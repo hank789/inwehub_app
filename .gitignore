@@ -1,8 +1,7 @@
-/.idea/
-/vendor/
-/composer.lock
-/.DS_Store
-.DS_Store
-test.php
-.phpcd
+.idea/
+vendor/
+bootstrap/cache/
+storage/
 .env
+.DS_Store
+/composer.lock
