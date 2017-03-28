@@ -54,55 +54,48 @@ Route::Group(['namespace'=>'Account'],function(){
     Route::get('oauth/register/{auth_id}',['as'=>'auth.oauth.profile','uses'=>'OauthController@profile']);
     Route::post('oauth/register',['as'=>'auth.oauth.register','uses'=>'OauthController@register']);
 
-    /*用户空间首页*/
-    Route::get('people/{user_id}',['as'=>'auth.space.index','uses'=>'SpaceController@index'])->where(['user_id'=>'[0-9]+']);
-    /*我的提问*/
-    Route::get('people/{user_id}/questions',['as'=>'auth.space.questions','uses'=>'SpaceController@questions'])->where(['user_id'=>'[0-9]+']);
-    /*我的回答*/
-    Route::get('people/{user_id}/answers',['as'=>'auth.space.answers','uses'=>'SpaceController@answers'])->where(['user_id'=>'[0-9]+']);
-    /*我的文章*/
-    Route::get('people/{user_id}/articles',['as'=>'auth.space.articles','uses'=>'SpaceController@articles'])->where(['user_id'=>'[0-9]+']);
-
-    /*我的粉丝*/
-    Route::get('people/{user_id}/followers',['as'=>'auth.space.followers','uses'=>'SpaceController@followers'])->where(['user_id'=>'[0-9]+']);
-    /*我的关注*/
-    Route::get('people/{user_id}/followed/{source_type}',['as'=>'auth.space.attentions','uses'=>'SpaceController@attentions'])->where(['user_id'=>'[0-9]+','source_type'=>'(questions|tags|users)']);
-    /*我的收藏*/
-    Route::get('people/{user_id}/collected/{source_type}',['as'=>'auth.space.collections','uses'=>'SpaceController@collections'])->where(['user_id'=>'[0-9]+','source_type'=>'(questions|articles)']);
-
-    /*我的金币*/
-    Route::get('people/{user_id}/coins',['as'=>'auth.space.coins','uses'=>'SpaceController@coins'])->where(['user_id'=>'[0-9]+']);
-    /*我的经验*/
-    Route::get('people/{user_id}/credits',['as'=>'auth.space.credits','uses'=>'SpaceController@credits'])->where(['user_id'=>'[0-9]+']);
-
 
     /*动态*/
     Route::Group(['middleware'=>'auth'],function(){
         Route::get('doings',['as'=>'auth.doing.index','uses'=>'DoingsController@index']);
-    });
+        /*用户空间首页*/
+        Route::get('people/{user_id}',['as'=>'auth.space.index','uses'=>'SpaceController@index'])->where(['user_id'=>'[0-9]+']);
+        /*我的提问*/
+        Route::get('people/{user_id}/questions',['as'=>'auth.space.questions','uses'=>'SpaceController@questions'])->where(['user_id'=>'[0-9]+']);
+        /*我的回答*/
+        Route::get('people/{user_id}/answers',['as'=>'auth.space.answers','uses'=>'SpaceController@answers'])->where(['user_id'=>'[0-9]+']);
+        /*我的文章*/
+        Route::get('people/{user_id}/articles',['as'=>'auth.space.articles','uses'=>'SpaceController@articles'])->where(['user_id'=>'[0-9]+']);
+
+        /*我的粉丝*/
+        Route::get('people/{user_id}/followers',['as'=>'auth.space.followers','uses'=>'SpaceController@followers'])->where(['user_id'=>'[0-9]+']);
+        /*我的关注*/
+        Route::get('people/{user_id}/followed/{source_type}',['as'=>'auth.space.attentions','uses'=>'SpaceController@attentions'])->where(['user_id'=>'[0-9]+','source_type'=>'(questions|tags|users)']);
+        /*我的收藏*/
+        Route::get('people/{user_id}/collected/{source_type}',['as'=>'auth.space.collections','uses'=>'SpaceController@collections'])->where(['user_id'=>'[0-9]+','source_type'=>'(questions|articles)']);
+
+        /*我的金币*/
+        Route::get('people/{user_id}/coins',['as'=>'auth.space.coins','uses'=>'SpaceController@coins'])->where(['user_id'=>'[0-9]+']);
+        /*我的经验*/
+        Route::get('people/{user_id}/credits',['as'=>'auth.space.credits','uses'=>'SpaceController@credits'])->where(['user_id'=>'[0-9]+']);
+
+        /*全局搜索*/
+        Route::any('search/{filter?}',['as'=>'auth.search.index','uses'=>'SearchController@index'])->where(['filter'=>'(all|questions|articles|tags|users)']);
+
+        /*邮箱token验证*/
+        Route::get('email/{action}/{token}',['as'=>'auth.email.verifyToken','uses'=>'EmailController@verifyToken'])->where(['action'=>'(register|verify)']);
 
 
-    /*全局搜索*/
-    Route::any('search/{filter?}',['as'=>'auth.search.index','uses'=>'SearchController@index'])->where(['filter'=>'(all|questions|articles|tags|users)']);
+        /*用户排行榜*/
 
-    /*邮箱token验证*/
-    Route::get('email/{action}/{token}',['as'=>'auth.email.verifyToken','uses'=>'EmailController@verifyToken'])->where(['action'=>'(register|verify)']);
+        /*财富榜*/
+        Route::get('top/coins',['as'=>'auth.top.coins','uses'=>'TopController@coins']);
 
+        /*回答榜*/
+        Route::get('top/answers',['as'=>'auth.top.answers','uses'=>'TopController@answers']);
 
-    /*用户排行榜*/
-
-    /*财富榜*/
-    Route::get('top/coins',['as'=>'auth.top.coins','uses'=>'TopController@coins']);
-
-    /*回答榜*/
-    Route::get('top/answers',['as'=>'auth.top.answers','uses'=>'TopController@answers']);
-
-    /*文章榜*/
-    Route::get('top/articles',['as'=>'auth.top.articles','uses'=>'TopController@articles']);
-
-
-
-    Route::Group(['middleware'=>'auth'],function(){
+        /*文章榜*/
+        Route::get('top/articles',['as'=>'auth.top.articles','uses'=>'TopController@articles']);
 
         Route::get('email/sendToken',['as'=>'auth.email.sendToken','uses'=>'EmailController@sendToken']);
 
@@ -150,24 +143,15 @@ Route::Group(['namespace'=>'Account'],function(){
         /*关注问题、人、标签*/
         Route::get('follow/{source_type}/{source_id}',['as'=>'auth.attention.store','uses'=>'AttentionController@store'])->where(['source_type'=>'(question|tag|user)','source_id'=>'[0-9]+']);
 
-
+        /*点赞*/
+        Route::get('support/{source_type}/{source_id}',['as'=>'auth.support.store','uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)','source_id'=>'[0-9]+']);
+        Route::get('support/check/{source_type}/{source_id}',['as'=>'auth.support.check','uses'=>'SupportController@check'])->where(['source_type'=>'(answer|article|comment)','source_id'=>'[0-9]+']);
 
     });
-
-    /*点赞*/
-    Route::get('support/{source_type}/{source_id}',['as'=>'auth.support.store','uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)','source_id'=>'[0-9]+']);
-    Route::get('support/check/{source_type}/{source_id}',['as'=>'auth.support.check','uses'=>'SupportController@check'])->where(['source_type'=>'(answer|article|comment)','source_id'=>'[0-9]+']);
-
-
-
-
-
-
-
 });
 
 /*前台显示部分*/
-Route::Group(['namespace'=>'Ask'],function(){
+Route::Group(['namespace'=>'Ask','middleware'=>'auth'],function(){
 
 
     /*问题查看*/
@@ -180,42 +164,36 @@ Route::Group(['namespace'=>'Ask'],function(){
     Route::post('question/suggest',['as'=>'ask.question.suggest','uses'=>'QuestionController@suggest']);
 
 
-    /*需要登录的模块*/
-    Route::Group(['middleware'=>'auth'],function(){
 
-        /*问题创建*/
-        Route::get('question/create',['as'=>'ask.question.create','uses'=>'QuestionController@create']);
-        Route::post('question/store',['middleware' =>'ban.user','as'=>'ask.question.store','uses'=>'QuestionController@store']);
+    /*问题创建*/
+    Route::get('question/create',['as'=>'ask.question.create','uses'=>'QuestionController@create']);
+    Route::post('question/store',['middleware' =>'ban.user','as'=>'ask.question.store','uses'=>'QuestionController@store']);
 
 
-        /*问题修改*/
-        Route::get('question/edit/{id}',['as'=>'ask.question.edit','uses'=>'QuestionController@edit'])->where(['id'=>'[0-9]+']);
-        Route::post('question/update',['middleware' =>'ban.user','as'=>'ask.question.update','uses'=>'QuestionController@update']);
+    /*问题修改*/
+    Route::get('question/edit/{id}',['as'=>'ask.question.edit','uses'=>'QuestionController@edit'])->where(['id'=>'[0-9]+']);
+    Route::post('question/update',['middleware' =>'ban.user','as'=>'ask.question.update','uses'=>'QuestionController@update']);
 
-        /*追加悬赏*/
-        Route::post('question/{id}/appendReward',['as'=>'ask.question.appendReward','uses'=>'QuestionController@appendReward'])->where(['id'=>'[0-9]+']);
+    /*追加悬赏*/
+    Route::post('question/{id}/appendReward',['as'=>'ask.question.appendReward','uses'=>'QuestionController@appendReward'])->where(['id'=>'[0-9]+']);
 
-        /*邀请回答*/
-        Route::get('question/invite/{question_id}/{to_user_id}',['as'=>'ask.question.invite','uses'=>'QuestionController@invite'])->where(['question_id'=>'[0-9]+','to_user_id'=>'[0-9]+']);
-        Route::any('question/inviteEmail/{question_id}',['as'=>'ask.question.inviteEmail','uses'=>'QuestionController@inviteEmail'])->where(['question_id'=>'[0-9]+']);
-        Route::get('question/{question_id}/invitations/{type}',['as'=>'ask.question.invitations','uses'=>'QuestionController@invitations'])->where(['question_id'=>'[0-9]+','type'=>'(part|all)']);
+    /*邀请回答*/
+    Route::get('question/invite/{question_id}/{to_user_id}',['as'=>'ask.question.invite','uses'=>'QuestionController@invite'])->where(['question_id'=>'[0-9]+','to_user_id'=>'[0-9]+']);
+    Route::any('question/inviteEmail/{question_id}',['as'=>'ask.question.inviteEmail','uses'=>'QuestionController@inviteEmail'])->where(['question_id'=>'[0-9]+']);
+    Route::get('question/{question_id}/invitations/{type}',['as'=>'ask.question.invitations','uses'=>'QuestionController@invitations'])->where(['question_id'=>'[0-9]+','type'=>'(part|all)']);
 
-        /*采纳回答*/
-        Route::get('answer/adopt/{id}',['as'=>'ask.answer.adopt','uses'=>'AnswerController@adopt'])->where(['id'=>'[0-9]+']);
+    /*采纳回答*/
+    Route::get('answer/adopt/{id}',['as'=>'ask.answer.adopt','uses'=>'AnswerController@adopt'])->where(['id'=>'[0-9]+']);
 
-        /*回答保存*/
-        Route::post('answer/store',['as'=>'ask.answer.store','uses'=>'AnswerController@store']);
-        /*回答编辑页面显示*/
-        Route::get('answer/edit/{id}',['as'=>'ask.answer.edit','uses'=>'AnswerController@edit'])->where(['id'=>'[0-9]+']);
-        /*回答保存*/
-        Route::post('answer/update/{id}',['as'=>'ask.answer.update','uses'=>'AnswerController@update'])->where(['id'=>'[0-9]+']);
+    /*回答保存*/
+    Route::post('answer/store',['as'=>'ask.answer.store','uses'=>'AnswerController@store']);
+    /*回答编辑页面显示*/
+    Route::get('answer/edit/{id}',['as'=>'ask.answer.edit','uses'=>'AnswerController@edit'])->where(['id'=>'[0-9]+']);
+    /*回答保存*/
+    Route::post('answer/update/{id}',['as'=>'ask.answer.update','uses'=>'AnswerController@update'])->where(['id'=>'[0-9]+']);
 
-        /*评论添加*/
-        Route::post('comment/store',['middleware' =>'ban.user','as'=>'ask.comment.store','uses'=>'CommentController@store']);
-
-
-    });
-
+    /*评论添加*/
+    Route::post('comment/store',['middleware' =>'ban.user','as'=>'ask.comment.store','uses'=>'CommentController@store']);
 
     /*标签首页*/
     Route::get('topic/{id}/{source_type?}',['as'=>'ask.tag.index','uses'=>'TagController@index'])->where(['id'=>'[0-9]+','source_type'=>'(questions|articles|details)']);
@@ -227,41 +205,31 @@ Route::Group(['namespace'=>'Ask'],function(){
 
 
 /*文章模块*/
-Route::Group(['namespace'=>'Blog'],function(){
+Route::Group(['namespace'=>'Blog','middleware'=>'auth'],function(){
 
     /*文章查看*/
     Route::get('article/{id}',['as'=>'blog.article.detail','uses'=>'ArticleController@show'])->where(['id'=>'[0-9]+']);
 
-
-    /*需要登录的模块*/
-    Route::Group(['middleware'=>'auth'],function(){
-
-        /*文章创建*/
-        Route::get('article/create',['as'=>'blog.article.create','uses'=>'ArticleController@create']);
-        Route::post('article/store',['middleware' =>'ban.user','as'=>'blog.article.store','uses'=>'ArticleController@store']);
-        Route::get('article/edit/{id}',['as'=>'blog.article.edit','uses'=>'ArticleController@edit'])->where(['id'=>'[0-9]+']);
-        Route::post('article/update',['middleware' =>'ban.user','as'=>'blog.article.update','uses'=>'ArticleController@update']);
-    });
+    /*文章创建*/
+    Route::get('article/create',['as'=>'blog.article.create','uses'=>'ArticleController@create']);
+    Route::post('article/store',['middleware' =>'ban.user','as'=>'blog.article.store','uses'=>'ArticleController@store']);
+    Route::get('article/edit/{id}',['as'=>'blog.article.edit','uses'=>'ArticleController@edit'])->where(['id'=>'[0-9]+']);
+    Route::post('article/update',['middleware' =>'ban.user','as'=>'blog.article.update','uses'=>'ArticleController@update']);
 
 });
 
 /*商城模块*/
-Route::Group(['namespace'=>'Shop'],function(){
+Route::Group(['namespace'=>'Shop','middleware'=>'auth'],function(){
 
     /*商品详情查看*/
     Route::get('goods/{id}',['as'=>'shop.goods.detail','uses'=>'GoodsController@show'])->where(['id'=>'[0-9]+']);
 
-    Route::Group(['middleware'=>'auth'],function(){
-        /*兑换礼品*/
-        Route::POST('goods/exchange',['as'=>'shop.goods.exchange','uses'=>'GoodsController@exchange']);
+    /*兑换礼品*/
+    Route::POST('goods/exchange',['as'=>'shop.goods.exchange','uses'=>'GoodsController@exchange']);
 
-        /*我的商城兑换记录*/
-        Route::get('exchanges',['as'=>'shop.exchange.index','uses'=>'ExchangeController@index']);
-    });
-
-
-
-
+    /*我的商城兑换记录*/
+    Route::get('exchanges',['as'=>'shop.exchange.index','uses'=>'ExchangeController@index']);
+    
 });
 
 
