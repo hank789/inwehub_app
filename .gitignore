@@ -1,6 +1,5 @@
 .idea/
 vendor/
-storage/
 .env
 .DS_Store
 /composer.lock
