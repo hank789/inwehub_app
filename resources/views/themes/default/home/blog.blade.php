@@ -1,5 +1,5 @@
 @extends('theme::layout.public')
-@section('seo_title')@section('seo_title')@if($filter === 'hottest')热门的@elseif($filter === 'recommended')推荐的@endif文章  @if( $articles->currentPage()>1 ) - 第{{ $articles->currentPage() }}页 @endif - {{ Setting()->get('website_name') }}@endsection
+@section('seo_title')@if($filter === 'hottest')热门的@elseif($filter === 'recommended')推荐的@endif文章  @if( $articles->currentPage()>1 ) - 第{{ $articles->currentPage() }}页 @endif - {{ Setting()->get('website_name') }}@endsection
 @section('content')
     <div class="row mt-10">
         <div class="col-xs-12 col-md-9 main">
@@ -93,7 +93,7 @@
                 <h2 class="h4 widget-box-title">热议话题 <a href="{{ route('website.topic') }}" title="更多">»</a></h2>
                 <ul class="taglist-inline multi">
                     @foreach($hotTags as $hotTag)
-                        <li class="tagPopup"><a class="tag" data-toggle="popover"  href="{{ route('ask.tag.index',['name'=>$hotTag->name,'source_type'=>'articles']) }}">{{ $hotTag->name }}</a></li>
+                        <li class="tagPopup"><a class="tag" data-toggle="popover"  href="{{ route('ask.tag.index',['id'=>$hotTag->tag_id,'source_type'=>'articles']) }}">{{ $hotTag->name }}</a></li>
                     @endforeach
                 </ul>
             </div>

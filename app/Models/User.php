@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -46,6 +47,7 @@ use Illuminate\Support\Facades\Config;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\QuestionInvitation[] $questionInvitations
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Question[] $questions
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bican\Roles\Models\Role[] $roles
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @property-read \App\Models\UserData $userData
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserOauth[] $userOauth
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bican\Roles\Models\Permission[] $userPermissions
@@ -75,7 +77,7 @@ class User extends Model implements AuthenticatableContract,
     CanResetPasswordContract,
     HasRoleAndPermissionContract
 {
-    use Authenticatable, CanResetPassword,HasRoleAndPermission;
+    use Authenticatable, CanResetPassword,HasRoleAndPermission,MorphManyTagsTrait;
 
     /**
      * The database table used by the model.
@@ -107,8 +109,6 @@ class User extends Model implements AuthenticatableContract,
             }
         });
         static::deleted(function($user){
-            /*删除角色管理*/
-            $user->roles()->delete();
 
             /*删除用户扩展信息*/
             $user->userData()->delete();
@@ -143,6 +143,9 @@ class User extends Model implements AuthenticatableContract,
             $user->questionInvitations()->delete();
             /*删除评论*/
             $user->comments()->delete();
+
+            /*删除角色管理*/
+            $user->detachAllRoles();
 
             if(Setting()->get('xunsearch_open',0) == 1) {
                 App::offsetGet('search')->delete($user);

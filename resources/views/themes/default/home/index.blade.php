@@ -108,24 +108,23 @@
             </div>
 
             @if($hotExperts)
-            <div class="widget-box clearfix">
-                <h4 class="widget-box-title">推荐专家 <a href="{{ route('website.experts') }}" title="更多">»</a></h4>
-                <div class="row row-horizon">
-                    @foreach($hotExperts as $expert)
-                        <section class="col-sm-6 col-md-4">
-                            <div class="thumbnail">
-                                <a href="{{ route('auth.space.index',['user_id'=>$expert->id]) }}" target="_blank"><img class="avatar-128" src="{{ get_user_avatar($expert->id,'big') }}" alt="{{ $expert->name }}"></a>
-
-                                <div class="caption">
-                                    <h4 class="text-center"><a href="{{ route('auth.space.index',['user_id'=>$expert->id]) }}">{{ $expert->name }}</a></h4>
-                                    <p class="text-muted text-center">{{ $expert->title }}&nbsp;</p>
-                                    <p class="text-center"><a class="btn btn-primary btn-sm" href="{{ route('ask.question.create') }}?to_user_id={{ $expert->id }}">向TA提问</a></p>
+                <div class="widget-box clearfix">
+                    <h4 class="widget-box-title">推荐专家 <a href="{{ route('website.experts') }}" title="更多">»</a></h4>
+                    <div class="row row-horizon">
+                        @foreach($hotExperts as $expert)
+                            <section class="col-sm-6 col-md-3">
+                                <div class="thumbnail">
+                                    <a href="{{ route('auth.space.index',['user_id'=>$expert->user_id]) }}" target="_blank"><img class="avatar-128" src="{{ get_user_avatar($expert->user_id,'big') }}" alt="{{ $expert->real_name }}"></a>
+                                    <div class="caption">
+                                        <h4 class="text-center"><a href="{{ route('auth.space.index',['user_id'=>$expert->user_id]) }}" title="{{ $expert->real_name }}">{{ str_limit($expert->real_name,10,'') }}</a></h4>
+                                        <p class="text-muted text-center" title="{{ $expert->title }}">{{ str_limit($expert->title,16,'') }}&nbsp;</p>
+                                        <p class="text-center"><a class="btn btn-primary btn-sm" href="{{ route('ask.question.create') }}?to_user_id={{ $expert->user_id }}">向TA提问</a></p>
+                                    </div>
                                 </div>
-                            </div>
-                        </section>
-                    @endforeach
+                            </section>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
             @endif
 
         </div>
@@ -152,7 +151,7 @@
                 <h2 class="h4 widget-box-title">热议话题 <a href="{{ route('website.topic') }}" title="更多">»</a></h2>
                 <ul class="taglist-inline multi">
                     @foreach($hotTags as $hotTag)
-                    <li class="tagPopup"><a class="tag" data-toggle="popover"  href="{{ route('ask.tag.index',['name'=>$hotTag->name]) }}" target="_blank">{{ $hotTag->name }}</a></li>
+                        <li class="tagPopup"><a class="tag" data-toggle="popover"  href="{{ route('ask.tag.index',['id'=>$hotTag->tag_id]) }}" target="_blank">{{ $hotTag->name }}</a></li>
                     @endforeach
                 </ul>
             </div>

@@ -21,7 +21,7 @@ class ArticleController extends Controller
     /*问题创建校验*/
     protected $validateRules = [
         'title' => 'required|min:5|max:255',
-        'content' => 'required|min:50|max:65535',
+        'content' => 'required|min:50|max:16777215',
         'summary' => 'sometimes|max:255',
         'tags' => 'sometimes|max:128',
         'category_id' => 'sometimes|numeric'
@@ -135,12 +135,12 @@ class ArticleController extends Controller
      */
     public function show($id,Request $request)
     {
-        $article = Article::find($id);
+        $article = Article::findOrFail($id);
 
         /*问题查看数+1*/
         $article->increment('views');
 
-        $topUsers = Cache::remember('top_article_users',10,function() {
+        $topUsers = Cache::remember('article_top_article_users',10,function() {
             return  UserData::top('articles',8);
         });
 
