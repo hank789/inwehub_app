@@ -6,6 +6,44 @@ use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * App\Models\UserData
+ *
+ * @property int $user_id
+ * @property int $coins
+ * @property int $credits
+ * @property string $registered_at
+ * @property string $last_visit
+ * @property string $last_login_ip
+ * @property int $questions
+ * @property int $articles
+ * @property int $answers
+ * @property int $adoptions
+ * @property int $supports
+ * @property int $followers
+ * @property int $views
+ * @property bool $email_status
+ * @property bool $mobile_status
+ * @property bool $authentication_status
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereAdoptions($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereAnswers($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereArticles($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereAuthenticationStatus($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereCoins($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereCredits($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereEmailStatus($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereFollowers($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereLastLoginIp($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereLastVisit($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereMobileStatus($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereQuestions($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereRegisteredAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereSupports($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereViews($value)
+ * @mixin \Eloquent
+ */
 class UserData extends Model
 {
     use BelongsToUserTrait;

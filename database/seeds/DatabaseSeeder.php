@@ -61,7 +61,16 @@ class DatabaseSeeder extends Seeder
             ['name' => 'website_icp','value' => ''],
             ['name' => 'website_cache_time','value' => '1'],
             ['name' => 'website_name','value' => '英淘官网'],
-            ['name' => 'website_url','value' => '']
+            ['name' => 'website_url','value' => ''],
+            ['name' => 'register_title','value' => '欢迎加入英淘社区'],
+            ['name' => 'website_slogan','value' => '做最好的咨询社区'],
+            ['name' => 'website_welcome','value' => '欢迎加入英淘社区，一起成长'],
+            ['name' => '','value' => ''],
+            ['name' => '','value' => ''],
+            ['name' => '','value' => ''],
+
+
+
         ]);
 
         /*地区字典表*/

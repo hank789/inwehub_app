@@ -14,13 +14,15 @@
         "socialiteproviders/qq": "^2.0",
         "socialiteproviders/weibo": "^2.0",
         "socialiteproviders/weixin": "^2.0",
+        "doctrine/dbal": "~2.3",
         "sdfsky/tipask-xunsearch": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~4.0",
-        "phpspec/phpspec": "~2.1"
+        "phpspec/phpspec": "~2.1",
+        "barryvdh/laravel-ide-helper":"dev-master"
     },
     "autoload": {
         "classmap": [

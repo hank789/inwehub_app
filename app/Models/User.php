@@ -13,6 +13,63 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
+/**
+ * App\Models\User
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $mobile
+ * @property string $password
+ * @property bool $gender
+ * @property string $birthday
+ * @property int $province
+ * @property int $city
+ * @property string $title
+ * @property string $description
+ * @property bool $status
+ * @property string $site_notifications
+ * @property string $email_notifications
+ * @property string $remember_token
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Answer[] $answers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Article[] $articles
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Attention[] $attentions
+ * @property-read \App\Models\Authentication $authentication
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Collection[] $collections
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Credit[] $credits
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Doing[] $doings
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Exchange[] $exchanges
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserData[] $followers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\QuestionInvitation[] $questionInvitations
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Question[] $questions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bican\Roles\Models\Role[] $roles
+ * @property-read \App\Models\UserData $userData
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserOauth[] $userOauth
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bican\Roles\Models\Permission[] $userPermissions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserTag[] $userTag
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserTag[] $userTags
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereBirthday($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereCity($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereDescription($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereEmail($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereEmailNotifications($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereGender($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereMobile($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User wherePassword($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereProvince($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereRememberToken($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereSiteNotifications($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereStatus($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereTitle($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,
     CanResetPasswordContract,

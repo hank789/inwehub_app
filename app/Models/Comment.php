@@ -5,6 +5,36 @@ namespace App\Models;
 use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Comment
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $content
+ * @property int $source_id
+ * @property string $source_type
+ * @property int $to_user_id
+ * @property bool $status
+ * @property int $supports
+ * @property bool $device
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
+ * @property-read \App\Models\User $toUser
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereContent($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereDevice($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereSourceId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereSourceType($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereStatus($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereSupports($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereToUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Comment extends Model
 {
     use BelongsToUserTrait;

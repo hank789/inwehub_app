@@ -6,6 +6,33 @@ use App\Models\Relations\BelongsToCategoryTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
+/**
+ * App\Models\Tag
+ *
+ * @property int $id
+ * @property string $name
+ * @property int $category_id
+ * @property string $logo
+ * @property string $summary
+ * @property string $description
+ * @property int $parent_id
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\UserData[] $followers
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\Models\Category $category
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserTag[] $userTags
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereCategoryId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereDescription($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereFollowers($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereLogo($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereParentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereSummary($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Tag extends Model
 {
     use BelongsToCategoryTrait;

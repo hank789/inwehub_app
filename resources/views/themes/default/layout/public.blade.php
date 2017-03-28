@@ -146,7 +146,7 @@
             <a href="http://www.miibeian.gov.cn" target="_blank">{{ Setting()->get('website_icp') }}</a>
         </div>
         <div class="copyright mt-10">
-            Powered By <a href="http://www.tipask.com" target="_blank">{{ Config('tipask.version') }}</a> Release {{ config('tipask.release') }} ©2009-{{ gmdate('Y') }} tipask.com
+            Powered By <a href="#" target="_blank">{{ Config('tipask.version') }}</a> Release {{ config('tipask.release') }} ©2017-{{ gmdate('Y') }} intervapp.com
         </div>
     </div>
 </footer>

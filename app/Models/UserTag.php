@@ -6,6 +6,32 @@ use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\UserTag
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $tag_id
+ * @property int $questions
+ * @property int $articles
+ * @property int $answers
+ * @property int $supports
+ * @property int $adoptions
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereAdoptions($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereAnswers($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereArticles($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereQuestions($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereSupports($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereTagId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereUserId($value)
+ * @mixin \Eloquent
+ */
 class UserTag extends Model
 {
     use BelongsToUserTrait;

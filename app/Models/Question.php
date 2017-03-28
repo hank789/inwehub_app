@@ -11,6 +11,47 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * App\Models\Question
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $category_id
+ * @property string $title
+ * @property string $description
+ * @property int $price
+ * @property bool $hide
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Answer[] $answers
+ * @property int $views
+ * @property int $followers
+ * @property int $collections
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property bool $device
+ * @property bool $status
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\Models\Category $category
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\QuestionInvitation[] $invitations
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereAnswers($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereCategoryId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereCollections($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereComments($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereDescription($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereDevice($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereFollowers($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereHide($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question wherePrice($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereStatus($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereTitle($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereViews($value)
+ * @mixin \Eloquent
+ */
 class Question extends Model
 {
     use BelongsToUserTrait,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToCategoryTrait;

@@ -6,6 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\Taggable
+ *
+ * @property int $id
+ * @property int $tag_id
+ * @property int $taggable_id
+ * @property string $taggable_type
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Taggable whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Taggable whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Taggable whereTagId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Taggable whereTaggableId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Taggable whereTaggableType($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Taggable whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Taggable extends Model
 {
     protected $table = 'taggables';

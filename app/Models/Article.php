@@ -9,6 +9,44 @@ use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
+/**
+ * App\Models\Article
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $logo
+ * @property int $category_id
+ * @property string $title
+ * @property string $summary
+ * @property string $content
+ * @property int $views
+ * @property int $collections
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property int $supports
+ * @property bool $status
+ * @property bool $device
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\Models\Category $category
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereCategoryId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereCollections($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereComments($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereContent($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereDevice($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereLogo($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereStatus($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereSummary($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereSupports($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereTitle($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereViews($value)
+ * @mixin \Eloquent
+ */
 class Article extends Model
 {
     use BelongsToUserTrait,MorphManyTagsTrait,MorphManyCommentsTrait,BelongsToCategoryTrait;

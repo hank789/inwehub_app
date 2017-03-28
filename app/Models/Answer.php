@@ -6,6 +6,39 @@ use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Answer
+ *
+ * @property int $id
+ * @property string $question_title
+ * @property int $question_id
+ * @property int $user_id
+ * @property string $content
+ * @property int $supports
+ * @property int $oppositions
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property bool $device
+ * @property bool $status
+ * @property string $adopted_at
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property-read \App\Models\Question $question
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereAdoptedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereComments($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereContent($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereDevice($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereOppositions($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereQuestionId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereQuestionTitle($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereStatus($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereSupports($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Answer extends Model
 {
     use MorphManyCommentsTrait,BelongsToUserTrait;

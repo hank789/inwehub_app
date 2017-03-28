@@ -6,6 +6,34 @@ use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\Doing
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $action
+ * @property int $source_id
+ * @property string $source_type
+ * @property string $subject
+ * @property string $content
+ * @property int $refer_id
+ * @property int $refer_user_id
+ * @property string $refer_content
+ * @property string $created_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereAction($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereContent($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereReferContent($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereReferId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereReferUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereSourceId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereSourceType($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereSubject($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Doing extends Model
 {
     use BelongsToUserTrait;

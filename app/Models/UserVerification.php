@@ -7,6 +7,12 @@ use Illuminate\Auth\Passwords\DatabaseTokenRepository as Token;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 
+/**
+ * App\Models\UserVerification
+ *
+ * @property-read \App\Models\User $user
+ * @mixin \Eloquent
+ */
 class UserVerification extends Model
 {
 

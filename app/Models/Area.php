@@ -6,6 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\Area
+ *
+ * @property int $id
+ * @property string $name
+ * @property int $parent_id
+ * @property bool $grade
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Area whereGrade($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Area whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Area whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Area whereParentId($value)
+ * @mixin \Eloquent
+ */
 class Area extends Model
 {
     protected $table = 'areas';
