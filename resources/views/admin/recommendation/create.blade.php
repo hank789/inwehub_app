@@ -29,7 +29,7 @@
                             </div>
                             <div class="form-group">
                                 <label>推荐链接地址</label>
-                                <input type="text" name="url" class="form-control "  placeholder="http://www.tipask.com" value="{{ old('url','') }}">
+                                <input type="text" name="url" class="form-control "  placeholder="http://www.intervapp.com" value="{{ old('url','') }}">
                             </div>
                             <div class="form-group">
                                 <label>logo图片</label>

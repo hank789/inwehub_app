@@ -23,7 +23,7 @@
 @section('script')
     <script type="text/javascript" src="{{ asset('/static/js/jquery.jsonp.js') }}"></script>
     <script type="text/javascript">
-        var push_site_url = "http://www.tipask.com/sync?";
+        var push_site_url = "http://www.intervapp.com/sync?";
         $(function(){
             $.jsonp({
                 url: push_site_url+$("#websiteForm input").serialize(),

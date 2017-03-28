@@ -32,7 +32,7 @@
 
                             <div class="form-group @if($errors->has('url')) has-error @endif">
                                 <label>链接地址</label>
-                                <span class="text-muted">请输入完整地址，例如：http://www.tipask.com</span>
+                                <span class="text-muted">请输入完整地址，例如：http://www.baidu.com</span>
 
                                 <input type="text" name="url" class="form-control " placeholder="链接地址，以http:// 开头" value="{{ old('url','') }}">
                                 @if($errors->has('url')) <p class="help-block">{{ $errors->first('url') }}</p> @endif

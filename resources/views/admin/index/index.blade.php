@@ -109,7 +109,7 @@
                                 <table class="table table-striped table-bordered">
                                     <tbody>
                                     <tr>
-                                        <td>软件版本：{{ config('tipask.version') }} Release {{ config('tipask.release') }} [<a href="http://www.tipask.com/download.html">查看最新版本</a>]</td>
+                                        <td>软件版本：{{ config('tipask.version') }} Release {{ config('tipask.release') }} [<a href="http://www.intervapp.com/download.html">查看最新版本</a>]</td>
                                     </tr>
                                     <tr>
                                         <td>服务器域名： {{ $systemInfo['hostName'] }}</td>
@@ -144,10 +144,10 @@
                                 <table class="table table-striped table-bordered">
                                     <tbody>
                                     <tr>
-                                        <td>版权所有：www.tipask.com</td>
+                                        <td>版权所有：www.intervapp.com</td>
                                     </tr>
                                     <tr>
-                                        <td>用户协议：<a href="http://www.tipask.com/license.html" target="_blank">查看用户协议</a></td>
+                                        <td>用户协议：<a href="http://www.intervapp.com/license.html" target="_blank">查看用户协议</a></td>
                                     </tr>
                                     </tbody>
                                 </table>

@@ -22,7 +22,7 @@
 <body>
 <div class="header text-center">
   <h1>
-    <a href="http://www.tipask.com" class="logo">
+    <a href="http://www.intervapp.com" class="logo">
       <img src="{{ asset('/css/default/logo.png') }}" height="50" alt="Tipask" />
     </a>
   </h1>
@@ -45,7 +45,7 @@
 
 
 <footer class="main-footer text-center">
-  <strong>Copyright © 2010-{{ date("Y-m-d") }} <a href="http://www.tipask.com" target="_blank">tipask.com</a>.</strong> All rights reserved.
+  <strong>Copyright © 2010-{{ date("Y-m-d") }} <a href="http://www.intervapp.com" target="_blank">tipask.com</a>.</strong> All rights reserved.
 </footer>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
