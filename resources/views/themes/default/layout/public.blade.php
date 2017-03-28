@@ -132,7 +132,7 @@
 
 <footer id="footer">
     <div class="container">
-        @if(request()->route()->getName() == 'website.index')
+        @if(request()->route()->getName() == 'website.index' && 0)
         <ul class="list-unstyled list-inline">
             <li>友情链接</li>
             @foreach($friendshipLinks as $link)
