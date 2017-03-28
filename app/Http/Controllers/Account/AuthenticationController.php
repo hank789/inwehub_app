@@ -54,16 +54,12 @@ class AuthenticationController extends Controller
         $this->validate($request,$this->validateRules,$this->validateMessages);
 
         $data = $request->all();
-        logger('test');
 
         $data['user_id'] = $request->user()->id;
 
-        logger($data);
 
         if($request->hasFile('id_card_image')){
-            logger('hank');
             $savePath = storage_path('app/authentications');
-            logger($savePath);
 
             $file = $request->file('id_card_image');
             $fileName = uniqid(str_random(8)).'.'.$file->getClientOriginalExtension();
