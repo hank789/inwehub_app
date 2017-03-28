@@ -16,8 +16,8 @@ class AuthenticationController extends Controller
 
     protected  $validateRules = [
         'real_name' => 'required|max:64',
-        'title' => 'required|max:128',
-        'description' => 'sometimes|max:9999',
+        //'title' => 'required|max:128',
+        //'description' => 'sometimes|max:9999',
         'id_card' => 'required|max:64|unique:authentications',
         'id_card_image' => 'required|image|max:2048',
         'skill' => 'required|max:128',
@@ -51,15 +51,20 @@ class AuthenticationController extends Controller
      */
     public function postStore(Request $request)
     {
-
         $this->validate($request,$this->validateRules,$this->validateMessages);
 
         $data = $request->all();
+        logger('test');
 
         $data['user_id'] = $request->user()->id;
 
+        logger($data);
+
         if($request->hasFile('id_card_image')){
+            logger('hank');
             $savePath = storage_path('app/authentications');
+            logger($savePath);
+
             $file = $request->file('id_card_image');
             $fileName = uniqid(str_random(8)).'.'.$file->getClientOriginalExtension();
             $target = $file->move($savePath,$fileName);
