@@ -70,10 +70,9 @@ class ProfileController extends Controller
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
 
             if(in_array($extension, $extArray)){
-	            if($extension != 'jpg'){
+                Storage::disk('local')->put($avatarDir.'/'.User::getAvatarFileName($user_id,'origin').'.'.$extension,File::get($file));
+                if($extension != 'jpg'){
                     Image::make(File::get($file))->save(storage_path('app/'.User::getAvatarPath($user_id,'origin')));
-                }else{
-                    Storage::disk('local')->put($avatarDir.'/'.User::getAvatarFileName($user_id,'origin').'.'.$extension,File::get($file));
                 }
             }else{
                 return response('error');
