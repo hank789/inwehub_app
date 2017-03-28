@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
 
         /*友情连接*/
         DB::table('friendship_links')->insert([
-            ['id' => '1','name' => 'tipask问答网','slogan' => '国内最好PHP开源的问答系统','url' => 'http://wenda.tipask.com','sort' => '1','status' => '1','created_at' => '2016-05-10 18:25:54','updated_at' => '2016-05-10 18:28:05'],
+            ['id' => '1','name' => 'laravel中文网','slogan' => '国内最好PHP开源框架','url' => 'http://www.golaravel.com','sort' => '1','status' => '1','created_at' => '2016-05-10 18:25:54','updated_at' => '2016-05-10 18:28:05'],
         ]);
 
 
@@ -55,12 +55,12 @@ class DatabaseSeeder extends Seeder
             ['name' => 'time_format','value' => 'H:i'],
             ['name' => 'time_friendly','value' => '1'],
             ['name' => 'time_offset','value' => '8'],
-            ['name' => 'website_admin_email','value' => 'admin@tipask.com'],
+            ['name' => 'website_admin_email','value' => 'hank.wang@intervapp.com'],
             ['name' => 'website_footer','value' => ''],
             ['name' => 'website_header','value' => ''],
             ['name' => 'website_icp','value' => ''],
             ['name' => 'website_cache_time','value' => '1'],
-            ['name' => 'website_name','value' => 'Tipask问答网'],
+            ['name' => 'website_name','value' => '英淘官网'],
             ['name' => 'website_url','value' => '']
         ]);
 
@@ -453,6 +453,16 @@ class DatabaseSeeder extends Seeder
             ['id' => '385','parent_id' => '31','name' => '林芝','grade' => '2']
         ]);
 
+
+        $registrar = new \App\Services\Registrar();
+        $admin = $registrar->create([
+            'name' => 'intervapp',
+            'email' => 'hank.wang@intervapp.com',
+            'password' => 'qwer1234',
+            'status' => 1,
+            'visit_ip' => '127.0.0.1',
+        ]);
+        $admin->attachRole(1);
 
 
 
