@@ -65,12 +65,6 @@ class DatabaseSeeder extends Seeder
             ['name' => 'register_title','value' => '欢迎加入英淘社区'],
             ['name' => 'website_slogan','value' => '做最好的咨询社区'],
             ['name' => 'website_welcome','value' => '欢迎加入英淘社区，一起成长'],
-            ['name' => '','value' => ''],
-            ['name' => '','value' => ''],
-            ['name' => '','value' => ''],
-
-
-
         ]);
 
         /*地区字典表*/
