@@ -31,7 +31,7 @@
 
                         <div class="form-group @if ($errors->has('website_welcome')) has-error @endif">
                             <label for="website_welcome">首页欢迎语</label>
-                            <span class="text-muted">(例如：欢迎加入Tipask站长问答社区，一起记录站长的世界)</span>
+                            <span class="text-muted">(例如：欢迎加入英淘社区)</span>
                             <input type="text" name="website_welcome" class="form-control " placeholder="首页欢迎语" value="{{ old('website_welcome',Setting()->get('website_welcome')) }}">
                             @if ($errors->has('website_welcome')) <p class="help-block">{{ $errors->first('website_welcome') }}</p> @endif
                         </div>

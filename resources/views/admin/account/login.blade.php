@@ -27,7 +27,7 @@
 <body class="login-page">
 <div class="login-box">
     <div class="login-box-body">
-        <p class="login-box-msg">Tipask 管理后台</p>
+        <p class="login-box-msg">英淘社区管理后台</p>
         <form action="{{ route('admin.account.login') }}" method="post">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <div class="form-group has-feedback @if ($errors->first('email')) has-error @endif">

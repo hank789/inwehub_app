@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
-    <meta name="author" content="Tipask Team" />
-    <meta name="copyright" content="2016 tipask.com" />
+    <meta name="author" content="英淘社区" />
+    <meta name="copyright" content="2017 intervapp.com" />
     {!! Setting()->get('website_header') !!}
     <link href="{{ asset('/static/css/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('/static/css/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" />

@@ -9,7 +9,7 @@
                 <img src="{{ asset('/css/default/login-logo.png') }}" alt="{{ Setting()->get('website_name') }}">
             </a>
         </h1>
-        <p class="description text-muted">{{ Setting()->get('register_title','欢迎加入Tipask问答社区') }}</p>
+        <p class="description text-muted">{{ Setting()->get('register_title','欢迎加入英淘社区') }}</p>
     </div>
 
     @if(isset($success))
