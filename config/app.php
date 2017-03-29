@@ -152,6 +152,7 @@ return [
         Sdfsky\TipaskXunSearch\ServiceProvider::class,
         SocialiteProviders\Manager\ServiceProvider::class,
         Roumen\Sitemap\SitemapServiceProvider::class,
+        Sentry\SentryLaravel\SentryLaravelServiceProvider::class,
     ],
 
     /*
@@ -204,6 +205,7 @@ return [
         'Image'     => Intervention\Image\Facades\Image::class,
         'Purifier' => Mews\Purifier\Facades\Purifier::class,
         'Search' => Sdfsky\TipaskXunSearch\Facade::class,
+        'Sentry' => Sentry\SentryLaravel\SentryFacade::class,
     ],
 
 ];
