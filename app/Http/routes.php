@@ -51,8 +51,8 @@ Route::Group(['namespace'=>'Account'],function(){
     Route::match(['get','post'],'findPassword/{token}',['as'=>'auth.user.findPassword','uses'=>'UserController@findPassword']);
 
     /*用户auth2.0*/
-    Route::get('oauth/{type}/login',['as'=>'auth.oauth.login','uses'=>'OauthController@login'])->where(['type'=>'(qq|weibo|weixin)']);
-    Route::get('oauth/{type}/callback',['as'=>'auth.oauth.callback','uses'=>'OauthController@callback'])->where(['type'=>'(qq|weibo|weixin)']);
+    Route::get('oauth/{type}/login',['as'=>'auth.oauth.login','uses'=>'OauthController@login'])->where(['type'=>'(qq|weibo|weixin|weixinweb)']);
+    Route::get('oauth/{type}/callback',['as'=>'auth.oauth.callback','uses'=>'OauthController@callback'])->where(['type'=>'(qq|weibo|weixin|weixinweb)']);
     Route::get('oauth/register/{auth_id}',['as'=>'auth.oauth.profile','uses'=>'OauthController@profile']);
     Route::post('oauth/register',['as'=>'auth.oauth.register','uses'=>'OauthController@register']);
 

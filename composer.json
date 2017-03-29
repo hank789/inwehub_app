@@ -14,6 +14,7 @@
         "socialiteproviders/qq": "^2.0",
         "socialiteproviders/weibo": "^2.0",
         "socialiteproviders/weixin": "^2.0",
+        "socialiteproviders/weixin-web": "^2.0",
         "doctrine/dbal": "~2.3",
         "sdfsky/tipask-xunsearch": "dev-master",
         "roumen/sitemap": "^2.6",

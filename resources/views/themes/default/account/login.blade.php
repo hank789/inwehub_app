@@ -60,7 +60,7 @@
                 <p class="text-muted mt-5 mr-10 pull-left hidden-xs">快速登录</p>
                 <a href="{{ route('auth.oauth.login',['type'=>'weibo']) }}" class="btn btn-default btn-sm btn-sn-weibo" ><span class="icon-sn-bg-weibo"></span> <strong class="visible-xs-inline">新浪微博账号</strong></a>
                 <a href="{{ route('auth.oauth.login',['type'=>'qq']) }}" class="btn btn-default btn-sm btn-sn-qq" ><span class="icon-sn-bg-qq"></span> <strong class="visible-xs-inline">QQ 账号</strong></a>
-                <a href="{{ route('auth.oauth.login',['type'=>'weixin']) }}" class="btn btn-default btn-sm btn-sn-weixin" ><span class="icon-sn-bg-weixin"></span> <strong class="visible-xs-inline">微信账号</strong></a>
+                <a href="{{ route('auth.oauth.login',['type'=>'weixinweb']) }}" class="btn btn-default btn-sm btn-sn-weixin" ><span class="icon-sn-bg-weixin"></span> <strong class="visible-xs-inline">微信账号</strong></a>
 
             </div>
             @endif
