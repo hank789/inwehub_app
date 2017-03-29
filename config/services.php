@@ -44,5 +44,10 @@ return [
         'client_secret' => env('OAUTH_WEIBO_SECRET'),
         'redirect' => env('OAUTH_WEIBO_REDIRECT'),
     ],
+    'weixin' => [
+        'client_id' => env('OAUTH_WEIXIN_KEY'),
+        'client_secret' => env('OAUTH_WEIXIN_SECRET'),
+        'redirect' => env('OAUTH_WEIXIN_REDIRECT'),
+    ],
 
 ];
