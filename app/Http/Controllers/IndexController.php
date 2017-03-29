@@ -220,7 +220,7 @@ class IndexController extends Controller
     }
 
     public function callback(){
-
+        echo $_GET['echostr'];
     }
 
 }
