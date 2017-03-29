@@ -219,4 +219,8 @@ class IndexController extends Controller
         return view('theme::home.shop')->with(compact('goods','exchanges'));
     }
 
+    public function callback(){
+
+    }
+
 }
