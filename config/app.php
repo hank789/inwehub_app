@@ -153,6 +153,7 @@ return [
         SocialiteProviders\Manager\ServiceProvider::class,
         Roumen\Sitemap\SitemapServiceProvider::class,
         Sentry\SentryLaravel\SentryLaravelServiceProvider::class,
+        Jacobcyl\AliOSS\AliOssServiceProvider::class,
     ],
 
     /*

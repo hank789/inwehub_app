@@ -19,7 +19,8 @@
         "sdfsky/tipask-xunsearch": "dev-master",
         "roumen/sitemap": "^2.6",
         "maknz/slack": "^1.7",
-        "sentry/sentry-laravel": "^0.6.1"
+        "sentry/sentry-laravel": "^0.6.1",
+        "jacobcyl/ali-oss-storage": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

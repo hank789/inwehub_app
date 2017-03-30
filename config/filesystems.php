@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => 'local',
+    'default' => env('FILESYSTEM_TYPE','local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -78,6 +78,15 @@ return [
             'endpoint'  => 'https://identity.api.rackspacecloud.com/v2.0/',
             'region'    => 'IAD',
             'url_type'  => 'publicURL',
+        ],
+        'oss' => [
+            'driver'        => 'oss',
+            'access_id'     => env('OSS_ACCESS_KEY_ID',''),
+            'access_key'    => env('OSS_ACCESS_KEY_SECRET',''),
+            'bucket'        => env('OSS_BUCKET'),
+            'endpoint'      => env('OSS_ENDPOINT'),
+            'isCName'       => env('OSS_ISCNAME'),
+            'debug'         => env('OSS_DEBUGT')
         ],
 
     ],

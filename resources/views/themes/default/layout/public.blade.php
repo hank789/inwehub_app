@@ -8,8 +8,8 @@
     <title>@yield('seo_title',Setting()->get('website_name'))</title>
     <meta name="keywords" content="@yield('seo_keyword',parse_seo_template('seo_index_keyword','default'))" />
     <meta name="description" content="@yield('seo_description',parse_seo_template('seo_index_description','default'))" />
-    <meta name="author" content="Tipask Team" />
-    <meta name="copyright" content="2016 tipask.com" />
+    <meta name="author" content="Intervapp Team" />
+    <meta name="copyright" content="2017 intervapp.com" />
     {!! Setting()->get('website_header') !!}
     <!-- Bootstrap -->
     <link href="{{ asset('/static/css/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />

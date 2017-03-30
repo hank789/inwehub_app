@@ -1,8 +1,10 @@
-@servers(['web' => 'web@47.92.24.67'])
+@servers(['web-test1' => 'web@47.92.24.67'])
 
-@task('deploy')
+@task('deploy-test',['on' => ['web-test1']])
     cd /home/web/www/intervapp
     git pull origin master
+    composer update --no-scripts
+    php artisan optimize
 @endtask
 
 
