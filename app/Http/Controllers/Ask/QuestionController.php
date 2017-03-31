@@ -66,7 +66,7 @@ class QuestionController extends Controller
         }
 
         /*相关问题*/
-        $relatedQuestions = Question::correlations($question->tags()->lists('tag_id'));
+        $relatedQuestions = Question::correlations($question->tags()->pluck('tag_id'));
         return view("theme::question.detail")->with('question',$question)
                                              ->with('answers',$answers)->with('bestAnswer',$bestAnswer)
                                              ->with('relatedQuestions',$relatedQuestions);
@@ -179,12 +179,12 @@ class QuestionController extends Controller
             abort(404);
         }
 
-        if($question->user_id !== $request->user()->id && !$request->user()->is('admin')){
+        if($question->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
             abort(403);
         }
 
         /*编辑问题时效控制*/
-        if( !$request->user()->is('admin') && Setting()->get('edit_question_timeout') ){
+        if( !$request->user()->isRole('admin') && Setting()->get('edit_question_timeout') ){
             if( $question->created_at->diffInMinutes() > Setting()->get('edit_question_timeout') ){
                 return $this->showErrorMsg(route('website.index'),'你已超过问题可编辑的最大时长，不能进行编辑了。如有疑问请联系管理员!');
             }
@@ -204,7 +204,7 @@ class QuestionController extends Controller
             abort(404);
         }
 
-        if($question->user_id !== $request->user()->id && !$request->user()->is('admin')){
+        if($question->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
             abort(403);
         }
 

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Account;
 use App\Http\Controllers\Controller;
 use App\Models\EmailToken;
 use App\Models\User;
+use App\Services\Registrar;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;

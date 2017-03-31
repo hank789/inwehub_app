@@ -103,27 +103,41 @@ Route::Group(['namespace'=>'Account'],function(){
 
         Route::get('oauth/{type}/unbind',['as'=>'auth.oauth.unbind','uses'=>'OauthController@unbind']);
         /*用户个人信息修改*/
-        Route::controller('profile','ProfileController', [
+        /*Route::controller('profile','ProfileController', [
             'anyBase'     => 'auth.profile.base',
             'postAvatar'  => 'auth.profile.avatar',
             'anyPassword' =>'auth.profile.password',
             'anyEmail'    =>'auth.profile.email',
             'anyOauth'    =>'auth.profile.oauth',
             'anyNotification' =>'auth.profile.notification',
-        ]);
+        ]);*/
+        Route::get('profile/base',['as'=>'auth.profile.base','uses'=>'ProfileController@anyBase']);
+        Route::post('profile/avatar',['as'=>'auth.profile.avatar','uses'=>'ProfileController@postAvatar']);
+        Route::get('profile/password',['as'=>'auth.profile.password','uses'=>'ProfileController@anyPassword']);
+        Route::get('profile/email',['as'=>'auth.profile.email','uses'=>'ProfileController@anyEmail']);
+        Route::get('profile/oauth',['as'=>'auth.profile.oauth','uses'=>'ProfileController@anyOauth']);
+        Route::get('profile/notification',['as'=>'auth.profile.notification','uses'=>'ProfileController@anyNotification']);
+
 
         /*行家认证*/
-        Route::controller('authentication','AuthenticationController', [
+        /*Route::controller('authentication','AuthenticationController', [
             'getIndex'     => 'auth.authentication.index',
             'anyEdit' =>'auth.authentication.edit',
             'postStore'    =>'auth.authentication.store'
-        ]);
+        ]);*/
+        Route::get('authentication/index',['as'=>'auth.authentication.index','uses'=>'AuthenticationController@getIndex']);
+        Route::get('authentication/edit',['as'=>'auth.authentication.edit','uses'=>'AuthenticationController@anyEdit']);
+        Route::post('authentication/store',['as'=>'auth.authentication.store','uses'=>'AuthenticationController@postStore']);
+
 
         /*我的通知*/
-        Route::controller('notifications','NotificationController',[
+        /*Route::controller('notifications','NotificationController',[
             'getIndex' => 'auth.notification.index',
             'getReadAll' => 'auth.notification.readAll',
-        ]);
+        ]);*/
+        Route::get('notifications/index',['as'=>'auth.notification.index','uses'=>'NotificationController@getIndex']);
+        Route::get('notifications/readAll',['as'=>'auth.notification.readAll','uses'=>'NotificationController@getReadAll']);
+
 
         /*我的私信*/
         Route::get('messages',['as'=>'auth.message.index','uses'=>'MessageController@index']);
@@ -231,7 +245,7 @@ Route::Group(['namespace'=>'Shop','middleware'=>'auth'],function(){
 
     /*我的商城兑换记录*/
     Route::get('exchanges',['as'=>'shop.exchange.index','uses'=>'ExchangeController@index']);
-    
+
 });
 
 
@@ -252,14 +266,14 @@ Route::Group(['prefix'=>'admin','namespace'=>'Admin','middleware' =>['auth','aut
     Route::post('system/adjust',['as'=>'admin.system.adjust','uses'=>'SystemController@adjust']);
 
     /*首页*/
-    Route::resource('index', 'IndexController', ['only' => ['index']]);
+    Route::resource('index', 'IndexController', ['only' => ['index'],'as'=>'admin']);
     Route::get('index/sidebar',['as'=>'sidebar','uses'=>'IndexController@sidebar']);
 
     /*权限管理*/
-    Route::resource('permission', 'PermissionController',['except' => ['show']]);
+    Route::resource('permission', 'PermissionController',['except' => ['show'],'as'=>'admin']);
 
     /*角色管理*/
-    Route::resource('role', 'RoleController',['except' => ['show']]);
+    Route::resource('role', 'RoleController',['except' => ['show'],'as'=>'admin']);
     Route::post('role/permission',['as'=>'admin.role.permission','uses'=>'RoleController@permission']);
 
     /*用户删除*/
@@ -267,14 +281,14 @@ Route::Group(['prefix'=>'admin','namespace'=>'Admin','middleware' =>['auth','aut
     /*用户审核*/
     Route::post('user/verify',['as'=>'admin.user.verify','uses'=>'UserController@verify']);
     /*用户管理*/
-    Route::resource('user', 'UserController',['except' => ['show','destroy']]);
+    Route::resource('user', 'UserController',['except' => ['show','destroy'],'as'=>'admin']);
 
     /*认证管理*/
     Route::post('authentication/destroy',['as'=>'admin.authentication.destroy','uses'=>'AuthenticationController@destroy']);
     Route::post('authentication/verify',['as'=>'admin.authentication.verify','uses'=>'AuthenticationController@verify']);
     /*修改分类核*/
     Route::post('authentication/changeCategories',['as'=>'admin.authentication.changeCategories','uses'=>'AuthenticationController@changeCategories']);
-    Route::resource('authentication', 'AuthenticationController',['except' => ['show','create','store','destroy']]);
+    Route::resource('authentication', 'AuthenticationController',['except' => ['show','create','store','destroy'],'as'=>'admin']);
 
 
     /*站点设置*/
@@ -298,7 +312,7 @@ Route::Group(['prefix'=>'admin','namespace'=>'Admin','middleware' =>['auth','aut
     Route::any('setting/oauth',['as'=>'admin.setting.oauth','uses'=>'SettingController@oauth']);
 
     /*财务管理*/
-    Route::resource('credit', 'CreditController',['except' => ['show']]);
+    Route::resource('credit', 'CreditController',['except' => ['show'],'as'=>'admin']);
 
     /*问题删除*/
     Route::post('question/destroy',['as'=>'admin.question.destroy','uses'=>'QuestionController@destroy']);
@@ -307,7 +321,7 @@ Route::Group(['prefix'=>'admin','namespace'=>'Admin','middleware' =>['auth','aut
     /*问题审核*/
     Route::post('question/verify',['as'=>'admin.question.verify','uses'=>'QuestionController@verify']);
     /*问题管理*/
-    Route::resource('question', 'QuestionController',['only' => ['index','edit','update']]);
+    Route::resource('question', 'QuestionController',['only' => ['index','edit','update'],'as'=>'admin']);
 
 
     /*回答删除*/
@@ -315,7 +329,7 @@ Route::Group(['prefix'=>'admin','namespace'=>'Admin','middleware' =>['auth','aut
     /*回答审核*/
     Route::post('answer/verify',['as'=>'admin.answer.verify','uses'=>'AnswerController@verify']);
     /*回答管理*/
-    Route::resource('answer', 'AnswerController',['only' => ['index','edit','update']]);
+    Route::resource('answer', 'AnswerController',['only' => ['index','edit','update'],'as'=>'admin']);
 
     /*文章删除*/
     Route::post('article/destroy',['as'=>'admin.article.destroy','uses'=>'ArticleController@destroy']);
@@ -324,7 +338,7 @@ Route::Group(['prefix'=>'admin','namespace'=>'Admin','middleware' =>['auth','aut
     /*修改分类核*/
     Route::post('article/changeCategories',['as'=>'admin.article.changeCategories','uses'=>'ArticleController@changeCategories']);
     /*文章管理*/
-    Route::resource('article', 'ArticleController',['only' => ['index','edit','update']]);
+    Route::resource('article', 'ArticleController',['only' => ['index','edit','update'],'as'=>'admin']);
 
 
     /*评论删除*/
@@ -332,7 +346,7 @@ Route::Group(['prefix'=>'admin','namespace'=>'Admin','middleware' =>['auth','aut
     /*评论审核*/
     Route::post('comment/verify',['as'=>'admin.comment.verify','uses'=>'CommentController@verify']);
     /*评论管理*/
-    Route::resource('comment', 'CommentController',['only' => ['index','edit','update']]);
+    Route::resource('comment', 'CommentController',['only' => ['index','edit','update'],'as'=>'admin']);
 
     /*标签删除*/
     Route::post('tag/destroy',['as'=>'admin.tag.destroy','uses'=>'TagController@destroy']);
@@ -342,28 +356,27 @@ Route::Group(['prefix'=>'admin','namespace'=>'Admin','middleware' =>['auth','aut
     /*标签审核*/
     Route::post('tag/verify',['as'=>'admin.tag.verify','uses'=>'TagController@verify']);
     /*标签管理*/
-    Route::resource('tag', 'TagController',['except' => ['show','destroy']]);
+    Route::resource('tag', 'TagController',['except' => ['show','destroy'],'as'=>'admin']);
 
 
     /*分类管理*/
-    Route::resource('category', 'CategoryController',['except' => ['show']]);
-
+    Route::resource('category', 'CategoryController',['except' => ['show'],'as'=>'admin']);
 
 
     /*公告管理*/
-    Route::resource('notice', 'NoticeController',['except' => ['show']]);
+    Route::resource('notice', 'NoticeController',['except' => ['show'],'as'=>'admin']);
 
     /*首页推荐*/
-    Route::resource('recommendation', 'RecommendationController',['except' => ['show']]);
+    Route::resource('recommendation', 'RecommendationController',['except' => ['show'],'as'=>'admin']);
 
     /*商品管理*/
-    Route::resource('goods', 'GoodsController',['except' => ['show']]);
+    Route::resource('goods', 'GoodsController',['except' => ['show'],'as'=>'admin']);
     /*商品兑换*/
-    Route::resource('exchange', 'ExchangeController',['except' => ['show']]);
+    Route::resource('exchange', 'ExchangeController',['except' => ['show'],'as'=>'admin']);
     Route::get('exchange/{id}/{status}',['as'=>'admin.exchange.changeStatus','uses'=>'ExchangeController@changeStatus'])->where(['id'=>'[0-9]+','status'=>'(success|failed)']);
 
     /*友情链接*/
-    Route::resource('friendshipLink', 'FriendshipLinkController',['except' => ['show']]);
+    Route::resource('friendshipLink', 'FriendshipLinkController',['except' => ['show'],'as'=>'admin']);
 
     /*工具管理*/
     Route::match(['get','post'],'tool/clearCache',['as'=>'admin.tool.clearCache','uses'=>'ToolController@clearCache']);

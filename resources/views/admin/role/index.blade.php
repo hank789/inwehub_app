@@ -34,7 +34,7 @@
                       </div>
                     </div>
                     <div class="box-body  no-padding">
-                        <form name="itemForm" id="item_form" method="POST" action="{{ route('admin.role.destroy') }}">
+                        <form name="itemForm" id="item_form" method="POST" action="{{ route('admin.role.destroy',['id'=>0]) }}">
                             <input name="_method" type="hidden" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <div class="table-responsive">

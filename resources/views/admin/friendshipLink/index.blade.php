@@ -18,7 +18,7 @@
                                 <div class="col-xs-12">
                                     <div class="btn-group">
                                         <a href="{{ route('admin.friendshipLink.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="添加友情链接"><i class="fa fa-plus"></i></a>
-                                        <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.friendshipLink.destroy') }}','确定删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                        <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.friendshipLink.destroy',['id'=>0]) }}','确定删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                     </div>
                                 </div>
                             </div>

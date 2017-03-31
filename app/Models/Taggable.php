@@ -32,7 +32,7 @@ class Taggable extends Model
 
     public static function hottest($type='all',$pageSize=20)
     {
-       $tagIds = Tag::lists('id');
+       $tagIds = Tag::pluck('id');
        $query =  DB::table('taggables')->select('tag_id',DB::raw('COUNT(id) as total_num'))
             ->whereIn('tag_id',$tagIds);
        if($type=='questions'){

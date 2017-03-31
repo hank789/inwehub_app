@@ -40,8 +40,8 @@ return [
     */
 
     'models' => [
-        'role' => Bican\Roles\Models\Role::class,
-        'permission' => Bican\Roles\Models\Permission::class,
+        'role' => \App\Models\Role::class,
+        'permission' => \Bican\Roles\Models\Permission::class,
     ],
 
     /*

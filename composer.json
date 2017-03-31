@@ -6,28 +6,28 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
+        "bizly/roles": "^2.1",
+        "doctrine/dbal": "~2.3",
+        "intervention/image": "^2.3",
+        "jacobcyl/ali-oss-storage": "dev-master",
+        "laravel/framework": "5.4.*",
+        "laravel/tinker": "~1.0",
+        "maknz/slack": "^1.7",
         "mews/captcha": "~2.0",
         "mews/purifier": "^2.0",
-        "bican/roles": "2.1.*",
-        "intervention/image": "^2.3",
-        "socialiteproviders/qq": "^2.0",
-        "socialiteproviders/weibo": "^2.0",
-        "socialiteproviders/weixin": "^2.0",
-        "socialiteproviders/weixin-web": "^2.0",
-        "doctrine/dbal": "~2.3",
-        "sdfsky/tipask-xunsearch": "dev-master",
+        "predis/predis": "^1.1",
         "roumen/sitemap": "^2.6",
-        "maknz/slack": "^1.7",
         "sentry/sentry-laravel": "^0.6.1",
-        "jacobcyl/ali-oss-storage": "dev-master"
+        "socialiteproviders/qq": "^3.0",
+        "socialiteproviders/weibo": "^3.0",
+        "socialiteproviders/weixin": "^4.0",
+        "socialiteproviders/weixin-web": "^3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~4.0",
-        "barryvdh/laravel-ide-helper":"dev-master",
-        "phpspec/phpspec": "~2.1"
+        "phpunit/phpunit": "~5.7",
+        "barryvdh/laravel-ide-helper":"dev-master"
     },
     "autoload": {
         "classmap": [
@@ -41,30 +41,30 @@
         ]
     },
     "autoload-dev": {
-        "classmap": [
-            "tests/TestCase.php"
-        ]
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     },
     "scripts": {
-        "post-install-cmd": [
-            "php artisan clear-compiled",
-            "php artisan optimize"
-        ],
-        "pre-update-cmd": [
-            "php artisan clear-compiled"
-        ],
-        "post-update-cmd": [
-            "php artisan optimize"
-        ],
         "post-root-package-install": [
-            "php -r \"copy('.env.example', '.env');\""
+            "php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
             "php artisan key:generate"
+        ],
+        "post-install-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postInstall",
+            "php artisan optimize"
+        ],
+        "post-update-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "php artisan optimize"
         ]
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
     },
     "repositories": [
         {

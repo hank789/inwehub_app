@@ -106,7 +106,7 @@ class SpaceController extends Controller
     /*我的关注*/
     public function attentions(Request $request)
     {
-        $source_type = $request->route()->getParameter('source_type');
+        $source_type = $request->route()->parameter('source_type');
         $sourceClassMap = [
             'questions' => 'App\Models\Question',
             'users' => 'App\Models\User',
@@ -129,7 +129,7 @@ class SpaceController extends Controller
 
     public function collections(Request $request)
     {
-        $source_type = $request->route()->getParameter('source_type');
+        $source_type = $request->route()->parameter('source_type');
 
         $sourceClassMap = [
             'questions' => 'App\Models\Question',

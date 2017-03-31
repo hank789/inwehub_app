@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box">
-                    <form role="form" name="listForm" method="post" action="{{ route('admin.recommendation.destroy') }}">
+                    <form role="form" name="listForm" method="post" action="{{ route('admin.recommendation.destroy',['id'=>0]) }}">
                         <input name="_method" type="hidden" value="DELETE">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-header">
