@@ -74,7 +74,7 @@ class Authentication extends Model
     }
 
     public function hotTags(){
-        $hotTagIds = $this->userTags()->select("tag_id")->distinct()->orderBy('supports','desc')->orderBy('answers','desc')->orderBy('created_at','desc')->take(5)->lists('tag_id');
+        $hotTagIds = $this->userTags()->select("tag_id")->distinct()->orderBy('supports','desc')->orderBy('answers','desc')->orderBy('created_at','desc')->take(5)->pluck('tag_id');
         $tags = [];
         foreach($hotTagIds as $hotTagId){
             $tag = Tag::find($hotTagId);

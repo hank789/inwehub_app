@@ -122,11 +122,11 @@ class AnswerController extends Controller
     {
         $answer = Answer::findOrFail($id);
 
-        if($answer->user_id !== $request->user()->id && !$request->user()->is('admin')){
+        if($answer->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
             abort(403);
         }
         /*编辑回答时效控制*/
-        if( !$request->user()->is('admin') && Setting()->get('edit_answer_timeout') ){
+        if( !$request->user()->isRole('admin') && Setting()->get('edit_answer_timeout') ){
             if( $answer->created_at->diffInMinutes() > Setting()->get('edit_answer_timeout') ){
                 return $this->showErrorMsg(route('ask.question.detail',['id'=>$answer->question_id]),'你已超过回答可编辑的最大时长，不能进行编辑了。如有疑问请联系管理员!');
             }
@@ -142,7 +142,7 @@ class AnswerController extends Controller
     {
         $answer = Answer::findOrFail($id);
 
-        if($answer->user_id !== $request->user()->id && !$request->user()->is('admin')){
+        if($answer->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
             abort(403);
         }
 
@@ -168,7 +168,7 @@ class AnswerController extends Controller
     {
         $answer = Answer::findOrFail($id);
 
-        if(($request->user()->id !== $answer->question->user_id) && !$request->user()->is('admin')  ){
+        if(($request->user()->id !== $answer->question->user_id) && !$request->user()->isRole('admin')  ){
             abort(403);
         }
 
@@ -233,7 +233,7 @@ class AnswerController extends Controller
         }
 
         /*相关问题*/
-        $relatedQuestions = Question::correlations($question->tags()->lists('tag_id'));
+        $relatedQuestions = Question::correlations($question->tags()->pluck('tag_id'));
         return view("theme::answer.detail")->with('question',$question)
             ->with('answer',$answer)
             ->with('relatedQuestions',$relatedQuestions);

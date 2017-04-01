@@ -34,7 +34,7 @@
                             <li>分类：<a href="{{ route('website.blog',['category_slug'=>$article->category->slug]) }}" target="_blank">{{ $article->category->name }}</a>
                             @endif
                             </li>
-                            @if($article->status !== 2 && Auth()->check() && (Auth()->user()->id === $article->user_id || Auth()->user()->is('admin') ) )
+                            @if($article->status !== 2 && Auth()->check() && (Auth()->user()->id === $article->user_id || Auth()->user()->isRole('admin') ) )
                             <li><a href="{{ route('blog.article.edit',['id'=>$article->id]) }}" class="edit" data-toggle="tooltip" data-placement="right" title="" data-original-title="进一步完善文章内容"><i class="fa fa-edit"></i> 编辑</a></li>
                             @endif
                         </ul>

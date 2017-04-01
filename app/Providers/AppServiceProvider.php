@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Providers;
-
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -17,7 +16,6 @@ class AppServiceProvider extends ServiceProvider
     {
         //设置时间
         Carbon::setLocale(Config::get('app.locale'));
-
     }
 
     /**
@@ -27,10 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
-            'Illuminate\Contracts\Auth\Registrar',
-            'App\Services\Registrar'
-        );
         if ($this->app->environment() !== 'production') {
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
         }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\Relations\HasRoleAndPermission;
 use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -8,7 +9,6 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Bican\Roles\Traits\HasRoleAndPermission;
 use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
@@ -327,7 +327,7 @@ class User extends Model implements AuthenticatableContract,
 
 
     public function hotTags(){
-        $hotTagIds = $this->userTags()->select("tag_id")->distinct()->orderBy('supports','desc')->orderBy('answers','desc')->orderBy('created_at','desc')->take(5)->lists('tag_id');
+        $hotTagIds = $this->userTags()->select("tag_id")->distinct()->orderBy('supports','desc')->orderBy('answers','desc')->orderBy('created_at','desc')->take(5)->pluck('tag_id');
         $tags = [];
         foreach($hotTagIds as $hotTagId){
             $tag = Tag::find($hotTagId);

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -13,28 +13,48 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\SomeEvent' => [
-            'App\Listeners\EventListener',
-        ],
-
         \SocialiteProviders\Manager\SocialiteWasCalled::class => [
             'SocialiteProviders\QQ\QqExtendSocialite@handle',
             'SocialiteProviders\Weibo\WeiboExtendSocialite@handle',
             'SocialiteProviders\Weixin\WeixinExtendSocialite@handle',
             'SocialiteProviders\WeixinWeb\WeixinWebExtendSocialite@handle',
-
         ]
     ];
 
     /**
-     * Register any other events for your application.
+     * Class event subscribers.
      *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
+     * @var array
+     */
+    protected $subscribe = [
+        /*
+         * Frontend Subscribers
+         */
+
+        /*
+         * Auth Subscribers
+         */
+        \App\Listeners\Frontend\Auth\UserEventListener::class,
+
+        /*
+         * Backend Subscribers
+         */
+
+        /*
+         * Access Subscribers
+         */
+        \App\Listeners\Backend\Access\User\UserEventListener::class,
+        \App\Listeners\Backend\Access\Role\RoleEventListener::class,
+    ];
+
+    /**
+     * Register any events for your application.
+     *
      * @return void
      */
-    public function boot(DispatcherContract $events)
+    public function boot()
     {
-        parent::boot($events);
+        parent::boot();
 
         //
     }
