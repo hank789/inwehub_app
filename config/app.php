@@ -186,7 +186,8 @@ return [
         Roumen\Sitemap\SitemapServiceProvider::class,
         Sentry\SentryLaravel\SentryLaravelServiceProvider::class,
         Jacobcyl\AliOSS\AliOssServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class
+        Barryvdh\Debugbar\ServiceProvider::class,
+        Maknz\Slack\Laravel\ServiceProvider::class,
 
     ],
 
@@ -243,6 +244,7 @@ return [
         //'Search' => Sdfsky\TipaskXunSearch\Facade::class,
         'Sentry' => Sentry\SentryLaravel\SentryFacade::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        'Slack' => Maknz\Slack\Laravel\Facade::class,
 
     ],
 

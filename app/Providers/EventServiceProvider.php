@@ -13,15 +13,38 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\Event' => [
-            'App\Listeners\EventListener',
-        ],
         \SocialiteProviders\Manager\SocialiteWasCalled::class => [
             'SocialiteProviders\QQ\QqExtendSocialite@handle',
             'SocialiteProviders\Weibo\WeiboExtendSocialite@handle',
             'SocialiteProviders\Weixin\WeixinExtendSocialite@handle',
             'SocialiteProviders\WeixinWeb\WeixinWebExtendSocialite@handle',
         ]
+    ];
+
+    /**
+     * Class event subscribers.
+     *
+     * @var array
+     */
+    protected $subscribe = [
+        /*
+         * Frontend Subscribers
+         */
+
+        /*
+         * Auth Subscribers
+         */
+        \App\Listeners\Frontend\Auth\UserEventListener::class,
+
+        /*
+         * Backend Subscribers
+         */
+
+        /*
+         * Access Subscribers
+         */
+        \App\Listeners\Backend\Access\User\UserEventListener::class,
+        \App\Listeners\Backend\Access\Role\RoleEventListener::class,
     ];
 
     /**

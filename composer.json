@@ -12,7 +12,6 @@
         "jacobcyl/ali-oss-storage": "dev-master",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
-        "maknz/slack": "^1.7",
         "mews/captcha": "~2.0",
         "mews/purifier": "^2.0",
         "predis/predis": "^1.1",
@@ -21,7 +20,8 @@
         "socialiteproviders/qq": "^3.0",
         "socialiteproviders/weibo": "^3.0",
         "socialiteproviders/weixin": "^4.0",
-        "socialiteproviders/weixin-web": "^3.0"
+        "socialiteproviders/weixin-web": "^3.0",
+        "tlapi/slack-laravel": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -72,6 +72,10 @@
         {
             "type": "composer",
             "url": "https://packagist.phpcomposer.com"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:Tlapi/slack-laravel.git"
         },
         {
             "packagist": false

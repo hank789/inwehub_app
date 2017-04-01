@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Account;
 
+use App\Events\Frontend\Auth\UserLoggedIn;
+use App\Events\Frontend\Auth\UserLoggedOut;
+use App\Events\Frontend\Auth\UserRegistered;
 use App\Http\Controllers\Controller;
 use App\Models\EmailToken;
 use App\Models\User;
@@ -52,7 +55,8 @@ class UserController extends Controller
             /*根据邮箱地址和密码进行认证*/
             if ($this->auth->attempt($credentials, $request->has('remember')))
             {
-
+                //登陆事件通知
+                event(new UserLoggedIn($request->user()));
                 if($this->credit($request->user()->id,'login',Setting()->get('coins_login'),Setting()->get('credits_login'))){
                     $message = '登陆成功! '.get_credit_message(Setting()->get('credits_login'),Setting()->get('coins_login'));
                    return $this->success(route('website.index'),$message);
@@ -124,6 +128,8 @@ class UserController extends Controller
             if($this->credit($request->user()->id,'register',Setting()->get('coins_register'),Setting()->get('credits_register'))){
                 $message .= get_credit_message(Setting()->get('credits_register'),Setting()->get('coins_register'));
             }
+            //注册事件通知
+            event(new UserRegistered($request->user()));
 
             /*发送邮箱验证邮件*/
 
@@ -227,7 +233,8 @@ class UserController extends Controller
      * 用户登出
      */
     public function logout(){
-
+        //通知
+        event(new UserLoggedOut($this->auth->user()));
         $this->auth->logout();
 
         return redirect()->to(route('website.index'));
