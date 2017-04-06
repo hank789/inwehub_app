@@ -188,7 +188,8 @@ return [
         Jacobcyl\AliOSS\AliOssServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Maknz\Slack\Laravel\ServiceProvider::class,
-
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+        Barryvdh\Cors\ServiceProvider::class,
     ],
 
     /*
@@ -245,7 +246,8 @@ return [
         'Sentry' => Sentry\SentryLaravel\SentryFacade::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
         'Slack' => Maknz\Slack\Laravel\Facade::class,
-
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class
     ],
 
 ];
