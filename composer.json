@@ -21,7 +21,8 @@
         "socialiteproviders/weibo": "^3.0",
         "socialiteproviders/weixin": "^4.0",
         "socialiteproviders/weixin-web": "^3.0",
-        "tlapi/slack-laravel": "dev-master"
+        "tlapi/slack-laravel": "dev-master",
+        "zhuzhichao/ip-location-zh": "^2.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
