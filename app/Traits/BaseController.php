@@ -35,12 +35,12 @@ trait BaseController {
      */
     protected function credit($user_id,$action,$coins = 0,$credits = 0,$source_id = 0 ,$source_subject = null)
     {
-        DB::beginTransaction();
         try{
             /*用户登陆只添加一次积分*/
             if($action == 'login' && Credit::where('user_id','=',$user_id)->where('action','=',$action)->where('created_at','>',Carbon::today())->count()>0){
                 return false;
             }
+            DB::beginTransaction();
             /*记录详情数据*/
             Credit::create([
                 'user_id' => $user_id,

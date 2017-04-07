@@ -6,6 +6,7 @@ use App\Events\Frontend\Auth\UserLoggedOut;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Models\EmailToken;
+use App\Models\LoginRecord;
 use App\Models\User;
 use App\Services\RateLimiter;
 use App\Services\Registrar;
@@ -48,7 +49,7 @@ class AuthController extends Controller
 
     public function login(Request $request,JWTAuth $JWTAuth){
 
-        /*只接收email和password的值*/
+        /*只接收mobile和password的值*/
         $credentials = $request->only('mobile', 'password');
 
         try{
@@ -57,13 +58,29 @@ class AuthController extends Controller
             {
                 //登陆事件通知
                 event(new UserLoggedIn($request->user()));
+                $message = 'ok';
                 if($this->credit($request->user()->id,'login',Setting()->get('coins_login'),Setting()->get('credits_login'))){
                     $message = '登陆成功! '.get_credit_message(Setting()->get('credits_login'),Setting()->get('coins_login'));
-                    return static::createJsonData(true,ApiException::SUCCESS,$message,['token'=>$token]);
                 }
+                $deviceCode = $request->input('device_code');
+
+                // 登录记录
+                $clientIp = $request->getClientIp();
+                $loginrecord = new LoginRecord();
+                $loginrecord->ip = $clientIp;
+
+                $location = $this->findIp($clientIp);
+                array_filter($location);
+                $loginrecord->address = trim(implode(' ', $location));
+                $loginrecord->device_system = $request->input('device_system');
+                $loginrecord->device_name = $request->input('device_name');
+                $loginrecord->device_model = $request->input('device_model');
+                $loginrecord->device_code = $deviceCode;
+                $loginrecord->user_id = $request->user()->id;
+                $loginrecord->save();
 
                 /*认证成功*/
-                return static::createJsonData(true,ApiException::SUCCESS,'ok',['token'=>$token]);
+                return static::createJsonData(true,ApiException::SUCCESS,$message,['token'=>$token]);
 
             }
         }catch (JWTException $e){

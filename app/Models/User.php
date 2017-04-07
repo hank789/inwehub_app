@@ -211,6 +211,16 @@ class User extends Model implements AuthenticatableContract,
         return $list;
     }
 
+    /**
+     * 用户登录记录关系.
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function loginRecords()
+    {
+        return $this->hasMany(loginRecord::class, 'user_id');
+    }
 
     /**
      *获取用户数据
