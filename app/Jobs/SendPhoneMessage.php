@@ -13,19 +13,20 @@ use Flc\Alidayu\Requests\AlibabaAliqinFcSmsNumSend;
 use Illuminate\Support\Facades\Log;
 
 
-class SendPhoneCode implements ShouldQueue
+class SendPhoneMessage implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 
     protected $alidayu;
 
-    public function __construct($phone,$code)
+    public function __construct($phone,$code,$type='verify')
     {
         $app = new App(config('alidayu'));
         $this->alidayu = new Client($app);
         $this->phone = $phone;
         $this->code = $code;
+        $this->type = $type;
     }
 
     /**
@@ -36,14 +37,22 @@ class SendPhoneCode implements ShouldQueue
     public function handle()
     {
         $freeSignName = config('alidayu.sign_name');
-        $verifyTemplateId = config('alidayu.verify_template_id');
+
+        switch($this->type){
+            case 'verify':
+                $templateId = config('alidayu.verify_template_id');
+                $params = ['code' => $this->code];
+                break;
+            default:
+                $templateId = config('alidayu.verify_template_id');
+                $params = ['code' => $this->code];
+                break;
+        }
 
         $request = new AlibabaAliqinFcSmsNumSend();
-        $request->setSmsParam([
-            'code' => $this->code,
-        ])
+        $request->setSmsParam($params)
             ->setSmsFreeSignName($freeSignName)
-            ->setSmsTemplateCode($verifyTemplateId)
+            ->setSmsTemplateCode($templateId)
             ->setRecNum($this->phone);
 
         $response = $this->alidayu->execute($request);

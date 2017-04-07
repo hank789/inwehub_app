@@ -291,6 +291,20 @@ if( !function_exists('is_mobile') ){
     }
 }
 
+//生成验证码
+if( !function_exists('makeVerifyCode') ){
+    function makeVerifyCode(int $min = 1000, int $max = 9999)
+    {
+        $min = min($min, $max);
+        $max = max($min, $max);
+
+        if (function_exists('mt_rand')) {
+            return mt_rand($min, $max);
+        }
+
+        return rand($min, $max);
+    }
+}
 
 
 

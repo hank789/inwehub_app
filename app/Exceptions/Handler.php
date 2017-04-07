@@ -66,7 +66,7 @@ class Handler extends ExceptionHandler
 
         if($exception instanceof ApiValidationException){
             return CreateJsonResponseData::createJsonData(false,$exception->getCode(),
-                $exception->getMessage(),$exception->getResponse()->getData());
+                $exception->getMessage(),(array)$exception->getResponse()->getData());
         }
 
         if($request->is('api/*')){

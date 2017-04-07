@@ -5,6 +5,7 @@ use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\Auth\UserLoggedOut;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
+use App\Jobs\SendPhoneMessage;
 use App\Models\EmailToken;
 use App\Models\LoginRecord;
 use App\Models\User;
@@ -28,10 +29,18 @@ class AuthController extends Controller
     //发送手机验证码
     public function sendPhoneCode(Request $request)
     {
-        $phone = $request->input('phone');
-        if(RateLimiter::instance()->increase('register',$phone,60,1)){
+        $validateRules = [
+            'mobile' => 'required|cn_phone',
+        ];
+
+        $this->validate($request,$validateRules);
+        $mobile = $request->input('mobile');
+        if(RateLimiter::instance()->increase('register',$mobile,60,1)){
             throw new ApiException(ApiException::LIMIT_ACTION);
         }
+
+        $code = makeVerifyCode();
+        dispatch(new SendPhoneMessage($mobile,$code));
     }
 
     //刷新token
@@ -48,6 +57,12 @@ class AuthController extends Controller
     }
 
     public function login(Request $request,JWTAuth $JWTAuth){
+
+        $validateRules = [
+            'mobile' => 'required|cn_phone',
+        ];
+
+        $this->validate($request,$validateRules);
 
         /*只接收mobile和password的值*/
         $credentials = $request->only('mobile', 'password');
@@ -115,8 +130,9 @@ class AuthController extends Controller
         /*表单数据校验*/
         $validateRules = [
             'name' => 'required|min:2|max:100',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6|max:16',
+            'mobile' => 'required|cn_phone|unique:users',
+            'code'   => 'required',
+            'password' => 'required|min:6|max:16',
         ];
 
         if( Setting()->get('code_register') == 1){
@@ -124,13 +140,18 @@ class AuthController extends Controller
         }
 
         $this->validate($request,$validateRules);
+        //验证手机验证码
+
 
         $formData = $request->all();
-        $formData['status'] = 0;
+        $formData['email'] = $formData['mobile'];
+        $formData['status'] = 1;
         $formData['visit_ip'] = $request->getClientIp();
 
         $user = $registrar->create($formData);
         $user->attachRole(2); //默认注册为普通用户角色
+        $user->userData->email_status = 1;
+        $user->userData->save();
         $message = '注册成功!';
         if($this->credit($user->id,'register',Setting()->get('coins_register'),Setting()->get('credits_register'))){
             $message .= get_credit_message(Setting()->get('credits_register'),Setting()->get('coins_register'));
@@ -139,18 +160,6 @@ class AuthController extends Controller
         event(new UserRegistered($request->user()));
 
         /*发送邮箱验证邮件*/
-
-        $emailToken = EmailToken::create([
-            'email' => $user->email,
-            'token' => EmailToken::createToken(),
-            'action'=> 'register'
-        ]);
-
-        if($emailToken){
-            $subject = '欢迎注册'.Setting()->get('website_name').',请激活您注册的邮箱！';
-            $content = "「".$user->name."」您好，请激活您在 ".Setting()->get('website_name')." 的注册邮箱！<br /> 请在1小时内点击该链接激活注册账号 → ".route('auth.email.verifyToken',['action'=>$emailToken->action,'token'=>$emailToken->token])."<br />如非本人操作，请忽略此邮件！";
-            $this->sendEmail($emailToken->email,$subject,$content);
-        }
 
         $token = $JWTAuth->fromUser($user);
         return static::createJsonData(true,100,'ok',['token'=>$token]);

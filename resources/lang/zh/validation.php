@@ -77,6 +77,7 @@ return [
     'unique'           => ':attribute 已经存在。',
     'url'              => ':attribute 格式不正确。',
     'captcha'          => '验证码不正确。',
+    'cn_phone'         => '手机号码格式错误',
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

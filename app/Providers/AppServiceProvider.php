@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 use Carbon\Carbon;
-use Illuminate\Cache\RateLimiter;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +17,11 @@ class AppServiceProvider extends ServiceProvider
     {
         //设置时间
         Carbon::setLocale(Config::get('app.locale'));
+
+        // 添加验证手机号码规则
+        Validator::extend('cn_phone', function ($attribute, $value,$parameters, $validator) {
+            return preg_match('/^(\+?0?86\-?)?((13\d|14[57]|15[^4,\D]|17[678]|18\d)\d{8}|170[059]\d{7})$/', $value);
+        });
     }
 
     /**

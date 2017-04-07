@@ -33,6 +33,7 @@ class Registrar {
         $user =  User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'mobile' => $data['mobile'],
             'password' => bcrypt($data['password']),
             'status' => $data['status'],
             'site_notifications' => 'follow_user,invite_answer,comment_question,comment_article,adopt_answer,comment_answer,reply_comment',
