@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\JWTAuth;
 
 
@@ -34,8 +35,15 @@ class AuthController extends Controller
 
     //刷新token
     public function refreshToken(Request $request,JWTAuth $JWTAuth){
-        $new_token = $JWTAuth->refresh();
-        return static::createJsonData(true,ApiException::SUCCESS,'ok',['token'=>$new_token])->header('Authorization', 'Bearer '.$new_token);
+        try {
+            $newToken = $JWTAuth->setRequest($request)->parseToken()->refresh();
+        } catch (TokenExpiredException $e) {
+            return self::createJsonData(false,ApiException::TOKEN_EXPIRED,'token已失效')->setStatusCode($e->getStatusCode());
+        } catch (JWTException $e) {
+            return self::createJsonData(false,ApiException::TOKEN_INVALID,'token无效')->setStatusCode($e->getStatusCode());
+        }
+        // send the refreshed token back to the client
+        return static::createJsonData(true,ApiException::SUCCESS,'ok',['token'=>$newToken])->header('Authorization', 'Bearer '.$newToken);
     }
 
     public function login(Request $request,JWTAuth $JWTAuth){

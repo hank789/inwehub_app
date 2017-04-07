@@ -9,7 +9,7 @@
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('register', 'AuthController@register');
     Route::post('login', 'AuthController@login');
-    Route::post('refresh', ['uses'=>'AuthController@refreshToken'])->middleware('jwt.auth');
+    Route::post('refresh', ['uses'=>'AuthController@refreshToken']);
 
 
     Route::post('recovery', 'AuthController@forgetPassword');
