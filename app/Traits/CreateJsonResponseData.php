@@ -4,7 +4,7 @@ namespace App\Traits;
 
 trait CreateJsonResponseData
 {
-    protected static function createJsonData(bool $success,$code,$message,array $data)
+    public static function createJsonData(bool $success,$code,$message,array $data=[])
     {
         $data = [
             'status'  => $success,

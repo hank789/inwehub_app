@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Traits\CreateJsonResponseData;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -20,6 +21,8 @@ class Handler extends ExceptionHandler
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
+        ApiValidationException::class,
+        ApiException::class,
     ];
 
     /**
@@ -35,6 +38,7 @@ class Handler extends ExceptionHandler
         if ($this->shouldReport($exception)) {
             app('sentry')->captureException($exception);
         }
+
         parent::report($exception);
     }
 
@@ -47,6 +51,20 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+
+        if($exception instanceof ApiException){
+            return CreateJsonResponseData::createJsonData(false,$exception->getCode(),$exception->getMessage());
+        }
+
+        if($exception instanceof ApiValidationException){
+            return CreateJsonResponseData::createJsonData(false,$exception->getCode(),
+                $exception->getMessage(),$exception->getResponse()->getData());
+        }
+
+        if($request->is('api/*')){
+            return CreateJsonResponseData::createJsonData(false,$exception->getCode(),$exception->getMessage());
+        }
+
         return parent::render($request, $exception);
     }
 

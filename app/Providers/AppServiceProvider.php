@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 use Carbon\Carbon;
+use Illuminate\Cache\RateLimiter;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
