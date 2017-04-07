@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Flc\Alidayu\App;
 use Flc\Alidayu\Client;
 use Flc\Alidayu\Requests\AlibabaAliqinFcSmsNumSend;
+use Illuminate\Support\Facades\Log;
 
 
 class SendPhoneCode implements ShouldQueue
@@ -54,7 +55,7 @@ class SendPhoneCode implements ShouldQueue
         if ($result && $result->success == true) {
             // 发送成功～
         }else{
-            logger('短信验证码发送失败',[$result, $sub_code, $sub_msg]);
+            Log::error('短信验证码发送失败',[$result, $sub_code, $sub_msg]);
         }
     }
 }

@@ -41,7 +41,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapWebRoutes();
 
-        //
+        // vendor
+        $this->mapVendorRoutes();
     }
 
     /**
@@ -71,5 +72,13 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->api_namespace)
              ->group(base_path('routes/api.php'));
+    }
+
+    protected function mapVendorRoutes()
+    {
+        $files = config('component_routes', []);
+        foreach ($files as $file) {
+            include_once $file;
+        }
     }
 }
