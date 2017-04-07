@@ -26,8 +26,9 @@ class ApiException extends Exception
 
     const SUCCESS = 10000;
 
-    const TOKEN_MISSING = 13000;
+    const TOKEN_EXPIRED = 13000;
     const TOKEN_INVALID = 13001;
+    const TOKEN_MISSING = 13002;
 
     const MISSING_PARAMS = 12000;
     const VISIT_LIMIT = 12001;
@@ -103,8 +104,9 @@ class ApiException extends Exception
         self::WITHDRAW_CUR_DAY_TOTAL_ERROR => '超过单笔最高限额或单天最高限额',
         self::WITHDRAW_SUSPEND => '暂停提现',
         self::RECHARGE_MONEY_OVER => '充值金额超限',
-        self::TOKEN_MISSING=>'token信息不存在',
-        self::TOKEN_INVALID => 'token不存在或已失效'
+        self::TOKEN_EXPIRED=>'token已过期',
+        self::TOKEN_INVALID => 'token无效',
+        self::TOKEN_MISSING => 'token缺失'
     ];
 
 

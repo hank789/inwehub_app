@@ -489,8 +489,8 @@ var IMGSWIPER = 'imgswiper';
 
 
 
-var baseURL = 'http://thinksns-plus.hs.app';
-var api = 'http://thinksns-plus.hs.app/api/v1';
+var baseURL = 'http://zhihu.hank.com:8080';
+var api = 'http://zhihu.hank.com:8080/api';
 
 var createRequestURI = function createRequestURI(PATH) {
   return baseURL + '/' + PATH;
@@ -40587,7 +40587,7 @@ var login = {
       var device_code = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__utils_detecdOS__["a" /* default */])();
       this.isLoading = true;
       this.isDisabled = true;
-      __WEBPACK_IMPORTED_MODULE_2__utils_request__["d" /* default */].post(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__utils_request__["b" /* createAPI */])('auth'), {
+      __WEBPACK_IMPORTED_MODULE_2__utils_request__["d" /* default */].post(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__utils_request__["b" /* createAPI */])('auth/login'), {
         phone: phone,
         password: password,
         device_code: device_code

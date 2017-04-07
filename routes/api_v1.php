@@ -9,6 +9,7 @@
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('register', 'AuthController@register');
     Route::post('login', 'AuthController@login');
+    Route::post('refresh', ['uses'=>'AuthController@refreshToken'])->middleware('jwt.auth');
 
 
     Route::post('recovery', 'AuthController@forgetPassword');
@@ -23,23 +24,12 @@ Route::group(['middleware' => 'jwt.auth','prefix' => 'account','namespace'=>'Acc
     //用户信息
     Route::post('show','ProfileController@show');
 
-
-
-
     Route::post('protected', function() {
         return response()->json([
             'message' => 'Access to this item is only for authenticated user. Provide a token in your request!'
         ]);
     });
 
-    Route::post('refresh', [
-        'middleware' => 'jwt.refresh',
-        function() {
-            return response()->json([
-                'message' => 'By accessing this endpoint, you can refresh your access token at each request. Check out this response headers!'
-            ]);
-        }
-    ]);
 });
 
 Route::get('hello', function() {

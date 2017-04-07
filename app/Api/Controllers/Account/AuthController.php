@@ -30,14 +30,18 @@ class AuthController extends Controller
         if(RateLimiter::instance()->increase('register',$phone,60,1)){
             throw new ApiException(ApiException::LIMIT_ACTION);
         }
+    }
 
-
+    //刷新token
+    public function refreshToken(Request $request,JWTAuth $JWTAuth){
+        $new_token = $JWTAuth->refresh();
+        return static::createJsonData(true,ApiException::SUCCESS,'ok',['token'=>$new_token])->header('Authorization', 'Bearer '.$new_token);
     }
 
     public function login(Request $request,JWTAuth $JWTAuth){
 
         /*只接收email和password的值*/
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('mobile', 'password');
 
         try{
             /*根据邮箱地址和密码进行认证*/
@@ -57,7 +61,7 @@ class AuthController extends Controller
         }catch (JWTException $e){
             return static::createJsonData(false,$e->getCode(),$e->getMessage(),[]);
         }
-        return static::createJsonData(false,500,'用户名或密码错误',[]);
+        return static::createJsonData(false,500,'用户名或密码错误',[])->setStatusCode(401);
 
     }
 
@@ -163,11 +167,11 @@ class AuthController extends Controller
 
         $emailToken = EmailToken::where('action','=','findPassword')->where('token','=',$token)->first();
         if(!$emailToken){
-            throw new ApiException(ApiException::TOKEN_MISSING);
+            throw new ApiException(ApiException::TOKEN_INVALID);
         }
 
         if($emailToken->created_at->diffInMinutes() > 60){
-            throw new ApiException(ApiException::TOKEN_INVALID);
+            throw new ApiException(ApiException::TOKEN_EXPIRED);
         }
 
         $user = User::where('email','=',$emailToken->email)->first();

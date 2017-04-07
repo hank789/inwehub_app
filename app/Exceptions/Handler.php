@@ -6,6 +6,8 @@ use App\Traits\CreateJsonResponseData;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class Handler extends ExceptionHandler
 {
@@ -51,6 +53,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+
+        if ($exception instanceof TokenExpiredException) {
+            return CreateJsonResponseData::createJsonData(false,ApiException::TOKEN_EXPIRED,'token已失效')->setStatusCode($exception->getStatusCode());
+        } else if ($exception instanceof TokenInvalidException) {
+            return CreateJsonResponseData::createJsonData(false,ApiException::TOKEN_INVALID,'token无效')->setStatusCode($exception->getStatusCode());
+        }
 
         if($exception instanceof ApiException){
             return CreateJsonResponseData::createJsonData(false,$exception->getCode(),$exception->getMessage());
