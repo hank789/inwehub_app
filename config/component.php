@@ -1,5 +1,6 @@
 <?php 
-return array (
+return 
+array (
   'intervapp/plus-component-web' => 
   array (
     'installed' => true,

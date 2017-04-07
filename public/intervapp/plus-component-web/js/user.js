@@ -549,7 +549,7 @@ module.exports = function(it){
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(193);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(205);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__routes__ = __webpack_require__(91);
 
 
@@ -10296,7 +10296,7 @@ Vue$3.compile = compileToFunctions;
 
 /* harmony default export */ __webpack_exports__["default"] = (Vue$3);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(215)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(227)))
 
 /***/ }),
 /* 25 */
@@ -11253,7 +11253,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(169)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(181)))
 
 /***/ }),
 /* 31 */
@@ -38012,14 +38012,14 @@ module.exports = [
 
 
 /* styles */
-__webpack_require__(162)
-__webpack_require__(163)
+__webpack_require__(176)
+__webpack_require__(177)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(96),
   /* template */
-  __webpack_require__(172),
+  __webpack_require__(199),
   /* scopeId */
   null,
   /* cssModules */
@@ -39157,23 +39157,23 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue__["default"]({
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__views_Login_vue__ = __webpack_require__(211);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__views_Login_vue__ = __webpack_require__(223);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__views_Login_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__views_Login_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__views_Register_vue__ = __webpack_require__(212);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__views_Register_vue__ = __webpack_require__(224);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__views_Register_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__views_Register_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__views_FindPassword_vue__ = __webpack_require__(209);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__views_FindPassword_vue__ = __webpack_require__(221);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__views_FindPassword_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__views_FindPassword_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__views_Feeds_vue__ = __webpack_require__(208);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__views_Feeds_vue__ = __webpack_require__(220);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__views_Feeds_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__views_Feeds_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__views_Home_vue__ = __webpack_require__(210);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__views_Home_vue__ = __webpack_require__(222);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__views_Home_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__views_Home_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__views_FeedFollowing__ = __webpack_require__(206);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__views_FeedFollowing__ = __webpack_require__(218);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__views_FeedFollowing___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__views_FeedFollowing__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__views_FeedAll__ = __webpack_require__(204);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__views_FeedAll__ = __webpack_require__(216);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__views_FeedAll___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__views_FeedAll__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__views_FeedNew__ = __webpack_require__(207);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__views_FeedNew__ = __webpack_require__(219);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__views_FeedNew___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__views_FeedNew__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__views_FeedDetail__ = __webpack_require__(205);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__views_FeedDetail__ = __webpack_require__(217);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__views_FeedDetail___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__views_FeedDetail__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__utils_auth__ = __webpack_require__(52);
 
@@ -39442,9 +39442,9 @@ function friendNum(num) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Notice__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Notice__ = __webpack_require__(212);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Notice___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Notice__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_ImageSwiper__ = __webpack_require__(199);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_ImageSwiper__ = __webpack_require__(211);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_ImageSwiper___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_ImageSwiper__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_types__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vuex__ = __webpack_require__(29);
@@ -39482,7 +39482,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_user__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_request__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__routers_index__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_Comfirm__ = __webpack_require__(203);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_Comfirm__ = __webpack_require__(215);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_Comfirm___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__utils_Comfirm__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__stores_types__ = __webpack_require__(3);
 
@@ -39679,11 +39679,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stores_errorCodes__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stores_localStorage__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_user__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FeedImages__ = __webpack_require__(196);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FeedImages__ = __webpack_require__(208);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FeedImages___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__FeedImages__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__FeedTool__ = __webpack_require__(198);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__FeedTool__ = __webpack_require__(210);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__FeedTool___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__FeedTool__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__CommentsTool__ = __webpack_require__(194);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__CommentsTool__ = __webpack_require__(206);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__CommentsTool___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__CommentsTool__);
 
 
@@ -39846,7 +39846,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_request__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stores_errorCodes__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__stores_localStorage__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Feed__ = __webpack_require__(195);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Feed__ = __webpack_require__(207);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Feed___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__Feed__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_user__ = __webpack_require__(15);
 
@@ -40184,7 +40184,7 @@ var comfirmUi = {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_FeedList__ = __webpack_require__(197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_FeedList__ = __webpack_require__(209);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_FeedList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_FeedList__);
 
 
@@ -40207,9 +40207,9 @@ var FeedFollowing = {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_auth_js__ = __webpack_require__(52);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_feedNavBar__ = __webpack_require__(202);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_feedNavBar__ = __webpack_require__(214);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_feedNavBar___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_feedNavBar__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_ToolBar__ = __webpack_require__(201);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_ToolBar__ = __webpack_require__(213);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_ToolBar___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_ToolBar__);
 
 
@@ -41097,9 +41097,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__swiper_vue__ = __webpack_require__(214);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__swiper_vue__ = __webpack_require__(226);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__swiper_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__swiper_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__swiper_item__ = __webpack_require__(213);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__swiper_item__ = __webpack_require__(225);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__swiper_item___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__swiper_item__);
 /* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__swiper_vue___default.a; });
 /* harmony reexport (default from non-hamory) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__swiper_item___default.a; });
@@ -41119,7 +41119,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_createClass___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_helpers_createClass__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_array_from__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_array_from___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_array_from__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_object_assign__ = __webpack_require__(168);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_object_assign__ = __webpack_require__(180);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_object_assign___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_object_assign__);
 
 
@@ -42469,45 +42469,129 @@ for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList'
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+module.exports = {"comfirm":"_2Ryh_iUsl2qqf808j7p86r_0","comirmRow":"_2bmmCgeW3GVMCsFotTEjLI_0","comfirmCol":"_1t7i48OXA8LoYB23vuqdmO_0"};
 
 /***/ }),
 /* 162 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+module.exports = {"commentInput":"_2HSPfG0vOZnh2ww231i-qD_0","commentCount":"_3VTczqss3hRj8M53bJEVX__0","wrapper":"_1sx4b65NOk2tSIGUoSuRt2_0","sendComment":"_3gYyMGbxj_91nfpt2_Ulg1_0","userName":"_2Rs42kSWwI2J0SuV879jYo_0","commentContent":"Yni0aP0PMLKNoruOrloC__0"};
 
 /***/ }),
 /* 163 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+module.exports = {"manContent":"HLJ2sQNdebu3dYUDIsYuM_0"};
 
 /***/ }),
 /* 164 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+module.exports = {"commentInput":"_1eko2Lb1Up_qWRMjoK-6-9_0","commentCount":"_3UmqVaPBlwFIcGDp9pGkTG_0","wrapper":"JRjeR2Jpjw-_prsYatG1T_0","sendComment":"_3KkudEnMj9KMwIldXq5Gzi_0","userName":"_3LE6DwucCb3FDyZ1-zcVlu_0","commentContent":"yUS84qG1dDCiaXAGj-F1Q_0"};
 
 /***/ }),
 /* 165 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+module.exports = {"content":"_2mxGtOo1S3QGdy8dHodKS-_0","success":"_3zlwBE4zw5jPTNCO2yhY4M_0","error":"_3LpC7PvUTXCqY8PF56QdbP_0","notice":"_3AtrfrjQ6Ry6WgP7varcbA_0"};
 
 /***/ }),
 /* 166 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+module.exports = {"notice":"_24fTzqTcCDXgarHwvq903n_0"};
 
 /***/ }),
 /* 167 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+module.exports = {"feedNavBar":"_3QPEkHPoe8PbX3b8spit38_0","navLink":"_1W9Yq3AWaOAOVMpbUuJERu_0"};
 
 /***/ }),
 /* 168 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+module.exports = {"detail":"_17CwT2yNmhUdefxUQOpQGZ_0","toolTop":"_1a6R46zGYRxzff_lnBjb6Z_0","usernameLine":"_feul-8Gr51aS7xgiD7fn_0","username":"l8QM8ILGwOMALhwcBlrS1_0","content":"_2PVqydOF3jkRV07rtvfKWW_0","timer":"_34b2qAg94V84n5XRWvHyNe_0"};
+
+/***/ }),
+/* 169 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+module.exports = {"swiper":"_3bbn4GfBevF_5TdEewPd_F_0"};
+
+/***/ }),
+/* 170 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+module.exports = {"toolBar":"gB2a28bFMqmenytCNXMnD_0","plus":"_3OR_lG2qbzKAZvEn-qaP-__0","menuItem":"_1YeZ4kM9KgG3-5qTABb0wT_0"};
+
+/***/ }),
+/* 171 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+module.exports = {"feedListContent":"_19PphYlfqZupcOY92xL_Ll_0"};
+
+/***/ }),
+/* 172 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+module.exports = {"FeedImages":"_4q9m0V6lZ2nfZzvciirHA_0","imgParent":"y54kd84mwst2mhYxO7FBB_0","showImgBox":"D-ikYghm-aurPs2vZa8-k_0","imagesRow":"_3wK63ex-Am4GdfAAhSujKk_0"};
+
+/***/ }),
+/* 173 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 174 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 175 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 176 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 179 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42604,7 +42688,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 /***/ }),
-/* 169 */
+/* 181 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -42790,135 +42874,418 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 170 */
+/* 182 */
 /***/ (function(module, exports) {
 
 module.exports = "data:image/jpeg;base64,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"
 
 /***/ }),
-/* 171 */
+/* 183 */
 /***/ (function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
+    class: _vm.$style.comfirm
+  }, [_c('Row', {
+    class: _vm.$style.comirmRow
+  }, [_c('i-col', {
+    class: _vm.$style.comfirmCol,
+    attrs: {
+      "span": 24
+    }
+  }, [_c('i-button', {
+    attrs: {
+      "long": true
+    },
+    nativeOn: {
+      "click": function($event) {
+        _vm.doIt(_vm.data)
+      }
+    }
+  }, [_vm._v(_vm._s(_vm.comfirmContent))])], 1), _vm._v(" "), _c('i-col', {
+    class: _vm.$style.comfirmCol,
+    attrs: {
+      "span": 24
+    }
+  }, [_c('i-button', {
+    attrs: {
+      "long": true
+    },
+    nativeOn: {
+      "click": function($event) {
+        _vm.cannelIt($event)
+      }
+    }
+  }, [_vm._v("取消")])], 1)], 1)], 1)
+},staticRenderFns: []}
+
+/***/ }),
+/* 184 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "feedContent"
+  }, [_c('h2', [_vm._v("FeedNew")])])
+}]}
+
+/***/ }),
+/* 185 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "container"
+  }, [_c('div', {
+    staticClass: "main-content"
+  }, [_c('form', {
+    attrs: {
+      "role": "form"
+    },
+    on: {
+      "submit": function($event) {
+        $event.preventDefault();
+        _vm.submit($event)
+      }
+    }
+  }, [_c('div', {
+    staticClass: "loginForm"
+  }, [_c('Row', {
+    staticClass: "formChildrenRow bottom-border",
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "1"
+    }
+  }, [_c('label', {
+    class: _vm.loginFormTitle,
+    attrs: {
+      "for": "phone"
+    }
+  }, [_vm._v("手机号")])]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 10
+    }
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model.trim.num",
+      value: (_vm.phone),
+      expression: "phone",
+      modifiers: {
+        "trim": true,
+        "num": true
+      }
+    }],
+    attrs: {
+      "type": "tel",
+      "autocomplete": "off",
+      "placeholder": "输入手机号码",
+      "id": "phone",
+      "name": "phone"
+    },
+    domProps: {
+      "value": (_vm.phone)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.phone = $event.target.value.trim()
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  })]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 1,
+      "offset": "1"
+    }
+  }, [_c('i', {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: (_vm.show),
-      expression: "show"
+      value: (_vm.isShowClean),
+      expression: "isShowClean"
     }],
-    class: _vm.$style.swiper
-  }, [_c('swiper', {
-    staticStyle: {
-      "width": "100%",
-      "height": "100%"
-    },
-    attrs: {
-      "show-dots": true,
-      "dots-position": "top",
-      "show-desc-mask": false,
-      "duration": 200,
-      "height": "100%"
-    },
+    staticClass: "el-icon-circle-close",
     on: {
-      "on-index-change": _vm.onSwiperItemIndexChange
-    },
-    model: {
-      value: (_vm.value),
-      callback: function($$v) {
-        _vm.value = $$v
-      },
-      expression: "value"
+      "click": _vm.cleanPhone
     }
-  }, _vm._l((_vm.list), function(item, index) {
-    return _c('swiper-item', {
-      key: index,
-      staticClass: "swiper-demo-img"
-    }, [_c('img', {
-      attrs: {
-        "src": item
-      },
-      on: {
-        "click": _vm.hideSwiper
-      }
-    })])
-  }))], 1)
-},staticRenderFns: []}
-
-/***/ }),
-/* 172 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "container-fluid",
+  })]), _vm._v(" "), _c('i-col', {
+    staticClass: "text-align-right",
     attrs: {
-      "id": "app"
-    }
-  }, [_c('div', {
-    directives: [{
-      name: "wechat-title",
-      rawName: "v-wechat-title",
-      value: (_vm.$route.meta.title + ' - ThinkSNS+'),
-      expression: "$route.meta.title + ' - ThinkSNS+'"
-    }]
-  }), _vm._v(" "), _c('router-view'), _vm._v(" "), _c('NoticeText'), _vm._v(" "), _c('ImageSwiper')], 1)
-},staticRenderFns: []}
-
-/***/ }),
-/* 173 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "feed-nav-bar",
-    class: _vm.$style.feedNavBar
-  }, [_c('Row', [_c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "4"
-    }
-  }, [_c('router-link', {
-    class: _vm.$style.navLink,
-    attrs: {
-      "to": "/feeds/following"
-    }
-  }, [_vm._v("关注")])], 1), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 2,
-      "offset": "2"
-    }
-  }), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "2"
-    }
-  }, [_c('router-link', {
-    class: _vm.$style.navLink,
-    attrs: {
-      "to": "/feeds/all"
-    }
-  }, [_vm._v("全部")])], 1), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 2,
-      "offset": "2"
-    }
-  }), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "2"
+      "span": 6
     }
   }, [_c('i-button', {
+    attrs: {
+      "type": "text",
+      "htmlType": "button",
+      "disabled": !_vm.isCanGetCode,
+      "size": "large"
+    },
     nativeOn: {
       "click": function($event) {
-        _vm.clean($event)
+        _vm.getCode($event)
       }
     }
-  }, [_vm._v("缓存")])], 1)], 1)], 1)
+  }, [_vm._v(_vm._s(_vm.getCodeText))])], 1)], 1), _vm._v(" "), _c('Row', {
+    staticClass: "formChildrenRow bottom-border",
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "1"
+    }
+  }, [_c('label', {
+    class: _vm.loginFormTitle,
+    attrs: {
+      "for": "code"
+    }
+  }, [_vm._v("验证码")])]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 18
+    }
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model.number.trim",
+      value: (_vm.code),
+      expression: "code",
+      modifiers: {
+        "number": true,
+        "trim": true
+      }
+    }],
+    attrs: {
+      "type": "tel",
+      "autocomplete": "off",
+      "placeholder": "请输入验证码",
+      "id": "code",
+      "name": "code"
+    },
+    domProps: {
+      "value": (_vm.code)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.code = _vm._n($event.target.value.trim())
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  })])], 1), _vm._v(" "), _c('Row', {
+    staticClass: "formChildrenRow",
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "1"
+    }
+  }, [_c('label', {
+    class: _vm.loginFormTitle,
+    attrs: {
+      "for": "password"
+    }
+  }, [_vm._v("新密码")])]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 16
+    }
+  }, [_c('input', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.isShowPassword),
+      expression: "isShowPassword"
+    }, {
+      name: "model",
+      rawName: "v-model.trim",
+      value: (_vm.password),
+      expression: "password",
+      modifiers: {
+        "trim": true
+      }
+    }],
+    attrs: {
+      "type": "password",
+      "placeholder": "请输入6位以上登录密码",
+      "id": "password",
+      "name": "password"
+    },
+    domProps: {
+      "value": (_vm.password)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.password = $event.target.value.trim()
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  }), _vm._v(" "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model.trim",
+      value: (_vm.passwordText),
+      expression: "passwordText",
+      modifiers: {
+        "trim": true
+      }
+    }, {
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.isShowPasswordText),
+      expression: "isShowPasswordText"
+    }],
+    attrs: {
+      "type": "text",
+      "value": "",
+      "placeholder": "请输入6位以上登录密码"
+    },
+    domProps: {
+      "value": (_vm.passwordText)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.passwordText = $event.target.value.trim()
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  })]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 1,
+      "offset": "1"
+    }
+  }, [_c('i', {
+    class: {
+      'el-icon-arrow-up': _vm.isShowPasswordText, 'el-icon-arrow-down': _vm.isShowPassword
+    },
+    on: {
+      "click": _vm.showPassword
+    }
+  })])], 1)], 1), _vm._v(" "), _c('div', {
+    attrs: {
+      "id": "notice"
+    }
+  }, [_c('Row', {
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 22,
+      "offset": "1"
+    }
+  }, [_c('p', {
+    staticClass: "notice error"
+  }, [_vm._v(_vm._s(_vm.error))])])], 1)], 1), _vm._v(" "), _c('div', {
+    class: _vm.operation
+  }, [_c('Row', {
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 22,
+      "offset": "1"
+    }
+  }, [_c('i-button', {
+    staticClass: "loginButton",
+    attrs: {
+      "type": "primary",
+      "htmlType": "submit",
+      "loading": _vm.isLoading,
+      "disabled": _vm.isDisabled,
+      "size": "large"
+    }
+  }, [_vm._v("确认")])], 1)], 1)], 1)])])])
 },staticRenderFns: []}
 
 /***/ }),
-/* 174 */
+/* 186 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "vux-slider"
+  }, [_c('div', {
+    staticClass: "vux-swiper",
+    style: ({
+      height: _vm.xheight
+    })
+  }, [_vm._t("default"), _vm._v(" "), _vm._l((_vm.list), function(item, index) {
+    return _c('div', {
+      staticClass: "vux-swiper-item",
+      attrs: {
+        "data-index": index
+      },
+      on: {
+        "click": function($event) {
+          _vm.clickListItem(item)
+        }
+      }
+    }, [_c('a', {
+      attrs: {
+        "href": "javascript:"
+      }
+    }, [_c('div', {
+      staticClass: "vux-img",
+      style: ({
+        backgroundImage: _vm.buildBackgroundUrl(item.img)
+      })
+    }), _vm._v(" "), (_vm.showDescMask) ? _c('p', {
+      staticClass: "vux-swiper-desc"
+    }, [_vm._v(_vm._s(item.title))]) : _vm._e()])])
+  })], 2), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.showDots),
+      expression: "showDots"
+    }],
+    class: [_vm.dotsClass, 'vux-indicator', 'vux-indicator-' + _vm.dotsPosition]
+  }, _vm._l((_vm.length), function(key) {
+    return _c('a', {
+      attrs: {
+        "href": "javascript:"
+      }
+    }, [_c('i', {
+      staticClass: "vux-icon-dot",
+      class: {
+        'active': key - 1 === _vm.current
+      }
+    })])
+  }))])
+},staticRenderFns: []}
+
+/***/ }),
+/* 187 */
 /***/ (function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -43057,7 +43424,558 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 },staticRenderFns: []}
 
 /***/ }),
-/* 175 */
+/* 188 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "container",
+    class: _vm.$style.manContent
+  }, [_c('FeedNavBar'), _vm._v(" "), _c('router-view'), _vm._v(" "), _c('ToolBar')], 1)
+},staticRenderFns: []}
+
+/***/ }),
+/* 189 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "container"
+  }, [_c('h2', [_vm._v("llll")])])
+}]}
+
+/***/ }),
+/* 190 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "vux-swiper-item"
+  }, [_vm._t("default")], 2)
+},staticRenderFns: []}
+
+/***/ }),
+/* 191 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('ul', _vm._l((_vm.commentsData), function(comment, index) {
+    return (index < 3) ? _c('li', {
+      key: comment.id
+    }, [_c('p', [(comment.user_id) ? _c('router-link', {
+      class: _vm.$style.userName,
+      attrs: {
+        "to": {
+          path: '/users/profile'
+        }
+      }
+    }, [_vm._v(_vm._s(_vm.getUserName(comment.user_id)))]) : _vm._e(), _vm._v(" "), (comment.reply_to_user_id) ? _c('span', {
+      class: _vm.$style.commentContent
+    }, [_vm._v("\n          回复\n        ")]) : _vm._e(), _vm._v(" "), (comment.reply_to_user_id) ? _c('router-link', {
+      class: _vm.$style.userName,
+      attrs: {
+        "to": {
+          path: '/users/profile'
+        }
+      }
+    }, [_vm._v(_vm._s(_vm.getUserName(comment.reply_to_user_id)))]) : _vm._e(), _vm._v(" "), (comment.user_id != _vm.currentUser.user_id) ? _c('span', {
+      class: _vm.$style.commentContent,
+      on: {
+        "click": function($event) {
+          $event.stopPropagation();
+          _vm.focusInput(comment.id, comment.user_id, _vm.feedId)
+        }
+      }
+    }, [_vm._v(" \n         : " + _vm._s(comment.comment_content) + "\n        ")]) : _vm._e(), _vm._v(" "), (comment.user_id == _vm.currentUser.user_id) ? _c('span', {
+      class: _vm.$style.commentContent,
+      on: {
+        "click": function($event) {
+          $event.stopPropagation();
+          _vm.showComfirm(comment.id, _vm.feedId, index)
+        }
+      }
+    }, [_vm._v(" \n         : " + _vm._s(comment.comment_content) + "\n        ")]) : _vm._e()], 1)]) : _vm._e()
+  })), _vm._v(" "), (_vm.hasMore) ? _c('router-link', {
+    class: _vm.$style.userName,
+    attrs: {
+      "to": "/web"
+    }
+  }, [_vm._v("查看全部评论")]) : _vm._e(), _vm._v(" "), (_vm.CanInput) ? _c('div', {
+    class: _vm.$style.commentInput
+  }, [_c('Row', {
+    attrs: {
+      "type": "flex",
+      "align": "bottom"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 18,
+      "offset": "1"
+    }
+  }, [(_vm.CanInput) ? _c('i-input', {
+    staticClass: "commentInput",
+    attrs: {
+      "type": "textarea",
+      "autofocus": _vm.autoF,
+      "placeholder": _vm.placeholder,
+      "autosize": {
+        minRows: 1,
+        maxRows: 4
+      },
+      "minlength": "1",
+      "blur": _vm.inputBlur,
+      "maxlength": "255"
+    },
+    model: {
+      value: (_vm.userComment),
+      callback: function($$v) {
+        _vm.userComment = $$v
+      },
+      expression: "userComment"
+    }
+  }) : _vm._e()], 1), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 3,
+      "offset": "1"
+    }
+  }, [(_vm.commentCount > 200) ? _c('Row', {
+    class: _vm.$style.commentCount
+  }, [_c('i-col', {
+    attrs: {
+      "span": 24
+    }
+  }, [_c('span', {
+    class: {
+      inputFull: _vm.commentCount > 100
+    }
+  }, [_vm._v(_vm._s(_vm.commentCount))]), _vm._v("/255")])], 1) : _vm._e(), _vm._v(" "), _c('Row', [_c('i-col', {
+    attrs: {
+      "span": 24
+    }
+  }, [_c('i-button', {
+    class: _vm.$style.sendComment,
+    attrs: {
+      "long": true,
+      "type": "primary",
+      "disabled": _vm.commentCount == 0,
+      "size": "mini"
+    },
+    nativeOn: {
+      "click": function($event) {
+        _vm.sendComment()
+      }
+    }
+  }, [_vm._v("发送")])], 1)], 1)], 1)], 1)], 1) : _vm._e(), _vm._v(" "), (_vm.isShowComfirm) ? _c('Comfirm', {
+    attrs: {
+      "data": _vm.deleteData,
+      "comfirm-content": "删除这条评论"
+    },
+    on: {
+      "cannel": _vm.cannel,
+      "increment": _vm.deleteComment
+    }
+  }) : _vm._e(), _vm._v(" "), _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.CanInput),
+      expression: "CanInput"
+    }],
+    class: _vm.$style.wrapper,
+    on: {
+      "click": function($event) {
+        $event.stopPropagation();
+        _vm.closeInput($event)
+      }
+    }
+  })], 1)
+},staticRenderFns: []}
+
+/***/ }),
+/* 192 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('transition', {
+    attrs: {
+      "name": "slide-left"
+    }
+  }, [_c('div', {
+    staticClass: "container"
+  }, [_c('div', {
+    staticClass: "main-content"
+  }, [_c('form', {
+    attrs: {
+      "role": "form"
+    },
+    on: {
+      "submit": function($event) {
+        $event.preventDefault();
+        _vm.submit($event)
+      }
+    }
+  }, [_c('div', {
+    staticClass: "loginForm"
+  }, [_c('Row', {
+    staticClass: "bottom-border formChildrenRow",
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "1"
+    }
+  }, [_c('label', {
+    class: _vm.loginFormTitle,
+    attrs: {
+      "for": "phone"
+    }
+  }, [_vm._v("手机号")])]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 16
+    }
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model.number.trim",
+      value: (_vm.phone),
+      expression: "phone",
+      modifiers: {
+        "number": true,
+        "trim": true
+      }
+    }],
+    attrs: {
+      "type": "tel",
+      "size": "large",
+      "autocomplete": "off",
+      "placeholder": "请输入手机号",
+      "id": "phone",
+      "name": "phone"
+    },
+    domProps: {
+      "value": (_vm.phone)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.phone = _vm._n($event.target.value.trim())
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  })]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 1,
+      "offset": "1"
+    }
+  }, [_c('i', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.isShowClean),
+      expression: "isShowClean"
+    }],
+    staticClass: "ivu-icon ivu-icon-close-circled",
+    on: {
+      "click": _vm.cleanPhone
+    }
+  })])], 1), _vm._v(" "), _c('Row', {
+    staticClass: "formChildrenRow",
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "1"
+    }
+  }, [_c('label', {
+    class: _vm.loginFormTitle,
+    attrs: {
+      "for": "password"
+    }
+  }, [_vm._v("密码")])]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 16
+    }
+  }, [_c('input', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.isShowPassword),
+      expression: "isShowPassword"
+    }, {
+      name: "model",
+      rawName: "v-model.trim",
+      value: (_vm.password),
+      expression: "password",
+      modifiers: {
+        "trim": true
+      }
+    }],
+    attrs: {
+      "type": "password",
+      "size": "large",
+      "placeholder": "请输入6位以上密码",
+      "id": "password",
+      "name": "password"
+    },
+    domProps: {
+      "value": (_vm.password)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.password = $event.target.value.trim()
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  }), _vm._v(" "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model.trim",
+      value: (_vm.passwordText),
+      expression: "passwordText",
+      modifiers: {
+        "trim": true
+      }
+    }, {
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.isShowPasswordText),
+      expression: "isShowPasswordText"
+    }],
+    attrs: {
+      "type": "text",
+      "value": "",
+      "placeholder": "请输入6位以上密码"
+    },
+    domProps: {
+      "value": (_vm.passwordText)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.passwordText = $event.target.value.trim()
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  })]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 1,
+      "offset": "1"
+    }
+  }, [_c('i', {
+    staticClass: "ivu-icon",
+    class: {
+      'ivu-icon-eye-disabled': _vm.isShowPasswordText, 'ivu-icon-eye': _vm.isShowPassword
+    },
+    on: {
+      "click": _vm.showPassword
+    }
+  })])], 1)], 1), _vm._v(" "), _c('div', {
+    attrs: {
+      "id": "notice"
+    }
+  }, [_c('Row', {
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 22,
+      "offset": "1"
+    }
+  }, [_c('p', {
+    staticClass: "notice error"
+  }, [_vm._v(_vm._s(_vm.error))])])], 1)], 1), _vm._v(" "), _c('div', {
+    class: _vm.operation
+  }, [_c('Row', {
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 22,
+      "offset": "1"
+    }
+  }, [_c('i-button', {
+    staticClass: "loginButton",
+    attrs: {
+      "type": "primary",
+      "htmlType": "submit",
+      "loading": _vm.isLoading,
+      "disabled": _vm.isDisabled,
+      "size": "large"
+    }
+  }, [_vm._v("登录")])], 1)], 1)], 1)]), _vm._v(" "), _c('div', {
+    staticClass: "otherOperation"
+  }, [_c('Row', {
+    attrs: {
+      "justify": "start",
+      "type": "flex"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 12,
+      "offset": "1"
+    }
+  }, [_c('router-link', {
+    attrs: {
+      "to": "/register"
+    }
+  }, [_vm._v("\n              注册账号\n            ")])], 1), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 10
+    }
+  }, [_c('router-link', {
+    staticStyle: {
+      "float": "right"
+    },
+    attrs: {
+      "to": "/findpassword"
+    }
+  }, [_vm._v("\n              找回密码\n            ")])], 1)], 1)], 1)])])])
+},staticRenderFns: []}
+
+/***/ }),
+/* 193 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.show),
+      expression: "show"
+    }],
+    staticClass: "notice-root"
+  }, [_c('div', {
+    class: _vm.$style.notice
+  }, [_c('div', {
+    class: _vm.$style.content
+  }, [(_vm.status) ? _c('Icon', {
+    class: _vm.$style.success,
+    attrs: {
+      "type": "ios-checkmark"
+    }
+  }) : _vm._e(), _vm._v(" "), (!_vm.status) ? _c('Icon', {
+    class: _vm.$style.error,
+    attrs: {
+      "type": "android-alert"
+    }
+  }) : _vm._e(), _vm._v("\n      " + _vm._s(_vm.text) + "\n    ")], 1)]), _vm._v(" "), _c('div', {
+    class: _vm.$style.commonWrapper
+  })])
+},staticRenderFns: []}
+
+/***/ }),
+/* 194 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "feedContent"
+  }, [(_vm.errors.serverError) ? _c('div', {
+    class: _vm.$style.notice
+  }, [_vm._v("\n    " + _vm._s(_vm.errors.serverError) + "\n  ")]) : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "feed-list"
+  }, _vm._l((_vm.feeds), function(feed) {
+    return _c('div', {
+      staticClass: "feed"
+    }, [_c('Feed', {
+      key: feed.id,
+      attrs: {
+        "feed": feed
+      }
+    })], 1)
+  }))])
+},staticRenderFns: []}
+
+/***/ }),
+/* 195 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _vm._m(0)
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "feedContent"
+  }, [_c('h2', [_vm._v("FeedAll")])])
+}]}
+
+/***/ }),
+/* 196 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "feed-nav-bar",
+    class: _vm.$style.feedNavBar
+  }, [_c('Row', [_c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "4"
+    }
+  }, [_c('router-link', {
+    class: _vm.$style.navLink,
+    attrs: {
+      "to": "/feeds/following"
+    }
+  }, [_vm._v("关注")])], 1), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 2,
+      "offset": "2"
+    }
+  }), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "2"
+    }
+  }, [_c('router-link', {
+    class: _vm.$style.navLink,
+    attrs: {
+      "to": "/feeds/all"
+    }
+  }, [_vm._v("全部")])], 1), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 2,
+      "offset": "2"
+    }
+  }), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "2"
+    }
+  }, [_c('i-button', {
+    nativeOn: {
+      "click": function($event) {
+        _vm.clean($event)
+      }
+    }
+  }, [_vm._v("缓存")])], 1)], 1)], 1)
+},staticRenderFns: []}
+
+/***/ }),
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -43079,7 +43997,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "border-radius": "50%"
     },
     attrs: {
-      "src": __webpack_require__(170),
+      "src": __webpack_require__(182),
       "alt": ""
     }
   })])]), _vm._v(" "), _c('i-col', {
@@ -43164,388 +44082,193 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 },staticRenderFns: []}
 
 /***/ }),
-/* 176 */
+/* 198 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('h1', [_vm._v("TS+ 粗犷入口")]), _vm._v(" "), _c('p', [_c('router-link', {
+    attrs: {
+      "to": "/"
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#"
+    }
+  }, [_vm._v("to Home")])]), _vm._v(" "), _c('router-link', {
+    attrs: {
+      "to": "/login"
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#"
+    }
+  }, [_vm._v("to Login")])]), _vm._v(" "), _c('router-link', {
+    attrs: {
+      "to": "/register"
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#"
+    }
+  }, [_vm._v("to Register")])]), _vm._v(" "), _c('router-link', {
+    attrs: {
+      "to": "/findpassword"
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#"
+    }
+  }, [_vm._v("to FindPassword")])]), _vm._v(" "), _c('router-link', {
+    attrs: {
+      "to": "/feeds"
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#"
+    }
+  }, [_vm._v("to Feeds")])])], 1), _vm._v(" "), _c('router-view')], 1)
+},staticRenderFns: []}
+
+/***/ }),
+/* 199 */
 /***/ (function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "vux-swiper-item"
-  }, [_vm._t("default")], 2)
+    staticClass: "container-fluid",
+    attrs: {
+      "id": "app"
+    }
+  }, [_c('div', {
+    directives: [{
+      name: "wechat-title",
+      rawName: "v-wechat-title",
+      value: (_vm.$route.meta.title + ' - ThinkSNS+'),
+      expression: "$route.meta.title + ' - ThinkSNS+'"
+    }]
+  }), _vm._v(" "), _c('router-view'), _vm._v(" "), _c('NoticeText'), _vm._v(" "), _c('ImageSwiper')], 1)
 },staticRenderFns: []}
 
 /***/ }),
-/* 177 */
+/* 200 */
 /***/ (function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('transition', {
-    attrs: {
-      "name": "slide-left"
-    }
-  }, [_c('div', {
-    staticClass: "container"
-  }, [_c('div', {
-    staticClass: "main-content"
-  }, [_c('form', {
-    attrs: {
-      "role": "form"
-    },
-    on: {
-      "submit": function($event) {
-        $event.preventDefault();
-        _vm.register($event)
-      }
-    }
-  }, [_c('div', {
-    staticClass: "loginForm"
-  }, [_c('Row', {
-    staticClass: "formChildrenRow bottom-border",
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "1"
-    }
-  }, [_c('label', {
-    class: _vm.loginFormTitle,
-    attrs: {
-      "for": "username"
-    }
-  }, [_vm._v("用户名")])]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 16
-    }
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model.trim",
-      value: (_vm.username),
-      expression: "username",
-      modifiers: {
-        "trim": true
-      }
-    }],
-    attrs: {
-      "type": "text",
-      "autocomplete": "off",
-      "placeholder": "不能以数字开头,不能有特殊字符",
-      "id": "username",
-      "name": "username"
-    },
-    domProps: {
-      "value": (_vm.username)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.username = $event.target.value.trim()
-      },
-      "blur": function($event) {
-        _vm.$forceUpdate()
-      }
-    }
-  })]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 1,
-      "offset": "1"
-    }
-  }, [_c('i', {
+  return _c('div', {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: (_vm.isShowUserClean),
-      expression: "isShowUserClean"
+      value: (_vm.show),
+      expression: "show"
     }],
-    staticClass: "ivu-icon ivu-icon-close-circled",
-    on: {
-      "click": _vm.cleanUsername
-    }
-  })])], 1), _vm._v(" "), _c('Row', {
-    staticClass: "formChildrenRow bottom-border",
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "1"
-    }
-  }, [_c('label', {
-    class: _vm.loginFormTitle,
-    attrs: {
-      "for": "phone"
-    }
-  }, [_vm._v("手机号")])]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 10
-    }
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model.trim.num",
-      value: (_vm.phone),
-      expression: "phone",
-      modifiers: {
-        "trim": true,
-        "num": true
-      }
-    }],
-    attrs: {
-      "type": "tel",
-      "autocomplete": "off",
-      "placeholder": "输入手机号码",
-      "id": "phone",
-      "name": "phone"
+    class: _vm.$style.swiper
+  }, [_c('swiper', {
+    staticStyle: {
+      "width": "100%",
+      "height": "100%"
     },
-    domProps: {
-      "value": (_vm.phone)
+    attrs: {
+      "show-dots": true,
+      "dots-position": "top",
+      "show-desc-mask": false,
+      "duration": 200,
+      "height": "100%"
     },
     on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.phone = $event.target.value.trim()
+      "on-index-change": _vm.onSwiperItemIndexChange
+    },
+    model: {
+      value: (_vm.value),
+      callback: function($$v) {
+        _vm.value = $$v
       },
-      "blur": function($event) {
-        _vm.$forceUpdate()
-      }
+      expression: "value"
     }
-  })]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 1,
-      "offset": "1"
-    }
-  }, [_c('i', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.isShowClean),
-      expression: "isShowClean"
-    }],
-    staticClass: "ivu-icon ivu-icon-close-circled",
-    on: {
-      "click": _vm.cleanPhone
-    }
-  })]), _vm._v(" "), _c('i-col', {
-    staticClass: "text-align-right",
-    attrs: {
-      "span": 6
-    }
-  }, [_c('i-button', {
-    staticClass: "text-button",
-    attrs: {
-      "type": "text",
-      "htmlType": "button",
-      "size": "large"
-    },
-    nativeOn: {
-      "click": function($event) {
-        $event.stopPropagation();
-        $event.preventDefault();
-        _vm.getCode($event)
-      }
-    }
-  }, [_vm._v("\n                " + _vm._s(_vm.getCodeText) + "\n              ")])], 1)], 1), _vm._v(" "), _c('Row', {
-    staticClass: "bottom-border formChildrenRow",
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "1"
-    }
-  }, [_c('label', {
-    class: _vm.loginFormTitle,
-    attrs: {
-      "for": "code"
-    }
-  }, [_vm._v("验证码")])]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 18
-    }
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model.trim.num",
-      value: (_vm.code),
-      expression: "code",
-      modifiers: {
-        "trim": true,
-        "num": true
-      }
-    }],
-    attrs: {
-      "type": "tel",
-      "autocomplete": "off",
-      "placeholder": "输入验证码",
-      "id": "code",
-      "name": "code"
-    },
-    domProps: {
-      "value": (_vm.code)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.code = $event.target.value.trim()
+  }, _vm._l((_vm.list), function(item, index) {
+    return _c('swiper-item', {
+      key: index,
+      staticClass: "swiper-demo-img"
+    }, [_c('img', {
+      attrs: {
+        "src": item
       },
-      "blur": function($event) {
-        _vm.$forceUpdate()
+      on: {
+        "click": _vm.hideSwiper
       }
-    }
-  })])], 1), _vm._v(" "), _c('Row', {
-    staticClass: "formChildrenRow",
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "1"
-    }
-  }, [_c('label', {
-    class: _vm.loginFormTitle,
-    attrs: {
-      "for": "password"
-    }
-  }, [_vm._v("密码")])]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 16
-    }
-  }, [_c('input', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.isShowPassword),
-      expression: "isShowPassword"
-    }, {
-      name: "model",
-      rawName: "v-model.trim",
-      value: (_vm.password),
-      expression: "password",
-      modifiers: {
-        "trim": true
-      }
-    }],
-    attrs: {
-      "type": "password",
-      "autocomplete": "off",
-      "placeholder": "请输入6位以上密码",
-      "id": "password",
-      "name": "password"
-    },
-    domProps: {
-      "value": (_vm.password)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.password = $event.target.value.trim()
-      },
-      "blur": function($event) {
-        _vm.$forceUpdate()
-      }
-    }
-  }), _vm._v(" "), _c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model.trim",
-      value: (_vm.passwordText),
-      expression: "passwordText",
-      modifiers: {
-        "trim": true
-      }
-    }, {
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.isShowPasswordText),
-      expression: "isShowPasswordText"
-    }],
-    attrs: {
-      "type": "text",
-      "autocomplete": "off",
-      "value": "",
-      "placeholder": "请输入6位以上密码"
-    },
-    domProps: {
-      "value": (_vm.passwordText)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.passwordText = $event.target.value.trim()
-      },
-      "blur": function($event) {
-        _vm.$forceUpdate()
-      }
-    }
-  })]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 1,
-      "offset": "1"
-    }
-  }, [_c('i', {
-    staticClass: "ivu-icon",
-    class: {
-      'ivu-icon-eye-disabled': _vm.isShowPasswordText, 'ivu-icon-eye': _vm.isShowPassword
-    },
-    on: {
-      "click": _vm.showPassword
-    }
-  })])], 1)], 1), _vm._v(" "), _c('div', {
-    attrs: {
-      "id": "notice"
-    }
-  }, [_c('Row', {
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 22,
-      "offset": "1"
-    }
-  }, [_c('p', {
-    staticClass: "notice error"
-  }, [_vm._v(_vm._s(_vm.error))])])], 1)], 1), _vm._v(" "), _c('div', {
-    class: _vm.operation
-  }, [_c('Row', {
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 22,
-      "offset": "1"
-    }
-  }, [_c('i-button', {
-    staticClass: "loginButton",
-    attrs: {
-      "type": "primary",
-      "loading": _vm.isLoading,
-      "htmlType": "submit",
-      "disabled": _vm.isDisabled,
-      "size": "large"
-    }
-  }, [_vm._v("注册")])], 1)], 1)], 1)])])])])
+    })])
+  }))], 1)
 },staticRenderFns: []}
 
 /***/ }),
-/* 178 */
+/* 201 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('Row', {
+    staticClass: "menu",
+    class: _vm.$style.toolBar
+  }, [_c('i-col', {
+    class: _vm.$style.menuItem,
+    attrs: {
+      "span": 5
+    }
+  }, [_c('Icon', {
+    attrs: {
+      "type": "android-home"
+    }
+  }), _vm._v(" "), _c('i', [_vm._v("首页")])], 1), _vm._v(" "), _c('i-col', {
+    class: _vm.$style.menuItem,
+    attrs: {
+      "span": 5
+    }
+  }, [_c('Icon', {
+    attrs: {
+      "type": "android-globe"
+    }
+  }), _vm._v(" "), _c('i', [_vm._v("发现")])], 1), _vm._v(" "), _c('i-col', {
+    staticClass: "plus-parent",
+    class: _vm.$style.menuItem,
+    attrs: {
+      "span": 4
+    }
+  }, [_c('Icon', {
+    class: _vm.$style.plus,
+    attrs: {
+      "type": "ios-plus-empty"
+    }
+  })], 1), _vm._v(" "), _c('i-col', {
+    class: _vm.$style.menuItem,
+    attrs: {
+      "span": 5
+    }
+  }, [_c('Icon', {
+    attrs: {
+      "type": "chatboxes"
+    }
+  }), _vm._v(" "), _c('i', [_vm._v("消息")])], 1), _vm._v(" "), _c('i-col', {
+    class: _vm.$style.menuItem,
+    attrs: {
+      "span": 5
+    }
+  }, [_c('Icon', {
+    attrs: {
+      "type": "android-person"
+    }
+  }), _vm._v(" "), _c('i', [_vm._v("我")])], 1)], 1)
+},staticRenderFns: []}
+
+/***/ }),
+/* 202 */
+/***/ (function(module, exports) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    class: _vm.$style.feedListContent
+  }, [_c('FeedList')], 1)
+},staticRenderFns: []}
+
+/***/ }),
+/* 203 */
 /***/ (function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
@@ -44474,113 +45197,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
 },staticRenderFns: []}
 
 /***/ }),
-/* 179 */
+/* 204 */
 /***/ (function(module, exports) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "container"
-  }, [_c('h2', [_vm._v("llll")])])
-}]}
-
-/***/ }),
-/* 180 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('Row', {
-    staticClass: "menu",
-    class: _vm.$style.toolBar
-  }, [_c('i-col', {
-    class: _vm.$style.menuItem,
+  return _c('transition', {
     attrs: {
-      "span": 5
+      "name": "slide-left"
     }
-  }, [_c('Icon', {
-    attrs: {
-      "type": "android-home"
-    }
-  }), _vm._v(" "), _c('i', [_vm._v("首页")])], 1), _vm._v(" "), _c('i-col', {
-    class: _vm.$style.menuItem,
-    attrs: {
-      "span": 5
-    }
-  }, [_c('Icon', {
-    attrs: {
-      "type": "android-globe"
-    }
-  }), _vm._v(" "), _c('i', [_vm._v("发现")])], 1), _vm._v(" "), _c('i-col', {
-    staticClass: "plus-parent",
-    class: _vm.$style.menuItem,
-    attrs: {
-      "span": 4
-    }
-  }, [_c('Icon', {
-    class: _vm.$style.plus,
-    attrs: {
-      "type": "ios-plus-empty"
-    }
-  })], 1), _vm._v(" "), _c('i-col', {
-    class: _vm.$style.menuItem,
-    attrs: {
-      "span": 5
-    }
-  }, [_c('Icon', {
-    attrs: {
-      "type": "chatboxes"
-    }
-  }), _vm._v(" "), _c('i', [_vm._v("消息")])], 1), _vm._v(" "), _c('i-col', {
-    class: _vm.$style.menuItem,
-    attrs: {
-      "span": 5
-    }
-  }, [_c('Icon', {
-    attrs: {
-      "type": "android-person"
-    }
-  }), _vm._v(" "), _c('i', [_vm._v("我")])], 1)], 1)
-},staticRenderFns: []}
-
-/***/ }),
-/* 181 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.show),
-      expression: "show"
-    }],
-    staticClass: "notice-root"
   }, [_c('div', {
-    class: _vm.$style.notice
-  }, [_c('div', {
-    class: _vm.$style.content
-  }, [(_vm.status) ? _c('Icon', {
-    class: _vm.$style.success,
-    attrs: {
-      "type": "ios-checkmark"
-    }
-  }) : _vm._e(), _vm._v(" "), (!_vm.status) ? _c('Icon', {
-    class: _vm.$style.error,
-    attrs: {
-      "type": "android-alert"
-    }
-  }) : _vm._e(), _vm._v("\n      " + _vm._s(_vm.text) + "\n    ")], 1)]), _vm._v(" "), _c('div', {
-    class: _vm.$style.commonWrapper
-  })])
-},staticRenderFns: []}
-
-/***/ }),
-/* 182 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
     staticClass: "container"
   }, [_c('div', {
     staticClass: "main-content"
@@ -44591,12 +45216,78 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "submit": function($event) {
         $event.preventDefault();
-        _vm.submit($event)
+        _vm.register($event)
       }
     }
   }, [_c('div', {
     staticClass: "loginForm"
   }, [_c('Row', {
+    staticClass: "formChildrenRow bottom-border",
+    attrs: {
+      "justify": "start",
+      "type": "flex",
+      "align": "middle"
+    }
+  }, [_c('i-col', {
+    attrs: {
+      "span": 4,
+      "offset": "1"
+    }
+  }, [_c('label', {
+    class: _vm.loginFormTitle,
+    attrs: {
+      "for": "username"
+    }
+  }, [_vm._v("用户名")])]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 16
+    }
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model.trim",
+      value: (_vm.username),
+      expression: "username",
+      modifiers: {
+        "trim": true
+      }
+    }],
+    attrs: {
+      "type": "text",
+      "autocomplete": "off",
+      "placeholder": "不能以数字开头,不能有特殊字符",
+      "id": "username",
+      "name": "username"
+    },
+    domProps: {
+      "value": (_vm.username)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.username = $event.target.value.trim()
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  })]), _vm._v(" "), _c('i-col', {
+    attrs: {
+      "span": 1,
+      "offset": "1"
+    }
+  }, [_c('i', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.isShowUserClean),
+      expression: "isShowUserClean"
+    }],
+    staticClass: "ivu-icon ivu-icon-close-circled",
+    on: {
+      "click": _vm.cleanUsername
+    }
+  })])], 1), _vm._v(" "), _c('Row', {
     staticClass: "formChildrenRow bottom-border",
     attrs: {
       "justify": "start",
@@ -44659,7 +45350,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.isShowClean),
       expression: "isShowClean"
     }],
-    staticClass: "el-icon-circle-close",
+    staticClass: "ivu-icon ivu-icon-close-circled",
     on: {
       "click": _vm.cleanPhone
     }
@@ -44669,19 +45360,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "span": 6
     }
   }, [_c('i-button', {
+    staticClass: "text-button",
     attrs: {
       "type": "text",
       "htmlType": "button",
-      "disabled": !_vm.isCanGetCode,
       "size": "large"
     },
     nativeOn: {
       "click": function($event) {
+        $event.stopPropagation();
+        $event.preventDefault();
         _vm.getCode($event)
       }
     }
-  }, [_vm._v(_vm._s(_vm.getCodeText))])], 1)], 1), _vm._v(" "), _c('Row', {
-    staticClass: "formChildrenRow bottom-border",
+  }, [_vm._v("\n                " + _vm._s(_vm.getCodeText) + "\n              ")])], 1)], 1), _vm._v(" "), _c('Row', {
+    staticClass: "bottom-border formChildrenRow",
     attrs: {
       "justify": "start",
       "type": "flex",
@@ -44704,18 +45397,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('input', {
     directives: [{
       name: "model",
-      rawName: "v-model.number.trim",
+      rawName: "v-model.trim.num",
       value: (_vm.code),
       expression: "code",
       modifiers: {
-        "number": true,
-        "trim": true
+        "trim": true,
+        "num": true
       }
     }],
     attrs: {
       "type": "tel",
       "autocomplete": "off",
-      "placeholder": "请输入验证码",
+      "placeholder": "输入验证码",
       "id": "code",
       "name": "code"
     },
@@ -44725,331 +45418,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.code = _vm._n($event.target.value.trim())
+        _vm.code = $event.target.value.trim()
       },
       "blur": function($event) {
         _vm.$forceUpdate()
       }
-    }
-  })])], 1), _vm._v(" "), _c('Row', {
-    staticClass: "formChildrenRow",
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "1"
-    }
-  }, [_c('label', {
-    class: _vm.loginFormTitle,
-    attrs: {
-      "for": "password"
-    }
-  }, [_vm._v("新密码")])]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 16
-    }
-  }, [_c('input', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.isShowPassword),
-      expression: "isShowPassword"
-    }, {
-      name: "model",
-      rawName: "v-model.trim",
-      value: (_vm.password),
-      expression: "password",
-      modifiers: {
-        "trim": true
-      }
-    }],
-    attrs: {
-      "type": "password",
-      "placeholder": "请输入6位以上登录密码",
-      "id": "password",
-      "name": "password"
-    },
-    domProps: {
-      "value": (_vm.password)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.password = $event.target.value.trim()
-      },
-      "blur": function($event) {
-        _vm.$forceUpdate()
-      }
-    }
-  }), _vm._v(" "), _c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model.trim",
-      value: (_vm.passwordText),
-      expression: "passwordText",
-      modifiers: {
-        "trim": true
-      }
-    }, {
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.isShowPasswordText),
-      expression: "isShowPasswordText"
-    }],
-    attrs: {
-      "type": "text",
-      "value": "",
-      "placeholder": "请输入6位以上登录密码"
-    },
-    domProps: {
-      "value": (_vm.passwordText)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.passwordText = $event.target.value.trim()
-      },
-      "blur": function($event) {
-        _vm.$forceUpdate()
-      }
-    }
-  })]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 1,
-      "offset": "1"
-    }
-  }, [_c('i', {
-    class: {
-      'el-icon-arrow-up': _vm.isShowPasswordText, 'el-icon-arrow-down': _vm.isShowPassword
-    },
-    on: {
-      "click": _vm.showPassword
-    }
-  })])], 1)], 1), _vm._v(" "), _c('div', {
-    attrs: {
-      "id": "notice"
-    }
-  }, [_c('Row', {
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 22,
-      "offset": "1"
-    }
-  }, [_c('p', {
-    staticClass: "notice error"
-  }, [_vm._v(_vm._s(_vm.error))])])], 1)], 1), _vm._v(" "), _c('div', {
-    class: _vm.operation
-  }, [_c('Row', {
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 22,
-      "offset": "1"
-    }
-  }, [_c('i-button', {
-    staticClass: "loginButton",
-    attrs: {
-      "type": "primary",
-      "htmlType": "submit",
-      "loading": _vm.isLoading,
-      "disabled": _vm.isDisabled,
-      "size": "large"
-    }
-  }, [_vm._v("确认")])], 1)], 1)], 1)])])])
-},staticRenderFns: []}
-
-/***/ }),
-/* 183 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    class: _vm.$style.comfirm
-  }, [_c('Row', {
-    class: _vm.$style.comirmRow
-  }, [_c('i-col', {
-    class: _vm.$style.comfirmCol,
-    attrs: {
-      "span": 24
-    }
-  }, [_c('i-button', {
-    attrs: {
-      "long": true
-    },
-    nativeOn: {
-      "click": function($event) {
-        _vm.doIt(_vm.data)
-      }
-    }
-  }, [_vm._v(_vm._s(_vm.comfirmContent))])], 1), _vm._v(" "), _c('i-col', {
-    class: _vm.$style.comfirmCol,
-    attrs: {
-      "span": 24
-    }
-  }, [_c('i-button', {
-    attrs: {
-      "long": true
-    },
-    nativeOn: {
-      "click": function($event) {
-        _vm.cannelIt($event)
-      }
-    }
-  }, [_vm._v("取消")])], 1)], 1)], 1)
-},staticRenderFns: []}
-
-/***/ }),
-/* 184 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "feedContent"
-  }, [_c('h2', [_vm._v("FeedNew")])])
-}]}
-
-/***/ }),
-/* 185 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "feedContent"
-  }, [(_vm.errors.serverError) ? _c('div', {
-    class: _vm.$style.notice
-  }, [_vm._v("\n    " + _vm._s(_vm.errors.serverError) + "\n  ")]) : _vm._e(), _vm._v(" "), _c('div', {
-    staticClass: "feed-list"
-  }, _vm._l((_vm.feeds), function(feed) {
-    return _c('div', {
-      staticClass: "feed"
-    }, [_c('Feed', {
-      key: feed.id,
-      attrs: {
-        "feed": feed
-      }
-    })], 1)
-  }))])
-},staticRenderFns: []}
-
-/***/ }),
-/* 186 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _vm._m(0)
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "feedContent"
-  }, [_c('h2', [_vm._v("FeedAll")])])
-}]}
-
-/***/ }),
-/* 187 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('transition', {
-    attrs: {
-      "name": "slide-left"
-    }
-  }, [_c('div', {
-    staticClass: "container"
-  }, [_c('div', {
-    staticClass: "main-content"
-  }, [_c('form', {
-    attrs: {
-      "role": "form"
-    },
-    on: {
-      "submit": function($event) {
-        $event.preventDefault();
-        _vm.submit($event)
-      }
-    }
-  }, [_c('div', {
-    staticClass: "loginForm"
-  }, [_c('Row', {
-    staticClass: "bottom-border formChildrenRow",
-    attrs: {
-      "justify": "start",
-      "type": "flex",
-      "align": "middle"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 4,
-      "offset": "1"
-    }
-  }, [_c('label', {
-    class: _vm.loginFormTitle,
-    attrs: {
-      "for": "phone"
-    }
-  }, [_vm._v("手机号")])]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 16
-    }
-  }, [_c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model.number.trim",
-      value: (_vm.phone),
-      expression: "phone",
-      modifiers: {
-        "number": true,
-        "trim": true
-      }
-    }],
-    attrs: {
-      "type": "tel",
-      "size": "large",
-      "autocomplete": "off",
-      "placeholder": "请输入手机号",
-      "id": "phone",
-      "name": "phone"
-    },
-    domProps: {
-      "value": (_vm.phone)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.phone = _vm._n($event.target.value.trim())
-      },
-      "blur": function($event) {
-        _vm.$forceUpdate()
-      }
-    }
-  })]), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 1,
-      "offset": "1"
-    }
-  }, [_c('i', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.isShowClean),
-      expression: "isShowClean"
-    }],
-    staticClass: "ivu-icon ivu-icon-close-circled",
-    on: {
-      "click": _vm.cleanPhone
     }
   })])], 1), _vm._v(" "), _c('Row', {
     staticClass: "formChildrenRow",
@@ -45089,7 +45462,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     attrs: {
       "type": "password",
-      "size": "large",
+      "autocomplete": "off",
       "placeholder": "请输入6位以上密码",
       "id": "password",
       "name": "password"
@@ -45123,6 +45496,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     attrs: {
       "type": "text",
+      "autocomplete": "off",
       "value": "",
       "placeholder": "请输入6位以上密码"
     },
@@ -45185,306 +45559,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "loginButton",
     attrs: {
       "type": "primary",
-      "htmlType": "submit",
       "loading": _vm.isLoading,
+      "htmlType": "submit",
       "disabled": _vm.isDisabled,
       "size": "large"
     }
-  }, [_vm._v("登录")])], 1)], 1)], 1)]), _vm._v(" "), _c('div', {
-    staticClass: "otherOperation"
-  }, [_c('Row', {
-    attrs: {
-      "justify": "start",
-      "type": "flex"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 12,
-      "offset": "1"
-    }
-  }, [_c('router-link', {
-    attrs: {
-      "to": "/register"
-    }
-  }, [_vm._v("\n              注册账号\n            ")])], 1), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 10
-    }
-  }, [_c('router-link', {
-    staticStyle: {
-      "float": "right"
-    },
-    attrs: {
-      "to": "/findpassword"
-    }
-  }, [_vm._v("\n              找回密码\n            ")])], 1)], 1)], 1)])])])
+  }, [_vm._v("注册")])], 1)], 1)], 1)])])])])
 },staticRenderFns: []}
 
 /***/ }),
-/* 188 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "container",
-    class: _vm.$style.manContent
-  }, [_c('FeedNavBar'), _vm._v(" "), _c('router-view'), _vm._v(" "), _c('ToolBar')], 1)
-},staticRenderFns: []}
-
-/***/ }),
-/* 189 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('h1', [_vm._v("TS+ 粗犷入口")]), _vm._v(" "), _c('p', [_c('router-link', {
-    attrs: {
-      "to": "/"
-    }
-  }, [_c('a', {
-    attrs: {
-      "href": "#"
-    }
-  }, [_vm._v("to Home")])]), _vm._v(" "), _c('router-link', {
-    attrs: {
-      "to": "/login"
-    }
-  }, [_c('a', {
-    attrs: {
-      "href": "#"
-    }
-  }, [_vm._v("to Login")])]), _vm._v(" "), _c('router-link', {
-    attrs: {
-      "to": "/register"
-    }
-  }, [_c('a', {
-    attrs: {
-      "href": "#"
-    }
-  }, [_vm._v("to Register")])]), _vm._v(" "), _c('router-link', {
-    attrs: {
-      "to": "/findpassword"
-    }
-  }, [_c('a', {
-    attrs: {
-      "href": "#"
-    }
-  }, [_vm._v("to FindPassword")])]), _vm._v(" "), _c('router-link', {
-    attrs: {
-      "to": "/feeds"
-    }
-  }, [_c('a', {
-    attrs: {
-      "href": "#"
-    }
-  }, [_vm._v("to Feeds")])])], 1), _vm._v(" "), _c('router-view')], 1)
-},staticRenderFns: []}
-
-/***/ }),
-/* 190 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('ul', _vm._l((_vm.commentsData), function(comment, index) {
-    return (index < 3) ? _c('li', {
-      key: comment.id
-    }, [_c('p', [(comment.user_id) ? _c('router-link', {
-      class: _vm.$style.userName,
-      attrs: {
-        "to": {
-          path: '/users/profile'
-        }
-      }
-    }, [_vm._v(_vm._s(_vm.getUserName(comment.user_id)))]) : _vm._e(), _vm._v(" "), (comment.reply_to_user_id) ? _c('span', {
-      class: _vm.$style.commentContent
-    }, [_vm._v("\n          回复\n        ")]) : _vm._e(), _vm._v(" "), (comment.reply_to_user_id) ? _c('router-link', {
-      class: _vm.$style.userName,
-      attrs: {
-        "to": {
-          path: '/users/profile'
-        }
-      }
-    }, [_vm._v(_vm._s(_vm.getUserName(comment.reply_to_user_id)))]) : _vm._e(), _vm._v(" "), (comment.user_id != _vm.currentUser.user_id) ? _c('span', {
-      class: _vm.$style.commentContent,
-      on: {
-        "click": function($event) {
-          $event.stopPropagation();
-          _vm.focusInput(comment.id, comment.user_id, _vm.feedId)
-        }
-      }
-    }, [_vm._v(" \n         : " + _vm._s(comment.comment_content) + "\n        ")]) : _vm._e(), _vm._v(" "), (comment.user_id == _vm.currentUser.user_id) ? _c('span', {
-      class: _vm.$style.commentContent,
-      on: {
-        "click": function($event) {
-          $event.stopPropagation();
-          _vm.showComfirm(comment.id, _vm.feedId, index)
-        }
-      }
-    }, [_vm._v(" \n         : " + _vm._s(comment.comment_content) + "\n        ")]) : _vm._e()], 1)]) : _vm._e()
-  })), _vm._v(" "), (_vm.hasMore) ? _c('router-link', {
-    class: _vm.$style.userName,
-    attrs: {
-      "to": "/web"
-    }
-  }, [_vm._v("查看全部评论")]) : _vm._e(), _vm._v(" "), (_vm.CanInput) ? _c('div', {
-    class: _vm.$style.commentInput
-  }, [_c('Row', {
-    attrs: {
-      "type": "flex",
-      "align": "bottom"
-    }
-  }, [_c('i-col', {
-    attrs: {
-      "span": 18,
-      "offset": "1"
-    }
-  }, [(_vm.CanInput) ? _c('i-input', {
-    staticClass: "commentInput",
-    attrs: {
-      "type": "textarea",
-      "autofocus": _vm.autoF,
-      "placeholder": _vm.placeholder,
-      "autosize": {
-        minRows: 1,
-        maxRows: 4
-      },
-      "minlength": "1",
-      "blur": _vm.inputBlur,
-      "maxlength": "255"
-    },
-    model: {
-      value: (_vm.userComment),
-      callback: function($$v) {
-        _vm.userComment = $$v
-      },
-      expression: "userComment"
-    }
-  }) : _vm._e()], 1), _vm._v(" "), _c('i-col', {
-    attrs: {
-      "span": 3,
-      "offset": "1"
-    }
-  }, [(_vm.commentCount > 200) ? _c('Row', {
-    class: _vm.$style.commentCount
-  }, [_c('i-col', {
-    attrs: {
-      "span": 24
-    }
-  }, [_c('span', {
-    class: {
-      inputFull: _vm.commentCount > 100
-    }
-  }, [_vm._v(_vm._s(_vm.commentCount))]), _vm._v("/255")])], 1) : _vm._e(), _vm._v(" "), _c('Row', [_c('i-col', {
-    attrs: {
-      "span": 24
-    }
-  }, [_c('i-button', {
-    class: _vm.$style.sendComment,
-    attrs: {
-      "long": true,
-      "type": "primary",
-      "disabled": _vm.commentCount == 0,
-      "size": "mini"
-    },
-    nativeOn: {
-      "click": function($event) {
-        _vm.sendComment()
-      }
-    }
-  }, [_vm._v("发送")])], 1)], 1)], 1)], 1)], 1) : _vm._e(), _vm._v(" "), (_vm.isShowComfirm) ? _c('Comfirm', {
-    attrs: {
-      "data": _vm.deleteData,
-      "comfirm-content": "删除这条评论"
-    },
-    on: {
-      "cannel": _vm.cannel,
-      "increment": _vm.deleteComment
-    }
-  }) : _vm._e(), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.CanInput),
-      expression: "CanInput"
-    }],
-    class: _vm.$style.wrapper,
-    on: {
-      "click": function($event) {
-        $event.stopPropagation();
-        _vm.closeInput($event)
-      }
-    }
-  })], 1)
-},staticRenderFns: []}
-
-/***/ }),
-/* 191 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    class: _vm.$style.feedListContent
-  }, [_c('FeedList')], 1)
-},staticRenderFns: []}
-
-/***/ }),
-/* 192 */
-/***/ (function(module, exports) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "vux-slider"
-  }, [_c('div', {
-    staticClass: "vux-swiper",
-    style: ({
-      height: _vm.xheight
-    })
-  }, [_vm._t("default"), _vm._v(" "), _vm._l((_vm.list), function(item, index) {
-    return _c('div', {
-      staticClass: "vux-swiper-item",
-      attrs: {
-        "data-index": index
-      },
-      on: {
-        "click": function($event) {
-          _vm.clickListItem(item)
-        }
-      }
-    }, [_c('a', {
-      attrs: {
-        "href": "javascript:"
-      }
-    }, [_c('div', {
-      staticClass: "vux-img",
-      style: ({
-        backgroundImage: _vm.buildBackgroundUrl(item.img)
-      })
-    }), _vm._v(" "), (_vm.showDescMask) ? _c('p', {
-      staticClass: "vux-swiper-desc"
-    }, [_vm._v(_vm._s(item.title))]) : _vm._e()])])
-  })], 2), _vm._v(" "), _c('div', {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: (_vm.showDots),
-      expression: "showDots"
-    }],
-    class: [_vm.dotsClass, 'vux-indicator', 'vux-indicator-' + _vm.dotsPosition]
-  }, _vm._l((_vm.length), function(key) {
-    return _c('a', {
-      attrs: {
-        "href": "javascript:"
-      }
-    }, [_c('i', {
-      staticClass: "vux-icon-dot",
-      class: {
-        'active': key - 1 === _vm.current
-      }
-    })])
-  }))])
-},staticRenderFns: []}
-
-/***/ }),
-/* 193 */
+/* 205 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47772,20 +47856,20 @@ if (inBrowser && window.Vue) {
 
 
 /***/ }),
-/* 194 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-b264b0d4\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./CommentsTool.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
-__webpack_require__(166)
+cssModules["$style"] = __webpack_require__(164)
+__webpack_require__(175)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(97),
   /* template */
-  __webpack_require__(190),
+  __webpack_require__(191),
   /* scopeId */
   null,
   /* cssModules */
@@ -47796,19 +47880,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 195 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-3083d6f0\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./Feed.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+cssModules["$style"] = __webpack_require__(168)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(98),
   /* template */
-  __webpack_require__(175),
+  __webpack_require__(197),
   /* scopeId */
   null,
   /* cssModules */
@@ -47819,19 +47903,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 196 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-447f4320\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./FeedImages.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+cssModules["$style"] = __webpack_require__(172)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(99),
   /* template */
-  __webpack_require__(178),
+  __webpack_require__(203),
   /* scopeId */
   null,
   /* cssModules */
@@ -47842,19 +47926,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 197 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-74433246\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./FeedList.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+cssModules["$style"] = __webpack_require__(166)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(100),
   /* template */
-  __webpack_require__(185),
+  __webpack_require__(194),
   /* scopeId */
   null,
   /* cssModules */
@@ -47865,20 +47949,20 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 198 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-2d244380\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./FeedTool.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
-__webpack_require__(164)
+cssModules["$style"] = __webpack_require__(162)
+__webpack_require__(174)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(101),
   /* template */
-  __webpack_require__(174),
+  __webpack_require__(187),
   /* scopeId */
   null,
   /* cssModules */
@@ -47889,20 +47973,20 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 199 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-047a998e\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./ImageSwiper.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
-__webpack_require__(161)
+cssModules["$style"] = __webpack_require__(169)
+__webpack_require__(178)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(102),
   /* template */
-  __webpack_require__(171),
+  __webpack_require__(200),
   /* scopeId */
   null,
   /* cssModules */
@@ -47913,19 +47997,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 200 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-54d5e77c\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./Notice.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+cssModules["$style"] = __webpack_require__(165)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(103),
   /* template */
-  __webpack_require__(181),
+  __webpack_require__(193),
   /* scopeId */
   null,
   /* cssModules */
@@ -47936,20 +48020,20 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 201 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-505ae83e\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./ToolBar.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
-__webpack_require__(165)
+cssModules["$style"] = __webpack_require__(170)
+__webpack_require__(179)
 
 var Component = __webpack_require__(0)(
   /* script */
   null,
   /* template */
-  __webpack_require__(180),
+  __webpack_require__(201),
   /* scopeId */
   null,
   /* cssModules */
@@ -47960,19 +48044,19 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 202 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-2bc31c78\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./feedNavBar.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+cssModules["$style"] = __webpack_require__(167)
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(104),
   /* template */
-  __webpack_require__(173),
+  __webpack_require__(196),
   /* scopeId */
   null,
   /* cssModules */
@@ -47983,13 +48067,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 203 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 /* styles */
 var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-6463c072\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./Comfirm.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+cssModules["$style"] = __webpack_require__(161)
 
 var Component = __webpack_require__(0)(
   /* script */
@@ -48006,14 +48090,14 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 204 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Component = __webpack_require__(0)(
   /* script */
   null,
   /* template */
-  __webpack_require__(186),
+  __webpack_require__(195),
   /* scopeId */
   null,
   /* cssModules */
@@ -48024,107 +48108,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 205 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Component = __webpack_require__(0)(
-  /* script */
-  null,
-  /* template */
-  __webpack_require__(179),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 206 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/* styles */
-var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-d4ab0bfa\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./FeedFollowing.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
-
-var Component = __webpack_require__(0)(
-  /* script */
-  __webpack_require__(106),
-  /* template */
-  __webpack_require__(191),
-  /* scopeId */
-  null,
-  /* cssModules */
-  cssModules
-)
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 207 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Component = __webpack_require__(0)(
-  /* script */
-  null,
-  /* template */
-  __webpack_require__(184),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 208 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/* styles */
-var cssModules = {}
-cssModules["$style"] = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"!!../../node_modules/extract-text-webpack-plugin/loader.js?{\"omit\":1,\"remove\":true}!vue-style-loader!css-loader?{\"minimize\":true,\"sourceMap\":true,\"localIdentName\":\"[hash:base64]_0\",\"modules\":true,\"importLoaders\":true}!../../node_modules/vue-loader/lib/style-compiler/index?{\"id\":\"data-v-7fc8b105\",\"scoped\":false,\"hasInlineConfig\":false}!sass-loader?{\"sourceMap\":true}!../../node_modules/vux-loader/src/style-loader.js!../../node_modules/vue-loader/lib/selector?type=styles&index=0!./Feeds.vue\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
-
-var Component = __webpack_require__(0)(
-  /* script */
-  __webpack_require__(107),
-  /* template */
-  __webpack_require__(188),
-  /* scopeId */
-  null,
-  /* cssModules */
-  cssModules
-)
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 209 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Component = __webpack_require__(0)(
-  /* script */
-  __webpack_require__(108),
-  /* template */
-  __webpack_require__(182),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 210 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Component = __webpack_require__(0)(
@@ -48142,70 +48126,112 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 211 */
+/* 218 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+var cssModules = {}
+cssModules["$style"] = __webpack_require__(171)
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(106),
+  /* template */
+  __webpack_require__(202),
+  /* scopeId */
+  null,
+  /* cssModules */
+  cssModules
+)
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 219 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(0)(
+  /* script */
+  null,
+  /* template */
+  __webpack_require__(184),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 220 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+var cssModules = {}
+cssModules["$style"] = __webpack_require__(163)
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(107),
+  /* template */
+  __webpack_require__(188),
+  /* scopeId */
+  null,
+  /* cssModules */
+  cssModules
+)
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 221 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(108),
+  /* template */
+  __webpack_require__(185),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 222 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(0)(
+  /* script */
+  null,
+  /* template */
+  __webpack_require__(198),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Component = __webpack_require__(0)(
   /* script */
   __webpack_require__(109),
-  /* template */
-  __webpack_require__(187),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 212 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Component = __webpack_require__(0)(
-  /* script */
-  __webpack_require__(110),
-  /* template */
-  __webpack_require__(177),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 213 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Component = __webpack_require__(0)(
-  /* script */
-  __webpack_require__(111),
-  /* template */
-  __webpack_require__(176),
-  /* scopeId */
-  null,
-  /* cssModules */
-  null
-)
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 214 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/* styles */
-__webpack_require__(167)
-
-var Component = __webpack_require__(0)(
-  /* script */
-  __webpack_require__(112),
   /* template */
   __webpack_require__(192),
   /* scopeId */
@@ -48218,7 +48244,65 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 215 */
+/* 224 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(110),
+  /* template */
+  __webpack_require__(204),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 225 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(111),
+  /* template */
+  __webpack_require__(190),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 226 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/* styles */
+__webpack_require__(173)
+
+var Component = __webpack_require__(0)(
+  /* script */
+  __webpack_require__(112),
+  /* template */
+  __webpack_require__(186),
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 227 */
 /***/ (function(module, exports) {
 
 var g;
