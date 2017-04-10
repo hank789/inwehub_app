@@ -24,8 +24,6 @@ class ProfileController extends Controller
         $cities = Area::cities($user->province);
         $data = [
             'user'   => $user,
-            'provinces' => $provinces,
-            'cities' => $cities,
         ];
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }

@@ -41,5 +41,3 @@ Route::get('hello', function() {
 
 //上传图片
 Route::post('upload/uploadImg','UploadController@uploadImg')->middleware('jwt.auth');
-//显示图片
-Route::post('upload/showImg','UploadController@showImg');
