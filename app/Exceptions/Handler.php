@@ -6,6 +6,7 @@ use App\Traits\CreateJsonResponseData;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
@@ -67,6 +68,9 @@ class Handler extends ExceptionHandler
         if($exception instanceof ApiValidationException){
             return CreateJsonResponseData::createJsonData(false,(array)$exception->getResponse()->getData(),$exception->getCode(),
                 $exception->getMessage());
+        }
+        if($exception instanceof HttpException){
+            return CreateJsonResponseData::createJsonData(false,[],$exception->getStatusCode(),$exception->getMessage());
         }
 
         if($request->is('api/*')){
