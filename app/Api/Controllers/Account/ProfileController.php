@@ -19,6 +19,9 @@ class ProfileController extends Controller
     /*个人基本资料*/
     public function show(Request $request)
     {
+        /**
+         * @var User
+         */
         $user = $request->user();
         $provinces = Area::provinces();
         $cities = Area::cities($user->province);
@@ -35,14 +38,14 @@ class ProfileController extends Controller
             'description' => 'sometimes|max:9999',
         ];
         $this->validate($request,$validateRules);
-        $user->name = $request->input('name');
+        /*$user->name = $request->input('name');
         $user->gender = $request->input('gender');
         $user->birthday = $request->input('birthday');
         $user->title = $request->input('title');
         $user->description = $request->input('description');
         $user->province = $request->input('province');
         $user->city = $request->input('city');
-        $user->save();
+        $user->save();*/
         return $this->success(route('auth.profile.base'),'个人资料修改成功');
     }
 
@@ -65,10 +68,12 @@ class ProfileController extends Controller
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
 
             if(in_array($extension, $extArray)){
-                Storage::disk('local')->put($avatarDir.'/'.User::getAvatarFileName($user_id,'origin').'.'.$extension,File::get($file));
+                $path = $avatarDir.'/'.User::getAvatarFileName($user_id,'origin').'.'.$extension;
+                Storage::disk('oss')->put($path,File::get($file));
                 if($extension != 'jpg'){
                     Image::make(File::get($file))->save(storage_path('app/'.User::getAvatarPath($user_id,'origin')));
                 }
+                $request->user()->addMedia($path)->toMediaCollection();
             }else{
                 return response('error');
             }

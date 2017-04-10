@@ -13,6 +13,8 @@ use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 
 /**
  * App\Models\User
@@ -75,9 +77,10 @@ use Illuminate\Support\Facades\Config;
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,
     CanResetPasswordContract,
-    HasRoleAndPermissionContract
+    HasRoleAndPermissionContract,
+    HasMedia
 {
-    use Authenticatable, CanResetPassword,HasRoleAndPermission,MorphManyTagsTrait;
+    use Authenticatable, CanResetPassword,HasRoleAndPermission,MorphManyTagsTrait,HasMediaTrait;
 
     /**
      * The database table used by the model.

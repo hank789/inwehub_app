@@ -190,6 +190,7 @@ return [
         Maknz\Slack\Laravel\ServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
+        Spatie\MediaLibrary\MediaLibraryServiceProvider::class,
     ],
 
     /*
