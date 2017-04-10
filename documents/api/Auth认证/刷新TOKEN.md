@@ -3,13 +3,13 @@
 ## 接口地址
 
 ```text
-/api/auth
+/api/auth/refreshToken
 ```
 
 ## 请求方式
 
 ```text
-PATCH
+post
 ```
 
 ### HTTP Status Code
@@ -18,11 +18,15 @@ PATCH
 
 ## 请求体
 
-| name     | type     | must     | description |
-|----------|:--------:|:--------:|:--------:|
-| refresh_token | string | yes   | 用于刷新token的token |
-| device_code | string | yes     | 设备号 |
-
 ## 返回体
 
-刷新后自动调用[auth](用户登录.md)接口，请查看login接口response.
+```json5
+{
+  "status": true,
+  "code": 10000,
+  "message": "操作成功",
+  "data": {
+    "token": "bc272b2e87037ded8a5962b33a8cc054", //token
+  }
+}
+``` 

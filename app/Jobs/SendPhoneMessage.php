@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Flc\Alidayu\App;
 use Flc\Alidayu\Client;
 use Flc\Alidayu\Requests\AlibabaAliqinFcSmsNumSend;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 
@@ -20,7 +21,18 @@ class SendPhoneMessage implements ShouldQueue
 
     protected $alidayu;
 
-    public function __construct($phone,$code,$type='verify')
+    /**
+     * 任务最大尝试次数
+     *
+     * @var int
+     */
+    public $tries = 1;
+
+    protected $type;
+    protected $phone;
+    protected $code;
+
+    public function __construct($phone,$code,$type='register')
     {
         $app = new App(config('alidayu'));
         $this->alidayu = new Client($app);
@@ -39,7 +51,7 @@ class SendPhoneMessage implements ShouldQueue
         $freeSignName = config('alidayu.sign_name');
 
         switch($this->type){
-            case 'verify':
+            case 'register':
                 $templateId = config('alidayu.verify_template_id');
                 $params = ['code' => $this->code];
                 break;
@@ -61,10 +73,16 @@ class SendPhoneMessage implements ShouldQueue
         $sub_code = isset($response->sub_code) ? $response->sub_code : null;
         $sub_msg = isset($response->sub_msg) ? $response->sub_msg : null;
 
+        Cache::put(self::getCacheKey($this->type,$this->phone), $this->code, 60);
+
         if ($result && $result->success == true) {
             // 发送成功～
         }else{
             Log::error('短信验证码发送失败',[$result, $sub_code, $sub_msg]);
         }
+    }
+
+    public static function getCacheKey($type,$phone){
+        return 'sendPhoneCode:'.$type.':'.$phone;
     }
 }

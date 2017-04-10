@@ -14,7 +14,7 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 
     Route::post('recovery', 'AuthController@forgetPassword');
     Route::post('reset', 'AuthController@resetPassword');
-    Route::post('sendCode', 'AuthController@sendPhoneCode');
+    Route::post('sendPhoneCode', 'AuthController@sendPhoneCode');
 
 });
 

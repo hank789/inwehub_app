@@ -31,18 +31,32 @@ class AuthController extends Controller
     {
         $validateRules = [
             'mobile' => 'required|cn_phone',
-            'type'   => 'required'
+            'type'   => 'required|in:register,login,change'
         ];
 
         $this->validate($request,$validateRules);
         $mobile = $request->input('mobile');
         $type   = $request->input('type');
-        if(RateLimiter::instance()->increase('register',$mobile,60,1)){
-            throw new ApiException(ApiException::LIMIT_ACTION);
+        if(RateLimiter::instance()->increase('sendPhoneCode:'.$type,$mobile,120,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        $user = User::where('mobile',$mobile)->first();
+        switch($type){
+            case 'register':
+                if($user){
+                    throw new ApiException(ApiException::USER_PHONE_EXIST);
+                }
+                break;
+            default:
+                if(!$user){
+                    throw new ApiException(ApiException::USER_NOT_FOUND);
+                }
+                break;
         }
 
         $code = makeVerifyCode();
         dispatch(new SendPhoneMessage($mobile,$code,$type));
+        return self::createJsonData(true);
     }
 
     //刷新token
@@ -62,6 +76,7 @@ class AuthController extends Controller
 
         $validateRules = [
             'mobile' => 'required|cn_phone',
+            'password' => 'required'
         ];
 
         $this->validate($request,$validateRules);
@@ -69,41 +84,39 @@ class AuthController extends Controller
         /*只接收mobile和password的值*/
         $credentials = $request->only('mobile', 'password');
 
-        try{
-            /*根据邮箱地址和密码进行认证*/
-            if ($token = $JWTAuth->attempt($credentials))
-            {
-                //登陆事件通知
-                event(new UserLoggedIn($request->user()));
-                $message = 'ok';
-                if($this->credit($request->user()->id,'login',Setting()->get('coins_login'),Setting()->get('credits_login'))){
-                    $message = '登陆成功! '.get_credit_message(Setting()->get('credits_login'),Setting()->get('coins_login'));
-                }
-                $deviceCode = $request->input('device_code');
 
-                // 登录记录
-                $clientIp = $request->getClientIp();
-                $loginrecord = new LoginRecord();
-                $loginrecord->ip = $clientIp;
-
-                $location = $this->findIp($clientIp);
-                array_filter($location);
-                $loginrecord->address = trim(implode(' ', $location));
-                $loginrecord->device_system = $request->input('device_system');
-                $loginrecord->device_name = $request->input('device_name');
-                $loginrecord->device_model = $request->input('device_model');
-                $loginrecord->device_code = $deviceCode;
-                $loginrecord->user_id = $request->user()->id;
-                $loginrecord->save();
-
-                /*认证成功*/
-                return static::createJsonData(true,ApiException::SUCCESS,$message,['token'=>$token]);
-
+        /*根据邮箱地址和密码进行认证*/
+        if ($token = $JWTAuth->attempt($credentials))
+        {
+            //登陆事件通知
+            event(new UserLoggedIn($request->user()));
+            $message = 'ok';
+            if($this->credit($request->user()->id,'login',Setting()->get('coins_login'),Setting()->get('credits_login'))){
+                $message = '登陆成功! '.get_credit_message(Setting()->get('credits_login'),Setting()->get('coins_login'));
             }
-        }catch (JWTException $e){
-            return static::createJsonData(false,$e->getCode(),$e->getMessage(),[]);
+            $deviceCode = $request->input('device_code');
+
+            // 登录记录
+            $clientIp = $request->getClientIp();
+            $loginrecord = new LoginRecord();
+            $loginrecord->ip = $clientIp;
+
+            $location = $this->findIp($clientIp);
+            array_filter($location);
+            $loginrecord->address = trim(implode(' ', $location));
+            $loginrecord->device_system = $request->input('device_system');
+            $loginrecord->device_name = $request->input('device_name');
+            $loginrecord->device_model = $request->input('device_model');
+            $loginrecord->device_code = $deviceCode;
+            $loginrecord->user_id = $request->user()->id;
+            $loginrecord->save();
+
+            /*认证成功*/
+            return static::createJsonData(true,ApiException::SUCCESS,$message,['token'=>$token]);
+
         }
-        return static::createJsonData(false,500,'用户名或密码错误',[])->setStatusCode(401);
+
+        return static::createJsonData(false,ApiException::USER_PASSWORD_ERROR,'用户名或密码错误',[])->setStatusCode(401);
 
     }
 
@@ -132,18 +145,29 @@ class AuthController extends Controller
         /*表单数据校验*/
         $validateRules = [
             'name' => 'required|min:2|max:100',
-            'mobile' => 'required|cn_phone|unique:users',
+            'mobile' => 'required|cn_phone',
             'code'   => 'required',
             'password' => 'required|min:6|max:16',
         ];
 
-        if( Setting()->get('code_register') == 1){
+        /*if( Setting()->get('code_register') == 1){
             $validateRules['captcha'] = 'required|captcha';
-        }
+        }*/
 
         $this->validate($request,$validateRules);
-        //验证手机验证码
+        $mobile = $request->input('mobile');
 
+        $user = User::where('mobile',$mobile)->first();
+        if($user){
+            throw new ApiException(ApiException::USER_PHONE_EXIST);
+        }
+
+        //验证手机验证码
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('register',$mobile));
+        $code = $request->input('code');
+        if($code_cache != $code){
+            throw new ApiException(ApiException::ARGS_YZM_ERROR);
+        }
 
         $formData = $request->all();
         $formData['email'] = $formData['mobile'];
@@ -159,12 +183,10 @@ class AuthController extends Controller
             $message .= get_credit_message(Setting()->get('credits_register'),Setting()->get('coins_register'));
         }
         //注册事件通知
-        event(new UserRegistered($request->user()));
-
-        /*发送邮箱验证邮件*/
+        event(new UserRegistered($user));
 
         $token = $JWTAuth->fromUser($user);
-        return static::createJsonData(true,100,'ok',['token'=>$token]);
+        return static::createJsonData(true,ApiException::SUCCESS,'ok',['token'=>$token]);
     }
 
 
