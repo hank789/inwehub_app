@@ -315,7 +315,7 @@ class QuestionController extends Controller
            return $this->ajaxError(50001,'notFound');
         }
 
-        if( $this->counter('question_invite_num_'.$loginUser->id) > config('tipask.user_invite_limit') ){
+        if( $this->counter('question_invite_num_'.$loginUser->id) > config('intervapp.user_invite_limit') ){
             return $this->ajaxError(50007,'超出每天最大邀请次数');
         }
 
@@ -357,7 +357,7 @@ class QuestionController extends Controller
 
         $loginUser = $request->user();
 
-        if( $this->counter('question_invite_num_'.$loginUser->id) > config('tipask.user_invite_limit') ){
+        if( $this->counter('question_invite_num_'.$loginUser->id) > config('intervapp.user_invite_limit') ){
             return $this->ajaxError(50007,'超出每天最大邀请次数');
         }
 

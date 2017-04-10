@@ -82,7 +82,7 @@
                 lang: 'zh-CN',
                 height: 300,
                 placeholder:'完善话题详情',
-                toolbar: [ {!! config('tipask.summernote.blog') !!} ],
+                toolbar: [ {!! config('intervapp.summernote.blog') !!} ],
                 callbacks: {
                     onChange:function (contents, $editable) {
                         var code = $(this).summernote("code");

@@ -35,7 +35,7 @@
                                 <label>栏目</label>
                                 <span class="text-muted">(允许显示的栏目)</span>
                                 <div class="checkbox">
-                                    @foreach( config('tipask.category_types') as $key => $name )
+                                    @foreach( config('intervapp.category_types') as $key => $name )
                                         <input type="checkbox" name="types[]" value="{{ $key }}"> {{ $name }} &nbsp;&nbsp;
                                     @endforeach
                                 </div>

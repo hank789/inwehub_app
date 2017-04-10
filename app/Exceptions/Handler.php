@@ -55,22 +55,22 @@ class Handler extends ExceptionHandler
     {
 
         if ($exception instanceof TokenExpiredException) {
-            return CreateJsonResponseData::createJsonData(false,ApiException::TOKEN_EXPIRED,'token已失效')->setStatusCode($exception->getStatusCode());
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_EXPIRED,'token已失效')->setStatusCode($exception->getStatusCode());
         } else if ($exception instanceof TokenInvalidException) {
-            return CreateJsonResponseData::createJsonData(false,ApiException::TOKEN_INVALID,'token无效')->setStatusCode($exception->getStatusCode());
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_INVALID,'token无效')->setStatusCode($exception->getStatusCode());
         }
 
         if($exception instanceof ApiException){
-            return CreateJsonResponseData::createJsonData(false,$exception->getCode(),$exception->getMessage());
+            return CreateJsonResponseData::createJsonData(false,[],$exception->getCode(),$exception->getMessage());
         }
 
         if($exception instanceof ApiValidationException){
-            return CreateJsonResponseData::createJsonData(false,$exception->getCode(),
-                $exception->getMessage(),(array)$exception->getResponse()->getData());
+            return CreateJsonResponseData::createJsonData(false,(array)$exception->getResponse()->getData(),$exception->getCode(),
+                $exception->getMessage());
         }
 
         if($request->is('api/*')){
-            return CreateJsonResponseData::createJsonData(false,$exception->getCode(),$exception->getMessage());
+            return CreateJsonResponseData::createJsonData(false,[],$exception->getCode(),$exception->getMessage());
         }
 
         return parent::render($request, $exception);

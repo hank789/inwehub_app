@@ -14,7 +14,7 @@
     <!-- Bootstrap -->
     <link href="{{ asset('/static/css/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('/static/css/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('/css/default/global.css')}}?v={{ config('tipask.release') }}" rel="stylesheet" />
+    <link href="{{ asset('/css/default/global.css')}}?v={{ config('intervapp.release') }}" rel="stylesheet" />
     @yield('css')
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -146,7 +146,7 @@
             <a href="http://www.miibeian.gov.cn" target="_blank">{{ Setting()->get('website_icp') }}</a>
         </div>
         <div class="copyright mt-10">
-            Powered By <a href="#" target="_blank">{{ Config('tipask.version') }}</a> Release {{ config('tipask.release') }} ©2017-{{ gmdate('Y') }} intervapp.com
+            Powered By <a href="#" target="_blank">{{ config('intervapp.version') }}</a> Release {{ config('intervapp.release') }} ©2017-{{ gmdate('Y') }} intervapp.com
         </div>
     </div>
 </footer>
@@ -220,7 +220,7 @@
 <script type="text/javascript">
     var is_login = Boolean("{{ Auth()->check() }}");
 </script>
-<script src="{{ asset('js/global.js') }}?v={{ config('tipask.release') }}"></script>
+<script src="{{ asset('js/global.js') }}?v={{ config('intervapp.release') }}"></script>
 @yield('script')
 
 {!! Setting()->get('website_footer') !!}

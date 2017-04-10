@@ -40,7 +40,7 @@
                                 <label for="mail_driver" >邮件类型</label>
                                 <span class="text-muted">(邮件发送方式)</span>
                                 <select name="mail_driver" id="mail_driver" class="form-control">
-                                    @foreach(config('tipask.mail_drivers') as $name => $text)
+                                    @foreach(config('intervapp.mail_drivers') as $name => $text)
                                     <option value="{{ $name }}" @if(Setting()->get('mail_driver','smtp') == $name ) selected @endif >{{ $text }}</option>
                                     @endforeach
                                 </select>

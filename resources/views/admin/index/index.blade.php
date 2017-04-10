@@ -109,7 +109,7 @@
                                 <table class="table table-striped table-bordered">
                                     <tbody>
                                     <tr>
-                                        <td>软件版本：{{ config('tipask.version') }} Release {{ config('tipask.release') }} [<a href="http://www.intervapp.com/download.html">查看最新版本</a>]</td>
+                                        <td>软件版本：{{ config('intervapp.version') }} Release {{ config('intervapp.release') }} [<a href="http://www.intervapp.com/download.html">查看最新版本</a>]</td>
                                     </tr>
                                     <tr>
                                         <td>服务器域名： {{ $systemInfo['hostName'] }}</td>

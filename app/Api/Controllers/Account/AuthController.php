@@ -63,12 +63,12 @@ class AuthController extends Controller
         try {
             $newToken = $JWTAuth->setRequest($request)->parseToken()->refresh();
         } catch (TokenExpiredException $e) {
-            return self::createJsonData(false,ApiException::TOKEN_EXPIRED,'token已失效')->setStatusCode($e->getStatusCode());
+            return self::createJsonData(false,[],ApiException::TOKEN_EXPIRED,'token已失效')->setStatusCode($e->getStatusCode());
         } catch (JWTException $e) {
-            return self::createJsonData(false,ApiException::TOKEN_INVALID,'token无效')->setStatusCode($e->getStatusCode());
+            return self::createJsonData(false,[],ApiException::TOKEN_INVALID,'token无效')->setStatusCode($e->getStatusCode());
         }
         // send the refreshed token back to the client
-        return static::createJsonData(true,ApiException::SUCCESS,'ok',['token'=>$newToken])->header('Authorization', 'Bearer '.$newToken);
+        return static::createJsonData(true,['token'=>$newToken],ApiException::SUCCESS,'ok')->header('Authorization', 'Bearer '.$newToken);
     }
 
     public function login(Request $request,JWTAuth $JWTAuth){
@@ -111,11 +111,11 @@ class AuthController extends Controller
             $loginrecord->save();
 
             /*认证成功*/
-            return static::createJsonData(true,ApiException::SUCCESS,$message,['token'=>$token]);
+            return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);
 
         }
 
-        return static::createJsonData(false,ApiException::USER_PASSWORD_ERROR,'用户名或密码错误',[])->setStatusCode(401);
+        return static::createJsonData(false,[],ApiException::USER_PASSWORD_ERROR,'用户名或密码错误')->setStatusCode(401);
 
     }
 
@@ -129,14 +129,14 @@ class AuthController extends Controller
 
         /*注册是否开启*/
         if(!Setting()->get('register_open',1)){
-            return static::createJsonData(false,403,'管理员已关闭了网站的注册功能!',[]);
+            return static::createJsonData(false,[],403,'管理员已关闭了网站的注册功能!');
         }
 
         /*防灌水检查*/
         if( Setting()->get('register_limit_num') > 0 ){
             $registerCount = $this->counter('register_number_'.md5($request->ip()));
             if( $registerCount > Setting()->get('register_limit_num')){
-                return static::createJsonData(false,500,'您的当前的IP已经超过当日最大注册数目，如有疑问请联系管理员',[]);
+                return static::createJsonData(false,[],500,'您的当前的IP已经超过当日最大注册数目，如有疑问请联系管理员');
             }
         }
 
@@ -185,7 +185,7 @@ class AuthController extends Controller
         event(new UserRegistered($user));
 
         $token = $JWTAuth->fromUser($user);
-        return static::createJsonData(true,ApiException::SUCCESS,'ok',['token'=>$token]);
+        return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,'ok');
     }
 
 

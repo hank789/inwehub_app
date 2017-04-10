@@ -32,7 +32,7 @@ class CreditController extends AdminController
         }
         $credits = $query->orderBy('created_at','desc')->paginate(20);
         $credits->map(function($credit){
-            $credit->actionText = config('tipask.user_actions.'.$credit->action);
+            $credit->actionText = config('intervapp.user_actions.'.$credit->action);
         });
         return view('admin.credit.index')->with(compact('credits'));
     }

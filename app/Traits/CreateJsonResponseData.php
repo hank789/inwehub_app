@@ -6,7 +6,7 @@ use App\Exceptions\ApiException;
 
 trait CreateJsonResponseData
 {
-    public static function createJsonData(bool $success,$code = ApiException::SUCCESS,$message='ok',array $data=[])
+    public static function createJsonData(bool $success,array $data=[],$code = ApiException::SUCCESS,$message='ok')
     {
         $data = [
             'status'  => $success,

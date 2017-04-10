@@ -101,7 +101,7 @@
                 lang: 'zh-CN',
                 height: 180,
                 placeholder:'您可以在这里继续补充问题细节',
-                toolbar: [ {!! config('tipask.summernote.ask') !!} ],
+                toolbar: [ {!! config('intervapp.summernote.ask') !!} ],
                 callbacks: {
                     onChange:function (contents, $editable) {
                         var code = $(this).summernote("code");

@@ -30,6 +30,7 @@ class ApiException extends Exception
     const VISIT_LIMIT=1009;//超过访问频率
     const ERROR=1010;//系统异常
     const MISSING_PARAMS=1011;//参数缺失
+    const FILE_NOT_EXIST=1012;//文件不存在
 
 
 
@@ -54,6 +55,7 @@ class ApiException extends Exception
         self::VISIT_LIMIT => '访问频率过高,请稍后再试',
         self::ERROR => '系统异常',
         self::TOKEN_LOGIN_OTHER => 'token在其他设备登陆',
+        self::FILE_NOT_EXIST => '文件不存在',
 
         //用户模块
         self::USER_PHONE_EXIST => '该手机号已注册',

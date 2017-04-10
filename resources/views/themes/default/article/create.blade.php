@@ -94,7 +94,7 @@
                 lang: 'zh-CN',
                 height: 350,
                 placeholder:'撰写文章',
-                toolbar: [ {!! config('tipask.summernote.blog') !!} ],
+                toolbar: [ {!! config('intervapp.summernote.blog') !!} ],
                 callbacks: {
                     onChange:function (contents, $editable) {
                         var code = $(this).summernote("code");

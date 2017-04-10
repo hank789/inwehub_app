@@ -13,8 +13,8 @@
                     <input type="hidden" name="website_url" value="{{ Setting()->get('website_url') }}" />
                     <input type="hidden" name="website_admin_email" value="{{ Setting()->get('website_admin_email') }}" />
                     <input type="hidden" name="website_admin_email" value="{{ Setting()->get('website_admin_email') }}" />
-                    <input type="hidden" name="website_version" value="{{ config('tipask.version') }}" />
-                    <input type="hidden" name="website_release" value="{{ config('tipask.release') }}" />
+                    <input type="hidden" name="website_version" value="{{ config('intervapp.version') }}" />
+                    <input type="hidden" name="website_release" value="{{ config('intervapp.release') }}" />
                 </form>
             </div>
         </div>

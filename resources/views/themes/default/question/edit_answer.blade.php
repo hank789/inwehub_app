@@ -56,7 +56,7 @@
                 lang: 'zh-CN',
                 height: 240,
                 placeholder:'撰写答案',
-                toolbar: [ {!! config('tipask.summernote.ask') !!} ],
+                toolbar: [ {!! config('intervapp.summernote.ask') !!} ],
                 callbacks: {
                     onChange:function (contents, $editable) {
                         var code = $(this).summernote("code");

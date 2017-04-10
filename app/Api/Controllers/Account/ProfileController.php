@@ -27,7 +27,7 @@ class ProfileController extends Controller
             'provinces' => $provinces,
             'cities' => $cities,
         ];
-        return self::createJsonData(true,ApiException::SUCCESS,'ok',$data);
+        return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
 
     public function edit(Request $request){

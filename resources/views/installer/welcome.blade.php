@@ -1,7 +1,7 @@
 @extends('installer.layout')
 @section('title')欢迎使用@endsection
 @section('content')
-    <h3>授权协议<small class="pull-right hidden-xs">{{ config('tipask.version') }} 中文版 {{ config('tipask.release') }}</small></h3>
+    <h3>授权协议<small class="pull-right hidden-xs">{{ config('intervapp.version') }} 中文版 {{ config('intervapp.release') }}</small></h3>
     <div class="box">
         <div class="box-body">
             <div class="row">
