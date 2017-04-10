@@ -12,9 +12,10 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('refresh', ['uses'=>'AuthController@refreshToken']);
 
 
-    Route::post('recovery', 'AuthController@forgetPassword');
-    Route::post('reset', 'AuthController@resetPassword');
+    Route::post('forgot', 'AuthController@forgetPassword');
     Route::post('sendPhoneCode', 'AuthController@sendPhoneCode');
+
+    Route::post('logout', 'AuthController@logout')->middleware('jwt.auth');
 
 });
 

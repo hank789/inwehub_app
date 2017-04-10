@@ -6,7 +6,6 @@ use App\Events\Frontend\Auth\UserLoggedOut;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
-use App\Models\EmailToken;
 use App\Models\LoginRecord;
 use App\Models\User;
 use App\Services\RateLimiter;
@@ -147,7 +146,7 @@ class AuthController extends Controller
             'name' => 'required|min:2|max:100',
             'mobile' => 'required|cn_phone',
             'code'   => 'required',
-            'password' => 'required|min:6|max:16',
+            'password' => 'required|min:6|max:64',
         ];
 
         /*if( Setting()->get('code_register') == 1){
@@ -196,55 +195,28 @@ class AuthController extends Controller
 
         /*表单数据校验*/
         $this->validate($request, [
-            'email' => 'required|email|exists:users',
-            'captcha' => 'required|captcha'
+            'mobile' => 'required|cn_phone',
+            'code' => 'required',
+            'password' => 'required|min:6|max:64',
         ]);
+        $mobile = $request->input('mobile');
 
-        $emailToken = EmailToken::create([
-            'email' =>  $request->input('email'),
-            'token' => EmailToken::createToken(),
-            'action'=> 'findPassword'
-        ]);
-
-        if($emailToken){
-            $subject = Setting()->get('website_name').' 找回密码通知';
-            $content = "如果您在 ".Setting()->get('website_name')."的密码丢失，请点击下方链接找回 → ".route('auth.user.findPassword',['token'=>$emailToken->token])."<br />如非本人操作，请忽略此邮件！";
-            $this->sendEmail($emailToken->email,$subject,$content);
-        }
-        return self::createJsonData(true,ApiException::SUCCESS,'ok');
-
-    }
-
-
-    public function resetPassword($token,Request $request,JWTAuth $JWTAuth)
-    {
-        $this->validate($request, [
-            'password' => 'required|min:6',
-            'captcha' => 'required|captcha'
-        ]);
-
-        $emailToken = EmailToken::where('action','=','findPassword')->where('token','=',$token)->first();
-        if(!$emailToken){
-            throw new ApiException(ApiException::TOKEN_INVALID);
-        }
-
-        if($emailToken->created_at->diffInMinutes() > 60){
-            throw new ApiException(ApiException::TOKEN_EXPIRED);
-        }
-
-        $user = User::where('email','=',$emailToken->email)->first();
-
+        $user = User::where('mobile',$mobile)->first();
         if(!$user){
             throw new ApiException(ApiException::USER_NOT_FOUND);
+        }
+
+        //验证手机验证码
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('register',$mobile));
+        $code = $request->input('code');
+        if($code_cache != $code){
+            throw new ApiException(ApiException::ARGS_YZM_ERROR);
         }
 
         $user->password = Hash::make($request->input('password'));
         $user->save();
 
-        EmailToken::clear($user->email,'findPassword');
-        $token = $JWTAuth->refresh();
-
-        return self::createJsonData(true,ApiException::SUCCESS,'密码修改成功,请重新登录',['token'=>$token]);
+        return self::createJsonData(true);
 
     }
 
@@ -253,12 +225,12 @@ class AuthController extends Controller
     /**
      * 用户登出
      */
-    public function logout(Guard $auth){
+    public function logout(Guard $auth,JWTAuth $JWTAuth){
         //通知
         event(new UserLoggedOut($auth->user()));
-        $auth->logout();
+        $JWTAuth->parseToken()->refresh();
+        return self::createJsonData(true);
     }
-
 
 
 }
