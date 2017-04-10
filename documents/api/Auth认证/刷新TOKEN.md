@@ -3,7 +3,7 @@
 ## 接口地址
 
 ```text
-/api/v1/auth
+/api/auth
 ```
 
 ## 请求方式

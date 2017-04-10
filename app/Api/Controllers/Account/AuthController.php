@@ -31,16 +31,18 @@ class AuthController extends Controller
     {
         $validateRules = [
             'mobile' => 'required|cn_phone',
+            'type'   => 'required'
         ];
 
         $this->validate($request,$validateRules);
         $mobile = $request->input('mobile');
+        $type   = $request->input('type');
         if(RateLimiter::instance()->increase('register',$mobile,60,1)){
             throw new ApiException(ApiException::LIMIT_ACTION);
         }
 
         $code = makeVerifyCode();
-        dispatch(new SendPhoneMessage($mobile,$code));
+        dispatch(new SendPhoneMessage($mobile,$code,$type));
     }
 
     //刷新token
