@@ -137,3 +137,31 @@ Route::post('tool/sendTestEmail',['as'=>'admin.tool.sendTestEmail','uses'=>'Tool
 /*XunSearch索引管理*/
 Route::get("xunSearch/clear",['as'=>'admin.xunSearch.clear','uses'=>'XunSearchController@clear']);
 Route::get("xunSearch/rebuild",['as'=>'admin.xunSearch.rebuild','uses'=>'XunSearchController@rebuild']);
+
+
+/*inwehub管理*/
+Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
+    /*文章创建*/
+    Route::get('topic/create',['as'=>'admin.inwehub.topic.create','uses'=>'TopicController@create']);
+    Route::post('topic/store',['as'=>'admin.inwehub.topic.store','uses'=>'TopicController@store']);
+    Route::get('topic/edit/{id}',['as'=>'admin.inwehub.topic.edit','uses'=>'TopicController@edit'])->where(['id'=>'[0-9]+']);
+    Route::post('topic/update',['as'=>'admin.inwehub.topic.update','uses'=>'TopicController@update']);
+    Route::post('topic/news/update',['as'=>'admin.inwehub.topic.news.update','uses'=>'TopicController@topicNews']);
+
+    /*文章删除*/
+    Route::post('topic/destroy',['as'=>'admin.inwehub.topic.destroy','uses'=>'TopicController@destroy']);
+    /*文章审核*/
+    Route::post('topic/verify',['as'=>'admin.inwehub.topic.verify','uses'=>'TopicController@verify']);
+    /*文章管理*/
+    Route::resource('topic', 'TopicController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
+
+    /*新闻管理*/
+    Route::get('news/create',['as'=>'admin.inwehub.news.create','uses'=>'NewsController@create']);
+    Route::post('news/store',['as'=>'admin.inwehub.news.store','uses'=>'NewsController@store']);
+    Route::get('news/edit/{id}',['as'=>'admin.inwehub.news.edit','uses'=>'NewsController@edit'])->where(['id'=>'[0-9]+']);
+    Route::post('news/update',['as'=>'admin.inwehub.news.update','uses'=>'NewsController@update']);
+    Route::post('news/destroy',['as'=>'admin.inwehub.news.destroy','uses'=>'NewsController@destroy']);
+
+    Route::resource('news', 'NewsController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
+
+});

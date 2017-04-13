@@ -58,6 +58,17 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-comments-o"></i> <span>Inwehub.com</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_inwehub">
+            <li><a href="{{ route('admin.inwehub.topic.index') }}"><i class="fa fa-circle-o"></i> 话题管理</a></li>
+            <li><a href="{{ route('admin.inwehub.news.index') }}"><i class="fa fa-circle-o"></i> 新闻管理</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-cutlery"></i> <span>运营</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>

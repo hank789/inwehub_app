@@ -20,4 +20,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // RESTful API version 1.
 Route::group([], function () {
     require_once base_path('routes/api_v1.php');
+    require_once base_path('routes/api_inwehub.php');
 });
