@@ -46,7 +46,7 @@
 
                         <div class="box-footer">
                             <div class="col-xs-12 col-md-1">
-                                <button type="submit" class="btn btn-primary pull-right editor-submit">发布话题</button>
+                                <button type="submit" class="btn btn-primary pull-right editor-submit">发布新闻</button>
                             </div>
                         </div>
                     </form>
