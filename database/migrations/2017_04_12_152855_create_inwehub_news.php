@@ -16,7 +16,7 @@ class CreateInwehubNews extends Migration
         Schema::connection('inwehub')->create('news', function (Blueprint $table) {
 
             $table->increments('id');
-            $table->string('url',255);                            //新闻链接
+            $table->string('url',255)->unique();                            //新闻链接
             $table->string('title',255);                          //新闻标题
             $table->integer('user_id')->unsigned()->index();                  //发起人
             $table->integer('topic_id')->unsigned()->index();                  //所属话题

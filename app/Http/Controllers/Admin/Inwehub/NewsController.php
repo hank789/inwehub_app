@@ -74,6 +74,7 @@ class NewsController extends AdminController
         $loginUser = $request->user();
 
         $request->flash();
+        $this->validateRules['url'] = 'required|max:255|unique:inwehub.news';
 
         $this->validate($request,$this->validateRules);
 

@@ -2,7 +2,6 @@
 
 namespace App\Models\Inwehub;
 
-use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**

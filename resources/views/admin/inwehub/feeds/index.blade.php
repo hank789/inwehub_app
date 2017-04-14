@@ -1,10 +1,10 @@
 @extends('admin/public/layout')
-@section('title')新闻管理@endsection
+@section('title')数据源管理@endsection
 @section('content')
     <section class="content-header">
         <h1>
-            Inwehub新闻管理
-            <small>管理Inwehub的所有新闻</small>
+            Inwehub数据源管理
+            <small>管理Inwehub的数据源</small>
         </h1>
     </section>
     <section class="content">
@@ -15,17 +15,14 @@
                         <div class="row">
                             <div class="col-xs-2">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.inwehub.news.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新新闻"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.news.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                    <a href="{{ route('admin.inwehub.feeds.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建数据源"><i class="fa fa-plus"></i></a>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-10">
                                 <div class="row">
-                                    <form name="searchForm" action="{{ route('admin.inwehub.news.index') }}" method="GET">
+                                    <form name="searchForm" action="{{ route('admin.inwehub.feeds.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <div class="col-xs-3">
-                                            <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
-                                        </div>
                                         <div class="col-xs-2">
                                             <input type="text" class="form-control" name="user_id" placeholder="作者UID" value="{{ $filter['user_id'] or '' }}"/>
                                         </div>
@@ -55,26 +52,24 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
-                                        <th>标题</th>
-                                        <th>作者</th>
                                         <th>站点</th>
-                                        <th>话题Id</th>
+                                        <th>描述</th>
+                                        <th>源地址</th>
                                         <th>时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
-                                    @foreach($news as $article)
+                                    @foreach($feeds as $article)
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
-                                            <td><a href="{{ route('admin.inwehub.news.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->title }}</a></td>
-                                            <td>{{ $article->author_name }}</td>
-                                            <td>{{ $article->site_name }}</td>
-                                            <td>{{ $article->topic_id }}</td>
-                                            <td>{{ timestamp_format($article->publish_date) }}</td>
+                                            <td><a href="{{ route('admin.inwehub.feeds.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->name }}</a></td>
+                                            <td>{{ $article->description }}</td>
+                                            <td>{{ $article->source_link }}</td>
+                                            <td>{{ timestamp_format($article->created_at) }}</td>
                                             <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.inwehub.news.edit',['id'=>$article->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.inwehub.feeds.edit',['id'=>$article->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -87,14 +82,14 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.inwehub.news.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新新闻"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.news.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                    <a href="{{ route('admin.inwehub.feeds.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建数据源"><i class="fa fa-plus"></i></a>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-sm-9">
                                 <div class="text-right">
-                                    <span class="total-num">共 {{ $news->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $news->render()) !!}
+                                    <span class="total-num">共 {{ $feeds->total() }} 条数据</span>
+                                    {!! str_replace('/?', '?', $feeds->render()) !!}
                                 </div>
                             </div>
                         </div>
@@ -110,6 +105,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_inwehub',"{{ route('admin.inwehub.news.index') }}");
+        set_active_menu('manage_inwehub',"{{ route('admin.inwehub.feeds.index') }}");
     </script>
 @endsection

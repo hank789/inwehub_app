@@ -16,6 +16,9 @@ class Kernel extends ConsoleKernel
         Commands\Component\ComponentArchiveCommand::class,
         Commands\Component\ComponentCommand::class,
         Commands\Component\ComponentLinkCommand::class,
+        Commands\Scraper\RssPosts::class,
+        Commands\Scraper\AtomPosts::class,
+        Commands\Scraper\WechatPosts::class,
     ];
 
     /**

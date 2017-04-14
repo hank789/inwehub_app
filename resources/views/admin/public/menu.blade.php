@@ -64,6 +64,7 @@
         <ul class="treeview-menu" id="manage_inwehub">
             <li><a href="{{ route('admin.inwehub.topic.index') }}"><i class="fa fa-circle-o"></i> 话题管理</a></li>
             <li><a href="{{ route('admin.inwehub.news.index') }}"><i class="fa fa-circle-o"></i> 新闻管理</a></li>
+            <li><a href="{{ route('admin.inwehub.feeds.index') }}"><i class="fa fa-circle-o"></i> 数据源管理</a></li>
         </ul>
     </li>
 
@@ -85,16 +86,6 @@
         </a>
         <ul class="treeview-menu" id="finance">
             <li><a href="{{ route('admin.credit.index') }}"><i class="fa fa-circle-o"></i> 积分管理</a></li>
-        </ul>
-    </li>
-    <li class="treeview">
-        <a href="#">
-            <i class="fa fa-recycle"></i> <span>第三方</span>
-            <i class="fa fa-angle-left pull-right"></i>
-        </a>
-        <ul class="treeview-menu" id="third_part">
-            <li><a href="{{ route('admin.setting.xunSearch') }}"><i class="fa fa-circle-o"></i> XunSearch</a></li>
-            <li><a href="{{ route('admin.setting.oauth') }}"><i class="fa fa-circle-o"></i>一键登录</a></li>
         </ul>
     </li>
 

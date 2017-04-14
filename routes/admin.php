@@ -164,4 +164,12 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
 
     Route::resource('news', 'NewsController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
 
+    /*数据源管理*/
+    Route::get('feeds/create',['as'=>'admin.inwehub.feeds.create','uses'=>'FeedsController@create']);
+    Route::post('feeds/store',['as'=>'admin.inwehub.feeds.store','uses'=>'FeedsController@store']);
+    Route::get('feeds/edit/{id}',['as'=>'admin.inwehub.feeds.edit','uses'=>'FeedsController@edit'])->where(['id'=>'[0-9]+']);
+    Route::post('feeds/update',['as'=>'admin.inwehub.feeds.update','uses'=>'FeedsController@update']);
+    Route::post('feeds/destroy',['as'=>'admin.inwehub.feeds.destroy','uses'=>'FeedsController@destroy']);
+
+    Route::resource('feeds', 'FeedsController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
 });
