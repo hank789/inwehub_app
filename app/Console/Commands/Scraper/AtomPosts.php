@@ -43,6 +43,7 @@ class AtomPosts extends Command
         $lists = Feeds::orderBy('id', 'desc')
             ->where('source_type', 2)
             ->get();
+        if($lists->count()<=0) return;
 
         $client = new Client();
 

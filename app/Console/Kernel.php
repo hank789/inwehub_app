@@ -31,6 +31,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        $schedule->command('scraper:rss')->hourly();
+        $schedule->command('scraper:atom')->hourly();
     }
 
     /**

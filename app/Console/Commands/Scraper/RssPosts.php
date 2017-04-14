@@ -42,6 +42,7 @@ class RssPosts extends Command
             ->where('source_type', 1)
             ->get();
 
+        if($lists->count()<=0) return;
         $client = new Client();
 
         $requests = function ($lists) {
