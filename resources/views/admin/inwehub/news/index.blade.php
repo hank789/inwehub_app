@@ -62,6 +62,7 @@
                                         <th>ID</th>
                                         <th>作者</th>
                                         <th>站点</th>
+                                        <th>链接</th>
                                         <th>话题Id</th>
                                         <th>时间</th>
                                         <th>状态</th>
@@ -74,6 +75,7 @@
                                             <td><a href="{{ route('admin.inwehub.news.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->title }}</a></td>
                                             <td>{{ $article->author_name }}</td>
                                             <td>{{ $article->site_name }}</td>
+                                            <td><a href="{{ $article->url }}" target="_blank">链接</a></td>
                                             <td>{{ $article->topic_id }}</td>
                                             <td>{{ timestamp_format($article->publish_date) }}</td>
                                             <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
