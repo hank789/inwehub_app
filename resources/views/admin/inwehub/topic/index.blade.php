@@ -56,6 +56,7 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
+                                        <th>ID</th>
                                         <th>标题</th>
                                         <th>作者</th>
                                         <th>新闻数</th>
@@ -66,6 +67,7 @@
                                     @foreach($articles as $article)
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
+                                            <td>{{ $article->id }}</td>
                                             <td><a href="{{ route('admin.inwehub.topic.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->title }}</a></td>
                                             <td>{{ $article->withUser()->name }}<span class="text-muted">[UID:{{ $article->user_id }}]</span></td>
                                             <td>{{ $article->newsCount() }}</td>

@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Models\Inwehub\News;
 use App\Models\Inwehub\Topic;
+use App\Models\Inwehub\WechatWenzhangInfo;
 use Illuminate\Http\Request;
 
 /**
@@ -26,7 +27,8 @@ class TopicController extends Controller {
         foreach($articles as $article){
             $item = [];
             $news = News::where('topic_id',$article->id)->get();
-            if($news->count() <=0) continue;
+            $wechat_articles = WechatWenzhangInfo::where('topic_id',$article->id)->get();
+            if($news->count() <=0 && $wechat_articles->count() <=0) continue;
             $item['id'] = $article->id;
             $item['title'] = $article->title;
             $item['summary'] = $article->summary;
@@ -48,6 +50,18 @@ class TopicController extends Controller {
                 $o['mobileUrl']=$val->mobile_url;
                 $o['authorName']=$val->author_name;
                 $o['publishDate']=$val->publish_date;
+                $newsArray[] = $o;
+            }
+            foreach($wechat_articles as $wechat_article){
+                $o = [];
+                $o['id']=$wechat_article->_id;
+                $o['url']=$wechat_article->content_url;
+                $o['title']=$wechat_article->title;
+                $o['userId']=$wechat_article->mp_id;
+                $o['siteName']=$wechat_article->withAuthor()->name;
+                $o['mobileUrl']=$wechat_article->content_url;
+                $o['authorName']=$wechat_article->author;
+                $o['publishDate']=$wechat_article->date_time;
                 $newsArray[] = $o;
             }
             $item['newsArray'] = $newsArray;

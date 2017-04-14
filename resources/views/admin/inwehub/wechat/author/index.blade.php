@@ -1,10 +1,10 @@
 @extends('admin/public/layout')
-@section('title')数据源管理@endsection
+@section('title')微信公众号管理@endsection
 @section('content')
     <section class="content-header">
         <h1>
-            Inwehub数据源管理
-            <small>管理Inwehub的数据源</small>
+            Inwehub微信公众号管理
+            <small>管理Inwehub的微信公众号</small>
         </h1>
     </section>
     <section class="content">
@@ -15,13 +15,14 @@
                         <div class="row">
                             <div class="col-xs-2">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.inwehub.feeds.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建数据源"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                    <a href="{{ route('admin.inwehub.wechat.author.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建公众号"><i class="fa fa-plus"></i></a>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.destroy') }}','确认不再抓取选中项的数据？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-10">
                                 <div class="row">
-                                    <form name="searchForm" action="{{ route('admin.inwehub.feeds.index') }}" method="GET">
+                                    <form name="searchForm" action="{{ route('admin.inwehub.wechat.author.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-2">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
@@ -49,24 +50,24 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
-                                        <th>站点</th>
-                                        <th>描述</th>
-                                        <th>源地址</th>
+                                        <th>ID</th>
+                                        <th>公众号名称</th>
+                                        <th>微信号</th>
                                         <th>时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
-                                    @foreach($feeds as $article)
+                                    @foreach($authors as $author)
                                         <tr>
-                                            <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
-                                            <td><a href="{{ route('admin.inwehub.feeds.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->name }}</a></td>
-                                            <td>{{ $article->description }}</td>
-                                            <td>{{ $article->source_link }}</td>
-                                            <td>{{ timestamp_format($article->created_at) }}</td>
-                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
+                                            <td><input type="checkbox" name="id[]" value="{{ $author->_id }}"/></td>
+                                            <td>{{ $author->_id }}</td>
+                                            <td><a href="{{ route('admin.inwehub.feeds.edit',['id'=>$author->_id]) }}" target="_blank">{{ $author->name }}</a></td>
+                                            <td>{{ $author->wx_hao }}</td>
+                                            <td>{{ timestamp_format($author->create_time) }}</td>
+                                            <td><span class="label @if($author->status===0) label-danger  @else label-success @endif">{{ trans_common_status($author->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.inwehub.feeds.edit',['id'=>$article->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.inwehub.wechat.author.edit',['id'=>$author->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -79,14 +80,15 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.inwehub.feeds.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建数据源"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                    <a href="{{ route('admin.inwehub.wechat.author.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建微信公众号"><i class="fa fa-plus"></i></a>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.destroy') }}','确认不再抓取选中项的数据？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-sm-9">
                                 <div class="text-right">
-                                    <span class="total-num">共 {{ $feeds->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $feeds->render()) !!}
+                                    <span class="total-num">共 {{ $authors->total() }} 条数据</span>
+                                    {!! str_replace('/?', '?', $authors->render()) !!}
                                 </div>
                             </div>
                         </div>
@@ -102,6 +104,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_inwehub',"{{ route('admin.inwehub.feeds.index') }}");
+        set_active_menu('manage_inwehub',"{{ route('admin.inwehub.wechat.author.index') }}");
     </script>
 @endsection

@@ -31,12 +31,6 @@ class FeedsController extends AdminController
 
         $query = Feeds::query();
 
-
-        /*提问人过滤*/
-        if( isset($filter['user_id']) &&  $filter['user_id'] > 0 ){
-            $query->where('user_id','=',$filter['user_id']);
-        }
-
         /*问题标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('name','like', '%'.$filter['word'].'%');

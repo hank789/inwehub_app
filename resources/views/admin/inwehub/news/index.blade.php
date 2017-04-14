@@ -30,6 +30,9 @@
                                             <input type="text" class="form-control" name="user_id" placeholder="作者UID" value="{{ $filter['user_id'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
+                                            <input type="text" class="form-control" name="topic_id" placeholder="话题ID" value="{{ $filter['topic_id'] or '' }}"/>
+                                        </div>
+                                        <div class="col-xs-2">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
@@ -56,6 +59,7 @@
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>标题</th>
+                                        <th>ID</th>
                                         <th>作者</th>
                                         <th>站点</th>
                                         <th>话题Id</th>
@@ -66,6 +70,7 @@
                                     @foreach($news as $article)
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
+                                            <td>{{ $article->id }}</td>
                                             <td><a href="{{ route('admin.inwehub.news.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->title }}</a></td>
                                             <td>{{ $article->author_name }}</td>
                                             <td>{{ $article->site_name }}</td>

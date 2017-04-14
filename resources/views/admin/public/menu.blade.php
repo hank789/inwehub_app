@@ -65,6 +65,8 @@
             <li><a href="{{ route('admin.inwehub.topic.index') }}"><i class="fa fa-circle-o"></i> 话题管理</a></li>
             <li><a href="{{ route('admin.inwehub.news.index') }}"><i class="fa fa-circle-o"></i> 新闻管理</a></li>
             <li><a href="{{ route('admin.inwehub.feeds.index') }}"><i class="fa fa-circle-o"></i> 数据源管理</a></li>
+            <li><a href="{{ route('admin.inwehub.wechat.author.index') }}"><i class="fa fa-circle-o"></i> 微信公众号管理</a></li>
+            <li><a href="{{ route('admin.inwehub.wechat.article.index') }}"><i class="fa fa-circle-o"></i> 微信公众号文章管理</a></li>
         </ul>
     </li>
 

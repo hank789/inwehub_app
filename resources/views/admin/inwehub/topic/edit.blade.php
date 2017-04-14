@@ -57,6 +57,21 @@
                                         @endforeach
                                     </div>
                                 </div>
+                                <div class="box-body">
+                                    <h4>微信文章列表</h4>
+                                    <div class="form-group">
+                                        @foreach($wehcat_articles as $item)
+                                            <div class="col-xs-3">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="wc_articles[]" value="{{ $item->_id }}" @if($item->topic_id == $article->id) checked @endif/>
+                                                        {{ $item->title }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
                                 <div class="box-footer">
                                     <button type="submit" class="btn btn-primary">保存</button>
                                     <button type="reset" class="btn btn-success">重置</button>
