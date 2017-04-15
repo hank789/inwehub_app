@@ -35,6 +35,7 @@ class TopicController extends Controller {
             $item['wechatArray'] = null;
             $item['relatedTopicArray'] = null;
             $item['order'] = $article->id;
+            $item['isTop'] = 0;
             $item['publishDate'] = date('Y-m-d H:i:s',strtotime($article->publish_date));
             $item['createdAt']   = date('Y-m-d H:i:s',strtotime($article->created_at));
             $item['updatedAt']   = date('Y-m-d H:i:s',strtotime($article->updated_at));

@@ -17,21 +17,21 @@ class NewsController extends Controller
         $lastCursor = is_numeric($lastCursor) ? $lastCursor :0;
         $query = News::query();
         if($lastCursor){
-            $query->where('_id','<',$lastCursor);
+            $query->where('date_time','<',date('Y-m-d H:i:s',$lastCursor));
         }
-        $articles = $query->orderBy('_id','desc')->paginate($pageSize);
+        $articles = $query->orderBy('date_time','desc')->paginate($pageSize);
         $list = [];
         foreach($articles as $article){
             $item = [];
             $item['id'] = $article->_id;
-            $item['order'] = $article->_id;
+            $item['order'] = strtotime($article->date_time);
             $item['title'] = $article->title;
             $item['summary'] = $article->description;
             $item['publishDate'] = date('Y-m-d H:i:s',strtotime($article->date_time));
             $item['url']=$article->content_url;
             $item['siteName']=$article->mp_id ? '微信公众号':$article->site_name;
             $item['authorName']=$article->author;
-
+            $item['isTop'] = 0;
             $list[] = $item;
         }
 
@@ -52,7 +52,7 @@ class NewsController extends Controller
         $count = 0;
         if($latestCursor){
             $query = News::query();
-            $count = $query->where('_id','>',$latestCursor)->count();
+            $count = $query->where('date_time','>',date('Y-m-d H:i:s',$latestCursor))->count();
         }
         $data = [
             'count' => $count
