@@ -24,7 +24,7 @@ class AtomPosts extends Command
      *
      * @var string
      */
-    protected $signature = 'scraper:atom';
+    protected $signature = 'scraper:atom {id?}';
 
     /**
      * The console command description.
@@ -111,7 +111,7 @@ class AtomPosts extends Command
                         $author_link = $value->author->uri;
                     }
 
-                    $article = News::firstOrCreate(array_merge($data, ['url' => $value->id]));
+                    $article = News::firstOrCreate(['url' => $value->id]);
 
                     $published_at = new DateTime();
                     if (strlen((string)$value->published) > 0) {

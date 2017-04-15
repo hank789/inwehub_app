@@ -120,7 +120,7 @@ class RssPosts extends Command
                     if (!$guid) {
                         $guid = $value->link;
                     }
-                    $article = News::firstOrCreate(array_merge($data, ['url' => $guid]));
+                    $article = News::firstOrCreate(['url' => $value->link]);
 
                     $article->update([
                         'url'           => $value->link,
