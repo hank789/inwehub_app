@@ -88,6 +88,14 @@ class FeedsController extends AdminController
         /*判断新闻是否添加成功*/
         if($news){
             $message = '发布成功! ';
+            switch($news->source_type){
+                case 1:
+                    Artisan::queue('scraper:rss',['id'=>$news->id]);
+                    break;
+                case 2:
+                    Artisan::queue('scraper:atom',['id'=>$news->id]);
+                    break;
+            }
             return $this->success(route('admin.inwehub.feeds.index'),$message);
         }
 
