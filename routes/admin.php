@@ -176,8 +176,6 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     /*微信公众号*/
     Route::get('wechat/author/create',['as'=>'admin.inwehub.wechat.author.create','uses'=>'WechatController@createAuthor']);
     Route::post('wechat/author/store',['as'=>'admin.inwehub.wechat.author.store','uses'=>'WechatController@storeAuthor']);
-    Route::get('wechat/author/edit/{id}',['as'=>'admin.inwehub.wechat.author.edit','uses'=>'WechatController@editAuthor'])->where(['id'=>'[0-9]+']);
-    Route::post('wechat/author/update',['as'=>'admin.inwehub.wechat.author.update','uses'=>'WechatController@updateAuthor']);
     Route::get('wechat/author/index',['as'=>'admin.inwehub.wechat.author.index','uses'=>'WechatController@indexAuthor']);
     Route::post('wechat/author/destroy',['as'=>'admin.inwehub.wechat.author.destroy','uses'=>'WechatController@destroyAuthor']);
     Route::post('wechat/author/verify',['as'=>'admin.inwehub.wechat.author.verify','uses'=>'WechatController@verifyAuthor']);

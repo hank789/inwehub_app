@@ -56,7 +56,6 @@
                                         <th>微信号</th>
                                         <th>时间</th>
                                         <th>状态</th>
-                                        <th>操作</th>
                                     </tr>
                                     @foreach($authors as $author)
                                         <tr>
@@ -66,11 +65,6 @@
                                             <td>{{ $author->wx_hao }}</td>
                                             <td>{{ timestamp_format($author->create_time) }}</td>
                                             <td><span class="label @if($author->status===0) label-danger  @else label-success @endif">{{ trans_common_status($author->status) }}</span> </td>
-                                            <td>
-                                                <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.inwehub.wechat.author.edit',['id'=>$author->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
-                                                </div>
-                                            </td>
                                         </tr>
                                     @endforeach
                                 </table>

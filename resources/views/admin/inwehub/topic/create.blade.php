@@ -30,9 +30,7 @@
                         </div>
 
                         <div class="box-footer">
-                            <div class="col-xs-12 col-md-1">
-                                <button type="submit" class="btn btn-primary pull-right editor-submit">发布话题</button>
-                            </div>
+                                <button type="submit" class="btn btn-primary editor-submit">发布话题</button>
                         </div>
                     </form>
                 </div>

@@ -26,9 +26,7 @@
                         </div>
 
                         <div class="box-footer">
-                            <div class="col-xs-12 col-md-1">
-                                <button type="submit" class="btn btn-primary pull-right editor-submit">创建微信公众号</button>
-                            </div>
+                                <button type="submit" class="btn btn-primary editor-submit">创建微信公众号</button>
                         </div>
                     </form>
                 </div>
