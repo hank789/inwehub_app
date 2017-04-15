@@ -17,7 +17,7 @@
                                 <div class="btn-group">
                                     <a href="{{ route('admin.inwehub.wechat.author.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建公众号"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.destroy') }}','确认不再抓取选中项的数据？')"><i class="fa fa-trash-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.destroy') }}','确认不再抓取选中项的数据？')"><i class="fa fa-lock"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-10">
@@ -39,6 +39,7 @@
                                             <button type="submit" class="btn btn-primary">搜索</button>
                                         </div>
                                     </form>
+                                    <a class="btn btn-default" href="{{ route('admin.inwehub.wechat.author.sync') }}" data-toggle="tooltip" title="抓取数据"><i class="fa fa-refresh"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -82,7 +83,7 @@
                                 <div class="btn-group">
                                     <a href="{{ route('admin.inwehub.wechat.author.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建微信公众号"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.destroy') }}','确认不再抓取选中项的数据？')"><i class="fa fa-trash-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.wechat.author.destroy') }}','确认不再抓取选中项的数据？')"><i class="fa fa-lock"></i></button>
                                 </div>
                             </div>
                             <div class="col-sm-9">

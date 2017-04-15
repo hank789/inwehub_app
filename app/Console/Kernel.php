@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\RssPosts::class,
         Commands\Scraper\AtomPosts::class,
         Commands\Scraper\WechatPosts::class,
+        Commands\Scraper\WechatAuthor::class,
     ];
 
     /**
@@ -33,6 +34,7 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
         $schedule->command('scraper:rss')->hourly();
         $schedule->command('scraper:atom')->hourly();
+        $schedule->command('scraper:wechat:author')->hourly();
     }
 
     /**

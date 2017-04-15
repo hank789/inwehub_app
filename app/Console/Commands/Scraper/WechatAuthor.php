@@ -12,19 +12,19 @@ use Goutte\Client;
  */
 
 
-class WechatPosts extends Command {
+class WechatAuthor extends Command {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'scraper:wechat:posts';
+    protected $signature = 'scraper:wechat:author';
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '抓取微信公众号文章';
+    protected $description = '抓取微信公众号';
     /**
      * Create a new command instance.
      *
@@ -42,8 +42,8 @@ class WechatPosts extends Command {
     {
         $path = env('SPIDER_PATH');
         if($path){
-            shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
+            shell_exec('cd '.$path.' && python auto_add_mp.py >> /tmp/auto_add_mp.log');
+            $this->call('scraper:wechat:posts');
         }
     }
-
 }

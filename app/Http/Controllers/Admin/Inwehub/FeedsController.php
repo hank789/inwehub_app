@@ -8,6 +8,7 @@ use App\Models\Inwehub\News;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Artisan;
 
 class FeedsController extends AdminController
 {
@@ -151,4 +152,20 @@ class FeedsController extends AdminController
         Feeds::destroy($request->input('id'));
         return $this->success(route('admin.inwehub.feeds.index'),'删除成功');
     }
+
+    public function sync(Request $request){
+        $id = $request->input('id');
+        $feed = Feeds::find($id);
+        switch($feed->source_type){
+            case 1:
+                Artisan::queue('scraper:rss',['id'=>$id]);
+                break;
+            case 2:
+                Artisan::queue('scraper:atom',['id'=>$id]);
+                break;
+        }
+        return $this->success(route('admin.inwehub.feeds.index'),"正在抓取数据,稍等片刻");
+
+    }
+
 }

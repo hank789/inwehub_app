@@ -16,7 +16,7 @@
                             <div class="col-xs-2">
                                 <div class="btn-group">
                                     <a href="{{ route('admin.inwehub.feeds.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建数据源"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认禁用选中项？')"><i class="fa fa-lock"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-10">
@@ -67,6 +67,8 @@
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.inwehub.feeds.edit',['id'=>$article->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.inwehub.feeds.sync',['id'=>$article->id]) }}" data-toggle="tooltip" title="抓取数据"><i class="fa fa-refresh"></i></a>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -80,7 +82,7 @@
                             <div class="col-sm-3">
                                 <div class="btn-group">
                                     <a href="{{ route('admin.inwehub.feeds.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建数据源"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认禁用选中项？')"><i class="fa fa-lock"></i></button>
                                 </div>
                             </div>
                             <div class="col-sm-9">

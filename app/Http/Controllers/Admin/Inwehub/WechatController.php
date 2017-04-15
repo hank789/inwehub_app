@@ -11,6 +11,7 @@ use App\Models\Inwehub\WechatWenzhangInfo;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Artisan;
 
 class WechatController extends AdminController
 {
@@ -75,7 +76,13 @@ class WechatController extends AdminController
     {
         $articleIds = $request->input('id');
         WechatMpInfo::whereIn('_id',$articleIds)->update(['status'=>1]);
-        return $this->success(route('admin.inwehub.wechat.author.index').'?status=0','审核成功');
+        Artisan::queue('scraper:wechat:author');
+        return $this->success(route('admin.inwehub.wechat.author.index'),'审核成功,正在抓取文章数据,请稍候');
+    }
+
+    public function sync(Request $request){
+        Artisan::queue('scraper:wechat:author');
+        return $this->success(route('admin.inwehub.wechat.author.index'),'正在抓取文章数据,请稍候');
     }
 
 
@@ -108,6 +115,7 @@ class WechatController extends AdminController
 
         if($news){
             $message = '发布成功!请稍等片刻,正在为您抓取公众号信息 ';
+            Artisan::queue('scraper:wechat:author');
             return $this->success(route('admin.inwehub.wechat.author.index'),$message);
         }
 

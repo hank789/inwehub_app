@@ -170,6 +170,7 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     Route::get('feeds/edit/{id}',['as'=>'admin.inwehub.feeds.edit','uses'=>'FeedsController@edit'])->where(['id'=>'[0-9]+']);
     Route::post('feeds/update',['as'=>'admin.inwehub.feeds.update','uses'=>'FeedsController@update']);
     Route::post('feeds/destroy',['as'=>'admin.inwehub.feeds.destroy','uses'=>'FeedsController@destroy']);
+    Route::get('feeds/sync',['as'=>'admin.inwehub.feeds.sync','uses'=>'FeedsController@sync']);
 
     Route::resource('feeds', 'FeedsController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
     /*微信公众号*/
@@ -180,6 +181,7 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     Route::get('wechat/author/index',['as'=>'admin.inwehub.wechat.author.index','uses'=>'WechatController@indexAuthor']);
     Route::post('wechat/author/destroy',['as'=>'admin.inwehub.wechat.author.destroy','uses'=>'WechatController@destroyAuthor']);
     Route::post('wechat/author/verify',['as'=>'admin.inwehub.wechat.author.verify','uses'=>'WechatController@verifyAuthor']);
+    Route::get('wechat/author/sync',['as'=>'admin.inwehub.wechat.author.sync','uses'=>'WechatController@sync']);
 
     /*微信公众号文章管理*/
     Route::get('wechat/article/index',['as'=>'admin.inwehub.wechat.article.index','uses'=>'WechatController@indexArticle']);

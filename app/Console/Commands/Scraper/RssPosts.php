@@ -22,7 +22,7 @@ class RssPosts extends Command
      *
      * @var string
      */
-    protected $signature = 'scraper:rss';
+    protected $signature = 'scraper:rss {id?}';
 
     /**
      * The console command description.
@@ -38,8 +38,14 @@ class RssPosts extends Command
      */
     public function handle()
     {
-        $lists = Feeds::orderBy('id', 'desc')
+        $id = $this->argument('id');
+        $query = Feeds::query();
+        if($id){
+            $query->where('id',$id);
+        }
+        $lists = $query->orderBy('id', 'desc')
             ->where('source_type', 1)
+            ->where('status',1)
             ->get();
 
         if($lists->count()<=0) return;
