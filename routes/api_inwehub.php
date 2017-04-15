@@ -10,4 +10,6 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub','middleware'=>\Barryv
     Route::get('topic', 'TopicController@index');
     Route::get('topic/newCount', 'TopicController@newCount');
 
+    Route::get('news', 'NewsController@index');
+    Route::get('news/newCount', 'NewsController@newCount');
 });
