@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class WechatWenzhangInfo extends Model {
 
-    protected $table = 'wechat_wenzhang_info';
+    protected $table = 'news_info';
     /**
      * 此模型的连接名称。
      *

@@ -27,8 +27,7 @@ class TopicController extends Controller {
         foreach($articles as $article){
             $item = [];
             $news = News::where('topic_id',$article->id)->get();
-            $wechat_articles = WechatWenzhangInfo::where('topic_id',$article->id)->get();
-            if($news->count() <=0 && $wechat_articles->count() <=0) continue;
+            if($news->count() <=0) continue;
             $item['id'] = $article->id;
             $item['title'] = $article->title;
             $item['summary'] = $article->summary;
@@ -42,26 +41,14 @@ class TopicController extends Controller {
             $newsArray = [];
             foreach($news as $val){
                 $o = [];
-                $o['id']=$val->id;
-                $o['url']=$val->url;
+                $o['id']=$val->_id;
+                $o['url']=$val->content_url;
                 $o['title']=$val->title;
-                $o['userId']=$val->user_id;
+                $o['userId']=$val->mp_id;
                 $o['siteName']=$val->site_name;
                 $o['mobileUrl']=$val->mobile_url;
-                $o['authorName']=$val->author_name;
-                $o['publishDate']=$val->publish_date;
-                $newsArray[] = $o;
-            }
-            foreach($wechat_articles as $wechat_article){
-                $o = [];
-                $o['id']=$wechat_article->_id;
-                $o['url']=$wechat_article->content_url;
-                $o['title']=$wechat_article->title;
-                $o['userId']=$wechat_article->mp_id;
-                $o['siteName']=$wechat_article->withAuthor()->name;
-                $o['mobileUrl']=$wechat_article->content_url;
-                $o['authorName']=$wechat_article->author;
-                $o['publishDate']=$wechat_article->date_time;
+                $o['authorName']=$val->author;
+                $o['publishDate']=$val->date_time;
                 $newsArray[] = $o;
             }
             $item['newsArray'] = $newsArray;

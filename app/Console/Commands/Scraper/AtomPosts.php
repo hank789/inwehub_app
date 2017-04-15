@@ -84,7 +84,7 @@ class AtomPosts extends Command
                     $dom = new Dom();
                     $dom->load($value->content);
 
-                    /*$img_tags = $dom->find('img');
+                    $img_tags = $dom->find('img');
                     foreach ($img_tags as $img) {
                         $image_url = $img->getAttribute('src');
                         // 如果图片链接为空，则跳过下方的处理
@@ -104,14 +104,14 @@ class AtomPosts extends Command
                         } else {
                             $image_url = '';
                         }
-                    }*/
+                    }
 
                     if ($value->author) {
                         $author_name = $value->author->name;
                         $author_link = $value->author->uri;
                     }
 
-                    $article = News::firstOrCreate(['url' => $value->id]);
+                    $article = News::firstOrCreate(['content_url' => $value->id]);
 
                     $published_at = new DateTime();
                     if (strlen((string)$value->published) > 0) {
@@ -121,14 +121,16 @@ class AtomPosts extends Command
                     }
 
                     $article->update([
-                        'url'           => $value->link->attributes()->href,
-                        'mobile_url'    => $value->link->attributes()->href,
+                        'content_url'           => $value->link->attributes()->href,
                         'title'          => $value->title,
+                        'author'    => $author_name,
                         'site_name'      => $topic->name,
-                        'author_name'    => $author_name,
-                        'publish_date'   => $published_at,
                         'topic_id'       => 0,
-                        'user_id'        => 1,
+                        'mobile_url'    => '',
+                        'date_time'   => $published_at,
+                        'source_type' => 2,
+                        'description' => substr(strip_tags($value->summary),0,200),
+                        'cover_url'   => $image_url,
                         'status'         => 1
                     ]);
                 }

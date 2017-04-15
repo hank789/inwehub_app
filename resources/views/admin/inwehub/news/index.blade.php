@@ -27,9 +27,6 @@
                                             <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                         </div>
                                         <div class="col-xs-2">
-                                            <input type="text" class="form-control" name="user_id" placeholder="作者UID" value="{{ $filter['user_id'] or '' }}"/>
-                                        </div>
-                                        <div class="col-xs-2">
                                             <input type="text" class="form-control" name="topic_id" placeholder="话题ID" value="{{ $filter['topic_id'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
@@ -70,18 +67,18 @@
                                     </tr>
                                     @foreach($news as $article)
                                         <tr>
-                                            <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
-                                            <td>{{ $article->id }}</td>
-                                            <td><a href="{{ route('admin.inwehub.news.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->title }}</a></td>
-                                            <td>{{ $article->author_name }}</td>
+                                            <td><input type="checkbox" name="id[]" value="{{ $article->_id }}"/></td>
+                                            <td>{{ $article->_id }}</td>
+                                            <td><a href="{{ route('admin.inwehub.news.edit',['id'=>$article->_id]) }}" target="_blank">{{ $article->title }}</a></td>
+                                            <td>{{ $article->author }}</td>
                                             <td>{{ $article->site_name }}</td>
-                                            <td><a href="{{ $article->url }}" target="_blank">链接</a></td>
+                                            <td><a href="{{ $article->content_url }}" target="_blank">链接</a></td>
                                             <td>{{ $article->topic_id }}</td>
-                                            <td>{{ timestamp_format($article->publish_date) }}</td>
+                                            <td>{{ timestamp_format($article->date_time) }}</td>
                                             <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.inwehub.news.edit',['id'=>$article->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.inwehub.news.edit',['id'=>$article->_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                 </div>
                                             </td>
                                         </tr>

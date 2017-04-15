@@ -14,9 +14,10 @@ class NewsController extends AdminController
     /*新闻创建校验*/
     protected $validateRules = [
         'title' => 'required|min:5|max:255',
-        'url' => 'required|max:255',
+        'content_url' => 'required|max:255',
         'site_name' => 'required|max:255',
-        'author_name' => 'required|max:255',
+        'author' => 'required|max:255',
+        'description' => 'max:200'
     ];
 
     /**
@@ -30,12 +31,6 @@ class NewsController extends AdminController
 
         $query = News::query();
 
-
-        /*提问人过滤*/
-        if( isset($filter['user_id']) &&  $filter['user_id'] > 0 ){
-            $query->where('user_id','=',$filter['user_id']);
-        }
-
         /*话题过滤*/
         if( isset($filter['topic_id']) &&  $filter['topic_id'] > 0 ){
             $query->where('topic_id','=',$filter['topic_id']);
@@ -48,7 +43,7 @@ class NewsController extends AdminController
 
         /*提问时间过滤*/
         if( isset($filter['date_range']) && $filter['date_range'] ){
-            $query->whereBetween('publish_date',explode(" - ",$filter['date_range']));
+            $query->whereBetween('date_time',explode(" - ",$filter['date_range']));
         }
 
         /*问题状态过滤*/
@@ -57,7 +52,7 @@ class NewsController extends AdminController
         }
 
 
-        $articles = $query->orderBy('publish_date','desc')->paginate(20);
+        $articles = $query->where('source_type',2)->orderBy('date_time','desc')->paginate(20);
         return view("admin.inwehub.news.index")->with('news',$articles)->with('filter',$filter);
     }
 
@@ -79,18 +74,20 @@ class NewsController extends AdminController
         $loginUser = $request->user();
 
         $request->flash();
-        $this->validateRules['url'] = 'required|max:255|unique:inwehub.news';
+        $this->validateRules['content_url'] = 'required|max:255|unique:inwehub.news_info';
 
         $this->validate($request,$this->validateRules);
 
         $data = [
-            'user_id'      => $loginUser->id,
             'title'        => trim($request->input('title')),
-            'url'           =>$request->input('url'),
-            'mobile_url'   => $request->input('mobile_url')?:$request->input('url'),
-            'author_name'  => $request->input('author_name'),
+            'content_url'           =>$request->input('content_url'),
+            'mobile_url'   => $request->input('mobile_url')?:'',
+            'author'  => $request->input('author'),
             'site_name'    => $request->input('site_name'),
+            'description'  => $request->input('description')?:'',
+            'date_time'    => date('Y-m-d H:i:s'),
             'topic_id'     => 0,
+            'source_type'  => 2,
             'status'       => 1,
         ];
 
@@ -100,7 +97,7 @@ class NewsController extends AdminController
         /*判断新闻是否添加成功*/
         if($news){
             $message = '发布成功! 请去给新闻挂载话题';
-            return $this->success(route('admin.inwehub.news.index',['id'=>$news->id]),$message);
+            return $this->success(route('admin.inwehub.news.index',['id'=>$news->_id]),$message);
         }
 
         return  $this->error("话题发布失败，请稍后再试",route('admin.inwehub.news.index'));
@@ -144,10 +141,11 @@ class NewsController extends AdminController
         $this->validate($request,$this->validateRules);
 
         $article->title = trim($request->input('title'));
-        $article->url = trim($request->input('url'));
+        $article->content_url = trim($request->input('content_url'));
         $article->site_name = trim($request->input('site_name'));
-        $article->mobile_url = trim($request->input('mobile_url'));
-        $article->author_name = trim($request->input('author_name'));
+        $article->mobile_url = trim($request->input('mobile_url'))?:'';
+        $article->author = trim($request->input('author'));
+        $article->description = trim($request->input('description'))?:'';
 
         $article->save();
 
@@ -160,7 +158,7 @@ class NewsController extends AdminController
     public function verify(Request $request)
     {
         $articleIds = $request->input('id');
-        News::whereIn('id',$articleIds)->update(['status'=>1]);
+        News::whereIn('_id',$articleIds)->update(['status'=>1]);
         return $this->success(route('admin.inwehub.news.index').'?status=0','审核成功');
 
     }

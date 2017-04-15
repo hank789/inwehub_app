@@ -67,7 +67,7 @@ class WechatController extends AdminController
             $query->where('topic_id','=',$filter['topic_id']);
         }
 
-        $articles = $query->orderBy('date_time','desc')->paginate(20);
+        $articles = $query->where('source_type',1)->orderBy('date_time','desc')->paginate(20);
         return view("admin.inwehub.wechat.article.index")->with('articles',$articles)->with('filter',$filter);
     }
 
@@ -132,5 +132,10 @@ class WechatController extends AdminController
     {
         WechatMpInfo::whereIn('_id',$request->input('id'))->update(['status'=>0]);
         return $this->success(route('admin.inwehub.wechat.author.index'),'禁用成功');
+    }
+
+    public function destroyArticle(Request $request){
+        WechatWenzhangInfo::destroy($request->input('id'));
+        return $this->success(route('admin.inwehub.wechat.article.index'),'删除成功');
     }
 }

@@ -111,10 +111,12 @@ class TopicController extends AdminController
         if(!$article){
             abort(404);
         }
-        $news = News::where('status',1)->Where(function ($query) use ($id){
-            $query->where('topic_id',0)->orWhere('topic_id',$id);})->orderBy('created_at', 'asc')->get();
+        $news = News::where('status',1)->where('source_type',2)->Where(function ($query) use ($id){
+            $query->where('topic_id',0)->orWhere('topic_id',$id);})->orderBy('date_time', 'asc')->get();
 
-        $wehcat_articles = WechatWenzhangInfo::where('topic_id',0)->orWhere('topic_id',$id)->orderBy('date_time', 'asc')->get();
+        $wehcat_articles = WechatWenzhangInfo::where('status',1)->where('source_type',1)->Where(function ($query) use ($id){
+            $query->where('topic_id',0)->orWhere('topic_id',$id);})->orderBy('date_time', 'asc')->get();
+
         return view("admin.inwehub.topic.edit")->with(compact('article','news','wehcat_articles'));
 
     }

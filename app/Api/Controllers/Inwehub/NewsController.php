@@ -17,20 +17,20 @@ class NewsController extends Controller
         $lastCursor = is_numeric($lastCursor) ? $lastCursor :0;
         $query = News::query();
         if($lastCursor){
-            $query->where('id','<',$lastCursor);
+            $query->where('_id','<',$lastCursor);
         }
-        $articles = $query->orderBy('id','desc')->paginate($pageSize);
+        $articles = $query->orderBy('_id','desc')->paginate($pageSize);
         $list = [];
         foreach($articles as $article){
             $item = [];
-            $item['id'] = $article->id;
-            $item['order'] = $article->id;
+            $item['id'] = $article->_id;
+            $item['order'] = $article->_id;
             $item['title'] = $article->title;
-            $item['summary'] = $article->title;
-            $item['publishDate'] = date('Y-m-d H:i:s',strtotime($article->publish_date));
-            $item['url']=$article->url;
-            $item['siteName']=$article->site_name;
-            $item['authorName']=$article->author_name;
+            $item['summary'] = $article->description;
+            $item['publishDate'] = date('Y-m-d H:i:s',strtotime($article->date_time));
+            $item['url']=$article->content_url;
+            $item['siteName']=$article->mp_id ? '微信公众号':$article->site_name;
+            $item['authorName']=$article->author;
 
             $list[] = $item;
         }
@@ -52,7 +52,7 @@ class NewsController extends Controller
         $count = 0;
         if($latestCursor){
             $query = News::query();
-            $count = $query->where('id','>',$latestCursor)->count();
+            $count = $query->where('_id','>',$latestCursor)->count();
         }
         $data = [
             'count' => $count

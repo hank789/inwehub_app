@@ -87,7 +87,7 @@ class RssPosts extends Command
                         $author = $value->children('dc', true)->creator;
                     }
 
-                    /*$img_tags = $dom->find('img');
+                    $img_tags = $dom->find('img');
                     foreach ($img_tags as $img) {
                         $image_url = $img->getAttribute('src');
                         // 如果图片链接为空，则跳过下方的处理
@@ -107,7 +107,7 @@ class RssPosts extends Command
                         } else {
                             $image_url = '';
                         }
-                    }*/
+                    }
                     // 获取文章的标签
                     /*$category_tags = $value->category;
                     foreach ($category_tags as $category) {
@@ -120,17 +120,19 @@ class RssPosts extends Command
                     if (!$guid) {
                         $guid = $value->link;
                     }
-                    $article = News::firstOrCreate(['url' => $value->link]);
+                    $article = News::firstOrCreate(['content_url' => $value->link]);
 
                     $article->update([
-                        'url'           => $value->link,
+                        'content_url'           => $value->link,
                         'title'          => $value->title,
-                        'author_name'    => $author,
+                        'author'    => $author,
                         'site_name'      => $topic->name,
                         'topic_id'       => 0,
-                        'user_id'        => 1,
-                        'mobile_url'     => $value->link,
-                        'publish_date'   => new DateTime($value->pubDate),
+                        'mobile_url'     => '',
+                        'date_time'   => new DateTime($value->pubDate),
+                        'source_type' => 2,
+                        'description' => substr(strip_tags($value->description),0,200),
+                        'cover_url'   => $image_url,
                         'status'         => 1
                     ]);
                 }

@@ -37,25 +37,6 @@ class ScraperWechat extends Migration
             $table->tinyInteger('status')->default(0);                        //状态0待审核,1已审核
 
         });
-        Schema::connection('inwehub')->create('wechat_wenzhang_info', function (Blueprint $table) {
-            $table->increments('_id');
-            $table->string('title', 100)->default('')->comment('文章标题');
-            $table->string('source_url',300)->default('')->comment('原文地址');
-            $table->string('cover_url',200)->default('')->comment('封面图URL');
-            $table->string('description',200)->default('')->comment('文章摘要');
-            $table->dateTime('date_time')->nullable()->comment('文章推送时间')->index();
-            $table->integer('mp_id')->default(0)->comment('对应的公众号ID');
-            $table->integer('read_count')->default(0)->comment('阅读数');
-            $table->integer('like_count')->default(0)->comment('点攒数');
-            $table->integer('comment_count')->default(0)->comment('评论数');
-            $table->string('content_url',300)->default('')->comment('文章永久地址');
-            $table->string('author',50)->default('')->comment('作者');
-            $table->integer('msg_index')->default(0)->comment('一次群发中的图文顺序 1是头条 ');
-            $table->integer('copyright_stat')->default(0)->comment('11表示原创 其它表示非原创');
-            $table->integer('qunfa_id')->default(0)->comment('群发消息ID');
-            $table->integer('type')->default(0)->comment('消息类型');
-            $table->integer('topic_id')->unsigned()->default(0)->index();                  //所属话题
-        });
 
         Schema::connection('inwehub')->create('wechat_wenzhang_statistics', function (Blueprint $table) {
             $table->increments('_id');
@@ -77,7 +58,6 @@ class ScraperWechat extends Migration
     {
         Schema::connection('inwehub')->drop('wechat_add_mp_list');
         Schema::connection('inwehub')->drop('wechat_mp_info');
-        Schema::connection('inwehub')->drop('wechat_wenzhang_info');
         Schema::connection('inwehub')->drop('wechat_wenzhang_statistics');
 
     }

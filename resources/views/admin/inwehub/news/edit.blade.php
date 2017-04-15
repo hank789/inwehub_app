@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box box-primary">
-                    <form id="article_form" method="POST" role="form" enctype="multipart/form-data" action="{{ route('admin.inwehub.news.update',['id'=>$news->id]) }}">
+                    <form id="article_form" method="POST" role="form" enctype="multipart/form-data" action="{{ route('admin.inwehub.news.update',['id'=>$news->_id]) }}">
                         <input type="hidden" id="editor_token" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
                             <div class="form-group @if($errors->has('title')) has-error @endif ">
@@ -23,8 +23,8 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="author_name">作者：</label>
-                                <input id="author_name" type="text" name="author_name"  class="form-control input-lg" placeholder="" value="{{ old('author_name',$news->author_name) }}" />
+                                <label for="author">作者：</label>
+                                <input id="author" type="text" name="author"  class="form-control input-lg" placeholder="" value="{{ old('author',$news->author) }}" />
                             </div>
                             <div class="form-group">
                                 <label for="site_name">站点名字：</label>
@@ -32,12 +32,17 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="url">网站url：</label>
-                                <input id="url" type="text" name="url"  class="form-control input-lg" placeholder="" value="{{ old('url',$news->url) }}" />
+                                <label for="content_url">网站url：</label>
+                                <input id="content_url" type="text" name="content_url"  class="form-control input-lg" placeholder="" value="{{ old('content_url',$news->content_url) }}" />
                             </div>
                             <div class="form-group">
                                 <label for="mobile_url">手机端url：</label>
                                 <input id="mobile_url" type="text" name="mobile_url"  class="form-control input-lg" placeholder="默认与网站url一致" value="{{ old('mobile_url',$news->mobile_url) }}" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editor">摘要：</label>
+                                <textarea name="description" class="form-control" placeholder="200字以内的摘要">{{ old('description',$news->description) }}</textarea>
                             </div>
 
 

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class News extends Model
 {
-    protected $table = 'news';
+    protected $table = 'news_info';
 
     /**
      * 此模型的连接名称。
@@ -20,7 +20,9 @@ class News extends Model
      */
     protected $connection = 'inwehub';
 
-    protected $fillable = ['title', 'user_id', 'url','mobile_url','topic_id','site_name','author_name','status'];
+    protected $primaryKey = '_id';
+
+    protected $fillable = ['title', 'description','date_time' ,'content_url','mobile_url','topic_id','site_name','author','status','source_type'];
 
     public static function boot()
     {
