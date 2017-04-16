@@ -80,6 +80,14 @@ class WechatController extends AdminController
         return $this->success(route('admin.inwehub.wechat.author.index'),'审核成功,正在抓取文章数据,请稍候');
     }
 
+    /*审核*/
+    public function verifyArticle(Request $request)
+    {
+        $articleIds = $request->input('id');
+        WechatWenzhangInfo::whereIn('_id',$articleIds)->update(['status'=>1]);
+        return $this->success(route('admin.inwehub.wechat.article.index'),'审核成功');
+    }
+
     public function sync(Request $request){
         Artisan::queue('scraper:wechat:author');
         return $this->success(route('admin.inwehub.wechat.author.index'),'正在抓取文章数据,请稍候');
@@ -135,7 +143,7 @@ class WechatController extends AdminController
     }
 
     public function destroyArticle(Request $request){
-        WechatWenzhangInfo::destroy($request->input('id'));
-        return $this->success(route('admin.inwehub.wechat.article.index'),'删除成功');
+        WechatWenzhangInfo::whereIn('_id',$request->input('id'))->update(['status'=>0]);
+        return $this->success(route('admin.inwehub.wechat.article.index'),'禁用成功');
     }
 }

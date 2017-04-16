@@ -159,7 +159,7 @@ class NewsController extends AdminController
     {
         $articleIds = $request->input('id');
         News::whereIn('_id',$articleIds)->update(['status'=>1]);
-        return $this->success(route('admin.inwehub.news.index').'?status=0','审核成功');
+        return $this->success(route('admin.inwehub.news.index'),'审核成功');
 
     }
 
@@ -172,7 +172,7 @@ class NewsController extends AdminController
      */
     public function destroy(Request $request)
     {
-        News::destroy($request->input('id'));
-        return $this->success(route('admin.inwehub.news.index'),'删除成功');
+        News::whereIn('_id',$request->input('id'))->update(['status'=>0]);
+        return $this->success(route('admin.inwehub.news.index'),'禁用成功');
     }
 }

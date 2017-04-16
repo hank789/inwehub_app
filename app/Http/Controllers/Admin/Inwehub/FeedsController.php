@@ -79,7 +79,7 @@ class FeedsController extends AdminController
             'description'  =>$request->input('description'),
             'source_type' => $request->input('source_type'),
             'source_link'   => $request->input('source_link'),
-            'status'       => 1,
+            'status'       => 0,
         ];
 
 
@@ -88,14 +88,6 @@ class FeedsController extends AdminController
         /*判断新闻是否添加成功*/
         if($news){
             $message = '发布成功! ';
-            switch($news->source_type){
-                case 1:
-                    Artisan::queue('scraper:rss',['id'=>$news->id]);
-                    break;
-                case 2:
-                    Artisan::queue('scraper:atom',['id'=>$news->id]);
-                    break;
-            }
             return $this->success(route('admin.inwehub.feeds.index'),$message);
         }
 
@@ -157,8 +149,20 @@ class FeedsController extends AdminController
      */
     public function destroy(Request $request)
     {
-        Feeds::destroy($request->input('id'));
-        return $this->success(route('admin.inwehub.feeds.index'),'删除成功');
+        Feeds::whereIn('id',$request->input('id'))->update(['status'=>0]);
+        return $this->success(route('admin.inwehub.feeds.index'),'禁用成功');
+    }
+
+    /*审核*/
+    public function verify(Request $request)
+    {
+        $articleIds = $request->input('id');
+        Feeds::whereIn('id',$articleIds)->update(['status'=>1]);
+        Artisan::queue('scraper:rss');
+        Artisan::queue('scraper:atom');
+
+        return $this->success(route('admin.inwehub.feeds.index'),'审核成功,正在执行数据抓取,请稍后');
+
     }
 
     public function sync(Request $request){

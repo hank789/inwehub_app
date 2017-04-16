@@ -177,7 +177,7 @@ class TopicController extends AdminController
     {
         $articleIds = $request->input('id');
         Topic::whereIn('id',$articleIds)->update(['status'=>1]);
-        return $this->success(route('admin.inwehub.topic.index').'?status=0','审核成功');
+        return $this->success(route('admin.inwehub.topic.index'),'审核成功');
 
     }
 

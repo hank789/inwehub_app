@@ -161,6 +161,7 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     Route::get('news/edit/{id}',['as'=>'admin.inwehub.news.edit','uses'=>'NewsController@edit'])->where(['id'=>'[0-9]+']);
     Route::post('news/update',['as'=>'admin.inwehub.news.update','uses'=>'NewsController@update']);
     Route::post('news/destroy',['as'=>'admin.inwehub.news.destroy','uses'=>'NewsController@destroy']);
+    Route::post('news/verify',['as'=>'admin.inwehub.news.verify','uses'=>'NewsController@verify']);
 
     Route::resource('news', 'NewsController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
 
@@ -171,6 +172,8 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     Route::post('feeds/update',['as'=>'admin.inwehub.feeds.update','uses'=>'FeedsController@update']);
     Route::post('feeds/destroy',['as'=>'admin.inwehub.feeds.destroy','uses'=>'FeedsController@destroy']);
     Route::get('feeds/sync',['as'=>'admin.inwehub.feeds.sync','uses'=>'FeedsController@sync']);
+    Route::post('feeds/verify',['as'=>'admin.inwehub.feeds.verify','uses'=>'FeedsController@verify']);
+
 
     Route::resource('feeds', 'FeedsController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
     /*微信公众号*/
@@ -184,6 +187,7 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     /*微信公众号文章管理*/
     Route::get('wechat/article/index',['as'=>'admin.inwehub.wechat.article.index','uses'=>'WechatController@indexArticle']);
     Route::post('wechat/article/destroy',['as'=>'admin.inwehub.wechat.article.destroy','uses'=>'WechatController@destroyArticle']);
+    Route::post('wechat/article/verify',['as'=>'admin.inwehub.wechat.article.verify','uses'=>'WechatController@verifyArticle']);
 
 
 });

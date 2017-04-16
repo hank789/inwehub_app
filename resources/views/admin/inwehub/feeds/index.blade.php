@@ -16,6 +16,7 @@
                             <div class="col-xs-2">
                                 <div class="btn-group">
                                     <a href="{{ route('admin.inwehub.feeds.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建数据源"><i class="fa fa-plus"></i></a>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认禁用选中项？')"><i class="fa fa-lock"></i></button>
                                 </div>
                             </div>
@@ -82,6 +83,7 @@
                             <div class="col-sm-3">
                                 <div class="btn-group">
                                     <a href="{{ route('admin.inwehub.feeds.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建数据源"><i class="fa fa-plus"></i></a>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.inwehub.feeds.destroy') }}','确认禁用选中项？')"><i class="fa fa-lock"></i></button>
                                 </div>
                             </div>
