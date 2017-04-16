@@ -7,6 +7,7 @@
 
 use App\Api\Controllers\Controller;
 use App\Models\Inwehub\News;
+use App\Models\Inwehub\WechatMpInfo;
 use Illuminate\Http\Request;
 
 class NewsController extends Controller
@@ -30,7 +31,12 @@ class NewsController extends Controller
             $item['publishDate'] = date('Y-m-d H:i:s',strtotime($article->date_time));
             $item['url']=$article->content_url;
             $item['siteName']=$article->mp_id ? '微信公众号':$article->site_name;
-            $item['authorName']=$article->author;
+            $authorName = $article->author;
+            if(empty($authorName) && $article->mp_id){
+                $wechatMp = WechatMpInfo::find($article->mp_id);
+                $authorName = $wechatMp->name;
+            }
+            $item['authorName']=$authorName;
             $item['isTop'] = 0;
             $list[] = $item;
         }
