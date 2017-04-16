@@ -111,10 +111,7 @@ class TopicController extends AdminController
         if(!$article){
             abort(404);
         }
-        $news = News::where('status',1)->where('source_type',2)->Where(function ($query) use ($id){
-            $query->where('topic_id',0)->orWhere('topic_id',$id);})->orderBy('date_time', 'asc')->get();
-
-        $wehcat_articles = WechatWenzhangInfo::where('status',1)->where('source_type',1)->Where(function ($query) use ($id){
+        $news = News::where('status',1)->Where(function ($query) use ($id){
             $query->where('topic_id',0)->orWhere('topic_id',$id);})->orderBy('date_time', 'asc')->get();
 
         return view("admin.inwehub.topic.edit")->with(compact('article','news','wehcat_articles'));
@@ -129,15 +126,10 @@ class TopicController extends AdminController
     public function topicNews(Request $request){
         $id = $request->input('id');
         $news = $request->input('news',array());
-        $wc_articles = $request->input('wc_articles',array());
 
         News::where('topic_id',$id)->update(['topic_id'=>0]);
         if($news){
-            News::whereIn('id',$news)->update(['topic_id'=>$id]);
-        }
-        WechatWenzhangInfo::where('topic_id',$id)->update(['topic_id'=>0]);
-        if($wc_articles){
-            WechatWenzhangInfo::whereIn('_id',$wc_articles)->update(['topic_id'=>$id]);
+            News::whereIn('_id',$news)->update(['topic_id'=>$id]);
         }
 
         return $this->success(route('admin.inwehub.topic.index'),'添加新闻成功');

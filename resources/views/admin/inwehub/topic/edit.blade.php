@@ -44,32 +44,27 @@
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <div class="box-body">
                                     <h4>新闻列表</h4>
-                                    <div class="form-group">
-                                        @foreach($news as $item)
-                                            <div class="col-xs-3">
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <input type="checkbox" name="news[]" value="{{ $item->id }}" @if($item->topic_id == $article->id) checked @endif/>
-                                                        {{ $item->title }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <div class="box-body">
-                                    <h4>微信文章列表</h4>
-                                    <div class="form-group">
-                                        @foreach($wehcat_articles as $item)
-                                            <div class="col-xs-3">
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <input type="checkbox" name="wc_articles[]" value="{{ $item->_id }}" @if($item->topic_id == $article->id) checked @endif/>
-                                                        {{ $item->title }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        @endforeach
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="topic_news_table">
+                                            <thead>
+                                            <tr>
+                                                <th><input type="checkbox" class="checkbox-toggle" /></th>
+                                                <th>ID</th>
+                                                <th>标题</th>
+                                                <th>发布时间</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($news as $item)
+                                                <tr>
+                                                    <td><input type="checkbox" name="news[]" value="{{ $item->_id }}" @if($item->topic_id == $article->id) checked @endif/></td>
+                                                    <td>{{ $item->_id }}</td>
+                                                    <td>{{ $item->title }}</td>
+                                                    <td>{{ $item->date_time }}</td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                                 <div class="box-footer">
@@ -86,8 +81,20 @@
     </section>
 
 @endsection
+@section('css')
+    <link href="{{ asset('/static/css/datatables/dataTables.bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+@endsection
 @section('script')
+    <script src='{{ asset('/static/js/datatables/jquery.dataTables.min.js') }}' type="text/javascript"></script>
+    <script src='{{ asset('/static/js/datatables/dataTables.bootstrap.min.js') }}' type="text/javascript"></script>
+
     <script type="text/javascript">
         set_active_menu('manage_inwehub',"{{ route('admin.inwehub.topic.index') }}");
+        $(document).ready(function() {
+            $('#topic_news_table').DataTable({
+                "pageLength": 100,
+                "order": [[ 3, 'desc' ]]
+            });
+        } );
     </script>
 @endsection
