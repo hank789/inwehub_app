@@ -48,7 +48,7 @@ class TopicController extends Controller {
                 $o['userId']=$val->mp_id;
                 $o['siteName']=$val->mp_id ? '微信公众号' : $val->site_name;
                 $o['mobileUrl']=$val->mobile_url;
-                $o['authorName']=$val->author;
+                $o['authorName']=$val->author ? : $o['siteName'];
                 $o['publishDate']=$val->date_time;
                 $newsArray[] = $o;
             }
