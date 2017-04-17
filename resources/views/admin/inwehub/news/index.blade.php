@@ -56,8 +56,8 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
-                                        <th>标题</th>
                                         <th>ID</th>
+                                        <th>标题</th>
                                         <th>作者</th>
                                         <th>站点</th>
                                         <th>链接</th>
