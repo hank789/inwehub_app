@@ -47,13 +47,14 @@ class TopicController extends Controller {
                 $o['url']=$val->content_url;
                 $o['title']=$val->title;
                 $o['userId']=$val->mp_id;
-                $o['siteName']=$val->mp_id ? '微信公众号' : $val->site_name;
+                $siteName = $val->site_name;
+                if($val->mp_id){
+                    $wechatMp = WechatMpInfo::find($val->mp_id);
+                    $siteName = $wechatMp->name;
+                }
+                $o['siteName']=$siteName;
                 $o['mobileUrl']=$val->mobile_url;
                 $authorName = $val->author;
-                if(empty($authorName) && $val->mp_id){
-                    $wechatMp = WechatMpInfo::find($val->mp_id);
-                    $authorName = $wechatMp->name;
-                }
                 $o['authorName']=$authorName;
                 $o['publishDate']=$val->date_time;
                 $newsArray[] = $o;
