@@ -5,7 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
-Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub','middleware'=>\Barryvdh\Cors\HandleCors::class], function() {
+Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'], function() {
 
     Route::get('topic', 'TopicController@index');
     Route::get('topic/newCount', 'TopicController@newCount');
