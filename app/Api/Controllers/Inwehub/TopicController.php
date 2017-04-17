@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Models\Inwehub\News;
 use App\Models\Inwehub\Topic;
+use App\Models\Inwehub\WechatMpInfo;
 use App\Models\Inwehub\WechatWenzhangInfo;
 use Illuminate\Http\Request;
 
@@ -48,7 +49,12 @@ class TopicController extends Controller {
                 $o['userId']=$val->mp_id;
                 $o['siteName']=$val->mp_id ? '微信公众号' : $val->site_name;
                 $o['mobileUrl']=$val->mobile_url;
-                $o['authorName']=$val->author ? : $o['siteName'];
+                $authorName = $val->author;
+                if(empty($authorName) && $val->mp_id){
+                    $wechatMp = WechatMpInfo::find($val->mp_id);
+                    $authorName = $wechatMp->name;
+                }
+                $o['authorName']=$authorName;
                 $o['publishDate']=$val->date_time;
                 $newsArray[] = $o;
             }
