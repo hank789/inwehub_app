@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
         $schedule->command('scraper:rss')->everyTenMinutes();
         $schedule->command('scraper:atom')->everyTenMinutes();
-        $schedule->command('scraper:wechat:author')->everyThirtyMinutes();
+        $schedule->command('scraper:wechat:author')->hourly();
     }
 
     /**
