@@ -111,7 +111,7 @@ class AtomPosts extends Command
                         $author_link = $value->author->uri;
                     }
 
-                    $article = News::firstOrCreate(['content_url' => $value->id]);
+                    $article = News::firstOrCreate(['content_url' => $value->link->attributes()->href]);
 
                     $published_at = new DateTime();
                     if (strlen((string)$value->published) > 0) {
