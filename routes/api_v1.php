@@ -21,9 +21,9 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 
 
 
-Route::group(['middleware' => 'jwt.auth','prefix' => 'account','namespace'=>'Account'], function() {
+Route::group(['middleware' => 'jwt.auth','prefix' => 'profile','namespace'=>'Account'], function() {
     //用户信息
-    Route::post('show','ProfileController@show');
+    Route::post('info','ProfileController@info');
 
     Route::post('protected', function() {
         return response()->json([

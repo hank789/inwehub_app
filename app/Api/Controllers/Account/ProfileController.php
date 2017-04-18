@@ -17,7 +17,7 @@ class ProfileController extends Controller
 {
 
     /*个人基本资料*/
-    public function show(Request $request)
+    public function info(Request $request)
     {
         /**
          * @var User
