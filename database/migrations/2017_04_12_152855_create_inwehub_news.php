@@ -18,7 +18,7 @@ class CreateInwehubNews extends Migration
             $table->string('title', 100)->default('')->comment('文章标题');
             $table->string('source_url',300)->default('')->comment('原文地址');
             $table->string('cover_url',200)->default('')->comment('封面图URL');
-            $table->string('description',200)->default('')->comment('文章摘要');
+            $table->string('description',2048)->default('')->comment('文章摘要');
             $table->dateTime('date_time')->nullable()->comment('文章推送时间')->index();
             $table->integer('mp_id')->default(0)->index()->comment('对应的公众号ID');
             $table->integer('read_count')->default(0)->comment('阅读数');
