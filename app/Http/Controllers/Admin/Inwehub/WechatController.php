@@ -42,6 +42,11 @@ class WechatController extends AdminController
             $query->where('status','=',$filter['status']);
         }
 
+        /*公众号id过滤*/
+        if( isset($filter['user_id']) && $filter['user_id'] > -1 ){
+            $query->where('mp_id','=',$filter['user_id']);
+        }
+
 
         $authors = $query->orderBy('create_time','desc')->paginate(20);
         return view("admin.inwehub.wechat.author.index")->with('authors',$authors)->with('filter',$filter);
