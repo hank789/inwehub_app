@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Relations\BelongsToCategoryTrait;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
+use App\Models\Relations\MorphManyDoingsTrait;
 use App\Models\Relations\MorphManyTagsTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -54,7 +55,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Question extends Model
 {
-    use BelongsToUserTrait,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToCategoryTrait;
+    use BelongsToUserTrait,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToCategoryTrait, MorphManyDoingsTrait;
     protected $table = 'questions';
     protected $fillable = ['title', 'user_id','category_id','description','tags','price','hide','status'];
 
@@ -109,6 +110,99 @@ class Question extends Model
             }
 
         });
+    }
+
+    public function statusHumanDescription(){
+        $description = '';
+        switch ($this->status){
+            case 0:
+                $description = '未发布';
+                break;
+            case 1:
+                $description = '您的提问平台已经受理,我们将会尽快为您寻找合适的专家!';
+                break;
+            case 2:
+                $description = '';
+                break;
+            case 3:
+                $description = '';
+                break;
+            case 4:
+                $description = '';
+                break;
+            case 5:
+                $description = '';
+                break;
+            case 6:
+                $description = '';
+                break;
+            case 7:
+                $description = '';
+                break;
+            case 8:
+                $description = '';
+                break;
+        }
+        return $description;
+    }
+
+    public function formatTimeline(){
+        $doings = $this->doings()->orderBy('id','asc')->get();
+        $timeline = [];
+        foreach($doings as $doing){
+            $title = '';
+            switch($doing->action){
+                case 'ask':
+                    $title = '问题成功提交';
+                    break;
+                case 'process':
+                    $title = '平台已经受理,正在为您找寻合适专家';
+                    break;
+                case 'answer_confirming':
+                    $title = '平台已经帮您找到合适的专家,等待确认';
+                    break;
+                case 'answer_confirmed':
+                    $title = $this->user->name.'为您回答问题';
+                    break;
+                case 'answered':
+                    $title = $this->user->name.'已为您回答问题';
+                    break;
+                case 'reject_answer':
+                    break;
+            }
+            if($title){
+                $timeline[] = [
+                    'title' => $title,
+                    'created_at' => (string)$doing->created_at
+                ];
+            }
+        }
+        return $timeline;
+    }
+
+    //已邀请
+    public function invitedAnswer(){
+        $this->status = 2;
+        return $this->save();
+    }
+
+    //已确认待回答
+    public function confirmedAnswer(){
+        $this->status = 4;
+        return $this->save();
+    }
+
+    //已拒绝
+    public function rejectAnswer(){
+        $this->status = 5;
+        return $this->save();
+    }
+
+    //已回答
+    public function answered()
+    {
+        $this->status = 6;
+        return $this->save();
     }
 
     /*获取相关问题*/

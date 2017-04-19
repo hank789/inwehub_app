@@ -1,7 +1,7 @@
-<?php
+<?php namespace App\Api\Controllers\Ask;
 
-namespace App\Http\Controllers\Ask;
-
+use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Question;
@@ -11,7 +11,6 @@ use App\Models\UserTag;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 class AnswerController extends Controller
@@ -19,7 +18,8 @@ class AnswerController extends Controller
 
     /*问题创建校验*/
     protected $validateRules = [
-        'content' => 'required|min:15|max:65535',
+        'description' => 'required|min:15|max:65535',
+        'question_id' => 'required'
     ];
 
 
@@ -32,15 +32,12 @@ class AnswerController extends Controller
     public function store(Request $request)
     {
         $loginUser = $request->user();
-        if($loginUser->status === 0){
-            return $this->error(route('website.index'),'操作失败！您的邮箱还未验证，验证后才能进行该操作！');
-        }
 
         /*防灌水检查*/
         if( Setting()->get('answer_limit_num') > 0 ){
             $questionCount = $this->counter('answer_num_'. $loginUser->id);
             if( $questionCount > Setting()->get('answer_limit_num')){
-                return $this->showErrorMsg(route('website.index'),'你已超过每小时回答限制数'.Setting()->get('answer_limit_num').'，请稍后再进行该操作，如有疑问请联系管理员!');
+                return self::createJsonData(false,[],ApiException::VISIT_LIMIT,'你已超过每小时回答限制数'.Setting()->get('answer_limit_num').'，请稍后再进行该操作，如有疑问请联系管理员!');
             }
         }
 
@@ -50,20 +47,18 @@ class AnswerController extends Controller
         if(empty($question)){
             abort(404);
         }
-        $loginUser = $request->user();
-        $request->flash();
-        /*普通用户修改需要输入验证码*/
-        if( Setting()->get('code_create_answer') ){
-            $this->validateRules['captcha'] = 'required|captcha';
+        $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->where('status',0)->first();
+        if(empty($question_invitation)){
+            abort(404);
         }
 
         $this->validate($request,$this->validateRules);
-        $answerContent = clean($request->input('content'));
+        $answerContent = clean($request->input('description'));
         $data = [
             'user_id'      => $loginUser->id,
             'question_id'      => $question_id,
-            'question_title'        => $question->title,
             'content'  => $answerContent,
+            'adopted_at' => date('Y-m-d H:i:s'),
             'status'   => 1,
         ];
         $answer = Answer::create($data);
@@ -75,10 +70,13 @@ class AnswerController extends Controller
             /*问题回答数+1*/
             $question->increment('answers');
 
+            //问题变为已回答
+            $question->answered();
+
             UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
 
             /*记录动态*/
-            $this->doing($answer->user_id,'answer',get_class($question),$question->id,$question->title,$answer->content);
+            $this->doing($answer->user_id,'answered',get_class($question),$question->id,$question->title,$answer->content);
 
             /*记录通知*/
             $this->notify($answer->user_id,$question->user_id,'answer',$question->title,$question->id,$answer->content);
@@ -98,23 +96,19 @@ class AnswerController extends Controller
                     $question->increment('followers');
                 }
             }
-
-
-
-
             /*修改问题邀请表的回答状态*/
             QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>1]);
 
             $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
 
             /*记录积分*/
-            if($answer->status ==1 && $this->credit($request->user()->id,'answer',Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
+            if($this->credit($request->user()->id,'answer',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
                 $message = '回答成功! '.get_credit_message(Setting()->get('credits_answer'),Setting()->get('coins_answer'));
-                return $this->success(route('ask.question.detail',['question_id'=>$answer->question_id]),$message);
+                return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],true,$message);
             }
         }
 
-        return redirect(route('ask.question.detail',['id'=>$question_id]));
+        throw new ApiException(ApiException::ERROR);
     }
 
 
@@ -147,10 +141,6 @@ class AnswerController extends Controller
         }
 
         $request->flash();
-        /*普通用户修改需要输入验证码*/
-        if( Setting()->get('code_create_answer') ){
-            $this->validateRules['captcha'] = 'required|captcha';
-        }
 
         $this->validate($request,$this->validateRules);
 
@@ -221,6 +211,7 @@ class AnswerController extends Controller
     {
 
         $question = Question::findOrFail($question_id);
+
         /*问题查看数+1*/
         $question->increment('views');
 

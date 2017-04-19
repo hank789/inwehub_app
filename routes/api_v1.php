@@ -20,8 +20,8 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 });
 
 
-
-Route::group(['middleware' => 'jwt.auth','prefix' => 'profile','namespace'=>'Account'], function() {
+//用户信息
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'profile','namespace'=>'Account'], function() {
     //用户信息
     Route::post('info','ProfileController@info');
 
@@ -33,10 +33,28 @@ Route::group(['middleware' => 'jwt.auth','prefix' => 'profile','namespace'=>'Acc
 
 });
 
-Route::get('hello', function() {
-    return response()->json([
-        'message' => 'This is a simple example of item returned by your APIs. Everyone can see it.'
-    ]);
+
+//问答模块
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], function() {
+    //回答反馈
+    Route::post('answer/feedback','AnswerController@feedback');
+    //我的回答列表
+    Route::post('answer/myList','AnswerController@myList');
+    //我的提问列表
+    Route::post('question/myList','QuestionController@myList');
+    //拒绝回答
+    Route::post('question/rejectAnswer','QuestionController@rejectAnswer');
+    //提问请求
+    Route::post('question/request','QuestionController@request');
+    //新建回答
+    Route::post('answer/store','AnswerController@store');
+    //新建提问
+    Route::post('question/store','QuestionController@store');
+    //查看点评
+    Route::post('answer/feedbackInfo','AnswerController@feedbackInfo');
+    //问题详情
+    Route::post('question/info','QuestionController@info');
+
 });
 
 //上传图片

@@ -352,6 +352,11 @@ class User extends Model implements AuthenticatableContract,
         return $tags;
     }
 
+    //获得用户头像地址
+    public function getAvatarUrl(){
+        return $this->getMedia('avatar')->last()->getUrl();
+    }
+
 
     /*是否回答过问题*/
     public function isAnswered($questionId)
@@ -394,9 +399,4 @@ class User extends Model implements AuthenticatableContract,
         }
         return true;
     }
-
-
-
-
-
 }

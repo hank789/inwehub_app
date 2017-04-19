@@ -445,7 +445,7 @@
             });
 
             $("#adoptAnswerSubmit").click(function(){
-                document.location = "/answer/adopt/"+$(this).data('answer_id');
+                document.location = "/manager/answer/adopt/"+$(this).data('answer_id');
             });
 
             /*邀请回答模块逻辑处理*/
@@ -479,7 +479,7 @@
 
                 $.ajax({
                     type: "get",
-                    url:"/question/invite/"+question_id+"/"+user_id,
+                    url:"/manager/question/invite/"+question_id+"/"+user_id,
                     success: function(data){
                         if(data.code > 0){
                             alert(data.message);
@@ -515,7 +515,7 @@
                 var formData = $("#inviteEmailForm").serialize();
                 $.ajax({
                     type: "post",
-                    url: "/question/inviteEmail/{{ $question->id }}",
+                    url: "/manager/question/inviteEmail/{{ $question->id }}",
                     data:formData,
                     success: function(data){
                         if(data.code>0){
@@ -545,7 +545,7 @@
         function loadInviteUsers(questionId,word){
             $.ajax({
                 type: "get",
-                url: "/ajax/loadInviteUsers",
+                url: "/manager/ajax/loadInviteUsers",
                 data:{question_id:questionId,word:word},
                 success: function(data){
                     console.log(data);
@@ -580,7 +580,7 @@
 
         /*加载已被邀请的用户信息*/
         function loadQuestionInvitedUsers(questionId,type){
-            $("#questionInviteUsers").load('/question/'+questionId+'/invitations/'+type);
+            $("#questionInviteUsers").load('/manager/question/'+questionId+'/invitations/'+type);
         }
 
     </script>

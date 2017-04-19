@@ -18,9 +18,7 @@ class CreateQuestionsTable extends Migration
 
             $table->integer('user_id')->unsigned()->default(0)->index();                  //问题发起人UID
 
-            $table->string('title',255)->index();                          //问题标题
-
-            $table->text('description')->nullable();              //问题详情
+            $table->string('title',500);                          //问题标题
 
             $table->smallInteger('price')->default(0);            //问题价格
 

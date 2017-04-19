@@ -70,7 +70,7 @@ class ProfileController extends Controller
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
 
             if(in_array($extension, $extArray)){
-                $request->user()->addMediaFromRequest('user_avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('images');
+                $request->user()->addMediaFromRequest('user_avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
             }else{
                 return response('error');
             }

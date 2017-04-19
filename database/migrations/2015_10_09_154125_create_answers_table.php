@@ -16,8 +16,6 @@ class CreateAnswersTable extends Migration
 
             $table->increments('id')->unsigned();                             //回答ID
 
-            $table->string('question_title',255);                 //问题标题
-
             $table->integer('question_id')->unsigned()->default(0)->index();              //问题ID
 
             $table->integer('user_id')->unsigned()->default(0)->index();                 //回答发起人UID
@@ -32,7 +30,7 @@ class CreateAnswersTable extends Migration
 
             $table->tinyInteger('device')->default(1);            //提问设备类型1pc,2安卓,3IOS,4weixin
 
-            $table->tinyInteger('status')->default(0);            //回答状态0待审核,1已审核
+            $table->tinyInteger('status')->default(0);            //回答状态0待审核,1已审核,2拒绝回答
 
             $table->timestamp('adopted_at')->nullable()->index();             //回答采纳时间
 

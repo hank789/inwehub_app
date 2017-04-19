@@ -92,7 +92,6 @@ class Category extends Model
         return $this->hasMany('App\Models\Tag','category_id');
     }
 
-
     /**
      * 获取用户问题
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

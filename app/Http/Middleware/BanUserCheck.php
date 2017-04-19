@@ -37,6 +37,9 @@ class BanUserCheck
         if($this->auth->check() && $this->auth->user()->status === -1){
             abort(403);
         }
+        if($this->auth->check() && $this->auth->user()->status === 0){
+            abort(403);
+        }
         return $next($request);
     }
 }

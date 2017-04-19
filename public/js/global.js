@@ -204,10 +204,10 @@ $(function(){
 
 
     /*通知异步加载*/
-    $("#unread_notifications").load("/ajax/unreadNotifications");
+    //$("#unread_notifications").load("/ajax/unreadNotifications");
 
     /*异步加载私信*/
-    $("#unread_messages").load("/ajax/unreadMessages");
+    //$("#unread_messages").load("/ajax/unreadMessages");
 
 
     /*标签自动选择*/

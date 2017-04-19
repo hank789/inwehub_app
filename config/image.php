@@ -15,6 +15,6 @@ return array(
     |
     */
 
-    'driver' => 'gd'
-
+    'driver' => 'gd',
+    'user_default_avatar' => 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/media/7/user_origin_1.png"',
 );

@@ -39,7 +39,7 @@ class QuestionController extends Controller
 
 
         $question = Question::find($id);
-
+        $t = $question->formatTimeline();
         if(empty($question)){
             abort(404);
         }
@@ -335,16 +335,21 @@ class QuestionController extends Controller
         }
 
         $invitation = QuestionInvitation::create([
-            'from_user_id'=> $loginUser->id,
+            'from_user_id'=> $question->user_id,
             'question_id'=> $question->id,
             'user_id'=> $toUser->id,
             'send_to'=> $toUser->email
         ]);
 
-        if($invitation){
+        //已邀请
+        $question->invitedAnswer();
+        //记录动态
+        $this->doing($question->user_id,'answer_confirming',get_class($question),$question->id,$question->title,'');
+
+        if($invitation && $toUser->email){
             $this->counter('question_invite_num_'.$loginUser->id);
-            $subject = $loginUser->name."在「".Setting()->get('website_name')."」向您发起了回答邀请";
-            $message = "我在 ".Setting()->get('website_name')." 上遇到了问题「".$question->title."」 → ".route("ask.question.detail",['question_id'=>$question->id])."，希望您能帮我解答 ";
+            $subject = $question->user->name."在「".Setting()->get('website_name')."」向您发起了回答邀请";
+            $message = "我在 ".Setting()->get('website_name')." 上遇到了问题「".$question->title."」，希望您能帮我解答 ";
             $this->sendEmail($invitation->send_to,$subject,$message);
             return $this->ajaxSuccess('success');
         }
@@ -389,6 +394,11 @@ class QuestionController extends Controller
             'user_id'=> 0,
             'send_to'=> $email
         ]);
+
+        //已邀请
+        $question->invitedAnswer();
+        //记录动态
+        $this->doing($question->user_id,'answer_confirming',get_class($question),$question->id,$question->title,'');
 
         if($invitation){
             $this->counter('question_invite_num_'.$loginUser->id,1);

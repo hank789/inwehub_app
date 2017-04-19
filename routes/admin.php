@@ -4,7 +4,7 @@
  * @date: 2017/4/6 上午11:46
  * @email: wanghui@yonglibao.com
  */
-
+/*后台管理部分处理*/
 
 /*用户登陆*/
 Route::match(['get','post'],'login',['as'=>'admin.account.login','uses'=>'AccountController@login']);

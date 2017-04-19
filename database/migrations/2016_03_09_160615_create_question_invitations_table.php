@@ -20,7 +20,7 @@ class CreateQuestionInvitationsTable extends Migration
 
             $table->integer('question_id')->unsigned()->index();              //问题ID
 
-            $table->tinyInteger('status')->default(0);            //回答状态0待审核,1已审核
+            $table->tinyInteger('status')->default(0);            //回答状态0待审核,1已审核,2已拒绝
 
 
             $table->timestamps();

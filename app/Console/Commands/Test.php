@@ -2,17 +2,18 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Question;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
 
-class Inspire extends Command
+class Test extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'inspire';
+    protected $signature = 'test';
 
     /**
      * The console command description.
@@ -28,6 +29,8 @@ class Inspire extends Command
      */
     public function handle()
     {
-        $this->comment(PHP_EOL.Inspiring::quote().PHP_EOL);
+        $question = Question::find(7);
+        $t = $question->doings()->orderBy('id','asc')->get();
+        var_dump($t);
     }
 }

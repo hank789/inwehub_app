@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // RESTful API version 1.
 Route::group(['middleware'=>\Barryvdh\Cors\HandleCors::class], function () {
     require_once base_path('routes/api_v1.php');

@@ -33,14 +33,15 @@ class ApiException extends Exception
     const FILE_NOT_EXIST=1012;//文件不存在
 
 
-
-
     //用户模块响应码
     const AUTH_FAIL = 1199;
     const USER_PHONE_EXIST = 1101;
     const USER_NOT_FOUND   = 1102;
     const USER_PASSWORD_ERROR = 1103;
     const ARGS_YZM_ERROR = 1104;
+
+    //问答模块响应码
+    const ASK_NEED_USER_INFORMATION = 3000;
 
     public static $errorMessages = [
         //全局响应吗
@@ -62,6 +63,10 @@ class ApiException extends Exception
         self::USER_NOT_FOUND  => '用户不存在',
         self::USER_PASSWORD_ERROR => '用户账号或者密码不正确',
         self::ARGS_YZM_ERROR => '验证码错误',
+
+
+        //问答模块
+        self::ASK_NEED_USER_INFORMATION => '稍微花点时间,完成下个人信息,平台为您匹配专家会更精确哦!'
 
     ];
 
