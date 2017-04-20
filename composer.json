@@ -10,7 +10,6 @@
         "bizly/roles": "^2.1",
         "doctrine/dbal": "~2.3",
         "flc/alidayu": "^2.0",
-        "intervapp/plus-component-web": "dev-master",
         "intervapp/plus-install-plugin": "dev-master",
         "intervention/image": "^2.3",
         "jacobcyl/ali-oss-storage": "dev-master",

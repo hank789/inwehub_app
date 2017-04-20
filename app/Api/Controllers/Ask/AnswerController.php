@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Feedback;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Setting;
@@ -18,7 +19,6 @@ class AnswerController extends Controller
 
     /*问题创建校验*/
     protected $validateRules = [
-        'description' => 'required|min:15|max:65535',
         'question_id' => 'required'
     ];
 
@@ -53,182 +53,179 @@ class AnswerController extends Controller
         }
 
         $this->validate($request,$this->validateRules);
+        $promise_time = $request->input('promise_time');
+
         $answerContent = clean($request->input('description'));
         $data = [
             'user_id'      => $loginUser->id,
             'question_id'      => $question_id,
             'content'  => $answerContent,
-            'adopted_at' => date('Y-m-d H:i:s'),
-            'status'   => 1,
         ];
-        $answer = Answer::create($data);
-        if($answer){
-
-            /*用户回答数+1*/
-            $loginUser->userData()->increment('answers');
-
-            /*问题回答数+1*/
-            $question->increment('answers');
-
-            //问题变为已回答
-            $question->answered();
-
-            UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
-
-            /*记录动态*/
-            $this->doing($answer->user_id,'answered',get_class($question),$question->id,$question->title,$answer->content);
-
-            /*记录通知*/
-            $this->notify($answer->user_id,$question->user_id,'answer',$question->title,$question->id,$answer->content);
-            
-            /*回答后通知关注问题*/
-            if(intval($request->input('followed'))){
-                $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->count();
-                if($attention===0){
-                    $data = [
-                        'user_id'     => $request->user()->id,
-                        'source_id'   => $question->id,
-                        'source_type' => get_class($question),
-                        'subject'  => $question->title,
-                    ];
-                    Attention::create($data);
-
-                    $question->increment('followers');
-                }
+        if($promise_time){
+            if(strlen($promise_time) != 4) {
+                throw new ApiException(ApiException::ASK_ANSWER_PROMISE_TIME_INVALID);
             }
-            /*修改问题邀请表的回答状态*/
-            QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>1]);
+            $hours = substr($promise_time,0,2);
+            $minutes = substr($promise_time,2,2);
+            $data['promise_time'] = date('Y-m-d H:i:00',strtotime('+ '.$hours.' hours + '.$minutes.' minutes'));
+            $data['status'] = 3;
+        }else{
+            $data['adopted_at'] = date('Y-m-d H:i:s');
+            $data['status'] = 1;
+        }
 
-            $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
+        if($question->status == 4){
+            //已确认待回答
+            $answer = Answer::where('status',3)->first();
+        }else{
+            $answer = Answer::create($data);
+        }
+        if($answer){
+            if(empty($promise_time)){
+                /*用户回答数+1*/
+                $loginUser->userData()->increment('answers');
 
-            /*记录积分*/
-            if($this->credit($request->user()->id,'answer',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
-                $message = '回答成功! '.get_credit_message(Setting()->get('credits_answer'),Setting()->get('coins_answer'));
-                return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],true,$message);
+                /*问题回答数+1*/
+                $question->increment('answers');
+
+                //问题变为已回答
+                $question->answered();
+
+                UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
+
+                /*记录动态*/
+                $this->doing($answer->user_id,'answered',get_class($question),$question->id,$question->title,$answer->content);
+
+                /*记录通知*/
+                $this->notify($answer->user_id,$question->user_id,'answer',$question->title,$question->id,$answer->content);
+
+                /*回答后通知关注问题*/
+                if(intval($request->input('followed'))){
+                    $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->count();
+                    if($attention===0){
+                        $data = [
+                            'user_id'     => $request->user()->id,
+                            'source_id'   => $question->id,
+                            'source_type' => get_class($question),
+                            'subject'  => $question->title,
+                        ];
+                        Attention::create($data);
+
+                        $question->increment('followers');
+                    }
+                }
+                /*修改问题邀请表的回答状态*/
+                QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>1]);
+
+                $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
+
+                /*记录积分*/
+                if($this->credit($request->user()->id,'answer',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
+                    $message = '回答成功! '.get_credit_message(Setting()->get('credits_answer'),Setting()->get('coins_answer'));
+                    return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],true,$message);
+                }
+            }else{
+                //问题变为待回答
+                $question->confirmedAnswer();
+                /*记录动态*/
+                $this->doing($answer->user_id,'answer_confirmed',get_class($question),$question->id,$question->title,$answer->content);
+                return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
             }
         }
 
         throw new ApiException(ApiException::ERROR);
     }
 
-
-    public function edit($id,Request $request)
+    //我的提问列表
+    public function myList(Request $request)
     {
-        $answer = Answer::findOrFail($id);
-
-        if($answer->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
-            abort(403);
-        }
-        /*编辑回答时效控制*/
-        if( !$request->user()->isRole('admin') && Setting()->get('edit_answer_timeout') ){
-            if( $answer->created_at->diffInMinutes() > Setting()->get('edit_answer_timeout') ){
-                return $this->showErrorMsg(route('ask.question.detail',['id'=>$answer->question_id]),'你已超过回答可编辑的最大时长，不能进行编辑了。如有疑问请联系管理员!');
+        $question_invitations = QuestionInvitation::where('user_id','=',$request->user()->id)->whereIn('status',[0,1])->get();
+        $list = [];
+        foreach($question_invitations as $question_invitation){
+            $question = Question::find($question_invitation->question_id);
+            $status_description = '';
+            $answer_promise_time = '';
+            switch($question->status){
+                case 2:
+                    //已分配待确认
+                    $status_description = '您的问题来啦,请速速点击前往应答';
+                    break;
+                case 4:
+                    //已确认待回答
+                    $answer = Answer::where('status',3)->first();
+                    $answer_promise_time = $answer->promise_time;
+                    $status_description = promise_time_format($answer_promise_time).',点击前往回答';
+                    break;
+                case 6:
+                    //已回答待点评
+                    $status_description = '您已提交回答,等待对方评价';
+                    break;
+                case 7:
+                    //已点评
+                    $status_description = '对方已点评,点击前往查看评价';
+                    break;
             }
-
+            $list[] = [
+                'id' => $question->id,
+                'user_id' => $question->user_id,
+                'user_name' => $question->hide ? '匿名' : $question->user->name,
+                'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
+                'description'  => $question->title,
+                'tags' => $question->tags()->pluck('name'),
+                'hide' => $question->hide,
+                'price' => $question->price,
+                'status' => $question->status,
+                'status_description' => $status_description,
+                'created_at' => (string)$question->created_at,
+                'answer_promise_time' =>  $answer_promise_time
+            ];
         }
-
-        return view("theme::question.edit_answer")->with('answer',$answer);
+        return self::createJsonData(true,$list);
     }
 
 
-    /*修改问题内容*/
-    public function update($id,Request $request)
+    public function feedback(Request $request)
     {
-        $answer = Answer::findOrFail($id);
-
-        if($answer->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
-            abort(403);
+        $validateRules = [
+            'answer_id' => 'required',
+            'description' => 'required|max:500',
+            'rate_star' => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $answer = Answer::find($request->input('answer_id'));
+        if(empty($answer)){
+            abort(404);
         }
 
-        $request->flash();
+        Feedback::create([
+            'user_id' => $request->user()->id,
+            'source_id' => $request->input('answer_id'),
+            'source_type' => get_class($answer),
+            'star' => $request->input('rate_star'),
+            'content' => $request->input('description'),
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
 
-        $this->validate($request,$this->validateRules);
-
-        $answer->content = clean($request->input('content'));
-        $answer->status = 1;
-
-        $answer->save();
-
-        return $this->success(route('ask.answer.detail',['question_id'=>$answer->question_id,'id'=>$answer->id]),"回答编辑成功");
-
+        return self::createJsonData(true,$request->all());
     }
 
-
-    public function adopt($id,Request $request)
-    {
-        $answer = Answer::findOrFail($id);
-
-        if(($request->user()->id !== $answer->question->user_id) && !$request->user()->isRole('admin')  ){
-            abort(403);
+    public function feedbackInfo(Request $request){
+        $validateRules = [
+            'answer_id' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $answer = Answer::find($request->input('answer_id'));
+        if(empty($answer)){
+            abort(404);
         }
-
-        /*防止重复采纳*/
-        if($answer->adopted_at>0){
-            return $this->error(route('ask.question.detail',['question_id'=>$answer->question_id]),'该回答已被采纳，不能重复采纳');
-        }
-
-
-        DB::beginTransaction();
-        try{
-
-            $answer->adopted_at = Carbon::now();
-            $answer->save();
-
-            $answer->question->status = 2;
-            $answer->question->save();
-
-            $answer->user->userData->increment('adoptions');
-
-            /*悬赏处理*/
-            $this->credit($answer->user_id,'answer_adopted',($answer->question->price+Setting()->get('coins_adopted',0)),Setting()->get('credits_adopted'),$answer->question->id,$answer->question->title);
-
-            UserTag::multiIncrement($request->user()->id,$answer->question->tags()->get(),'adoptions');
-            $this->notify($request->user()->id,$answer->user_id,'adopt_answer',$answer->question_title,$answer->question_id);
-            DB::commit();
-            /*发送邮件通知*/
-            if($answer->user->allowedEmailNotify('adopt_answer')){
-                $emailSubject = '您对于问题「'.$answer->question_title.'」的回答被采纳了！';
-                $emailContent = "您对于问题「".$answer->question_title."」的回答被采纳了！<br /> 点击此链接查看详情  →  ".route('ask.question.detail',['question_id'=>$answer->question_id]);
-                $this->sendEmail($answer->user->email,$emailSubject,$emailContent);
-            }
-
-            return $this->success(route('ask.question.detail',['question_id'=>$answer->question_id]),"回答采纳成功!".get_credit_message(Setting()->get('credits_adopted'),Setting()->get('coins_adopted')));
-
-        }catch (\Exception $e) {
-            echo $e->getMessage();
-            DB::rollBack();
-        }
-        return $this->error(route('ask.question.detail',['question_id'=>$answer->question_id]),"回答采纳失败，请稍后再试！");
-
+        return self::createJsonData(true,[
+            'answer_id' => $answer->id,
+            'rate_star' => $answer->star,
+            'description' => $answer->content,
+            'create_time' => (string)$answer->created_at
+        ]);
 
     }
-
-
-    /**
-     * 回答详情查看
-     */
-    public function detail($question_id,$id,Request $request)
-    {
-
-        $question = Question::findOrFail($question_id);
-
-        /*问题查看数+1*/
-        $question->increment('views');
-
-        $answer = $question->answers()->find($id);
-
-        /*设置通知为已读*/
-        if($request->user()){
-            $this->readNotifications($answer->id,'answer');
-        }
-
-        /*相关问题*/
-        $relatedQuestions = Question::correlations($question->tags()->pluck('tag_id'));
-        return view("theme::answer.detail")->with('question',$question)
-            ->with('answer',$answer)
-            ->with('relatedQuestions',$relatedQuestions);
-    }
-
 
 
 }

@@ -42,6 +42,7 @@ class ApiException extends Exception
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
+    const ASK_ANSWER_PROMISE_TIME_INVALID = 3001;
 
     public static $errorMessages = [
         //全局响应吗
@@ -66,8 +67,8 @@ class ApiException extends Exception
 
 
         //问答模块
-        self::ASK_NEED_USER_INFORMATION => '稍微花点时间,完成下个人信息,平台为您匹配专家会更精确哦!'
-
+        self::ASK_NEED_USER_INFORMATION => '稍微花点时间,完成下个人信息,平台为您匹配专家会更精确哦!',
+        self::ASK_ANSWER_PROMISE_TIME_INVALID => '格式错误'
     ];
 
 

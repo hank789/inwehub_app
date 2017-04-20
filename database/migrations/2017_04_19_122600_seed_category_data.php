@@ -62,6 +62,11 @@ class SeedCategoryData extends Migration
         Schema::table('doings', function (Blueprint $table) {
             $table->string('action',64)->change();
         });
+
+        Schema::table('answers', function (Blueprint $table) {
+            $table->dateTime('promise_time')->nullable()->after('adopted_at')->index()->comment('承诺响应时间');
+        });
+
     }
 
     /**

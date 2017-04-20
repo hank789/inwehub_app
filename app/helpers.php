@@ -307,6 +307,28 @@ if( !function_exists('makeVerifyCode') ){
     }
 }
 
+//时间格式优化
+if( !function_exists('promise_time_format') ){
+    function promise_time_format(string $datetime)
+    {
+        $timestamp = new \Carbon\Carbon($datetime);
+        $diff_minutes_origin = $timestamp->diffInMinutes(null,false);
+        $diff_minutes = abs($diff_minutes_origin);
+        $diff_hours = floor($diff_minutes/60);
+        $diff_minutes -= $diff_hours*60;
+        $desc = ($diff_hours?$diff_hours.'小时':'').($diff_minutes>0?$diff_minutes.'分钟':'');
+        if($diff_minutes_origin > 0){
+            //小于当前时间
+            $desc = '已超时'.$desc;
+        }elseif($diff_minutes == 0){
+            $desc = '已到承诺时间';
+        }else{
+            $desc = '距您承诺时间还有'.$desc;
+        }
+        return $desc;
+    }
+}
+
 
 
 

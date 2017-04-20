@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Question;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
 
@@ -29,8 +30,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $question = Question::find(7);
-        $t = $question->doings()->orderBy('id','asc')->get();
-        var_dump($t);
+        $t = '2017-04-20 14:45:34';
+
+        var_dump(promise_time_format($t));
     }
 }
