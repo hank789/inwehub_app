@@ -138,8 +138,13 @@ if (! function_exists('trans_question_status')) {
     function trans_question_status($status){
         $map = [
             0 => '待审核',
-            1 => '待解决',
-            2 => '已解决',
+            1 => '待分配',
+            2 => '已分配待确认',
+            3 => '已关闭',
+            4 => '已确认待回答',
+            5 => '已拒绝待分配',
+            6 => '已回答待点评',
+            7 => '已点评'
         ];
 
         if($status==='all'){

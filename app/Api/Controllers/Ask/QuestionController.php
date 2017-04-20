@@ -26,8 +26,6 @@ class QuestionController extends Controller
         'tags' => 'required'
     ];
 
-
-
     /**
      * 问题详情查看
      */
@@ -129,10 +127,18 @@ class QuestionController extends Controller
         $this->checkUserInfoPercent($loginUser);
 
         $price = abs($request->input('price'));
+        $tagString = trim($request->input('tags'));
 
+        $category_id = 0;
+        if($tagString){
+            //目前只能添加一个标签
+            $tags = array_unique(explode(",",$tagString));
+            $tag = Tag::where('name',$tags[0])->first();
+            $category_id = $tag->category_id;
+        }
         $data = [
             'user_id'      => $loginUser->id,
-            'category_id'      => $request->input('category_id',0),
+            'category_id'      => $category_id,
             'title'        => trim($request->input('description')),
             'price'        => $price,
             'hide'         => intval($request->input('hide')),
@@ -144,9 +150,7 @@ class QuestionController extends Controller
         if($question){
 
             /*添加标签*/
-            $tagString = trim($request->input('tags'));
             Tag::multiSave($tagString,$question);
-
 
             //记录动态
             $this->doing($question->user_id,'ask',get_class($question),$question->id,$question->title,'');
@@ -229,7 +233,8 @@ class QuestionController extends Controller
 
     //我的提问列表
     public function myList(Request $request){
-        $questions = $request->user()->questions()->orderBy('created_at','DESC')->paginate(10);
+        $last_id = $request->input('last_id',0);
+        $questions = $request->user()->questions()->where('id','>',$last_id)->orderBy('created_at','DESC')->paginate(10);
 
         $list = [];
         foreach($questions as $question){

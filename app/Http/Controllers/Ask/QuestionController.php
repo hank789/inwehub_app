@@ -315,6 +315,10 @@ class QuestionController extends Controller
            return $this->ajaxError(50001,'notFound');
         }
 
+        if($to_user_id == $question->user_id){
+            return $this->ajaxError(50009,'不能邀请提问者');
+        }
+
         if( $this->counter('question_invite_num_'.$loginUser->id) > config('intervapp.user_invite_limit') ){
             return $this->ajaxError(50007,'超出每天最大邀请次数');
         }
@@ -341,10 +345,14 @@ class QuestionController extends Controller
             'send_to'=> $toUser->email
         ]);
 
+
+
         //已邀请
         $question->invitedAnswer();
         //记录动态
         $this->doing($question->user_id,'answer_confirming',get_class($question),$question->id,$question->title,'');
+        //记录任务
+        $this->task($to_user_id,get_class($question),$question->id);
 
         if($invitation && $toUser->email){
             $this->counter('question_invite_num_'.$loginUser->id);

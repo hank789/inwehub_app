@@ -63,6 +63,7 @@
                                         <th>用户ID</th>
                                         <th>用户名</th>
                                         <th>邮箱</th>
+                                        <th>手机</th>
                                         <th>身份职业</th>
                                         <th>地区</th>
                                         <th>注册时间</th>
@@ -76,6 +77,7 @@
                                             <td>{{ $user->id }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
+                                            <td>{{ $user->mobile }}</td>
                                             <td>{{ $user->title }}</td>
                                             <td>{{ Area()->getName($user->province) }} @if($user->city>0 &&  Area()->getName($user->province)!=Area()->getName($user->city)) - {{ Area()->getName($user->city) }} @endif</td>
                                             <td>{{ $user->created_at }}</td>

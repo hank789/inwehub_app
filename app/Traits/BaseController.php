@@ -7,6 +7,7 @@
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Notification;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\UserData;
 use Carbon\Carbon;
@@ -96,6 +97,26 @@ trait BaseController {
             exit($e->getMessage());
         }
 
+    }
+
+
+    /**
+     * 创建任务
+     * @param $user_id
+     * @param $source_type
+     * @param $source_id
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    protected function task($user_id,$source_type,$source_id){
+        try{
+            return Task::create([
+                'user_id' => $user_id,
+                'source_id' => $source_id,
+                'source_type' => $source_type,
+            ]);
+        }catch (\Exception $e){
+            exit($e->getMessage());
+        }
     }
 
 

@@ -57,5 +57,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
 
 });
 
+//任务模块
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], function() {
+    //我的任务列表
+    Route::post('task/myList','TaskController@myList');
+
+});
+
 //上传图片
 Route::post('upload/uploadImg','UploadController@uploadImg')->middleware('jwt.auth');
