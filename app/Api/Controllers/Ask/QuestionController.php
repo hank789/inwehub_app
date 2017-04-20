@@ -99,10 +99,7 @@ class QuestionController extends Controller
                 return self::createJsonData(false,[],ApiException::VISIT_LIMIT,'你已超过每小时最大提问数'.Setting()->get('question_limit_num').'，如有疑问请联系管理员!');
             }
         }
-        //todo 字段完成度为95%才能创建问题
-        if(empty($user->title)){
-            throw new ApiException(ApiException::ASK_NEED_USER_INFORMATION);
-        }
+        $this->checkUserInfoPercent($user);
         $question_c = Category::where('slug','question')->first();
         $question_c_arr = Category::where('parent_id',$question_c->id)->where('status',1)->get();
         $tags = [];
@@ -128,6 +125,9 @@ class QuestionController extends Controller
         }
 
         $this->validate($request,$this->validateRules);
+
+        $this->checkUserInfoPercent($loginUser);
+
         $price = abs($request->input('price'));
 
         $data = [
@@ -257,6 +257,13 @@ class QuestionController extends Controller
             ];
         }
         return self::createJsonData(true,$list);
+    }
+
+    protected function checkUserInfoPercent($user){
+        //todo 字段完成度为95%才能创建问题
+        if(empty($user->title)){
+            throw new ApiException(ApiException::ASK_NEED_USER_INFORMATION);
+        }
     }
 
 }

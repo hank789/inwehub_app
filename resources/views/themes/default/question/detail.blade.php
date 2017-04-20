@@ -36,13 +36,13 @@
                         <ul class="list-inline">
                             <li><a class="comments"  data-toggle="collapse"  href="#comments-question-{{ $question->id }}" aria-expanded="false" aria-controls="comment-{{ $question->id }}"><i class="fa fa-comment-o"></i> {{ $question->comments }} 条评论</a></li>
                             @if(Auth()->check())
-                                @if(($question->status !== 2 && Auth()->user()->id === $question->user_id) || Auth()->user()->isRole('admin') )
+                                @if(($question->status !== 3 && Auth()->user()->id === $question->user_id) || Auth()->user()->isRole('admin') )
                                 <li><a href="{{ route('ask.question.edit',['id'=>$question->id]) }}" class="edit" data-toggle="tooltip" data-placement="right" title="" data-original-title="补充细节，以得到更准确的答案"><i class="fa fa-edit"></i> 编辑</a></li>
                                 @endif
-                                @if( $question->status !== 2 && Auth()->user()->id === $question->user_id )
+                                @if( $question->status !== 3 && Auth()->user()->id === $question->user_id )
                                 <li><a href="#" data-toggle="modal" data-target="#appendReward"  ><i class="fa fa-database"></i> 追加悬赏</a></li>
                                 @endif
-                                @if( $question->status !== 2 )
+                                @if( $question->status !== 3 )
                                     <li><a href="#" data-toggle="modal" data-target="#inviteAnswer"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> 邀请回答</a></li>
                                 @endif
                             @endif
@@ -60,7 +60,7 @@
 
 
                 {{--最佳答案--}}
-                @if($question->status===2 && $bestAnswer)
+                @if($question->status===6 && $bestAnswer)
                 <div class="best-answer mt-10">
                     <div class="trophy-title">
                         <h3>
@@ -130,6 +130,12 @@
                             @if($answer->user->title)
                             <span class="text-muted"> - {{ $answer->user->title }}</span>
                             @endif
+                            @if($answer->status==2)
+                                <span class="text-muted">拒绝回答</span>
+                            @endif
+                            @if($answer->status==3)
+                                <span class="text-muted">待回答</span>
+                            @endif
                             <span class="answer-time text-muted hidden-xs">{{ timestamp_format($answer->created_at) }}</span>
                         </div>
                         <div class="content">
@@ -163,7 +169,7 @@
                 </div>
 
             </div>
-            @if($question->status!==2)
+            @if($question->status!==6)
             <div class="widget-answer-form mt-15">
 
                 @if(Auth()->guest())

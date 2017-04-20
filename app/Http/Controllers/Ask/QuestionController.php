@@ -49,7 +49,7 @@ class QuestionController extends Controller
 
         /*已解决问题*/
         $bestAnswer = [];
-        if($question->status === 2 ){
+        if($question->status === 6 ){
             $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
         }
 

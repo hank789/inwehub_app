@@ -27,8 +27,8 @@
                 @foreach($questions as $question)
                 <section class="stream-list-item">
                     <div class="qa-rank">
-                        <div class="answers @if($question->status===2) solved @elseif($question->answers>0) answered @endif">
-                            {{ $question->answers }}<small>@if($question->status===2) 解决 @else 回答 @endif</small>
+                        <div class="answers @if($question->status>=6) solved @elseif($question->answers>0) answered @endif">
+                            {{ $question->answers }}<small>@if($question->status>=6) 解决 @else 回答 @endif</small>
                         </div>
                         <div class="views hidden-xs">
                             {{ $question->views }}<small>浏览</small>
