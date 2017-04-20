@@ -461,6 +461,7 @@ class DatabaseSeeder extends Seeder
         $admin = $registrar->create([
             'name' => 'intervapp',
             'email' => 'hank.wang@intervapp.com',
+            'mobile' => '15050368286',
             'password' => 'qwer1234',
             'status' => 1,
             'visit_ip' => '127.0.0.1',
