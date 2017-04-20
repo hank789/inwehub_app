@@ -27,7 +27,6 @@ class ProfileController extends Controller
         $cities = Area::cities($user->province);
         $data = [
             'user'   => $user,
-            'avatar' => $user->getMedia('avatar')->last()->getUrl()
         ];
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
