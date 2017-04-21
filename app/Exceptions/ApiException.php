@@ -39,6 +39,7 @@ class ApiException extends Exception
     const USER_NOT_FOUND   = 1102;
     const USER_PASSWORD_ERROR = 1103;
     const ARGS_YZM_ERROR = 1104;
+    const EXPERT_NEED_CONFIRM = 1105;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -64,6 +65,7 @@ class ApiException extends Exception
         self::USER_NOT_FOUND  => '用户不存在',
         self::USER_PASSWORD_ERROR => '用户账号或者密码不正确',
         self::ARGS_YZM_ERROR => '验证码错误',
+        self::EXPERT_NEED_CONFIRM => '您的认证申请正在审核中',
 
 
         //问答模块

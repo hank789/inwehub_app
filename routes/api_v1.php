@@ -21,9 +21,11 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 
 
 //用户信息
-Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'profile','namespace'=>'Account'], function() {
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
-    Route::post('info','ProfileController@info');
+    Route::post('profile/info','ProfileController@info');
+    //专家认证申请
+    Route::post('expert/apply','ExpertController@apply');
 
     Route::post('protected', function() {
         return response()->json([
@@ -69,3 +71,4 @@ Route::post('upload/uploadImg','UploadController@uploadImg')->middleware('jwt.au
 
 //加载标签
 Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
+

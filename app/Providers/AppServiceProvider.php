@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 use App\Models\Answer;
+use App\Models\Authentication;
 use App\Models\Question;
 use App\Observers\AnswerObserver;
+use App\Observers\AuthenticationObserver;
 use App\Observers\QuestionObserver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         //事件监听
         Question::observe(QuestionObserver::class);
         Answer::observe(AnswerObserver::class);
+        Authentication::observe(AuthenticationObserver::class);
     }
 
     /**

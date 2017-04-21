@@ -40,7 +40,7 @@ Route::post('authentication/destroy',['as'=>'admin.authentication.destroy','uses
 Route::post('authentication/verify',['as'=>'admin.authentication.verify','uses'=>'AuthenticationController@verify']);
 /*修改分类核*/
 Route::post('authentication/changeCategories',['as'=>'admin.authentication.changeCategories','uses'=>'AuthenticationController@changeCategories']);
-Route::resource('authentication', 'AuthenticationController',['except' => ['show','create','store','destroy'],'as'=>'admin']);
+Route::resource('authentication', 'AuthenticationController',['except' => ['show','destroy'],'as'=>'admin']);
 
 
 /*站点设置*/

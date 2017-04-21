@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Authentication;
 use App\Models\Question;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -30,8 +31,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $t = '2017-04-20 14:45:34';
+        $t = Authentication::find(1);
 
-        var_dump(promise_time_format($t));
+        var_dump($t->user->name);
     }
 }

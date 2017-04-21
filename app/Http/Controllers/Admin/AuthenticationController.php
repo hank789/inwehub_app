@@ -51,6 +51,42 @@ class AuthenticationController extends AdminController
         return view('admin.authentication.index')->with(compact('filter','authentications'));
     }
 
+    public function create(){
+        $provinces = Area::provinces();
+        $cities = Area::cities('');
+        $data = [
+            'provinces' => $provinces,
+            'cities' => $cities,
+        ];
+        return view('admin.authentication.create')->with(compact('data'));
+    }
+
+    public function store(Request $request){
+        $this->validate($request,$this->validateRules);
+        $data = $request->all();
+        if ($request->hasFile('id_card_image')) {
+            $savePath = storage_path('app/authentications');
+            $file = $request->file('id_card_image');
+            $fileName = uniqid(str_random(8)) . '.' . $file->getClientOriginalExtension();
+            $target = $file->move($savePath, $fileName);
+            if ($target) {
+                $data['id_card_image'] = 'authentications-' . $fileName;
+            }
+        }
+
+        if ($request->hasFile('skill_image')) {
+            $savePath = storage_path('app/authentications');
+            $file = $request->file('skill_image');
+            $fileName = uniqid(str_random(8)) . '.' . $file->getClientOriginalExtension();
+            $target = $file->move($savePath, $fileName);
+            if ($target) {
+                $data['skill_image'] = 'authentications-' . $fileName;
+            }
+        }
+
+        Authentication::create($data);
+        return $this->success(route('admin.authentication.index'),'行家认证信息添加成功');
+    }
 
     /**
      * Show the form for editing the specified resource.
