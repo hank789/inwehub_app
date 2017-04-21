@@ -126,7 +126,7 @@ class AnswerController extends Controller
                 /*记录积分*/
                 if($this->credit($request->user()->id,'answer',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
                     $message = '回答成功! '.get_credit_message(Setting()->get('credits_answer'),Setting()->get('coins_answer'));
-                    return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],true,$message);
+                    return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],ApiException::SUCCESS,$message);
                 }
             }else{
                 //问题变为待回答
