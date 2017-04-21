@@ -41,7 +41,7 @@ class TagsController extends Controller {
         }
         if(empty($tags)){
             //一维
-            $tags = $question_c->tags()->pluck('name');
+            $tags = $question_c->tags()->pluck('name')->toArray();
         }
 
         return self::createJsonData(true,$tags);
