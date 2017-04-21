@@ -23,9 +23,10 @@
                                 @if($errors->has('title')) <p class="help-block">{{ $errors->first('title') }}</p> @endif
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @if($errors->has('summary')) has-error @endif">
                                 <label for="editor">话题导读：</label>
                                 <textarea name="summary" class="form-control" placeholder="话题摘要">{{ old('summary','') }}</textarea>
+                                @if($errors->has('summary')) <p class="help-block">{{ $errors->first('title') }}</p> @endif
                             </div>
                         </div>
 
