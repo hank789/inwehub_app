@@ -112,10 +112,60 @@ class TopicController extends AdminController
             abort(404);
         }
         $news = News::where('status',1)->Where(function ($query) use ($id){
-            $query->where('topic_id',0)->orWhere('topic_id',$id);})->orderBy('date_time', 'asc')->get();
+            $query->where('topic_id',0)->orWhere('topic_id',$id);})->orderBy('date_time', 'asc')->paginate(50);
 
         return view("admin.inwehub.topic.edit")->with(compact('article','news','wehcat_articles'));
+    }
 
+    public function loadNews(Request $request){
+        $id = $request->input('id');
+        $search = $request->input('search');
+        $start = $request->input('start');
+        $length = $request->input('length');
+        $selected = $request->input('selected');
+        $word = $search['value'];
+        $query = News::where('status',1)->Where(function ($query) use ($id){
+            $query->where('topic_id',0)->orWhere('topic_id',$id);});
+
+        if($word){
+            $query->where('title','like',$word.'%');
+        }
+        $count = $query->count();
+        $news = $query->orderBy('date_time', 'asc')->offset($start)->limit($length)->get();
+
+        $data = [];
+        $data['draw'] = $request->input('draw');
+        $data['recordsTotal'] = $count;
+        $data['recordsFiltered'] = $count;
+        $ids = [];
+        if($selected) {
+            $selected = array_unique($selected);
+        }
+        foreach($news as $item){
+            $o = [];
+            $checked = ($item->topic_id == $id || in_array($item->_id,$selected) ? 'checked':'');
+            $o[] = '<input type="checkbox" name="news[]" value="'.$item->_id.'" '.$checked.'/>';
+            $o[] = $item->_id;
+            $o[] = $item->title;
+            $o[] = $item->date_time;
+            $data['data'][] = $o;
+            $ids[] = $item->_id;
+        }
+
+        if($selected){
+            foreach($selected as $id){
+                if(in_array($id,$ids)) continue;
+                $item = News::find($id);
+                $o = [];
+                $o[] = '<input type="checkbox" name="news[]" value="'.$item->_id.'" checked/>';
+                $o[] = $item->_id;
+                $o[] = $item->title;
+                $o[] = $item->date_time;
+                $data['data'][] = $o;
+            }
+        }
+
+        return response()->json($data);
     }
 
     /**

@@ -45,7 +45,7 @@
                                 <div class="box-body">
                                     <h4>新闻列表</h4>
                                     <div class="table-responsive">
-                                        <table class="table table-striped" id="topic_news_table">
+                                        <table class="table table-striped" id="topic_news_table" style="width: 100%;">
                                             <thead>
                                             <tr>
                                                 <th><input type="checkbox" class="checkbox-toggle" /></th>
@@ -91,9 +91,23 @@
     <script type="text/javascript">
         set_active_menu('manage_inwehub',"{{ route('admin.inwehub.topic.index') }}");
         $(document).ready(function() {
-            $('#topic_news_table').DataTable({
-                "pageLength": 100,
-                "order": [[ 3, 'desc' ]]
+            var table = $('#topic_news_table').DataTable({
+                "pageLength": 50,
+                "order": [[ 3, 'desc' ]],
+                "processing": true,
+                "serverSide": true,
+                "stateSave": true,
+                "ajax": {
+                    "url" : "{{ route('admin.inwehub.topic.loadnews',['id'=>$article->id]) }}",
+                    "type": "POST",
+                    "data": function ( d ) {
+                        var chk_value =[];//定义一个数组
+                        $('input[name="news[]"]:checked').each(function(){//遍历每一个名字为interest的复选框，其中选中的执行函数
+                            chk_value.push($(this).val());//将选中的值添加到数组chk_value中
+                        });
+                        d.selected = chk_value;
+                    }
+                }
             });
         } );
     </script>

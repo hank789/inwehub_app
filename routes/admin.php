@@ -147,6 +147,7 @@ Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     Route::get('topic/edit/{id}',['as'=>'admin.inwehub.topic.edit','uses'=>'TopicController@edit'])->where(['id'=>'[0-9]+']);
     Route::post('topic/update',['as'=>'admin.inwehub.topic.update','uses'=>'TopicController@update']);
     Route::post('topic/news/update',['as'=>'admin.inwehub.topic.news.update','uses'=>'TopicController@topicNews']);
+    Route::post('topic/loadNews',['as'=>'admin.inwehub.topic.loadnews','uses'=>'TopicController@loadNews']);
 
     /*文章删除*/
     Route::post('topic/destroy',['as'=>'admin.inwehub.topic.destroy','uses'=>'TopicController@destroy']);
