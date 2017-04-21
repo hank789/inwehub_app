@@ -128,18 +128,18 @@ class Question extends Model
                 $description = '问题已关闭';
                 break;
             case 4:
-                $answer = $this->answers->last();
+                $answer = $this->answers()->orderBy('id','desc')->first();
                 $description = '您的问题已分配给专家,专家已承诺在'.promise_time_format($answer->promise_time).'前回答';
                 break;
             case 5:
                 $description = '您的提问平台已经受理,我们将会尽快为您寻找合适的专家!';
                 break;
             case 6:
-                $answer = $this->answers->last();
+                $answer = $this->answers()->orderBy('id','desc')->first();
                 $description = $answer->user->name.'回答了您的问题';
                 break;
             case 7:
-                $answer = $this->answers->last();
+                $answer = $this->answers()->orderBy('id','desc')->first();
                 $description = $answer->user->name.'回答了您的问题';
                 break;
         }
