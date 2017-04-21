@@ -27,6 +27,16 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //专家认证申请
     Route::post('expert/apply','ExpertController@apply');
 
+    //教育经历
+    Route::resource('account/edu','EduController');
+    //工作经历
+    Route::resource('account/job','JobController');
+    //培训经历
+    Route::resource('account/train','TrainController');
+    //项目经历
+    Route::resource('account/project','ProjectController');
+
+
     Route::post('protected', function() {
         return response()->json([
             'message' => 'Access to this item is only for authenticated user. Provide a token in your request!'
