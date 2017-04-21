@@ -273,7 +273,7 @@ class QuestionController extends Controller
                 'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->getAvatarUrl() : '',
-                'answer_time' => $bestAnswer ? $bestAnswer->created_at : ''
+                'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
             ];
         }
         return self::createJsonData(true,$list);
