@@ -31,8 +31,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $t = Authentication::find(1);
+        $t = Question::find(7);
 
-        var_dump($t->user->name);
+        var_dump($t->statusHumanDescription());
     }
 }
