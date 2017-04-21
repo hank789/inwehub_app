@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
+use App\Models\Relations\MorphManyFeedbackTrait;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Relations\MorphManyTagsTrait;
 
@@ -42,7 +43,7 @@ use App\Models\Relations\MorphManyTagsTrait;
  */
 class Answer extends Model
 {
-    use MorphManyCommentsTrait,BelongsToUserTrait,MorphManyTagsTrait;
+    use MorphManyCommentsTrait,BelongsToUserTrait,MorphManyTagsTrait,MorphManyFeedbackTrait;
     protected $table = 'answers';
     protected $fillable = ['question_title','question_id','user_id','adopted_at', 'content','status','promise_time'];
 

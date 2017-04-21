@@ -223,11 +223,12 @@ class AnswerController extends Controller
         if(empty($answer)){
             abort(404);
         }
+        $feedback = $answer->feedbacks()->orderBy('id','desc')->first();
         return self::createJsonData(true,[
             'answer_id' => $answer->id,
-            'rate_star' => $answer->star,
-            'description' => $answer->content,
-            'create_time' => (string)$answer->created_at
+            'rate_star' => $feedback->star,
+            'description' => $feedback->content,
+            'create_time' => (string)$feedback->created_at
         ]);
 
     }

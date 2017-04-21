@@ -66,3 +66,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], func
 
 //上传图片
 Route::post('upload/uploadImg','UploadController@uploadImg')->middleware('jwt.auth');
+
+//加载标签
+Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
