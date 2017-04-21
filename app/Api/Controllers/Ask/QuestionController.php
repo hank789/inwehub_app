@@ -80,16 +80,19 @@ class QuestionController extends Controller
         $timeline = $question->formatTimeline();
 
         //feedback
-        $feedback = $bestAnswers->last()->feedbacks()->orderBy('id','desc')->first();
         $feedback_data = [];
-        if(!empty($feedback)){
-            $feedback_data = [
-                'answer_id' => $feedback->source_id,
-                'rate_star' => $feedback->star,
-                'description' => $feedback->content,
-                'create_time' => (string)$feedback->created_at
-            ];
+        if($answers_data){
+            $feedback = $bestAnswers->last()->feedbacks()->orderBy('id','desc')->first();
+            if(!empty($feedback)){
+                $feedback_data = [
+                    'answer_id' => $feedback->source_id,
+                    'rate_star' => $feedback->star,
+                    'description' => $feedback->content,
+                    'create_time' => (string)$feedback->created_at
+                ];
+            }
         }
+
 
         return self::createJsonData(true,['question'=>$question_data,'answers'=>$answers_data,'timeline'=>$timeline,'feedback'=>$feedback_data]);
 
