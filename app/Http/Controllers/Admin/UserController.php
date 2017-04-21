@@ -20,6 +20,7 @@ class UserController extends AdminController
     protected $validateRules = [
         'name' => 'required|max:100',
         'email' => 'required|email|max:255|unique:users',
+        'mobile' => 'required|email|max:255|unique:users',
         'password' => 'required|min:6|max:20',
     ];
     /**

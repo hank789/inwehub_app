@@ -36,6 +36,12 @@
                             @if ($errors->has('email')) <p class="help-block">{{ $errors->first('email') }}</p> @endif
 
                         </div>
+                          <div class="form-group @if ($errors->has('mobile')) has-error @endif">
+                              <label>手机</label>
+                              <input type="email" name="mobile" class="form-control"  placeholder="手机" value="{{ old('mobile') }}">
+                              @if ($errors->has('mobile')) <p class="help-block">{{ $errors->first('mobile') }}</p> @endif
+
+                          </div>
                         <div class="form-group @if ($errors->has('password')) has-error @endif">
                           <label>密码</label>
                           <input type="text" name="password" class="form-control"  placeholder="密码" value="{{ old('password','') }}">
