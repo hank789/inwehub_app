@@ -211,7 +211,7 @@ class QuestionController extends Controller
         $data = [
             'user_id'      => $loginUser->id,
             'question_id'      => $request->input('question_id'),
-            'content'  => $request->input('description'),
+            'content'  => $request->input('description',''),
             'status'   => 2,
         ];
 

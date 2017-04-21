@@ -39,6 +39,10 @@ class TaskController extends Controller {
                             $answer_promise_time = $answer->promise_time;
                             $status_description = promise_time_format($answer_promise_time).',点击前往回答';
                             break;
+                        case 5:
+                            //已拒绝
+                            $status_description = '您拒绝了该提问';
+                            break;
                         case 6:
                             //已回答待点评
                             $status_description = '您已提交回答,等待对方评价';
