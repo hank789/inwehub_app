@@ -24,6 +24,9 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.inwehub.news.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <div class="col-xs-2">
+                                            <input type="text" class="form-control" name="news_id" placeholder="新闻ID" value="{{ $filter['news_id'] or '' }}"/>
+                                        </div>
                                         <div class="col-xs-3">
                                             <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                         </div>

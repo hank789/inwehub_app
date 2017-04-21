@@ -36,6 +36,10 @@ class NewsController extends AdminController
             $query->where('topic_id','=',$filter['topic_id']);
         }
 
+        if( isset($filter['news_id']) &&  $filter['news_id'] > 0 ){
+            $query->where('_id','=',$filter['news_id']);
+        }
+
         /*问题标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('title','like', '%'.$filter['word'].'%');

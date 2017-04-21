@@ -21,9 +21,9 @@ class CreateInwehubTopic extends Migration
             $table->integer('user_id')->unsigned()->index();                  //文章发起人
 
 
-            $table->string('title',255);                          //文章标题
+            $table->string('title',500);                          //文章标题
 
-            $table->string('summary',255);                        //导读、摘要
+            $table->string('summary',500);                        //导读、摘要
 
             $table->integer('views')->unsigned()->default(0);                 //查看数
 
