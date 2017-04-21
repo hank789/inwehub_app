@@ -67,6 +67,10 @@ class WechatController extends AdminController
             $query->where('topic_id','=',$filter['topic_id']);
         }
 
+        if( isset($filter['news_id']) &&  $filter['news_id'] > 0 ){
+            $query->where('_id','=',$filter['news_id']);
+        }
+
         /*公众号id过滤*/
         if( isset($filter['user_id']) && $filter['user_id'] > -1 ){
             $query->where('mp_id','=',$filter['user_id']);
