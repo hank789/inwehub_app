@@ -143,7 +143,7 @@ class TopicController extends AdminController
         }
         foreach($news as $item){
             $o = [];
-            $checked = ($item->topic_id == $id || in_array($item->_id,$selected) ? 'checked':'');
+            $checked = (($item->topic_id == $id || ($selected && in_array($item->_id,$selected))) ? 'checked':'');
             $o[] = '<input type="checkbox" name="news[]" value="'.$item->_id.'" '.$checked.'/>';
             $o[] = $item->_id;
             $o[] = $item->title;
