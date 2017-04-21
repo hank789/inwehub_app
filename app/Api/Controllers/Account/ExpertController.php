@@ -32,10 +32,30 @@ class ExpertController extends Controller {
         $data['skill_image'] = '';
         $data['status'] = 0;
 
-        logger('test1',$data);
         Authentication::create($data);
 
         return self::createJsonData(true,['tips'=>'稍安勿躁，我们正在审核中!']);
+    }
+
+    public function info(Request $request){
+        $user = $request->user();
+        $authentication = $user->authentication;
+        $res['status'] = 0;
+        $res['tips'] = '速速申请成为专家,参与延伸服务!';
+        if(!empty($authentication)){
+            if($authentication->status == 0){
+                $res['status'] = 1;
+                $res['tips'] = '稍安勿躁,我们正在审核中!';
+            }elseif($authentication->status == 1){
+                $res['status'] = 2;
+                $res['tips'] = '恭喜您,您已经是专家啦!';
+            }else{
+                $res['status'] = 3;
+                $res['tips'] = '很抱歉,认证失败!';
+            }
+        }
+
+        return self::createJsonData(true,$res);
 
     }
 
