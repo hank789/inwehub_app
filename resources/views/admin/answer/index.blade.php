@@ -72,7 +72,7 @@
                                             <td>{{ $answer->user->name }} <span class="text-muted">[UID:{{ $answer->user_id }}]</span></td>
                                             <td>{{ $answer->supports }}</td>
                                             <td>{{ timestamp_format($answer->created_at) }}</td>
-                                            <td><span class="label @if($answer->status===0) label-danger @elseif($answer->status===1) label-warning @else label-success @endif">{{ trans_common_status($answer->status) }}</span> </td>
+                                            <td><span class="label @if($answer->status===0) label-danger @elseif($answer->status===1) label-success @else label-warning @endif">{{ trans_answer_status($answer->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" target="_blank" href="{{ route('ask.answer.edit',['id'=>$answer->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>

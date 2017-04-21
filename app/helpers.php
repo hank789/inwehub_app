@@ -131,6 +131,33 @@ if (! function_exists('trans_common_status')) {
 
 }
 
+/*回答状态文字定义*/
+if (! function_exists('trans_answer_status')) {
+
+    function trans_answer_status($status){
+        $map = [
+            0 => '待审核',
+            1 => '已审核已发布',
+            2 => '拒绝回答',
+            3 => '待回答',
+            -1 => '已禁言'
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+
+}
+
 
 /*问题状态文本描述定义*/
 if (! function_exists('trans_question_status')) {
