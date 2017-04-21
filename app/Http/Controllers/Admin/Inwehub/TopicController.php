@@ -16,7 +16,7 @@ class TopicController extends AdminController
     /*问题创建校验*/
     protected $validateRules = [
         'title' => 'required|min:5|max:500',
-        'summary' => 'required|max:500',
+        'summary' => 'required|max:1024',
     ];
 
 
