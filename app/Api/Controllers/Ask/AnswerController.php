@@ -232,6 +232,4 @@ class AnswerController extends Controller
         ]);
 
     }
-
-
 }
