@@ -72,3 +72,6 @@ Route::post('upload/uploadImg','UploadController@uploadImg')->middleware('jwt.au
 //加载标签
 Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
 
+//意见反馈
+Route::post('system/feedback','SystemController@feedback')->middleware('jwt.auth');
+
