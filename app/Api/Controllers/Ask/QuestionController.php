@@ -86,7 +86,7 @@ class QuestionController extends Controller
             'rate_star' => $feedback->star,
             'description' => $feedback->content,
             'create_time' => (string)$feedback->created_at
-        ]);
+        ];
 
         return self::createJsonData(true,['question'=>$question_data,'answers'=>$answers_data,'timeline'=>$timeline,'feedback'=>$feedback_data]);
 
