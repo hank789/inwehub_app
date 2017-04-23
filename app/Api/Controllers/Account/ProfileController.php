@@ -31,22 +31,34 @@ class ProfileController extends Controller
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
 
-    public function edit(Request $request){
+    //修改用户资料
+    public function update(Request $request){
         $validateRules = [
-            'name' => 'required|max:128',
+            'real_name' => 'required|max:128',
+            'gender'    => 'max:128',
+            'industry'  => 'max:128',
+            'company'   => 'max:128',
+            'working_province' => 'max:128',
+            'working_city'     => 'max:128',
+            'working_address'  => 'max:128',
+            'email'            => 'max:128',
+            'birthday'         => 'max:128',
             'title' => 'sometimes|max:128',
-            'description' => 'sometimes|max:9999',
+            'self_description' => 'sometimes|max:9999',
         ];
         $this->validate($request,$validateRules);
-        /*$user->name = $request->input('name');
+        $user = $request->user();
+        $user->name = $request->input('real_name');
         $user->gender = $request->input('gender');
         $user->birthday = $request->input('birthday');
         $user->title = $request->input('title');
-        $user->description = $request->input('description');
-        $user->province = $request->input('province');
-        $user->city = $request->input('city');
-        $user->save();*/
-        return $this->success(route('auth.profile.base'),'个人资料修改成功');
+        $user->description = $request->input('self_description');
+        $user->province = $request->input('working_province');
+        $user->city = $request->input('working_city');
+        $user->address_detail = $request->input('working_address');
+        $user->industry_tag_id = $request->input('industry');
+        $user->save();
+        return self::createJsonData(true);
     }
 
     /**
@@ -58,9 +70,8 @@ class ProfileController extends Controller
         $validateRules = [
             'user_avatar' => 'required|image',
         ];
-
+        $this->validate($request,$validateRules);
         if($request->hasFile('user_avatar')){
-            $this->validate($request,$validateRules);
             $user_id = $request->user()->id;
             $file = $request->file('user_avatar');
             $avatarDir = User::getAvatarDir($user_id);
@@ -68,43 +79,13 @@ class ProfileController extends Controller
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
 
             if(in_array($extension, $extArray)){
-                $path = $avatarDir.'/'.User::getAvatarFileName($user_id,'origin').'.'.$extension;
-                Storage::disk('oss')->put($path,File::get($file));
-                if($extension != 'jpg'){
-                    Image::make(File::get($file))->save(storage_path('app/'.User::getAvatarPath($user_id,'origin')));
-                }
-                $request->user()->addMedia($path)->toMediaCollection();
+                $request->user()->addMediaFromRequest('user_avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
             }else{
-                return response('error');
+                return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
             }
-
-            return response()->json(array(
-                'status' => 1,
-                'msg' => '头像上传成功'
-            ));
+            return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl()]);
         }
-
-        if($request->isMethod('POST')){
-            $x = intval($request->input('x'));
-            $y = intval($request->input('y'));
-            $width = intval($request->input('width'));
-            $height = intval($request->input('height'));
-
-            $user_id = $request->user()->id;
-
-            File::delete(storage_path('app/'.User::getAvatarPath($user_id,'big')));
-            File::delete(storage_path('app/'.User::getAvatarPath($user_id,'middle')));
-            File::delete(storage_path('app/'.User::getAvatarPath($user_id,'small')));
-
-            Image::make(storage_path('app/'.User::getAvatarPath($user_id,'origin')))->crop($width,$height,$x,$y)->resize(128,128)->save(storage_path('app/'.User::getAvatarPath($user_id,'big')));
-            Image::make(storage_path('app/'.User::getAvatarPath($user_id,'origin')))->crop($width,$height,$x,$y)->resize(64,64)->save(storage_path('app/'.User::getAvatarPath($user_id,'middle')));
-            Image::make(storage_path('app/'.User::getAvatarPath($user_id,'origin')))->crop($width,$height,$x,$y)->resize(24,24)->save(storage_path('app/'.User::getAvatarPath($user_id,'small')));
-
-            return response()->json(array(
-                'status' => 1,
-                'msg' => '头像截剪成功'
-            ));
-        }
+        return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
 
     }
 
@@ -112,102 +93,25 @@ class ProfileController extends Controller
      * 修改用户密码
      * @param Request $request
      */
-    public function anyPassword(Request $request)
+    public function updatePassword(Request $request)
     {
-        if($request->isMethod('POST')){
-            $validateRules = [
-                'old_password' => 'required|min:6|max:16',
-                'password' => 'required|min:6|max:16',
-                'password_confirmation'=>'same:password',
-                'captcha' => 'required|captcha',
+        $validateRules = [
+            'old_password' => 'required|min:6|max:16',
+            'password' => 'required|min:6|max:16',
+            'password_confirmation'=>'same:password',
+        ];
+        $this->validate($request,$validateRules);
 
-            ];
-            $this->validate($request,$validateRules);
+        $user = $request->user();
 
-            $user = $request->user();
-
-            if(Hash::check($request->input('old_password'),$user->password)){
-                $user->password = Hash::make($request->input('password'));
-                $user->save();
-                Auth()->logout();
-                return $this->success(route('auth.user.login'),'密码修改成功,请重新登录');
-            }
-
-            return redirect(route('auth.profile.password'))
-                ->withErrors([
-                    'old_password' => '原密码错误！',
-                ]);
+        if(Hash::check($request->input('old_password'),$user->password)){
+            $user->password = Hash::make($request->input('password'));
+            $user->save();
+            Auth()->logout();
+            return self::createJsonData(true,[],ApiException::SUCCESS,'密码修改成功,请重新登录');
         }
-        return view('theme::profile.password');
+
+        return self::createJsonData(false,[],ApiException::USER_PASSWORD_ERROR,'原始密码错误');
     }
-
-    /*修改邮箱*/
-    public function anyEmail(Request $request)
-    {
-        if($request->isMethod('POST'))
-        {
-            $validateRules = [
-                'email' => 'required|email|unique:users,email,'.$request->user()->id,
-                'captcha' => 'required|captcha',
-            ];
-            $this->validate($request,$validateRules);
-
-            if($request->input('email') !== $request->user()->email){
-                $request->user()->email = $request->input('email');
-                $request->user()->status = 0;
-                $request->user()->save();
-                $emailToken = EmailToken::create([
-                    'email' =>$request->input('email'),
-                    'action' => 'verify',
-                    'token' => EmailToken::createToken(),
-                ]);
-
-                if($emailToken){
-                    $subject = '欢迎注册'.Setting()->get('website_name').',请激活您注册的邮箱！';
-                    $content = "「".$request->user()->name."」您好，请激活您在 ".Setting()->get('website_name')." 的注册邮箱！<br /> 请在1小时内点击该链接激活注册账号 → ".route('auth.email.verifyToken',['action'=>$emailToken->action,'token'=>$emailToken->token])."<br />如非本人操作，请忽略此邮件！";
-                    $this->sendEmail($emailToken->email,$subject,$content);
-                }
-
-                return $this->success(route('auth.profile.email'),'邮箱修改成功！一封验证邮件已经发到您的邮箱'.$request->user()->email.',请登陆邮箱进行验证！');
-            }
-
-        }
-        return view('theme::profile.email');
-    }
-
-
-
-    /*第三方系统账号绑定*/
-    public function anyOauth()
-    {
-
-        return view('theme::profile.oauth');
-    }
-
-    /*消息通知设置*/
-    public function anyNotification(Request $request)
-    {
-        if($request->isMethod('post')){
-            $siteNotifications = $request->input('site_notifications','');
-            $emailNotifications = $request->input('email_notifications','');
-            $request->user()->site_notifications = '';
-            if($siteNotifications){
-                $request->user()->site_notifications = implode(",",$siteNotifications);
-            }
-            $request->user()->email_notifications = '';
-            if($emailNotifications){
-                $request->user()->email_notifications = implode(",",$emailNotifications);
-            }
-
-            $request->user()->save();
-            return $this->success(route('auth.profile.notification'),'通知提醒策略设置成功');
-
-        }
-        $siteNotifications = explode(",",$request->user()->site_notifications);
-        $emailNotifications = explode(",",$request->user()->email_notifications);
-        return view('theme::profile.notification')->with(compact('siteNotifications','emailNotifications'));
-
-    }
-
 
 }

@@ -24,17 +24,32 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
     Route::post('profile/info','ProfileController@info');
+    //修改用户头像
+    Route::post('profile/updateAvatar','ProfileController@postAvatar');
+    //用户修改密码
+    Route::post('profile/password','ProfileController@updatePassword');
+
+
     //专家认证申请
     Route::post('expert/apply','ExpertController@apply');
 
     //教育经历
-    Route::resource('account/edu','EduController');
+    Route::post('account/edu/store','EduController@store');
+    Route::post('account/edu/update','EduController@update');
+    Route::post('account/edu/destroy','EduController@destroy');
+
     //工作经历
-    Route::resource('account/job','JobController');
+    Route::post('account/job/store','JobController@store');
+    Route::post('account/job/update','JobController@update');
+    Route::post('account/job/destroy','JobController@destroy');
     //培训经历
-    Route::resource('account/train','TrainController');
+    Route::post('account/train/store','TrainController@store');
+    Route::post('account/train/update','TrainController@update');
+    Route::post('account/train/destroy','TrainController@destroy');
     //项目经历
-    Route::resource('account/project','ProjectController');
+    Route::post('account/project/store','ProjectController@store');
+    Route::post('account/project/update','ProjectController@update');
+    Route::post('account/project/destroy','ProjectController@destroy');
 
 
     Route::post('protected', function() {
