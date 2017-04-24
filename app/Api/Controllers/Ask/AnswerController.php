@@ -211,6 +211,8 @@ class AnswerController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
+        $answer->question()->update(['status'=>7]);
+
         return self::createJsonData(true,$request->all());
     }
 
