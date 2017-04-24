@@ -21,11 +21,13 @@ class TaskController extends Controller {
             $task_type = '';
             $task_type_description = '';
             $description = '';
+            $object_id = '';
             switch($task->source_type){
                 case 'App\Models\Question':
                     $task_type = 1;
                     $task_type_description = '提问';
                     $question = Question::find($task->source_id);
+                    $object_id = $question->id;
                     $description = $question->title;
                     $status = $question->status;
                     switch($question->status){
@@ -60,6 +62,7 @@ class TaskController extends Controller {
                 'user_name' => $task->user->name,
                 'user_avatar_url' => $task->user->getAvatarUrl(),
                 'description' => $description,
+                'object_id'   => $object_id,
                 'status' => $status,
                 'status_description' => $status_description,
                 'created_at' => (string)$task->updated_at
