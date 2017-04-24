@@ -3,6 +3,7 @@
 use App\Exceptions\ApiException;
 use App\Models\Area;
 use App\Models\EmailToken;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
@@ -23,10 +24,26 @@ class ProfileController extends Controller
          * @var User
          */
         $user = $request->user();
-        $provinces = Area::provinces();
-        $cities = Area::cities($user->province);
+        $info = [];
+        $info['id'] = $user->id;
+        $info['name'] = $user->name;
+        $info['mobile'] = $user->mobile;
+        $info['email'] = $user->email;
+        $info['avatar_url'] = $user->getAvatarUrl();
+        $info['gender'] = trans_gender_name($user->gender);
+        $info['birthday'] = $user->birthday;
+        $info['province'] = $user->province;
+        $info['city'] = $user->city;
+        $info['company'] = $user->company;
+        $info['description'] = $user->description;
+        $info['status'] = $user->status;
+        $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
         $data = [
-            'user'   => $user,
+            'info'   => $info,
+            'jobs'   => $user->jobs(),
+            'projects' => $user->projects(),
+            'edus'   => $user->edus(),
+            'trans'  => $user->trains()
         ];
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }

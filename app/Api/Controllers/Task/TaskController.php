@@ -14,8 +14,18 @@ use Illuminate\Http\Request;
 class TaskController extends Controller {
 
     public function myList(Request $request){
-        $last_id = $request->input('last_id',0);
-        $tasks = $request->user()->tasks()->where('status',0)->where('id','>',$last_id)->orderBy('updated_at','DESC')->paginate(10);
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+
+        $query = $request->user()->tasks()->where('status',0);
+        if($top_id){
+            $query = $query->where('id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('id','<',$bottom_id);
+        }else{
+            $query = $query->where('id','>',0);
+        }
+        $tasks = $query->orderBy('updated_at','DESC')->paginate(10);
         $list = [];
         foreach($tasks as $task){
             $task_type = '';
@@ -57,6 +67,7 @@ class TaskController extends Controller {
                     break;
             }
             $list[] = [
+                'id'        => $task->id,
                 'task_type' => $task_type,
                 'task_type_description' => $task_type_description,
                 'user_name' => $task->user->name,

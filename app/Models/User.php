@@ -342,6 +342,25 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany('App\Models\UserTag','user_id');
     }
 
+    //工作经历
+    public function jobs(){
+        return $this->hasMany('App\Models\UserInfo\JobInfo','user_id');
+    }
+
+    //教育经历
+    public function edus(){
+        return $this->hasMany('App\Models\UserInfo\EduInfo','user_id');
+    }
+
+    //培训经历
+    public function trains(){
+        return $this->hasMany('App\Models\UserInfo\TrainInfo','user_id');
+    }
+
+    //项目经历
+    public function projects(){
+        return $this->hasMany('App\Models\UserInfo\ProjectInfo','user_id');
+    }
 
     public function hotTags(){
         $hotTagIds = $this->userTags()->select("tag_id")->distinct()->orderBy('supports','desc')->orderBy('answers','desc')->orderBy('created_at','desc')->take(5)->pluck('tag_id');
