@@ -147,7 +147,7 @@ class RssPosts extends Command
         $promise = $pool->promise();
 
         // Force the pool of requests to complete.
-        $promise->wait();
+        $promise->wait(false);
 
         $this->comment(PHP_EOL.Inspiring::quote().PHP_EOL);
     }
