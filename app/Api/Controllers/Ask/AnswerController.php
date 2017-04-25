@@ -55,7 +55,7 @@ class AnswerController extends Controller
         $this->validate($request,$this->validateRules);
         $promise_time = $request->input('promise_time');
 
-        $answerContent = clean($request->input('description'));
+        $answerContent = trim($request->input('description'));
         $data = [
             'user_id'      => $loginUser->id,
             'question_id'      => $question_id,
@@ -77,7 +77,7 @@ class AnswerController extends Controller
 
         if($question->status == 4){
             //已确认待回答
-            $answer = Answer::where('status',3)->first();
+            $answer = Answer::where('status',3)->get()->last();
         }else{
             $answer = Answer::create($data);
         }
