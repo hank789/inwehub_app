@@ -54,7 +54,7 @@ class ProfileController extends Controller
     //修改用户资料
     public function update(Request $request){
         $validateRules = [
-            'real_name' => 'required|max:128',
+            'name' => 'required|max:128',
             'gender'    => 'max:128',
             'industry'  => 'max:128',
             'company'   => 'max:128',
@@ -68,7 +68,7 @@ class ProfileController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $user->name = $request->input('real_name');
+        $user->name = $request->input('name');
         $user->gender = $request->input('gender');
         $user->birthday = $request->input('birthday');
         $user->title = $request->input('title');
@@ -76,7 +76,6 @@ class ProfileController extends Controller
         $user->province = $request->input('working_province');
         $user->city = $request->input('working_city');
         $user->address_detail = $request->input('working_address');
-        $user->industry_tag_id = $request->input('industry');
         $user->save();
         return self::createJsonData(true);
     }

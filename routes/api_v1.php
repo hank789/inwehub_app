@@ -28,6 +28,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/updateAvatar','ProfileController@postAvatar');
     //用户修改密码
     Route::post('profile/password','ProfileController@updatePassword');
+    //用户修改基本信息
+    Route::post('profile/update','ProfileController@update');
 
 
     //专家认证申请
