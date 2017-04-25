@@ -15,8 +15,11 @@ class AddUserInfo extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string("company",255)->after('city')->default('');
-            $table->integer("industry_tag_id")->after('title')->default('0');
             $table->string("address_detail",255)->after('city')->default('');
+        });
+
+        Schema::table('user_tags', function (Blueprint $table) {
+            $table->integer('industries')->unsigned()->default(0);
         });
 
         //工作经历
