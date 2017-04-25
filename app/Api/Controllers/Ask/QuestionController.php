@@ -248,8 +248,18 @@ class QuestionController extends Controller
 
     //我的提问列表
     public function myList(Request $request){
-        $last_id = $request->input('last_id',0);
-        $questions = $request->user()->questions()->where('id','>',$last_id)->orderBy('created_at','DESC')->paginate(10);
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+
+        $query = $request->user()->questions();
+        if($top_id){
+            $query = $query->where('id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('id','<',$bottom_id);
+        }else{
+            $query = $query->where('id','>',0);
+        }
+        $questions = $query->orderBy('created_at','DESC')->paginate(10);
 
         $list = [];
         foreach($questions as $question){

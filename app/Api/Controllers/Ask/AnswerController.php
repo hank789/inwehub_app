@@ -143,8 +143,19 @@ class AnswerController extends Controller
     //我的提问列表
     public function myList(Request $request)
     {
-        $last_id = $request->input('last_id',0);
-        $question_invitations = QuestionInvitation::where('user_id','=',$request->user()->id)->whereIn('status',[0,1])->where('id','>',$last_id)->paginate(10);
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+
+        $query = QuestionInvitation::where('user_id','=',$request->user()->id)->whereIn('status',[0,1]);
+        if($top_id){
+            $query = $query->where('id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('id','<',$bottom_id);
+        }else{
+            $query = $query->where('id','>',0);
+        }
+
+        $question_invitations = $query->paginate(10);
         $list = [];
         foreach($question_invitations as $question_invitation){
             $question = Question::find($question_invitation->question_id);
