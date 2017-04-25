@@ -155,7 +155,7 @@ class AnswerController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $question_invitations = $query->paginate(10);
+        $question_invitations = $query->orderBy('id','DESC')->paginate(10);
         $list = [];
         foreach($question_invitations as $question_invitation){
             $question = Question::find($question_invitation->question_id);
