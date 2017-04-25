@@ -182,7 +182,8 @@ class AnswerController extends Controller
                     break;
             }
             $list[] = [
-                'id' => $question->id,
+                'id' => $question_invitation->id,
+                'question_id' => $question->id,
                 'user_id' => $question->user_id,
                 'user_name' => $question->hide ? '匿名' : $question->user->name,
                 'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
