@@ -43,7 +43,7 @@ class QuestionController extends Controller
         /*已解决问题*/
         $bestAnswers = [];
         if($question->status >= 6 ){
-            $bestAnswers = $question->answers()->where('adopted_at','>',0)->get();
+            $bestAnswers = $question->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get();
         }
 
         /*设置通知为已读*/
