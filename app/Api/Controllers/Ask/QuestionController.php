@@ -38,6 +38,7 @@ class QuestionController extends Controller
         if(empty($question)){
             abort(404);
         }
+        $user = $request->user();
 
         /*已解决问题*/
         $bestAnswers = [];
@@ -60,7 +61,7 @@ class QuestionController extends Controller
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,
-            'status_description' => $question->statusHumanDescription(),
+            'status_description' => $question->statusHumanDescription($user->id == $question->user_id),
             'created_at' => (string)$question->created_at
         ];
 

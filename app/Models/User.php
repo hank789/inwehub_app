@@ -375,6 +375,18 @@ class User extends Model implements AuthenticatableContract,
         return $tags;
     }
 
+    public function industryTags(){
+        $tagIds = $this->userTags()->select("tag_id")->distinct()->where('industries','>',0)->orderBy('created_at','desc')->get()->pluck('tag_id');
+        $tags = [];
+        foreach($tagIds as $tagId){
+            $tag = Tag::find($tagId);
+            if($tag){
+                $tags[] = $tag;
+            }
+        }
+        return $tags;
+    }
+
     //获得用户头像地址
     public function getAvatarUrl(){
         if($this->getMedia('avatar')->isEmpty()){

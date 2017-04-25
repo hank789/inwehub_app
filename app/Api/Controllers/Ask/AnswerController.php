@@ -170,7 +170,8 @@ class AnswerController extends Controller
                     //已确认待回答
                     $answer = Answer::where('status',3)->first();
                     $answer_promise_time = $answer->promise_time;
-                    $status_description = promise_time_format($answer_promise_time).',点击前往回答';
+                    $desc = promise_time_format($answer_promise_time);
+                    $status_description = $desc['desc'].',点击前往回答';
                     break;
                 case 6:
                     //已回答待点评

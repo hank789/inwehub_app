@@ -35,8 +35,11 @@ class ProfileController extends Controller
         $info['province'] = $user->province;
         $info['city'] = $user->city;
         $info['company'] = $user->company;
+        $info['title'] = $user->title;
         $info['description'] = $user->description;
         $info['status'] = $user->status;
+        $info['address_detail'] = $user->address_detail;
+        $info['industry_tags'] = array_column($user->industryTags(),'name');
         $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
         $data = [
             'info'   => $info,

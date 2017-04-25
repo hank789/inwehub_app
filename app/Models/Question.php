@@ -112,7 +112,7 @@ class Question extends Model
         });
     }
 
-    public function statusHumanDescription(){
+    public function statusHumanDescription($is_self = true){
         $description = '';
         switch ($this->status){
             case 0:
@@ -129,7 +129,12 @@ class Question extends Model
                 break;
             case 4:
                 $answer = $this->answers()->orderBy('id','desc')->first();
-                $description = '您的问题已分配给专家,专家已承诺在'.promise_time_format($answer->promise_time).'前回答';
+                $desc = promise_time_format($answer->promise_time);
+                if($is_self){
+                    $description = '您的问题已分配给专家,专家已承诺在'.$desc['desc'].'前回答';
+                }else{
+                    $description = '倒计时'.$desc['diff'];
+                }
                 break;
             case 5:
                 $description = '您的提问平台已经受理,我们将会尽快为您寻找合适的专家!';
