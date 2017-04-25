@@ -146,7 +146,7 @@ class AnswerController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
 
-        $query = QuestionInvitation::where('user_id','=',$request->user()->id)->whereIn('status',[0,1]);
+        $query = QuestionInvitation::where('user_id','=',$request->user()->id);
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
