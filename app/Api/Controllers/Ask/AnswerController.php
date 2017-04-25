@@ -93,6 +93,7 @@ class AnswerController extends Controller
                 $question->answered();
 
                 $answer->status = 1;
+                $answer->adopted_at = date('Y-m-d H:i:s');
                 $answer->save();
 
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
