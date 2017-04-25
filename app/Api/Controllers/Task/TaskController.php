@@ -25,7 +25,7 @@ class TaskController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $tasks = $query->orderBy('updated_at','DESC')->paginate(10);
+        $tasks = $query->orderBy('id','DESC')->paginate(10);
         $list = [];
         foreach($tasks as $task){
             $task_type = '';

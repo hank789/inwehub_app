@@ -259,7 +259,7 @@ class QuestionController extends Controller
         }else{
             $query = $query->where('id','>',0);
         }
-        $questions = $query->orderBy('created_at','DESC')->paginate(10);
+        $questions = $query->orderBy('id','DESC')->paginate(10);
 
         $list = [];
         foreach($questions as $question){
