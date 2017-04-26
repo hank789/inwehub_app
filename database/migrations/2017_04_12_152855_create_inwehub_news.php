@@ -24,8 +24,8 @@ class CreateInwehubNews extends Migration
             $table->integer('read_count')->default(0)->comment('阅读数');
             $table->integer('like_count')->default(0)->comment('点攒数');
             $table->integer('comment_count')->default(0)->comment('评论数');
-            $table->string('content_url',300)->default('')->unique()->comment('文章永久地址');
-            $table->string('mobile_url',255)->default('')->comment('手机站url');
+            $table->string('content_url',1024)->default('')->unique()->comment('文章永久地址');
+            $table->string('mobile_url',1024)->default('')->comment('手机站url');
             $table->string('site_name',255)->default('')->comment('站点名字');                          //站点名字
             $table->string('author',50)->default('')->comment('作者');
             $table->integer('msg_index')->default(0)->comment('一次群发中的图文顺序 1是头条 ');

@@ -14,7 +14,7 @@ class NewsController extends AdminController
     /*新闻创建校验*/
     protected $validateRules = [
         'title' => 'required|min:5|max:255',
-        'content_url' => 'required|max:255',
+        'content_url' => 'required|max:1024',
         'site_name' => 'required|max:255',
         'author' => 'required|max:255',
         'description' => 'max:200'

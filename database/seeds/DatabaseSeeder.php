@@ -468,6 +468,26 @@ class DatabaseSeeder extends Seeder
         ]);
         $admin->attachRole(1);
 
+        $admin2 = $registrar->create([
+            'name' => 'laoguo',
+            'email' => 'hongwei.guo@intervapp.com',
+            'mobile' => '15801776680',
+            'password' => 'qwer1234',
+            'status' => 1,
+            'visit_ip' => '127.0.0.1',
+        ]);
+        $admin2->attachRole(1);
+
+        $admin3 = $registrar->create([
+            'name' => 'cicely',
+            'email' => 'cicely.cheng@intervapp.com',
+            'mobile' => '13601874269',
+            'password' => 'qwer1234',
+            'status' => 1,
+            'visit_ip' => '127.0.0.1',
+        ]);
+        $admin3->attachRole(1);
+
 
 
     }
