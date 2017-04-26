@@ -63,7 +63,7 @@ class UserController extends Controller
                 }
 
                 /*认证成功后跳转到首页*/
-                return redirect()->to(route('website.index'));
+                return redirect()->to(route('admin.account.login'));
 
             }
 

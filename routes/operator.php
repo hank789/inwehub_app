@@ -1,39 +1,28 @@
 <?php
 
-/*installer*/
-Route::Group(['namespace'=>'Installer','middleware'=>'installer'],function(){
-    Route::get('/install',['as'=>'website.installer.welcome','uses'=>'InstallerController@welcome']);
-    Route::get('/install/requirement',['as'=>'website.installer.requirement','uses'=>'InstallerController@requirement']);
-    Route::any('/install/config',['as'=>'website.installer.config','uses'=>'InstallerController@config']);
-    Route::get('/install/initDB',['as'=>'website.installer.initDB','uses'=>'InstallerController@initDB']);
-    Route::any('/install/website',['as'=>'website.installer.website','uses'=>'InstallerController@website']);
-    Route::get('/install/finished',['as'=>'website.installer.finished','uses'=>'InstallerController@finished']);
-});
-
-
 /*首页*/
 Route::get('/',['as'=>'website.index','middleware'=>'auth','uses'=>'IndexController@index']);
 
 Route::get('/callback',['as'=>'website.index.callback','uses'=>'IndexController@callback']);
 
 /*问答*/
-Route::get('/questions/{category_name?}/{filter?}',['as'=>'website.ask','uses'=>'IndexController@ask'])->where(['filter'=>'(newest|hottest|reward|unAnswered)']);
+Route::get('/questions/{category_name?}/{filter?}',['as'=>'website.ask','uses'=>'IndexController@ask'])->where(['filter'=>'(newest|hottest|reward|unAnswered)'])->middleware(['auth','auth.admin']);
 
 /*标签*/
-Route::get('/topics/{category_name?}',['as'=>'website.topic','uses'=>'IndexController@topic']);
+Route::get('/topics/{category_name?}',['as'=>'website.topic','uses'=>'IndexController@topic'])->middleware(['auth','auth.admin']);
 
 /*文章*/
-Route::get('/articles/{category_name?}/{filter?}',['as'=>'website.blog','uses'=>'IndexController@blog'])->where(['filter'=>'(recommended|newest|hottest)']);
+Route::get('/articles/{category_name?}/{filter?}',['as'=>'website.blog','uses'=>'IndexController@blog'])->where(['filter'=>'(recommended|newest|hottest)'])->middleware(['auth','auth.admin']);
 
 /*用户*/
-Route::get('/users',['as'=>'website.user','uses'=>'IndexController@user']);
+Route::get('/users',['as'=>'website.user','uses'=>'IndexController@user'])->middleware(['auth','auth.admin']);
 
 /*experts*/
-Route::get('/experts/{categorySlug?}/{provinceId?}',['as'=>'website.experts','uses'=>'IndexController@experts']);
+Route::get('/experts/{categorySlug?}/{provinceId?}',['as'=>'website.experts','uses'=>'IndexController@experts'])->middleware(['auth','auth.admin']);
 
 
 /*积分商城*/
-Route::get('/shop',['as'=>'website.shop','uses'=>'IndexController@shop']);
+Route::get('/shop',['as'=>'website.shop','uses'=>'IndexController@shop'])->middleware(['auth','auth.admin']);
 
 /*sitemap*/
 Route::get('/sitemap',['as'=>'website.sitemap','uses'=>'SiteMapController@index']);
@@ -58,7 +47,7 @@ Route::Group(['namespace'=>'Account'],function(){
 
 
     /*动态*/
-    Route::Group(['middleware'=>'auth'],function(){
+    Route::Group(['middleware'=>['auth','auth.admin']],function(){
         Route::get('doings',['as'=>'auth.doing.index','uses'=>'DoingsController@index']);
         /*用户空间首页*/
         Route::get('people/{user_id}',['as'=>'auth.space.index','uses'=>'SpaceController@index'])->where(['user_id'=>'[0-9]+']);
@@ -167,7 +156,7 @@ Route::Group(['namespace'=>'Account'],function(){
 });
 
 /*前台显示部分*/
-Route::Group(['namespace'=>'Ask','middleware'=>'auth'],function(){
+Route::Group(['namespace'=>'Ask','middleware'=>['auth','auth.admin']],function(){
 
 
     /*问题查看*/
@@ -221,7 +210,7 @@ Route::Group(['namespace'=>'Ask','middleware'=>'auth'],function(){
 
 
 /*文章模块*/
-Route::Group(['namespace'=>'Blog','middleware'=>'auth'],function(){
+Route::Group(['namespace'=>'Blog','middleware'=>['auth','auth.admin']],function(){
 
     /*文章查看*/
     Route::get('article/{id}',['as'=>'blog.article.detail','uses'=>'ArticleController@show'])->where(['id'=>'[0-9]+']);
@@ -235,7 +224,7 @@ Route::Group(['namespace'=>'Blog','middleware'=>'auth'],function(){
 });
 
 /*商城模块*/
-Route::Group(['namespace'=>'Shop','middleware'=>'auth'],function(){
+Route::Group(['namespace'=>'Shop','middleware'=>['auth','auth.admin']],function(){
 
     /*商品详情查看*/
     Route::get('goods/{id}',['as'=>'shop.goods.detail','uses'=>'GoodsController@show'])->where(['id'=>'[0-9]+']);
