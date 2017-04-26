@@ -30,7 +30,7 @@ class ProfileController extends Controller
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
         $info['avatar_url'] = $user->getAvatarUrl();
-        $info['gender'] = trans_gender_name($user->gender);
+        $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province'] = $user->province;
         $info['city'] = $user->city;
@@ -72,6 +72,8 @@ class ProfileController extends Controller
         $user->gender = $request->input('gender');
         $user->birthday = $request->input('birthday');
         $user->title = $request->input('title');
+        $user->company = $request->input('company');
+
         $user->description = $request->input('self_description');
         $user->province = $request->input('working_province');
         $user->city = $request->input('working_city');
