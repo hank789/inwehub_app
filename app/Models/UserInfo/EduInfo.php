@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class EduInfo extends Model
 {
     use BelongsToUserTrait,SoftDeletes;
-    protected $table = 'user_udu_info';
+    protected $table = 'user_edu_info';
     protected $fillable = ['user_id', 'school_name','title','degree','begin_time','end_time','description'];
 
     /**

@@ -30,9 +30,9 @@ class JobController extends Controller {
         $data = $request->all();
         $data['user_id'] = $user->id;
 
-        JobInfo::create($data);
+        $job = JobInfo::create($data);
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$job->id,'type'=>'job']);
     }
 
     //提交修改
@@ -45,7 +45,7 @@ class JobController extends Controller {
 
         JobInfo::where('id',$id)->where('user_id',$user->id)->update($data);
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$id,'type'=>'job']);
     }
 
     //删除
@@ -54,7 +54,7 @@ class JobController extends Controller {
         $user = $request->user();
         JobInfo::where('id',$id)->where('user_id',$user->id)->delete();
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$id,'type'=>'job']);
     }
 
 

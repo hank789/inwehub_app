@@ -28,9 +28,9 @@ class TrainController extends Controller {
         $data = $request->all();
         $data['user_id'] = $user->id;
 
-        TrainInfo::create($data);
+        $train = TrainInfo::create($data);
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$train->id,'type'=>'train']);
     }
 
     //提交修改
@@ -43,7 +43,7 @@ class TrainController extends Controller {
 
         TrainInfo::where('id',$id)->where('user_id',$user->id)->update($data);
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$id,'type'=>'train']);
     }
 
     //删除
@@ -52,7 +52,7 @@ class TrainController extends Controller {
         $user = $request->user();
         TrainInfo::where('id',$id)->where('user_id',$user->id)->delete();
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$id,'type'=>'train']);
     }
 
 

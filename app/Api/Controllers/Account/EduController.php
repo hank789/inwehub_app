@@ -31,9 +31,9 @@ class EduController extends Controller {
         $data = $request->all();
         $data['user_id'] = $user->id;
 
-        EduInfo::create($data);
+        $edu = EduInfo::create($data);
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$edu->id,'type'=>'edu']);
     }
 
     //提交修改
@@ -46,7 +46,7 @@ class EduController extends Controller {
 
         EduInfo::where('id',$id)->where('user_id',$user->id)->update($data);
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$id,'type'=>'edu']);
     }
 
     //删除
@@ -55,7 +55,7 @@ class EduController extends Controller {
         $user = $request->user();
         EduInfo::where('id',$id)->where('user_id',$user->id)->delete();
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$id,'type'=>'edu']);
     }
 
 

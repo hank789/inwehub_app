@@ -30,9 +30,9 @@ class ProjectController extends Controller {
         $data = $request->all();
         $data['user_id'] = $user->id;
 
-        ProjectInfo::create($data);
+        $project = ProjectInfo::create($data);
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$project->id,'type'=>'project']);
     }
 
     //提交修改
@@ -45,7 +45,7 @@ class ProjectController extends Controller {
 
         ProjectInfo::where('id',$id)->where('user_id',$user->id)->update($data);
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$id,'type'=>'project']);
     }
 
     //删除
@@ -54,7 +54,7 @@ class ProjectController extends Controller {
         $user = $request->user();
         ProjectInfo::where('id',$id)->where('user_id',$user->id)->delete();
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['id'=>$id,'type'=>'project']);
     }
 
 

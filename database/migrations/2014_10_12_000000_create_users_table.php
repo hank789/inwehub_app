@@ -20,8 +20,8 @@ class CreateUsersTable extends Migration
             $table->string('password', 64);                     //登录密码
             $table->tinyInteger('gender')->nullable();          //性别: 1-男，2-女，0-保密
             $table->date('birthday')->nullable();               //出生日期
-            $table->smallInteger('province')->nullable();       //居住省份
-            $table->smallInteger('city')->nullable();           //居住城市
+            $table->string('province',12)->nullable();       //居住省份
+            $table->string('city',12)->nullable();           //居住城市
             $table->string('title')->nullable();                //头衔
             $table->text('description')->nullable();            //个人简介
             $table->tinyInteger('status')->default(1);          //用户状态0-待审核，1已审核

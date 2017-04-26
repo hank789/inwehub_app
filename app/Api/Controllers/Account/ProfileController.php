@@ -43,10 +43,10 @@ class ProfileController extends Controller
         $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
         $data = [
             'info'   => $info,
-            'jobs'   => $user->jobs(),
-            'projects' => $user->projects(),
-            'edus'   => $user->edus(),
-            'trans'  => $user->trains()
+            'jobs'   => $user->jobs()->orderBy('begin_time','desc')->get(),
+            'projects' => $user->projects()->orderBy('begin_time','desc')->get(),
+            'edus'   => $user->edus()->orderBy('begin_time','desc')->get(),
+            'trains'  => $user->trains()->orderBy('get_time','desc')->get()
         ];
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
@@ -58,13 +58,13 @@ class ProfileController extends Controller
             'gender'    => 'max:128',
             'industry'  => 'max:128',
             'company'   => 'max:128',
-            'working_province' => 'max:128',
-            'working_city'     => 'max:128',
-            'working_address'  => 'max:128',
+            'province' => 'max:128',
+            'city'     => 'max:128',
+            'address_detail'  => 'max:128',
             'email'            => 'max:128',
             'birthday'         => 'max:128',
             'title' => 'sometimes|max:128',
-            'self_description' => 'sometimes|max:9999',
+            'description' => 'sometimes|max:9999',
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
@@ -74,10 +74,10 @@ class ProfileController extends Controller
         $user->title = $request->input('title');
         $user->company = $request->input('company');
 
-        $user->description = $request->input('self_description');
-        $user->province = $request->input('working_province');
-        $user->city = $request->input('working_city');
-        $user->address_detail = $request->input('working_address');
+        $user->description = $request->input('description');
+        $user->province = $request->input('province');
+        $user->city = $request->input('city');
+        $user->address_detail = $request->input('address_detail');
         $user->save();
         return self::createJsonData(true);
     }
