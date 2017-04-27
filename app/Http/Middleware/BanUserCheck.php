@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\ApiException;
+use App\Traits\CreateJsonResponseData;
 use Illuminate\Contracts\Auth\Guard;
 use Closure;
 
@@ -35,10 +37,10 @@ class BanUserCheck
     public function handle($request, Closure $next)
     {
         if($this->auth->check() && $this->auth->user()->status === -1){
-            abort(403);
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::USER_NEED_CONFIRM,ApiException::$errorMessages[ApiException::USER_NEED_CONFIRM]);
         }
         if($this->auth->check() && $this->auth->user()->status === 0){
-            abort(403);
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::USER_NEED_CONFIRM,ApiException::$errorMessages[ApiException::USER_NEED_CONFIRM]);
         }
         return $next($request);
     }

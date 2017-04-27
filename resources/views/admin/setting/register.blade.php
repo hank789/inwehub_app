@@ -26,6 +26,15 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label for="website_url">新用户注册后需要审核</label>
+                                <span class="text-muted">(需要管理员在后台审核通过)</span>
+                                <div class="radio">
+                                    <label><input type="radio" name="register_need_confirm" value="1" @if(Setting()->get('register_need_confirm','0') == 1) checked @endif > 需要审核 </label>
+                                    <label class="ml-20"><input type="radio" name="register_need_confirm" value="0" @if(Setting()->get('register_need_confirm','0') != 1) checked @endif > 不需要审核 </label>
+                                </div>
+                            </div>
+
 
 
                             <div class="form-group">

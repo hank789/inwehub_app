@@ -170,7 +170,12 @@ class AuthController extends Controller
 
         $formData = $request->all();
         $formData['email'] = $formData['mobile'];
-        $formData['status'] = 1;
+        if(Setting()->get('register_need_confirm', 0)){
+            //注册完成后需要审核
+            $formData['status'] = 0;
+        }else{
+            $formData['status'] = 1;
+        }
         $formData['visit_ip'] = $request->getClientIp();
 
         $user = $registrar->create($formData);

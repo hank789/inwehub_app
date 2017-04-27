@@ -30,22 +30,22 @@ class GetUserFromToken extends BaseMiddleware
     {
         if (! $token = $this->auth->setRequest($request)->getToken()) {
             $this->respond('tymon.jwt.absent', 'token_not_provided', 400);
-            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_MISSING,'token缺失')->setStatusCode(400);
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_MISSING,'token缺失');
         }
 
         try {
             $user = $this->auth->authenticate($token);
         } catch (TokenExpiredException $e) {
             $this->respond('tymon.jwt.expired', 'token_expired', $e->getStatusCode(), [$e]);
-            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_EXPIRED,'token已失效')->setStatusCode($e->getStatusCode());
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_EXPIRED,'token已失效');
         } catch (JWTException $e) {
              $this->respond('tymon.jwt.invalid', 'token_invalid', $e->getStatusCode(), [$e]);
-            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_INVALID,'token无效')->setStatusCode($e->getStatusCode());
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_INVALID,'token无效');
         }
 
         if (! $user) {
             $this->respond('tymon.jwt.user_not_found', 'user_not_found', 404);
-            return CreateJsonResponseData::createJsonData(false,[],ApiException::USER_NOT_FOUND,'用户不存在')->setStatusCode(404);
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::USER_NOT_FOUND,'用户不存在');
         }
 
         $this->events->fire('tymon.jwt.valid', $user);

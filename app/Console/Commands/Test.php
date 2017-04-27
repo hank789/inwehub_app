@@ -31,8 +31,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $t = Question::find(7);
-
-        var_dump($t->statusHumanDescription());
+        $t = Setting()->get('register_need_confirm',0);
+        var_dump($t);
     }
 }
