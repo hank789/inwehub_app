@@ -13,7 +13,7 @@ class EduInfo extends Model
 {
     use BelongsToUserTrait,SoftDeletes;
     protected $table = 'user_edu_info';
-    protected $fillable = ['user_id', 'school_name','title','degree','begin_time','end_time','description'];
+    protected $fillable = ['user_id', 'school','major','degree','begin_time','end_time','description'];
 
     /**
      * 需要被转换成日期的属性。
