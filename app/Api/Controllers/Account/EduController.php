@@ -16,7 +16,7 @@ class EduController extends Controller {
     protected $validateRules = [
         'school' => 'required',
         'major'   => 'required',
-        'degree'  => 'degree',
+        'degree'  => 'required',
         'begin_time'   => 'required',
         'end_time'   => 'required',
         'description'   => 'required',
