@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Tag;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use Illuminate\Http\Request;
@@ -240,6 +241,7 @@ class QuestionController extends Controller
             //问题已拒绝
             $question->rejectAnswer();
         }
+        $this->finishTask($loginUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
         /*添加标签*/
         $tagString = trim($request->input('tags'));
