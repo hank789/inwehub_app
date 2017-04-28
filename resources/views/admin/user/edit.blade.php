@@ -45,7 +45,7 @@
                               <input type="text" name="email" class="form-control " placeholder="邮箱地址" value="{{ old('email',$user->email) }}">
                               @if ($errors->has('email')) <p class="help-block">{{ $errors->first('email') }}</p> @endif
                           </div>
-                            <div class="form-group @if ($errors->has('email')) has-error @endif">
+                            <div class="form-group @if ($errors->has('mobile')) has-error @endif">
                                 <label for="name">手机</label>
                                 <input type="text" name="mobile" class="form-control " placeholder="手机" value="{{ old('mobile',$user->mobile) }}">
                                 @if ($errors->has('mobile')) <p class="help-block">{{ $errors->first('mobile') }}</p> @endif

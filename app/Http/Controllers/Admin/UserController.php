@@ -115,8 +115,11 @@ class UserController extends AdminController
         if(!$user){
             abort(404);
         }
-        $this->validateRules['name'] = 'required|email|max:255|unique:users,name,'.$user->id;
+        $this->validateRules['name'] = 'required|max:255|unique:users,name,'.$user->id;
         $this->validateRules['email'] = 'required|email|max:255|unique:users,email,'.$user->id;
+        $this->validateRules['mobile'] = 'required|cn_phone|unique:users,mobile,'.$user->id;
+        unset($this->validateRules['password']);
+        $this->validate($request,$this->validateRules);
         $this->validateRules['password'] = 'sometimes|min:6';
         $password = $request->input('password');
         if($password)
@@ -125,6 +128,7 @@ class UserController extends AdminController
         }
         $user->name = $request->input('name');
         $user->email = $request->input('email');
+        $user->mobile = $request->input('mobile');
         $user->title = $request->input('title','');
         $user->gender = $request->input('gender',0);
         $user->province = $request->input('province',0);
