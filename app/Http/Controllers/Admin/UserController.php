@@ -135,6 +135,7 @@ class UserController extends AdminController
         $user->city = $request->input('city',0);
         $user->description = $request->input('description');
         $user->status = $request->input('status',0);
+        $user->birthday = $request->input('birthday',null);
 
         if($request->hasFile('avatar')){
             $user_id = $user->id;
