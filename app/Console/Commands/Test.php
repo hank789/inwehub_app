@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Question;
 use Carbon\Carbon;
@@ -31,7 +32,10 @@ class Test extends Command
      */
     public function handle()
     {
-        $t = Setting()->get('register_need_confirm',0);
-        var_dump($t);
+        $otherAnswers = Answer::where('question_id',1)->where('status','!=',2)->first();
+        if(!$otherAnswers){
+            //问题已拒绝
+            var_dump(1);
+        }
     }
 }

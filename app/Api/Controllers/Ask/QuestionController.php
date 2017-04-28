@@ -237,7 +237,8 @@ class QuestionController extends Controller
 
         //是否有其它待回答
         $otherAnswers = Answer::where('question_id',$question->id)->where('status','!=',2)->first();
-        if(!$otherAnswers){
+        $other_question_invitations = QuestionInvitation::where('question_id','=',$question->id)->where('status',0)->first();
+        if(!$otherAnswers && !$other_question_invitations){
             //问题已拒绝
             $question->rejectAnswer();
         }
