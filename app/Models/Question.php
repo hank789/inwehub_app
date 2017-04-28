@@ -128,14 +128,10 @@ class Question extends Model
                 $description = '问题已关闭';
                 break;
             case 4:
-                $answer_query = $this->answers();
-                if($user_id != $this->user_id){
-                    $answer_query->where('user_id',$user_id);
-                }
-                $answer = $answer_query->orderBy('id','desc')->first();
+                $answer = $this->answers()->whereIn('status',[1,3])->orderBy('id','asc')->first();
                 $desc = promise_time_format($answer->promise_time);
                 if($user_id == $this->user_id){
-                    $description = '专家已承诺,'.$desc['desc'];
+                    $description = $answer->user->name.'已承诺,'.$desc['desc'];
                 }else{
                     $description = '倒计时'.$desc['diff'];
                 }
