@@ -167,7 +167,7 @@ class AnswerController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
 
-        $query = QuestionInvitation::where('user_id','=',$request->user()->id)->whereIn('status',[0,1]);
+        $query = Answer::where('user_id','=',$request->user()->id)->whereIn('status',[0,3]);
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
@@ -176,10 +176,10 @@ class AnswerController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $question_invitations = $query->orderBy('id','DESC')->paginate(10);
+        $answers = $query->orderBy('id','DESC')->paginate(10);
         $list = [];
-        foreach($question_invitations as $question_invitation){
-            $question = Question::find($question_invitation->question_id);
+        foreach($answers as $answer){
+            $question = Question::find($answer->question_id);
             $status_description = '';
             $answer_promise_time = '';
             switch($question->status){
@@ -204,7 +204,7 @@ class AnswerController extends Controller
                     break;
             }
             $list[] = [
-                'id' => $question_invitation->id,
+                'id' => $answer->id,
                 'question_id' => $question->id,
                 'user_id' => $question->user_id,
                 'user_name' => $question->hide ? '匿名' : $question->user->name,

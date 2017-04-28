@@ -5,6 +5,8 @@
     git pull origin master
     composer update --no-scripts
     php artisan optimize
+    php artisan config:cache
+    php artisan route:cache
     php artisan migrate
     php artisan queue:restart
 @endtask
