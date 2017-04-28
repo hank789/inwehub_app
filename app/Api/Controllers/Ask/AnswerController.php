@@ -101,7 +101,7 @@ class AnswerController extends Controller
                 //任务变为已完成
                 $this->finishTask($answer->user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
-                $this->task($answer->user_id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+                $this->task($question->user_id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
 
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
 
