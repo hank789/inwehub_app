@@ -112,7 +112,7 @@ class Question extends Model
         });
     }
 
-    public function statusHumanDescription($is_self = true){
+    public function statusHumanDescription($user_id){
         $description = '';
         switch ($this->status){
             case 0:
@@ -128,10 +128,14 @@ class Question extends Model
                 $description = '问题已关闭';
                 break;
             case 4:
-                $answer = $this->answers()->orderBy('id','desc')->first();
+                $answer_query = $this->answers();
+                if($user_id != $this->user_id){
+                    $answer_query->where('user_id',$user_id);
+                }
+                $answer = $answer_query->orderBy('id','desc')->first();
                 $desc = promise_time_format($answer->promise_time);
-                if($is_self){
-                    $description = '您的问题已分配给专家,专家已承诺在'.$desc['desc'].'前回答';
+                if($user_id == $this->user_id){
+                    $description = '专家已承诺,'.$desc['desc'];
                 }else{
                     $description = '倒计时'.$desc['diff'];
                 }

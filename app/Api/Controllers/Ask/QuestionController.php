@@ -61,7 +61,7 @@ class QuestionController extends Controller
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,
-            'status_description' => $question->statusHumanDescription($user->id == $question->user_id),
+            'status_description' => $question->statusHumanDescription($user->id),
             'created_at' => (string)$question->created_at
         ];
 
@@ -74,6 +74,7 @@ class QuestionController extends Controller
                 'user_name' => $bestAnswer->user->name,
                 'user_avatar_url' => $bestAnswer->user->getAvatarUrl(),
                 'content' => $bestAnswer->content,
+                'promise_time' => $bestAnswer->promise_time,
                 'created_at' => (string)$bestAnswer->created_at
             ];
         }
@@ -283,7 +284,7 @@ class QuestionController extends Controller
                 'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,
-                'status_description' => $question->statusHumanDescription(),
+                'status_description' => $question->statusHumanDescription($question->user_id),
                 'created_at' => (string)$question->created_at,
                 'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
