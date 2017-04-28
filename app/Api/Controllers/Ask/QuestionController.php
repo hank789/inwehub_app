@@ -36,7 +36,7 @@ class QuestionController extends Controller
         $question = Question::find($id);
 
         if(empty($question)){
-            abort(404);
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
         $user = $request->user();
 

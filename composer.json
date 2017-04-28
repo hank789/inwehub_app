@@ -1,7 +1,7 @@
 {
-    "name": "tipask/tipask",
-    "description": "PHP社区问答系统",
-    "keywords": ["问答系统", "tipask","laravel"],
+    "name": "intervapp/intervapp",
+    "description": "",
+    "keywords": ["问答系统", "laravel"],
     "license": "MPL",
     "type": "project",
     "require": {
