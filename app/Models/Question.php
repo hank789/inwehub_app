@@ -171,10 +171,10 @@ class Question extends Model
                     $title = '平台已经帮您找到合适的专家,等待确认';
                     break;
                 case 'question_answer_confirmed':
-                    $title = $this->user->name.'为您回答问题';
+                    $title = $doing->user->name.'为您回答问题';
                     break;
                 case 'question_answered':
-                    $title = $this->user->name.'已为您回答问题';
+                    $title = $doing->user->name.'已为您回答问题';
                     break;
                 case 'question_answer_rejected':
                     break;
