@@ -16,8 +16,8 @@ class JobController extends Controller {
     protected $validateRules = [
         'company' => 'required',
         'title'   => 'required',
-        'begin_time'   => 'required',
-        'end_time'   => 'required',
+        'begin_time'   => 'required|date_format:Y-m-d',
+        'end_time'   => 'required|date_format:Y-m-d',
         'description'   => 'required',
 
     ];

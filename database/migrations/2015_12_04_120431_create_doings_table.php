@@ -15,7 +15,7 @@ class CreateDoingsTable extends Migration
         Schema::create('doings', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->char('action',16);
+            $table->string('action',32);
             $table->morphs('source');
             $table->string('subject',128)->nullable();
             $table->string('content',256)->nullable();

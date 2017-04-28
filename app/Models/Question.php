@@ -157,22 +157,22 @@ class Question extends Model
         foreach($doings as $doing){
             $title = '';
             switch($doing->action){
-                case 'ask':
+                case 'question_submit':
                     $title = '问题成功提交';
                     break;
-                case 'process':
+                case 'question_process':
                     $title = '平台已经受理,正在为您找寻合适专家';
                     break;
-                case 'answer_confirming':
+                case 'question_answer_confirming':
                     $title = '平台已经帮您找到合适的专家,等待确认';
                     break;
-                case 'answer_confirmed':
+                case 'question_answer_confirmed':
                     $title = $this->user->name.'为您回答问题';
                     break;
-                case 'answered':
+                case 'question_answered':
                     $title = $this->user->name.'已为您回答问题';
                     break;
-                case 'reject_answer':
+                case 'question_answer_rejected':
                     break;
             }
             if($title){
@@ -187,27 +187,36 @@ class Question extends Model
 
     //已邀请
     public function invitedAnswer(){
-        $this->status = 2;
-        return $this->save();
+        //只有状态是待分配和已拒绝时才要更改状态
+        if($this->status != 4 && $this->status != 6 && $this->status != 7){
+            $this->status = 2;
+            return $this->save();
+        }
     }
 
     //已确认待回答
     public function confirmedAnswer(){
-        $this->status = 4;
-        return $this->save();
+        if($this->status != 6 && $this->status != 7){
+            $this->status = 4;
+            return $this->save();
+        }
     }
 
     //已拒绝
     public function rejectAnswer(){
-        $this->status = 5;
-        return $this->save();
+        if($this->status != 4 && $this->status != 6 && $this->status != 7){
+            $this->status = 5;
+            return $this->save();
+        }
     }
 
     //已回答
     public function answered()
     {
-        $this->status = 6;
-        return $this->save();
+        if($this->status != 7){
+            $this->status = 6;
+            return $this->save();
+        }
     }
 
     /*获取相关问题*/

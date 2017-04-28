@@ -62,7 +62,7 @@ class ProfileController extends Controller
             'city'     => 'max:128',
             'address_detail'  => 'max:128',
             'email'            => 'max:128',
-            'birthday'         => 'max:128',
+            'birthday'         => 'max:128|date_format:Y-m-d',
             'title' => 'sometimes|max:128',
             'description' => 'sometimes|max:9999',
         ];

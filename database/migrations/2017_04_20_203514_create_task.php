@@ -15,7 +15,8 @@ class CreateTask extends Migration
     {
         Schema::create('task', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('user_id')->unsigned();
+            $table->string('action',32);
+            $table->integer('user_id')->unsigned()->index();
             $table->morphs('source');
             $table->tinyInteger('status')->default(0);                        //状态0待处理,1已处理
             $table->softDeletes();

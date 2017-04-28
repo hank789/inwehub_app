@@ -169,9 +169,9 @@ class QuestionController extends Controller
             Tag::multiSave($tagString,$question);
 
             //记录动态
-            $this->doing($question->user_id,'ask',get_class($question),$question->id,$question->title,'');
+            $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
 
-            $doing_obj = $this->doing(0,'process',get_class($question),$question->id,$question->title,'');
+            $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
             $waiting_second = rand(1,15);
             $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
             $doing_obj->save();
@@ -216,12 +216,12 @@ class QuestionController extends Controller
 
         $question = Question::find($request->input('question_id'));
         if(empty($question)){
-            abort(404);
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
 
         $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->where('status',0)->first();
         if(empty($question_invitation)){
-            abort(404);
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
 
         $data = [
@@ -233,14 +233,18 @@ class QuestionController extends Controller
 
         $answer = Answer::create($data);
 
-        //问题已拒绝
-        $question->rejectAnswer();
+        //是否有其它待回答
+        $otherAnswers = Answer::where('question_id',$question->id)->where('status','!=',2)->first();
+        if(!$otherAnswers){
+            //问题已拒绝
+            $question->rejectAnswer();
+        }
 
         /*添加标签*/
         $tagString = trim($request->input('tags'));
         Tag::multiSave($tagString,$answer);
         /*记录动态*/
-        $this->doing($answer->user_id,'reject_answer',get_class($question),$question->id,$question->title,$answer->content);
+        $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->content);
         /*修改问题邀请表的回答状态*/
         QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>2]);
 

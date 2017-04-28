@@ -105,18 +105,28 @@ trait BaseController {
      * @param $user_id
      * @param $source_type
      * @param $source_id
+     * @param $action
      * @return \Illuminate\Database\Eloquent\Model
      */
-    protected function task($user_id,$source_type,$source_id){
+    protected function task($user_id,$source_type,$source_id,$action){
         try{
             return Task::create([
                 'user_id' => $user_id,
                 'source_id' => $source_id,
                 'source_type' => $source_type,
+                'action' => $action
             ]);
         }catch (\Exception $e){
             exit($e->getMessage());
         }
+    }
+
+    protected function finishTask($user_id,$source_type,$source_id,$action){
+        return Task::where('source_id',$source_id)
+            ->where('source_type',$source_type)
+            ->where('user_id',$user_id)
+            ->where('action',$action)
+            ->update(['status'=>1]);
     }
 
 

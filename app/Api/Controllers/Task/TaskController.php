@@ -40,29 +40,31 @@ class TaskController extends Controller {
                     $object_id = $question->id;
                     $description = $question->title;
                     $status = $question->status;
-                    switch($question->status){
-                        case 2:
+                    switch($task->action){
+                        case Task::ACTION_TYPE_ANSWER:
                             //已分配待确认
                             $status_description = '您的问题来啦,请速速点击前往应答';
+
+                            $answer = Answer::where('question_id',$object_id)->where('user_id',$task->user_id)->get()->last();
+                            if($answer && $answer->status == 3){
+                                $answer_promise_time = $answer->promise_time;
+                                $desc = promise_time_format($answer_promise_time);
+                                $status_description = $desc['desc'].',点击前往回答';
+                            }
                             break;
-                        case 4:
-                            //已确认待回答
-                            $answer = Answer::where('status',3)->first();
-                            $answer_promise_time = $answer->promise_time;
-                            $desc = promise_time_format($answer_promise_time);
-                            $status_description = $desc['desc'].',点击前往回答';
-                            break;
-                        case 5:
-                            //已拒绝
-                            $status_description = '您拒绝了该提问';
-                            break;
-                        case 6:
-                            //已回答待点评
-                            $status_description = '您已提交回答,等待对方评价';
-                            break;
-                        case 7:
-                            //已点评
-                            $status_description = '对方已点评,点击前往查看评价';
+                    }
+                    break;
+                case 'App\Models\Answer':
+                    $task_type = 2;
+                    $task_type_description = '回答';
+                    $answer = Answer::find($task->source_id);
+                    $question = Question::find($answer->question_id);
+                    $object_id = $question->id;
+                    $description = $question->title;
+                    $status = $question->status;
+                    switch($task->action){
+                        case Task::ACTION_TYPE_ANSWER_FEEDBACK:
+                            $status_description = '需要前往查看回答并进行点评';
                             break;
                     }
                     break;

@@ -8,6 +8,7 @@ use App\Models\Feedback;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Setting;
+use App\Models\Task;
 use App\Models\UserTag;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -45,11 +46,11 @@ class AnswerController extends Controller
         $question = Question::find($question_id);
 
         if(empty($question)){
-            abort(404);
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
         $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->where('status',0)->first();
         if(empty($question_invitation)){
-            abort(404);
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
 
         $this->validate($request,$this->validateRules);
@@ -61,26 +62,27 @@ class AnswerController extends Controller
             'question_id'      => $question_id,
             'content'  => $answerContent,
         ];
-        if($promise_time){
-            if(strlen($promise_time) != 4) {
-                throw new ApiException(ApiException::ASK_ANSWER_PROMISE_TIME_INVALID);
-            }
-            $hours = substr($promise_time,0,2);
-            $minutes = substr($promise_time,2,2);
-            $data['promise_time'] = date('Y-m-d H:i:00',strtotime('+ '.$hours.' hours + '.$minutes.' minutes'));
-            $data['status'] = 3;
-            $data['content'] = '承诺在:'.$data['promise_time'].'前回答该问题';
-        }else{
-            $data['adopted_at'] = date('Y-m-d H:i:s');
-            $data['status'] = 1;
-        }
 
-        if($question->status == 4){
-            //已确认待回答
-            $answer = Answer::where('status',3)->get()->last();
-        }else{
+        //先检查是否已有回答
+        $answer = Answer::where('question_id',$question_id)->where('user_id',$loginUser->id)->get()->last();
+
+        if(!$answer){
+            if($promise_time){
+                if(strlen($promise_time) != 4) {
+                    throw new ApiException(ApiException::ASK_ANSWER_PROMISE_TIME_INVALID);
+                }
+                $hours = substr($promise_time,0,2);
+                $minutes = substr($promise_time,2,2);
+                $data['promise_time'] = date('Y-m-d H:i:00',strtotime('+ '.$hours.' hours + '.$minutes.' minutes'));
+                $data['status'] = 3;
+                $data['content'] = '承诺在:'.$data['promise_time'].'前回答该问题';
+            }else{
+                $data['adopted_at'] = date('Y-m-d H:i:s');
+                $data['status'] = 1;
+            }
             $answer = Answer::create($data);
         }
+
         if($answer){
             if(empty($promise_time)){
                 /*用户回答数+1*/
@@ -96,14 +98,18 @@ class AnswerController extends Controller
                 $answer->content = $answerContent;
                 $answer->adopted_at = date('Y-m-d H:i:s');
                 $answer->save();
+                //任务变为已完成
+                $this->finishTask($answer->user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
+
+                $this->task($answer->user_id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
 
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
 
                 /*记录动态*/
-                $this->doing($answer->user_id,'answered',get_class($question),$question->id,$question->title,$answer->content);
+                $this->doing($answer->user_id,'question_answered',get_class($question),$question->id,$question->title,$answer->content);
 
                 /*记录通知*/
-                $this->notify($answer->user_id,$question->user_id,'answer',$question->title,$question->id,$answer->content);
+                $this->notify($answer->user_id,$question->user_id,'question_answered',$question->title,$question->id,$answer->content);
 
                 /*回答后通知关注问题*/
                 if(intval($request->input('followed'))){
@@ -124,17 +130,18 @@ class AnswerController extends Controller
                 QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>1]);
 
                 $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
-
+                $message = 'ok';
                 /*记录积分*/
-                if($this->credit($request->user()->id,'answer',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
+                if($this->credit($request->user()->id,'question_answered',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
                     $message = '回答成功! '.get_credit_message(Setting()->get('credits_answer'),Setting()->get('coins_answer'));
-                    return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],ApiException::SUCCESS,$message);
                 }
+                return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],ApiException::SUCCESS,$message);
+
             }else{
                 //问题变为待回答
                 $question->confirmedAnswer();
                 /*记录动态*/
-                $this->doing($answer->user_id,'answer_confirmed',get_class($question),$question->id,$question->title,$answer->content);
+                $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->content);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
             }
         }
@@ -228,6 +235,7 @@ class AnswerController extends Controller
 
         $answer->question()->update(['status'=>7]);
 
+        $this->finishTask($request->user()->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
         return self::createJsonData(true,$request->all());
     }
 

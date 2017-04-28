@@ -16,7 +16,7 @@ class TrainController extends Controller {
     protected $validateRules = [
         'certificate' => 'required',
         'agency'   => 'required',
-        'get_time'  => 'degree',
+        'get_time'  => 'degree|date_format:Y-m-d',
         'description'   => 'required',
     ];
 

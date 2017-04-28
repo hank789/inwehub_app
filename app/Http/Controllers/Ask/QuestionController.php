@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Tag;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Models\XsSearch;
@@ -350,15 +351,16 @@ class QuestionController extends Controller
         //已邀请
         $question->invitedAnswer();
         //记录动态
-        $this->doing($question->user_id,'answer_confirming',get_class($question),$question->id,$question->title,'');
+        $this->doing($question->user_id,'question_answer_confirming',get_class($question),$question->id,$question->title,'');
         //记录任务
-        $this->task($to_user_id,get_class($question),$question->id);
+        $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
         if($invitation && $toUser->email){
             $this->counter('question_invite_num_'.$loginUser->id);
             $subject = $question->user->name."在「".Setting()->get('website_name')."」向您发起了回答邀请";
             $message = "我在 ".Setting()->get('website_name')." 上遇到了问题「".$question->title."」，希望您能帮我解答 ";
-            $this->sendEmail($invitation->send_to,$subject,$message);
+            //暂时不发送邮件
+            //$this->sendEmail($invitation->send_to,$subject,$message);
             return $this->ajaxSuccess('success');
         }
 
@@ -406,7 +408,7 @@ class QuestionController extends Controller
         //已邀请
         $question->invitedAnswer();
         //记录动态
-        $this->doing($question->user_id,'answer_confirming',get_class($question),$question->id,$question->title,'');
+        $this->doing($question->user_id,'question_answer_confirming',get_class($question),$question->id,$question->title,'');
 
         if($invitation){
             $this->counter('question_invite_num_'.$loginUser->id,1);
