@@ -30,13 +30,21 @@
                                 @if($errors->has('slug')) <p class="help-block">{{ $errors->first('slug') }}</p> @endif
                             </div>
 
-
                             <div class="form-group">
+                                <label>选择父级分类</label>
+                                <select name="parent_id" class="form-control">
+                                    <option value="0">选择父级分类</option>
+                                    @include('admin.category.option',['type'=>'tags','select_id'=>0])
+                                </select>
+                            </div>
+
+
+                            <div class="form-group" style="display: none">
                                 <label>栏目</label>
                                 <span class="text-muted">(允许显示的栏目)</span>
                                 <div class="checkbox">
                                     @foreach( config('intervapp.category_types') as $key => $name )
-                                        <input type="checkbox" name="types[]" value="{{ $key }}"> {{ $name }} &nbsp;&nbsp;
+                                        <input type="checkbox" name="types[]" checked value="{{ $key }}"> {{ $name }} &nbsp;&nbsp;
                                     @endforeach
                                 </div>
                             </div>

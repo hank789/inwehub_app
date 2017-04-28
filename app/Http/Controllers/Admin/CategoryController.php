@@ -96,6 +96,7 @@ class CategoryController extends AdminController
         $category->sort = $request->input('sort');
         $category->status = $request->input('status');
         $category->type = implode(",",$request->input('types'));
+        $category->parent_id = $request->input('parent_id');
         $category->save();
         Artisan::call('cache:clear');
         return $this->success(route('admin.category.index'),'分类添加成功');

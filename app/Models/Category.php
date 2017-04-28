@@ -136,9 +136,10 @@ class Category extends Model
 
     public static function loadFromCache($type='all'){
 
-        $globalCategories = Cache::rememberForever('global_all_categories',function() {
+        /*$globalCategories = Cache::rememberForever('global_all_categories',function() {
             return self::where('status','>',0)->orderBy('sort','asc')->orderBy('created_at','asc')->get();
-        });
+        });*/
+        $globalCategories = self::where('status','>',0)->orderBy('sort','asc')->orderBy('created_at','asc')->get();
 
         /*返回所有分类*/
         if($type == 'all'){
