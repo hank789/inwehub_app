@@ -121,12 +121,16 @@ trait BaseController {
         }
     }
 
-    protected function finishTask($user_id,$source_type,$source_id,$action){
-        return Task::where('source_id',$source_id)
-            ->where('source_type',$source_type)
-            ->where('user_id',$user_id)
-            ->where('action',$action)
-            ->update(['status'=>1]);
+    protected function finishTask($source_type,$source_id,$action,$user_ids,$expert_user_ids=[]){
+        $query = Task::where('source_id',$source_id)
+            ->where('source_type',$source_type);
+        if($user_ids) {
+            $query->whereIn('user_id',$user_ids);
+        }
+        if($expert_user_ids){
+            $query->whereNotIn('user_id',$expert_user_ids);
+        }
+        return $query->where('action',$action)->update(['status'=>1]);
     }
 
 

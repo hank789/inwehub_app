@@ -62,6 +62,33 @@ class RateLimiter extends Singleton
         }
     }
 
+    /**
+     * 尝试获得锁，等待直到获得为止,防止事件并发
+     * 对于$max=1的事件（即不允许并发）执行完后一定要执行lock_release方法
+     * @param $key
+     * @param int $max 最大并发数
+     * @param int $timeout 有效时间内
+     * @return bool
+     */
+    function lock_acquire($key,$max=1,$timeout=5){
+        $count = $this->client->incr($key);
+        $this->client->expire($key,$timeout);
+        $max = $max + 1;
+        while($count >= $max){
+            $count = $this->client->incr($key);
+            usleep(1000);
+        }
+        return true;
+    }
+
+    /**
+     * 释放锁
+     * @param $key
+     */
+    function lock_release($key){
+        $this->client->del($key);
+    }
+
     public static function instance(){
         if(!self::$instance){
             self::$instance = new self(Redis::connection());

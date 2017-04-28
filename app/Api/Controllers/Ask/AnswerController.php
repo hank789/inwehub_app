@@ -10,6 +10,7 @@ use App\Models\QuestionInvitation;
 use App\Models\Setting;
 use App\Models\Task;
 use App\Models\UserTag;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -54,6 +55,15 @@ class AnswerController extends Controller
         }
 
         $this->validate($request,$this->validateRules);
+        $lock_key = 'question_answer_action';
+        RateLimiter::instance()->lock_acquire($lock_key,1,20);
+        //检查问题是否已经被其它人回答
+        $exit_answers = Answer::where('question_id',$question_id)->whereIn('status',[1,3])->where('user_id','!=',$loginUser->id)->get()->last();
+        if($exit_answers){
+            RateLimiter::instance()->lock_release($lock_key);
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+        }
+
         $promise_time = $request->input('promise_time');
 
         $answerContent = trim($request->input('description'));
@@ -82,6 +92,7 @@ class AnswerController extends Controller
             }
             $answer = Answer::create($data);
         }
+        RateLimiter::instance()->lock_release($lock_key);
 
         if($answer){
             if(empty($promise_time)){
@@ -99,7 +110,7 @@ class AnswerController extends Controller
                 $answer->adopted_at = date('Y-m-d H:i:s');
                 $answer->save();
                 //任务变为已完成
-                $this->finishTask($answer->user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
+                $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[]);
 
                 $this->task($question->user_id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
 
@@ -140,6 +151,7 @@ class AnswerController extends Controller
             }else{
                 //问题变为待回答
                 $question->confirmedAnswer();
+                $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[],[$request->user()->id]);
                 /*记录动态*/
                 $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->content);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
@@ -235,7 +247,7 @@ class AnswerController extends Controller
 
         $answer->question()->update(['status'=>7]);
 
-        $this->finishTask($request->user()->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+        $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
         return self::createJsonData(true,$request->all());
     }
 

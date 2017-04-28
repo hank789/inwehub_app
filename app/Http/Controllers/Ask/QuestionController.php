@@ -339,6 +339,11 @@ class QuestionController extends Controller
             return $this->ajaxError(50008,'该用户已被邀请，不能重复邀请');
         }
 
+        //如果问题已经有人确认并应答了,不必再邀请
+        if(in_array($question->status,[4,6,7])){
+            return $this->ajaxError(50009,'该问题已有专家承诺回答');
+        }
+
         $invitation = QuestionInvitation::create([
             'from_user_id'=> $question->user_id,
             'question_id'=> $question->id,
@@ -396,6 +401,10 @@ class QuestionController extends Controller
         /*是否已邀请，不能重复邀请*/
         if($question->isInvited($email,$loginUser->id)){
             return $this->ajaxError(50008,'该用户已被邀请，不能重复邀请');
+        }
+        //如果问题已经有人确认并应答了,不必再邀请
+        if(in_array($question->status,[4,6,7])){
+            return $this->ajaxError(50009,'该问题已有专家承诺回答');
         }
 
         $invitation = QuestionInvitation::create([

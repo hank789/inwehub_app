@@ -241,7 +241,7 @@ class QuestionController extends Controller
             //问题已拒绝
             $question->rejectAnswer();
         }
-        $this->finishTask($loginUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
+        $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[$loginUser->id]);
 
         /*添加标签*/
         $tagString = trim($request->input('tags'));
