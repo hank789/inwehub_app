@@ -64,6 +64,7 @@ class TaskController extends Controller {
                     $status = $question->status;
                     switch($task->action){
                         case Task::ACTION_TYPE_ANSWER_FEEDBACK:
+                            $task_type_description = '点评';
                             $status_description = '需要前往查看回答并进行点评';
                             break;
                     }
