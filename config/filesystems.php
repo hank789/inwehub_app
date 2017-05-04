@@ -68,6 +68,9 @@ return [
             'access_key'    => env('OSS_ACCESS_KEY_SECRET',''),
             'bucket'        => env('OSS_BUCKET'),
             'endpoint'      => env('OSS_ENDPOINT'),
+            'endpoint_internal' => env('OSS_ENDPOINT_INTERNAL',''),
+            'cdnDomain'     => env('OSS_CDN_DOMAIN',''),
+            'ssl'           => env('OSS_SSL',false),
             'isCName'       => env('OSS_ISCNAME'),
             'debug'         => env('OSS_DEBUGT')
         ],
