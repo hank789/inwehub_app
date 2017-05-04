@@ -107,6 +107,11 @@ class Tag extends Model
         return $this->morphedByMany('App\Models\Question', 'taggable');
     }
 
+    public function answers()
+    {
+        return $this->morphedByMany('App\Models\Answer', 'taggable');
+    }
+
 
     public function articles()
     {
