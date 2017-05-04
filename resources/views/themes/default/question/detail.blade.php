@@ -74,6 +74,7 @@
                     <div class="options clearfix mt-10">
                         <ul class="list-inline pull-right">
                             <li class="pull-right">
+                                <a href="{{ route('ask.answer.edit',['id'=>$bestAnswer->id]) }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="继续完善回答内容"><i class="fa fa-edit"></i> 编辑</a>
                                 <a class="comments mr-10" data-toggle="collapse" href="#comments-answer-{{ $bestAnswer->id }}" aria-expanded="false" aria-controls="comment-{{ $bestAnswer->id }}"><i class="fa fa-comment-o"></i> {{ $bestAnswer->comments }} 条评论</a>
                                 <button class="btn btn-default btn-sm btn-support" data-source_id="{{ $bestAnswer->id }}" data-source_type="answer" data-support_num="{{ $bestAnswer->supports }}"><i class="fa fa-thumbs-o-up"></i> {{ $bestAnswer->supports }}</button>
                             </li>
@@ -131,10 +132,13 @@
                             <span class="text-muted"> - {{ $answer->user->title }}</span>
                             @endif
                             @if($answer->status==2)
-                                <span class="text-muted">拒绝回答</span>
+                                <span class="label label-danger">拒绝回答</span>
                             @endif
                             @if($answer->status==3)
-                                <span class="text-muted">待回答</span>
+                                <span class="label label-warning">待回答</span>
+                            @endif
+                            @if($answer->status==0)
+                                <span class="label label-warning">承诺回答</span>
                             @endif
                             <span class="answer-time text-muted hidden-xs">{{ timestamp_format($answer->created_at) }}</span>
                         </div>

@@ -68,6 +68,7 @@
                                         <th>分类</th>
                                         <th>标题</th>
                                         <th>提问人</th>
+                                        <th>拒绝/邀请</th>
                                         <th>回答/查看</th>
                                         <th>时间</th>
                                         <th>状态</th>
@@ -81,6 +82,7 @@
                                             <td>@if( $question->category ) {{ $question->category->name }} @else 无 @endif</td>
                                             <td><a href="{{ route('ask.question.detail',['id'=>$question->id]) }}" target="_blank">{{ $question->title }}</a></td>
                                             <td>{{ $question->user->name }}<span class="text-muted">[UID:{{ $question->user_id }}]</span></td>
+                                            <td>{{ $question->invitations()->where('status',2)->count() }} / {{ $question->invitations()->count() }}</td>
                                             <td>{{ $question->answers }} / {{ $question->views }}</td>
                                             <td>{{ timestamp_format($question->created_at) }}</td>
                                             <td><span class="label @if($question->status===0) label-danger @elseif($question->status===1) label-warning @else label-success @endif">{{ trans_question_status($question->status) }}</span> </td>
