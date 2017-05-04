@@ -204,7 +204,7 @@ Route::Group(['namespace'=>'Ask','middleware'=>['auth','auth.admin']],function()
     Route::get('topic/{id}/{source_type?}',['as'=>'ask.tag.index','uses'=>'TagController@index'])->where(['id'=>'[0-9]+','source_type'=>'(questions|articles|details)']);
 
     /*加载评论*/
-    Route::get('{source_type}/{source_id}/comments',['as'=>'ask.comment.show','uses'=>'CommentController@show'])->where(['source_type'=>'(question|answer|article)','source_id'=>'[0-9]+']);
+    Route::get('{source_type}/{source_id}/comments',['as'=>'ask.comment.show','uses'=>'CommentController@show'])->where(['source_type'=>'(question|answer|article|asks)','source_id'=>'[0-9]+']);
 
 });
 
