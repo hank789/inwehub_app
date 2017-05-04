@@ -9,6 +9,7 @@
         "barryvdh/laravel-cors": "^0.9.2",
         "bizly/roles": "^2.1",
         "doctrine/dbal": "~2.3",
+        "fabpot/goutte": "^3.2",
         "flc/alidayu": "^2.0",
         "intervapp/plus-install-plugin": "dev-master",
         "intervention/image": "^2.3",
@@ -17,6 +18,7 @@
         "laravel/tinker": "~1.0",
         "mews/captcha": "~2.0",
         "mews/purifier": "^2.0",
+        "paquettg/php-html-parser": "^1.7",
         "predis/predis": "^1.1",
         "roumen/sitemap": "^2.6",
         "sentry/sentry-laravel": "^0.6.1",
@@ -24,13 +26,11 @@
         "socialiteproviders/weibo": "^3.0",
         "socialiteproviders/weixin": "^4.0",
         "socialiteproviders/weixin-web": "^3.0",
+        "spatie/laravel-backup": "^4.13",
         "spatie/laravel-medialibrary": "^5.8",
         "tlapi/slack-laravel": "dev-master",
         "tymon/jwt-auth": "^0.5.10",
-        "zhuzhichao/ip-location-zh": "^2.2",
-        "fabpot/goutte": "^3.2",
-        "paquettg/php-html-parser": "^1.7"
-
+        "zhuzhichao/ip-location-zh": "^2.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
