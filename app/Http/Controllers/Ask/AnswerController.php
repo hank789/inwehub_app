@@ -184,8 +184,10 @@ class AnswerController extends Controller
             $answer->adopted_at = Carbon::now();
             $answer->save();
 
-            $answer->question->status = 2;
-            $answer->question->save();
+            if($answer->question->status != 7){
+                $answer->question->status = 6;
+                $answer->question->save();
+            }
 
             $answer->user->userData->increment('adoptions');
 
@@ -196,11 +198,11 @@ class AnswerController extends Controller
             $this->notify($request->user()->id,$answer->user_id,'adopt_answer',$answer->question_title,$answer->question_id);
             DB::commit();
             /*发送邮件通知*/
-            if($answer->user->allowedEmailNotify('adopt_answer')){
+            /*if($answer->user->allowedEmailNotify('adopt_answer')){
                 $emailSubject = '您对于问题「'.$answer->question_title.'」的回答被采纳了！';
                 $emailContent = "您对于问题「".$answer->question_title."」的回答被采纳了！<br /> 点击此链接查看详情  →  ".route('ask.question.detail',['question_id'=>$answer->question_id]);
                 $this->sendEmail($answer->user->email,$emailSubject,$emailContent);
-            }
+            }*/
 
             return $this->success(route('ask.question.detail',['question_id'=>$answer->question_id]),"回答采纳成功!".get_credit_message(Setting()->get('credits_adopted'),Setting()->get('coins_adopted')));
 

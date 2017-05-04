@@ -50,7 +50,7 @@ class QuestionController extends Controller
 
         /*已解决问题*/
         $bestAnswer = [];
-        if($question->status === 6 ){
+        if(in_array($question->status, [6,7])){
             $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
         }
 
