@@ -155,9 +155,6 @@
                                     @if($question->status!==2 &&  (Auth()->user()->id === $answer->user_id  || Auth()->user()->isRole('admin')) )
                                     <li><a href="{{ route('ask.answer.edit',['id'=>$answer->id]) }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="继续完善回答内容"><i class="fa fa-edit"></i> 编辑</a></li>
                                     @endif
-                                    @if(!in_array($question->status, [6,7]) &&  ( Auth()->user()->id === $question->user_id || Auth()->user()->isRole('admin') ))
-                                    <li><a href="#" class="adopt-answer" data-toggle="modal" data-target="#adoptAnswer" data-answer_id="{{ $answer->id }}" data-answer_content="{{ str_limit($answer->content,200) }}"><i class="fa fa-check-square-o"></i> 采纳为最佳答案</a></li>
-                                    @endif
                                 @endif
                                 <li class="pull-right">
                                     <button class="btn btn-default btn-sm btn-support" data-source_id="{{ $answer->id }}" data-source_type="answer"  data-support_num="{{ $answer->supports }}"><i class="fa fa-thumbs-o-up"></i> {{ $answer->supports }}</button>
