@@ -439,7 +439,7 @@ class QuestionController extends Controller
             return $this->ajaxError(50001,'question not fund');
         }
 
-        $showRows = ($type=='part') ? 3:100;
+        $showRows = ($type=='part') ? 100:100;
 
         $invitations = $question->invitations()->where("user_id",">",0)->orderBy('created_at','desc')->groupBy('user_id')->take($showRows);
 
