@@ -92,3 +92,8 @@ Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
 //意见反馈
 Route::post('system/feedback','SystemController@feedback')->middleware('jwt.auth');
 
+//消息模块
+Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
+    //通知列表
+    Route::post('notification/list','NotificationController@list');
+});
