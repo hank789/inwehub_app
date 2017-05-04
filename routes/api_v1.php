@@ -53,13 +53,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('account/project/update','ProjectController@update');
     Route::post('account/project/destroy','ProjectController@destroy');
 
-
-    Route::post('protected', function() {
-        return response()->json([
-            'message' => 'Access to this item is only for authenticated user. Provide a token in your request!'
-        ]);
-    });
-
 });
 
 
@@ -92,9 +85,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], func
     Route::post('task/myList','TaskController@myList');
 
 });
-
-//上传图片
-Route::post('upload/uploadImg','UploadController@uploadImg')->middleware('jwt.auth');
 
 //加载标签
 Route::post('tags/load','TagsController@load')->middleware('jwt.auth');

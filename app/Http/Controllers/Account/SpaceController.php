@@ -19,8 +19,8 @@ class SpaceController extends Controller
 {
     protected $user;
 
-    public function __construct(Request $request){
-        $userId =  $request->route()->parameter('user_id');
+    protected function init(Request $request){
+        $userId =  $request->route()->parameter('user_id',0);
 
         $user  = User::with('userData')->find($userId);
 
@@ -36,8 +36,9 @@ class SpaceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $this->init($request);
         $doings = $this->user->doings()->orderBy('created_at','DESC')->paginate(10);
         $doings->map(function($doing){
             $doing->action_text = Config::get('tipask.user_actions.'.$doing->action);
@@ -50,8 +51,10 @@ class SpaceController extends Controller
      * 用户提问
      * @return View
      */
-    public function questions()
+    public function questions(Request $request)
     {
+        $this->init($request);
+
         $questions = $this->user->questions()->orderBy('created_at','DESC')->paginate(10);
         return view('theme::space.questions')->with('questions',$questions);
     }
@@ -60,22 +63,28 @@ class SpaceController extends Controller
      * 用户回答
      * @return mixed
      */
-    public function answers()
+    public function answers(Request $request)
     {
+        $this->init($request);
+
         $answers = $this->user->answers()->with('question')->orderBy('created_at','DESC')->paginate(10);
         return view('theme::space.answers')->with('answers',$answers);
     }
 
-    public function articles()
+    public function articles(Request $request)
     {
+        $this->init($request);
+
         $articles = $this->user->articles()->orderBy('created_at','DESC')->paginate(10);
         return view('theme::space.articles')->with('articles',$articles);
     }
 
 
     /*我的金币*/
-    public function coins()
+    public function coins(Request $request)
     {
+        $this->init($request);
+
         $coins = Credit::where('user_id','=',$this->user->id)->where('coins','<>',0)->orderBy('created_at','DESC')->paginate(10);
         $coins->map(function($coin){
             $coin->actionText = Config::get('tipask.user_actions.'.$coin->action);
@@ -85,8 +94,10 @@ class SpaceController extends Controller
 
 
     /*我的经验*/
-    public function credits()
+    public function credits(Request $request)
     {
+        $this->init($request);
+
         $credits = Credit::where('user_id','=',$this->user->id)->where('credits','<>',0)->orderBy('created_at','DESC')->paginate(10);
         $credits->map(function($credit){
             $credit->actionText = Config::get('tipask.user_actions.'.$credit->action);
@@ -96,8 +107,10 @@ class SpaceController extends Controller
 
 
     /*我的粉丝*/
-    public function followers()
+    public function followers(Request $request)
     {
+        $this->init($request);
+
         $followers = $this->user->followers()->orderBy('attentions.created_at','asc')->paginate(10);
         return view('theme::space.followers')->with('followers',$followers);
     }
@@ -106,6 +119,8 @@ class SpaceController extends Controller
     /*我的关注*/
     public function attentions(Request $request)
     {
+        $this->init($request);
+
         $source_type = $request->route()->parameter('source_type');
         $sourceClassMap = [
             'questions' => 'App\Models\Question',
@@ -129,6 +144,8 @@ class SpaceController extends Controller
 
     public function collections(Request $request)
     {
+        $this->init($request);
+
         $source_type = $request->route()->parameter('source_type');
 
         $sourceClassMap = [
