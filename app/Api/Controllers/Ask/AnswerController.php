@@ -161,13 +161,13 @@ class AnswerController extends Controller
         throw new ApiException(ApiException::ERROR);
     }
 
-    //我的提问列表
+    //我的回答列表
     public function myList(Request $request)
     {
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
 
-        $query = Answer::where('user_id','=',$request->user()->id)->whereIn('status',[0,3]);
+        $query = Answer::where('user_id','=',$request->user()->id)->whereIn('status',[0,1,3]);
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
