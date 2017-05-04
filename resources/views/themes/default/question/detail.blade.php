@@ -85,7 +85,7 @@
                     <div class="media user-info border-top">
                         <div class="media-left">
                             <a href="{{ route('auth.space.index',['user_id'=>$bestAnswer->user_id]) }}" target="_blank">
-                                <img class="avatar-40 hidden-xs"  src="{{ get_user_avatar($bestAnswer->user_id) }}" alt="{{ $bestAnswer->user->name }}"></a>
+                                <img class="avatar-40 hidden-xs"  src="{{ $bestAnswer->user->getAvatarUrl() }}" alt="{{ $bestAnswer->user->name }}"></a>
                             </a>
                         </div>
                         <div class="media-body">
@@ -101,8 +101,30 @@
                                 <span class="answer-time text-muted hidden-xs">@if($bestAnswer->user->authentication && $bestAnswer->user->authentication->status === 1)擅长：{{ $bestAnswer->user->authentication->skill }} | @endif采纳率 {{ $bestAnswer->user->userData->adoptPercent() }}% | 回答于 {{ timestamp_format($bestAnswer->created_at) }}</span>
                             </div>
                         </div>
-
                     </div>
+                    @if($feedback = $bestAnswer->feedbacks()->orderBy('id','desc')->first())
+                    <div class="media user-info border-top">
+                        <div class="media-left">
+                            <a href="{{ route('auth.space.index',['user_id'=>$feedback->user_id]) }}" target="_blank">
+                                <img class="avatar-40 hidden-xs"  src="{{ $feedback->user->getAvatarUrl() }}" alt="{{ $feedback->user->name }}"></a>
+                            </a>
+                        </div>
+                        <div class="media-body">
+
+                            <div class="media-heading">
+                                <strong><a href="{{ route('auth.space.index',['user_id'=>$feedback->user_id]) }}" class="mr5">{{ $feedback->user->name }}</a> <span class="text-gold">@if($feedback->user->authentication && $feedback->user->authentication->status === 1)<i class="fa fa-graduation-cap" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="" data-original-title="已通过行家认证"></i>@endif</span></strong>
+                                @if($feedback->user->title)
+                                    <span class="text-muted"> - {{ $feedback->user->title }}</span>
+                                @endif
+                            </div>
+
+                            <div class="content">
+                                <span class="answer-time text-muted hidden-xs"> {{ $feedback->star }}星好评 | 点评于 {{ timestamp_format($feedback->created_at) }}</span>
+                                <p>{!! $feedback->content !!}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
                 @endif
             </div>
