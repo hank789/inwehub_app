@@ -21,6 +21,8 @@ class TagController extends Controller
             $sources = $tag->questions()->orderBy('created_at','desc')->paginate(15);
         }else if($source_type=='articles'){
             $sources = $tag->articles()->orderBy('created_at','desc')->paginate(15);
+        }else if($source_type=='asks'){
+            $sources = $tag->answers()->orderBy('created_at','desc')->paginate(15);
         }
         $followers = $tag->followers()->orderBy('user_data.credits','desc')->orderBy('user_data.supports','desc')->take(10)->get();
         return view('theme::tag.index')->with('tag',$tag)

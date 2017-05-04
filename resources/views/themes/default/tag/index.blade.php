@@ -30,7 +30,8 @@
             </section>
 
             <ul class="nav nav-tabs nav-tabs-zen">
-                <li @if($source_type==='questions') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">问答</a></li>
+                <li @if($source_type==='questions') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">问题</a></li>
+                <li @if($source_type==='asks') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'asks']) }}">回答</a></li>
                 <li @if($source_type==='articles') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'articles']) }}">文章</a></li>
                 <li @if($source_type==='details') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'details']) }}">百科</a></li>
             </ul>
@@ -91,6 +92,29 @@
                                             发布于 {{ timestamp_format($article->created_at) }}
                                         </li>
                                     </ul>
+                                </div>
+                            </section>
+                        @endforeach
+                    @elseif($source_type==='asks')
+                        @foreach($sources as $answer)
+                            <section class="stream-list-item">
+
+                                <div class="summary">
+                                    <ul class="author list-inline">
+                                        <li>
+                                            <a href="{{ route('auth.space.index',['user_id'=>$answer->user->id]) }}">{{ $answer->user->name }}</a>
+                                            <span class="split"></span>
+                                            <span class="askDate">{{ $answer->created_at }}</span>
+                                        </li>
+                                    </ul>
+                                    <h2 class="title"><a href="{{ route('ask.question.detail',['id'=>$answer->question->id]) }}">{{ $answer->content }}</a></h2>
+                                    @if($answer->tags)
+                                        <ul class="taglist-inline ib">
+                                            @foreach($answer->tags as $tag)
+                                                <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">{{ $tag->name }}</a></li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
                                 </div>
                             </section>
                         @endforeach

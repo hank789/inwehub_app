@@ -151,7 +151,7 @@
                         @if($answer->tags)
                             <ul class="taglist-inline">
                                 @foreach($answer->tags as $tag)
-                                    <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">{{ $tag->name }}</a></li>
+                                    <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'asks']) }}">{{ $tag->name }}</a></li>
                                 @endforeach
                             </ul>
                         @endif
