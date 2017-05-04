@@ -66,7 +66,7 @@
                                         <th>ID</th>
                                         <th>悬赏</th>
                                         <th>分类</th>
-                                        <th>标题</th>
+                                        <th style="width: 25%">标题</th>
                                         <th>提问人</th>
                                         <th>拒绝/邀请</th>
                                         <th>回答/查看</th>
@@ -80,7 +80,7 @@
                                             <td>{{ $question->id }}</td>
                                             <td><span class="text-gold"><i class="fa fa-database"></i> {{ $question->price }}</span></td>
                                             <td>@if( $question->category ) {{ $question->category->name }} @else 无 @endif</td>
-                                            <td><a href="{{ route('ask.question.detail',['id'=>$question->id]) }}" target="_blank">{{ $question->title }}</a></td>
+                                            <td style="width: 25%"><a href="{{ route('ask.question.detail',['id'=>$question->id]) }}" target="_blank">{{ $question->title }}</a></td>
                                             <td>{{ $question->user->name }}<span class="text-muted">[UID:{{ $question->user_id }}]</span></td>
                                             <td>{{ $question->invitations()->where('status',2)->count() }} / {{ $question->invitations()->count() }}</td>
                                             <td>{{ $question->answers }} / {{ $question->views }}</td>
