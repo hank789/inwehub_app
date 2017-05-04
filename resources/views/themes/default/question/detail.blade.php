@@ -119,7 +119,7 @@
                 <div class="media">
                     <div class="media-left">
                         <a href="{{ route('auth.space.index',['user_id'=>$answer->user_id]) }}" class="avatar-link user-card" target="_blank">
-                            <img class="avatar-40 hidden-xs"  src="{{ get_user_avatar($answer->user_id) }}" alt="{{ $answer->user['name'] }}"></a>
+                            <img class="avatar-40 hidden-xs"  src="{{ $answer->user->getAvatarUrl() }}" alt="{{ $answer->user['name'] }}"></a>
                         </a>
                     </div>
                     <div class="media-body">
@@ -159,7 +159,7 @@
                             <ul class="list-inline mb-20">
                                 <li><a class="comments"  data-toggle="collapse"  href="#comments-answer-{{ $answer->id }}" aria-expanded="false" aria-controls="comment-{{ $answer->id }}"><i class="fa fa-comment-o"></i> {{ $answer->comments }} 条评论</a></li>
                                 @if(Auth()->check())
-                                    @if($question->status!==2 &&  (Auth()->user()->id === $answer->user_id  || Auth()->user()->isRole('admin')) )
+                                    @if((Auth()->user()->id === $answer->user_id  || Auth()->user()->isRole('admin')) )
                                     <li><a href="{{ route('ask.answer.edit',['id'=>$answer->id]) }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="继续完善回答内容"><i class="fa fa-edit"></i> 编辑</a></li>
                                     @endif
                                 @endif
