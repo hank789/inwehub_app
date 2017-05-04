@@ -148,6 +148,13 @@
                             @endif
                             <p>{!! $answer->content !!}</p>
                         </div>
+                        @if($answer->tags)
+                            <ul class="taglist-inline">
+                                @foreach($answer->tags as $tag)
+                                    <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">{{ $tag->name }}</a></li>
+                                @endforeach
+                            </ul>
+                        @endif
                         <div class="media-footer">
                             <ul class="list-inline mb-20">
                                 <li><a class="comments"  data-toggle="collapse"  href="#comments-answer-{{ $answer->id }}" aria-expanded="false" aria-controls="comment-{{ $answer->id }}"><i class="fa fa-comment-o"></i> {{ $answer->comments }} 条评论</a></li>
