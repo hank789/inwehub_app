@@ -52,6 +52,9 @@ return [
             'prefix'    => env('DB_PREFIX','intervapp_'),
             'strict' => false,
             'engine' => null,
+            'dump'   => [
+                'dump_binary_path' => env('MYSQL_DUMP_PATH')
+            ]
         ],
         'inwehub' => [
             'driver' => 'mysql',
@@ -66,6 +69,9 @@ return [
             'prefix'    => env('DB_INWEHUB_PREFIX','inwehub_'),
             'strict' => false,
             'engine' => null,
+            'dump'   => [
+                'dump_binary_path' => env('MYSQL_DUMP_PATH')
+            ]
         ],
 
         'pgsql' => [
