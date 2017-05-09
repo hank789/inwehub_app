@@ -1,7 +1,11 @@
 <?php
 
 namespace App\Listeners\Frontend;
+use App\Events\Frontend\System\Feedback;
+use App\Events\Frontend\System\Push;
+use App\Models\UserDevice;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Getui;
 
 /**
  * Class UserEventListener.
@@ -25,6 +29,24 @@ class SystemEventListener implements ShouldQueue
     }
 
     /**
+     * 推送事件
+     * @param Push $event
+     */
+    public function push($event){
+        $devices = UserDevice::where('user_id',$event->user->id)->get();
+
+        $data = [
+            'title' => $event->title,
+            'body'  => $event->body,
+            'content' => $event->content,
+            'payload' => $event->payload
+        ];
+        foreach($devices as $device){
+            Getui::pushMessageToSingle($device->client_id,$data,$event->template_id);
+        }
+    }
+
+    /**
      * Register the listeners for the subscriber.
      *
      * @param \Illuminate\Events\Dispatcher $events
@@ -32,8 +54,12 @@ class SystemEventListener implements ShouldQueue
     public function subscribe($events)
     {
         $events->listen(
-            \App\Events\Frontend\System\Feedback::class,
+            Feedback::class,
             'App\Listeners\Frontend\SystemEventListener@feedback'
+        );
+        $events->listen(
+            Push::class,
+            'App\Listeners\Frontend\SystemEventListener@push'
         );
     }
 }

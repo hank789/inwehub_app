@@ -32,40 +32,49 @@ class TaskController extends Controller {
             $task_type_description = '';
             $description = '';
             $object_id = '';
+            $priority = '高';
+            $deadline = '';
+            $status_description = '';
+            $status = $task->status;
+            $user_name = '';
+            $user_avatar_url = '';
             switch($task->source_type){
                 case 'App\Models\Question':
                     $task_type = 1;
-                    $task_type_description = '提问';
+                    $task_type_description = '专业问答';
                     $question = Question::find($task->source_id);
                     $object_id = $question->id;
-                    $description = $question->title;
                     $status = $question->status;
                     switch($task->action){
                         case Task::ACTION_TYPE_ANSWER:
                             //已分配待确认
-                            $status_description = '您的问题来啦,请速速点击前往应答';
-
+                            $user_name = $question->user->name;
+                            $user_avatar_url = $question->user->getAvatarUrl();
+                            $description = '用户'.$user_name.'发起了专业提问:'.$question->title;
                             $answer = Answer::where('question_id',$object_id)->where('user_id',$task->user_id)->get()->last();
                             if($answer && $answer->status == 3){
-                                $answer_promise_time = $answer->promise_time;
-                                $desc = promise_time_format($answer_promise_time);
-                                $status_description = $desc['desc'].',点击前往回答';
+                                $status_description = '前往回答问题';
+                                $deadline = $answer->promise_time;
+                            }else{
+                                $status_description = '前往确认回答';
                             }
                             break;
                     }
                     break;
                 case 'App\Models\Answer':
                     $task_type = 2;
-                    $task_type_description = '回答';
+                    $task_type_description = '专业问答';
                     $answer = Answer::find($task->source_id);
                     $question = Question::find($answer->question_id);
                     $object_id = $question->id;
-                    $description = $question->title;
                     $status = $question->status;
                     switch($task->action){
                         case Task::ACTION_TYPE_ANSWER_FEEDBACK:
-                            $task_type_description = '点评';
-                            $status_description = '需要前往查看回答并进行点评';
+                            $user_name = $answer->user->name;
+                            $user_avatar_url = $answer->user->getAvatarUrl();
+                            $priority = '中';
+                            $description = '用户'.$user_name.'回答了您的专业提问:'.$question->title;
+                            $status_description = '前往点评';
                             break;
                     }
                     break;
@@ -74,13 +83,15 @@ class TaskController extends Controller {
                 'id'        => $task->id,
                 'task_type' => $task_type,
                 'task_type_description' => $task_type_description,
-                'user_name' => $task->user->name,
-                'user_avatar_url' => $task->user->getAvatarUrl(),
+                'user_name' => $user_name,
+                'user_avatar_url' => $user_avatar_url,
                 'description' => $description,
+                'status_description' => $status_description,
                 'object_id'   => $object_id,
                 'status' => $status,
-                'status_description' => $status_description,
-                'created_at' => (string)$task->updated_at
+                'created_at' => (string)$task->updated_at,
+                'deadline' =>$deadline,
+                'priority' => $priority
             ];
         }
         return self::createJsonData(true,$list);

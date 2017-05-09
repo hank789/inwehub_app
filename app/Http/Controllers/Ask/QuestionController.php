@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Ask;
 
+use App\Events\Frontend\System\Push;
 use App\Http\Controllers\Controller;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
@@ -358,6 +359,9 @@ class QuestionController extends Controller
         //记录任务
         $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
+        //推送
+        event(new Push($request->user(),'有人向您发起了回答邀请','content:'.$question->title,'body:'.$question->title,['type'=>'question','id'=>$question->id]));
+        
         if($invitation && $toUser->email){
             $this->counter('question_invite_num_'.$loginUser->id);
             $subject = $question->user->name."在「".Setting()->get('website_name')."」向您发起了回答邀请";

@@ -192,6 +192,7 @@ return [
         Barryvdh\Cors\ServiceProvider::class,
         Spatie\MediaLibrary\MediaLibraryServiceProvider::class,
         Spatie\Backup\BackupServiceProvider::class,
+        Echobool\Getui\GetuiServiceProvider::class,
     ],
 
     /*
@@ -250,6 +251,7 @@ return [
         'Slack' => Maknz\Slack\Laravel\Facade::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        'Getui' => Echobool\Getui\Facades\Getui::class,
     ],
 
 ];
