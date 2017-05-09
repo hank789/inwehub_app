@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Account;
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Models\UserInfo\EduInfo;
 use Illuminate\Http\Request;
 
@@ -16,11 +17,10 @@ class EduController extends Controller {
     protected $validateRules = [
         'school' => 'required',
         'major'   => 'required',
-        'degree'  => 'required',
-        'begin_time'   => 'required|date_format:Y-m-d',
-        'end_time'   => 'required|date_format:Y-m-d',
+        'degree'  => 'required|in:本科,硕士,大专,博士,其它',
+        'begin_time'   => 'required|date_format:Y-m',
+        'end_time'   => 'required|date_format:Y-m',
         'description'   => 'required',
-
     ];
 
     //新建
@@ -29,6 +29,10 @@ class EduController extends Controller {
         $user = $request->user();
 
         $data = $request->all();
+        if($data['begin_time'] > $data['end_time']){
+            throw new ApiException(ApiException::USER_DATE_RANGE_INVALID);
+        }
+
         $data['user_id'] = $user->id;
 
         $edu = EduInfo::create($data);
@@ -42,9 +46,16 @@ class EduController extends Controller {
         $this->validate($request,$this->validateRules);
         $user = $request->user();
         $data = $request->all();
-        $id = $data['id'];
+        if($data['begin_time'] > $data['end_time']){
+            throw new ApiException(ApiException::USER_DATE_RANGE_INVALID);
+        }
 
-        EduInfo::where('id',$id)->where('user_id',$user->id)->update($data);
+        $id = $data['id'];
+        $edu = EduInfo::find($id);
+        if($edu->user_id != $user->id){
+            return self::createJsonData(false,['id'=>$id,'type'=>'project'],ApiException::BAD_REQUEST,'bad request');
+        }
+        EduInfo::where('id',$id)->update($data);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'edu']);
     }

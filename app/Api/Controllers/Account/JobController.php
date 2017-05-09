@@ -1,5 +1,7 @@
 <?php namespace App\Api\Controllers\Account;
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
+use App\Models\Tag;
 use App\Models\UserInfo\JobInfo;
 use Illuminate\Http\Request;
 
@@ -16,10 +18,11 @@ class JobController extends Controller {
     protected $validateRules = [
         'company' => 'required',
         'title'   => 'required',
-        'begin_time'   => 'required|date_format:Y-m-d',
-        'end_time'   => 'required|date_format:Y-m-d',
+        'begin_time'   => 'required|date_format:Y-m',
+        'end_time'   => 'required',
         'description'   => 'required',
-
+        'industry_tags'  => 'max:128',
+        'product_tags'   => 'max:128',
     ];
 
     //新建
@@ -28,9 +31,23 @@ class JobController extends Controller {
         $user = $request->user();
 
         $data = $request->all();
+        if($data['begin_time'] > $data['end_time'] && $data['end_time'] != '至今'){
+            throw new ApiException(ApiException::USER_DATE_RANGE_INVALID);
+        }
+
         $data['user_id'] = $user->id;
 
         $job = JobInfo::create($data);
+
+        $industry_tags = $request->input('industry_tags');
+        /*添加标签*/
+        if($industry_tags){
+            Tag::multiSave($industry_tags,$job);
+        }
+        $product_tags = $request->input('product_tags');
+        if($product_tags){
+            Tag::multiSave($product_tags,$job);
+        }
 
         return self::createJsonData(true,['id'=>$job->id,'type'=>'job']);
     }
@@ -41,9 +58,29 @@ class JobController extends Controller {
         $this->validate($request,$this->validateRules);
         $user = $request->user();
         $data = $request->all();
+
+        if($data['begin_time'] > $data['end_time'] && $data['end_time'] != '至今'){
+            throw new ApiException(ApiException::USER_DATE_RANGE_INVALID);
+        }
+
         $id = $data['id'];
 
-        JobInfo::where('id',$id)->where('user_id',$user->id)->update($data);
+        $job = JobInfo::find($id);
+        if($job->user_id != $user->id){
+            return self::createJsonData(false,['id'=>$id,'type'=>'job'],ApiException::BAD_REQUEST,'bad request');
+        }
+
+        JobInfo::where('id',$id)->update($data);
+
+        $industry_tags = $request->input('industry_tags');
+        /*添加标签*/
+        if($industry_tags){
+            Tag::multiSave($industry_tags,$job);
+        }
+        $product_tags = $request->input('product_tags');
+        if($product_tags){
+            Tag::multiSave($product_tags,$job);
+        }
 
         return self::createJsonData(true,['id'=>$id,'type'=>'job']);
     }

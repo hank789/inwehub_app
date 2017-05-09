@@ -7,6 +7,7 @@ use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
 use App\Models\LoginRecord;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\RateLimiter;
 use App\Services\Registrar;
@@ -110,8 +111,28 @@ class AuthController extends Controller
             $loginrecord->user_id = $request->user()->id;
             $loginrecord->save();
 
+            $user = $request->user();
+            $info = [];
+            $info['token'] = $token;
+            $info['id'] = $user->id;
+            $info['name'] = $user->name;
+            $info['mobile'] = $user->mobile;
+            $info['email'] = $user->email;
+            $info['avatar_url'] = $user->getAvatarUrl();
+            $info['gender'] = $user->gender;
+            $info['birthday'] = $user->birthday;
+            $info['province'] = $user->province;
+            $info['city'] = $user->city;
+            $info['company'] = $user->company;
+            $info['title'] = $user->title;
+            $info['description'] = $user->description;
+            $info['status'] = $user->status;
+            $info['address_detail'] = $user->address_detail;
+            $info['industry_tags'] = array_column($user->industryTags(),'name');
+            $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
+
             /*认证成功*/
-            return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);
+            return static::createJsonData(true,$info,ApiException::SUCCESS,$message);
 
         }
 

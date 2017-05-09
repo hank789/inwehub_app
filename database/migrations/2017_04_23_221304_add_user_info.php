@@ -41,6 +41,7 @@ class AddUserInfo extends Migration
             $table->integer('user_id')->unsigned();
             $table->string("project_name",64)->nullable()->comment('项目名称');
             $table->string('title',32)->nullable()->comment('项目职位');
+            $table->string("customer_name",64)->nullable()->comment('客户名称');
             $table->string('begin_time',10)->nullable()->comment('开始时间,格式:Y-m');
             $table->string('end_time',10)->default('')->comment('结束时间,格式:Y-m');
             $table->text('description')->default('')->comment('描述');

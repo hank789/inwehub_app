@@ -3,6 +3,8 @@ use App\Api\Controllers\Controller;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Question;
+use App\Models\Tag;
+use App\Models\Taggable;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -16,12 +18,13 @@ class TagsController extends Controller {
 
     public function load(Request $request){
         $validateRules = [
-            'tag_type' => 'required|in:1,2'
+            'tag_type' => 'required|in:1,2,3,4'
         ];
 
         $this->validate($request,$validateRules);
         $tag_type = $request->input('tag_type');
 
+        $word = $request->input('word');
         switch($tag_type){
             case 1:
                 //问题分类
@@ -31,17 +34,33 @@ class TagsController extends Controller {
                 //拒绝分类
                 $category_name = 'answer_reject';
                 break;
+            case 3:
+                //行业领域
+                $category_name = 'industry';
+                break;
+            case 4:
+                //产品类型
+                $category_name = 'product_type';
+                break;
         }
 
         $question_c = Category::where('slug',$category_name)->first();
         $question_c_arr = Category::where('parent_id',$question_c->id)->where('status',1)->get();
         $tags = [];
         foreach($question_c_arr as $category){
-            $tags[$category->name] = $category->tags()->pluck('name');
+            $query = $category->tags();
+            if(trim($word)){
+                $query = $query->where('name','like',$word.'%');
+            }
+            $tags[$category->name] = $query->pluck('name');
         }
         if(empty($tags)){
             //一维
-            $tags = $question_c->tags()->pluck('name')->toArray();
+            $query_c = $question_c->tags();
+            if(trim($word)){
+                $query_c = $query_c->where('name','like',$word.'%');
+            }
+            $tags = $query_c->pluck('name')->toArray();
         }
 
         return self::createJsonData(true,$tags);

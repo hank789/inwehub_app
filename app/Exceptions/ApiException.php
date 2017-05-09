@@ -41,6 +41,7 @@ class ApiException extends Exception
     const ARGS_YZM_ERROR = 1104;
     const EXPERT_NEED_CONFIRM = 1105;
     const USER_NEED_CONFIRM = 1106;
+    const USER_DATE_RANGE_INVALID = 1107;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -70,6 +71,7 @@ class ApiException extends Exception
         self::ARGS_YZM_ERROR => '验证码错误',
         self::EXPERT_NEED_CONFIRM => '您的认证申请正在审核中',
         self::USER_NEED_CONFIRM => '您的账户正在审核中,请耐心等待',
+        self::USER_DATE_RANGE_INVALID => '起始日期有误',
 
 
         //问答模块

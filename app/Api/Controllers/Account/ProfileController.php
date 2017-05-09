@@ -5,6 +5,7 @@ use App\Models\Area;
 use App\Models\EmailToken;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserTag;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 
@@ -56,13 +57,13 @@ class ProfileController extends Controller
         $validateRules = [
             'name' => 'required|max:128',
             'gender'    => 'max:128',
-            'industry'  => 'max:128',
+            'industry_tags'  => 'max:128',
             'company'   => 'max:128',
             'province' => 'max:128',
             'city'     => 'max:128',
             'address_detail'  => 'max:128',
-            'email'            => 'max:128',
-            'birthday'         => 'max:128',
+            'email'            => 'max:128|email',
+            'birthday'         => 'max:128|date_format:Y-m-d',
             'title' => 'sometimes|max:128',
             'description' => 'sometimes|max:9999',
         ];
@@ -79,6 +80,10 @@ class ProfileController extends Controller
         $user->city = $request->input('city');
         $user->address_detail = $request->input('address_detail');
         $user->save();
+        $industry_tags = $request->input('industry_tags');
+        $tags = Tag::whereIn('name',explode(',',$industry_tags))->get();
+        UserTag::multiIncrement($user->id,$tags,'industries');
+
         return self::createJsonData(true);
     }
 
