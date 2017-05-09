@@ -42,13 +42,12 @@ class ProjectController extends Controller {
         $project = ProjectInfo::create($data);
 
         $industry_tags = $request->input('industry_tags');
-        /*添加标签*/
-        if($industry_tags){
-            Tag::multiSave($industry_tags,$project);
-        }
         $product_tags = $request->input('product_tags');
-        if($product_tags){
-            Tag::multiSave($product_tags,$project);
+
+        $tags = trim($industry_tags.','.$product_tags,',');
+        /*添加标签*/
+        if($tags){
+            Tag::multiSave($industry_tags,$project);
         }
 
         return self::createJsonData(true,['id'=>$project->id,'type'=>'project']);
@@ -75,13 +74,12 @@ class ProjectController extends Controller {
         ProjectInfo::where('id',$id)->update($data);
 
         $industry_tags = $request->input('industry_tags');
-        /*添加标签*/
-        if($industry_tags){
-            Tag::multiSave($industry_tags,$project);
-        }
         $product_tags = $request->input('product_tags');
-        if($product_tags){
-            Tag::multiSave($product_tags,$project);
+
+        $tags = trim($industry_tags.','.$product_tags,',');
+        /*添加标签*/
+        if($tags){
+            Tag::multiSave($industry_tags,$project);
         }
 
         return self::createJsonData(true,['id'=>$id,'type'=>'project']);

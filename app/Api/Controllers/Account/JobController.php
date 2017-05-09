@@ -40,13 +40,12 @@ class JobController extends Controller {
         $job = JobInfo::create($data);
 
         $industry_tags = $request->input('industry_tags');
-        /*添加标签*/
-        if($industry_tags){
-            Tag::multiSave($industry_tags,$job);
-        }
         $product_tags = $request->input('product_tags');
-        if($product_tags){
-            Tag::multiSave($product_tags,$job);
+
+        $tags = trim($industry_tags.','.$product_tags,',');
+        /*添加标签*/
+        if($tags){
+            Tag::multiSave($industry_tags,$job);
         }
 
         return self::createJsonData(true,['id'=>$job->id,'type'=>'job']);
@@ -73,13 +72,12 @@ class JobController extends Controller {
         JobInfo::where('id',$id)->update($data);
 
         $industry_tags = $request->input('industry_tags');
-        /*添加标签*/
-        if($industry_tags){
-            Tag::multiSave($industry_tags,$job);
-        }
         $product_tags = $request->input('product_tags');
-        if($product_tags){
-            Tag::multiSave($product_tags,$job);
+
+        $tags = trim($industry_tags.','.$product_tags,',');
+        /*添加标签*/
+        if($tags){
+            Tag::multiSave($industry_tags,$job);
         }
 
         return self::createJsonData(true,['id'=>$id,'type'=>'job']);

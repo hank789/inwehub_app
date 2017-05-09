@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Question;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
@@ -32,10 +33,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $otherAnswers = Answer::where('question_id',1)->where('status','!=',2)->first();
-        if(!$otherAnswers){
-            //问题已拒绝
-            var_dump(1);
-        }
+        $user = Question::find(1);
+        $tags = $user->tags()->where('category_id',3)->pluck('name')->toArray();
+        var_dump(implode(',',$tags));
     }
 }

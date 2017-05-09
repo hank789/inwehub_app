@@ -42,10 +42,43 @@ class ProfileController extends Controller
         $info['address_detail'] = $user->address_detail;
         $info['industry_tags'] = array_column($user->industryTags(),'name');
         $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
+        $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+
+        $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
+        foreach($jobs as &$job){
+            $job->industry_tags = '';
+            $job->product_tags = '';
+            $tags = $job->tags();
+            $industry_tags = $tags->where('category_id',9)->pluck('name')->toArray();
+            if($industry_tags){
+                $job->industry_tags = implode(',',$industry_tags);
+            }
+            $product_tags = $tags->where('category_id',10)->pluck('name')->toArray();
+            if($product_tags){
+                $job->product_tags = implode(',',$product_tags);
+            }
+        }
+
+        $projects = $user->projects()->orderBy('begin_time','desc')->get();
+
+        foreach($projects as &$project){
+            $project->industry_tags = '';
+            $project->product_tags = '';
+            $tags = $project->tags();
+            $industry_tags = $tags->where('category_id',9)->pluck('name')->toArray();
+            if($industry_tags){
+                $project->industry_tags = implode(',',$industry_tags);
+            }
+            $product_tags = $tags->where('category_id',10)->pluck('name')->toArray();
+            if($product_tags){
+                $project->product_tags = implode(',',$product_tags);
+            }
+        }
+
         $data = [
             'info'   => $info,
-            'jobs'   => $user->jobs()->orderBy('begin_time','desc')->get(),
-            'projects' => $user->projects()->orderBy('begin_time','desc')->get(),
+            'jobs'   => $jobs,
+            'projects' => $projects,
             'edus'   => $user->edus()->orderBy('begin_time','desc')->get(),
             'trains'  => $user->trains()->orderBy('get_time','desc')->get()
         ];

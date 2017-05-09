@@ -1,6 +1,7 @@
 <?php namespace App\Models\UserInfo;
 
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class ProjectInfo extends Model
 {
-    use BelongsToUserTrait,SoftDeletes;
+    use BelongsToUserTrait,MorphManyTagsTrait,SoftDeletes;
     protected $table = 'user_project_info';
     protected $fillable = ['user_id', 'project_name','title','begin_time','end_time','description'];
 
