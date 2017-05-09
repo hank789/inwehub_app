@@ -92,6 +92,10 @@ Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
 //意见反馈
 Route::post('system/feedback','SystemController@feedback')->middleware('jwt.auth');
 
+//保存用户设备信息
+Route::post('system/device','SystemController@device')->middleware('jwt.auth');
+
+
 //消息模块
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     //通知列表
