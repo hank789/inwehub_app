@@ -361,15 +361,6 @@ class QuestionController extends Controller
 
         //推送
         event(new Push($request->user(),'有人向您发起了回答邀请','content:'.$question->title,'body:'.$question->title,['type'=>'question','id'=>$question->id]));
-        
-        if($invitation && $toUser->email){
-            $this->counter('question_invite_num_'.$loginUser->id);
-            $subject = $question->user->name."在「".Setting()->get('website_name')."」向您发起了回答邀请";
-            $message = "我在 ".Setting()->get('website_name')." 上遇到了问题「".$question->title."」，希望您能帮我解答 ";
-            //暂时不发送邮件
-            //$this->sendEmail($invitation->send_to,$subject,$message);
-            return $this->ajaxSuccess('success');
-        }
 
         return $this->ajaxError(10008,'邀请失败，请稍后再试');
     }
