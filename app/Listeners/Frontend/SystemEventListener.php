@@ -38,7 +38,8 @@ class SystemEventListener implements ShouldQueue
         $data = [
             'title' => $event->title,
             'body'  => $event->body,
-            'content' => $event->content,
+            'text'  => $event->body,
+            'content' => json_encode($event->content),
             'payload' => $event->payload
         ];
         foreach($devices as $device){

@@ -31,7 +31,16 @@ class Push
     public $template_id;
 
 
-    public function __construct($user,$title, $content,$body, $payload=[], $template_id = 4)
+    /**
+     * Push constructor.
+     * @param $user
+     * @param $title; 通知标题
+     * @param $body; 通知内容
+     * @param array $content; 给前端的参数,定义事件类型和事件id
+     * @param array $payload;
+     * @param int $template_id;模板id,默认就可以
+     */
+    public function __construct($user, $title, $body, $content=[], $payload=[], $template_id = 1)
     {
         $this->user = $user;
         $this->content = $content;
