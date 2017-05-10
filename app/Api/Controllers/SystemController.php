@@ -40,7 +40,8 @@ class SystemController extends Controller {
                 'device_type'=>$data['device_type'],
                 'device_token' => $data['device_token'],
                 'appid'        => $data['appid'],
-                'appkey'       => $data['appkey']
+                'appkey'       => $data['appkey'],
+                'created_at'   => date('Y-m-d H:i:s')
             ]);
         return self::createJsonData(true);
     }
