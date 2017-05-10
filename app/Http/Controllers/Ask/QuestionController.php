@@ -360,7 +360,7 @@ class QuestionController extends Controller
         $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
         //推送
-        event(new Push($request->user(),'有人向您发起了回答邀请','content:'.$question->title,'body:'.$question->title,['type'=>'question','id'=>$question->id]));
+        event(new Push($request->user(),'您有新的回答邀请',$question->title,['payload'=>['object_type'=>'question','object_id'=>$question->id]]));
 
         return $this->ajaxError(10008,'邀请失败，请稍后再试');
     }

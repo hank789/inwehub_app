@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Ask;
 
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Attention;
@@ -122,6 +123,9 @@ class AnswerController extends Controller
                 /*记录通知*/
                 $this->notify($answer->user_id,$question->user_id,'question_answered',$question->title,$question->id,$answer->content);
 
+                //推送通知
+                event(new Push($question->user,'您的提问专家已回答,请前往点评',$question->title,['payload'=>['object_type'=>'question','object_id'=>$question->id]]));
+
                 /*回答后通知关注问题*/
                 if(intval($request->input('followed'))){
                     $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->count();
@@ -154,6 +158,9 @@ class AnswerController extends Controller
                 $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[],[$request->user()->id]);
                 /*记录动态*/
                 $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->content);
+                //推送通知
+                event(new Push($question->user,'您的提问专家已响应,点击查看',$question->title,['payload'=>['object_type'=>'question','object_id'=>$question->id]]));
+
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
             }
         }
@@ -248,6 +255,10 @@ class AnswerController extends Controller
         $answer->question()->update(['status'=>7]);
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
+        //推送通知
+        event(new Push($answer->user,'您的回答已点评,点击查看',$answer->content,['payload'=>['object_type'=>'answer','object_id'=>$answer->question_id]]));
+
+
         return self::createJsonData(true,$request->all());
     }
 
