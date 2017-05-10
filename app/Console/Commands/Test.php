@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\Frontend\Expert\Recommend;
 use App\Events\Frontend\System\Push;
 use App\Models\Answer;
 use App\Models\Authentication;
@@ -12,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
 use Getui;
+use Illuminate\Support\Facades\Storage;
+
 
 class Test extends Command
 {
@@ -36,7 +39,17 @@ class Test extends Command
      */
     public function handle()
     {
-        $devices = UserDevice::where('user_id',2)->get();
+
+        $head_img_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/expert/recommend/1/667ba35683a2c99646fccfb84209740d.png';
+        $data['name'] = '张三';
+        $data['gender'] = '男';
+        $data['industry_tags'] = '工业';
+        $data['work_years'] = '10';
+        $data['mobile'] = '15050368485';
+        $data['description'] = '你好';
+        event(new Recommend(1,$data['name'],$data['gender'],$data['industry_tags'],$data['work_years'],$data['mobile'],$data['description'],$head_img_url));
+
+        /*$devices = UserDevice::where('user_id',2)->get();
 
         $data = [
             'title' => 'hello',
@@ -46,6 +59,6 @@ class Test extends Command
             'payload' => '{title:"title",content:"content",payload:"ppppp"}'
         ];
         event(new Push(User::find(2),'有人向您发起了回答邀请',
-            'content:问题内容,有人向您发起了回答邀请,有人向您发起了回答邀请,有人向您发起了回答邀请',['payload'=>['object_type'=>'question','object_id'=>123]],[],1));
+            'content:问题内容,有人向您发起了回答邀请,有人向您发起了回答邀请,有人向您发起了回答邀请',['payload'=>['object_type'=>'question','object_id'=>123]],[],1));*/
     }
 }

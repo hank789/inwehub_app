@@ -361,6 +361,27 @@ if( !function_exists('promise_time_format') ){
     }
 }
 
+if (!function_exists('cal_account_info_finish')) {
+    function cal_account_info_finish(array $data){
+        $expert_fields = ['id','is_expert','tags','status'];
+        $total = 0;
+        $filled = 0;
+        $info = $data['info'];
+        foreach($info as $field=>$value){
+            if(in_array($field,$expert_fields)) continue;
+            $total++;
+            if(!empty($value)) $filled++;
+        }
+        unset($data['info']);
+        foreach($data as $field=>$value){
+            if(in_array($field,$expert_fields)) continue;
+            $total++;
+            if(!empty($value)) $filled++;
+        }
+
+        return ['total'=>$total,'filled'=>$filled];
+    }
+}
 
 
 

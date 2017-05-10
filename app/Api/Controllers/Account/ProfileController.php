@@ -82,6 +82,11 @@ class ProfileController extends Controller
             'edus'   => $user->edus()->orderBy('begin_time','desc')->get(),
             'trains'  => $user->trains()->orderBy('get_time','desc')->get()
         ];
+
+        $fields = cal_account_info_finish($data);
+        $data['info']['account_info_total_filed'] = $fields['total'];
+        $data['info']['account_info_filled_filed'] = $fields['filled'];
+
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
 
@@ -89,7 +94,7 @@ class ProfileController extends Controller
     public function update(Request $request){
         $validateRules = [
             'name' => 'required|max:128',
-            'gender'    => 'max:128',
+            'gender'    => 'max:128|in:0,1,2',
             'industry_tags'  => 'max:128',
             'company'   => 'max:128',
             'province' => 'max:128',

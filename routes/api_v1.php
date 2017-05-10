@@ -34,6 +34,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
 
     //专家认证申请
     Route::post('expert/apply','ExpertController@apply');
+    //推荐专家
+    Route::post('expert/recommend','ExpertController@recommend');
+    //专家审核情况
+    Route::post('expert/info','ExpertController@info');
+
 
     //教育经历
     Route::post('account/edu/store','EduController@store');
