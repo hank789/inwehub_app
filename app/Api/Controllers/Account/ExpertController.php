@@ -69,7 +69,7 @@ class ExpertController extends Controller {
             'mobile'      => 'required|cn_phone',
             'industry_tags'      => 'required',
             'description'      => 'required',
-            'head_img'  => 'required|image',
+            'images'  => 'required|image',
         ];
         $this->validate($request,$validateRules);
         if($request->hasFile('head_img')){
