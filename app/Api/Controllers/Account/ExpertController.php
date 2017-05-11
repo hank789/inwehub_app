@@ -69,26 +69,28 @@ class ExpertController extends Controller {
             'mobile'      => 'required|cn_phone',
             'industry_tags'      => 'required',
             'description'      => 'required',
-            'images'  => 'required|image',
+            'images'  => 'image',
         ];
         $this->validate($request,$validateRules);
-        if($request->hasFile('head_img')){
-            $user_id = $request->user()->id;
-            $file = $request->file('head_img');
+        $user_id = $request->user()->id;
+        $head_img_url = '';
+
+        if($request->hasFile('images')){
+            $file = $request->file('images');
             $extension = strtolower($file->getClientOriginalExtension());
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
-
             if(in_array($extension, $extArray)){
                 $file_name = 'expert/recommend/'.$user_id.'/'.md5($file->getFilename()).'.'.$extension;
                 Storage::disk('oss')->put($file_name,File::get($file));
                 $head_img_url = Storage::disk('oss')->url($file_name);
-                $data = $request->all();
-                event(new Recommend($user_id,$data['name'],$data['gender'],$data['industry_tags'],$data['work_years'],$data['mobile'],$data['description'],$head_img_url));
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'名片格式错误');
             }
-            return self::createJsonData(true);
         }
+
+        $data = $request->all();
+        event(new Recommend($user_id,$data['name'],$data['gender'],$data['industry_tags'],$data['work_years'],$data['mobile'],$data['description'],$head_img_url));
+
         return self::createJsonData(false,[],ApiException::BAD_REQUEST,'推荐失败');
 
     }
