@@ -30,7 +30,7 @@ class TrainController extends Controller {
 
         $train = TrainInfo::create($data);
 
-        return self::createJsonData(true,['id'=>$train->id,'type'=>'train']);
+        return self::createJsonData(true,['id'=>$train->id,'type'=>'train','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
     //提交修改
@@ -52,7 +52,7 @@ class TrainController extends Controller {
         $user = $request->user();
         TrainInfo::where('id',$id)->where('user_id',$user->id)->delete();
 
-        return self::createJsonData(true,['id'=>$id,'type'=>'train']);
+        return self::createJsonData(true,['id'=>$id,'type'=>'train','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
 

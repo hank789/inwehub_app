@@ -37,7 +37,7 @@ class EduController extends Controller {
 
         $edu = EduInfo::create($data);
 
-        return self::createJsonData(true,['id'=>$edu->id,'type'=>'edu']);
+        return self::createJsonData(true,['id'=>$edu->id,'type'=>'edu','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
     //提交修改
@@ -66,7 +66,7 @@ class EduController extends Controller {
         $user = $request->user();
         EduInfo::where('id',$id)->where('user_id',$user->id)->delete();
 
-        return self::createJsonData(true,['id'=>$id,'type'=>'edu']);
+        return self::createJsonData(true,['id'=>$id,'type'=>'edu','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
 

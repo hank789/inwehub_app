@@ -50,7 +50,7 @@ class ProjectController extends Controller {
             Tag::multiSave($industry_tags,$project);
         }
 
-        return self::createJsonData(true,['id'=>$project->id,'type'=>'project']);
+        return self::createJsonData(true,['id'=>$project->id,'type'=>'project','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
     //提交修改
@@ -91,7 +91,7 @@ class ProjectController extends Controller {
         $user = $request->user();
         ProjectInfo::where('id',$id)->where('user_id',$user->id)->delete();
 
-        return self::createJsonData(true,['id'=>$id,'type'=>'project']);
+        return self::createJsonData(true,['id'=>$id,'type'=>'project','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
 

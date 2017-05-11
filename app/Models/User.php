@@ -437,4 +437,40 @@ class User extends Model implements AuthenticatableContract,
         }
         return true;
     }
+
+    //获取信息完整度百分比
+    public function getInfoCompletePercent(){
+        $user = $this->toArray();
+        $info = [];
+        $info['name'] = $user['name'];
+        $info['mobile'] = $user['mobile'];
+        $info['email'] = $user['email'];
+        $info['gender'] = $user['gender'];
+        $info['birthday'] = $user['birthday'];
+        $info['province'] = $user['province'];
+        $info['city'] = $user['city'];
+        $info['company'] = $user['company'];
+        $info['title'] = $user['title'];
+        $info['description'] = $user['description'];
+        $info['address_detail'] = $user['address_detail'];
+        $info['industry_tags'] = array_column($this->industryTags(),'name');
+        $info['avatar_url'] = $this->getAvatarUrl();
+
+        $edu = $this->edus()->first();
+        $job = $this->jobs()->first();
+        $project = $this->projects()->first();
+        $train = $this->trains()->first();
+        $data = [];
+        $data['info'] = $info;
+        $data['jobs'] = $job;
+        $data['edus'] = $edu;
+        $data['projects'] = $project;
+        $data['trains'] = $train;
+
+        $fields = cal_account_info_finish($data);
+
+        return round(100*$fields['filled']/$fields['total']);
+
+    }
+
 }

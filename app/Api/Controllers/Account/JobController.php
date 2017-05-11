@@ -48,7 +48,7 @@ class JobController extends Controller {
             Tag::multiSave($industry_tags,$job);
         }
 
-        return self::createJsonData(true,['id'=>$job->id,'type'=>'job']);
+        return self::createJsonData(true,['id'=>$job->id,'type'=>'job','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
     //提交修改
@@ -89,7 +89,7 @@ class JobController extends Controller {
         $user = $request->user();
         JobInfo::where('id',$id)->where('user_id',$user->id)->delete();
 
-        return self::createJsonData(true,['id'=>$id,'type'=>'job']);
+        return self::createJsonData(true,['id'=>$id,'type'=>'job','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
 

@@ -43,6 +43,7 @@ class ProfileController extends Controller
         $info['industry_tags'] = array_column($user->industryTags(),'name');
         $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+        $info['account_info_complete_percent'] = $user->getInfoCompletePercent();
 
         $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
         foreach($jobs as &$job){
@@ -83,10 +84,6 @@ class ProfileController extends Controller
             'trains'  => $user->trains()->orderBy('get_time','desc')->get()
         ];
 
-        $fields = cal_account_info_finish($data);
-        $data['info']['account_info_total_filed'] = $fields['total'];
-        $data['info']['account_info_filled_filed'] = $fields['filled'];
-
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
 
@@ -122,7 +119,7 @@ class ProfileController extends Controller
         $tags = Tag::whereIn('name',explode(',',$industry_tags))->get();
         UserTag::multiIncrement($user->id,$tags,'industries');
 
-        return self::createJsonData(true);
+        return self::createJsonData(true,['account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
     /**
@@ -147,7 +144,7 @@ class ProfileController extends Controller
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
             }
-            return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl()]);
+            return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$request->user()->getInfoCompletePercent()]);
         }
         return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
 

@@ -299,8 +299,9 @@ class QuestionController extends Controller
     }
 
     protected function checkUserInfoPercent($user){
-        //todo 字段完成度为95%才能创建问题
-        if(empty($user->title)){
+        //字段完成度为95%才能创建问题
+        $percent = $user->getInfoCompletePercent();
+        if($percent < 95){
             throw new ApiException(ApiException::ASK_NEED_USER_INFORMATION);
         }
     }

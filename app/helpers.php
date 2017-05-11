@@ -363,13 +363,14 @@ if( !function_exists('promise_time_format') ){
 
 if (!function_exists('cal_account_info_finish')) {
     function cal_account_info_finish(array $data){
-        $expert_fields = ['id','is_expert','tags','status'];
+        $expert_fields = ['id','site_notifications','password','is_expert','tags','status','created_at','updated_at','remember_token','email_notifications'];
         $total = 0;
         $filled = 0;
         $info = $data['info'];
         foreach($info as $field=>$value){
             if(in_array($field,$expert_fields)) continue;
             $total++;
+            if($filled=='avatar_url' && $value==config('image.user_default_avatar')) continue;
             if(!empty($value)) $filled++;
         }
         unset($data['info']);
@@ -378,7 +379,6 @@ if (!function_exists('cal_account_info_finish')) {
             $total++;
             if(!empty($value)) $filled++;
         }
-
         return ['total'=>$total,'filled'=>$filled];
     }
 }
