@@ -41,6 +41,7 @@ class ProfileController extends Controller
         $info['status'] = $user->status;
         $info['address_detail'] = $user->address_detail;
         $info['industry_tags'] = array_column($user->industryTags(),'name');
+        if(empty($info['industry_tags'])) $info['industry_tags'] = '';
         $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['account_info_complete_percent'] = $user->getInfoCompletePercent();
@@ -98,7 +99,7 @@ class ProfileController extends Controller
             'city'     => 'max:128',
             'address_detail'  => 'max:128',
             'email'            => 'max:128|email',
-            'birthday'         => 'max:128|date_format:Y-m-d',
+            'birthday'         => 'max:128',
             'title' => 'sometimes|max:128',
             'description' => 'sometimes|max:9999',
         ];
@@ -116,7 +117,7 @@ class ProfileController extends Controller
         $user->address_detail = $request->input('address_detail');
         $user->save();
         $industry_tags = $request->input('industry_tags');
-        $tags = Tag::whereIn('name',explode(',',$industry_tags))->get();
+        $tags = Tag::whereIn('name',$industry_tags)->get();
         UserTag::multiIncrement($user->id,$tags,'industries');
 
         return self::createJsonData(true,['account_info_complete_percent'=>$user->getInfoCompletePercent()]);

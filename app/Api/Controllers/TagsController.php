@@ -44,6 +44,7 @@ class TagsController extends Controller {
                 break;
         }
 
+        $level = 2;
         $question_c = Category::where('slug',$category_name)->first();
         $question_c_arr = Category::where('parent_id',$question_c->id)->where('status',1)->get();
         $tags = [];
@@ -55,6 +56,7 @@ class TagsController extends Controller {
             $tags[$category->name] = $query->pluck('name');
         }
         if(empty($tags)){
+            $level = 1;
             //一维
             $query_c = $question_c->tags();
             if(trim($word)){
@@ -62,8 +64,11 @@ class TagsController extends Controller {
             }
             $tags = $query_c->pluck('name')->toArray();
         }
+        $data = [];
+        $data['tags'] = $tags;
+        $data['level'] = $level;
 
-        return self::createJsonData(true,$tags);
+        return self::createJsonData(true,$data);
     }
 
 }

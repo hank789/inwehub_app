@@ -40,8 +40,6 @@ class Test extends Command
     public function handle()
     {
 
-        $s = User::find(1)->getInfoCompletePercent();
-        var_dump($s);
 
         return;
         $head_img_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/expert/recommend/1/667ba35683a2c99646fccfb84209740d.png';
