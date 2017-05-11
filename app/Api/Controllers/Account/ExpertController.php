@@ -37,7 +37,7 @@ class ExpertController extends Controller {
 
         Authentication::create($data);
 
-        return self::createJsonData(true,['tips'=>'稍安勿躁，我们正在审核中!']);
+        return self::createJsonData(true,['status'=>1,'tips'=>'稍安勿躁，我们正在审核中!']);
     }
 
     public function info(Request $request){
