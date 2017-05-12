@@ -371,7 +371,7 @@ if (!function_exists('cal_account_info_finish')) {
             if(in_array($field,$expert_fields)) continue;
             $total++;
             if($filled=='avatar_url' && $value==config('image.user_default_avatar')) continue;
-            if(!empty($value) || $value === 0) $filled++;
+            if(!empty($value) || $value === "0") $filled++;
         }
         unset($data['info']);
         foreach($data as $field=>$value){
