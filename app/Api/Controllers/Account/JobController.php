@@ -37,10 +37,13 @@ class JobController extends Controller {
 
         $data['user_id'] = $user->id;
 
-        $job = JobInfo::create($data);
+        $industry_tags = $data['industry_tags']?implode(',',$data['industry_tags']):'';
+        $product_tags = $data['product_tags']?implode(',',$data['product_tags']):'';
 
-        $industry_tags = $request->input('industry_tags');
-        $product_tags = $request->input('product_tags');
+        unset($data['industry_tags']);
+        unset($data['product_tags']);
+
+        $job = JobInfo::create($data);
 
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/
@@ -68,11 +71,14 @@ class JobController extends Controller {
         if($job->user_id != $user->id){
             return self::createJsonData(false,['id'=>$id,'type'=>'job'],ApiException::BAD_REQUEST,'bad request');
         }
+        $industry_tags = $data['industry_tags']?implode(',',$data['industry_tags']):'';
+        $product_tags = $data['product_tags']?implode(',',$data['product_tags']):'';
+
+        unset($data['industry_tags']);
+        unset($data['product_tags']);
 
         JobInfo::where('id',$id)->update($data);
 
-        $industry_tags = $request->input('industry_tags');
-        $product_tags = $request->input('product_tags');
 
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/

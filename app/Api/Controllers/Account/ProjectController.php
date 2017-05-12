@@ -39,10 +39,13 @@ class ProjectController extends Controller {
 
         $data['user_id'] = $user->id;
 
-        $project = ProjectInfo::create($data);
+        $industry_tags = $data['industry_tags']?implode(',',$data['industry_tags']):'';
+        $product_tags = $data['product_tags']?implode(',',$data['product_tags']):'';
 
-        $industry_tags = $request->input('industry_tags');
-        $product_tags = $request->input('product_tags');
+        unset($data['industry_tags']);
+        unset($data['product_tags']);
+
+        $project = ProjectInfo::create($data);
 
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/
@@ -71,10 +74,13 @@ class ProjectController extends Controller {
             return self::createJsonData(false,['id'=>$id,'type'=>'project'],ApiException::BAD_REQUEST,'bad request');
         }
 
-        ProjectInfo::where('id',$id)->update($data);
+        $industry_tags = $data['industry_tags']?implode(',',$data['industry_tags']):'';
+        $product_tags = $data['product_tags']?implode(',',$data['product_tags']):'';
 
-        $industry_tags = $request->input('industry_tags');
-        $product_tags = $request->input('product_tags');
+        unset($data['industry_tags']);
+        unset($data['product_tags']);
+
+        ProjectInfo::where('id',$id)->update($data);
 
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/
