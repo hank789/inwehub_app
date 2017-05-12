@@ -80,7 +80,15 @@ class ProjectController extends Controller {
         unset($data['industry_tags']);
         unset($data['product_tags']);
 
-        ProjectInfo::where('id',$id)->update($data);
+        unset($this->validateRules['id']);
+        $update = [];
+        foreach($this->validateRules as $field=>$rule){
+            if(isset($data[$field])){
+                $update[$field] = $data[$field];
+            }
+        }
+
+        ProjectInfo::where('id',$id)->update($update);
 
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/

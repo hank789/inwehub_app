@@ -55,7 +55,16 @@ class EduController extends Controller {
         if($edu->user_id != $user->id){
             return self::createJsonData(false,['id'=>$id,'type'=>'project'],ApiException::BAD_REQUEST,'bad request');
         }
-        EduInfo::where('id',$id)->update($data);
+
+        unset($this->validateRules['id']);
+        $update = [];
+        foreach($this->validateRules as $field=>$rule){
+            if(isset($data[$field])){
+                $update[$field] = $data[$field];
+            }
+        }
+
+        EduInfo::where('id',$id)->update($update);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'edu']);
     }

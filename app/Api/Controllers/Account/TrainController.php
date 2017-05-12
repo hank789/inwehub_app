@@ -40,8 +40,15 @@ class TrainController extends Controller {
         $user = $request->user();
         $data = $request->all();
         $id = $data['id'];
+        unset($this->validateRules['id']);
+        $update = [];
+        foreach($this->validateRules as $field=>$rule){
+            if(isset($data[$field])){
+                $update[$field] = $data[$field];
+            }
+        }
 
-        TrainInfo::where('id',$id)->where('user_id',$user->id)->update($data);
+        TrainInfo::where('id',$id)->where('user_id',$user->id)->update($update);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'train']);
     }
