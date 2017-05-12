@@ -105,7 +105,7 @@ class ExpertController extends Controller {
         $data = $request->all();
         event(new Recommend($user_id,$data['name'],$data['gender'],$data['industry_tags'],$data['work_years'],$data['mobile'],$data['description'],[$head_img_url_0,$head_img_url_1]));
 
-        return self::createJsonData(false,[],ApiException::BAD_REQUEST,'推荐失败');
+        return self::createJsonData(true);
 
     }
 

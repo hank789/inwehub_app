@@ -28,9 +28,11 @@ class ExpertEventListener implements ShouldQueue {
 
             if($field == 'head_img_urls' && is_array($value)){
                 foreach($value as $key=>$img_url){
-                    $item['title'] = $field.'_'.$key;
-                    $item['value'] = $img_url;
-                    $item['short'] = false;
+                    if($img_url){
+                        $item['title'] = $field.'_'.$key;
+                        $item['value'] = $img_url;
+                        $item['short'] = false;
+                    }
                 }
             }else{
                 $item['title'] = $field;

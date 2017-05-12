@@ -11,7 +11,6 @@
         "doctrine/dbal": "~2.3",
         "fabpot/goutte": "^3.2",
         "flc/alidayu": "^2.0",
-        "intervapp/plus-install-plugin": "dev-master",
         "intervention/image": "^2.3",
         "jacobcyl/ali-oss-storage": "dev-master",
         "laravel/framework": "5.4.*",
@@ -85,14 +84,6 @@
         {
             "type": "vcs",
             "url": "git@github.com:Tlapi/slack-laravel.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:hank789/plus-install-plugin.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:hank789/intervapp_web.git"
         },
         {
             "packagist": false
