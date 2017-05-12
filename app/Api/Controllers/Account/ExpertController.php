@@ -69,27 +69,41 @@ class ExpertController extends Controller {
             'mobile'      => 'required|cn_phone',
             'industry_tags'      => 'required',
             'description'      => 'required',
-            'images'  => 'image',
+            'images_0'  => 'image',
         ];
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
-        $head_img_url = '';
+        $head_img_url_0 = '';
+        $head_img_url_1 = '';
 
-        if($request->hasFile('images')){
-            $file = $request->file('images');
-            $extension = strtolower($file->getClientOriginalExtension());
+        if($request->hasFile('images_0')){
+            $file_0 = $request->file('images_0');
+            $extension = strtolower($file_0->getClientOriginalExtension());
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
             if(in_array($extension, $extArray)){
-                $file_name = 'expert/recommend/'.$user_id.'/'.md5($file->getFilename()).'.'.$extension;
-                Storage::disk('oss')->put($file_name,File::get($file));
-                $head_img_url = Storage::disk('oss')->url($file_name);
+                $file_name = 'expert/recommend/'.$user_id.'/'.md5($file_0->getFilename()).'.'.$extension;
+                Storage::disk('oss')->put($file_name,File::get($file_0));
+                $head_img_url_0 = Storage::disk('oss')->url($file_name);
+            }else{
+                return self::createJsonData(false,[],ApiException::BAD_REQUEST,'名片格式错误');
+            }
+        }
+
+        if($request->hasFile('images_1')){
+            $file_1 = $request->file('images_1');
+            $extension = strtolower($file_1->getClientOriginalExtension());
+            $extArray = array('png', 'gif', 'jpeg', 'jpg');
+            if(in_array($extension, $extArray)){
+                $file_name = 'expert/recommend/'.$user_id.'/'.md5($file_1->getFilename()).'.'.$extension;
+                Storage::disk('oss')->put($file_name,File::get($file_1));
+                $head_img_url_1 = Storage::disk('oss')->url($file_name);
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'名片格式错误');
             }
         }
 
         $data = $request->all();
-        event(new Recommend($user_id,$data['name'],$data['gender'],$data['industry_tags'],$data['work_years'],$data['mobile'],$data['description'],$head_img_url));
+        event(new Recommend($user_id,$data['name'],$data['gender'],$data['industry_tags'],$data['work_years'],$data['mobile'],$data['description'],[$head_img_url_0,$head_img_url_1]));
 
         return self::createJsonData(false,[],ApiException::BAD_REQUEST,'推荐失败');
 

@@ -25,9 +25,9 @@ class Recommend
 
     public $description;
 
-    public $head_img_url;
+    public $head_img_urls;
 
-    public function __construct($user_id,$name,$gender,$industry_tags,$work_years,$mobile,$description,$head_img_url)
+    public function __construct($user_id,$name,$gender,$industry_tags,$work_years,$mobile,$description,array $head_img_urls = [])
     {
         $this->user_id = $user_id;
         $this->name = $name;
@@ -36,7 +36,7 @@ class Recommend
         $this->work_years = $work_years;
         $this->mobile = $mobile;
         $this->description = $description;
-        $this->head_img_url = $head_img_url;
+        $this->head_img_urls = $head_img_urls;
     }
 
 

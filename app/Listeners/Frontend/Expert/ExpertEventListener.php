@@ -25,13 +25,24 @@ class ExpertEventListener implements ShouldQueue {
         $fields = [];
         foreach($event as $field=>$value){
             $item = [];
-            $item['title'] = $field;
-            $item['value'] = $value;
-            if(in_array($field,['description','head_img_url'])){
-                $item['short'] = false;
+
+            if($field == 'head_img_urls' && is_array($value)){
+                foreach($value as $key=>$img_url){
+                    $item['title'] = $field.'_'.$key;
+                    $item['value'] = $img_url;
+                    $item['short'] = false;
+                }
             }else{
-                $item['short'] = true;
+                $item['title'] = $field;
+                $item['value'] = $value;
+
+                if(in_array($field,['description','head_img_urls'])){
+                    $item['short'] = false;
+                }else{
+                    $item['short'] = true;
+                }
             }
+
             $fields[] = $item;
         }
         $attach = [];
