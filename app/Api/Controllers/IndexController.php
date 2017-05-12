@@ -13,13 +13,13 @@ class IndexController extends Controller {
             [
                 "user_name"=> "隔壁老王",//提问者名字
                 "user_avatar_url"=> "http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/media/11/user_origin_10.jpg",//头像地址
-                "description"=> "怎样成为专家?",//问题内容
+                "description"=> "老郭的花生卖多少钱?成本价多少?毛利率多少?赚钱么?我可以加盟吗?加盟费多少钱?",//问题内容
                 "price"=> "188"
             ],
             [
                 "user_name"=> "隔壁老王",//提问者名字
                 "user_avatar_url"=> "http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg",//头像地址
-                "description"=> "怎样成为专家?",//问题内容
+                "description"=> "老郭的花生卖多少钱?成本价多少?毛利率多少?赚钱么?我可以加盟吗?加盟费多少钱?",//问题内容
                 "price"=> "188"
             ]
         ];
