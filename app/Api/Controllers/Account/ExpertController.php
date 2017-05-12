@@ -71,9 +71,6 @@ class ExpertController extends Controller {
             'description'      => 'required',
             'images_0'  => 'required|image',
         ];
-        \Log::info('test',$request->file('images_0'));
-        \Log::info('test2',$request->all());
-
 
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
