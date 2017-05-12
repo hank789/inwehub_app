@@ -40,7 +40,8 @@ class Test extends Command
     public function handle()
     {
 
-
+        $s = "0";
+        if($s === "0") echo 2;
         return;
         $head_img_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/expert/recommend/1/667ba35683a2c99646fccfb84209740d.png';
         $data['name'] = '张三';

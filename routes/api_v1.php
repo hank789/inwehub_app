@@ -5,6 +5,10 @@
  * @email: wanghui@yonglibao.com
  */
 
+//app首页
+Route::post('home','IndexController@home');
+
+
 //登陆注册认证类
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('register', 'AuthController@register');
