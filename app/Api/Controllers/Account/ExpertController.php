@@ -69,7 +69,7 @@ class ExpertController extends Controller {
             'mobile'      => 'required|cn_phone',
             'industry_tags'      => 'required',
             'description'      => 'required',
-            'images_0'  => 'image',
+            'images_0'  => 'required|image',
         ];
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
