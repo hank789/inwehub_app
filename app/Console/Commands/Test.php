@@ -7,6 +7,7 @@ use App\Events\Frontend\System\Push;
 use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Question;
+use App\Models\RecommendQa;
 use App\Models\User;
 use App\Models\UserDevice;
 use Carbon\Carbon;
@@ -39,9 +40,8 @@ class Test extends Command
      */
     public function handle()
     {
-
-        $s = "0";
-        if($s === "0") echo 2;
+        $recommend_qa = RecommendQa::where('status',1)->orderBy('sort','asc')->orderBy('updated_at','desc')->get()->take(2)->toArray();
+        var_dump($recommend_qa);
         return;
         $head_img_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/expert/recommend/1/667ba35683a2c99646fccfb84209740d.png';
         $data['name'] = '张三';

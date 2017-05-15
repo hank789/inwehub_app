@@ -138,6 +138,11 @@ Route::post('tool/sendTestEmail',['as'=>'admin.tool.sendTestEmail','uses'=>'Tool
 Route::get("xunSearch/clear",['as'=>'admin.xunSearch.clear','uses'=>'XunSearchController@clear']);
 Route::get("xunSearch/rebuild",['as'=>'admin.xunSearch.rebuild','uses'=>'XunSearchController@rebuild']);
 
+/*首页运营数据管理*/
+Route::any('operate/home_data',['as'=>'admin.operate.home_data','uses'=>'OperateController@homeData']);
+
+/*首页问答推荐*/
+Route::resource('recommendQa', 'RecommendQaController',['except' => ['show'],'as'=>'admin.operate']);
 
 /*inwehub管理*/
 Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
