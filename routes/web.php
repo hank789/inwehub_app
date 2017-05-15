@@ -6,4 +6,13 @@
  */
 
 //首页
-Route::get('/',['as'=>'website.index','uses'=>'IndexController@index']);
+Route::group(['namespace'=>'Web'], function() {
+
+    Route::get('/',['as'=>'website.index','uses'=>'IndexController@index']);
+
+});
+
+//支付异步通知
+Route::group(['namespace'=>'Pay'], function() {
+    Route::get('pay/notify/:type',['as'=>'website.pay.notify','uses'=>'NotifyController@payNotify']);
+});

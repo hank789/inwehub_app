@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'coins_answer','value' => '0'],
             ['name' => 'coins_ask','value' => '0'],
             ['name' => 'coins_login','value' => '0'],
-            ['name' => 'coins_register','value' => '20'],
+            ['name' => 'coins_register','value' => '0'],
             ['name' => 'credits_write_article','value' => '0'],
             ['name' => 'credits_adopted','value' => '20'],
             ['name' => 'credits_answer','value' => '10'],

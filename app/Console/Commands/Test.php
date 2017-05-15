@@ -15,6 +15,9 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
 use Getui;
 use Illuminate\Support\Facades\Storage;
+use Payment\Client\Charge;
+use Payment\Common\PayException;
+use Payment\Config;
 
 
 class Test extends Command
@@ -40,8 +43,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $recommend_qa = RecommendQa::where('status',1)->orderBy('sort','asc')->orderBy('updated_at','desc')->get()->take(2)->toArray();
-        var_dump($recommend_qa);
+        echo gen_payment_order_number();
         return;
         $head_img_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/expert/recommend/1/667ba35683a2c99646fccfb84209740d.png';
         $data['name'] = '张三';

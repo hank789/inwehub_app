@@ -1,0 +1,74 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreatePayOrderTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        //订单表
+        Schema::create('pay_order', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id')->unsigned()->index();
+            $table->string('order_no')->unique()->commnet('商户订单号,系统生成');
+            $table->string('transaction_id')->unique()->commnet('记录三方支付放回的订单号');
+            $table->string('subject')->commnet('支付title');
+            $table->string('body')->nullable()->comment('支付详情');
+            $table->string('amount')->comment('支付金额');
+            $table->string('return_param')->nullable()->comment('请求自定义参数');
+            $table->string('client_ip',32);
+            $table->string('response_msg')->nullable()->comment('第三方响应信息');
+            $table->string('finish_time',32)->nullable()->comment('支付完成时间,Y-m-d H:i:s');
+            $table->json('response_data')->nullable()->comment('第三方返回完整信息');
+            $table->tinyInteger('pay_channel')->default(1)->comment('支付方式:1微信支付,2支付宝支付');
+            $table->tinyInteger('status')->default(0)->comment('订单状态:0待支付,1支付处理中,2支付成功,3支付失败');
+            $table->timestamps();
+        });
+
+        //订单关联表
+        Schema::create('pay_order_gables', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('pay_order_id')->unsigned()->index();  //订单ID
+            $table->morphs('ordergable');
+            $table->timestamps();
+        });
+
+        //用户资金表
+        Schema::create('user_money', function (Blueprint $table) {
+            $table->integer('user_id')->unsigned()->primary();              //用户UID
+            $table->decimal('total_money',10,2)->unsigned()->default(0)->comment('总金额');
+        });
+
+        //用户资金流水表
+        Schema::create('user_money_log', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id')->unsigned()->index();
+            $table->morphs('source');
+            $table->string('change_money')->comment('变更金额');
+            $table->tinyInteger('io')->default(1)->comment('初入账:1入账,-1出账');
+            $table->tinyInteger('log_type')->default(1)->comment('资金类型:1提问,2回答,3提现');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('pay_order');
+        Schema::drop('pay_order_gables');
+        Schema::drop('user_money_log');
+        Schema::drop('user_money');
+
+    }
+}

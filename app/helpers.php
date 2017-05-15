@@ -383,5 +383,18 @@ if (!function_exists('cal_account_info_finish')) {
     }
 }
 
+if (!function_exists('gen_payment_order_number')) {
+    function gen_payment_order_number(){
+        $time = date('YmdHis');
+        /**
+         * @var \Redis
+         */
+        $redis = Illuminate\Support\Facades\Redis::connection();
+        $key = 'Payment'.$time;
+        $count = $redis->incr($key);
+        $redis->expire($key, 60);
+        return $time.$count;
+    }
+}
 
 

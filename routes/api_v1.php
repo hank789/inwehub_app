@@ -95,6 +95,14 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], func
 
 });
 
+//支付
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Pay'], function() {
+    //支付请求
+    Route::post('pay/request','PayController@request');
+
+});
+
+
 //加载标签
 Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
 
