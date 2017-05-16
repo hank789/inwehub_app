@@ -10,6 +10,7 @@ use App\Models\Question;
 use App\Models\RecommendQa;
 use App\Models\User;
 use App\Models\UserDevice;
+use App\Models\UserInfo\JobInfo;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
@@ -44,7 +45,13 @@ class Test extends Command
      */
     public function handle()
     {
-        echo Str::plural('pay_order_gable');
+
+        $job = JobInfo::find(25);
+        $tags = $job->tags();
+        $industry_tags = $job->tags()->where('category_id',9)->pluck('name')->toArray();
+        var_dump($industry_tags);
+        $product_tags = $job->tags()->where('category_id',10)->pluck('name')->toArray();
+        var_dump($product_tags);
         return;
         $head_img_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/expert/recommend/1/667ba35683a2c99646fccfb84209740d.png';
         $data['name'] = '张三';

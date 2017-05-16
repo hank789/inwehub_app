@@ -50,10 +50,9 @@ class ProfileController extends Controller
         foreach($jobs as &$job){
             $job->industry_tags = '';
             $job->product_tags = '';
-            $tags = $job->tags();
-            $job->industry_tags = $tags->where('category_id',9)->pluck('name')->toArray();
 
-            $job->product_tags = $tags->where('category_id',10)->pluck('name')->toArray();
+            $job->industry_tags = $job->tags()->where('category_id',9)->pluck('name')->toArray();
+            $job->product_tags = $job->tags()->where('category_id',10)->pluck('name')->toArray();
         }
 
         $projects = $user->projects()->orderBy('begin_time','desc')->get();
@@ -61,10 +60,9 @@ class ProfileController extends Controller
         foreach($projects as &$project){
             $project->industry_tags = '';
             $project->product_tags = '';
-            $tags = $project->tags();
-            $project->industry_tags = $tags->where('category_id',9)->pluck('name')->toArray();
 
-            $project->product_tags = $tags->where('category_id',10)->pluck('name')->toArray();
+            $project->industry_tags = $project->tags()->where('category_id',9)->pluck('name')->toArray();
+            $project->product_tags = $project->tags()->where('category_id',10)->pluck('name')->toArray();
         }
 
         $data = [
