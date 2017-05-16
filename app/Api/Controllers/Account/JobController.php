@@ -48,7 +48,7 @@ class JobController extends Controller {
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/
         if($tags){
-            Tag::multiSave($industry_tags,$job);
+            Tag::multiSave($tags,$job);
         }
 
         return self::createJsonData(true,['id'=>$job->id,'type'=>'job','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
@@ -91,7 +91,7 @@ class JobController extends Controller {
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/
         if($tags){
-            Tag::multiSave($industry_tags,$job);
+            Tag::multiSave($tags,$job);
         }
 
         return self::createJsonData(true,['id'=>$id,'type'=>'job']);
