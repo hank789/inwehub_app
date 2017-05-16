@@ -44,9 +44,15 @@ class WithdrawController extends AdminController {
     public function verify(Request $request)
     {
         $ids = $request->input('id');
-        Withdraw::whereIn('id',$ids)->update(['status'=>Withdraw::WITHDRAW_STATUS_PROCESS]);
         foreach($ids as $id){
-            event(new WithdrawProcess($id));
+            $withdraw = Withdraw::find($id);
+            if($withdraw->status == Withdraw::WITHDRAW_STATUS_PENDING ||
+                $withdraw->status == Withdraw::WITHDRAW_STATUS_FAIL)
+            {
+                $withdraw->status = Withdraw::WITHDRAW_STATUS_PROCESS;
+                $withdraw->save();
+                event(new WithdrawProcess($id));
+            }
         }
         return $this->success(route('admin.user.index').'?status=0','开始处理提现');
     }

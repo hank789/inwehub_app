@@ -62,6 +62,7 @@
                                         <th>金额</th>
                                         <th>请求时间</th>
                                         <th>状态</th>
+                                        <th>信息</th>
                                         <th>操作</th>
                                     </tr>
                                     @foreach($withdraws as $withdraw)
@@ -72,6 +73,7 @@
                                             <td>{{ $withdraw->user->mobile }}</td>
                                             <td>{{ $withdraw->amount }}</td>
                                             <td>{{ $withdraw->created_at }}</td>
+                                            <td>{{ $withdraw->response_msg }}</td>
                                             <td><span class="label @if($withdraw->status===3) label-danger @elseif($withdraw->status<=1) label-default @elseif($withdraw->status===2) label-success @endif">{{ trans_common_status($withdraw->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
