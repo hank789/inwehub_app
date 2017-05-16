@@ -6,6 +6,7 @@ use App\Models\Relations\BelongsToCategoryTrait;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
 use App\Models\Relations\MorphManyDoingsTrait;
+use App\Models\Relations\MorphManyOrdersTrait;
 use App\Models\Relations\MorphManyTagsTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -55,7 +56,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Question extends Model
 {
-    use BelongsToUserTrait,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToCategoryTrait, MorphManyDoingsTrait;
+    use BelongsToUserTrait,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToCategoryTrait, MorphManyDoingsTrait, MorphManyOrdersTrait;
     protected $table = 'questions';
     protected $fillable = ['title', 'user_id','category_id','description','tags','price','hide','status'];
 

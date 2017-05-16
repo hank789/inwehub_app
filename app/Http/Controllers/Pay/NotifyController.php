@@ -1,6 +1,6 @@
 <?php namespace App\Http\Controllers\Pay;
 use App\Http\Controllers\Controller;
-use App\Services\PayNotify;
+use App\Logic\PayNotifyLogic;
 use Illuminate\Http\Request;
 use Payment\Client\Notify;
 use Payment\Common\PayException;
@@ -25,7 +25,7 @@ class NotifyController extends Controller
             default:
                 break;
         }
-        $callback = new PayNotify();
+        $callback = new PayNotifyLogic();
         try {
             //$retData = Notify::getNotifyData($type, $config);// 获取第三方的原始数据，未进行签名检查
             $ret = Notify::run($type, $config, $callback);// 处理回调，内部进行了签名检查
@@ -33,6 +33,6 @@ class NotifyController extends Controller
             echo $e->errorMessage();
             exit;
         }
-        echo 'SUCCESS';
+        return $ret;
     }
 }

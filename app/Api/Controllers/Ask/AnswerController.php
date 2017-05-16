@@ -3,9 +3,11 @@
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
+use App\Logic\MoneyLogLogic;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Feedback;
+use App\Models\Pay\MoneyLog;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Setting;
@@ -150,6 +152,10 @@ class AnswerController extends Controller
                 if($this->credit($request->user()->id,'question_answered',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
                     $message = '回答成功! '.get_credit_message(Setting()->get('credits_answer'),Setting()->get('coins_answer'));
                 }
+                //余额增加
+                $fee = MoneyLogLogic::getAnswerFee($answer);
+                MoneyLogLogic::addMoney($loginUser->id,$question->price,MoneyLog::MONEY_TYPE_ANSWER,$answer,$fee);
+
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],ApiException::SUCCESS,$message);
 
             }else{

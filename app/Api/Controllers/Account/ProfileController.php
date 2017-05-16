@@ -51,14 +51,9 @@ class ProfileController extends Controller
             $job->industry_tags = '';
             $job->product_tags = '';
             $tags = $job->tags();
-            $industry_tags = $tags->where('category_id',9)->pluck('name')->toArray();
-            if($industry_tags){
-                $job->industry_tags = implode(',',$industry_tags);
-            }
-            $product_tags = $tags->where('category_id',10)->pluck('name')->toArray();
-            if($product_tags){
-                $job->product_tags = implode(',',$product_tags);
-            }
+            $job->industry_tags = $tags->where('category_id',9)->pluck('name')->toArray();
+
+            $job->product_tags = $tags->where('category_id',10)->pluck('name')->toArray();
         }
 
         $projects = $user->projects()->orderBy('begin_time','desc')->get();
@@ -67,14 +62,9 @@ class ProfileController extends Controller
             $project->industry_tags = '';
             $project->product_tags = '';
             $tags = $project->tags();
-            $industry_tags = $tags->where('category_id',9)->pluck('name')->toArray();
-            if($industry_tags){
-                $project->industry_tags = implode(',',$industry_tags);
-            }
-            $product_tags = $tags->where('category_id',10)->pluck('name')->toArray();
-            if($product_tags){
-                $project->product_tags = implode(',',$product_tags);
-            }
+            $project->industry_tags = $tags->where('category_id',9)->pluck('name')->toArray();
+
+            $project->product_tags = $tags->where('category_id',10)->pluck('name')->toArray();
         }
 
         $data = [
@@ -93,7 +83,7 @@ class ProfileController extends Controller
         $validateRules = [
             'name' => 'required|max:128',
             'gender'    => 'max:128|in:0,1,2',
-            'industry_tags'  => 'max:128',
+            'industry_tags'  => 'required',
             'company'   => 'max:128',
             'province' => 'max:128',
             'city'     => 'max:128',

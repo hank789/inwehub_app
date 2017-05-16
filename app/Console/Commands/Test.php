@@ -15,6 +15,7 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
 use Getui;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Payment\Client\Charge;
 use Payment\Common\PayException;
 use Payment\Config;
@@ -43,7 +44,7 @@ class Test extends Command
      */
     public function handle()
     {
-        echo gen_payment_order_number();
+        echo Str::plural('pay_order_gable');
         return;
         $head_img_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/expert/recommend/1/667ba35683a2c99646fccfb84209740d.png';
         $data['name'] = '张三';

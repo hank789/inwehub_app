@@ -36,7 +36,24 @@ class CreatePayOrderTable extends Migration
         Schema::create('pay_order_gables', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('pay_order_id')->unsigned()->index();  //订单ID
-            $table->morphs('ordergable');
+            $table->morphs('pay_order_gable');
+            $table->timestamps();
+        });
+
+        //提现表
+        Schema::create('withdraw', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id')->unsigned()->index();
+            $table->string('order_no')->unique()->commnet('商户订单号,系统生成');
+            $table->string('transaction_id')->unique()->commnet('记录三方支付放回的订单号');
+            $table->string('amount')->comment('提现金额');
+            $table->string('return_param')->nullable()->comment('请求自定义参数');
+            $table->string('client_ip',32);
+            $table->string('response_msg')->nullable()->comment('第三方响应信息');
+            $table->string('finish_time',32)->nullable()->comment('提现完成时间,Y-m-d H:i:s');
+            $table->json('response_data')->nullable()->comment('第三方返回完整信息');
+            $table->tinyInteger('withdraw_channel')->default(1)->comment('提现方式:1微信,2支付宝');
+            $table->tinyInteger('status')->default(0)->comment('提现状态:0待处理,1处理中,2处理成功,3处理失败');
             $table->timestamps();
         });
 
@@ -51,9 +68,10 @@ class CreatePayOrderTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table->morphs('source');
-            $table->string('change_money')->comment('变更金额');
+            $table->string('before_money')->comment('未交易前账户金额');
+            $table->string('change_money')->comment('交易金额');
             $table->tinyInteger('io')->default(1)->comment('初入账:1入账,-1出账');
-            $table->tinyInteger('log_type')->default(1)->comment('资金类型:1提问,2回答,3提现');
+            $table->tinyInteger('money_type')->default(1)->comment('资金类型:1提问,2回答,3提现');
             $table->timestamps();
         });
     }

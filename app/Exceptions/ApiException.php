@@ -48,7 +48,9 @@ class ApiException extends Exception
     const ASK_ANSWER_PROMISE_TIME_INVALID = 3001;
     const ASK_QUESTION_NOT_EXIST = 3002;
     const ASK_QUESTION_ALREADY_CONFIRMED = 3003;
+    const ASK_PAYMENT_EXCEPTION = 3004;
 
+    //支付模块响应码
     const PAYMENT_UNKNOWN_CHANNEL = 4004;
     const PAYMENT_UNKNOWN_PAY_TYPE = 4005;
 
@@ -82,10 +84,12 @@ class ApiException extends Exception
         self::ASK_ANSWER_PROMISE_TIME_INVALID => '格式错误',
         self::ASK_QUESTION_NOT_EXIST => '问题不存在',
         self::ASK_QUESTION_ALREADY_CONFIRMED => '该问题已有专家抢答成功',
+        self::ASK_PAYMENT_EXCEPTION => '支付异常',
 
         //支付模块
         self::PAYMENT_UNKNOWN_CHANNEL => '未知支付渠道',
         self::PAYMENT_UNKNOWN_PAY_TYPE => '未知支付对象',
+
     ];
 
 

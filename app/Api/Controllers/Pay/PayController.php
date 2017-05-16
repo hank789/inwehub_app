@@ -53,7 +53,7 @@ class PayController extends Controller {
             'order_no'    => $orderNo,
             'timeout_express' => time() + 600,// 表示必须 600s 内付款
             'amount'    => $data['amount'],// 微信沙箱模式，需要金额固定为3.01
-            'return_param' => '',
+            'return_param' => $data['pay_object_type'],
             'client_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',// 客户地址
         ];
 

@@ -234,6 +234,11 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasOne('App\Models\UserData');
     }
 
+    public function userMoney()
+    {
+        return $this->hasOne('App\Models\Pay\UserMoney');
+    }
+
     public function userTag(){
         return $this->hasMany('App\Models\UserTag');
     }

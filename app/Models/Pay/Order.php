@@ -32,4 +32,15 @@ class Order extends Model
      */
     protected $hidden = [];
 
+
+    const PAY_STATUS_PENDING = 0;
+    const PAY_STATUS_PROCESS = 1;
+    const PAY_STATUS_SUCCESS = 2;
+    const PAY_STATUS_FAIL    = 3;
+
+    public function questions()
+    {
+        return $this->morphedByMany('App\Models\Question', 'pay_order_gable');
+    }
+
 }

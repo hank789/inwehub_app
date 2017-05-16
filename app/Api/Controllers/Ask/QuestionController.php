@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Category;
+use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Tag;
@@ -22,6 +23,7 @@ class QuestionController extends Controller
 
     /*问题创建校验*/
     protected $validateRules = [
+        'order_id'    => 'required|integer',
         'description' => 'required|max:500',
         'price'=> 'required|between:1,388',
         'tags' => 'required'
@@ -163,12 +165,21 @@ class QuestionController extends Controller
             'status'       => 1,
         ];
 
+        //查看支付订单是否成功
+        $order = Order::find($request->input('order_id'));
+        if(empty($order) || $order != Order::PAY_STATUS_SUCCESS){
+            throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
+        }
+
         $question = Question::create($data);
         /*判断问题是否添加成功*/
         if($question){
 
             /*添加标签*/
             Tag::multiSave($tagString,$question);
+
+            //订单和问题关联
+            $question->orders()->attach($order->id);
 
             //记录动态
             $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');

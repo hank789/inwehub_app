@@ -22,8 +22,8 @@ class ProjectController extends Controller {
         'begin_time'   => 'required|date_format:Y-m',
         'end_time'   => 'required',
         'description'   => 'required',
-        'industry_tags'  => 'max:128',
-        'product_tags'   => 'max:128',
+        'industry_tags'  => 'required',
+        'product_tags'   => 'required',
     ];
 
     //新建
