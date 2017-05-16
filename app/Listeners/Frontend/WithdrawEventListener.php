@@ -4,7 +4,8 @@
  * @date: 2017/5/16 下午3:23
  * @email: wanghui@yonglibao.com
  */
-use App\Events\Frontend\Withdraw\WithdrawRequest;
+use App\Events\Frontend\Withdraw\WithdrawCreate;
+use App\Events\Frontend\Withdraw\WithdrawProcess;
 use App\Exceptions\ApiException;
 use App\Logic\MoneyLogLogic;
 use App\Logic\WithdrawLogic;
@@ -27,9 +28,9 @@ class WithdrawEventListener implements ShouldQueue {
     public $queue = 'withdraw';
 
     /**
-     * @param WithdrawRequest $event
+     * @param WithdrawCreate $event
      */
-    public function request($event)
+    public function create($event)
     {
         $user_id = $event->user_id;
         $amount  = $event->amount;
@@ -63,9 +64,12 @@ class WithdrawEventListener implements ShouldQueue {
             $withdraw->response_msg = '扣除余额失败';
             $withdraw->save();
         }else{
-            //是否设置了暂停提现
-            $is_suspend = Setting()->get('withdraw_suspend',0);
-            if(!$is_suspend){
+            //是否设置了自动提现
+            $is_auto = Setting()->get('withdraw_auto',0);
+            if($is_auto){
+                //变为处理中
+                $withdraw->status = Withdraw::WITHDRAW_STATUS_PROCESS;
+                $withdraw->save();
                 //处理提现
                 $rp = WithdrawLogic::withdrawRequest($withdraw);
                 if($rp == false){
@@ -82,6 +86,22 @@ class WithdrawEventListener implements ShouldQueue {
 
 
     /**
+     * @param WithdrawProcess $event
+     */
+    public function process($event){
+        $withdraw = Withdraw::find($event->withdraw_id);
+        $rp = WithdrawLogic::withdrawRequest($withdraw);
+        if($rp == false){
+            //todo 处理请求失败
+        }else{
+            MoneyLog::where('source_id',$withdraw->id)->where('source_type',get_class($withdraw))->update([
+                'status' => MoneyLog::STATUS_SUCCESS
+            ]);
+        }
+    }
+
+
+    /**
      * Register the listeners for the subscriber.
      *
      * @param \Illuminate\Events\Dispatcher $events
@@ -89,8 +109,12 @@ class WithdrawEventListener implements ShouldQueue {
     public function subscribe($events)
     {
         $events->listen(
-            WithdrawRequest::class,
-            'App\Listeners\Frontend\WithdrawEventListener@request'
+            WithdrawCreate::class,
+            'App\Listeners\Frontend\WithdrawEventListener@create'
+        );
+        $events->listen(
+            WithdrawProcess::class,
+            'App\Listeners\Frontend\WithdrawEventListener@process'
         );
 
     }

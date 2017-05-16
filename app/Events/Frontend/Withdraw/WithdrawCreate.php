@@ -5,7 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
-class WithdrawRequest {
+class WithdrawCreate {
 
 
     public $user_id;

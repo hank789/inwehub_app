@@ -128,7 +128,30 @@ if (! function_exists('trans_common_status')) {
         return '';
 
     }
+}
 
+if (! function_exists('trans_withdraw_status')) {
+
+    function trans_withdraw_status($status){
+        $map = [
+            0 => '待处理',
+            1 => '处理中',
+            2 => '处理成功',
+            3 => '处理失败'
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
 }
 
 /*回答状态文字定义*/

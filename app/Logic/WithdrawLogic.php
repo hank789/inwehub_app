@@ -18,7 +18,7 @@ class WithdrawLogic {
 
     public static function withdrawRequest(Withdraw $withdraw)
     {
-        if($withdraw->status != Withdraw::WITHDRAW_STATUS_PENDING){
+        if($withdraw->status != Withdraw::WITHDRAW_STATUS_PROCESS){
             return false;
         }
         $user_oauth = UserOauth::where('user_id',$withdraw->user_id)->where('auth_type','weixin')->first();

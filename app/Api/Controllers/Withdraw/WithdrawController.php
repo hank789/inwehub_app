@@ -1,6 +1,6 @@
 <?php namespace App\Api\Controllers\Withdraw;
 use App\Api\Controllers\Controller;
-use App\Events\Frontend\Withdraw\WithdrawRequest;
+use App\Events\Frontend\Withdraw\WithdrawCreate;
 use App\Exceptions\ApiException;
 use App\Logic\WithdrawLogic;
 use App\Models\Pay\UserMoney;
@@ -41,7 +41,7 @@ class WithdrawController extends Controller {
 
         WithdrawLogic::checkUserWithdrawLimit($user->id,$amount);
 
-        event(new WithdrawRequest($user->id,$amount,isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1'));
+        event(new WithdrawCreate($user->id,$amount,isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1'));
         return self::createJsonData(true,['withdraw_channel'=>Setting()->get('withdraw_channel',Withdraw::WITHDRAW_CHANNEL_WX),'tips'=>'您的提现请求已受理']);
 
     }

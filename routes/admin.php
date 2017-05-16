@@ -65,6 +65,12 @@ Route::any('setting/oauth',['as'=>'admin.setting.oauth','uses'=>'SettingControll
 
 /*财务管理*/
 Route::resource('credit', 'CreditController',['except' => ['show'],'as'=>'admin']);
+Route::group(['namespace'=>'Finance'],function(){
+    /*提现管理*/
+    Route::get('withdraw/index',['as'=>'admin.finance.withdraw.index','uses'=>'WithdrawController@index']);
+    Route::post('withdraw/verify',['as'=>'admin.finance.withdraw.verify','uses'=>'WithdrawController@verify']);
+});
+
 
 /*问题删除*/
 Route::post('question/destroy',['as'=>'admin.question.destroy','uses'=>'QuestionController@destroy']);

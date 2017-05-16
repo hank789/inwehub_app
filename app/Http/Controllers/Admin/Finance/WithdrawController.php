@@ -1,0 +1,54 @@
+<?php namespace App\Http\Controllers\Admin\Finance;
+use App\Events\Frontend\Withdraw\WithdrawProcess;
+use App\Http\Controllers\Admin\AdminController;
+use App\Models\Pay\Withdraw;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+
+/**
+ * @author: wanghui
+ * @date: 2017/5/16 下午7:59
+ * @email: wanghui@yonglibao.com
+ */
+
+class WithdrawController extends AdminController {
+
+    public function index(Request $request)
+    {
+        $filter =  $request->all();
+
+        $query = Withdraw::query();
+
+        if(isset($filter['user_id']) && $filter['user_id'] > 0){
+            $query->where("user_id","=",$filter['user_id']);
+        }
+
+        /*时间过滤*/
+        if( isset($filter['date_range']) && $filter['date_range'] ){
+            $query->whereBetween('created_at',explode(" - ",$filter['date_range']));
+        }
+
+        /*状态过滤*/
+        if( isset($filter['status']) && $filter['status'] > -2 ){
+            $query->where('status','=',$filter['status']);
+        }else{
+            $query->where('status','=',Withdraw::WITHDRAW_STATUS_PENDING);
+            $filter['status'] = Withdraw::WITHDRAW_STATUS_PENDING;
+        }
+
+        $withdraws = $query->orderBy('created_at','desc')->paginate(Config::get('tipask.admin.page_size'));
+        return view('admin.pay.withdraw.index')->with('withdraws',$withdraws)->with('filter',$filter);
+    }
+
+
+    public function verify(Request $request)
+    {
+        $ids = $request->input('id');
+        Withdraw::whereIn('id',$ids)->update(['status'=>Withdraw::WITHDRAW_STATUS_PROCESS]);
+        foreach($ids as $id){
+            event(new WithdrawProcess($id));
+        }
+        return $this->success(route('admin.user.index').'?status=0','开始处理提现');
+    }
+
+}
