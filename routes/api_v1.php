@@ -35,6 +35,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //用户修改基本信息
     Route::post('profile/update','ProfileController@update');
 
+    //资金明细
+    Route::post('account/money_log','ProfileController@moneyLog');
+
 
     //专家认证申请
     Route::post('expert/apply','ExpertController@apply');
@@ -99,6 +102,13 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], func
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Pay'], function() {
     //支付请求
     Route::post('pay/request','PayController@request');
+
+});
+
+//提现
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Withdraw'], function() {
+    //提现请求
+    Route::post('withdraw/request','WithdrawController@request');
 
 });
 

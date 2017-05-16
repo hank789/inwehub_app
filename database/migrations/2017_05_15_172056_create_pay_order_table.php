@@ -18,7 +18,7 @@ class CreatePayOrderTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table->string('order_no')->unique()->commnet('商户订单号,系统生成');
-            $table->string('transaction_id')->unique()->commnet('记录三方支付放回的订单号');
+            $table->string('transaction_id')->nullable()->commnet('记录三方支付放回的订单号');
             $table->string('subject')->commnet('支付title');
             $table->string('body')->nullable()->comment('支付详情');
             $table->string('amount')->comment('支付金额');
@@ -27,7 +27,7 @@ class CreatePayOrderTable extends Migration
             $table->string('response_msg')->nullable()->comment('第三方响应信息');
             $table->string('finish_time',32)->nullable()->comment('支付完成时间,Y-m-d H:i:s');
             $table->json('response_data')->nullable()->comment('第三方返回完整信息');
-            $table->tinyInteger('pay_channel')->default(1)->comment('支付方式:1微信支付,2支付宝支付');
+            $table->tinyInteger('pay_channel')->default(1)->comment('支付方式:1微信app支付,2微信公众号支付,3微信扫码支付,4微信刷卡支付,5微信小程序支付,6微信wap支付,7支付宝app支付');
             $table->tinyInteger('status')->default(0)->comment('订单状态:0待支付,1支付处理中,2支付成功,3支付失败');
             $table->timestamps();
         });
@@ -45,7 +45,7 @@ class CreatePayOrderTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index();
             $table->string('order_no')->unique()->commnet('商户订单号,系统生成');
-            $table->string('transaction_id')->unique()->commnet('记录三方支付放回的订单号');
+            $table->string('transaction_id')->nullable()->commnet('记录三方支付放回的订单号');
             $table->string('amount')->comment('提现金额');
             $table->string('return_param')->nullable()->comment('请求自定义参数');
             $table->string('client_ip',32);
@@ -72,6 +72,7 @@ class CreatePayOrderTable extends Migration
             $table->string('change_money')->comment('交易金额');
             $table->tinyInteger('io')->default(1)->comment('初入账:1入账,-1出账');
             $table->tinyInteger('money_type')->default(1)->comment('资金类型:1提问,2回答,3提现');
+            $table->tinyInteger('status')->default(1)->comment('提现状态:0处理中,1处理成功,2处理失败');
             $table->timestamps();
         });
     }

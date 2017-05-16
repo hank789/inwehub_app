@@ -3,6 +3,8 @@
 use App\Exceptions\ApiException;
 use App\Models\Area;
 use App\Models\EmailToken;
+use App\Models\Pay\MoneyLog;
+use App\Models\Pay\UserMoney;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserTag;
@@ -14,6 +16,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
+use Symfony\Component\HttpKernel\Tests\Exception\BadRequestHttpExceptionTest;
 
 class ProfileController extends Controller
 {
@@ -45,6 +48,11 @@ class ProfileController extends Controller
         $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['account_info_complete_percent'] = $user->getInfoCompletePercent();
+        $info['total_money'] = 0;
+        $user_money = UserMoney::find($user->id);
+        if($user_money){
+            $info['total_money'] = $user_money->total_money;
+        }
 
         $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
         foreach($jobs as &$job){
@@ -162,6 +170,50 @@ class ProfileController extends Controller
         }
 
         return self::createJsonData(false,[],ApiException::USER_PASSWORD_ERROR,'原始密码错误');
+    }
+
+    public function moneyLog(Request $request){
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+
+        $query = $request->user()->moneyLogs();
+        if($top_id){
+            $query = $query->where('id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('id','<',$bottom_id);
+        }else{
+            $query = $query->where('id','>',0);
+        }
+        $logs = $query->orderBy('id','DESC')->paginate(10);
+        $list = [];
+        foreach($logs as $log){
+            $title = '';
+            switch($log->money_type){
+                case MoneyLog::MONEY_TYPE_ANSWER:
+                    $title = '专业回答收入';
+                    break;
+                case MoneyLog::MONEY_TYPE_ASK:
+                    $title = '付费问答';
+                    break;
+                case MoneyLog::MONEY_TYPE_FEE:
+                    $title = '手续费';
+                    break;
+                case MoneyLog::MONEY_TYPE_WITHDRAW:
+                    $title = '提现';
+                    break;
+            }
+            $list[] = [
+                "id"=> $log->id,
+                "user_id" => $log->user_id,
+                "change_money" => $log->change_money,
+                "io"=> $log->io,
+                "title"=> $title,
+                "status" => $log->status,
+                "created_at" => (string)$log->created_at
+            ];
+        }
+
+        return self::createJsonData(true,$list);
     }
 
 }

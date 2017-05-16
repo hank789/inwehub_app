@@ -38,6 +38,16 @@ class Order extends Model
     const PAY_STATUS_SUCCESS = 2;
     const PAY_STATUS_FAIL    = 3;
 
+
+    const PAY_CHANNEL_WX_APP = 1;
+    const PAY_CHANNEL_WX_PUB = 2;
+    const PAY_CHANNEL_WX_QR = 3;
+    const PAY_CHANNEL_WX_BAR = 4;
+    const PAY_CHANNEL_WX_LITE = 5;
+    const PAY_CHANNEL_WX_WAP = 6;
+
+    const PAY_CHANNEL_ALIPAY_APP = 7;
+
     public function questions()
     {
         return $this->morphedByMany('App\Models\Question', 'pay_order_gable');

@@ -32,6 +32,7 @@ class MoneyLogLogic {
             ]);
             if($fee>0){
                 $userMoney = UserMoney::find($user_id);
+                UserMoney::find($user_id)->decrement('total_money',$fee);
                 MoneyLog::create([
                     'user_id' => $user_id,
                     'change_money' => $fee,
@@ -47,6 +48,50 @@ class MoneyLogLogic {
         }catch (\Exception $e) {
             DB::rollBack();
             \Log::error('增加余额失败',['data'=>func_get_args(),'msg'=>$e->getMessage()]);
+            return false;
+        }
+    }
+
+    public static function decMoney($user_id,$money,$money_type, $object_class, $fee=0, $log_status=1){
+        try{
+            DB::beginTransaction();
+            if($fee && $fee>$money){
+                throw new \Exception('手续费大于总金额');
+            }
+            $userMoney = UserMoney::find($user_id);
+
+            UserMoney::find($user_id)->decrement('total_money',$money);
+
+            //资金记录
+            MoneyLog::create([
+                'user_id' => $user_id,
+                'change_money' => $money,
+                'source_id'    => $object_class->id,
+                'source_type'  => get_class($object_class),
+                'io'           => 1,
+                'status'       => $log_status,
+                'money_type'   => $money_type,
+                'before_money' => $userMoney->total_money
+            ]);
+            if($fee>0){
+                $userMoney = UserMoney::find($user_id);
+                UserMoney::find($user_id)->decrement('total_money',$fee);
+                MoneyLog::create([
+                    'user_id' => $user_id,
+                    'change_money' => $fee,
+                    'source_id'    => $object_class->id,
+                    'source_type'  => get_class($object_class),
+                    'io'           => -1,
+                    'status'       => $log_status,
+                    'money_type'   => MoneyLog::MONEY_TYPE_FEE,
+                    'before_money' => $userMoney->total_money
+                ]);
+            }
+            DB::commit();
+            return true;
+        }catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('扣除余额失败',['data'=>func_get_args(),'msg'=>$e->getMessage()]);
             return false;
         }
     }

@@ -62,6 +62,20 @@ class RateLimiter extends Singleton
         }
     }
 
+    public function increaseBy($event, $target, $value = 1 , $expire = 60)
+    {
+        $key = $this->key($event, $target);
+
+        $limit = $this->client->incrBy($key,$value);
+        $this->client->expire($key, $expire);
+        return $limit;
+    }
+
+    public function getValue($event, $target){
+        $key = $this->key($event, $target);
+        return $this->client->get($key);
+    }
+
     /**
      * 尝试获得锁，等待直到获得为止,防止事件并发
      * 对于$max=1的事件（即不允许并发）执行完后一定要执行lock_release方法

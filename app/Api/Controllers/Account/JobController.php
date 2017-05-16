@@ -20,7 +20,6 @@ class JobController extends Controller {
         'title'   => 'required',
         'begin_time'   => 'required|date_format:Y-m',
         'end_time'   => 'required',
-        'description'   => 'required',
         'industry_tags'  => 'required',
         'product_tags'   => 'required',
     ];

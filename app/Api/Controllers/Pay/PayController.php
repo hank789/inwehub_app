@@ -29,8 +29,10 @@ class PayController extends Controller {
         $pay_channel = $data['pay_channel'];
         switch($pay_channel){
             case 'wxpay':
+                //TODO 增加微信其它支付渠道的判断
                 $config = config('payment')['wechat'];
                 $channel = Config::WX_CHANNEL_APP;
+                $channel_type = Order::PAY_CHANNEL_WX_APP;
                 break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
@@ -45,7 +47,7 @@ class PayController extends Controller {
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_PAY_TYPE);
                 break;
         }
-        $orderNo = gen_payment_order_number();
+        $orderNo = gen_order_number();
         // 订单信息
         $payData = [
             'body'    => $body,
@@ -54,6 +56,7 @@ class PayController extends Controller {
             'timeout_express' => time() + 600,// 表示必须 600s 内付款
             'amount'    => $data['amount'],// 微信沙箱模式，需要金额固定为3.01
             'return_param' => $data['pay_object_type'],
+            'pay_channel'  => $channel_type,
             'client_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',// 客户地址
         ];
 

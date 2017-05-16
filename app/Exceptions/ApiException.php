@@ -53,6 +53,11 @@ class ApiException extends Exception
     //支付模块响应码
     const PAYMENT_UNKNOWN_CHANNEL = 4004;
     const PAYMENT_UNKNOWN_PAY_TYPE = 4005;
+    const WITHDRAW_AMOUNT_INVALID = 4006;
+    const WITHDRAW_DAY_COUNT_LIMIT = 4007;
+    const WITHDRAW_DAY_AMOUNT_LIMIT = 4008;
+    const WITHDRAW_UNBIND_WEXIN = 4009;
+
 
     public static $errorMessages = [
         //全局响应吗
@@ -89,7 +94,10 @@ class ApiException extends Exception
         //支付模块
         self::PAYMENT_UNKNOWN_CHANNEL => '未知支付渠道',
         self::PAYMENT_UNKNOWN_PAY_TYPE => '未知支付对象',
-
+        self::WITHDRAW_AMOUNT_INVALID => '提现金额有误',
+        self::WITHDRAW_DAY_COUNT_LIMIT => '提现单日超次数',
+        self::WITHDRAW_DAY_AMOUNT_LIMIT => '提现单日额度超限',
+        self::WITHDRAW_UNBIND_WEXIN => '未绑定微信',
     ];
 
 

@@ -367,6 +367,11 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany('App\Models\UserInfo\ProjectInfo','user_id');
     }
 
+    //资金明细
+    public function moneyLogs(){
+        return $this->hasMany('App\Models\Pay\MoneyLog','user_id');
+    }
+
     public function hotTags(){
         $hotTagIds = $this->userTags()->select("tag_id")->distinct()->orderBy('supports','desc')->orderBy('answers','desc')->orderBy('created_at','desc')->take(5)->pluck('tag_id');
         $tags = [];

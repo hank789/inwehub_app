@@ -28,4 +28,9 @@ class Withdraw extends Model {
     const WITHDRAW_STATUS_PROCESS = 1;
     const WITHDRAW_STATUS_SUCCESS = 2;
     const WITHDRAW_STATUS_FAIL    = 3;
+
+
+    const WITHDRAW_CHANNEL_WX = 1;
+    const WITHDRAW_CHANNEL_ALIPAY = 2;
+
 }

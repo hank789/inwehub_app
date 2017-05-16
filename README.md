@@ -10,6 +10,30 @@ Here is a sample status icon showing the state of the master branch.
 5. 执行`php artisan db:seed`
 6. 执行`php artisan component install intervapp/plus-component-web`
 
+##线上配置
+1. 安装进程管理工具:supervisor
+`
+[program:queue-default-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /home/web/www/inwehub/artisan queue:work --queue=default --sleep=3 --tries=1
+autostart=true
+autorestart=true
+user=web
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/tmp/queue_worker.log
+[program:queue-withdraw-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /home/web/www/inwehub/artisan queue:work --queue=withdraw --sleep=3 --tries=1
+autostart=true
+autorestart=true
+user=web
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/tmp/queue_worker.log
+`
+
+
 ## 部署
 使用https://laravel.com/docs/5.4/envoy 进行部署
 注意事项:
