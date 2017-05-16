@@ -37,7 +37,7 @@ class WithdrawController extends AdminController {
         }
 
         $withdraws = $query->orderBy('created_at','desc')->paginate(Config::get('tipask.admin.page_size'));
-        return view('admin.pay.withdraw.index')->with('withdraws',$withdraws)->with('filter',$filter);
+        return view('admin.finance.withdraw.index')->with('withdraws',$withdraws)->with('filter',$filter);
     }
 
 
@@ -54,7 +54,7 @@ class WithdrawController extends AdminController {
                 event(new WithdrawProcess($id));
             }
         }
-        return $this->success(route('admin.user.index').'?status=0','开始处理提现');
+        return $this->success(route('admin.finance.withdraw.index').'?status=0','开始处理提现');
     }
 
 }

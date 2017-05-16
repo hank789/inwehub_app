@@ -84,6 +84,8 @@ class WithdrawLogic {
                 $limit = 10;
                 break;
         }
+        $system_limit = Setting()->get('withdraw_day_limit',0);
+        if($system_limit) $limit = $system_limit;
         return $limit;
     }
 

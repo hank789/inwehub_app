@@ -75,6 +75,13 @@ class CreatePayOrderTable extends Migration
             $table->tinyInteger('status')->default(1)->comment('提现状态:0处理中,1处理成功,2处理失败');
             $table->timestamps();
         });
+
+        DB::table('settings')->insert([
+            ['name' => 'withdraw_auto','value' => '0'],
+            ['name' => 'withdraw_day_limit','value' => '1'],
+            ['name' => 'withdraw_per_min_money','value' => '10'],
+            ['name' => 'withdraw_per_max_money','value' => '2000']
+        ]);
     }
 
     /**

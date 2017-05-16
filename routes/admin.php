@@ -69,6 +69,10 @@ Route::group(['namespace'=>'Finance'],function(){
     /*提现管理*/
     Route::get('withdraw/index',['as'=>'admin.finance.withdraw.index','uses'=>'WithdrawController@index']);
     Route::post('withdraw/verify',['as'=>'admin.finance.withdraw.verify','uses'=>'WithdrawController@verify']);
+
+    Route::get('finance/setting/index',['as'=>'admin.finance.setting.index','uses'=>'SettingController@index']);
+    Route::post('finance/setting/index',['as'=>'admin.finance.setting.index','uses'=>'SettingController@index']);
+
 });
 
 

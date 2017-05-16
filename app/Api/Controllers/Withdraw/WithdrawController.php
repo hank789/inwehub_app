@@ -18,8 +18,11 @@ use Illuminate\Http\Request;
 class WithdrawController extends Controller {
     public function request(Request $request)
     {
+        $min = Setting()->get('withdraw_per_min_money',10);
+        $max = Setting()->get('withdraw_per_max_money',2000);
+
         $validateRules = [
-            'amount' => 'required|min:1|max:20000',
+            'amount' => 'required|min:'.$min.'|max:'.$max,
         ];
         $this->validate($request, $validateRules);
         $amount = $request->input('amount');

@@ -87,6 +87,7 @@
             <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="finance">
+            <li><a href="{{ route('admin.finance.setting.index') }}"><i class="fa fa-circle-o"></i> 参数设置</a></li>
             <li><a href="{{ route('admin.finance.withdraw.index') }}"><i class="fa fa-circle-o"></i> 提现管理</a></li>
             <li><a href="{{ route('admin.credit.index') }}"><i class="fa fa-circle-o"></i> 积分管理</a></li>
         </ul>
