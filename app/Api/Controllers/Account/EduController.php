@@ -19,7 +19,7 @@ class EduController extends Controller {
         'major'   => 'required',
         'degree'  => 'required|in:本科,硕士,大专,博士,其它',
         'begin_time'   => 'required|date_format:Y-m',
-        'end_time'   => 'required|date_format:Y-m'
+        'end_time'   => 'required'
     ];
 
     //新建
@@ -28,7 +28,7 @@ class EduController extends Controller {
         $user = $request->user();
 
         $data = $request->all();
-        if($data['begin_time'] > $data['end_time']){
+        if($data['begin_time'] > $data['end_time'] && $data['end_time'] != '至今'){
             throw new ApiException(ApiException::USER_DATE_RANGE_INVALID);
         }
 
