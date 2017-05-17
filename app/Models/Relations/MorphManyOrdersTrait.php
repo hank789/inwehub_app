@@ -14,7 +14,7 @@ trait MorphManyOrdersTrait
 
     public function orders()
     {
-        return $this->morphToMany('App\Models\Pay\Order', 'pay_order_gable');
+        return $this->morphToMany('App\Models\Pay\Order', 'pay_order_gable',null,null,'pay_order_id');
     }
 
 }
