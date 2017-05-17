@@ -167,7 +167,7 @@ class QuestionController extends Controller
 
         //查看支付订单是否成功
         $order = Order::find($request->input('order_id'));
-        if((empty($order) || $order != Order::PAY_STATUS_SUCCESS) && env('APP_ENV') == 'production'){
+        if((empty($order) || $order != Order::PAY_STATUS_SUCCESS) && Setting()->get('need_pay_actual',1)){
             throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
         }
 

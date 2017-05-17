@@ -34,6 +34,9 @@ class PayController extends Controller {
                 $channel = Config::WX_CHANNEL_APP;
                 $channel_type = Order::PAY_CHANNEL_WX_APP;
                 break;
+            case 'alipay':
+                throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
+                break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 break;
@@ -62,6 +65,16 @@ class PayController extends Controller {
 
         $order = Order::create($payData);
 
+        if(Setting()->get('need_pay_actual',1) != 1) {
+            //如果开启了非强制支付
+            return self::createJsonData(true,[
+                'order_info' => [],
+                'pay_channel' => $pay_channel,
+                'order_id'    => $order->id,
+                'debug'       => 1
+            ]);
+        }
+
         try {
             $ret = Charge::run($channel, $config, $payData);
         } catch (PayException $e) {
@@ -72,6 +85,7 @@ class PayController extends Controller {
         $return['order_info'] = $ret;
         $return['pay_channel'] = $pay_channel;
         $return['order_id'] = $order->id;
+        $return['debug'] = 0;
 
         return self::createJsonData(true,$return);
 

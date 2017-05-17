@@ -35,6 +35,16 @@
                                 </tr>
 
                                 <tr>
+                                    <td>是否强制支付</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('need_pay_actual')) has-error @endif ">
+                                            <input type="text" class="form-control" name="need_pay_actual" value="{{ old('need_pay_actual',Setting()->get('need_pay_actual')) }}" />
+                                            <span class="text-muted">0:非强制,表示用户可以不付费就可以提问,慎用;1:强制付费问答</span>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
                                     <td>用户每天最大提现次数</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_day_limit')) has-error @endif "><input type="text" class="form-control" name="withdraw_day_limit" value="{{ old('withdraw_day_limit',Setting()->get('withdraw_day_limit')) }}" /></div>

@@ -13,6 +13,7 @@ class SettingController extends AdminController {
 
     public function index(Request $request){
         $validateRules = [
+            'need_pay_actual' => 'required|integer',
             'withdraw_auto' => 'required|integer',
             'withdraw_day_limit' => 'required|integer',
             'withdraw_per_min_money' => 'required|integer',
