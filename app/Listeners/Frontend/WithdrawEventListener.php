@@ -71,14 +71,7 @@ class WithdrawEventListener implements ShouldQueue {
                 $withdraw->status = Withdraw::WITHDRAW_STATUS_PROCESS;
                 $withdraw->save();
                 //处理提现
-                $rp = WithdrawLogic::withdrawRequest($withdraw);
-                if($rp == false){
-                    //todo 处理请求失败
-                }else{
-                    MoneyLog::where('source_id',$withdraw->id)->where('source_type',get_class($withdraw))->update([
-                        'status' => MoneyLog::STATUS_SUCCESS
-                    ]);
-                }
+                $this->process(new WithdrawProcess($withdraw->id));
             }
         }
 

@@ -6,6 +6,7 @@ use App\Events\Frontend\Expert\Recommend;
 use App\Events\Frontend\System\Push;
 use App\Models\Answer;
 use App\Models\Authentication;
+use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\RecommendQa;
 use App\Models\User;
@@ -46,12 +47,26 @@ class Test extends Command
     public function handle()
     {
 
-        $job = JobInfo::find(25);
-        $tags = $job->tags();
-        $industry_tags = $job->tags()->where('category_id',9)->pluck('name')->toArray();
-        var_dump($industry_tags);
-        $product_tags = $job->tags()->where('category_id',10)->pluck('name')->toArray();
-        var_dump($product_tags);
+        $question = Question::find(1);
+        $order = Order::find(1);
+
+        $question->orders()->attach($order->id);
+
+        return;
+        $payData = [
+            'body'    => 'test',
+            'subject'    => 'test',
+            'order_no'    => time(),
+            'timeout_express' => time() + 600,// 表示必须 600s 内付款
+            'amount'    => 100,// 微信沙箱模式，需要金额固定为3.01
+            'return_param' => 123,
+            'pay_channel'  => 'we',
+            'client_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',// 客户地址
+        ];
+
+        $order = Order::create($payData);
+
+        var_dump($order->id);
         return;
         $head_img_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/expert/recommend/1/667ba35683a2c99646fccfb84209740d.png';
         $data['name'] = '张三';

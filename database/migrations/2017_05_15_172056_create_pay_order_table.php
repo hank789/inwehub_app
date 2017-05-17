@@ -78,6 +78,7 @@ class CreatePayOrderTable extends Migration
 
         DB::table('settings')->insert([
             ['name' => 'need_pay_actual','value' => '1'],
+            ['name' => 'withdraw_suspend','value' => '0'],
             ['name' => 'withdraw_auto','value' => '0'],
             ['name' => 'withdraw_day_limit','value' => '1'],
             ['name' => 'withdraw_per_min_money','value' => '10'],

@@ -123,6 +123,11 @@ class WithdrawLogic {
     }
 
     public static function checkUserWithdrawLimit($user_id, $amount){
+        //是否系统暂停了提现
+        if(Setting()->get('withdraw_suspend',0)){
+            throw new ApiException(ApiException::WITHDRAW_SYSTEM_SUSPEND);
+        }
+
         $channel = 'wx_transfer';
         $count = self::getUserWithdrawCount($user_id, $channel);
         $limit = self::getWithdrawChannelLimit($channel);

@@ -24,6 +24,17 @@
                                 </thead>
 
                                 <tbody>
+
+                                <tr>
+                                    <td>是否暂停提现</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_suspend')) has-error @endif ">
+                                            <input type="text" class="form-control" name="withdraw_suspend" value="{{ old('withdraw_suspend',Setting()->get('withdraw_suspend')) }}" />
+                                            <span class="text-muted">0:正常提现;1:暂停提现功能</span>
+                                        </div>
+                                    </td>
+                                </tr>
+
                                 <tr>
                                     <td>是否自动提现</td>
                                     <td>
