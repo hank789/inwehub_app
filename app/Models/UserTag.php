@@ -56,6 +56,12 @@ class UserTag extends Model
         }
     }
 
+    public static function detachByField($user_id,$field){
+        self::where('user_id',$user_id)->where($field,'>',0)->update([$field=>0]);
+    }
+
+
+
 
     /*初始化统计用户标签数据*/
     public static function figures(){

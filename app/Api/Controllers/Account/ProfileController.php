@@ -139,6 +139,7 @@ class ProfileController extends Controller
         if($request->input('industry_tags') !== null){
             $industry_tags = $request->input('industry_tags');
             $tags = Tag::whereIn('name',$industry_tags)->get();
+            UserTag::detachByField($user->id,'industries');
             UserTag::multiIncrement($user->id,$tags,'industries');
         }
 
