@@ -87,34 +87,60 @@ class ProfileController extends Controller
     //修改用户资料
     public function update(Request $request){
         $validateRules = [
-            'name' => 'required|max:128',
+            'name' => 'max:128',
             'gender'    => 'max:128|in:0,1,2',
-            'industry_tags'  => 'required',
             'company'   => 'max:128',
             'province' => 'max:128',
             'city'     => 'max:128',
             'address_detail'  => 'max:128',
             'email'            => 'max:128|email',
             'birthday'         => 'max:128',
-            'title' => 'sometimes|max:128',
-            'description' => 'sometimes|max:9999',
+            'title' => 'max:128',
+            'description' => 'max:9999',
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $user->name = $request->input('name');
-        $user->gender = $request->input('gender');
-        $user->birthday = $request->input('birthday');
-        $user->title = $request->input('title');
-        $user->company = $request->input('company');
+        if($request->input('name') !== null){
+            $user->name = $request->input('name');
+        }
+        if($request->input('gender') !== null){
+            $user->gender = $request->input('gender');
+        }
 
-        $user->description = $request->input('description');
-        $user->province = $request->input('province');
-        $user->city = $request->input('city');
-        $user->address_detail = $request->input('address_detail');
+        if($request->input('birthday') !== null){
+            $user->birthday = $request->input('birthday');
+        }
+
+        if($request->input('title') !== null){
+            $user->title = $request->input('title');
+        }
+
+        if($request->input('company') !== null){
+            $user->company = $request->input('company');
+        }
+
+        if($request->input('description') !== null){
+            $user->description = $request->input('description');
+        }
+
+        if($request->input('province') !== null){
+            $user->province = $request->input('province');
+        }
+
+        if($request->input('city') !== null){
+            $user->city = $request->input('city');
+        }
+
+        if($request->input('address_detail') !== null){
+            $user->address_detail = $request->input('address_detail');
+        }
+
         $user->save();
-        $industry_tags = $request->input('industry_tags');
-        $tags = Tag::whereIn('name',$industry_tags)->get();
-        UserTag::multiIncrement($user->id,$tags,'industries');
+        if($request->input('industry_tags') !== null){
+            $industry_tags = $request->input('industry_tags');
+            $tags = Tag::whereIn('name',$industry_tags)->get();
+            UserTag::multiIncrement($user->id,$tags,'industries');
+        }
 
         return self::createJsonData(true,['account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }

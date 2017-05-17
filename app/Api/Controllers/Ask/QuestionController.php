@@ -167,7 +167,7 @@ class QuestionController extends Controller
 
         //查看支付订单是否成功
         $order = Order::find($request->input('order_id'));
-        if(empty($order) || $order != Order::PAY_STATUS_SUCCESS){
+        if((empty($order) || $order != Order::PAY_STATUS_SUCCESS) && env('APP_ENV') == 'production'){
             throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
         }
 
@@ -179,7 +179,9 @@ class QuestionController extends Controller
             Tag::multiSave($tagString,$question);
 
             //订单和问题关联
-            $question->orders()->attach($order->id);
+            if($order){
+                $question->orders()->attach($order->id);
+            }
 
             //记录动态
             $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
