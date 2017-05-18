@@ -20,7 +20,7 @@ class EduController extends Controller {
         'degree'  => 'required|in:本科,硕士,大专,博士,其它',
         'begin_time'   => 'required|date_format:Y-m',
         'end_time'   => 'required',
-        'description' => 'string|nullable'
+        'description' => 'string:nullable'
     ];
 
     //新建

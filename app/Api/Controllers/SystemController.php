@@ -47,14 +47,12 @@ class SystemController extends Controller {
     }
 
     public function appVersion(){
-        $ios_version = Setting()->get('ios_version','1.0.0');
-        $android_version = Setting()->get('android_version','1.0.0');
+        $app_version = Setting()->get('app_version','1.0.0');
         $is_force = Setting()->get('is_force','0');
         $update_msg = Setting()->get('update_msg','1、大额提现t+1到账。\n2、变现进度做了优化。\n3、修复了一些bug。');
         $package_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/app_version/com.inwehub.InwehubApp.wgt';
         return self::createJsonData(true,[
-            'ios_version'           => $ios_version,
-            'android_version'       => $android_version,
+            'app_version'           => $app_version,
             'is_force'              => $is_force,
             'package_url'           => $package_url,
             'update_msg'            => $update_msg
