@@ -24,7 +24,7 @@ class Topic extends Model
      *
      * @var string
      */
-    protected $connection = 'inwehub';
+    protected $connection = 'inwehub_read';
 
     public static function boot()
     {

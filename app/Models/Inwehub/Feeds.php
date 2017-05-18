@@ -20,7 +20,7 @@ class Feeds extends Model {
      *
      * @var string
      */
-    protected $connection = 'inwehub';
+    protected $connection = 'inwehub_read';
 
 
     protected $fillable = ['name', 'user_id', 'description','source_type','source_link','status'];

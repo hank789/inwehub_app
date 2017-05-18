@@ -13,7 +13,7 @@ class CreateInwehubNews extends Migration
      */
     public function up()
     {
-        Schema::connection('inwehub')->create('news_info', function (Blueprint $table) {
+        Schema::connection('inwehub_read')->create('news_info', function (Blueprint $table) {
             $table->increments('_id');
             $table->string('title', 1024)->default('')->comment('文章标题');
             $table->string('source_url',1024)->default('')->comment('原文地址');
@@ -46,6 +46,6 @@ class CreateInwehubNews extends Migration
      */
     public function down()
     {
-        Schema::connection('inwehub')->drop('news_info');
+        Schema::connection('inwehub_read')->drop('news_info');
     }
 }

@@ -13,13 +13,13 @@ class ScraperWechat extends Migration
      */
     public function up()
     {
-        Schema::connection('inwehub')->create('wechat_add_mp_list', function (Blueprint $table) {
+        Schema::connection('inwehub_read')->create('wechat_add_mp_list', function (Blueprint $table) {
             $table->increments('_id');
             $table->string('name', 50)->default('')->comment('要添加的公众号名称');                  // 名称
             $table->string('wx_hao',50)->default('')->comment('公众号的微信号');                     // 描述
             $table->timestamps();
         });
-        Schema::connection('inwehub')->create('wechat_mp_info', function (Blueprint $table) {
+        Schema::connection('inwehub_read')->create('wechat_mp_info', function (Blueprint $table) {
             $table->increments('_id');
             $table->string('name', 50)->default('')->comment('公众号名称');                  // 名称
             $table->string('wx_hao',20)->default('')->comment('公众号的微信号');                     // 描述
@@ -38,7 +38,7 @@ class ScraperWechat extends Migration
 
         });
 
-        Schema::connection('inwehub')->create('wechat_wenzhang_statistics', function (Blueprint $table) {
+        Schema::connection('inwehub_read')->create('wechat_wenzhang_statistics', function (Blueprint $table) {
             $table->increments('_id');
             $table->integer('wz_id')->default(0)->comment('对应的文章ID');
             $table->dateTime('create_time')->nullable()->comment('统计时间');
@@ -56,9 +56,9 @@ class ScraperWechat extends Migration
      */
     public function down()
     {
-        Schema::connection('inwehub')->drop('wechat_add_mp_list');
-        Schema::connection('inwehub')->drop('wechat_mp_info');
-        Schema::connection('inwehub')->drop('wechat_wenzhang_statistics');
+        Schema::connection('inwehub_read')->drop('wechat_add_mp_list');
+        Schema::connection('inwehub_read')->drop('wechat_mp_info');
+        Schema::connection('inwehub_read')->drop('wechat_wenzhang_statistics');
 
     }
 }

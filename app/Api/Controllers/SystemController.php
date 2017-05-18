@@ -46,5 +46,18 @@ class SystemController extends Controller {
         return self::createJsonData(true);
     }
 
+    public function appVersion(){
+        $ios_version = Setting()->get('ios_version','1.0.0');
+        $android_version = Setting()->get('android_version','1.0.0');
+        $is_force = Setting()->get('is_force','0');
+        $update_msg = Setting()->get('update_msg','1、大额提现t+1到账。\n2、变现进度做了优化。\n3、修复了一些bug。');
+        return self::createJsonData(true,[
+            'ios_version'           => $ios_version,
+            'android_version'       => $android_version,
+            'is_force'              => $is_force,
+            'update_msg'            => $update_msg
+        ]);
+    }
+
 
 }

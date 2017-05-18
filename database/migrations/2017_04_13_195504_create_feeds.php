@@ -13,7 +13,7 @@ class CreateFeeds extends Migration
      */
     public function up()
     {
-        Schema::connection('inwehub')->create('feeds', function (Blueprint $table) {
+        Schema::connection('inwehub_read')->create('feeds', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');                             // 用户Id
             $table->string('name', 191)->unique();                  // 名称
@@ -33,6 +33,6 @@ class CreateFeeds extends Migration
      */
     public function down()
     {
-        Schema::connection('inwehub')->drop('feeds');
+        Schema::connection('inwehub_read')->drop('feeds');
     }
 }

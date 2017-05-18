@@ -122,6 +122,9 @@ Route::post('system/feedback','SystemController@feedback')->middleware('jwt.auth
 //保存用户设备信息
 Route::post('system/device','SystemController@device')->middleware('jwt.auth');
 
+//检测app版本
+Route::post('system/version','SystemController@appVersion');
+
 
 //消息模块
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {

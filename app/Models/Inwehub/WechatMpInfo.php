@@ -20,7 +20,7 @@ class WechatMpInfo extends Model {
      *
      * @var string
      */
-    protected $connection = 'inwehub';
+    protected $connection = 'inwehub_read';
 
     protected $primaryKey = '_id';
 

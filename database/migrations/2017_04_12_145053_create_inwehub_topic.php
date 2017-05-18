@@ -14,7 +14,7 @@ class CreateInwehubTopic extends Migration
      */
     public function up()
     {
-        Schema::connection('inwehub')->create('topic', function (Blueprint $table) {
+        Schema::connection('inwehub_read')->create('topic', function (Blueprint $table) {
 
             $table->increments('id');
 
@@ -51,6 +51,6 @@ class CreateInwehubTopic extends Migration
      */
     public function down()
     {
-        Schema::connection('inwehub')->drop('topic');
+        Schema::connection('inwehub_read')->drop('topic');
     }
 }
