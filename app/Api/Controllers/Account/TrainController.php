@@ -16,7 +16,8 @@ class TrainController extends Controller {
     protected $validateRules = [
         'certificate' => 'required',
         'agency'   => 'required',
-        'get_time'  => 'required|date_format:Y-m'
+        'get_time'  => 'required|date_format:Y-m',
+        'description' => 'string|nullable'
     ];
 
     //新建

@@ -22,6 +22,7 @@ class JobController extends Controller {
         'end_time'   => 'required',
         'industry_tags'  => 'required',
         'product_tags'   => 'required',
+        'description' => 'string|nullable'
     ];
 
     //新建
