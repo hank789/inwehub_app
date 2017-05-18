@@ -17,7 +17,7 @@ class TrainController extends Controller {
         'certificate' => 'required',
         'agency'   => 'required',
         'get_time'  => 'required|date_format:Y-m',
-        'description' => 'string:nullable'
+        'description' => 'nullable'
     ];
 
     //新建

@@ -23,7 +23,7 @@ class ProjectController extends Controller {
         'end_time'   => 'required',
         'industry_tags'  => 'required',
         'product_tags'   => 'required',
-        'description' => 'string:nullable'
+        'description' => 'nullable'
     ];
 
     //新建
