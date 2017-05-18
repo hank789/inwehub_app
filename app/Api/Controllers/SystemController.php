@@ -6,6 +6,7 @@
  */
 
 use App\Events\Frontend\System\Feedback;
+use App\Models\AppVersion;
 use App\Models\UserDevice;
 use Illuminate\Http\Request;
 
@@ -47,10 +48,12 @@ class SystemController extends Controller {
     }
 
     public function appVersion(){
-        $app_version = Setting()->get('app_version','1.0.0');
-        $is_force = Setting()->get('is_force','0');
-        $update_msg = Setting()->get('update_msg','1、大额提现t+1到账。\n2、变现进度做了优化。\n3、修复了一些bug。');
-        $package_url = 'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/app_version/com.inwehub.InwehubApp.wgt';
+        $last = AppVersion::where('status',1)->orderBy('app_version','desc')->first();
+
+        $app_version = $last->app_version??'1.0.0';
+        $is_force = $last->is_force??'0';
+        $update_msg = $last->update_msg??'1、大额提现t+1到账。\n2、变现进度做了优化。\n3、修复了一些bug。';
+        $package_url = $last->package_url??'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/app_version/com.inwehub.InwehubApp.wgt';
         return self::createJsonData(true,[
             'app_version'           => $app_version,
             'is_force'              => $is_force,

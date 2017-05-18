@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Events\Frontend\Expert\Recommend;
 use App\Events\Frontend\System\Push;
 use App\Models\Answer;
+use App\Models\AppVersion;
 use App\Models\Authentication;
 use App\Models\Pay\Order;
 use App\Models\Question;
@@ -47,10 +48,10 @@ class Test extends Command
     public function handle()
     {
 
-        $question = Question::find(1);
-        $order = Order::find(1);
+        if(preg_match("/^([0-9]+.[0-9]+.[0-9])/", ".245.3")){
+            echo 1;
+        }
 
-        $question->orders()->attach($order->id);
 
         return;
         $payData = [

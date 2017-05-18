@@ -154,6 +154,16 @@ Route::any('operate/home_data',['as'=>'admin.operate.home_data','uses'=>'Operate
 /*首页问答推荐*/
 Route::resource('recommendQa', 'RecommendQaController',['except' => ['show'],'as'=>'admin.operate']);
 
+/*app版本管理*/
+Route::get('version/index',['as'=>'admin.appVersion.index','uses'=>'VersionController@index']);
+Route::get('version/create',['as'=>'admin.appVersion.create','uses'=>'VersionController@create']);
+Route::post('version/store',['as'=>'admin.appVersion.store','uses'=>'VersionController@store']);
+Route::get('version/edit/{id}',['as'=>'admin.appVersion.edit','uses'=>'VersionController@edit'])->where(['id'=>'[0-9]+']);
+Route::post('version/update',['as'=>'admin.appVersion.update','uses'=>'VersionController@update']);
+Route::post('version/destroy',['as'=>'admin.appVersion.destroy','uses'=>'VersionController@destroy']);
+Route::post('version/verify',['as'=>'admin.appVersion.verify','uses'=>'VersionController@verify']);
+
+
 /*inwehub管理*/
 Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     /*文章创建*/

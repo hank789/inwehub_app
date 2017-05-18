@@ -77,6 +77,7 @@
         <ul class="treeview-menu" id="operations">
             <li><a href="{{ route('admin.operate.home_data') }}"><i class="fa fa-circle-o"></i> 首页运营数据</a></li>
             <li><a href="{{ route('admin.operate.recommendQa.index') }}"><i class="fa fa-circle-o"></i> 首页问答推荐</a></li>
+            <li><a href="{{ route('admin.appVersion.index') }}"><i class="fa fa-circle-o"></i> APP版本管理</a></li>
             <li><a href="{{ route('admin.notice.index') }}"><i class="fa fa-circle-o"></i> 公告管理</a></li>
         </ul>
     </li>

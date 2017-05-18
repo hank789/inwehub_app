@@ -30,7 +30,7 @@ class AddUserInfo extends Migration
             $table->string('title',32)->nullable()->comment('职位');
             $table->string('begin_time',10)->nullable()->comment('开始时间,格式:Y-m');
             $table->string('end_time',10)->default('')->comment('结束时间,格式:Y-m');
-            $table->text('description')->default('')->comment('经历描述');
+            $table->text('description')->nullable()->comment('经历描述');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -44,7 +44,7 @@ class AddUserInfo extends Migration
             $table->string("customer_name",64)->nullable()->comment('客户名称');
             $table->string('begin_time',10)->nullable()->comment('开始时间,格式:Y-m');
             $table->string('end_time',10)->default('')->comment('结束时间,格式:Y-m');
-            $table->text('description')->default('')->comment('描述');
+            $table->text('description')->nullable()->comment('描述');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -58,7 +58,7 @@ class AddUserInfo extends Migration
             $table->string('degree',32)->nullable()->comment('学历');
             $table->string('begin_time',10)->nullable()->comment('开始时间,格式:Y-m');
             $table->string('end_time',10)->default('')->comment('结束时间,格式:Y-m');
-            $table->text('description')->default('')->comment('描述');
+            $table->text('description')->nullable()->comment('描述');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -70,7 +70,7 @@ class AddUserInfo extends Migration
             $table->string("certificate",64)->nullable()->comment('证书,认证名称');
             $table->string('agency',32)->nullable()->comment('机构名');
             $table->string('get_time',10)->nullable()->comment('获取日期');
-            $table->text('description')->default('')->comment('描述');
+            $table->text('description')->nullable()->comment('描述');
             $table->softDeletes();
             $table->timestamps();
         });
