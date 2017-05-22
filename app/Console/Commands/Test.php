@@ -50,8 +50,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $code = config('slack.ask_activity_channel');
-        echo $code;
+        $user = User::find(1);
+        $s= $user->getInfoCompletePercent();
+        var_dump($s);
         return;
         $payData = [
             'body'    => 'test',

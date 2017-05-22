@@ -374,7 +374,7 @@ if( !function_exists('is_mobile') ){
 if( !function_exists('makeVerifyCode') ){
     function makeVerifyCode(int $min = 1000, int $max = 9999)
     {
-        if(env('APP_ENV') != 'production') return 6666;
+        if(config('app.env') != 'production') return 6666;
         $min = min($min, $max);
         $max = max($min, $max);
 
@@ -435,7 +435,7 @@ if (!function_exists('cal_account_info_finish')) {
                 if(!empty($value) || $value === "0") {
                     $filled++;
                     $score += $key;
-                    if($filled != 'trains'){
+                    if($field != 'trains'){
                         $career_extra_count += (count($value)-1);
                     }
                 }

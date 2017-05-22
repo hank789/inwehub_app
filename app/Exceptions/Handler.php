@@ -68,7 +68,7 @@ class Handler extends ExceptionHandler
         if($exception instanceof ApiValidationException){
             $res_data = (array)$exception->getResponse()->getData();
             $err_msg = $exception->getMessage();
-            if(env('APP_ENV') != 'production') {
+            if(config('app.env') != 'production') {
                 $err_msg = json_encode($res_data);
             }
             return CreateJsonResponseData::createJsonData(false,$res_data,$exception->getCode(), $err_msg);
