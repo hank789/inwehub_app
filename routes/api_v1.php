@@ -37,6 +37,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
 
     //资金明细
     Route::post('account/money_log','ProfileController@moneyLog');
+    //个人钱包
+    Route::post('account/wallet','ProfileController@wallet');
 
 
     //专家认证申请

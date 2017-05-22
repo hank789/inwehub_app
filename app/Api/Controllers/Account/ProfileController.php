@@ -1,8 +1,6 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Exceptions\ApiException;
-use App\Models\Area;
-use App\Models\EmailToken;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
 use App\Models\Tag;
@@ -17,7 +15,6 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
-use Symfony\Component\HttpKernel\Tests\Exception\BadRequestHttpExceptionTest;
 
 class ProfileController extends Controller
 {
@@ -264,6 +261,24 @@ class ProfileController extends Controller
         }
 
         return self::createJsonData(true,$list);
+    }
+
+    public function wallet(Request $request){
+        $data = get_pay_config();
+        /**
+         * @var User
+         */
+        $user = $request->user();
+
+        $data['total_money'] = 0;
+        $data['pay_settlement_money'] = 0;
+
+        $user_money = UserMoney::find($user->id);
+        if($user_money){
+            $data['total_money'] = $user_money->total_money;
+        }
+
+        return self::createJsonData(true,$data);
     }
 
 }
