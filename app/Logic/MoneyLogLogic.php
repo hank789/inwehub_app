@@ -102,7 +102,9 @@ class MoneyLogLogic {
 
     //获取问答手续费
     public static function getAnswerFee($answer){
-        return 0;
+        //目前都是20%的手续费
+        $fee_rate = Setting()->get('pay_answer_normal_fee_rate',0.2);
+        return $fee_rate * $answer->question->price;
     }
 
 }

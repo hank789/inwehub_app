@@ -81,6 +81,13 @@
                                 </tr>
 
                                 <tr>
+                                    <td>一般用户结算手续费(0~1)</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('pay_answer_normal_fee_rate')) has-error @endif "><input type="text" class="form-control" name="pay_answer_normal_fee_rate" value="{{ old('pay_answer_normal_fee_rate',Setting()->get('pay_answer_normal_fee_rate',0.2)) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
                                     <td>用户每天最大提现次数</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_day_limit')) has-error @endif "><input type="text" class="form-control" name="withdraw_day_limit" value="{{ old('withdraw_day_limit',Setting()->get('withdraw_day_limit')) }}" /></div>

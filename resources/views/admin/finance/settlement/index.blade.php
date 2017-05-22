@@ -1,14 +1,14 @@
 @extends('admin/public/layout')
 
 @section('title')
-    提现管理
+    结算管理
 @endsection
 
 @section('content')
     <section class="content-header">
         <h1>
-            提现列表
-            <small>显示当前系统的所有提现</small>
+            结算列表
+            <small>显示当前系统的所有结算</small>
         </h1>
     </section>
     <section class="content">
@@ -17,14 +17,10 @@
                 <div class="box">
                     <div class="box-header">
                         <div class="row">
-                            <div class="col-xs-3">
-                                <div class="btn-group">
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="处理提现" onclick="confirm_submit('item_form','{{  route('admin.finance.withdraw.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
-                                </div>
-                            </div>
+
                             <div class="col-xs-9">
                                 <div class="row">
-                                    <form name="searchForm" action="{{ route('admin.finance.withdraw.index') }}" method="GET">
+                                    <form name="searchForm" action="{{ route('admin.finance.settlement.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
@@ -59,27 +55,21 @@
                                         <th>用户ID</th>
                                         <th>用户名</th>
                                         <th>手机</th>
-                                        <th>金额</th>
-                                        <th>请求时间</th>
+                                        <th>结算金额</th>
+                                        <th>预计手续费</th>
+                                        <th>结算时间</th>
                                         <th>状态</th>
-                                        <th>信息</th>
-                                        <th>操作</th>
                                     </tr>
-                                    @foreach($withdraws as $withdraw)
+                                    @foreach($settlements as $settlement)
                                         <tr>
-                                            <td><input type="checkbox" value="{{ $withdraw->id }}" name="id[]"/></td>
-                                            <td>{{ $withdraw->id }}</td>
-                                            <td>{{ $withdraw->user->name }}</td>
-                                            <td>{{ $withdraw->user->mobile }}</td>
-                                            <td>{{ $withdraw->amount }}</td>
-                                            <td>{{ $withdraw->created_at }}</td>
-                                            <td>{{ $withdraw->response_msg }}</td>
-                                            <td><span class="label @if($withdraw->status===3) label-danger @elseif($withdraw->status<=1) label-default @elseif($withdraw->status===2) label-success @endif">{{ trans_withdraw_status($withdraw->status) }}</span> </td>
-                                            <td>
-                                                <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.finance.withdraw.verify',['id'=>[$withdraw->id]]) }}" data-toggle="tooltip" title="审核通过"><i class="fa fa-check-square-o"></i></a>
-                                                </div>
-                                            </td>
+                                            <td><input type="checkbox" value="{{ $settlement->id }}" name="id[]"/></td>
+                                            <td>{{ $settlement->id }}</td>
+                                            <td>{{ $settlement->user->name }}</td>
+                                            <td>{{ $settlement->user->mobile }}</td>
+                                            <td>{{ $settlement->getSettlementMoney() }}</td>
+                                            <td>{{ $settlement->getSettlementFee() }}</td>
+                                            <td>{{ $settlement->settlement_date }}</td>
+                                            <td><span class="label @if($settlement->status===3) label-danger @elseif($settlement->status<=1) label-default @elseif($settlement->status===2) label-success @endif">{{ trans_withdraw_status($settlement->status) }}</span> </td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -88,15 +78,10 @@
                     </div>
                     <div class="box-footer clearfix">
                         <div class="row">
-                            <div class="col-sm-3">
-                                <div class="btn-group">
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="处理提现" onclick="confirm_submit('item_form','{{  route('admin.finance.withdraw.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
-                                </div>
-                            </div>
                             <div class="col-sm-9">
                                 <div class="text-right">
-                                    <span class="total-num">共 {{ $withdraws->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $withdraws->render()) !!}
+                                    <span class="total-num">共 {{ $settlements->total() }} 条数据</span>
+                                    {!! str_replace('/?', '?', $settlements->render()) !!}
                                 </div>
                             </div>
                         </div>
@@ -111,6 +96,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('finance',"{{ route('admin.finance.withdraw.index') }}");
+        set_active_menu('finance',"{{ route('admin.finance.settlement.index') }}");
     </script>
 @endsection

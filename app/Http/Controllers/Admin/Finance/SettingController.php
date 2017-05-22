@@ -18,7 +18,8 @@ class SettingController extends AdminController {
             'withdraw_auto' => 'required|integer',
             'withdraw_day_limit' => 'required|integer',
             'withdraw_per_min_money' => 'required|integer',
-            'withdraw_per_max_money' => 'required|integer'
+            'withdraw_per_max_money' => 'required|integer',
+            'pay_answer_normal_fee_rate' => 'required|between:0,1'
         ];
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);

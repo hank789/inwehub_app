@@ -1,4 +1,5 @@
 <?php namespace App\Models\Pay;
+use App\Logic\MoneyLogLogic;
 use App\Models\Answer;
 use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +37,25 @@ class Settlement extends Model {
         ]);
         if ($object){
             $answer->user->userMoney()->increment('settlement_money',$answer->question->price);
+        }
+    }
+
+    public function getSettlementMoney(){
+        switch($this->source_type){
+            case 'App\Models\Answer':
+                $answer = Answer::find($this->source_id);
+                return $answer->question->price;
+                break;
+        }
+    }
+
+    public function getSettlementFee(){
+        switch($this->source_type){
+            case 'App\Models\Answer':
+                $answer = Answer::find($this->source_id);
+                return MoneyLogLogic::getAnswerFee($answer);
+
+                break;
         }
     }
 

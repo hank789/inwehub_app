@@ -31,7 +31,7 @@ class WithdrawController extends AdminController {
         /*状态过滤*/
         if( isset($filter['status']) && $filter['status'] > -2 ){
             $query->where('status','=',$filter['status']);
-        }else{
+        }elseif(isset($filter['status']) && $filter['status'] != -9){
             $query->where('status','=',Withdraw::WITHDRAW_STATUS_PENDING);
             $filter['status'] = Withdraw::WITHDRAW_STATUS_PENDING;
         }
