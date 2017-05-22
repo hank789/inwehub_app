@@ -41,6 +41,12 @@ class ProfileController extends Controller
         $info['province']['name'] = CityData::getProvinceName($user->province);
         $info['city']['key'] = $user->city;
         $info['city']['name'] = CityData::getCityName($user->province,$user->city);
+
+        $info['hometown_province']['key'] = $user->hometown_province;
+        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province);
+        $info['hometown_city']['key'] = $user->hometown_city;
+        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city);
+
         $info['company'] = $user->company;
         $info['title'] = $user->title;
         $info['description'] = $user->description;
@@ -95,6 +101,8 @@ class ProfileController extends Controller
             'company'   => 'max:128',
             'province' => 'max:128',
             'city'     => 'max:128',
+            'hometown_province' => 'max:128',
+            'hometown_city'     => 'max:128',
             'address_detail'  => 'max:255',
             'email'            => 'max:128|email',
             'birthday'         => 'max:128',
@@ -131,6 +139,14 @@ class ProfileController extends Controller
 
         if($request->input('city') !== null){
             $user->city = $request->input('city');
+        }
+
+        if($request->input('hometown_province') !== null){
+            $user->hometown_province = $request->input('hometown_province');
+        }
+
+        if($request->input('hometown_city') !== null){
+            $user->hometown_city = $request->input('hometown_city');
         }
 
         if($request->input('address_detail') !== null){

@@ -16,6 +16,8 @@ class AddUserInfo extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string("company",255)->after('city')->default('');
             $table->string("address_detail",255)->after('city')->default('');
+            $table->string('hometown_province',12)->after('city')->nullable();       //居住省份
+            $table->string('hometown_city',12)->after('hometown_province')->nullable();           //居住城市
         });
 
         Schema::table('user_tags', function (Blueprint $table) {

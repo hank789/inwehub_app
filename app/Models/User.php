@@ -452,24 +452,24 @@ class User extends Model implements AuthenticatableContract,
     public function getInfoCompletePercent(){
         $user = $this->toArray();
         $info = [];
-        $info['name'] = $user['name'];
-        $info['mobile'] = $user['mobile'];
-        $info['email'] = $user['email'];
-        $info['gender'] = $user['gender'];
-        $info['birthday'] = $user['birthday'];
-        $info['province'] = $user['province'];
-        $info['city'] = $user['city'];
-        $info['company'] = $user['company'];
-        $info['title'] = $user['title'];
-        $info['description'] = $user['description'];
-        $info['address_detail'] = $user['address_detail'];
-        $info['industry_tags'] = array_column($this->industryTags(),'name');
-        $info['avatar_url'] = $this->getAvatarUrl();
+        $info['name'] = [5=>$user['name']];
+        $info['mobile'] = [5=>$user['mobile']];
+        $info['email'] = [5=>$user['email']];
+        $info['gender'] = [5=>$user['gender']];
+        $info['birthday'] = [5=>$user['birthday']];
+        $info['city'] = [5=>$user['city']];
+        $info['hometown_city'] = [1=>$user['hometown_city']];
+        $info['company'] = [5=>$user['company']];
+        $info['title'] = [5=>$user['title']];
+        $info['description'] = [1=>$user['description']];
+        $info['address_detail'] = [5=>$user['address_detail']];
+        $info['industry_tags'] = [5=>array_column($this->industryTags(),'name')];
+        $info['avatar_url'] = [10=>$this->getAvatarUrl()];
 
-        $edu = $this->edus()->first();
-        $job = $this->jobs()->first();
-        $project = $this->projects()->first();
-        $train = $this->trains()->first();
+        $edu = [10=>$this->edus()->first()];
+        $job = [10=>$this->jobs()->first()];
+        $project = [10=>$this->projects()->first()];
+        $train = [2=>$this->trains()->first()];
         $data = [];
         $data['info'] = $info;
         $data['jobs'] = $job;
@@ -479,7 +479,7 @@ class User extends Model implements AuthenticatableContract,
 
         $fields = cal_account_info_finish($data);
 
-        return round(100*$fields['filled']/$fields['total']);
+        return $fields['score'];
 
     }
 

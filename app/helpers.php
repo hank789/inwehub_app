@@ -389,20 +389,41 @@ if (!function_exists('cal_account_info_finish')) {
         $expert_fields = ['id','site_notifications','password','is_expert','tags','status','created_at','updated_at','remember_token','email_notifications'];
         $total = 0;
         $filled = 0;
+        $score = 0;
         $info = $data['info'];
-        foreach($info as $field=>$value){
+        foreach($info as $field=>$item){
             if(in_array($field,$expert_fields)) continue;
             $total++;
-            if($filled=='avatar_url' && $value==config('image.user_default_avatar')) continue;
-            if(!empty($value) || $value === "0") $filled++;
+            foreach($item as $key=>$value){
+                if($filled=='avatar_url' && $value==config('image.user_default_avatar')) continue;
+                if(!empty($value) || $value === "0") {
+                    $filled++;
+                    $score += $key;
+                }
+            }
         }
         unset($data['info']);
-        foreach($data as $field=>$value){
+        $career_count = 0;
+        foreach($data as $field=>$item){
             if(in_array($field,$expert_fields)) continue;
             $total++;
-            if(!empty($value)) $filled++;
+            foreach($item as $key=>$value){
+                if(!empty($value) || $value === "0") {
+                    $filled++;
+                    $score += $key;
+                    if($filled != 'trains'){
+                        $career_count += count($value);
+                    }
+                }
+            }
         }
-        return ['total'=>$total,'filled'=>$filled];
+        if($career_count >=4){
+            $score += 4;
+        }else{
+            $score += $career_count;
+        }
+
+        return ['total'=>$total,'filled'=>$filled, 'score'=>$score];
     }
 }
 
