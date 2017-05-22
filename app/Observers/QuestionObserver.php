@@ -43,7 +43,7 @@ class QuestionObserver implements ShouldQueue {
 
     protected function slackMsg(Question $question){
         $url = route('ask.question.detail',['id'=>$question->id]);
-        return \Slack::to('#'.env('SLACK_ASK_CHANNEL','app_ask_activity'))
+        return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
             ->attach(
                 [

@@ -50,7 +50,7 @@ class ExpertEventListener implements ShouldQueue {
         $attach = [];
         $attach['fields'] = $fields;
         $attach['color'] = 'good';
-        return \Slack::to('#'.env('SLACK_ASK_CHANNEL','app_ask_activity'))
+        return \Slack::to(config('slack.ask_activity_channel'))
             ->attach($attach)
             ->send('用户['.$event->user_id.']推荐了专家');
     }

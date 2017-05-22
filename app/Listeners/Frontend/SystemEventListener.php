@@ -25,7 +25,7 @@ class SystemEventListener implements ShouldQueue
      */
     public function feedback($event)
     {
-        \Slack::to('#'.env('SLACK_ASK_CHANNEL','app_ask_activity'))->send('用户['.$event->user->name.']['.$event->user->mobile.']对平台的意见反馈:'.$event->content);
+        \Slack::to(config('slack.ask_activity_channel'))->send('用户['.$event->user->name.']['.$event->user->mobile.']对平台的意见反馈:'.$event->content);
     }
 
     /**

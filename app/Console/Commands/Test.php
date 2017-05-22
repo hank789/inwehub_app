@@ -50,7 +50,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $code = UserRegistrationCode::genCode();
+        $code = config('slack.ask_activity_channel');
         echo $code;
         return;
         $payData = [
