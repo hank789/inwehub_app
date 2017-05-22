@@ -248,7 +248,7 @@ class AnswerController extends Controller
         if(empty($answer)){
             abort(404);
         }
-        if($answer->question()->user->id != $request->user()->id){
+        if($answer->question->user->id != $request->user()->id){
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
