@@ -30,7 +30,7 @@ class GetUserFromToken extends BaseMiddleware
     {
         if (! $token = $this->auth->setRequest($request)->getToken()) {
             $this->respond('tymon.jwt.absent', 'token_not_provided', 400);
-            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_MISSING,'token缺失');
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_INVALID,'token缺失');
         }
 
         try {

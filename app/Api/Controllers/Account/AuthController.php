@@ -257,7 +257,6 @@ class AuthController extends Controller
         event(new UserLoggedOut($auth->user()));
         $data = $request->all();
         UserDevice::where('user_id',$auth->user()->id)->where('client_id',$data['client_id'])->where('device_type',$data['device_type'])->update(['status'=>0]);
-        \Log::info('hanktest',[$auth->user()->id,$data]);
         $JWTAuth->parseToken()->refresh();
         return self::createJsonData(true);
     }
