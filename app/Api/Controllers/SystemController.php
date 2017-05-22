@@ -32,7 +32,7 @@ class SystemController extends Controller {
         $this->validate($request, $validateRules);
         $data = $request->all();
         $user = $request->user();
-        UserDevice::firstOrCreate(['user_id'=>$user->id,
+        $user_device = UserDevice::firstOrCreate(['user_id'=>$user->id,
             'client_id'=>$data['client_id'],
             'device_type'=>$data['device_type']],
             [
@@ -44,6 +44,10 @@ class SystemController extends Controller {
                 'appkey'       => $data['appkey'],
                 'created_at'   => date('Y-m-d H:i:s')
             ]);
+        $user_device->status = 1;
+        $user_device->updated_at = date('Y-m-d H:i:s');
+        $user_device->save();
+
         return self::createJsonData(true);
     }
 

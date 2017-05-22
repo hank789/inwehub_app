@@ -13,6 +13,5 @@ class UserDevice extends Model {
 
     protected $table = 'user_device';
     protected $fillable = ['client_id', 'user_id','device_token','appid','appkey','device_type'];
-    public $timestamps = false;
 
 }

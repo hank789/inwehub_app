@@ -9,6 +9,7 @@ use App\Jobs\SendPhoneMessage;
 use App\Models\LoginRecord;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserDevice;
 use App\Services\RateLimiter;
 use App\Services\Registrar;
 use Illuminate\Contracts\Auth\Guard;
@@ -251,10 +252,13 @@ class AuthController extends Controller
     /**
      * 用户登出
      */
-    public function logout(Guard $auth,JWTAuth $JWTAuth){
+    public function logout(Request $request,Guard $auth,JWTAuth $JWTAuth){
         //通知
         event(new UserLoggedOut($auth->user()));
+        $data = $request->all();
+
         $JWTAuth->parseToken()->refresh();
+        UserDevice::where('user_id',$auth->user()->id)->where('client_id',$data['client_id'])->where('device_type',$data['device_type'])->update(['status'=>0]);
         return self::createJsonData(true);
     }
 

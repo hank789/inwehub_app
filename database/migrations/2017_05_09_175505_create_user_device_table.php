@@ -21,7 +21,8 @@ class CreateUserDeviceTable extends Migration
             $table->string('appid',128)->nullable()->comment('第三方推送服务的应用标识');
             $table->string('appkey',128)->nullable()->comment('第三方推送服务器的应用键值');
             $table->integer('device_type')->comment('设备类型,1安卓,2苹果')->default('1');
-            $table->timestamp('created_at');
+            $table->tinyInteger('status')->default(1)->comment('状态:1登陆,0未登录');   //状态
+            $table->timestamps();
             $table->unique(['user_id','client_id','device_type']);
         });
     }

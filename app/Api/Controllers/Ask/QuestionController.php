@@ -53,6 +53,11 @@ class QuestionController extends Controller
         if($request->user()){
             $this->readNotifications($question->id,'question');
         }
+        //问题作者或邀请者才能看
+        $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
+        if(empty($question_invitation) && $request->user()->id != $question->user->id){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
 
         $question_data = [
             'id' => $question->id,
