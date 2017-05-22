@@ -427,7 +427,7 @@ if (!function_exists('cal_account_info_finish')) {
             }
         }
         unset($data['info']);
-        $career_count = 0;
+        $career_extra_count = 0;
         foreach($data as $field=>$item){
             if(in_array($field,$expert_fields)) continue;
             $total++;
@@ -436,15 +436,15 @@ if (!function_exists('cal_account_info_finish')) {
                     $filled++;
                     $score += $key;
                     if($filled != 'trains'){
-                        $career_count += count($value);
+                        $career_extra_count += (count($value)-1);
                     }
                 }
             }
         }
-        if($career_count >=4){
+        if($career_extra_count >=4){
             $score += 4;
         }else{
-            $score += $career_count;
+            $score += $career_extra_count;
         }
 
         return ['total'=>$total,'filled'=>$filled, 'score'=>$score];
