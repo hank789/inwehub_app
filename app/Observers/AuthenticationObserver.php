@@ -27,7 +27,7 @@ class AuthenticationObserver implements ShouldQueue {
 
     protected function slackMsg(Authentication $authentication){
         $url = route('admin.authentication.edit',['user_id'=>$authentication->user_id]);
-        return \Slack::to('#app_ask_activity')
+        return \Slack::to('#'.env('SLACK_ASK_CHANNEL','app_ask_activity'))
             ->disableMarkdown()
             ->attach(
                 [
