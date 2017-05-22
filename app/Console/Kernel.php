@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\AtomPosts::class,
         Commands\Scraper\WechatPosts::class,
         Commands\Scraper\WechatAuthor::class,
-        Commands\pay\Settlement::class,
+        Commands\Pay\Settlement::class,
     ];
 
     /**
