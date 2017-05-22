@@ -27,6 +27,15 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="website_url">开启邀请码注册</label>
+                                <span class="text-muted">(只允许邀请码注册,前提是开启了"允许新用户注册"功能)</span>
+                                <div class="radio">
+                                    <label><input type="radio" name="registration_code_open" value="1" @if(Setting()->get('registration_code_open','1') == 1) checked @endif > 开启 </label>
+                                    <label class="ml-20"><input type="radio" name="registration_code_open" value="0" @if(Setting()->get('registration_code_open','1') != 1) checked @endif > 关闭 </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="website_url">新用户注册后需要审核</label>
                                 <span class="text-muted">(需要管理员在后台审核通过)</span>
                                 <div class="radio">

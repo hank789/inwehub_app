@@ -14,6 +14,7 @@ use App\Models\RecommendQa;
 use App\Models\User;
 use App\Models\UserDevice;
 use App\Models\UserInfo\JobInfo;
+use App\Models\UserRegistrationCode;
 use App\Services\City\CityData;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -49,9 +50,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $answer = Answer::find(2);
-        $id = $answer->question->user->id;
-        var_dump($id);
+        $code = UserRegistrationCode::genCode();
+        echo $code;
         return;
         $payData = [
             'body'    => 'test',

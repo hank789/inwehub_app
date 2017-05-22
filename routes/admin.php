@@ -164,6 +164,16 @@ Route::post('version/destroy',['as'=>'admin.appVersion.destroy','uses'=>'Version
 Route::post('version/verify',['as'=>'admin.appVersion.verify','uses'=>'VersionController@verify']);
 
 
+/*邀请码管理*/
+Route::get('rgcode/index',['as'=>'admin.operate.rgcode.index','uses'=>'RegistrationCodeController@index']);
+Route::get('rgcode/create',['as'=>'admin.operate.rgcode.create','uses'=>'RegistrationCodeController@create']);
+Route::post('rgcode/store',['as'=>'admin.operate.rgcode.store','uses'=>'RegistrationCodeController@store']);
+Route::get('rgcode/edit/{id}',['as'=>'admin.operate.rgcode.edit','uses'=>'RegistrationCodeController@edit'])->where(['id'=>'[0-9]+']);
+Route::post('rgcode/update',['as'=>'admin.operate.rgcode.update','uses'=>'RegistrationCodeController@update']);
+Route::post('rgcode/destroy',['as'=>'admin.operate.rgcode.destroy','uses'=>'RegistrationCodeController@destroy']);
+Route::post('rgcode/verify',['as'=>'admin.operate.rgcode.verify','uses'=>'RegistrationCodeController@verify']);
+
+
 /*inwehub管理*/
 Route::group(['prefix' => 'inwehub','namespace'=>'Inwehub'],function(){
     /*文章创建*/

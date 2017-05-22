@@ -10,6 +10,7 @@ use App\Models\LoginRecord;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserDevice;
+use App\Models\UserRegistrationCode;
 use App\Services\RateLimiter;
 use App\Services\Registrar;
 use Illuminate\Contracts\Auth\Guard;
@@ -46,6 +47,12 @@ class AuthController extends Controller
             case 'register':
                 if($user){
                     throw new ApiException(ApiException::USER_PHONE_EXIST);
+                }
+                if(Setting()->get('registration_code_open',1)){
+                    $rcode = UserRegistrationCode::where('mobile',$mobile)->where('code',$request->input('registration_code',''))->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
+                    if(empty($rcode)){
+                        throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
+                    }
                 }
                 break;
             default:
@@ -170,6 +177,10 @@ class AuthController extends Controller
             'code'   => 'required',
             'password' => 'required|min:6|max:64',
         ];
+        //是否开启了邀请码注册
+        if(Setting()->get('registration_code_open',1)){
+            $validateRules['registration_code'] = 'required';
+        }
 
         /*if( Setting()->get('code_register') == 1){
             $validateRules['captcha'] = 'required|captcha';
@@ -181,6 +192,12 @@ class AuthController extends Controller
         $user = User::where('mobile',$mobile)->first();
         if($user){
             throw new ApiException(ApiException::USER_PHONE_EXIST);
+        }
+        if(Setting()->get('registration_code_open',1)){
+            $rcode = UserRegistrationCode::where('mobile',$mobile)->where('code',$request->input('registration_code'))->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
+            if(empty($rcode)){
+                throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
+            }
         }
 
         //验证手机验证码
@@ -204,6 +221,10 @@ class AuthController extends Controller
         $user->attachRole(2); //默认注册为普通用户角色
         $user->userData->email_status = 1;
         $user->userData->save();
+        if(isset($rcode)){
+            $rcode->status = UserRegistrationCode::CODE_STATUS_USED;
+            $rcode->save();
+        }
         $message = '注册成功!';
         if($this->credit($user->id,'register',Setting()->get('coins_register'),Setting()->get('credits_register'))){
             $message .= get_credit_message(Setting()->get('credits_register'),Setting()->get('coins_register'));

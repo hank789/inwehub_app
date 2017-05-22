@@ -130,6 +130,30 @@ if (! function_exists('trans_common_status')) {
     }
 }
 
+/*公告状态文字定义*/
+if (! function_exists('trans_rgcode_status')) {
+
+    function trans_rgcode_status($status){
+        $map = [
+            0 => '待审核',
+            1 => '已审核',
+            2 => '已使用'
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+}
+
 if (! function_exists('trans_withdraw_status')) {
 
     function trans_withdraw_status($status){
