@@ -49,17 +49,9 @@ class Test extends Command
      */
     public function handle()
     {
-
-        $users = User::get();
-        foreach($users as $user){
-            $user_money = UserMoney::find($user->id);
-            if(empty($user_money)){
-                UserMoney::create([
-                    'user_id' => $user->id,
-                    'total_money' => 0
-                ]);
-            }
-        }
+        $answer = Answer::find(2);
+        $id = $answer->question->user->id;
+        var_dump($id);
         return;
         $payData = [
             'body'    => 'test',

@@ -130,4 +130,7 @@ Route::post('system/version','SystemController@appVersion');
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     //通知列表
     Route::post('notification/list','NotificationController@list');
+    //统计
+    Route::post('notification/count','NotificationController@count');
+
 });

@@ -54,6 +54,15 @@ class NotificationController extends Controller
         return self::createJsonData(true);
     }
 
+    public function count(Request $request){
+        $todo_task = $request->user()->tasks()->where('status',0)->count();
+        $data = [
+            'todo_tasks' => $todo_task
+        ];
+
+        return self::createJsonData(true,$data);
+    }
+
 
 
 
