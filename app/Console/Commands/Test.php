@@ -8,6 +8,7 @@ use App\Models\Answer;
 use App\Models\AppVersion;
 use App\Models\Authentication;
 use App\Models\Pay\Order;
+use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\RecommendQa;
 use App\Models\User;
@@ -49,9 +50,16 @@ class Test extends Command
     public function handle()
     {
 
-        event(new Push(User::find(2),'有人向您发起了回答邀请',
-            'content:问题内容,有人向您发起了回答邀请,有人向您发起了回答邀请,有人向您发起了回答邀请',['payload'=>['object_type'=>'question','object_id'=>123]],[],1));
-
+        $users = User::get();
+        foreach($users as $user){
+            $user_money = UserMoney::find($user->id);
+            if(empty($user_money)){
+                UserMoney::create([
+                    'user_id' => $user->id,
+                    'total_money' => 0
+                ]);
+            }
+        }
         return;
         $payData = [
             'body'    => 'test',
