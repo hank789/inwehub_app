@@ -48,8 +48,8 @@ class TaskController extends Controller {
                     switch($task->action){
                         case Task::ACTION_TYPE_ANSWER:
                             //已分配待确认
-                            $user_name = $question->user->name;
-                            $user_avatar_url = $question->user->getAvatarUrl();
+                            $user_name = $question->hide ? '匿名' : $question->user->name;
+                            $user_avatar_url = $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl();
                             $description = '用户'.$user_name.'发起了专业提问:'.$question->title;
                             $answer = Answer::where('question_id',$object_id)->where('user_id',$task->user_id)->get()->last();
                             if($answer && $answer->status == 3){
