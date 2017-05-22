@@ -113,6 +113,11 @@ class ProfileController extends Controller
         if($request->input('name') !== null){
             $user->name = $request->input('name');
         }
+
+        if($request->input('email') !== null){
+            $user->email = $request->input('email');
+        }
+
         if($request->input('gender') !== null){
             $user->gender = $request->input('gender');
         }
