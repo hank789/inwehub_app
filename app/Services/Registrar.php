@@ -53,7 +53,8 @@ class Registrar {
             ]);
             UserMoney::create([
                 'user_id' => $user->id,
-                'total_money' => 0
+                'total_money' => 0,
+                'settlement_money' => 0
             ]);
         }
 

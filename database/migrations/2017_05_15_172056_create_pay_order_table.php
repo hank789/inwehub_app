@@ -61,6 +61,8 @@ class CreatePayOrderTable extends Migration
         Schema::create('user_money', function (Blueprint $table) {
             $table->integer('user_id')->unsigned()->primary();              //用户UID
             $table->decimal('total_money',10,2)->unsigned()->default(0)->comment('总金额');
+            $table->decimal('settlement_money',10,2)->unsigned()->default(0)->comment('结算中的金额');
+
         });
 
         //用户资金流水表
@@ -82,7 +84,10 @@ class CreatePayOrderTable extends Migration
             ['name' => 'withdraw_auto','value' => '0'],
             ['name' => 'withdraw_day_limit','value' => '1'],
             ['name' => 'withdraw_per_min_money','value' => '10'],
-            ['name' => 'withdraw_per_max_money','value' => '2000']
+            ['name' => 'withdraw_per_max_money','value' => '2000'],
+            ['name' => 'pay_method_weixin','value' => '1'],
+            ['name' => 'pay_method_ali','value' => '0'],
+            ['name' => 'pay_settlement_cycle','value' => '5']
         ]);
     }
 

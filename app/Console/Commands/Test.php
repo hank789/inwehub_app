@@ -8,6 +8,7 @@ use App\Models\Answer;
 use App\Models\AppVersion;
 use App\Models\Authentication;
 use App\Models\Pay\Order;
+use App\Models\Pay\Settlement;
 use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\RecommendQa;
@@ -50,9 +51,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $s= $user->getInfoCompletePercent();
-        var_dump($s);
+        $answer = Answer::find(2);
+        Settlement::answerSettlement($answer);
         return;
         $payData = [
             'body'    => 'test',

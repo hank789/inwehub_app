@@ -276,6 +276,7 @@ class ProfileController extends Controller
         $user_money = UserMoney::find($user->id);
         if($user_money){
             $data['total_money'] = $user_money->total_money;
+            $data['pay_settlement_money'] = $user_money->settlement_money;
         }
 
         return self::createJsonData(true,$data);

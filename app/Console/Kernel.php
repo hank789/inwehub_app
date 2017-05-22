@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\AtomPosts::class,
         Commands\Scraper\WechatPosts::class,
         Commands\Scraper\WechatAuthor::class,
+        Commands\pay\Settlement::class,
     ];
 
     /**
@@ -37,6 +38,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('scraper:atom')->everyTenMinutes();
         $schedule->command('backup:clean')->daily()->at('01:00');
         $schedule->command('backup:run')->twiceDaily();
+        $schedule->command('pay:settlement')->daily()->at('00:10')->withoutOverlapping();
         //$schedule->command('scraper:wechat:author')->hourly();
     }
 

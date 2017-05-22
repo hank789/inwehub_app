@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class MoneyLogLogic {
 
-    public static function addMoney($user_id,$money,$money_type, $object_class, $fee=0){
+    public static function addMoney($user_id,$money,$money_type, $object_class, $fee=0, $is_settlement = 0){
         try{
             DB::beginTransaction();
             if($fee && $fee>$money){
@@ -19,6 +19,10 @@ class MoneyLogLogic {
             $userMoney = UserMoney::find($user_id);
 
             UserMoney::find($user_id)->increment('total_money',$money);
+            //执行结算
+            if($is_settlement){
+                UserMoney::find($user_id)->decrement('settlement_money',$money);
+            }
 
             //资金记录
             MoneyLog::create([
