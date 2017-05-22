@@ -95,7 +95,7 @@ class ApiException extends Exception
         self::ASK_PAYMENT_EXCEPTION => '支付异常',
 
         //支付模块
-        self::PAYMENT_UNKNOWN_CHANNEL => '未知支付渠道',
+        self::PAYMENT_UNKNOWN_CHANNEL => '暂不支持该支付渠道',
         self::PAYMENT_UNKNOWN_PAY_TYPE => '未知支付对象',
         self::WITHDRAW_AMOUNT_INVALID => '提现金额有误',
         self::WITHDRAW_DAY_COUNT_LIMIT => '提现单日超次数',

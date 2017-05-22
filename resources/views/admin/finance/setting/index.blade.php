@@ -29,8 +29,10 @@
                                     <td>是否暂停提现</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_suspend')) has-error @endif ">
-                                            <input type="text" class="form-control" name="withdraw_suspend" value="{{ old('withdraw_suspend',Setting()->get('withdraw_suspend')) }}" />
-                                            <span class="text-muted">0:正常提现;1:暂停提现功能</span>
+                                            <div class="radio">
+                                                <label><input type="radio" name="withdraw_suspend" value="0" @if ( Setting()->get('withdraw_suspend',0) == 0) checked @endif >正常提现</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="radio" name="withdraw_suspend" value="1" @if ( Setting()->get('withdraw_suspend',0) == 1) checked @endif>暂停提现功能</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -39,8 +41,10 @@
                                     <td>是否自动提现</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_auto')) has-error @endif ">
-                                            <input type="text" class="form-control" name="withdraw_auto" value="{{ old('withdraw_auto',Setting()->get('withdraw_auto')) }}" />
-                                            <span class="text-muted">0:需要人工在后台审核才能提现;1:系统自动提现</span>
+                                            <div class="radio">
+                                                <label><input type="radio" name="withdraw_auto" value="0" @if ( Setting()->get('withdraw_auto',0) == 0) checked @endif >需要人工在后台审核才能提现</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="radio" name="withdraw_auto" value="1" @if ( Setting()->get('withdraw_auto',0) == 1) checked @endif>系统自动提现</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -49,9 +53,30 @@
                                     <td>是否强制支付</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('need_pay_actual')) has-error @endif ">
-                                            <input type="text" class="form-control" name="need_pay_actual" value="{{ old('need_pay_actual',Setting()->get('need_pay_actual')) }}" />
-                                            <span class="text-muted">0:非强制,表示用户可以不付费就可以提问,慎用;1:强制付费问答</span>
+                                            <div class="radio">
+                                                <label><input type="radio" name="need_pay_actual" value="0" @if ( Setting()->get('need_pay_actual',0) == 0) checked @endif >非强制,表示用户不付费就可以提问</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="radio" name="need_pay_actual" value="1" @if ( Setting()->get('need_pay_actual',0) == 1) checked @endif>强制付费问答</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
                                         </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>支付方式</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('pay_methods')) has-error @endif ">
+                                            <div class="checkbox">
+                                                <input type="checkbox" name="pay_method_weixin" value="1"  @if(Setting()->get('pay_method_weixin',1) == 1) checked @endif /> 微信
+                                                <label><input type="checkbox" name="pay_method_ali" value="1" @if(Setting()->get('pay_method_ali',0) == 1) checked @endif /> 支付宝</label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>付款结算周期(天)</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('pay_settlement_cycle')) has-error @endif "><input type="text" class="form-control" name="pay_settlement_cycle" value="{{ old('pay_settlement_cycle',Setting()->get('pay_settlement_cycle',5)) }}" /></div>
                                     </td>
                                 </tr>
 

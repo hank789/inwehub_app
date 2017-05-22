@@ -30,12 +30,17 @@ class PayController extends Controller {
         switch($pay_channel){
             case 'wxpay':
                 //TODO 增加微信其它支付渠道的判断
+                if(Setting()->get('pay_method_weixin',1) != 1){
+                    throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
+                }
                 $config = config('payment')['wechat'];
                 $channel = Config::WX_CHANNEL_APP;
                 $channel_type = Order::PAY_CHANNEL_WX_APP;
                 break;
             case 'alipay':
-                throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
+                if(Setting()->get('pay_method_ali',0) != 1){
+                    throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
+                }
                 break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
