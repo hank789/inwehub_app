@@ -8,6 +8,7 @@ use App\Models\Pay\UserMoney;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserTag;
+use App\Services\City\CityData;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 
@@ -36,8 +37,10 @@ class ProfileController extends Controller
         $info['avatar_url'] = $user->getAvatarUrl();
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
-        $info['province'] = $user->province;
-        $info['city'] = $user->city;
+        $info['province']['key'] = $user->province;
+        $info['province']['name'] = CityData::getProvinceName($user->province);
+        $info['city']['key'] = $user->city;
+        $info['city']['name'] = CityData::getCityName($user->province,$user->city);
         $info['company'] = $user->company;
         $info['title'] = $user->title;
         $info['description'] = $user->description;
@@ -92,11 +95,10 @@ class ProfileController extends Controller
             'company'   => 'max:128',
             'province' => 'max:128',
             'city'     => 'max:128',
-            'address_detail'  => 'max:128',
+            'address_detail'  => 'max:255',
             'email'            => 'max:128|email',
             'birthday'         => 'max:128',
-            'title' => 'max:128',
-            'description' => 'max:9999',
+            'title' => 'max:255'
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();

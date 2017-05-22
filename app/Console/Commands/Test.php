@@ -13,6 +13,7 @@ use App\Models\RecommendQa;
 use App\Models\User;
 use App\Models\UserDevice;
 use App\Models\UserInfo\JobInfo;
+use App\Services\City\CityData;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
@@ -48,10 +49,8 @@ class Test extends Command
     public function handle()
     {
 
-        if(preg_match("/^([0-9]+.[0-9]+.[0-9])/", ".245.3")){
-            echo 1;
-        }
-
+        event(new Push(User::find(2),'有人向您发起了回答邀请',
+            'content:问题内容,有人向您发起了回答邀请,有人向您发起了回答邀请,有人向您发起了回答邀请',['payload'=>['object_type'=>'question','object_id'=>123]],[],1));
 
         return;
         $payData = [

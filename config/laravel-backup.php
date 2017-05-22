@@ -43,7 +43,7 @@ return [
              */
             'databases' => [
                 'mysql',
-                'inwehub'
+                'inwehub_read'
             ],
         ],
 
