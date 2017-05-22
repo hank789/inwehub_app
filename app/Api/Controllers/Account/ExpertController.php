@@ -65,7 +65,7 @@ class ExpertController extends Controller {
         $validateRules = [
             'name'      => 'required',
             'gender'      => 'required|in:0,1,2',
-            'work_years'      => 'required|between:1,70',
+            'work_years'      => 'required',
             'mobile'      => 'required|cn_phone',
             'industry_tags'      => 'required',
             'description'      => 'required',

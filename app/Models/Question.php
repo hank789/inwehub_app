@@ -155,6 +155,7 @@ class Question extends Model
     public function formatTimeline(){
         $doings = $this->doings()->orderBy('id','asc')->get();
         $timeline = [];
+        $is_find_expert = false;
         foreach($doings as $doing){
             $title = '';
             switch($doing->action){
@@ -165,7 +166,9 @@ class Question extends Model
                     $title = '平台已经受理,正在为您找寻合适专家';
                     break;
                 case 'question_answer_confirming':
+                    if($is_find_expert) continue;
                     $title = '平台已经帮您找到合适的专家,等待确认';
+                    $is_find_expert = true;
                     break;
                 case 'question_answer_confirmed':
                     $title = $doing->user->name.'为您回答问题';
