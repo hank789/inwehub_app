@@ -256,9 +256,9 @@ class AuthController extends Controller
         //通知
         event(new UserLoggedOut($auth->user()));
         $data = $request->all();
+        UserDevice::where('user_id',$auth->user()->id)->where('client_id',$data['client_id'])->where('device_type',$data['device_type'])->update(['status'=>0]);
 
         $JWTAuth->parseToken()->refresh();
-        UserDevice::where('user_id',$auth->user()->id)->where('client_id',$data['client_id'])->where('device_type',$data['device_type'])->update(['status'=>0]);
         return self::createJsonData(true);
     }
 
