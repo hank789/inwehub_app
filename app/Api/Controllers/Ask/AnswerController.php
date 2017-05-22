@@ -147,7 +147,7 @@ class AnswerController extends Controller
                 QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>1]);
 
                 $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
-                $message = 'ok';
+                $message = '回答成功!';
                 /*记录积分*/
                 if($this->credit($request->user()->id,'question_answered',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
                     $message = '回答成功! '.get_credit_message(Setting()->get('credits_answer'),Setting()->get('coins_answer'));

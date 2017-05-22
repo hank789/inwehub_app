@@ -41,6 +41,7 @@ trait BaseController {
             if($action == 'login' && Credit::where('user_id','=',$user_id)->where('action','=',$action)->where('created_at','>',Carbon::today())->count()>0){
                 return false;
             }
+            if($coins ==0 && $credits == 0) return false;
             DB::beginTransaction();
             /*记录详情数据*/
             Credit::create([
