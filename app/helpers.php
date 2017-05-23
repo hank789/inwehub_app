@@ -265,6 +265,23 @@ if (! function_exists('Area')) {
 
 }
 
+if (! function_exists('get_province_name')) {
+
+    function get_province_name($province_code){
+        return \App\Services\City\CityData::getProvinceName($province_code);
+    }
+
+}
+
+if (! function_exists('get_city_name')) {
+
+    function get_city_name($province_code, $city_code){
+        return \App\Services\City\CityData::getCityName($province_code, $city_code);
+    }
+
+}
+
+
 
 /**
  * 将正整数转换为带+,例如 10 装换为 +10

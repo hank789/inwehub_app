@@ -2,6 +2,8 @@
 
 @section('css')
     <link href="{{ asset('/static/js/bootstrap-datepicker/css/bootstrap-datepicker3.min.css')}}" rel="stylesheet" />
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
 @endsection
 
 @section('title')
@@ -24,11 +26,12 @@
                     </div>
                     <form role="form" name="userForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.user.update',['id'=>$user->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
+
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
                           <div class="form-group @if ($errors->has('name')) has-error @endif">
-                              <label for="name">用户名</label>
-                              <input type="text" name="name" class="form-control " placeholder="登陆用户名" value="{{ old('name',$user->name) }}">
+                              <label for="name">用户姓名</label>
+                              <input type="text" name="name" class="form-control " placeholder="姓名" value="{{ old('name',$user->name) }}">
                               @if ($errors->has('name')) <p class="help-block">{{ $errors->first('name') }}</p> @endif
                           </div>
 
@@ -36,7 +39,7 @@
                                 <label>头像</label>
                                 <input type="file" name="avatar" />
                                 <div style="margin-top: 10px;">
-                                    <img src="{{ get_user_avatar($user->id,'big') }}" width="100"/>
+                                    <img src="{{ $user->getAvatarUrl() }}" width="100"/>
                                 </div>
                             </div>
 
@@ -84,32 +87,81 @@
                           </div>
 
                             <div class="form-group">
-                                <label for="setting-city" class="control-label">所在城市</label>
+                                <label for="setting-city" class="control-label">工作城市</label>
                                 <div class="row">
                                     <div class="col-sm-5">
                                         <select class="form-control" name="province" id="province">
                                             <option>请选择省份</option>
-                                            @foreach($data['provinces'] as $province)
-                                                <option value="{{ $province->id }}"  @if($user->province == $province->id) selected @endif>{{ $province->name }}</option>
+                                            @foreach($data['provinces'] as $key=>$province)
+                                                <option value="{{ $key }}"  @if($user->province == $key) selected @endif>{{ $province }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-sm-5">
                                         <select class="form-control" name="city" id="city">
                                             <option>请选择城市</option>
-                                            @foreach($data['cities'] as $city)
-                                                <option value="{{ $city->id }}" @if($user->city == $city->id) selected @endif >{{ $city->name }}</option>
+                                            @foreach($data['cities'] as $key => $city)
+                                                <option value="{{ $key }}" @if($user->city == $key) selected @endif >{{ $city }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label for="setting-city" class="control-label">家乡城市</label>
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <select class="form-control" name="hometown_province" id="hometown_province">
+                                            <option>请选择省份</option>
+                                            @foreach($data['provinces'] as $key=>$province)
+                                                <option value="{{ $key }}"  @if($user->hometown_province == $key) selected @endif>{{ $province }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <select class="form-control" name="hometown_city" id="hometown_city">
+                                            <option>请选择城市</option>
+                                            @foreach($data['hometown_cities'] as $key => $city)
+                                                <option value="{{ $key }}" @if($user->hometown_city == $key) selected @endif >{{ $city }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group @if ($errors->has('company')) has-error @endif">
+                                <label for="company">当前公司</label>
+                                <input type="text" name="title" class="form-control " placeholder="当前公司" value="{{ old('company',$user->company) }}">
+                                @if ($errors->has('company')) <p class="help-block">{{ $errors->first('company') }}</p> @endif
+                            </div>
 
                             <div class="form-group @if ($errors->has('title')) has-error @endif">
-                                <label for="name">身份职业</label>
+                                <label for="title">身份职业</label>
                                 <input type="text" name="title" class="form-control " placeholder="身份职业" value="{{ old('title',$user->title) }}">
                                 @if ($errors->has('title')) <p class="help-block">{{ $errors->first('title') }}</p> @endif
+                            </div>
+
+                            <div class="form-group @if ($errors->first('industry_tags')) has-error @endif">
+                                <label for="industry_tags" class="control-label">所在行业</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select id="industry_tags" name="industry_tags" class="form-control" multiple="multiple" >
+                                            @foreach( array_column($user->industryTags(),'name') as $tag)
+                                                <option value="{{ $tag }}" selected>{{ $tag }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if ($errors->first('industry_tags'))
+                                            <span class="help-block">{{ $errors->first('industry_tags') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group @if ($errors->has('address_detail')) has-error @endif">
+                                <label for="address_detail">详细地址</label>
+                                <input type="text" name="address_detail" class="form-control " placeholder="详细地址" value="{{ old('address_detail',$user->address_detail) }}">
+                                @if ($errors->has('address_detail')) <p class="help-block">{{ $errors->first('address_detail') }}</p> @endif
                             </div>
 
 
@@ -145,6 +197,8 @@
 @section('script')
     <script src="{{ asset('/static/js/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('/static/js/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js') }}"></script>
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
+
     <script type="text/javascript">
         $(function(){
             /*生日日历*/
@@ -157,7 +211,36 @@
             /*加载省份城市*/
             $("#province").change(function(){
                 var province_id = $(this).val();
-                $("#city").load("{{ url('ajax/loadCities') }}/"+province_id);
+                $("#city").load("{{ url('manager/ajax/loadCities') }}/"+province_id);
+            });
+
+            $("#hometown_province").change(function(){
+                var province_id = $(this).val();
+                $("#hometown_city").load("{{ url('manager/ajax/loadCities') }}/"+province_id);
+            });
+
+            $("#industry_tags").select2({
+                theme:'bootstrap',
+                placeholder: "所在行业",
+                ajax: {
+                    url: '/manager/ajax/loadTags',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            word: params.term,
+                            type: 'industry'
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength:2,
+                tags:false
             });
 
             set_active_menu('manage_user',"{{ route('admin.user.index') }}");

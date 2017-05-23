@@ -12,6 +12,7 @@ use App\Models\Pay\Settlement;
 use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\RecommendQa;
+use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserDevice;
 use App\Models\UserInfo\JobInfo;
@@ -26,6 +27,7 @@ use Illuminate\Support\Str;
 use Payment\Client\Charge;
 use Payment\Common\PayException;
 use Payment\Config;
+use Illuminate\Support\Facades\DB;
 
 
 class Test extends Command
@@ -51,9 +53,12 @@ class Test extends Command
      */
     public function handle()
     {
-        $question = Question::find(129);
-        $timeline = $question->formatTimeline();
-        var_dump($timeline);
+        $word = 'SA';
+        $tags = Tag::where('name','like',$word.'%')->select('id',DB::raw('name as text'))->take(10)->get();
+        $tags->map(function($tag){
+            $tag->idd = $tag->text;
+        });
+        var_dump($tags->toArray());
         return;
         $payData = [
             'body'    => 'test',

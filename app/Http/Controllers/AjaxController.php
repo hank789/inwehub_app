@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Area;
+use App\Models\Category;
 use App\Models\Message;
 use App\Models\Notification;
 use App\Models\Question;
@@ -10,6 +11,7 @@ use App\Models\Tag;
 use App\Models\Taggable;
 use App\Models\User;
 use App\Models\UserTag;
+use App\Services\City\CityData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,11 +26,10 @@ class AjaxController extends Controller
     public function loadCities($province_id)
     {
 
-
-        $cities = Area::cities($province_id);
+        $cities = CityData::getCityByProvince($province_id);
         $city_options = '';
-        foreach($cities as $city){
-            $city_options .= '<option value="'.$city->id.'">'.$city->name.'</option>';
+        foreach($cities as $key => $city){
+            $city_options .= '<option value="'.$key.'">'.$city.'</option>';
         }
 
         return response($city_options);
@@ -75,17 +76,47 @@ class AjaxController extends Controller
         if( strlen($word) > 10 ){
             return response()->json($tags);
         }
-        $type = $request->input('type','all');
+        $tag_type = $request->input('type','all');
         if(!$word){
-            $tags = Taggable::hottest($type,10);
+            $tags = Taggable::hottest($tag_type,10);
+        }
+        $category_name = '';
+        switch($tag_type){
+            case 1:
+                //问题分类
+                $category_name = 'question';
+                break;
+            case 2:
+                //拒绝分类
+                $category_name = 'answer_reject';
+                break;
+            case 3:
+                //行业领域
+                $category_name = 'industry';
+                break;
+            case 4:
+                //产品类型
+                $category_name = 'product_type';
+                break;
         }
 
-        $tags = Tag::where('name','like',$word.'%')->select('id',DB::raw('name as text'))->take(10)->get();
-        $tags->map(function($tag){
-            $tag->id = $tag->text;
-        });
+        $query = Tag::where('name','like',$word.'%');
 
-        return response()->json($tags->toArray());
+        if($category_name){
+            $category = Category::where('slug',$category_name)->first();
+            $query->where('category_id',$category->id);
+        }
+
+        $tags = $query->select('id',DB::raw('name as text'))->take(20)->get();
+        $list = [];
+        foreach($tags as $tag){
+            $list[] = [
+                'id' => $tag->text,
+                'text' => $tag->text,
+            ];
+        }
+
+        return response()->json($list);
     }
 
 

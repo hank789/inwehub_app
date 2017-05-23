@@ -61,7 +61,7 @@
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>用户ID</th>
-                                        <th>用户名</th>
+                                        <th>用户姓名</th>
                                         <th>邮箱</th>
                                         <th>手机</th>
                                         <th>身份职业</th>
@@ -79,7 +79,7 @@
                                             <td>{{ $user->email }}</td>
                                             <td>{{ $user->mobile }}</td>
                                             <td>{{ $user->title }}</td>
-                                            <td>{{ Area()->getName($user->province) }} @if($user->city>0 &&  Area()->getName($user->province)!=Area()->getName($user->city)) - {{ Area()->getName($user->city) }} @endif</td>
+                                            <td>{{ get_province_name($user->province) }} - {{ get_city_name($user->province, $user->city) }}</td>
                                             <td>{{ $user->created_at }}</td>
                                             <td>{{ $user->updated_at }}</td>
                                             <td><span class="label @if($user->status===0) label-danger @elseif($user->status===-1) label-default @elseif($user->status===1) label-success @endif">{{ trans_common_status($user->status) }}</span> </td>

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Area;
+use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserTag;
+use App\Services\City\CityData;
 use App\Services\Registrar;
 use Bican\Roles\Models\Role;
 use Illuminate\Http\Request;
@@ -96,11 +99,12 @@ class UserController extends AdminController
     {
         $user = User::find($id);
         $roles = Role::orderby('name','asc')->get();
-        $provinces = Area::provinces();
-        $cities = Area::cities($user->province);
+        $cities = CityData::getCityByProvince($user->province);
+        $hometown_cities = CityData::getCityByProvince($user->hometown_province);
         $data = [
-            'provinces' => $provinces,
+            'provinces' => CityData::getAllProvince(),
             'cities' => $cities,
+            'hometown_cities' => $hometown_cities
         ];
         return view('admin.user.edit')->with(compact('user','roles','data'));
     }
@@ -129,6 +133,7 @@ class UserController extends AdminController
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->mobile = $request->input('mobile');
+        $user->company = $request->input('company');
         $user->title = $request->input('title','');
         $user->gender = $request->input('gender',0);
         $user->province = $request->input('province',0);
@@ -136,26 +141,33 @@ class UserController extends AdminController
         $user->description = $request->input('description');
         $user->status = $request->input('status',0);
         $user->birthday = $request->input('birthday',null);
+        $user->hometown_province = $request->input('hometown_province');
+        $user->hometown_city = $request->input('hometown_city');
+        $user->address_detail = $request->input('address_detail');
+
 
         if($request->hasFile('avatar')){
-            $user_id = $user->id;
+            $user_id = $id;
             $file = $request->file('avatar');
-            $avatarDir = User::getAvatarDir($user_id);
-            $extension = $file->getClientOriginalExtension();
+            $extension = strtolower($file->getClientOriginalExtension());
+            $extArray = array('png', 'gif', 'jpeg', 'jpg');
 
-            File::delete(storage_path('app/'.User::getAvatarPath($user_id,'big')));
-            File::delete(storage_path('app/'.User::getAvatarPath($user_id,'middle')));
-            File::delete(storage_path('app/'.User::getAvatarPath($user_id,'small')));
-
-            Storage::disk('local')->put($avatarDir.'/'.User::getAvatarFileName($user_id,'origin').'.'.$extension,File::get($file));
-            Image::make(storage_path('app/'.User::getAvatarPath($user_id,'origin',$extension)))->resize(128,128)->save(storage_path('app/'.User::getAvatarPath($user_id,'big')));
-            Image::make(storage_path('app/'.User::getAvatarPath($user_id,'origin',$extension)))->resize(64,64)->save(storage_path('app/'.User::getAvatarPath($user_id,'middle')));
-            Image::make(storage_path('app/'.User::getAvatarPath($user_id,'origin',$extension)))->resize(24,24)->save(storage_path('app/'.User::getAvatarPath($user_id,'small')));
+            if(in_array($extension, $extArray)){
+                $request->user()->addMediaFromRequest('user_avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
+            }
         }
 
         $user->save();
         $user->detachAllRoles();
         $user->attachRole($request->input('role_id'));
+
+        if($request->input('industry_tags') !== null){
+            $industry_tags = $request->input('industry_tags');
+            $tags = Tag::whereIn('name',$industry_tags)->get();
+            UserTag::detachByField($user->id,'industries');
+            UserTag::multiIncrement($user->id,$tags,'industries');
+        }
+
         return $this->success(route('admin.user.index'),'用户修改成功');
     }
 
