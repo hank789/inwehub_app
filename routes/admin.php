@@ -34,6 +34,13 @@ Route::post('user/destroy',['as'=>'admin.user.destroy','uses'=>'UserController@d
 Route::post('user/verify',['as'=>'admin.user.verify','uses'=>'UserController@verify']);
 /*用户管理*/
 Route::resource('user', 'UserController',['except' => ['show','destroy'],'as'=>'admin']);
+/*用户经历*/
+Route::get('user/item/info',['as'=>'admin.user.item.info','uses'=>'UserController@itemInfo']);
+/*用户经历修改或新增*/
+Route::post('user/item/store',['as'=>'admin.user.item.store','uses'=>'UserController@storeItemInfo']);
+/*用户经历删除*/
+Route::post('user/item/destroy',['as'=>'admin.user.item.destroy','uses'=>'UserController@destroyItemInfo']);
+
 
 /*认证管理*/
 Route::post('authentication/destroy',['as'=>'admin.authentication.destroy','uses'=>'AuthenticationController@destroy']);

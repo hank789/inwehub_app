@@ -112,7 +112,7 @@ class ProfileController extends Controller
         }
 
         if($request->input('email') !== null){
-            $user->email = $request->input('email');
+            $user->email = strtolower($request->input('email'));
         }
 
         if($request->input('gender') !== null){

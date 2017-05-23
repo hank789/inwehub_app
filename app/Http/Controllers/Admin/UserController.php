@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Area;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserInfo\EduInfo;
+use App\Models\UserInfo\JobInfo;
+use App\Models\UserInfo\ProjectInfo;
+use App\Models\UserInfo\TrainInfo;
 use App\Models\UserTag;
 use App\Services\City\CityData;
 use App\Services\Registrar;
@@ -131,7 +135,7 @@ class UserController extends AdminController
             $user->password = bcrypt($password);
         }
         $user->name = $request->input('name');
-        $user->email = $request->input('email');
+        $user->email = strtolower($request->input('email'));
         $user->mobile = $request->input('mobile');
         $user->company = $request->input('company');
         $user->title = $request->input('title','');
@@ -163,7 +167,7 @@ class UserController extends AdminController
 
         if($request->input('industry_tags') !== null){
             $industry_tags = $request->input('industry_tags');
-            $tags = Tag::whereIn('name',explode(',',$industry_tags))->get();
+            $tags = Tag::whereIn('id',explode(',',$industry_tags))->get();
             UserTag::detachByField($user->id,'industries');
             UserTag::multiIncrement($user->id,$tags,'industries');
         }
@@ -190,4 +194,134 @@ class UserController extends AdminController
         return $this->success(route('admin.user.index'),'用户删除成功');
 
     }
+
+    public function itemInfo(Request $request){
+        $type = $request->input('type');
+        $user_id = $request->input('user_id');
+        $item_id = $request->input('item_id');
+        $object_item = '';
+        $user = User::find($user_id);
+        $title = '';
+        $view = '';
+        switch($type){
+            case 'jobs':
+                $items = $user->jobs()->orderBy('begin_time','desc')->get();
+                $object_item = JobInfo::findOrNew($item_id);
+                $title = '工作经历';
+                $view = 'admin.user.items_job';
+                break;
+            case 'projects':
+                $items = $user->projects()->orderBy('begin_time','desc')->get();
+                $object_item = ProjectInfo::findOrNew($item_id);
+                $title = '项目经历';
+                $view = 'admin.user.items_project';
+                break;
+            case 'edus':
+                $items = $user->edus()->orderBy('begin_time','desc')->get();
+                $object_item = EduInfo::findOrNew($item_id);
+                $title = '教育经历';
+                $view = 'admin.user.items_edu';
+                break;
+            case 'trains':
+                $items = $user->trains()->orderBy('get_time','desc')->get();
+                $object_item = TrainInfo::findOrNew($item_id);
+                $title = '培训经历';
+                $view = 'admin.user.items_train';
+                break;
+        }
+
+        return view($view)->with('items',$items)->with('type',$type)->with('user_id',$user_id)
+            ->with('title',$title)->with('object_item',$object_item);
+    }
+
+    public function storeItemInfo(Request $request)
+    {
+        $type = $request->input('type');
+        $user_id = $request->input('user_id');
+        $user = User::find($user_id);
+        $data = $request->all();
+        $id = $data['id'];
+
+        if ($type == 'trains') {
+            $validateRules = [
+                'get_time'   => 'required|date_format:Y-m',
+            ];
+        }else{
+            $validateRules = [
+                'begin_time'   => 'required|date_format:Y-m',
+                'end_time'   => 'required'
+            ];
+            if($data['begin_time'] > $data['end_time'] && $data['end_time'] != '至今'){
+                return $this->error(route('admin.user.item.info',['item_id'=>$id,'user_id'=>$user->id,'type'=>$type]),'开始日期不能大于结束日期');
+            }
+        }
+
+        $this->validate($request,$validateRules);
+
+        $data['user_id'] = $user->id;
+
+        $industry_tags = $data['industry_tags'];
+        $product_tags = $data['product_tags'];
+
+        unset($data['industry_tags']);
+        unset($data['product_tags']);
+        unset($data['id']);
+
+        switch($type){
+            case 'jobs':
+                $item = JobInfo::updateOrCreate(['id'=>$id],$data);
+                $title = '工作经历';
+                break;
+            case 'projects':
+                $item = ProjectInfo::updateOrCreate(['id'=>$id],$data);
+                $title = '项目经历';
+                break;
+            case 'edus':
+                $item = EduInfo::updateOrCreate(['id'=>$id],$data);
+                $title = '教育经历';
+                break;
+            case 'trains':
+                $item = TrainInfo::updateOrCreate(['id'=>$id],$data);
+                $title = '培训经历';
+                break;
+        }
+        $tags = trim($industry_tags.','.$product_tags,',');
+        /*添加标签*/
+        if($tags){
+            Tag::multiSaveByIds($tags,$item);
+        }
+
+        return $this->success(route('admin.user.item.info',['item_id'=>$id,'user_id'=>$user->id,'type'=>$type]),'操作成功');
+
+    }
+
+    public function destroyItemInfo(Request $request){
+        $type = $request->input('type');
+        $data = $request->all();
+        $ids = $data['ids'];
+
+        switch($type){
+            case 'jobs':
+                JobInfo::whereIn('id',$ids)->delete();
+                $title = '工作经历';
+                break;
+            case 'projects':
+                ProjectInfo::whereIn('id',$ids)->delete();
+                $title = '项目经历';
+                break;
+            case 'edus':
+                EduInfo::whereIn('id',$ids)->delete();
+                $title = '教育经历';
+                break;
+            case 'trains':
+                TrainInfo::whereIn('id',$ids)->delete();
+                $title = '培训经历';
+                break;
+        }
+        return $this->success(route('admin.user.item.info',['item_id'=>$data['id'],'user_id'=>$data['user_id'],'type'=>$type]),'删除成功');
+
+
+    }
+
+
 }

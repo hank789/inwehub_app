@@ -148,8 +148,8 @@
                                 <div class="row">
                                     <div class="col-sm-10">
                                         <select id="select_industry_tags" name="select_industry_tags" class="form-control" multiple="multiple" >
-                                            @foreach( array_column($user->industryTags(),'name') as $tag)
-                                                <option value="{{ $tag }}" selected>{{ $tag }}</option>
+                                            @foreach( $user->industryTags() as $tag)
+                                                <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
                                             @endforeach
                                         </select>
                                         @if ($errors->first('industry_tags'))
@@ -230,7 +230,7 @@
                     data: function (params) {
                         return {
                             word: params.term,
-                            type: 'industry'
+                            type: 3
                         };
                     },
                     processResults: function (data) {

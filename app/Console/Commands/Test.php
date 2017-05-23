@@ -53,12 +53,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $word = 'SA';
-        $tags = Tag::where('name','like',$word.'%')->select('id',DB::raw('name as text'))->take(10)->get();
-        $tags->map(function($tag){
-            $tag->idd = $tag->text;
-        });
-        var_dump($tags->toArray());
+        $user = User::find(1);
+        $s = $user->getAvatarUrl();
+        var_dump($s);
         return;
         $payData = [
             'body'    => 'test',

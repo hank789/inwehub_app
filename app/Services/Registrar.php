@@ -33,7 +33,7 @@ class Registrar {
     {
         $user =  User::create([
             'name' => $data['name'],
-            'email' => $data['email'],
+            'email' => strtolower($data['email']),
             'mobile' => $data['mobile'],
             'gender' => 0,
             'password' => bcrypt($data['password']),

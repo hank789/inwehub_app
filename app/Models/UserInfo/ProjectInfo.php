@@ -14,7 +14,7 @@ class ProjectInfo extends Model
 {
     use BelongsToUserTrait,MorphManyTagsTrait,SoftDeletes;
     protected $table = 'user_project_info';
-    protected $fillable = ['user_id', 'project_name','title','begin_time','end_time','description'];
+    protected $fillable = ['user_id', 'project_name','customer_name','title','begin_time','end_time','description'];
 
     /**
      * 需要被转换成日期的属性。

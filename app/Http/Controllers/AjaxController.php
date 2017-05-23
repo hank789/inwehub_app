@@ -108,15 +108,8 @@ class AjaxController extends Controller
         }
 
         $tags = $query->select('id',DB::raw('name as text'))->take(20)->get();
-        $list = [];
-        foreach($tags as $tag){
-            $list[] = [
-                'id' => $tag->text,
-                'text' => $tag->text,
-            ];
-        }
 
-        return response()->json($list);
+        return response()->json($tags->toArray());
     }
 
 

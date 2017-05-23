@@ -92,6 +92,34 @@ class Tag extends Model
         return $tags;
     }
 
+    //通过tag id添加标签
+    public static function multiSaveByIds($tagIds,$taggable)
+    {
+        $tags = array_unique(explode(",",$tagIds));
+
+        /*删除所有标签关联*/
+        if($tags){
+            $taggable->tags()->detach();
+        }
+
+        foreach($tags as $tag_id){
+
+            if(!trim($tag_id)){
+                continue;
+            }
+
+            $tag = self::find($tag_id);
+
+            if(!$taggable->tags->contains($tag->id))
+            {
+                $taggable->tags()->attach($tag->id);
+            }
+        }
+        return $tags;
+    }
+
+
+
 
     /*搜索*/
     public static function search($word,$size=16)
