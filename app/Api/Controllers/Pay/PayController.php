@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Pay\Order;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Payment\Client\Charge;
 use Payment\Common\PayException;
