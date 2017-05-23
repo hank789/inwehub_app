@@ -14,4 +14,7 @@ class UserDevice extends Model {
     protected $table = 'user_device';
     protected $fillable = ['client_id', 'user_id','device_token','appid','appkey','device_type'];
 
+    const DEVICE_TYPE_IOS = 2;
+    const DEVICE_TYPE_ANDROID = 1;
+
 }

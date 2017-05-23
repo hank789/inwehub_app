@@ -43,7 +43,12 @@ class SystemEventListener implements ShouldQueue
             'payload' => $event->payload
         ];
         foreach($devices as $device){
-            Getui::pushMessageToSingle($device->client_id,$data,$event->template_id);
+            $tmp_id = $event->template_id;
+            if($device->device_type == UserDevice::DEVICE_TYPE_IOS){
+                $tmp_id = 4;
+            }
+            Getui::pushMessageToSingle($device->client_id,$data,$tmp_id);
+
         }
     }
 
