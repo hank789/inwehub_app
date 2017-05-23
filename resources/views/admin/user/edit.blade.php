@@ -26,6 +26,7 @@
                     </div>
                     <form role="form" name="userForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.user.update',['id'=>$user->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
+                        <input type="hidden" id="industry_tags" name="industry_tags" value="" />
 
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
@@ -132,7 +133,7 @@
 
                             <div class="form-group @if ($errors->has('company')) has-error @endif">
                                 <label for="company">当前公司</label>
-                                <input type="text" name="title" class="form-control " placeholder="当前公司" value="{{ old('company',$user->company) }}">
+                                <input type="text" name="company" class="form-control " placeholder="当前公司" value="{{ old('company',$user->company) }}">
                                 @if ($errors->has('company')) <p class="help-block">{{ $errors->first('company') }}</p> @endif
                             </div>
 
@@ -143,10 +144,10 @@
                             </div>
 
                             <div class="form-group @if ($errors->first('industry_tags')) has-error @endif">
-                                <label for="industry_tags" class="control-label">所在行业</label>
+                                <label for="select_industry_tags" class="control-label">所在行业</label>
                                 <div class="row">
                                     <div class="col-sm-10">
-                                        <select id="industry_tags" name="industry_tags" class="form-control" multiple="multiple" >
+                                        <select id="select_industry_tags" name="select_industry_tags" class="form-control" multiple="multiple" >
                                             @foreach( array_column($user->industryTags(),'name') as $tag)
                                                 <option value="{{ $tag }}" selected>{{ $tag }}</option>
                                             @endforeach
@@ -219,7 +220,7 @@
                 $("#hometown_city").load("{{ url('manager/ajax/loadCities') }}/"+province_id);
             });
 
-            $("#industry_tags").select2({
+            $("#select_industry_tags").select2({
                 theme:'bootstrap',
                 placeholder: "所在行业",
                 ajax: {
@@ -241,6 +242,10 @@
                 },
                 minimumInputLength:2,
                 tags:false
+            });
+
+            $("#select_industry_tags").change(function(){
+                $("#industry_tags").val($("#select_industry_tags").val());
             });
 
             set_active_menu('manage_user',"{{ route('admin.user.index') }}");

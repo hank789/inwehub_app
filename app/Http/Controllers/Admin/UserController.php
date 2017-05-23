@@ -153,7 +153,7 @@ class UserController extends AdminController
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
 
             if(in_array($extension, $extArray)){
-                $request->user()->addMediaFromRequest('user_avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
+                $request->user()->addMediaFromRequest('avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
             }
         }
 
@@ -163,7 +163,7 @@ class UserController extends AdminController
 
         if($request->input('industry_tags') !== null){
             $industry_tags = $request->input('industry_tags');
-            $tags = Tag::whereIn('name',$industry_tags)->get();
+            $tags = Tag::whereIn('name',explode(',',$industry_tags))->get();
             UserTag::detachByField($user->id,'industries');
             UserTag::multiIncrement($user->id,$tags,'industries');
         }
