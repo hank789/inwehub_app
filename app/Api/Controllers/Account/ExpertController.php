@@ -3,6 +3,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Expert\Recommend;
 use App\Exceptions\ApiException;
 use App\Models\Authentication;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -74,6 +75,11 @@ class ExpertController extends Controller {
 
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
+
+        if(RateLimiter::instance()->increase('expert:recommend',$user_id,10,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
         $head_img_url_0 = '';
         $head_img_url_1 = '';
 

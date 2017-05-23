@@ -51,8 +51,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $answer = Answer::find(2);
-        Settlement::answerSettlement($answer);
+        $question = Question::find(129);
+        $timeline = $question->formatTimeline();
+        var_dump($timeline);
         return;
         $payData = [
             'body'    => 'test',

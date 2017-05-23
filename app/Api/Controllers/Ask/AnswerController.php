@@ -47,6 +47,10 @@ class AnswerController extends Controller
             }
         }
 
+        if(RateLimiter::instance()->increase('question:answer:create',$loginUser->id,10,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
         $question_id = $request->input('question_id');
         $question = Question::find($question_id);
 
@@ -247,12 +251,16 @@ class AnswerController extends Controller
         if(empty($answer)){
             abort(404);
         }
-        if($answer->question->user->id != $request->user()->id){
+        $loginUser = $request->user();
+        if($answer->question->user->id != $loginUser->id){
             throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        if(RateLimiter::instance()->increase('question:answer:feedback',$loginUser->id,10,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
         Feedback::create([
-            'user_id' => $request->user()->id,
+            'user_id' => $loginUser->id,
             'source_id' => $request->input('answer_id'),
             'source_type' => get_class($answer),
             'star' => $request->input('rate_star'),

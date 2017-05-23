@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Ask;
 
 use App\Events\Frontend\System\Push;
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
@@ -11,6 +12,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Models\XsSearch;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -100,6 +102,10 @@ class QuestionController extends Controller
             if( $questionCount > Setting()->get('question_limit_num')){
                 return $this->showErrorMsg(route('website.index'),'你已超过每小时最大提问数'.Setting()->get('question_limit_num').'，如有疑问请联系管理员!');
             }
+        }
+
+        if(RateLimiter::instance()->increase('question:create',$loginUser->id,10,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
         $request->flash();

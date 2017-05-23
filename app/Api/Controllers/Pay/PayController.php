@@ -25,6 +25,12 @@ class PayController extends Controller {
             'pay_object_type' => 'required|in:ask'
         ];
         $this->validate($request, $validateRules);
+        $loginUser = $request->user();
+
+        if(RateLimiter::instance()->increase('expert:recommend',$loginUser->id,10,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
         $data = $request->all();
         $pay_channel = $data['pay_channel'];
         switch($pay_channel){
@@ -58,6 +64,7 @@ class PayController extends Controller {
         $orderNo = gen_order_number();
         // 订单信息
         $payData = [
+            'user_id' => $loginUser->id,
             'body'    => $body,
             'subject'    => $subject,
             'order_no'    => $orderNo,
