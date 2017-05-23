@@ -122,6 +122,7 @@ class AjaxController extends Controller
 
         $word = $request->input('word','');
 
+        $is_inviter_must_expert = Setting()->get('is_inviter_must_expert',1);
         if(trim($word)){
             $users = User::where('id','<>',$request->user()->id)->where('name','like',"$word%")->take(10)->get();
             $users->map(function($user) use($tagIds,$question) {
@@ -138,7 +139,7 @@ class AjaxController extends Controller
                 $user->avatar = get_user_avatar($user->id);
                 $user->url = route('auth.space.index',['user_id'=>$user->user_id]);
                 $user->isInvited = 0;
-
+                $user->isExpert = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
             });
         }else{
 
@@ -151,6 +152,9 @@ class AjaxController extends Controller
                 if(!$user){
                     continue;
                 }
+                $user->isExpert = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+                if($is_inviter_must_expert && $user->isExpert == 0) continue;
+
                 $user->tag_name = '';
                 $user->tag_answers = 0;
                 $tag = Tag::find($userTag->tag_id);
@@ -161,6 +165,7 @@ class AjaxController extends Controller
                 $user->avatar = get_user_avatar($userTag->user_id);
                 $user->url = route('auth.space.index',['user_id'=>$userTag->user_id]);
                 $user->isInvited = 0;
+
                 $users[] = $user;
             }
         }

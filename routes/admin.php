@@ -43,20 +43,13 @@ Route::post('authentication/changeCategories',['as'=>'admin.authentication.chang
 Route::resource('authentication', 'AuthenticationController',['except' => ['show','destroy'],'as'=>'admin']);
 
 
-/*站点设置*/
-Route::any('setting/website',['as'=>'admin.setting.website','uses'=>'SettingController@website']);
-/*邮箱设置*/
-Route::any('setting/email',['as'=>'admin.setting.email','uses'=>'SettingController@email']);
-/*时间设置*/
-Route::any('setting/time',['as'=>'admin.setting.time','uses'=>'SettingController@time']);
 /*注册设置*/
 Route::any('setting/register',['as'=>'admin.setting.register','uses'=>'SettingController@register']);
-/*防灌水*/
-Route::any('setting/irrigation',['as'=>'admin.setting.irrigation','uses'=>'SettingController@irrigation']);
 /*积分设置*/
 Route::any('setting/credits',['as'=>'admin.setting.credits','uses'=>'SettingController@credits']);
-/*SEO设置*/
-Route::any('setting/seo',['as'=>'admin.setting.seo','uses'=>'SettingController@seo']);
+
+/*问答设置*/
+Route::any('setting/answer',['as'=>'admin.setting.answer','uses'=>'SettingController@answer']);
 
 /*xunsearch整合*/
 Route::any('setting/xunSearch',['as'=>'admin.setting.xunSearch','uses'=>'SettingController@xunSearch']);

@@ -259,4 +259,23 @@ class SettingController extends AdminController
 
     }
 
+    public function answer(Request $request){
+        $validateRules = [
+            'is_inviter_must_expert' => 'required|between:0,1'
+        ];
+        if($request->isMethod('post')){
+            $this->validate($request,$validateRules);
+            $data = $request->except('_token');
+            unset($data['_token']);
+            foreach($data as $name=>$value){
+                Setting()->set($name,$value);
+            }
+            Setting()->clearAll();
+
+            return $this->success(route('admin.setting.answer'),'设置成功');
+        }
+
+        return view('admin.setting.answer');
+    }
+
 }

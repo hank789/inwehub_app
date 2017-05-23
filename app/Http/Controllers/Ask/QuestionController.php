@@ -335,6 +335,16 @@ class QuestionController extends Controller
             return $this->ajaxError(50006,'邀请人设置为不允许被邀请回答');
         }
 
+        //是否设置了邀请者必须为专家
+        if(Setting()->get('is_inviter_must_expert',1) == 1){
+            if(($toUser->authentication && $toUser->authentication->status === 1)){
+
+            } else {
+                //非专家
+                return $this->ajaxError(50006,'系统设置了邀请者必须为专家');
+            }
+        }
+
         //如果问题已经有人确认并应答了,不必再邀请
         if(in_array($question->status,[4,6,7])){
             return $this->ajaxError(50009,'该问题已有专家承诺回答');

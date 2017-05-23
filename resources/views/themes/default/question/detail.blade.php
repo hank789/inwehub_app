@@ -594,6 +594,7 @@
                                     '<img src="'+item.avatar+'" />'+
                                     '<div class="invite-question-user-info">'+
                                     '<a class="invite-question-user-name" target="_blank" href="'+item.url+'">'+item.name+'</a>'+
+                                    (item.isExpert ? '<i class="fa fa-graduation-cap" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="" data-original-title="已通过行家认证"></i>':'') +
                                     '<span class="invite-question-user-desc">'+item.tag_name+' 标签下有 '+item.tag_answers+' 个回答</span>'+
                                     '</div>';
                             if(item.isInvited>0){
