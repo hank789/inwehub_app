@@ -53,8 +53,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $s = $user->getAvatarUrl();
+        $s = CityData::getAll();
         var_dump($s);
         return;
         $payData = [

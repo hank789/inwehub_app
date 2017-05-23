@@ -50,7 +50,7 @@ class ProjectController extends Controller {
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/
         if($tags){
-            Tag::multiSave($tags,$project);
+            Tag::multiSaveByIds($tags,$project);
         }
 
         return self::createJsonData(true,['id'=>$project->id,'type'=>'project','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
@@ -93,7 +93,7 @@ class ProjectController extends Controller {
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/
         if($tags){
-            Tag::multiSave($tags,$project);
+            Tag::multiSaveByIds($tags,$project);
         }
 
         return self::createJsonData(true,['id'=>$id,'type'=>'project']);

@@ -2,6 +2,7 @@
 
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Logic\TagsLogic;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Pay\Order;
@@ -123,14 +124,9 @@ class QuestionController extends Controller
             }
         }
         $this->checkUserInfoPercent($user);
-        $question_c = Category::where('slug','question')->first();
-        $question_c_arr = Category::where('parent_id',$question_c->id)->where('status',1)->get();
-        $tags = [];
-        foreach($question_c_arr as $category){
-            $tags[$category->name] = $category->tags()->pluck('name');
-        }
+        $tags = TagsLogic::loadTags(1,'');
 
-        return self::createJsonData(true,['tags'=>$tags]);
+        return self::createJsonData(true,$tags);
     }
 
 
@@ -158,7 +154,7 @@ class QuestionController extends Controller
         if($tagString){
             //目前只能添加一个标签
             $tags = array_unique(explode(",",$tagString));
-            $tag = Tag::where('name',$tags[0])->first();
+            $tag = Tag::find($tags[0])->first();
             $category_id = $tag->category_id;
         }
         $data = [
@@ -181,7 +177,7 @@ class QuestionController extends Controller
         if($question){
 
             /*添加标签*/
-            Tag::multiSave($tagString,$question);
+            Tag::multiSaveByIds($tagString,$question);
 
             //订单和问题关联
             if($order){
@@ -264,7 +260,7 @@ class QuestionController extends Controller
 
         /*添加标签*/
         $tagString = trim($request->input('tags'));
-        Tag::multiSave($tagString,$answer);
+        Tag::multiSaveByIds($tagString,$answer);
         /*记录动态*/
         $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->content);
         /*修改问题邀请表的回答状态*/
