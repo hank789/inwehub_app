@@ -127,6 +127,9 @@ Route::post('system/device','SystemController@device')->middleware('jwt.auth');
 //检测app版本
 Route::post('system/version','SystemController@appVersion');
 
+//支付参数
+Route::post('pay/config','SystemController@getPayConfig');
+
 
 //消息模块
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
