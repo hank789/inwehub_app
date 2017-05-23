@@ -153,7 +153,7 @@ class UserController extends AdminController
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
 
             if(in_array($extension, $extArray)){
-                $request->user()->addMediaFromRequest('avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
+                $user->addMediaFromRequest('avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
             }
         }
 
