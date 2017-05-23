@@ -372,7 +372,7 @@ class QuestionController extends Controller
         //推送
         event(new Push($toUser,'您有新的回答邀请',$question->title,['payload'=>['object_type'=>'question','object_id'=>$question->id]]));
 
-        return $this->ajaxError(10008,'邀请失败，请稍后再试');
+        return $this->ajaxSuccess('邀请成功');
     }
 
 
