@@ -361,7 +361,7 @@ class QuestionController extends Controller
             return $this->ajaxError(50008,'该用户已被邀请，不能重复邀请');
         }
 
-        $invitation = QuestionInvitation::firstOrCreate(['send_to'=>$toUser->email,'from_user_id'=>$loginUser->id,'question_id'=>$question->id],[
+        $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
             'from_user_id'=> $question->user_id,
             'question_id'=> $question->id,
             'user_id'=> $toUser->id,

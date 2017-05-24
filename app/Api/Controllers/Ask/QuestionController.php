@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Ask;
 
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Answer;
@@ -172,6 +173,28 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
         }
 
+        $to_user_id = $request->input('answer_uid');
+        if($to_user_id) {
+            if ($loginUser->id == $to_user_id) {
+                throw new ApiException(ApiException::ASK_CANNOT_INVITE_SELF);
+            }
+
+            $toUser = User::find(intval($to_user_id));
+            if (!$toUser) {
+                throw new ApiException(ApiException::ASK_INVITE_USER_NOT_FOUND);
+            }
+
+            //是否设置了邀请者必须为专家
+            if (Setting()->get('is_inviter_must_expert', 1) == 1) {
+                if (($toUser->authentication && $toUser->authentication->status === 1)) {
+
+                } else {
+                    //非专家
+                    throw new ApiException(ApiException::ASK_INVITE_USER_MUST_EXPERT);
+                }
+            }
+        }
+
         $question = Question::create($data);
         /*判断问题是否添加成功*/
         if($question){
@@ -203,6 +226,25 @@ class QuestionController extends Controller
             }
 
             $this->counter( 'question_num_'. $question->user_id , 1 , 3600 );
+
+            if($to_user_id){
+                $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
+                    'from_user_id'=> $question->user_id,
+                    'question_id'=> $question->id,
+                    'user_id'=> $toUser->id,
+                    'send_to'=> $toUser->email
+                ]);
+
+                //已邀请
+                $question->invitedAnswer();
+                //记录动态
+                $this->doing($question->user_id,'question_answer_confirming',get_class($question),$question->id,$question->title,'');
+                //记录任务
+                $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
+
+                //推送
+                event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'question','object_id'=>$question->id]));
+            }
 
             $res_data = [
                 'id'=>$question->id,

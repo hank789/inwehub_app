@@ -50,6 +50,9 @@ class ApiException extends Exception
     const ASK_QUESTION_NOT_EXIST = 3002;
     const ASK_QUESTION_ALREADY_CONFIRMED = 3003;
     const ASK_PAYMENT_EXCEPTION = 3004;
+    const ASK_CANNOT_INVITE_SELF = 3005;
+    const ASK_INVITE_USER_NOT_FOUND = 3006;
+    const ASK_INVITE_USER_MUST_EXPERT = 3007;
 
     //支付模块响应码
     const PAYMENT_UNKNOWN_CHANNEL = 4004;
@@ -93,6 +96,9 @@ class ApiException extends Exception
         self::ASK_QUESTION_NOT_EXIST => '问题不存在',
         self::ASK_QUESTION_ALREADY_CONFIRMED => '该问题已有专家抢答成功',
         self::ASK_PAYMENT_EXCEPTION => '支付异常',
+        self::ASK_CANNOT_INVITE_SELF => '不能邀请自己',
+        self::ASK_INVITE_USER_NOT_FOUND => '邀请者不存在',
+        self::ASK_INVITE_USER_MUST_EXPERT => '邀请者必须为专家',
 
         //支付模块
         self::PAYMENT_UNKNOWN_CHANNEL => '暂不支持该支付渠道',
