@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Exceptions\ApiException;
+use App\Logic\TagsLogic;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
 use App\Models\Tag;
@@ -49,9 +50,9 @@ class ProfileController extends Controller
         $info['description'] = $user->description;
         $info['status'] = $user->status;
         $info['address_detail'] = $user->address_detail;
-        $info['industry_tags'] = array_column($user->industryTags(),'name');
+        $info['industry_tags'] = TagsLogic::formatTags($user->industryTags());
         if(empty($info['industry_tags'])) $info['industry_tags'] = '';
-        $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
+        $info['tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->get());
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['account_info_complete_percent'] = $user->getInfoCompletePercent();
         $info['total_money'] = 0;
@@ -65,8 +66,8 @@ class ProfileController extends Controller
             $job->industry_tags = '';
             $job->product_tags = '';
 
-            $job->industry_tags = $job->tags()->where('category_id',9)->pluck('name')->toArray();
-            $job->product_tags = $job->tags()->where('category_id',10)->pluck('name')->toArray();
+            $job->industry_tags = TagsLogic::formatTags($job->tags()->where('category_id',9)->get());
+            $job->product_tags = TagsLogic::formatTags($job->tags()->where('category_id',10)->get());
         }
 
         $projects = $user->projects()->orderBy('begin_time','desc')->get();
@@ -75,8 +76,8 @@ class ProfileController extends Controller
             $project->industry_tags = '';
             $project->product_tags = '';
 
-            $project->industry_tags = $project->tags()->where('category_id',9)->pluck('name')->toArray();
-            $project->product_tags = $project->tags()->where('category_id',10)->pluck('name')->toArray();
+            $project->industry_tags = TagsLogic::formatTags($project->tags()->where('category_id',9)->get());
+            $project->product_tags = TagsLogic::formatTags($project->tags()->where('category_id',10)->get());
         }
 
         $data = [

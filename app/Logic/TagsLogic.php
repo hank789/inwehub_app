@@ -71,4 +71,16 @@ class TagsLogic {
         $data['level'] = $level;
         return $data;
     }
+
+    public static function formatTags($tags){
+        $data = [];
+        foreach($tags as $tag){
+            $data[] = [
+                'value' => $tag->id,
+                'text'  => $tag->name
+            ];
+        }
+        return $data;
+    }
+
 }
