@@ -36,17 +36,18 @@ class Push
      * @param $user
      * @param $title; 通知标题
      * @param $body; 通知内容
-     * @param array $content; 给前端的参数,定义事件类型和事件id
-     * @param array $payload;
+     * @param array $payload; 给前端的参数,定义事件类型和事件id
+     * @param array $content;
      * @param int $template_id;模板id,默认就可以
      */
-    public function __construct($user, $title, $body, $content=[], $payload=[], $template_id = 1)
+    public function __construct($user, $title, $body, $payload=[], $content=[], $template_id = 1)
     {
         $this->user = $user;
         $this->content = $content;
+        $this->content['payload'] = $payload;
         $this->title = $title;
-        $this->content = $content;
         $this->body = $body;
+        $payload['title'] = $title;
         $this->payload = $payload;
         $this->template_id = $template_id;
     }
