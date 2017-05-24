@@ -23,6 +23,7 @@ class Settlement extends Model {
     const SETTLEMENT_STATUS_PROCESS = 1;
     const SETTLEMENT_STATUS_SUCCESS = 2;
     const SETTLEMENT_STATUS_FAIL = 3;
+    const SETTLEMENT_STATUS_SUSPEND = 4;
 
 
     public static function answerSettlement(Answer $answer){

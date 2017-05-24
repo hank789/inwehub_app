@@ -75,6 +75,9 @@ Route::group(['namespace'=>'Finance'],function(){
 
     //结算管理
     Route::get('settlement/index',['as'=>'admin.finance.settlement.index','uses'=>'SettlementController@index']);
+    Route::post('settlement/destroy',['as'=>'admin.finance.settlement.destroy','uses'=>'SettlementController@destroy']);
+    Route::post('settlement/verify',['as'=>'admin.finance.settlement.verify','uses'=>'SettlementController@verify']);
+    Route::post('settlement/doitnow',['as'=>'admin.finance.settlement.doitnow','uses'=>'SettlementController@doitnow']);
 
 });
 

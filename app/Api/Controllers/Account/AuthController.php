@@ -49,7 +49,7 @@ class AuthController extends Controller
                     throw new ApiException(ApiException::USER_PHONE_EXIST);
                 }
                 if(Setting()->get('registration_code_open',1)){
-                    $rcode = UserRegistrationCode::where('mobile',$mobile)->where('code',$request->input('registration_code',''))->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
+                    $rcode = UserRegistrationCode::where('code',$request->input('registration_code',''))->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
                     if(empty($rcode)){
                         throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
                     }
@@ -194,7 +194,7 @@ class AuthController extends Controller
             throw new ApiException(ApiException::USER_PHONE_EXIST);
         }
         if(Setting()->get('registration_code_open',1)){
-            $rcode = UserRegistrationCode::where('mobile',$mobile)->where('code',$request->input('registration_code'))->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
+            $rcode = UserRegistrationCode::where('code',$request->input('registration_code'))->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
             if(empty($rcode)){
                 throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
             }

@@ -8,7 +8,7 @@
     <section class="content-header">
         <h1>
             结算列表
-            <small>显示当前系统的所有结算</small>
+            <small>显示当前系统的所有结算,暂停和恢复只对未处理的生效</small>
         </h1>
     </section>
     <section class="content">
@@ -18,7 +18,14 @@
                     <div class="box-header">
                         <div class="row">
 
-                            <div class="col-xs-9">
+                            <div class="col-xs-2">
+                                <div class="btn-group">
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="立即结算" onclick="confirm_submit('item_form','{{  route('admin.finance.settlement.doitnow') }}','确认立即结算选中项？')"><i class="fa fa-plus"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="恢复" onclick="confirm_submit('item_form','{{  route('admin.finance.settlement.verify') }}','确认恢复选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="暂停选中项" onclick="confirm_submit('item_form','{{  route('admin.finance.settlement.destroy') }}','确认暂停选中项？')"><i class="fa fa-lock"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-xs-10">
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.finance.settlement.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -69,7 +76,7 @@
                                             <td>{{ $settlement->getSettlementMoney() }}</td>
                                             <td>{{ $settlement->getSettlementFee() }}</td>
                                             <td>{{ $settlement->settlement_date }}</td>
-                                            <td><span class="label @if($settlement->status===3) label-danger @elseif($settlement->status<=1) label-default @elseif($settlement->status===2) label-success @endif">{{ trans_withdraw_status($settlement->status) }}</span> </td>
+                                            <td><span class="label @if($settlement->status>=3) label-danger @elseif($settlement->status<=1) label-default @elseif($settlement->status===2) label-success @endif">{{ trans_withdraw_status($settlement->status) }}</span> </td>
                                         </tr>
                                     @endforeach
                                 </table>

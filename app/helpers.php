@@ -161,7 +161,8 @@ if (! function_exists('trans_withdraw_status')) {
             0 => '待处理',
             1 => '处理中',
             2 => '处理成功',
-            3 => '处理失败'
+            3 => '处理失败',
+            4 => '暂停处理'
         ];
 
         if($status==='all'){

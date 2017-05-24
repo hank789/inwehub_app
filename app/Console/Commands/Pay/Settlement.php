@@ -33,7 +33,7 @@ class Settlement extends Command {
     public function handle()
     {
         $date = date('Y-m-d 00:00:00');
-        $pendings = SettlementModel::where('status',0)->where('settlement_date',$date)->get();
+        $pendings = SettlementModel::where('status',SettlementModel::SETTLEMENT_STATUS_PENDING)->where('settlement_date',$date)->get();
         $ids = $pendings->pluck('id');
         SettlementModel::whereIn('id',$ids)->update([
             'status' => SettlementModel::SETTLEMENT_STATUS_PROCESS

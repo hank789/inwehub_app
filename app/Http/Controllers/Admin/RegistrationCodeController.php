@@ -113,7 +113,7 @@ class RegistrationCodeController extends AdminController
      */
     public function destroy(Request $request)
     {
-        UserRegistrationCode::destroy($request->input('ids'));
+        UserRegistrationCode::destroy($request->input('id'));
         return $this->success(route('admin.operate.rgcode.index'),'删除成功');
     }
 

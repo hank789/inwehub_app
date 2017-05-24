@@ -40,9 +40,33 @@ class SettlementController extends AdminController {
         return view('admin.finance.settlement.index')->with('settlements',$settlements)->with('filter',$filter);
     }
 
-    public function suspend(Request $request)
+    /**
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request)
     {
+        $ids = $request->input('id');
 
+        Settlement::where('status',Settlement::SETTLEMENT_STATUS_PENDING)->whereIn('id',$ids)->update(['status'=>Settlement::SETTLEMENT_STATUS_SUSPEND]);
+        return $this->success(route('admin.finance.settlement.index'),'暂停成功');
+    }
+
+    /*审核*/
+    public function verify(Request $request)
+    {
+        $ids = $request->input('id');
+        Settlement::where('status',Settlement::SETTLEMENT_STATUS_SUSPEND)->whereIn('id',$ids)->update(['status'=>Settlement::SETTLEMENT_STATUS_PENDING]);
+
+        return $this->success(route('admin.finance.settlement.index'),'恢复成功');
+    }
+
+    public function doitnow(Request $request){
+        $ids = $request->input('id');
+        Settlement::where('status',Settlement::SETTLEMENT_STATUS_PENDING)->whereIn('id',$ids)->update(['settlement_date'=>date('Y-m-d 00:00:00')]);
+        Artisan::queue('pay:settlement');
+        return $this->success(route('admin.finance.settlement.index'),'执行成功,稍等片刻');
     }
 
 }
