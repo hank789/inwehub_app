@@ -44,10 +44,10 @@ class Push
     {
         $this->user = $user;
         $this->content = $content;
+        $payload['title'] = $title;
         $this->content['payload'] = $payload;
         $this->title = $title;
         $this->body = $body;
-        $payload['title'] = $title;
         $this->payload = $payload;
         $this->template_id = $template_id;
     }
