@@ -67,6 +67,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('account/project/update','ProjectController@update');
     Route::post('account/project/destroy','ProjectController@destroy');
 
+
+    /*关注问题、人、标签*/
+    Route::post('follow/{source_type}',['uses'=>'FollowController@store'])->where(['source_type'=>'(question|tag|user)']);
+
 });
 
 
