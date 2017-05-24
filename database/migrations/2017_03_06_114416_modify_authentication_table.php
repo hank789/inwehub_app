@@ -13,8 +13,8 @@ class ModifyAuthenticationTable extends Migration
     public function up()
     {
         Schema::table('authentications', function (Blueprint $table) {
-            $table->smallInteger('province')->nullable()->after('real_name')->index();//居住省份
-            $table->smallInteger('city')->nullable()->after('province')->index();     //居住城市
+            $table->string('province',16)->nullable()->after('real_name')->index();//居住省份
+            $table->string('city',16)->nullable()->after('province')->index();     //居住城市
             $table->string('title')->nullable()->after('province');                   //头衔
             $table->text('description')->nullable()->after('title');                  //个人简介
             $table->tinyInteger('gender')->nullable()->after('description');          //性别: 1-男，2-女，0-保密

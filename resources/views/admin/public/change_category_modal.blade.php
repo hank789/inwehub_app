@@ -13,7 +13,7 @@
                     <div class="form-group">
                         <label for="to_user_name" class="control-label">将选中项目移动到:</label>
                         <select name="category_id" id="category_id" class="form-control">
-                            @include('admin.category.option',['type'=>$type,'select_id'=>0])
+                            @include('admin.category.option',['type'=>$type,'select_id'=>0,'root'=>false])
                             <option value="0">--不归类--</option>
                         </select>
                     </div>

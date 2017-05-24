@@ -34,7 +34,7 @@
                                 <label>选择父级分类</label>
                                 <select name="parent_id" class="form-control">
                                     <option value="0">选择父级分类</option>
-                                    @include('admin.category.option',['type'=>'tags','select_id'=>0])
+                                    @include('admin.category.option',['type'=>'tags','select_id'=>0, 'root'=>true])
                                 </select>
                             </div>
 

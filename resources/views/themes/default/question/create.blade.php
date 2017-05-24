@@ -43,7 +43,7 @@
                     <div class="form-group">
                         <select name="category_id" id="category_id" class="form-control">
                             <option value="0">请选择分类</option>
-                            @include('admin.category.option',['type'=>'questions','select_id'=>old('category_id',0)])
+                            @include('admin.category.option',['type'=>'questions','select_id'=>old('category_id',0),'root'=>false])
                         </select>
                     </div>
                 </div>

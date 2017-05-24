@@ -45,7 +45,7 @@
                                         <div class="col-xs-2">
                                             <select class="form-control" name="category_id">
                                                 <option value="-1">--分类--</option>
-                                                @include('admin.category.option',['type'=>'questions','select_id'=>$filter['category_id']])
+                                                @include('admin.category.option',['type'=>'questions','select_id'=>$filter['category_id'],'root'=>false])
                                             </select>
                                         </div>
                                         <div class="col-xs-1">

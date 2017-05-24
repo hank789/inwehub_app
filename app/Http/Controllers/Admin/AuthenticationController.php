@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Area;
 use App\Models\Authentication;
+use App\Models\Tag;
+use App\Models\UserTag;
+use App\Services\City\CityData;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -17,9 +20,6 @@ class AuthenticationController extends AdminController
         'title' => 'required|max:128',
         'description' => 'sometimes|max:9999',
         'id_card' => 'required|max:64|unique:authentications',
-        'id_card_image' => 'sometimes|image|max:2048',
-        'skill' => 'required|max:128',
-        'skill_image' => 'sometimes|image|max:2048',
     ];
 
     /**
@@ -52,8 +52,9 @@ class AuthenticationController extends AdminController
     }
 
     public function create(){
-        $provinces = Area::provinces();
-        $cities = Area::cities('');
+        $provinces = CityData::getAllProvince();
+        $cities = [];
+
         $data = [
             'provinces' => $provinces,
             'cities' => $cities,
@@ -83,6 +84,12 @@ class AuthenticationController extends AdminController
                 $data['skill_image'] = 'authentications-' . $fileName;
             }
         }
+        if($data['industry_tags'] !== null ){
+            $industry_tags = $data['industry_tags'];
+            $tags = Tag::whereIn('id',explode(',',$industry_tags))->get();
+            UserTag::detachByField($data['user_id'],'industries');
+            UserTag::multiIncrement($data['user_id'],$tags,'industries');
+        }
 
         Authentication::create($data);
         return $this->success(route('admin.authentication.index'),'行家认证信息添加成功');
@@ -97,8 +104,8 @@ class AuthenticationController extends AdminController
     public function edit($id)
     {
         $authentication = Authentication::find($id);
-        $provinces = Area::provinces();
-        $cities = Area::cities($authentication->province);
+        $provinces = CityData::getAllProvince();
+        $cities = CityData::getCityByProvince($authentication->province);
         $data = [
             'provinces' => $provinces,
             'cities' => $cities,

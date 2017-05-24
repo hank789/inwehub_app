@@ -35,7 +35,7 @@
                 <div class="col-xs-4">
                     <select name="category_id" id="category_id" class="form-control">
                         <option value="0">请选择分类</option>
-                        @include('admin.category.option',['type'=>'questions','select_id'=>$question->category_id])
+                        @include('admin.category.option',['type'=>'questions','select_id'=>$question->category_id,'root'=>false])
                     </select>
                 </div>
                 <div class="col-xs-8">

@@ -42,7 +42,7 @@
                                 <label>分类</label>
                                 <select name="category_id" class="form-control">
                                     <option value="0">选择分类</option>
-                                    @include('admin.category.option',['type'=>'tags','select_id'=>$tag->category_id])
+                                    @include('admin.category.option',['type'=>'tags','select_id'=>$tag->category_id,'root'=>false])
                                 </select>
                             </div>
 

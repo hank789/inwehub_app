@@ -134,12 +134,16 @@ class Category extends Model
     }
 
 
-    public static function loadFromCache($type='all'){
+    public static function loadFromCache($type='all', $root = false){
 
         /*$globalCategories = Cache::rememberForever('global_all_categories',function() {
             return self::where('status','>',0)->orderBy('sort','asc')->orderBy('created_at','asc')->get();
         });*/
-        $globalCategories = self::where('status','>',0)->orderBy('sort','asc')->orderBy('created_at','asc')->get();
+        $query = self::where('status','>',0);
+        if($root){
+            $query->where('parent_id',0);
+        }
+        $globalCategories = $query->orderBy('sort','asc')->orderBy('created_at','asc')->get();
 
         /*返回所有分类*/
         if($type == 'all'){

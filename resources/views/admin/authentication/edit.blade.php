@@ -1,5 +1,11 @@
 @extends('admin/public/layout')
 @section('title')编辑专家认证信息@endsection
+
+@section('css')
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
+@endsection
+
 @section('content')
     <section class="content-header">
         <h1>编辑专家认证信息</h1>
@@ -11,6 +17,9 @@
                     <form role="form" name="editForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.authentication.update',['id'=>$authentication->user_id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" id="industry_tags" name="industry_tags" value="" />
+
+
                         <div class="box-body">
 
                             <div class="form-group @if($errors->has('real_name')) has-error @endif">
@@ -34,16 +43,16 @@
                                     <div class="col-sm-5">
                                         <select class="form-control" name="province" id="province">
                                             <option>请选择省份</option>
-                                            @foreach($data['provinces'] as $province)
-                                                <option value="{{ $province->id }}"  @if($authentication->province == $province->id) selected @endif>{{ $province->name }}</option>
+                                            @foreach($data['provinces'] as $key=>$province)
+                                                <option value="{{ $key }}"  @if($authentication->province == $key) selected @endif>{{ $province }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-sm-5">
                                         <select class="form-control" name="city" id="city">
                                             <option>请选择城市</option>
-                                            @foreach($data['cities'] as $city)
-                                                <option value="{{ $city->id }}" @if($authentication->city == $city->id) selected @endif >{{ $city->name }}</option>
+                                            @foreach($data['cities'] as $key=>$city)
+                                                <option value="{{ $key }}" @if($authentication->city == $key) selected @endif >{{ $city }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -70,38 +79,21 @@
                                 @if($errors->has('id_card')) <p class="help-block">{{ $errors->first('id_card') }}</p> @endif
                             </div>
 
-                            <div class="form-group">
-                                <label>身份证正面图片</label>
-                                <input type="file" name="id_card_image" />
-                                @if($authentication->id_card_image)
-                                    <div style="margin-top: 10px;">
-                                        <img class="img-responsive" width="400" src="{{ route('website.image.show',['image_name'=>$authentication->id_card_image]) }}" />
+
+                            <div class="form-group @if ($errors->first('industry_tags')) has-error @endif">
+                                <label for="select_industry_tags" class="control-label">所在行业</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select id="select_industry_tags" name="select_industry_tags" class="form-control" multiple="multiple" >
+                                            @foreach( $authentication->user->industryTags() as $tag)
+                                                <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if ($errors->first('industry_tags'))
+                                            <span class="help-block">{{ $errors->first('industry_tags') }}</span>
+                                        @endif
                                     </div>
-                                @endif
-                            </div>
-
-                            <div class="form-group">
-                                <label>所属分类</label>
-                                <select name="category_id" class="form-control">
-                                    <option value="0">选择分类</option>
-                                    @include('admin.category.option',['type'=>'experts','select_id'=>$authentication->category_id])
-                                </select>
-                            </div>
-
-                            <div class="form-group @if($errors->has('skill')) has-error @endif">
-                                <label>认证领域</label>
-                                <input type="text" name="skill" class="form-control " placeholder="认证领域" value="{{ old('skill',$authentication->skill) }}">
-                                @if($errors->has('skill')) <p class="help-block">{{ $errors->first('skill') }}</p> @endif
-                            </div>
-
-                            <div class="form-group">
-                                <label>专业性证明文件</label>
-                                <input type="file" name="skill_image" />
-                                @if($authentication->skill_image)
-                                    <div style="margin-top: 10px;">
-                                        <img class="img-responsive" width="400" src="{{ route('website.image.show',['image_name'=>$authentication->skill_image]) }}" />
-                                    </div>
-                                @endif
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -136,13 +128,41 @@
     </section>
 @endsection
 @section('script')
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         $(function(){
+            set_active_menu('manage_user',"{{ route('admin.authentication.index') }}");
             /*加载省份城市*/
             $("#province").change(function(){
-                set_active_menu('manage_user',"{{ route('admin.authentication.index') }}");
                 var province_id = $(this).val();
                 $("#city").load("{{ url('manager/ajax/loadCities') }}/"+province_id);
+            });
+            $("#select_industry_tags").select2({
+                theme:'bootstrap',
+                placeholder: "所在行业",
+                ajax: {
+                    url: '/manager/ajax/loadTags',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            word: params.term,
+                            type: 3
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength:2,
+                tags:false
+            });
+
+            $("#select_industry_tags").change(function(){
+                $("#industry_tags").val($("#select_industry_tags").val());
             });
         });
     </script>

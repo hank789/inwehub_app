@@ -16,7 +16,6 @@
                             <div class="col-xs-3">
                                 <div class="btn-group">
                                     <a href="{{ route('admin.authentication.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新专家"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.authentication.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
@@ -38,7 +37,7 @@
                                         <div class="col-xs-3">
                                             <select class="form-control" name="category_id">
                                                 <option value="-1">--分类--</option>
-                                                @include('admin.category.option',['type'=>'experts','select_id'=>$filter['category_id']])
+                                                @include('admin.category.option',['type'=>'experts','select_id'=>$filter['category_id'],'root'=>false])
                                             </select>
                                         </div>
                                         <div class="col-xs-2">
@@ -57,7 +56,6 @@
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>UID</th>
-                                        <th>所属分类</th>
                                         <th>真实姓名</th>
                                         <th>城市</th>
                                         <th>职称</th>
@@ -71,12 +69,11 @@
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $authentication->user_id }}"/></td>
                                             <td>{{ $authentication->user_id }}</td>
-                                            <td>@if($authentication->category) {{ $authentication->category->name }} @else 无 @endif</td>
                                             <td>{{ $authentication->real_name }}</td>
-                                            <td>{{ Area()->getName($authentication->province) }} @if($authentication->city>0 &&  Area()->getName($authentication->province)!=Area()->getName($authentication->city)) - {{ Area()->getName($authentication->city) }} @endif</td>
+                                            <td>{{ get_province_name($authentication->province) }} - {{ get_city_name($authentication->province,$authentication->city) }}</td>
                                             <td>{{ $authentication->title }}</td>
                                             <td>{{ $authentication->id_card }}</td>
-                                            <td>{{ $authentication->skill }}</td>
+                                            <td>{{ implode(',',array_column($authentication->user->industryTags(),'name')) }}</td>
                                             <td>{{ timestamp_format($authentication->updated_at) }}</td>
                                             <td><span class="label @if($authentication->status===0) label-warning  @elseif($authentication->status===1) label-success @else label-default  @endif">{{ trans_authentication_status($authentication->status) }}</span> </td>
                                             <td>
@@ -94,7 +91,6 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="btn-group">
-                                    <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.authentication.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
