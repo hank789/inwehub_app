@@ -16,7 +16,7 @@ class CreateRegistrationCodeTable extends Migration
         Schema::create('user_registration_code', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('recommend_uid')->default('0')->unsigned()->index();
-            $table->string('mobile')->nullable()->comment('邀请手机号');
+            $table->string('keyword')->nullable()->comment('邀请对象关键词');
             $table->string('code',32)->unique()->commnet('注册码');
             $table->tinyInteger('status')->default(0)->comment('状态:0未生效,1已生效,2已使用');
             $table->timestamps();

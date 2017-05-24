@@ -53,8 +53,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $payload = ['object_type'=>'question','object_id'=>123];
-        event(new Push(User::find(2),'有人向您发起了回答邀请',
+        $payload = ['object_type'=>'question','object_id'=>147];
+        event(new Push(User::find(3),'有人向您发起了回答邀请',
             'content:问题内容,有人向您发起了回答邀请,有人向您发起了回答邀请,有人向您发起了回答邀请',$payload));
         return;
         $payData = [

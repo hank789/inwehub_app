@@ -13,7 +13,7 @@ class RegistrationCodeController extends AdminController
 {
     /*权限验证规则*/
     protected $validateRules = [
-        'mobile' => 'required|cn_phone|unique:user_registration_code',
+        'keyword' => 'required',
         'code' => 'required|max:6|unique:user_registration_code',
         'status' => 'required|in:0,1,2',
     ];
@@ -94,11 +94,10 @@ class RegistrationCodeController extends AdminController
         if(!$code){
             return $this->error(route('admin.rgcode.index'),'邀请码不存在，请核实');
         }
-        $this->validateRules['mobile'] = 'required|cn_phone|unique:user_registration_code,mobile,'.$code->id;
         $this->validateRules['code'] = 'required|max:6|unique:user_registration_code,code,'.$code->id;
 
         $this->validate($request,$this->validateRules);
-        $code->mobile = $request->input('mobile');
+        $code->keyword = $request->input('keyword');
         $code->code = $request->input('code');
         $code->status = $request->input('status');
 

@@ -16,10 +16,10 @@
                     <form id="article_form" method="POST" role="form" enctype="multipart/form-data" action="{{ route('admin.operate.rgcode.update',['id'=>$code->id]) }}">
                         <input type="hidden" id="editor_token" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
-                            <div class="form-group @if($errors->has('mobile')) has-error @endif ">
-                                <label for="mobile">手机号:</label>
-                                <input id="mobile" type="text" name="mobile"  class="form-control input-lg" placeholder="邀请注册者手机号" value="{{ old('mobile',$code->mobile) }}" />
-                                @if($errors->has('mobile')) <p class="help-block">{{ $errors->first('mobile') }}</p> @endif
+                            <div class="form-group @if($errors->has('keyword')) has-error @endif ">
+                                <label for="keyword">邀请对象:</label>
+                                <input id="keyword" type="text" name="keyword"  class="form-control input-lg" placeholder="邀请对象" value="{{ old('keyword',$code->keyword) }}" />
+                                @if($errors->has('keyword')) <p class="help-block">{{ $errors->first('keyword') }}</p> @endif
                             </div>
 
                             <div class="form-group @if($errors->has('code')) has-error @endif">

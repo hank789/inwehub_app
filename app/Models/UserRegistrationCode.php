@@ -19,7 +19,7 @@ class UserRegistrationCode extends Model {
      *
      * @var array
      */
-    protected $fillable = ['id','recommend_uid', 'mobile','code','status'];
+    protected $fillable = ['id','recommend_uid', 'keyword','code','status'];
 
     /**
      * The attributes excluded from the model's JSON form.

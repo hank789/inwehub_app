@@ -40,4 +40,9 @@ class SettlementController extends AdminController {
         return view('admin.finance.settlement.index')->with('settlements',$settlements)->with('filter',$filter);
     }
 
+    public function suspend(Request $request)
+    {
+
+    }
+
 }
