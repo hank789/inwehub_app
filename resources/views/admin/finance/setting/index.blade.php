@@ -77,6 +77,7 @@
                                     <td>付款结算周期(天)</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('pay_settlement_cycle')) has-error @endif "><input type="text" class="form-control" name="pay_settlement_cycle" value="{{ old('pay_settlement_cycle',Setting()->get('pay_settlement_cycle',5)) }}" /></div>
+                                        @if($errors->has('pay_settlement_cycle')) <p class="help-block">{{ $errors->first('pay_settlement_cycle') }}</p> @endif
                                     </td>
                                 </tr>
 
@@ -84,6 +85,7 @@
                                     <td>一般用户结算手续费(0~1)</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('pay_answer_normal_fee_rate')) has-error @endif "><input type="text" class="form-control" name="pay_answer_normal_fee_rate" value="{{ old('pay_answer_normal_fee_rate',Setting()->get('pay_answer_normal_fee_rate',0.2)) }}" /></div>
+                                        @if($errors->has('pay_answer_normal_fee_rate')) <p class="help-block">{{ $errors->first('pay_answer_normal_fee_rate') }}</p> @endif
                                     </td>
                                 </tr>
 
@@ -91,6 +93,8 @@
                                     <td>用户每天最大提现次数</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_day_limit')) has-error @endif "><input type="text" class="form-control" name="withdraw_day_limit" value="{{ old('withdraw_day_limit',Setting()->get('withdraw_day_limit')) }}" /></div>
+                                        @if($errors->has('withdraw_day_limit')) <p class="help-block">{{ $errors->first('withdraw_day_limit') }}</p> @endif
+
                                     </td>
                                 </tr>
 
@@ -98,6 +102,8 @@
                                     <td>单次最低提现金额(元)</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_per_min_money')) has-error @endif "><input type="text" class="form-control" name="withdraw_per_min_money" value="{{ old('withdraw_per_min_money',Setting()->get('withdraw_per_min_money')) }}" /></div>
+                                        @if($errors->has('withdraw_per_min_money')) <p class="help-block">{{ $errors->first('withdraw_per_min_money') }}</p> @endif
+
                                     </td>
                                 </tr>
 
@@ -105,6 +111,8 @@
                                     <td>单次最高提现金额(元)</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_per_max_money')) has-error @endif "><input type="text" class="form-control" name="withdraw_per_max_money" value="{{ old('withdraw_per_max_money',Setting()->get('withdraw_per_max_money')) }}" /></div>
+                                        @if($errors->has('withdraw_per_max_money')) <p class="help-block">{{ $errors->first('withdraw_per_max_money') }}</p> @endif
+
                                     </td>
                                 </tr>
 
