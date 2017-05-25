@@ -18,8 +18,7 @@ class AuthenticationController extends AdminController
     protected  $validateRules = [
         'real_name' => 'required|max:64',
         'title' => 'required|max:128',
-        'description' => 'sometimes|max:9999',
-        'id_card' => 'required|max:64|unique:authentications',
+        'description' => 'sometimes|max:9999'
     ];
 
     /**

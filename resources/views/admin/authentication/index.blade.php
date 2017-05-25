@@ -59,7 +59,6 @@
                                         <th>真实姓名</th>
                                         <th>城市</th>
                                         <th>职称</th>
-                                        <th>身份证号码</th>
                                         <th>认证领域</th>
                                         <th>更新时间</th>
                                         <th>状态</th>
@@ -72,7 +71,6 @@
                                             <td>{{ $authentication->real_name }}</td>
                                             <td>{{ get_province_name($authentication->province) }} - {{ get_city_name($authentication->province,$authentication->city) }}</td>
                                             <td>{{ $authentication->title }}</td>
-                                            <td>{{ $authentication->id_card }}</td>
                                             <td>{{ implode(',',array_column($authentication->user->industryTags(),'name')) }}</td>
                                             <td>{{ timestamp_format($authentication->updated_at) }}</td>
                                             <td><span class="label @if($authentication->status===0) label-warning  @elseif($authentication->status===1) label-success @else label-default  @endif">{{ trans_authentication_status($authentication->status) }}</span> </td>

@@ -77,13 +77,6 @@
                                 @if ($errors->has('description')) <p class="help-block">{{ $errors->first('description') }}</p> @endif
                             </div>
 
-
-                            <div class="form-group @if($errors->has('id_card')) has-error @endif">
-                                <label>身份证号码</label>
-                                <input type="text" name="id_card" class="form-control " placeholder="身份证号码" value="{{ old('id_card','') }}">
-                                @if($errors->has('id_card')) <p class="help-block">{{ $errors->first('id_card') }}</p> @endif
-                            </div>
-
                             <div class="form-group @if ($errors->first('industry_tags')) has-error @endif">
                                 <label for="select_industry_tags" class="control-label">所在行业</label>
                                 <div class="row">
