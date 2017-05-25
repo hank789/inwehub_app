@@ -85,7 +85,6 @@
                 lang: 'zh-CN',
                 height: 300,
                 placeholder:'完善用户注册协议',
-                toolbar: [ {!! config('intervapp.summernote.blog') !!} ],
                 callbacks: {
                     onChange:function (contents, $editable) {
                         var code = $(this).summernote("code");

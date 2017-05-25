@@ -46,7 +46,6 @@
                 lang: 'zh-CN',
                 height: 600,
                 placeholder:'关于我们内容',
-                toolbar: [ {!! config('intervapp.summernote.blog') !!} ],
                 callbacks: {
                     onChange:function (contents, $editable) {
                         var code = $(this).summernote("code");
