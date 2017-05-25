@@ -170,6 +170,11 @@ class Question extends Model
                     $title = '平台已经帮您找到合适的专家,等待确认';
                     $is_find_expert = true;
                     break;
+                case 'question_invite_answer_confirming':
+                    if($is_find_expert) continue;
+                    $title = '等待专家确认';
+                    $is_find_expert = true;
+                    break;
                 case 'question_answer_confirmed':
                     $title = $doing->user->name.'为您回答问题';
                     break;

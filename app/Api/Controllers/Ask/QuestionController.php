@@ -210,10 +210,13 @@ class QuestionController extends Controller
             //记录动态
             $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
 
-            $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
             $waiting_second = rand(1,15);
-            $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
-            $doing_obj->save();
+
+            if(!$to_user_id){
+                $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
+                $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
+                $doing_obj->save();
+            }
 
             /*用户提问数+1*/
             $loginUser->userData()->increment('questions');
@@ -238,7 +241,7 @@ class QuestionController extends Controller
                 //已邀请
                 $question->invitedAnswer();
                 //记录动态
-                $this->doing($question->user_id,'question_answer_confirming',get_class($question),$question->id,$question->title,'');
+                $this->doing($question->user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'');
                 //记录任务
                 $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
