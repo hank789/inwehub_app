@@ -58,7 +58,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="register_editor">用户注册协议</label>
+                                <label for="register_editor">用户注册协议</label><span class="text-muted">(<a target="_blank" href="{{ route('website.service.register') }}">点击预览</a>)</span>
                                 <div id="register_editor">{!! old('register_license',Setting()->get('register_license')) !!}</div>
                             </div>
 

@@ -10,6 +10,8 @@ Route::group(['namespace'=>'Web'], function() {
 
     Route::get('/',['as'=>'website.index','uses'=>'IndexController@index']);
 
+    Route::get('/service',['as'=>'website.service.register','uses'=>'ServiceController@register']);
+
 });
 
 //支付异步通知

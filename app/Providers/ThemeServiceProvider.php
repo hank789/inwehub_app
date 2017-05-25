@@ -19,6 +19,9 @@ class ThemeServiceProvider extends ServiceProvider
             base_path()."/resources/views/themes/$theme",
             base_path().'/resources/views/themes/default',
         ]);
+        $view->addNamespace('h5',[
+            base_path().'/resources/views/themes/h5'
+        ]);
     }
 
     /**
