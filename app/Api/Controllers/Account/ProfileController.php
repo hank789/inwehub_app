@@ -95,14 +95,14 @@ class ProfileController extends Controller
     public function update(Request $request){
         $validateRules = [
             'name' => 'max:128',
-            'gender'    => 'max:128|in:0,1,2',
+            'gender'    => 'nullable|in:0,1,2',
             'company'   => 'max:128',
             'province' => 'max:128',
             'city'     => 'max:128',
             'hometown_province' => 'max:128',
             'hometown_city'     => 'max:128',
             'address_detail'  => 'max:255',
-            'email'            => 'max:128|email',
+            'email'            => 'nullable|email',
             'birthday'         => 'max:128',
             'title' => 'max:255'
         ];
