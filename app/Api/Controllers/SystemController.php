@@ -54,6 +54,13 @@ class SystemController extends Controller {
     public function appVersion(){
         $last = AppVersion::where('status',1)->orderBy('app_version','desc')->first();
 
+        $ios_force_update_url = 'https://www.pgyer.com/Zoy3';
+        $android_force_update_url = 'https://www.pgyer.com/hfkG';
+
+        if(config('app.env') == 'production'){
+            $ios_force_update_url = 'https://www.pgyer.com/Zoy3';//正式环境换成苹果商店的地址
+            $android_force_update_url = 'https://www.pgyer.com/hfkG';//正式环境换成android商店的地址
+        }
         $app_version = $last->app_version??'1.0.0';
         $is_force = $last->is_force??0;
         $update_msg = $last->update_msg??'1、大额提现t+1到账。\n2、变现进度做了优化。\n3、修复了一些bug。';
@@ -62,7 +69,9 @@ class SystemController extends Controller {
             'app_version'           => $app_version,
             'is_force'              => $is_force,
             'package_url'           => $package_url,
-            'update_msg'            => $update_msg
+            'update_msg'            => $update_msg,
+            'ios_force_update_url'  => $ios_force_update_url,
+            'android_force_update_url' => $android_force_update_url
         ]);
     }
 
