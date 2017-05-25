@@ -10,7 +10,8 @@ Route::group(['namespace'=>'Web'], function() {
 
     Route::get('/',['as'=>'website.index','uses'=>'IndexController@index']);
 
-    Route::get('/service',['as'=>'website.service.register','uses'=>'ServiceController@register']);
+    Route::get('/service/register',['as'=>'website.service.register','uses'=>'ServiceController@register']);
+    Route::get('/service/about',['as'=>'website.service.about','uses'=>'ServiceController@about']);
 
 });
 

@@ -58,8 +58,10 @@ Route::any('setting/credits',['as'=>'admin.setting.credits','uses'=>'SettingCont
 /*问答设置*/
 Route::any('setting/answer',['as'=>'admin.setting.answer','uses'=>'SettingController@answer']);
 
-/*xunsearch整合*/
-Route::any('setting/xunSearch',['as'=>'admin.setting.xunSearch','uses'=>'SettingController@xunSearch']);
+/*关于我们设置*/
+Route::any('setting/aboutus',['as'=>'admin.setting.aboutus','uses'=>'SettingController@aboutus']);
+
+
 /*oauth2.0*/
 Route::any('setting/oauth',['as'=>'admin.setting.oauth','uses'=>'SettingController@oauth']);
 

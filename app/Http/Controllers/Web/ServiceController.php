@@ -13,4 +13,9 @@ class ServiceController extends Controller
     {
         return view('h5::service');
     }
+
+    public function about(){
+        return view('h5::about');
+    }
+
 }

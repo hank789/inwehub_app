@@ -83,7 +83,8 @@ class SystemController extends Controller {
 
     public function getH5Url(){
         $data = [
-            'register_service_url' => route('website.service.register')
+            'register_service_url' => route('website.service.register'),
+            'about_us_url'         => route('website.service.about'),
         ];
 
         return self::createJsonData(true,$data);
