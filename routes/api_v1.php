@@ -134,6 +134,9 @@ Route::post('system/version','SystemController@appVersion');
 //支付参数
 Route::post('pay/config','SystemController@getPayConfig');
 
+//获取h5地址
+Route::post('system/getH5Url','SystemController@getH5Url');
+
 
 //消息模块
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
