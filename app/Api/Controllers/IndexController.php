@@ -15,12 +15,14 @@ class IndexController extends Controller {
             $recommend_qa = [
                 [
                     "user_name"=> "隔壁老王",//提问者名字
+                    "type"=> "1",//提问
                     "user_avatar_url"=> "http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/media/11/user_origin_10.jpg",//头像地址
                     "description"=> "老郭的花生卖多少钱?成本价多少?毛利率多少?赚钱么?我可以加盟吗?加盟费多少钱?",//问题内容
                     "price"=> "188"
                 ],
                 [
                     "user_name"=> "隔壁老王",//提问者名字
+                    "type"=> "2",//回答
                     "user_avatar_url"=> "http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg",//头像地址
                     "description"=> "老郭的花生卖多少钱?成本价多少?毛利率多少?赚钱么?我可以加盟吗?加盟费多少钱?",//问题内容
                     "price"=> "188"
@@ -29,10 +31,10 @@ class IndexController extends Controller {
         }
 
         $data = [
-            'expert_number' => Setting()->get('operate_expert_number',127),//专家数量
-            'average_answer_minute' => Setting()->get('operate_average_answer_minute',30),//平均应答分钟
-            'industry_number' => Setting()->get('operate_industry_number',67),//行业数目
-            'header_image_url' => Setting()->get('operate_header_image_url','http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/default/WechatIMG1.jpeg'),//资深专家推荐图片
+            'recommend_expert_name' => Setting()->get('recommend_expert_name','郭小红'),//专家姓名
+            'recommend_expert_description' => Setting()->get('recommend_expert_description','SAP咨询行业15年从业经历，熟悉离散制造行业，专注pp等模块，是一位非常自身的超级顾问'),//专家介绍
+            'recommend_expert_uid' => Setting()->get('recommend_expert_uid',67),//专家id
+            'recommend_expert_avatar_url' => Setting()->get('recommend_expert_avatar_url','http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/default/WechatIMG1.jpeg'),//资深专家头像
             'recommend_qa' => $recommend_qa
         ];
 

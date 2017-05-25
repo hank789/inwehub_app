@@ -14,10 +14,10 @@ class OperateController extends AdminController {
      */
     public function homeData(Request $request){
         $validateRules = [
-            'operate_expert_number' => 'required|integer',
-            'operate_average_answer_minute' => 'required|integer',
-            'operate_industry_number' => 'required|integer',
-            'operate_header_image_url' => 'required'
+            'recommend_expert_name' => 'required',
+            'recommend_expert_description' => 'required',
+            'recommend_expert_uid' => 'required|integer',
+            'recommend_expert_avatar_url' => 'required'
         ];
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);

@@ -52,7 +52,7 @@ class FollowController extends Controller
             }else{
                 $source->decrement('followers');
             }
-            return self::createJsonData(true,[],ApiException::SUCCESS,'取消关注成功');
+            return self::createJsonData(true,['tip'=>'取消关注成功','type'=>'unfollow']);
         }
 
         $data = [
@@ -80,7 +80,7 @@ class FollowController extends Controller
             }
         }
 
-        return self::createJsonData(true,[],ApiException::SUCCESS,'关注成功');
+        return self::createJsonData(true,['tip'=>'关注成功','type'=>'follow']);
 
 
     }

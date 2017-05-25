@@ -25,30 +25,30 @@
 
                                 <tbody>
                                 <tr>
-                                    <td>行业专家数量</td>
+                                    <td>推荐专家姓名</td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('operate_expert_number')) has-error @endif "><input type="text" class="form-control" name="operate_expert_number" value="{{ old('operate_expert_number',Setting()->get('operate_expert_number')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('recommend_expert_name')) has-error @endif "><input type="text" class="form-control" name="recommend_expert_name" value="{{ old('recommend_expert_name',Setting()->get('recommend_expert_name')) }}" /></div>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td>平均应答分钟</td>
+                                    <td>推荐专家描述</td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('operate_average_answer_minute')) has-error @endif "><input type="text" class="form-control" name="operate_average_answer_minute" value="{{ old('operate_average_answer_minute',Setting()->get('operate_average_answer_minute')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('recommend_expert_description')) has-error @endif "><input type="text" class="form-control" name="recommend_expert_description" value="{{ old('recommend_expert_description',Setting()->get('recommend_expert_description')) }}" /></div>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td>行业数量</td>
+                                    <td>推荐专家系统用户id</td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('operate_industry_number')) has-error @endif "><input type="text" class="form-control" name="operate_industry_number" value="{{ old('operate_industry_number',Setting()->get('operate_industry_number')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('recommend_expert_uid')) has-error @endif "><input type="text" class="form-control" name="recommend_expert_uid" value="{{ old('recommend_expert_uid',Setting()->get('recommend_expert_uid')) }}" /></div>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td>首页推荐图片</td>
+                                    <td>推荐专家头像地址</td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('operate_header_image_url')) has-error @endif "><input type="text" class="form-control" name="operate_header_image_url" value="{{ old('operate_header_image_url',Setting()->get('operate_header_image_url')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('recommend_expert_avatar_url')) has-error @endif "><input type="text" class="form-control" name="recommend_expert_avatar_url" value="{{ old('recommend_expert_avatar_url',Setting()->get('recommend_expert_avatar_url')) }}" /></div>
                                     </td>
                                 </tr>
 
