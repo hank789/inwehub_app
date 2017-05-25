@@ -461,7 +461,7 @@ class DatabaseSeeder extends Seeder
         $registrar = new \App\Services\Registrar();
         $admin = $registrar->create([
             'name' => 'intervapp',
-            'email' => 'hank.wang@intervapp.com',
+            'email' => 'hank.wang@inwehub.com',
             'mobile' => '15050368286',
             'password' => 'qwer1234',
             'status' => 1,
@@ -471,7 +471,7 @@ class DatabaseSeeder extends Seeder
 
         $admin2 = $registrar->create([
             'name' => 'laoguo',
-            'email' => 'hongwei.guo@intervapp.com',
+            'email' => 'hongwei.guo@inwehub.com',
             'mobile' => '15801776680',
             'password' => 'qwer1234',
             'status' => 1,
@@ -481,7 +481,7 @@ class DatabaseSeeder extends Seeder
 
         $admin3 = $registrar->create([
             'name' => 'cicely',
-            'email' => 'cicely.cheng@intervapp.com',
+            'email' => 'cicely.cheng@inwehub.com',
             'mobile' => '13601874269',
             'password' => 'qwer1234',
             'status' => 1,
