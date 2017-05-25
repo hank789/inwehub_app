@@ -221,10 +221,6 @@ trait BaseController {
 
     }
 
-
-
-
-
     /**
      * 业务层计数器
      * @param $key 计数器key
@@ -245,6 +241,21 @@ trait BaseController {
         Cache::put($key,$count,$expiration);
 
         return $count;
-
     }
+
+    protected function getUserInfoCache($uid){
+        $cache_key = 'user_info:'.$uid;
+        return Cache::get($cache_key);
+    }
+
+    protected function delUserInfoCache($uid){
+        $cache_key = 'user_info:'.$uid;
+        return Cache::forget($cache_key);
+    }
+
+    protected function setUserInfoCache($uid,array $info){
+        $cache_key = 'user_info:'.$uid;
+        return Cache::forever($cache_key,$info);
+    }
+
 }

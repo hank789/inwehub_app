@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -27,6 +28,11 @@ class ProfileController extends Controller
          * @var User
          */
         $user = $request->user();
+        $cache = $this->getUserInfoCache($user->id);
+        if($cache){
+            return self::createJsonData(true,$cache);
+        }
+
         $info = [];
         $info['id'] = $user->id;
         $info['name'] = $user->name;
@@ -87,6 +93,8 @@ class ProfileController extends Controller
             'edus'   => $user->edus()->orderBy('begin_time','desc')->get(),
             'trains'  => $user->trains()->orderBy('get_time','desc')->get()
         ];
+
+        $this->setUserInfoCache($user->id,$data);
 
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
@@ -163,6 +171,7 @@ class ProfileController extends Controller
             UserTag::detachByField($user->id,'industries');
             UserTag::multiIncrement($user->id,$tags,'industries');
         }
+        $this->delUserInfoCache($user->id);
 
         return self::createJsonData(true,['account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
@@ -189,6 +198,7 @@ class ProfileController extends Controller
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
             }
+            $this->delUserInfoCache($user_id);
             return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$request->user()->getInfoCompletePercent()]);
         }
         return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
