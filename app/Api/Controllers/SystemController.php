@@ -81,10 +81,17 @@ class SystemController extends Controller {
         return self::createJsonData(true,get_pay_config());
     }
 
-    public function getH5Url(){
+    public function serviceRegister(){
         $data = [
-            'register_service_url' => route('website.service.register'),
-            'about_us_url'         => route('website.service.about'),
+            'html' => Setting()->get('register_license','')
+        ];
+
+        return self::createJsonData(true,$data);
+    }
+
+    public function serviceAbout(){
+        $data = [
+            'html' => Setting()->get('about_us','')
         ];
 
         return self::createJsonData(true,$data);

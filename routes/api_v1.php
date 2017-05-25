@@ -134,8 +134,10 @@ Route::post('system/version','SystemController@appVersion');
 //支付参数
 Route::post('pay/config','SystemController@getPayConfig');
 
-//获取h5地址
-Route::post('system/getH5Url','SystemController@getH5Url');
+//获取服务条款
+Route::post('system/service_register','SystemController@serviceRegister');
+//获取关于我们
+Route::post('system/service_about','SystemController@serviceAbout');
 
 
 //消息模块
