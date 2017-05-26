@@ -449,7 +449,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     //获取信息完整度百分比
-    public function getInfoCompletePercent(){
+    public function getInfoCompletePercent($return_unfilled_filed = false){
         $user = $this->toArray();
         $info = [];
         $info['name'] = [5=>$user['name']];
