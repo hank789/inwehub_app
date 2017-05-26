@@ -104,8 +104,8 @@ class AuthController extends Controller
             //登陆事件通知
             event(new UserLoggedIn($user));
             $message = 'ok';
-            if($this->credit($user->id,'login',Setting()->get('coins_login'),Setting()->get('credits_login'))){
-                $message = '登陆成功! '.get_credit_message(Setting()->get('credits_login'),Setting()->get('coins_login'));
+            if($this->credit($user->id,'login')){
+                $message = '登陆成功! ';
             }
             $deviceCode = $request->input('device_code');
             // 登录记录
@@ -229,14 +229,12 @@ class AuthController extends Controller
             $rcode->save();
         }
         $message = '注册成功!';
-        if($this->credit($user->id,'register',Setting()->get('coins_register'),Setting()->get('credits_register'))){
-            $message .= get_credit_message(Setting()->get('credits_register'),Setting()->get('coins_register'));
-        }
+        $this->credit($user->id,'register');
         //注册事件通知
         event(new UserRegistered($user));
 
         $token = $JWTAuth->fromUser($user);
-        return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,'ok');
+        return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);
     }
 
 

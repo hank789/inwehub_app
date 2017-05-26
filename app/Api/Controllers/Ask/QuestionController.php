@@ -222,7 +222,7 @@ class QuestionController extends Controller
             /*用户提问数+1*/
             $loginUser->userData()->increment('questions');
             UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'questions');
-            $this->credit($request->user()->id,'ask',Setting()->get('coins_ask'),Setting()->get('credits_ask'),$question->id,$question->title);
+            $this->credit($request->user()->id,'ask',$question->id,$question->title);
             if($question->status == 1 ){
                 $message = '发起提问成功! '.get_credit_message(Setting()->get('credits_ask'),Setting()->get('coins_ask'));
             }else{

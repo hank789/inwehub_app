@@ -214,16 +214,20 @@ class ProfileController extends Controller
         if($request->hasFile('user_avatar')){
             $user_id = $request->user()->id;
             $file = $request->file('user_avatar');
-            $avatarDir = User::getAvatarDir($user_id);
             $extension = strtolower($file->getClientOriginalExtension());
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
 
             if(in_array($extension, $extArray)){
                 $request->user()->addMediaFromRequest('user_avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
+                $upload_count = Cache::increment('user_avatar_upload:'.$user_id);
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
             }
             UserCache::delUserInfoCache($user_id);
+            if($upload_count == 1){
+                //只有首次上传头像才加积分
+                $this->credit($user_id,'upload_avatar');
+            }
             return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$request->user()->getInfoCompletePercent()]);
         }
         return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');

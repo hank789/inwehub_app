@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Frontend\System\Credit;
 use App\Models\Area;
 use App\Models\Authentication;
 use App\Models\Tag;
@@ -90,7 +91,11 @@ class AuthenticationController extends AdminController
             UserTag::multiIncrement($data['user_id'],$tags,'industries');
         }
 
-        Authentication::create($data);
+        $object = Authentication::create($data);
+        if($object && $data['status'] == 1){
+            $action = 'expert_valid';
+            event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$object->id,'专家认证'));
+        }
         return $this->success(route('admin.authentication.index'),'行家认证信息添加成功');
     }
 
@@ -150,7 +155,15 @@ class AuthenticationController extends AdminController
             }
         }
 
+        $old_status = $authentication->status;
+        $new_status = $data['status'];
         $authentication->update($data);
+
+        if($old_status != 1 && $new_status == 1){
+            $action = 'expert_valid';
+            event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$id,'专家认证'));
+        }
+
         return $this->success(route('admin.authentication.index'),'行家认证信息修改成功');
 
 

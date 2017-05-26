@@ -23,6 +23,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
 use Getui;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Payment\Client\Charge;
@@ -55,8 +56,8 @@ class Test extends Command
     public function handle()
     {
         $user = User::find(1);
-        $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
-        var_dump($jobs->count());
+        $upload_count = $user->userData->answers;
+        var_dump($upload_count);
         return;
         $payData = [
             'body'    => 'test',

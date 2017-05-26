@@ -134,7 +134,7 @@ class AnswerController extends Controller
                 event(new Push($question->user,'您的提问专家已回答,请前往点评',$question->title,['object_type'=>'question','object_id'=>$question->id]));
 
                 /*回答后通知关注问题*/
-                if(intval($request->input('followed'))){
+                if(true){
                     $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->count();
                     if($attention===0){
                         $data = [
@@ -154,9 +154,13 @@ class AnswerController extends Controller
                 $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
                 $message = '回答成功!';
                 /*记录积分*/
-                if($this->credit($request->user()->id,'question_answered',$question->price ?? Setting()->get('coins_answer'),Setting()->get('credits_answer'),$question->id,$question->title)){
-                    $message = '回答成功! '.get_credit_message(Setting()->get('credits_answer'),Setting()->get('coins_answer'));
+                $this->credit($request->user()->id,'answer',$answer->id,$answer->content);
+                //首次回答额外积分
+                if($loginUser->userData->answers == 1)
+                {
+                    $this->credit($request->user()->id,'first_answer',$answer->id,$answer->content);
                 }
+
                 //进入结算中心
                 Settlement::answerSettlement($answer);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],ApiException::SUCCESS,$message);

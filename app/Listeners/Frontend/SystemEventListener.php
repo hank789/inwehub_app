@@ -1,10 +1,15 @@
 <?php
 
 namespace App\Listeners\Frontend;
+use App\Models\Credit as CreditModel;
+use App\Events\Frontend\System\Credit;
 use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\Push;
+use App\Models\UserData;
 use App\Models\UserDevice;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\DB;
 use Getui;
 
 /**
@@ -53,6 +58,46 @@ class SystemEventListener implements ShouldQueue
     }
 
     /**
+     * 用户积分
+     * @param Credit $event
+     */
+    public function credit($event){
+        try{
+            $action = $event->action;
+            $user_id = $event->user_id;
+            $coins = $event->coins;
+            $credits = $event->credits;
+            $source_id = $event->source_id;
+            $source_subject = $event->source_subject;
+            /*用户登陆只添加一次积分*/
+            if($action == 'login' && CreditModel::where('user_id','=',$user_id)->where('action','=',$action)->where('created_at','>',Carbon::today())->count()>0){
+                return false;
+            }
+            if($coins ==0 && $credits == 0) return false;
+            DB::beginTransaction();
+            /*记录详情数据*/
+            CreditModel::create([
+                'user_id' => $user_id,
+                'action' => $action,
+                'source_id' => $source_id,
+                'source_subject' => $source_subject,
+                'coins' => $coins,
+                'credits' => $credits,
+                'created_at' => Carbon::now()
+            ]);
+
+            /*修改用户账户信息*/
+            UserData::find($user_id)->increment('coins',$coins);
+            UserData::find($user_id)->increment('credits',$credits);
+            DB::commit();
+            return true;
+        }catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
      * Register the listeners for the subscriber.
      *
      * @param \Illuminate\Events\Dispatcher $events
@@ -66,6 +111,11 @@ class SystemEventListener implements ShouldQueue
         $events->listen(
             Push::class,
             'App\Listeners\Frontend\SystemEventListener@push'
+        );
+
+        $events->listen(
+            Credit::class,
+            'App\Listeners\Frontend\SystemEventListener@credit'
         );
     }
 }
