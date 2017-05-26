@@ -80,7 +80,7 @@ class ProfileController extends Controller
         }
         $info['questions'] = $user->userData->questions;
         $info['answers'] = $user->userData->answers;
-        $info['tasks'] = $user->tasks->count();
+        $info['tasks'] = $user->tasks->where('status',0)->count();
         $info['projects'] = 0;
         $info['user_level'] = $user->getUserLevel();
         $info['user_credits'] = $user->userData->credits;
