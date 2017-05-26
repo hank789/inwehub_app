@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Account;
 
+use App\Cache\UserCache;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Pay\MoneyLog;
@@ -28,7 +29,7 @@ class ProfileController extends Controller
          * @var User
          */
         $user = $request->user();
-        $cache = $this->getUserInfoCache($user->id);
+        $cache = UserCache::getUserInfoCache($user->id);
         if($cache){
             return self::createJsonData(true,$cache);
         }
@@ -94,7 +95,7 @@ class ProfileController extends Controller
             'trains'  => $user->trains()->orderBy('get_time','desc')->get()
         ];
 
-        $this->setUserInfoCache($user->id,$data);
+        UserCache::setUserInfoCache($user->id,$data);
 
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
@@ -171,7 +172,7 @@ class ProfileController extends Controller
             UserTag::detachByField($user->id,'industries');
             UserTag::multiIncrement($user->id,$tags,'industries');
         }
-        $this->delUserInfoCache($user->id);
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
@@ -198,7 +199,7 @@ class ProfileController extends Controller
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
             }
-            $this->delUserInfoCache($user_id);
+            UserCache::delUserInfoCache($user_id);
             return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$request->user()->getInfoCompletePercent()]);
         }
         return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');

@@ -243,19 +243,4 @@ trait BaseController {
         return $count;
     }
 
-    protected function getUserInfoCache($uid){
-        $cache_key = 'user_info:'.$uid;
-        return Cache::get($cache_key);
-    }
-
-    protected function delUserInfoCache($uid){
-        $cache_key = 'user_info:'.$uid;
-        return Cache::forget($cache_key);
-    }
-
-    protected function setUserInfoCache($uid,array $info){
-        $cache_key = 'user_info:'.$uid;
-        return Cache::forever($cache_key,$info);
-    }
-
 }

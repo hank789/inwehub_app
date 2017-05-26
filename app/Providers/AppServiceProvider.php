@@ -4,9 +4,19 @@ namespace App\Providers;
 use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Question;
+use App\Models\User;
+use App\Models\UserInfo\EduInfo;
+use App\Models\UserInfo\JobInfo;
+use App\Models\UserInfo\ProjectInfo;
+use App\Models\UserInfo\TrainInfo;
 use App\Observers\AnswerObserver;
 use App\Observers\AuthenticationObserver;
 use App\Observers\QuestionObserver;
+use App\Observers\UserEduObserver;
+use App\Observers\UserJobObserver;
+use App\Observers\UserObserver;
+use App\Observers\UserProjectObserver;
+use App\Observers\UserTrainObserver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
@@ -33,6 +43,11 @@ class AppServiceProvider extends ServiceProvider
         Question::observe(QuestionObserver::class);
         Answer::observe(AnswerObserver::class);
         Authentication::observe(AuthenticationObserver::class);
+        User::observe(UserObserver::class);
+        JobInfo::observe(UserJobObserver::class);
+        EduInfo::observe(UserEduObserver::class);
+        ProjectInfo::observe(UserProjectObserver::class);
+        TrainInfo::observe(UserTrainObserver::class);
     }
 
     /**

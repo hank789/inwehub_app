@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Account;
 use App\Api\Controllers\Controller;
+use App\Cache\UserCache;
 use App\Exceptions\ApiException;
 use App\Models\UserInfo\EduInfo;
 use Illuminate\Http\Request;
@@ -36,6 +37,7 @@ class EduController extends Controller {
         $data['user_id'] = $user->id;
 
         $edu = EduInfo::create($data);
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$edu->id,'type'=>'edu','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
@@ -64,7 +66,8 @@ class EduController extends Controller {
             }
         }
 
-        EduInfo::where('id',$id)->update($update);
+        $edu->update($update);
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'edu']);
     }
@@ -73,7 +76,12 @@ class EduController extends Controller {
     public function destroy(Request $request){
         $id = $request->input('id');
         $user = $request->user();
-        EduInfo::where('id',$id)->where('user_id',$user->id)->delete();
+        $edu = EduInfo::findOrFail($id);
+        if($edu->user_id != $user->id){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $edu->delete();
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'edu','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Cache\UserCache;
 use App\Events\Frontend\Expert\Recommend;
 use App\Events\Frontend\System\Push;
 use App\Models\Answer;
@@ -53,9 +54,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $payload = ['object_type'=>'question','object_id'=>147];
-        event(new Push(User::find(3),'有人向您发起了回答邀请',
-            'content:问题内容,有人向您发起了回答邀请,有人向您发起了回答邀请,有人向您发起了回答邀请',$payload));
+        $s = UserCache::getUserInfoCache(1);
+        var_dump($s);
         return;
         $payData = [
             'body'    => 'test',

@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Account;
 use App\Api\Controllers\Controller;
+use App\Cache\UserCache;
 use App\Exceptions\ApiException;
 use App\Models\Tag;
 use App\Models\UserInfo\JobInfo;
@@ -50,6 +51,7 @@ class JobController extends Controller {
         if($tags){
             Tag::multiSaveByIds($tags,$job);
         }
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$job->id,'type'=>'job','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
@@ -85,7 +87,7 @@ class JobController extends Controller {
             }
         }
 
-        JobInfo::where('id',$id)->update($update);
+        $job->update($update);
 
 
         $tags = trim($industry_tags.','.$product_tags,',');
@@ -94,6 +96,8 @@ class JobController extends Controller {
             Tag::multiSaveByIds($tags,$job);
         }
 
+        UserCache::delUserInfoCache($user->id);
+
         return self::createJsonData(true,['id'=>$id,'type'=>'job']);
     }
 
@@ -101,7 +105,12 @@ class JobController extends Controller {
     public function destroy(Request $request){
         $id = $request->input('id');
         $user = $request->user();
-        JobInfo::where('id',$id)->where('user_id',$user->id)->delete();
+        $job = JobInfo::findOrFail($id);
+        if($job->user_id != $user->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $job->delete();
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'job','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }

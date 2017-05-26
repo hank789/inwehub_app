@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Cache\UserCache;
 use App\Models\Area;
 use App\Models\Tag;
 use App\Models\User;
@@ -290,6 +291,7 @@ class UserController extends AdminController
         if($tags){
             Tag::multiSaveByIds($tags,$item);
         }
+        UserCache::delUserInfoCache($user->id);
 
         return $this->success(route('admin.user.item.info',['item_id'=>$id,'user_id'=>$user->id,'type'=>$type]),'操作成功');
 
@@ -318,6 +320,8 @@ class UserController extends AdminController
                 $title = '培训经历';
                 break;
         }
+        UserCache::delUserInfoCache($data['user_id']);
+
         return $this->success(route('admin.user.item.info',['item_id'=>$data['id'],'user_id'=>$data['user_id'],'type'=>$type]),'删除成功');
 
 

@@ -1,5 +1,7 @@
 <?php namespace App\Api\Controllers\Account;
 use App\Api\Controllers\Controller;
+use App\Cache\UserCache;
+use App\Exceptions\ApiException;
 use App\Models\UserInfo\TrainInfo;
 use Illuminate\Http\Request;
 
@@ -29,6 +31,7 @@ class TrainController extends Controller {
         $data['user_id'] = $user->id;
 
         $train = TrainInfo::create($data);
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$train->id,'type'=>'train','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
@@ -47,8 +50,13 @@ class TrainController extends Controller {
                 $update[$field] = $data[$field];
             }
         }
+        $train = TrainInfo::findOrFail($id);
+        if($train->user_id != $user->id){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $train->update($update);
 
-        TrainInfo::where('id',$id)->where('user_id',$user->id)->update($update);
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'train']);
     }
@@ -57,7 +65,12 @@ class TrainController extends Controller {
     public function destroy(Request $request){
         $id = $request->input('id');
         $user = $request->user();
-        TrainInfo::where('id',$id)->where('user_id',$user->id)->delete();
+        $train = TrainInfo::findOrFail($id);
+        if($train->user_id != $user->id){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $train->delete();
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'train','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }

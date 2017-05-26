@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Account;
 use App\Api\Controllers\Controller;
+use App\Cache\UserCache;
 use App\Exceptions\ApiException;
 use App\Models\Tag;
 use App\Models\UserInfo\ProjectInfo;
@@ -52,6 +53,7 @@ class ProjectController extends Controller {
         if($tags){
             Tag::multiSaveByIds($tags,$project);
         }
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$project->id,'type'=>'project','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
@@ -88,13 +90,14 @@ class ProjectController extends Controller {
             }
         }
 
-        ProjectInfo::where('id',$id)->update($update);
+        $project->update($update);
 
         $tags = trim($industry_tags.','.$product_tags,',');
         /*添加标签*/
         if($tags){
             Tag::multiSaveByIds($tags,$project);
         }
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'project']);
     }
@@ -103,7 +106,13 @@ class ProjectController extends Controller {
     public function destroy(Request $request){
         $id = $request->input('id');
         $user = $request->user();
-        ProjectInfo::where('id',$id)->where('user_id',$user->id)->delete();
+        $project = ProjectInfo::findOrFail($id);
+
+        if($project->user_id != $user->id){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $project->delete();
+        UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'project','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
