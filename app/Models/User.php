@@ -449,7 +449,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     //获取信息完整度百分比
-    public function getInfoCompletePercent($return_unfilled_filed = false){
+    public function getInfoCompletePercent($include_unfilled_fields = false){
         $user = $this->toArray();
         $info = [];
         $info['name'] = [5=>$user['name']];
@@ -478,8 +478,58 @@ class User extends Model implements AuthenticatableContract,
         $data['trains'] = $train;
 
         $fields = cal_account_info_finish($data);
-
+        if ($include_unfilled_fields) {
+            return $fields;
+        }
         return $fields['score'];
+    }
+
+    public static function getFieldHumanName($field){
+        $name = '';
+        switch($field){
+            case 'name':
+                $name = '姓名';
+                break;
+            case 'email':
+                $name = '邮箱';
+                break;
+            case 'mobile':
+                $name = '手机号';
+                break;
+            case 'gender':
+                $name = '性别';
+                break;
+            case 'birthday':
+                $name = '生日';
+                break;
+            case 'city':
+            case 'province':
+                $name = '工作城市';
+                break;
+            case 'hometown_city':
+            case 'hometown_province':
+                $name = '家乡城市';
+                break;
+            case 'address_detail':
+                $name = '详细地址';
+                break;
+            case 'company':
+                $name = '所在公司';
+                break;
+            case 'title':
+                $name = '当前职位';
+                break;
+            case 'description':
+                $name = '个人签名';
+                break;
+            case 'avatar_url':
+                $name = '头像';
+                break;
+            case 'industry_tags':
+                $name = '所在行业';
+                break;
+        }
+        return $name;
     }
 
     public function getUserLevel(){

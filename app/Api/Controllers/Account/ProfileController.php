@@ -63,7 +63,15 @@ class ProfileController extends Controller
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
 
-        $info['account_info_complete_percent'] = $user->getInfoCompletePercent();
+        $info_percent = $user->getInfoCompletePercent(true);
+        $info['account_info_complete_percent'] = $info_percent['score'];
+
+        $infos = '';
+        if($info_percent['unfilled']){
+            $infos = '请添加'.User::getFieldHumanName($info_percent['unfilled'][0]).(count($info_percent['unfilled'])>1?'等':'').'字段';
+        }
+
+
         $info['account_info_valid_percent'] = config('intervapp.user_info_valid_percent');
         $info['total_money'] = 0;
         $user_money = UserMoney::find($user->id);
@@ -104,6 +112,7 @@ class ProfileController extends Controller
 
         $data = [
             'info'   => $info,
+            'infos'  => $infos,
             'jobs'   => $job_desc,
             'projects' => $project_desc,
             'edus'   => $edu_desc,

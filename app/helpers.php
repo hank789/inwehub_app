@@ -436,7 +436,10 @@ if (!function_exists('cal_account_info_finish')) {
             if(in_array($field,$expert_fields)) continue;
 
             foreach($item as $key=>$value){
-                if($field=='avatar_url' && $value==config('image.user_default_avatar')) continue;
+                if($field=='avatar_url' && $value==config('image.user_default_avatar')) {
+                    $unfilled[] = $field;
+                    continue;
+                }
                 if(!empty($value) || $value === "0") {
                     $score += $key;
                 }else {
