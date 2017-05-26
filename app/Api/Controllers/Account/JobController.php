@@ -2,9 +2,12 @@
 use App\Api\Controllers\Controller;
 use App\Cache\UserCache;
 use App\Exceptions\ApiException;
+use App\Logic\TagsLogic;
 use App\Models\Tag;
 use App\Models\UserInfo\JobInfo;
 use Illuminate\Http\Request;
+use App\Models\User;
+
 
 /**
  * 工作经历
@@ -99,6 +102,22 @@ class JobController extends Controller {
         UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'job']);
+    }
+
+    public function showList(Request $request){
+        /**
+         * @var User
+         */
+        $user = $request->user();
+        $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
+        foreach($jobs as &$job){
+            $job->industry_tags = '';
+            $job->product_tags = '';
+
+            $job->industry_tags = TagsLogic::formatTags($job->tags()->where('category_id',9)->get());
+            $job->product_tags = TagsLogic::formatTags($job->tags()->where('category_id',10)->get());
+        }
+        return self::createJsonData(true,$jobs);
     }
 
     //删除

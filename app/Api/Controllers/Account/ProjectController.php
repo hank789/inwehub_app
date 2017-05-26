@@ -2,9 +2,11 @@
 use App\Api\Controllers\Controller;
 use App\Cache\UserCache;
 use App\Exceptions\ApiException;
+use App\Logic\TagsLogic;
 use App\Models\Tag;
 use App\Models\UserInfo\ProjectInfo;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 /**
  * 项目经历
@@ -100,6 +102,23 @@ class ProjectController extends Controller {
         UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'project']);
+    }
+
+    public function showList(Request $request){
+        /**
+         * @var User
+         */
+        $user = $request->user();
+        $projects = $user->projects()->orderBy('begin_time','desc')->get();
+
+        foreach($projects as &$project){
+            $project->industry_tags = '';
+            $project->product_tags = '';
+
+            $project->industry_tags = TagsLogic::formatTags($project->tags()->where('category_id',9)->get());
+            $project->product_tags = TagsLogic::formatTags($project->tags()->where('category_id',10)->get());
+        }
+        return self::createJsonData(true,$projects);
     }
 
     //删除

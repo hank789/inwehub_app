@@ -53,20 +53,26 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('account/edu/store','EduController@store');
     Route::post('account/edu/update','EduController@update');
     Route::post('account/edu/destroy','EduController@destroy');
+    Route::post('account/edu/list','EduController@showList');
+
 
     //工作经历
     Route::post('account/job/store','JobController@store');
     Route::post('account/job/update','JobController@update');
     Route::post('account/job/destroy','JobController@destroy');
+    Route::post('account/job/list','JobController@showList');
+
     //培训经历
     Route::post('account/train/store','TrainController@store');
     Route::post('account/train/update','TrainController@update');
     Route::post('account/train/destroy','TrainController@destroy');
+    Route::post('account/train/list','TrainController@showList');
+
     //项目经历
     Route::post('account/project/store','ProjectController@store');
     Route::post('account/project/update','ProjectController@update');
     Route::post('account/project/destroy','ProjectController@destroy');
-
+    Route::post('account/project/list','ProjectController@showList');
 
     /*关注问题、人、标签*/
     Route::post('follow/{source_type}',['uses'=>'FollowController@store'])->where(['source_type'=>'(question|tag|user)']);

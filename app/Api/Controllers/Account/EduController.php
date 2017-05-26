@@ -72,6 +72,11 @@ class EduController extends Controller {
         return self::createJsonData(true,['id'=>$id,'type'=>'edu']);
     }
 
+    public function showList(Request $request){
+        $data = $request->user()->edus()->orderBy('begin_time','desc')->get();
+        return self::createJsonData(true,$data);
+    }
+
     //删除
     public function destroy(Request $request){
         $id = $request->input('id');

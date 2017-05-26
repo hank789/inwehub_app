@@ -1,10 +1,4 @@
 <?php
-/**
- * Tipask全局配置
- * User: sdf_sky
- * Date: 15/9/4
- * Time: 上午11:40
- */
 
 return [
     'version' => 'Interv0.1',
@@ -59,7 +53,8 @@ return [
         'articles' => '文章',
         'tags' => '话题',
         'experts' => '专家',
-    ]
+    ],
+    'user_info_valid_percent' => '90',//用户信息完整度要求百分比
 
 
 ];

@@ -62,37 +62,43 @@ class ProfileController extends Controller
         $info['tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->get());
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['account_info_complete_percent'] = $user->getInfoCompletePercent();
+        $info['account_info_valid_percent'] = config('intervapp.user_info_valid_percent');
         $info['total_money'] = 0;
         $user_money = UserMoney::find($user->id);
         if($user_money){
             $info['total_money'] = $user_money->total_money;
         }
 
-        $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
-        foreach($jobs as &$job){
-            $job->industry_tags = '';
-            $job->product_tags = '';
-
-            $job->industry_tags = TagsLogic::formatTags($job->tags()->where('category_id',9)->get());
-            $job->product_tags = TagsLogic::formatTags($job->tags()->where('category_id',10)->get());
+        $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
+        $job_desc = '';
+        if($jobs){
+            $job_desc = $jobs[0].($jobs->count()>1?'等':'').$jobs->count().'个工作';
         }
 
-        $projects = $user->projects()->orderBy('begin_time','desc')->get();
+        $projects = $user->projects()->orderBy('begin_time','desc')->pluck('project_name');
+        $project_desc = '';
+        if($projects){
+            $project_desc = $projects[0].($projects->count()>1?'等':'').$projects->count().'个项目';
+        }
 
-        foreach($projects as &$project){
-            $project->industry_tags = '';
-            $project->product_tags = '';
+        $edus = $user->edus()->orderBy('begin_time','desc')->pluck('school');
+        $edu_desc = '';
+        if ($edu_desc) {
+            $edu_desc = $edus[0].($edus->count()>1?'等':'').$edus->count().'所学校';
+        }
 
-            $project->industry_tags = TagsLogic::formatTags($project->tags()->where('category_id',9)->get());
-            $project->product_tags = TagsLogic::formatTags($project->tags()->where('category_id',10)->get());
+        $trains = $user->trains()->orderBy('get_time','desc')->pluck('certificate');
+        $train_desc = '';
+        if ($train_desc) {
+            $train_desc = $trains[0].($trains->count()>1?'等':'').$trains->count().'个认证';
         }
 
         $data = [
             'info'   => $info,
-            'jobs'   => $jobs,
-            'projects' => $projects,
-            'edus'   => $user->edus()->orderBy('begin_time','desc')->get(),
-            'trains'  => $user->trains()->orderBy('get_time','desc')->get()
+            'jobs'   => $job_desc,
+            'projects' => $project_desc,
+            'edus'   => $edu_desc,
+            'trains'  => $train_desc
         ];
 
         UserCache::setUserInfoCache($user->id,$data);

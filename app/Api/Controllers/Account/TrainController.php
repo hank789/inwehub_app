@@ -4,6 +4,7 @@ use App\Cache\UserCache;
 use App\Exceptions\ApiException;
 use App\Models\UserInfo\TrainInfo;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 /**
  * 培训经历
@@ -59,6 +60,15 @@ class TrainController extends Controller {
         UserCache::delUserInfoCache($user->id);
 
         return self::createJsonData(true,['id'=>$id,'type'=>'train']);
+    }
+
+    public function showList(Request $request){
+        /**
+         * @var User
+         */
+        $user = $request->user();
+        $trains = $user->trains()->orderBy('get_time','desc')->get();
+        return self::createJsonData(true,$trains);
     }
 
     //删除

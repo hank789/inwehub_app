@@ -54,8 +54,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $s = UserCache::getUserInfoCache(1);
-        var_dump($s);
+        $user = User::find(1);
+        $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
+        var_dump($jobs->count());
         return;
         $payData = [
             'body'    => 'test',
