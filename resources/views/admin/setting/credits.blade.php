@@ -20,8 +20,8 @@
                                 <thead>
                                 <tr role="row">
                                     <th>用户行为</th>
-                                    <th>经验值</th>
-                                    <th>金币数</th>
+                                    <th>成长值</th>
+                                    <th>哈币数</th>
                                 </tr>
                                 </thead>
 
@@ -37,7 +37,37 @@
                                 </tr>
 
                                 <tr>
-                                    <td>每日登录系统获得</td>
+                                    <td>上传头像</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_upload_avatar')) has-error @endif "><input type="text" class="form-control" name="credits_upload_avatar" value="{{ old('credits_upload_avatar',Setting()->get('credits_upload_avatar')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_upload_avatar')) has-error @endif "><input type="text" class="form-control" name="coins_upload_avatar" value="{{ old('coins_upload_avatar',Setting()->get('coins_upload_avatar')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>简历填写完成</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_user_info_complete')) has-error @endif "><input type="text" class="form-control" name="credits_user_info_complete" value="{{ old('credits_user_info_complete',Setting()->get('credits_user_info_complete')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_user_info_complete')) has-error @endif "><input type="text" class="form-control" name="coins_user_info_complete" value="{{ old('coins_user_info_complete',Setting()->get('coins_user_info_complete')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>每日签到</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_user_sign_daily')) has-error @endif "><input type="text" class="form-control" name="credits_user_sign_daily" value="{{ old('credits_user_sign_daily',Setting()->get('credits_user_sign_daily')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_user_sign_daily')) has-error @endif "><input type="text" class="form-control" name="coins_user_sign_daily" value="{{ old('coins_user_sign_daily',Setting()->get('coins_user_sign_daily')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>每日登陆</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_login')) has-error @endif "><input type="text" class="form-control" name="credits_login" value="{{ old('credits_login',Setting()->get('credits_login')) }}" /></div>
                                     </td>
@@ -47,7 +77,17 @@
                                 </tr>
 
                                 <tr>
-                                    <td>提出问题获得</td>
+                                    <td>完成首次提问</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_first_ask')) has-error @endif "><input type="text" class="form-control" name="credits_first_ask" value="{{ old('credits_first_ask',Setting()->get('credits_first_ask')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_first_ask')) has-error @endif "><input type="text" class="form-control" name="coins_first_ask" value="{{ old('coins_first_ask',Setting()->get('coins_first_ask')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>每次提问</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_ask')) has-error @endif "><input type="text" class="form-control" name="credits_ask" value="{{ old('credits_ask',Setting()->get('credits_ask')) }}" /></div>
                                     </td>
@@ -57,7 +97,17 @@
                                 </tr>
 
                                 <tr>
-                                    <td>回答问题获得</td>
+                                    <td>完成首次回答</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_first_answer')) has-error @endif "><input type="text" class="form-control" name="credits_first_answer" value="{{ old('credits_first_answer',Setting()->get('credits_first_answer')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_first_answer')) has-error @endif "><input type="text" class="form-control" name="coins_first_answer" value="{{ old('coins_first_answer',Setting()->get('coins_first_answer')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>每次回答</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_answer')) has-error @endif "><input type="text" class="form-control" name="credits_answer" value="{{ old('credits_answer',Setting()->get('credits_answer')) }}" /></div>
                                     </td>
@@ -67,22 +117,62 @@
                                 </tr>
 
                                 <tr>
-                                    <td>回答被采纳获得</td>
+                                    <td>超出承诺时间未回答每小时(扣分)</td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_adopted')) has-error @endif "><input type="text" class="form-control" name="credits_adopted" value="{{ old('credits_adopted',Setting()->get('credits_adopted')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_answer_over_promise_time_hourly')) has-error @endif "><input type="text" class="form-control" name="credits_answer_over_promise_time_hourly" value="{{ old('credits_answer_over_promise_time_hourly',Setting()->get('credits_answer_over_promise_time_hourly')) }}" /></div>
                                     </td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_adopted')) has-error @endif "><input type="text" class="form-control" name="coins_adopted" value="{{ old('coins_adopted',Setting()->get('coins_adopted')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_answer_over_promise_time_hourly')) has-error @endif "><input type="text" class="form-control" name="coins_answer_over_promise_time_hourly" value="{{ old('coins_answer_over_promise_time_hourly',Setting()->get('coins_answer_over_promise_time_hourly')) }}" /></div>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td>撰写文章获得</td>
+                                    <td>超出承诺时间未回答最多扣</td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_write_article')) has-error @endif "><input type="text" class="form-control" name="credits_write_article" value="{{ old('credits_adopted',Setting()->get('credits_write_article')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_answer_over_promise_time_max')) has-error @endif "><input type="text" class="form-control" name="credits_answer_over_promise_time_max" value="{{ old('credits_answer_over_promise_time_max',Setting()->get('credits_answer_over_promise_time_max')) }}" /></div>
                                     </td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_write_article')) has-error @endif "><input type="text" class="form-control" name="coins_write_article" value="{{ old('coins_write_article',Setting()->get('coins_write_article')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_answer_over_promise_time_max')) has-error @endif "><input type="text" class="form-control" name="coins_answer_over_promise_time_max" value="{{ old('coins_answer_over_promise_time_max',Setting()->get('coins_answer_over_promise_time_max')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>优质提问</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_ask_good')) has-error @endif "><input type="text" class="form-control" name="credits_ask_good" value="{{ old('credits_ask_good',Setting()->get('credits_ask_good')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_ask_good')) has-error @endif "><input type="text" class="form-control" name="coins_ask_good" value="{{ old('coins_ask_good',Setting()->get('coins_ask_good')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>优质回答</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_answer_good')) has-error @endif "><input type="text" class="form-control" name="credits_answer_good" value="{{ old('credits_answer_good',Setting()->get('credits_answer_good')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_answer_good')) has-error @endif "><input type="text" class="form-control" name="coins_answer_good" value="{{ old('coins_answer_good',Setting()->get('coins_answer_good')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>每邀请一位好友并激活</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_invite_user')) has-error @endif "><input type="text" class="form-control" name="credits_invite_user" value="{{ old('credits_invite_user',Setting()->get('credits_invite_user')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_invite_user')) has-error @endif "><input type="text" class="form-control" name="credits_invite_user" value="{{ old('coins_invite_user',Setting()->get('coins_invite_user')) }}" /></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>完成专家认证</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_expert_valid')) has-error @endif "><input type="text" class="form-control" name="credits_expert_valid" value="{{ old('credits_expert_valid',Setting()->get('credits_expert_valid')) }}" /></div>
+                                    </td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_expert_valid')) has-error @endif "><input type="text" class="form-control" name="coins_expert_valid" value="{{ old('coins_expert_valid',Setting()->get('coins_expert_valid')) }}" /></div>
                                     </td>
                                 </tr>
 

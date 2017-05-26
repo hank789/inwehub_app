@@ -38,18 +38,38 @@ class DatabaseSeeder extends Seeder
 
         /*系统默认配置*/
         DB::table('settings')->insert([
-            ['name' => 'coins_write_article','value' => '0'],
-            ['name' => 'coins_adopted','value' => '0'],
-            ['name' => 'coins_answer','value' => '0'],
-            ['name' => 'coins_ask','value' => '0'],
-            ['name' => 'coins_login','value' => '0'],
-            ['name' => 'coins_register','value' => '0'],
-            ['name' => 'credits_write_article','value' => '0'],
-            ['name' => 'credits_adopted','value' => '0'],
-            ['name' => 'credits_answer','value' => '0'],
-            ['name' => 'credits_ask','value' => '0'],
+            ['name' => 'credits_expert_valid','value' => '200'],//专家认证
+            ['name' => 'credits_invite_user','value' => '200'],//邀请好友
+            ['name' => 'credits_ask_good','value' => '0'],//优质提问
+            ['name' => 'credits_answer_good','value' => '0'],//优质回答
+            ['name' => 'credits_answer_over_promise_time_max','value' => '-200'],//超出承诺时间回答每小时最多扣
+            ['name' => 'credits_answer_over_promise_time_hourly','value' => '-20'],//超出承诺时间回答每小时扣
+            ['name' => 'credits_answer','value' => '200'],//每次回答
+            ['name' => 'credits_first_answer','value' => '500'],//首次提问
+            ['name' => 'credits_ask','value' => '200'],//每次提问
+            ['name' => 'credits_first_ask','value' => '500'],//首次提问
             ['name' => 'credits_login','value' => '0'],
-            ['name' => 'credits_register','value' => '0'],
+            ['name' => 'credits_user_sign_daily','value' => '10'],//每日签到
+            ['name' => 'credits_user_info_complete','value' => '500'],//简历完成
+            ['name' => 'credits_upload_avatar','value' => '50'],//头像上传成功
+            ['name' => 'credits_register','value' => '100'],//注册成功
+
+            ['name' => 'coins_expert_valid','value' => '500'],//专家认证
+            ['name' => 'coins_invite_user','value' => '100'],//邀请好友
+            ['name' => 'coins_ask_good','value' => '100'],//优质提问
+            ['name' => 'coins_answer_good','value' => '100'],//优质回答
+            ['name' => 'coins_answer_over_promise_time_max','value' => '0'],//超出承诺时间回答每小时最多扣
+            ['name' => 'coins_answer_over_promise_time_hourly','value' => '0'],//超出承诺时间回答每小时扣
+            ['name' => 'coins_answer','value' => '200'],//每次回答
+            ['name' => 'coins_first_answer','value' => '200'],//首次提问
+            ['name' => 'coins_ask','value' => '200'],//每次提问
+            ['name' => 'coins_first_ask','value' => '0'],//首次提问
+            ['name' => 'coins_login','value' => '0'],
+            ['name' => 'coins_user_sign_daily','value' => '0'],//每日签到
+            ['name' => 'coins_user_info_complete','value' => '0'],//简历完成
+            ['name' => 'coins_upload_avatar','value' => '0'],//头像上传成功
+            ['name' => 'coins_register','value' => '0'],//注册成功
+
             ['name' => 'date_format','value' => 'Y-m-d'],
             ['name' => 'time_diff','value' => '0'],
             ['name' => 'time_format','value' => 'H:i'],

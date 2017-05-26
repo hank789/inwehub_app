@@ -66,6 +66,7 @@ class QuestionController extends Controller
             'user_id' => $question->user_id,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
             'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
+            'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
             'tags' => $question->tags()->pluck('name'),
             'hide' => $question->hide,

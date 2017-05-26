@@ -158,28 +158,32 @@ class Question extends Model
         $is_find_expert = false;
         foreach($doings as $doing){
             $title = '';
+            $description = '';
+            $is_finish = 0;
             switch($doing->action){
                 case 'question_submit':
-                    $title = '问题成功提交';
+                    $title = '提交成功';
+                    $description = '叮咚,您的问题提交成功啦!';
                     break;
                 case 'question_process':
-                    $title = '平台已经受理,正在为您找寻合适专家';
-                    break;
-                case 'question_answer_confirming':
-                    if($is_find_expert) continue;
-                    $title = '平台已经帮您找到合适的专家,等待确认';
-                    $is_find_expert = true;
+                    $title = '受理成功';
+                    $description = '平台已受理,正快马加鞭为您寻找匹配的专家!';
                     break;
                 case 'question_invite_answer_confirming':
+                case 'question_answer_confirming':
                     if($is_find_expert) continue;
-                    $title = '等待专家确认';
+                    $title = '匹配成功';
+                    $description = '专家已经找到啦,就等他再确认一下!';
                     $is_find_expert = true;
                     break;
                 case 'question_answer_confirmed':
-                    $title = $doing->user->name.'为您回答问题';
+                    $title = '确认成功';
+                    $description = '专家'.$doing->user->name.'将义不容辞的为您答疑解惑!';
                     break;
                 case 'question_answered':
-                    $title = $doing->user->name.'已为您回答问题';
+                    $title = '回答成功';
+                    $description = '专家'.$doing->user->name.'干脆利落的回答了您的提问!';
+                    $is_finish = 1;
                     break;
                 case 'question_answer_rejected':
                     break;
@@ -187,6 +191,8 @@ class Question extends Model
             if($title){
                 $timeline[] = [
                     'title' => $title,
+                    'description' => $description,
+                    'is_finish' => $is_finish,
                     'created_at' => (string)$doing->created_at
                 ];
             }
