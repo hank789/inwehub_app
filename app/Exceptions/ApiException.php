@@ -43,6 +43,8 @@ class ApiException extends Exception
     const USER_NEED_CONFIRM = 1106;
     const USER_DATE_RANGE_INVALID = 1107;
     const USER_REGISTRATION_CODE_INVALID = 1108;
+    const USER_SUSPEND = 1109;
+
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -88,6 +90,7 @@ class ApiException extends Exception
         self::USER_NEED_CONFIRM => '您的账户正在审核中,请耐心等待',
         self::USER_DATE_RANGE_INVALID => '起始日期有误',
         self::USER_REGISTRATION_CODE_INVALID => '邀请码错误',
+        self::USER_SUSPEND => '您的账户已被禁用',
 
 
         //问答模块

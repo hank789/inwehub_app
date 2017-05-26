@@ -186,13 +186,15 @@ class UserController extends AdminController
     }
 
     /**
-     * 删除用户
+     * 将用户设置为不可用
      */
     public function destroy(Request $request)
     {
         $userIds = $request->input('id');
-        User::destroy($userIds);
-        return $this->success(route('admin.user.index'),'用户删除成功');
+        //User::destroy($userIds);
+        User::whereIn('id',$userIds)->update(['status'=>-1]);
+
+        return $this->success(route('admin.user.index'),'用户禁用成功');
 
     }
 

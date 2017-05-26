@@ -96,14 +96,18 @@ class AuthController extends Controller
         /*根据邮箱地址和密码进行认证*/
         if ($token = $JWTAuth->attempt($credentials))
         {
+
+            $user = $request->user();
+            if($user->status != 1) {
+                throw new ApiException(ApiException::USER_SUSPEND);
+            }
             //登陆事件通知
-            event(new UserLoggedIn($request->user()));
+            event(new UserLoggedIn($user));
             $message = 'ok';
-            if($this->credit($request->user()->id,'login',Setting()->get('coins_login'),Setting()->get('credits_login'))){
+            if($this->credit($user->id,'login',Setting()->get('coins_login'),Setting()->get('credits_login'))){
                 $message = '登陆成功! '.get_credit_message(Setting()->get('credits_login'),Setting()->get('coins_login'));
             }
             $deviceCode = $request->input('device_code');
-
             // 登录记录
             $clientIp = $request->getClientIp();
             $loginrecord = new LoginRecord();
@@ -116,10 +120,9 @@ class AuthController extends Controller
             $loginrecord->device_name = $request->input('device_name');
             $loginrecord->device_model = $request->input('device_model');
             $loginrecord->device_code = $deviceCode;
-            $loginrecord->user_id = $request->user()->id;
+            $loginrecord->user_id = $user->id;
             $loginrecord->save();
 
-            $user = $request->user();
             $info = [];
             $info['token'] = $token;
             $info['id'] = $user->id;
