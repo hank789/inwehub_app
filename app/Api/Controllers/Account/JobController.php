@@ -117,7 +117,7 @@ class JobController extends Controller {
             $job->industry_tags = TagsLogic::formatTags($job->tags()->where('category_id',9)->get());
             $job->product_tags = TagsLogic::formatTags($job->tags()->where('category_id',10)->get());
         }
-        return self::createJsonData(true,$jobs);
+        return self::createJsonData(true,(array)$jobs);
     }
 
     //删除

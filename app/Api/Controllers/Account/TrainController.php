@@ -68,7 +68,7 @@ class TrainController extends Controller {
          */
         $user = $request->user();
         $trains = $user->trains()->orderBy('get_time','desc')->get();
-        return self::createJsonData(true,$trains);
+        return self::createJsonData(true,(array)$trains);
     }
 
     //删除

@@ -429,18 +429,18 @@ if( !function_exists('promise_time_format') ){
 if (!function_exists('cal_account_info_finish')) {
     function cal_account_info_finish(array $data){
         $expert_fields = ['id','site_notifications','password','is_expert','tags','status','created_at','updated_at','remember_token','email_notifications'];
-        $total = 0;
-        $filled = 0;
+        $unfilled = [];
         $score = 0;
         $info = $data['info'];
         foreach($info as $field=>$item){
             if(in_array($field,$expert_fields)) continue;
-            $total++;
+
             foreach($item as $key=>$value){
-                if($filled=='avatar_url' && $value==config('image.user_default_avatar')) continue;
+                if($field=='avatar_url' && $value==config('image.user_default_avatar')) continue;
                 if(!empty($value) || $value === "0") {
-                    $filled++;
                     $score += $key;
+                }else {
+                    $unfilled[] = $field;
                 }
             }
         }
@@ -448,10 +448,8 @@ if (!function_exists('cal_account_info_finish')) {
         $career_extra_count = 0;
         foreach($data as $field=>$item){
             if(in_array($field,$expert_fields)) continue;
-            $total++;
             foreach($item as $key=>$value){
                 if(!empty($value) || $value === "0") {
-                    $filled++;
                     $score += $key;
                     if($field != 'trains'){
                         $career_extra_count += (count($value)-1);
@@ -465,7 +463,7 @@ if (!function_exists('cal_account_info_finish')) {
             $score += $career_extra_count;
         }
 
-        return ['total'=>$total,'filled'=>$filled, 'score'=>$score];
+        return ['unfilled'=>$unfilled, 'score'=>$score];
     }
 }
 

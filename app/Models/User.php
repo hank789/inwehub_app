@@ -480,7 +480,29 @@ class User extends Model implements AuthenticatableContract,
         $fields = cal_account_info_finish($data);
 
         return $fields['score'];
+    }
 
+    public function getUserLevel(){
+        $credits = $this->userData->credits;
+        $level = 1;
+        switch(true){
+            case $credits <= 1000 :
+                $level = 1;
+                break;
+            case $credits <= 5000:
+                $level = 2;
+                break;
+            case $credits <= 50000:
+                $level = 3;
+                break;
+            case $credits <= 100000:
+                $level = 4;
+                break;
+            default:
+                $level = 5;
+                break;
+        }
+        return $level;
     }
 
 }

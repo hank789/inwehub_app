@@ -118,7 +118,7 @@ class ProjectController extends Controller {
             $project->industry_tags = TagsLogic::formatTags($project->tags()->where('category_id',9)->get());
             $project->product_tags = TagsLogic::formatTags($project->tags()->where('category_id',10)->get());
         }
-        return self::createJsonData(true,$projects);
+        return self::createJsonData(true,(array)$projects);
     }
 
     //删除

@@ -31,7 +31,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $cache = UserCache::getUserInfoCache($user->id);
         if($cache){
-            return self::createJsonData(true,$cache);
+            //return self::createJsonData(true,$cache);
         }
 
         $info = [];
@@ -61,6 +61,8 @@ class ProfileController extends Controller
         if(empty($info['industry_tags'])) $info['industry_tags'] = '';
         $info['tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->get());
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+        $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
+
         $info['account_info_complete_percent'] = $user->getInfoCompletePercent();
         $info['account_info_valid_percent'] = config('intervapp.user_info_valid_percent');
         $info['total_money'] = 0;
@@ -68,6 +70,13 @@ class ProfileController extends Controller
         if($user_money){
             $info['total_money'] = $user_money->total_money;
         }
+        $info['questions'] = $user->userData->questions;
+        $info['answers'] = $user->userData->answers;
+        $info['tasks'] = $user->tasks->count();
+        $info['projects'] = 0;
+        $info['user_level'] = $user->getUserLevel();
+        $info['user_credits'] = $user->userData->credits;
+        $info['user_coins'] = $user->userData->coins;
 
         $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
         $job_desc = '';

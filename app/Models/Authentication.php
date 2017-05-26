@@ -86,6 +86,10 @@ class Authentication extends Model
         return $tags;
     }
 
+    public function getLevelName(){
+        return "认证专家";
+    }
+
     /*推荐行家*/
     public static function hottest($size)
     {
@@ -97,4 +101,5 @@ class Authentication extends Model
             ->select('authentications.user_id','authentications.real_name','authentications.title','user_data.coins','user_data.credits','user_data.followers','user_data.supports','user_data.answers','user_data.articles','user_data.authentication_status')
             ->take($size)->get();
     }
+
 }
