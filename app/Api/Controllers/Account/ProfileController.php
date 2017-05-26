@@ -100,13 +100,13 @@ class ProfileController extends Controller
 
         $edus = $user->edus()->orderBy('begin_time','desc')->pluck('school');
         $edu_desc = '';
-        if ($edu_desc) {
+        if ($edus) {
             $edu_desc = $edus[0].($edus->count()>1?'等':'').$edus->count().'所学校';
         }
 
         $trains = $user->trains()->orderBy('get_time','desc')->pluck('certificate');
         $train_desc = '';
-        if ($train_desc) {
+        if ($trains) {
             $train_desc = $trains[0].($trains->count()>1?'等':'').$trains->count().'个认证';
         }
 
