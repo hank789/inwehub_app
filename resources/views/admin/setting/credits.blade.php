@@ -162,7 +162,7 @@
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('credits_invite_user')) has-error @endif "><input type="text" class="form-control" name="credits_invite_user" value="{{ old('credits_invite_user',Setting()->get('credits_invite_user')) }}" /></div>
                                     </td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_invite_user')) has-error @endif "><input type="text" class="form-control" name="credits_invite_user" value="{{ old('coins_invite_user',Setting()->get('coins_invite_user')) }}" /></div>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('coins_invite_user')) has-error @endif "><input type="text" class="form-control" name="coins_invite_user" value="{{ old('coins_invite_user',Setting()->get('coins_invite_user')) }}" /></div>
                                     </td>
                                 </tr>
 
