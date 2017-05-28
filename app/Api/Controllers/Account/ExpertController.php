@@ -3,6 +3,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Expert\Recommend;
 use App\Exceptions\ApiException;
 use App\Models\Authentication;
+use App\Models\Tag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -110,7 +111,8 @@ class ExpertController extends Controller {
         }
 
         $data = $request->all();
-        event(new Recommend($user_id,$data['name'],$data['gender'],$data['industry_tags'],$data['work_years'],$data['mobile'],$data['description'],[$head_img_url_0,$head_img_url_1]));
+        $tagNames = Tag::whereIn('id',explode(',',$data['industry_tags']))->pluck('name');
+        event(new Recommend($user_id,$data['name'],$data['gender'],$tagNames,$data['work_years'],$data['mobile'],$data['description'],[$head_img_url_0,$head_img_url_1]));
 
         return self::createJsonData(true);
 
