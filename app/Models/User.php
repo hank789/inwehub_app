@@ -466,10 +466,10 @@ class User extends Model implements AuthenticatableContract,
         $info['industry_tags'] = [5=>array_column($this->industryTags(),'name')];
         $info['avatar_url'] = [10=>$this->getAvatarUrl()];
 
-        $edu = [10=>$this->edus()->first()];
-        $job = [10=>$this->jobs()->first()];
-        $project = [10=>$this->projects()->first()];
-        $train = [2=>$this->trains()->first()];
+        $edu = [10=>$this->edus()->pluck('id')];
+        $job = [10=>$this->jobs()->pluck('id')];
+        $project = [10=>$this->projects()->pluck('id')];
+        $train = [2=>$this->trains()->pluck('id')];
         $data = [];
         $data['info'] = $info;
         $data['jobs'] = $job;
