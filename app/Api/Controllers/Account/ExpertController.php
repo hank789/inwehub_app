@@ -77,7 +77,7 @@ class ExpertController extends Controller {
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
 
-        if(RateLimiter::instance()->increase('expert:recommend',$user_id,10,1)){
+        if(RateLimiter::instance()->increase('expert:recommend',$user_id,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 

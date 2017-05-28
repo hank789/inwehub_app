@@ -55,9 +55,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $upload_count = $user->userData->answers;
-        var_dump($upload_count);
+        $data['industry_tags'] = '29,30,31';
+        $tagNames = Tag::whereIn('id',explode(',',$data['industry_tags']))->pluck('name');
+        var_dump($tagNames);
         return;
         $payData = [
             'body'    => 'test',

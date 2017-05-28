@@ -47,7 +47,7 @@ class AnswerController extends Controller
             }
         }
 
-        if(RateLimiter::instance()->increase('question:answer:create',$loginUser->id,10,1)){
+        if(RateLimiter::instance()->increase('question:answer:create',$loginUser->id,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
