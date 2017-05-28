@@ -111,7 +111,7 @@ class ExpertController extends Controller {
         }
 
         $data = $request->all();
-        $tagNames = Tag::whereIn('id',explode(',',$data['industry_tags']))->pluck('name');
+        $tagNames = Tag::whereIn('id',explode(',',$data['industry_tags']))->pluck('name')->toArray();
         event(new Recommend($user_id,$data['name'],$data['gender'],implode(',',$tagNames),$data['work_years'],$data['mobile'],$data['description'],[$head_img_url_0,$head_img_url_1]));
 
         return self::createJsonData(true);
