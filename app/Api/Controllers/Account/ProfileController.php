@@ -94,7 +94,7 @@ class ProfileController extends Controller
 
         $projects = $user->projects()->orderBy('begin_time','desc')->pluck('project_name');
         $project_desc = '';
-        if($projects){
+        if($projects->count()){
             $project_desc = $projects[0].($projects->count()>1?'等':'').$projects->count().'个项目';
         }
 
