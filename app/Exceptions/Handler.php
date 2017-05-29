@@ -75,7 +75,7 @@ class Handler extends ExceptionHandler
         }
 
         if($request->is('api/*')){
-            return CreateJsonResponseData::createJsonData(false,[],$exception->getCode(),$exception->getMessage());
+            return CreateJsonResponseData::createJsonData(false,[],$exception->getCode(),'出错了,请稍后再试~');
         }
 
         return parent::render($request, $exception);
