@@ -139,8 +139,9 @@ class ProfileController extends Controller
             'birthday'         => 'max:128',
             'title' => 'max:255'
         ];
-        $this->validate($request,$validateRules);
         $user = $request->user();
+        $validateRules = 'nullable|email|max:255|unique:users,email,'.$user->id;
+        $this->validate($request,$validateRules);
         if($request->input('name') !== null){
             $user->name = $request->input('name');
         }
