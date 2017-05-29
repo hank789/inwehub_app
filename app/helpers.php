@@ -452,7 +452,7 @@ if (!function_exists('cal_account_info_finish')) {
         foreach($data as $field=>$item){
             if(in_array($field,$expert_fields)) continue;
             foreach($item as $key=>$value){
-                if(!empty($value) || $value === "0") {
+                if(count($value)>=1) {
                     $score += $key;
                     if($field != 'trains'){
                         $career_extra_count += (count($value)-1);

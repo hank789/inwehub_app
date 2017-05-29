@@ -91,7 +91,9 @@ class AuthController extends Controller
 
         /*只接收mobile和password的值*/
         $credentials = $request->only('mobile', 'password');
-
+        if(RateLimiter::instance()->increase('userLogin',$credentials['mobile'],3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
 
         /*根据邮箱地址和密码进行认证*/
         if ($token = $JWTAuth->attempt($credentials))
@@ -191,7 +193,9 @@ class AuthController extends Controller
 
         $this->validate($request,$validateRules);
         $mobile = $request->input('mobile');
-
+        if(RateLimiter::instance()->increase('userRegister',$mobile,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
         $user = User::where('mobile',$mobile)->first();
         if($user){
             throw new ApiException(ApiException::USER_PHONE_EXIST);
