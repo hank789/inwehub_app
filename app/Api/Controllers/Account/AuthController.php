@@ -149,7 +149,7 @@ class AuthController extends Controller
 
         }
 
-        return static::createJsonData(false,[],ApiException::USER_PASSWORD_ERROR,'用户名或密码错误')->setStatusCode(401);
+        return static::createJsonData(false,[],ApiException::USER_PASSWORD_ERROR,'用户名或密码错误');
 
     }
 
