@@ -118,7 +118,7 @@ class AjaxController extends Controller
     {
         $word = $request->input('word');
 
-        $users = User::where('id','<>',$request->user()->id)->where('name','like',"$word%")->take(10)->get();
+        $users = User::where('id','<>',$request->user()->id)->where('name','like',"%$word%")->take(10)->get();
         $users->map(function($user){
             $user->avatar = $user->getAvatarUrl();
             $user->coins = $user->userData->coins;
@@ -148,7 +148,7 @@ class AjaxController extends Controller
 
         $is_inviter_must_expert = Setting()->get('is_inviter_must_expert',1);
         if(trim($word)){
-            $users = User::where('id','<>',$request->user()->id)->where('name','like',"$word%")->take(10)->get();
+            $users = User::where('id','<>',$request->user()->id)->where('name','like',"%$word%")->take(10)->get();
             $users->map(function($user) use($tagIds,$question) {
                 $user->tag_name = '';
                 $user->tag_answers = 0;
