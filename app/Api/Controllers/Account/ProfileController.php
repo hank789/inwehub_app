@@ -140,7 +140,7 @@ class ProfileController extends Controller
             'title' => 'max:255'
         ];
         $user = $request->user();
-        $validateRules = 'nullable|email|max:255|unique:users,email,'.$user->id;
+        $validateRules['email'] = 'nullable|email|max:255|unique:users,email,'.$user->id;
         $this->validate($request,$validateRules);
         if($request->input('name') !== null){
             $user->name = $request->input('name');
