@@ -120,7 +120,7 @@ class AjaxController extends Controller
 
         $users = User::where('id','<>',$request->user()->id)->where('name','like',"$word%")->take(10)->get();
         $users->map(function($user){
-            $user->avatar = get_user_avatar($user->id);
+            $user->avatar = $user->getAvatarUrl();
             $user->coins = $user->userData->coins;
             $user->answers = $user->userData->answers;
             $user->followers = $user->userData->followers;
@@ -160,7 +160,7 @@ class AjaxController extends Controller
                     }
                     $user->tag_answers = $userTag->answers;
                 }
-                $user->avatar = get_user_avatar($user->id);
+                $user->avatar = $user->getAvatarUrl();
                 $user->url = route('auth.space.index',['user_id'=>$user->user_id]);
                 $user->isInvited = 0;
                 $user->isExpert = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
@@ -186,7 +186,7 @@ class AjaxController extends Controller
                     $user->tag_name = $tag->name;
                 }
                 $user->tag_answers = $userTag->answers;
-                $user->avatar = get_user_avatar($userTag->user_id);
+                $user->avatar = $userTag->user->getAvatarUrl();
                 $user->url = route('auth.space.index',['user_id'=>$userTag->user_id]);
                 $user->isInvited = 0;
 
