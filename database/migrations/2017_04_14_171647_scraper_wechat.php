@@ -13,6 +13,7 @@ class ScraperWechat extends Migration
      */
     public function up()
     {
+        return;
         Schema::connection('inwehub_read')->create('wechat_add_mp_list', function (Blueprint $table) {
             $table->increments('_id');
             $table->string('name', 50)->default('')->comment('要添加的公众号名称');                  // 名称

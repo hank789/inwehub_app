@@ -21,7 +21,8 @@ class AddUserInfo extends Migration
         });
 
         Schema::table('user_tags', function (Blueprint $table) {
-            $table->integer('industries')->unsigned()->default(0);
+            $table->integer('industries')->unsigned()->after('adoptions')->default(0);
+            $table->integer('skills')->unsigned()->after('adoptions')->default(0);
         });
 
         //工作经历

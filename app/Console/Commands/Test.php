@@ -55,60 +55,7 @@ class Test extends Command
      */
     public function handle()
     {
-        /*插入默认分类*/
-        DB::table('categories')->insert([
-            //问题分类
-            ['id'=>20,'name' => '问题分类','slug'=>'question','parent_id' =>'0','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>21,'name' => 'SAP','slug'=>'question_sap','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>22,'name' => '业务类','slug'=>'question_business','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>23,'name' => '行业类','slug'=>'question_industry','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>24,'name' => 'Oracle','slug'=>'question_oracle','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>25,'name' => 'Microsoft','slug'=>'question_microsoft','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>26,'name' => 'Salesforce','slug'=>'question_salesforce','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>27,'name' => '金蝶','slug'=>'question_jindie','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>28,'name' => '用友','slug'=>'question_yongyou','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>29,'name' => '其他','slug'=>'question_other','parent_id' =>'2','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-        ]);
-        DB::table('tags')->insert([
-            //问题分类 SAP tag
-            ['name' => 'FI/CO','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'MM/SD','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'PP','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'PS','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'PM','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'QM','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'HR','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'WM','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'EDI','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'HANA','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'Basis','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'BO/BW','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'Fiori','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'ABAP','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'EWM','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'CRM','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'PLM','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'SCM','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => 'SRM','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '其他','category_id'=>'21','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
 
-            //问题分类 业务类
-            ['name' => '供应链','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '财务和成本','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '采购','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '仓储','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '物流和运输','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '销售','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '渠道分销','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '电商','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '生产','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '人力资源','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '商务','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '项目管理','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '进出口','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['name' => '其他','category_id'=>'22','logo' =>'','summary'=>'','parent_id'=>'0','followers'=>'0','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-
-            ]);
         return;
         $payData = [
             'body'    => 'test',

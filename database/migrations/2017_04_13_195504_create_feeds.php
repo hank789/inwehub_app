@@ -13,6 +13,7 @@ class CreateFeeds extends Migration
      */
     public function up()
     {
+        return;
         Schema::connection('inwehub_read')->create('feeds', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');                             // 用户Id

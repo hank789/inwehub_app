@@ -23,9 +23,6 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.authentication.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <div class="col-xs-4">
-                                            <input type="text" class="form-control" name="id_card" placeholder="身份证号码" value="{{ $filter['id_card'] or '' }}"/>
-                                        </div>
                                         <div class="col-xs-3">
                                             <select class="form-control" name="status">
                                                 <option value="-1">--状态--</option>
@@ -59,7 +56,7 @@
                                         <th>真实姓名</th>
                                         <th>城市</th>
                                         <th>职称</th>
-                                        <th>认证领域</th>
+                                        <th>擅长领域</th>
                                         <th>更新时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
@@ -68,10 +65,10 @@
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $authentication->user_id }}"/></td>
                                             <td>{{ $authentication->user_id }}</td>
-                                            <td>{{ $authentication->real_name }}</td>
-                                            <td>{{ get_province_name($authentication->province) }} - {{ get_city_name($authentication->province,$authentication->city) }}</td>
-                                            <td>{{ $authentication->title }}</td>
-                                            <td>{{ implode(',',array_column($authentication->user->industryTags(),'name')) }}</td>
+                                            <td>{{ $authentication->user->name }}</td>
+                                            <td>{{ get_province_name($authentication->user->province) }} - {{ get_city_name($authentication->user->province,$authentication->user->city) }}</td>
+                                            <td>{{ $authentication->user->title }}</td>
+                                            <td>{{ implode(',',array_column($authentication->user->skillTags(),'name')) }}</td>
                                             <td>{{ timestamp_format($authentication->updated_at) }}</td>
                                             <td><span class="label @if($authentication->status===0) label-warning  @elseif($authentication->status===1) label-success @else label-default  @endif">{{ trans_authentication_status($authentication->status) }}</span> </td>
                                             <td>
@@ -87,11 +84,6 @@
                     </div>
                     <div class="box-footer clearfix">
                         <div class="row">
-                            <div class="col-sm-3">
-                                <div class="btn-group">
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.authentication.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
-                                </div>
-                            </div>
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $authentications->total() }} 条数据</span>

@@ -80,6 +80,7 @@ class AjaxController extends Controller
         if(!$word){
             $tags = Taggable::hottest($tag_type,10);
         }
+        $category_ids = '';
         $category_name = '';
         switch($tag_type){
             case 1:
@@ -103,8 +104,8 @@ class AjaxController extends Controller
         $query = Tag::where('name','like',$word.'%');
 
         if($category_name){
-            $category = Category::where('slug',$category_name)->first();
-            $query->where('category_id',$category->id);
+            $category_ids = Category::where('slug','like',$category_name.'%')->pluck('id')->toArray();
+            $query->whereIn('category_id',$category_ids);
         }
 
         $tags = $query->select('id',DB::raw('name as text'))->take(20)->get();

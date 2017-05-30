@@ -52,7 +52,7 @@ class Authentication extends Model
     use BelongsToUserTrait,BelongsToCategoryTrait;
     protected $table = 'authentications';
     protected $primaryKey = 'user_id';
-    protected $fillable = ['user_id','real_name','province','city','gender','title','description','id_card','id_card_image','skill','skill_image','status','category_id'];
+    protected $fillable = ['user_id','status','category_id','failed_reason'];
 
     public static function boot()
     {

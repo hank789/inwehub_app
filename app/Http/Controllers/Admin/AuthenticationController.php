@@ -15,13 +15,6 @@ use App\Http\Requests;
 class AuthenticationController extends AdminController
 {
 
-
-    protected  $validateRules = [
-        'real_name' => 'required|max:64',
-        'title' => 'required|max:128',
-        'description' => 'sometimes|max:9999'
-    ];
-
     /**
      * Display a listing of the resource.
      *
@@ -39,10 +32,6 @@ class AuthenticationController extends AdminController
             $query->where('status','=',$filter['status']);
         }
 
-        if( isset($filter['id_card']) && $filter['id_card']){
-            $query->where('id_card','=',$filter['id_card']);
-        }
-
         if( $filter['category_id'] > 0 ){
             $query->where('category_id','=',$filter['category_id']);
         }
@@ -52,47 +41,22 @@ class AuthenticationController extends AdminController
     }
 
     public function create(){
-        $provinces = CityData::getAllProvince();
-        $cities = [];
-
-        $data = [
-            'provinces' => $provinces,
-            'cities' => $cities,
-        ];
-        return view('admin.authentication.create')->with(compact('data'));
+        return view('admin.authentication.create');
     }
 
     public function store(Request $request){
-        $this->validate($request,$this->validateRules);
         $data = $request->all();
-        if ($request->hasFile('id_card_image')) {
-            $savePath = storage_path('app/authentications');
-            $file = $request->file('id_card_image');
-            $fileName = uniqid(str_random(8)) . '.' . $file->getClientOriginalExtension();
-            $target = $file->move($savePath, $fileName);
-            if ($target) {
-                $data['id_card_image'] = 'authentications-' . $fileName;
-            }
-        }
 
-        if ($request->hasFile('skill_image')) {
-            $savePath = storage_path('app/authentications');
-            $file = $request->file('skill_image');
-            $fileName = uniqid(str_random(8)) . '.' . $file->getClientOriginalExtension();
-            $target = $file->move($savePath, $fileName);
-            if ($target) {
-                $data['skill_image'] = 'authentications-' . $fileName;
-            }
-        }
-        if($data['industry_tags'] !== null ){
-            $industry_tags = $data['industry_tags'];
-            $tags = Tag::whereIn('id',explode(',',$industry_tags))->get();
-            UserTag::detachByField($data['user_id'],'industries');
-            UserTag::multiIncrement($data['user_id'],$tags,'industries');
+        \Log::info('test',$data);
+        if($data['skill_tags'] !== null ){
+            $skill_tags = $data['skill_tags'];
+            $tags = Tag::whereIn('id',explode(',',$skill_tags))->get();
+            UserTag::detachByField($data['user_id'],'skills');
+            UserTag::multiIncrement($data['user_id'],$tags,'skills');
         }
 
         $object = Authentication::create($data);
-        if($object && $data['status'] == 1){
+        if($object && isset($data['status']) && $data['status'] == 1){
             $action = 'expert_valid';
             event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$object->id,'专家认证'));
         }
@@ -108,13 +72,7 @@ class AuthenticationController extends AdminController
     public function edit($id)
     {
         $authentication = Authentication::find($id);
-        $provinces = CityData::getAllProvince();
-        $cities = CityData::getCityByProvince($authentication->province);
-        $data = [
-            'provinces' => $provinces,
-            'cities' => $cities,
-        ];
-        return view('admin.authentication.edit')->with(compact('authentication','data'));
+        return view('admin.authentication.edit')->with(compact('authentication'));
 
     }
 
@@ -132,36 +90,23 @@ class AuthenticationController extends AdminController
             return $this->error(route('admin.authentication.index'),'行家认证信息不存在，请核实');
         }
 
-        $this->validate($request,$this->validateRules);
 
         $data = $request->all();
-        if ($request->hasFile('id_card_image')) {
-            $savePath = storage_path('app/authentications');
-            $file = $request->file('id_card_image');
-            $fileName = uniqid(str_random(8)) . '.' . $file->getClientOriginalExtension();
-            $target = $file->move($savePath, $fileName);
-            if ($target) {
-                $data['id_card_image'] = 'authentications-' . $fileName;
-            }
-        }
-
-        if ($request->hasFile('skill_image')) {
-            $savePath = storage_path('app/authentications');
-            $file = $request->file('skill_image');
-            $fileName = uniqid(str_random(8)) . '.' . $file->getClientOriginalExtension();
-            $target = $file->move($savePath, $fileName);
-            if ($target) {
-                $data['skill_image'] = 'authentications-' . $fileName;
-            }
-        }
 
         $old_status = $authentication->status;
         $new_status = $data['status'];
         $authentication->update($data);
 
+        if($data['skill_tags'] !== null ){
+            $skill_tags = $data['skill_tags'];
+            $tags = Tag::whereIn('id',explode(',',$skill_tags))->get();
+            UserTag::detachByField($authentication->user_id,'skills');
+            UserTag::multiIncrement($authentication->user_id,$tags,'skills');
+        }
+
         if($old_status != 1 && $new_status == 1){
             $action = 'expert_valid';
-            event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$id,'专家认证'));
+            event(new Credit($authentication->user_id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$id,'专家认证'));
         }
 
         return $this->success(route('admin.authentication.index'),'行家认证信息修改成功');

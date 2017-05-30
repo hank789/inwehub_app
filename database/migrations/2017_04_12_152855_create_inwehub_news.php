@@ -13,6 +13,7 @@ class CreateInwehubNews extends Migration
      */
     public function up()
     {
+        return;
         Schema::connection('inwehub_read')->create('news_info', function (Blueprint $table) {
             $table->increments('_id');
             $table->string('title', 1024)->default('')->comment('文章标题');
