@@ -56,7 +56,7 @@ class Test extends Command
     public function handle()
     {
         $user = User::find(1);
-        $info_percent = $user->getInfoCompletePercent(true);
+        $info_percent = $user->userData->questions;
         var_dump($info_percent);
         return;
         $payData = [

@@ -38,6 +38,17 @@ trait BaseController {
         event(new CreditEvent($user_id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source_id,$source_subject));
     }
 
+
+    protected function creditAccountInfoCompletePercent($uid,$percent){
+        $valid_percent = config('intervapp.user_info_valid_percent',90);
+        if ($percent >= $valid_percent) {
+            $count = Cache::increment('account_info_complete_credit:'.$uid);
+        }
+        if ($count == 1){
+            $this->credit($uid,'user_info_complete');
+        }
+    }
+
     /**
      * 记录用户动态
      * @param $user_id 动态发起人

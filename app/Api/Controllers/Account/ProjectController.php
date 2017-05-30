@@ -56,8 +56,9 @@ class ProjectController extends Controller {
             Tag::multiSaveByIds($tags,$project);
         }
         UserCache::delUserInfoCache($user->id);
-
-        return self::createJsonData(true,['id'=>$project->id,'type'=>'project','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
+        $percent = $user->getInfoCompletePercent();
+        $this->creditAccountInfoCompletePercent($user->id,$percent);
+        return self::createJsonData(true,['id'=>$project->id,'type'=>'project','account_info_complete_percent'=>$percent]);
     }
 
     //提交修改

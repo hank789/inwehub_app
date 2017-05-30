@@ -223,11 +223,11 @@ class QuestionController extends Controller
             $loginUser->userData()->increment('questions');
             UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'questions');
             $this->credit($request->user()->id,'ask',$question->id,$question->title);
-            if($question->status == 1 ){
-                $message = '发起提问成功! '.get_credit_message(Setting()->get('credits_ask'),Setting()->get('coins_ask'));
-            }else{
-                $message = 'ok';
+            //首次提问
+            if($loginUser->userData->questions == 1){
+                $this->credit($request->user()->id,'first_ask',$question->id,$question->title);
             }
+            $message = '发起提问成功!';
 
             $this->counter( 'question_num_'. $question->user_id , 1 , 3600 );
 

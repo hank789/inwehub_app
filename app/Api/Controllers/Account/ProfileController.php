@@ -199,7 +199,9 @@ class ProfileController extends Controller
         }
         UserCache::delUserInfoCache($user->id);
 
-        return self::createJsonData(true,['account_info_complete_percent'=>$user->getInfoCompletePercent()]);
+        $percent = $user->getInfoCompletePercent();
+        $this->creditAccountInfoCompletePercent($user->id,$percent);
+        return self::createJsonData(true,['account_info_complete_percent'=>$percent]);
     }
 
     /**
@@ -229,7 +231,9 @@ class ProfileController extends Controller
                 //只有首次上传头像才加积分
                 $this->credit($user_id,'upload_avatar');
             }
-            return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$request->user()->getInfoCompletePercent()]);
+            $percent = $request->user()->getInfoCompletePercent();
+            $this->creditAccountInfoCompletePercent($user_id,$percent);
+            return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$percent]);
         }
         return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
 
