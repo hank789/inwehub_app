@@ -58,7 +58,7 @@ class AuthenticationController extends AdminController
         $object = Authentication::create($data);
         if($object && isset($data['status']) && $data['status'] == 1){
             $action = 'expert_valid';
-            event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$object->id,'专家认证'));
+            event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$data['user_id'],'专家认证'));
         }
         return $this->success(route('admin.authentication.index'),'行家认证信息添加成功');
     }
