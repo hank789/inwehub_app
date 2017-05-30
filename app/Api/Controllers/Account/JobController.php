@@ -25,7 +25,6 @@ class JobController extends Controller {
         'begin_time'   => 'required|date_format:Y-m',
         'end_time'   => 'required',
         'industry_tags'  => 'required',
-        'product_tags'   => 'required',
         'description' => 'nullable'
     ];
 
@@ -42,14 +41,12 @@ class JobController extends Controller {
         $data['user_id'] = $user->id;
 
         $industry_tags = $data['industry_tags']?implode(',',$data['industry_tags']):'';
-        $product_tags = $data['product_tags']?implode(',',$data['product_tags']):'';
 
         unset($data['industry_tags']);
-        unset($data['product_tags']);
 
         $job = JobInfo::create($data);
 
-        $tags = trim($industry_tags.','.$product_tags,',');
+        $tags = trim($industry_tags,',');
         /*添加标签*/
         if($tags){
             Tag::multiSaveByIds($tags,$job);
@@ -80,10 +77,8 @@ class JobController extends Controller {
             return self::createJsonData(false,['id'=>$id,'type'=>'job'],ApiException::BAD_REQUEST,'bad request');
         }
         $industry_tags = $data['industry_tags']?implode(',',$data['industry_tags']):'';
-        $product_tags = $data['product_tags']?implode(',',$data['product_tags']):'';
 
         unset($data['industry_tags']);
-        unset($data['product_tags']);
 
         unset($this->validateRules['id']);
         $update = [];
@@ -96,7 +91,7 @@ class JobController extends Controller {
         $job->update($update);
 
 
-        $tags = trim($industry_tags.','.$product_tags,',');
+        $tags = trim($industry_tags,',');
         /*添加标签*/
         if($tags){
             Tag::multiSaveByIds($tags,$job);
@@ -118,7 +113,6 @@ class JobController extends Controller {
             $job->product_tags = '';
 
             $job->industry_tags = TagsLogic::formatTags($job->tags()->where('category_id',9)->get());
-            $job->product_tags = TagsLogic::formatTags($job->tags()->where('category_id',10)->get());
         }
         return self::createJsonData(true,$jobs->toArray());
     }
