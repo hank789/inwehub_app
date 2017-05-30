@@ -12,7 +12,9 @@ return [
         'login'    => '登录',
         'register' => '注册',
         'ask'      => '发起提问',
+        'first_ask'=> '首次提问',
         'answer'   => '回答问题',
+        'first_answer' => '首次回答问题',
         'follow_question' => '关注了问题',
         'append_reward' => '对问题追加悬赏',
         'answer_adopted' => '回答被采纳',
@@ -21,6 +23,13 @@ return [
         'charge' => '金币充值',
         'reward_user' => '系统奖励',
         'punish_user' => '金币充值',
+        'expert_valid' => '专家认证',
+        'invite_user'  => '邀请好友',
+        'ask_good'     => '优质提问',
+        'answer_good'  => '优质回答',
+        'user_sign_daily' => '每日签到',
+        'user_info_complete' => '简历完成',
+        'upload_avatar'      => '头像上传'
     ],
     'notification_types' =>[
         'answer'  => '回答了问题',
