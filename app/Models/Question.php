@@ -120,33 +120,25 @@ class Question extends Model
                 $description = '未发布';
                 break;
             case 1:
-                $description = '您的提问平台已经受理,我们将会尽快为您寻找合适的专家!';
+                $description = '已受理';
                 break;
             case 2:
-                $description = '您的问题已分配给专家,正在等待专家响应';
+                $description = '已匹配';
                 break;
             case 3:
                 $description = '问题已关闭';
                 break;
             case 4:
-                $answer = $this->answers()->whereIn('status',[1,3])->orderBy('id','asc')->first();
-                $desc = promise_time_format($answer->promise_time);
-                if($user_id == $this->user_id){
-                    $description = $answer->user->name.'已承诺,'.$desc['desc'];
-                }else{
-                    $description = '倒计时'.$desc['diff'];
-                }
+                $description = '待回答';
                 break;
             case 5:
-                $description = '您的提问平台已经受理,我们将会尽快为您寻找合适的专家!';
+                $description = '已受理';
                 break;
             case 6:
-                $answer = $this->answers()->orderBy('id','desc')->first();
-                $description = $answer->user->name.'回答了您的问题';
+                $description = '已回答';
                 break;
             case 7:
-                $answer = $this->answers()->orderBy('id','desc')->first();
-                $description = $answer->user->name.'回答了您的问题';
+                $description = '已点评';
                 break;
         }
         return $description;

@@ -205,22 +205,19 @@ class AnswerController extends Controller
             switch($question->status){
                 case 2:
                     //已分配待确认
-                    $status_description = '您的问题来啦,请速速点击前往应答';
+                    $status_description = '待回答';
                     break;
                 case 4:
                     //已确认待回答
-                    $answer = Answer::where('status',3)->first();
-                    $answer_promise_time = $answer->promise_time;
-                    $desc = promise_time_format($answer_promise_time);
-                    $status_description = $desc['desc'].',点击前往回答';
+                    $status_description = '待回答';
                     break;
                 case 6:
                     //已回答待点评
-                    $status_description = '您已提交回答,等待对方评价';
+                    $status_description = '已回答';
                     break;
                 case 7:
                     //已点评
-                    $status_description = '对方已点评,点击前往查看评价';
+                    $status_description = '已回答';
                     break;
             }
             $list[] = [
