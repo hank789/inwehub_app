@@ -1,6 +1,7 @@
 <?php namespace App\Jobs\Question;
 
 use App\Events\Frontend\System\Push;
+use App\Logic\QuestionLogic;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use Illuminate\Bus\Queueable;
@@ -15,11 +16,11 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 /**
- * 检查邀请回答是否延期
+ * 检查邀请回答是否延期,通知系统
  * Class ConfirmOvertime
  * @package App\Jobs\Question
  */
-class ConfirmOvertime implements ShouldQueue
+class ConfirmOvertimeAlertSystem implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -31,13 +32,13 @@ class ConfirmOvertime implements ShouldQueue
     public $tries = 1;
 
     protected $question_id;
-    protected $invitation_id;
 
+    protected $overtime;
 
-    public function __construct($question_id, $invitation_id)
+    public function __construct($question_id,$overtime)
     {
         $this->question_id = $question_id;
-        $this->invitation_id = $invitation_id;
+        $this->overtime;
     }
 
     /**
@@ -49,8 +50,12 @@ class ConfirmOvertime implements ShouldQueue
     {
         $question = Question::find($this->question_id);
         if($question->status == 2) {
-            $question_invitation = QuestionInvitation::find($this->invitation_id);
-            event(new Push($question_invitation->user,'请您尽快确认回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+            $fields[] = [
+                'title' => 'tags',
+                'value' => implode(',',$question->tags()->pluck('name')->toArray())
+            ];
+            QuestionLogic::slackMsg($question)
+                ->send('问题超过'.$this->overtime.'分钟没有专家响应');
         }
     }
 }

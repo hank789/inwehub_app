@@ -1,6 +1,7 @@
 <?php namespace App\Jobs\Question;
 
 use App\Events\Frontend\System\Push;
+use App\Models\Answer;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use Illuminate\Bus\Queueable;
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Log;
  * Class ConfirmOvertime
  * @package App\Jobs\Question
  */
-class ConfirmOvertime implements ShouldQueue
+class PromiseOvertime implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -30,14 +31,15 @@ class ConfirmOvertime implements ShouldQueue
      */
     public $tries = 1;
 
-    protected $question_id;
-    protected $invitation_id;
+    protected $answer_id;
+
+    protected $overtime;
 
 
-    public function __construct($question_id, $invitation_id)
+    public function __construct($answer_id,$overtime)
     {
-        $this->question_id = $question_id;
-        $this->invitation_id = $invitation_id;
+        $this->answer_id = $answer_id;
+        $this->overtime = $overtime;
     }
 
     /**
@@ -47,10 +49,10 @@ class ConfirmOvertime implements ShouldQueue
      */
     public function handle()
     {
-        $question = Question::find($this->question_id);
-        if($question->status == 2) {
-            $question_invitation = QuestionInvitation::find($this->invitation_id);
-            event(new Push($question_invitation->user,'请您尽快确认回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+        $answer = Answer::find($this->answer_id);
+        if($answer->status == 3) {
+            $question = $answer->question;
+            event(new Push($answer->user,'距离您的承诺时间还有'.$this->overtime.'分钟',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
         }
     }
 }

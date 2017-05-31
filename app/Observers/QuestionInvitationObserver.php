@@ -5,8 +5,11 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Jobs\Question\ConfirmOvertime;
+use App\Logic\QuestionLogic;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class QuestionInvitationObserver implements ShouldQueue {
@@ -26,30 +29,10 @@ class QuestionInvitationObserver implements ShouldQueue {
      */
     public function created(QuestionInvitation $invitation)
     {
-        $this->slackMsg($invitation)
+        QuestionLogic::slackMsg($invitation->question)
             ->send('问题'.($invitation->send_to == 'auto'?'自动':'').'分配给了用户['.$invitation->user->name.']');
-    }
-
-
-    protected function slackMsg(QuestionInvitation $invitation){
-        $question = $invitation->question;
-        $fields[] = [
-            'title' => 'tags',
-            'value' => implode(',',$question->tags()->pluck('name')->toArray())
-        ];
-        $url = route('ask.question.detail',['id'=>$question->id]);
-        return \Slack::to(config('slack.ask_activity_channel'))
-            ->disableMarkdown()
-            ->attach(
-                [
-                    'text' => $question->title,
-                    'pretext' => '[链接]('.$url.')',
-                    'author_name' => $question->user->name,
-                    'author_link' => $url,
-                    'mrkdwn_in' => ['pretext'],
-                    'fields' => $fields
-                ]
-            );
+        //延时处理是否需要告警专家
+        dispatch((new ConfirmOvertime($invitation->question_id,$invitation->id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',10))));
     }
 
 }

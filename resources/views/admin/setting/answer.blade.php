@@ -37,10 +37,34 @@
                                 </tr>
 
                                 <tr>
-                                    <td>专家多久未回答进行告警(分钟)</td>
+                                    <td>超时未处理通知专家(分钟)</td>
                                     <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('question_invite_unanswer_alert_minute')) has-error @endif "><input type="text" class="form-control" name="question_invite_unanswer_alert_minute" value="{{ old('question_invite_unanswer_alert_minute',Setting()->get('question_invite_unanswer_alert_minute',10)) }}" /></div>
-                                        @if($errors->has('question_invite_unanswer_alert_minute')) <p class="help-block">{{ $errors->first('question_invite_unanswer_alert_minute') }}</p> @endif
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('alert_minute_expert_unconfirm_question')) has-error @endif "><input type="text" class="form-control" name="alert_minute_expert_unconfirm_question" value="{{ old('alert_minute_expert_unconfirm_question',Setting()->get('alert_minute_expert_unconfirm_question',10)) }}" /></div>
+                                        @if($errors->has('alert_minute_expert_unconfirm_question')) <p class="help-block">{{ $errors->first('alert_minute_expert_unconfirm_question') }}</p> @endif
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>离承诺时间多久告警专家(分钟)</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('alert_minute_expert_over_question_promise_time')) has-error @endif "><input type="text" class="form-control" name="alert_minute_expert_over_question_promise_time" value="{{ old('alert_minute_expert_over_question_promise_time',Setting()->get('alert_minute_expert_over_question_promise_time',10)) }}" /></div>
+                                        @if($errors->has('alert_minute_expert_over_question_promise_time')) <p class="help-block">{{ $errors->first('alert_minute_expert_over_question_promise_time') }}</p> @endif
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>专家超时未处理告警运营(分钟)</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('alert_minute_operator_question_unconfirm')) has-error @endif "><input type="text" class="form-control" name="alert_minute_operator_question_unconfirm" value="{{ old('alert_minute_operator_question_unconfirm',Setting()->get('alert_minute_operator_question_unconfirm',10)) }}" /></div>
+                                        @if($errors->has('alert_minute_operator_question_unconfirm')) <p class="help-block">{{ $errors->first('alert_minute_operator_question_unconfirm') }}</p> @endif
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>运营超时未分配告警(分钟)</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('alert_minute_operator_question_uninvite')) has-error @endif "><input type="text" class="form-control" name="alert_minute_operator_question_uninvite" value="{{ old('alert_minute_operator_question_uninvite',Setting()->get('alert_minute_operator_question_uninvite',10)) }}" /></div>
+                                        @if($errors->has('alert_minute_operator_question_uninvite')) <p class="help-block">{{ $errors->first('alert_minute_operator_question_uninvite') }}</p> @endif
                                     </td>
                                 </tr>
 

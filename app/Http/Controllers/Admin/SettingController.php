@@ -282,7 +282,7 @@ class SettingController extends AdminController
     public function answer(Request $request){
         $validateRules = [
             'is_inviter_must_expert' => 'required|between:0,1',
-            'question_invite_unanswer_alert_minute' => 'required|integer'
+            'alert_minute_operator_question_uninvite' => 'required|integer'
         ];
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);

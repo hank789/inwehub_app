@@ -5,8 +5,11 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Jobs\Question\PromiseOvertime;
+use App\Logic\QuestionLogic;
 use App\Models\Answer;
 use App\Models\Question;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class AnswerObserver implements ShouldQueue {
@@ -26,6 +29,10 @@ class AnswerObserver implements ShouldQueue {
                 //承诺回答
                 $this->slackMsg($answer->question)
                     ->send('用户['.$answer->user->name.']承诺在'.$answer->promise_time.'前回答该问题');
+                //承诺告警
+                $overtime = Setting()->get('alert_minute_expert_over_question_promise_time',10);
+                $promise_datetime = Carbon::createFromTimestamp(strtotime($answer->promise_time))->subMinutes($overtime);
+                dispatch((new PromiseOvertime($answer->id,$overtime))->delay($promise_datetime));
                 break;
             case 0:
             case 1:
@@ -52,18 +59,7 @@ class AnswerObserver implements ShouldQueue {
 
 
     protected function slackMsg(Question $question){
-        $url = route('ask.question.detail',['id'=>$question->id]);
-        return \Slack::to(config('slack.ask_activity_channel'))
-            ->disableMarkdown()
-            ->attach(
-                [
-                    'text' => $question->title,
-                    'pretext' => '[链接]('.$url.')',
-                    'author_name' => $question->user->name,
-                    'author_link' => $url,
-                    'mrkdwn_in' => ['pretext']
-                ]
-            );
+        return QuestionLogic::slackMsg($question);
     }
 
 }

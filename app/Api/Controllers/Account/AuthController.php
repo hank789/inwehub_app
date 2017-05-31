@@ -63,7 +63,7 @@ class AuthController extends Controller
         }
 
         $code = makeVerifyCode();
-        dispatch(new SendPhoneMessage($mobile,$code,$type));
+        dispatch((new SendPhoneMessage($mobile,$code,$type)));
         return self::createJsonData(true);
     }
 

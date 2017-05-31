@@ -32,6 +32,12 @@ class SendPhoneMessage implements ShouldQueue
     protected $phone;
     protected $code;
 
+    /**
+     * SendPhoneMessage constructor.
+     * @param $phone
+     * @param $code
+     * @param string $type
+     */
     public function __construct($phone,$code,$type='register')
     {
         $app = new App(config('alidayu'));

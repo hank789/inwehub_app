@@ -5,8 +5,10 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Jobs\Question\InvitationOvertimeAlertSystem;
+use App\Logic\QuestionLogic;
 use App\Models\Question;
-use App\Models\QuestionInvitation;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class QuestionObserver implements ShouldQueue {
@@ -26,28 +28,10 @@ class QuestionObserver implements ShouldQueue {
      */
     public function created(Question $question)
     {
-        $this->slackMsg($question)
+        QuestionLogic::slackMsg($question)
             ->send('用户['.$question->user->name.']新建了问题');
-    }
-
-    protected function slackMsg(Question $question){
-        $fields[] = [
-            'title' => 'tags',
-            'value' => implode(',',$question->tags()->pluck('name')->toArray())
-        ];
-        $url = route('ask.question.detail',['id'=>$question->id]);
-        return \Slack::to(config('slack.ask_activity_channel'))
-            ->disableMarkdown()
-            ->attach(
-                [
-                    'text' => $question->title,
-                    'pretext' => '[链接]('.$url.')',
-                    'author_name' => $question->user->name,
-                    'author_link' => $url,
-                    'mrkdwn_in' => ['pretext'],
-                    'fields' => $fields
-                ]
-            );
+        $overtime = Setting()->get('alert_minute_operator_question_uninvite',10);
+        dispatch((new InvitationOvertimeAlertSystem($this->id,$overtime))->delay(Carbon::now()->addMinutes($overtime)));
     }
 
 }
