@@ -197,7 +197,7 @@ class Question extends Model
     public function invitedAnswer(){
         //只有状态是待分配和已拒绝时才要更改状态
         if($this->status != 4 && $this->status != 6 && $this->status != 7){
-            if($this->status == 2) {
+            if($this->status != 2) {
                 $overtime = Setting()->get('alert_minute_operator_question_unconfirm',10);
                 dispatch((new ConfirmOvertimeAlertSystem($this->id,$overtime))->delay(Carbon::now()->addMinutes($overtime)));
             }
