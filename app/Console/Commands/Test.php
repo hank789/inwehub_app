@@ -59,7 +59,7 @@ class Test extends Command
     {
         //$userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
         $question = Question::find(18);
-        $tagIds = $question->tags()->pluck('id')->toArray();
+        $tagIds = $question->tags()->pluck('tags.id')->toArray();
         $userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',$tagIds)->where('user_tags.skills','>=','1')->pluck('user_tags.user_id')->toArray();
         $userTags = array_unique($userTags);
         var_dump($userTags);return;
