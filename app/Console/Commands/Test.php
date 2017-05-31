@@ -56,8 +56,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
-        var_dump($userTags);
+        //$userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
+        $recommend_qa = RecommendQa::select(['id','subject as description'])->where('status',1)->orderBy('sort','asc')->orderBy('updated_at','desc')->toSql();
+        var_dump($recommend_qa);
         return;
         $payData = [
             'body'    => 'test',

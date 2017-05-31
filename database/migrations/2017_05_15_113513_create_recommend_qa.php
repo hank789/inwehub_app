@@ -19,6 +19,7 @@ class CreateRecommendQa extends Migration
             $table->string('user_name');                       //名字
             $table->string('user_avatar_url');                      //头像地址
             $table->integer('price'); //金额
+            $table->tinyInteger('type')->default(1);   //类型,1提问,2回答
             $table->tinyInteger('sort');                 //排序字段 ASC
             $table->tinyInteger('status')->default(1);   //状态
             $table->timestamps();
