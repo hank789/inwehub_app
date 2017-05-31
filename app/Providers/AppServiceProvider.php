@@ -4,6 +4,7 @@ namespace App\Providers;
 use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Question;
+use App\Models\QuestionInvitation;
 use App\Models\User;
 use App\Models\UserInfo\EduInfo;
 use App\Models\UserInfo\JobInfo;
@@ -11,6 +12,7 @@ use App\Models\UserInfo\ProjectInfo;
 use App\Models\UserInfo\TrainInfo;
 use App\Observers\AnswerObserver;
 use App\Observers\AuthenticationObserver;
+use App\Observers\QuestionInvitationObserver;
 use App\Observers\QuestionObserver;
 use App\Observers\UserEduObserver;
 use App\Observers\UserJobObserver;
@@ -48,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
         EduInfo::observe(UserEduObserver::class);
         ProjectInfo::observe(UserProjectObserver::class);
         TrainInfo::observe(UserTrainObserver::class);
+        QuestionInvitation::observe(QuestionInvitationObserver::class);
     }
 
     /**

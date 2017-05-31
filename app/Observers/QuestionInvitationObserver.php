@@ -35,4 +35,6 @@ class QuestionInvitationObserver implements ShouldQueue {
         dispatch((new ConfirmOvertime($invitation->question_id,$invitation->id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',10))));
     }
 
+
+
 }
