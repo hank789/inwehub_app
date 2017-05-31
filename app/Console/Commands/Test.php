@@ -12,6 +12,7 @@ use App\Models\Pay\Order;
 use App\Models\Pay\Settlement;
 use App\Models\Pay\UserMoney;
 use App\Models\Question;
+use App\Models\QuestionInvitation;
 use App\Models\RecommendQa;
 use App\Models\Tag;
 use App\Models\User;
@@ -57,8 +58,29 @@ class Test extends Command
     public function handle()
     {
         //$userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
-        $s = Carbon::createFromTimestamp(time());
-        var_dump($s);
+        $question = Question::find(18);
+        $tagIds = $question->tags()->pluck('id')->toArray();
+        $userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',$tagIds)->where('user_tags.skills','>=','1')->pluck('user_tags.user_id')->toArray();
+        $userTags = array_unique($userTags);
+        var_dump($userTags);return;
+        foreach($userTags as $uid){
+            $toUser = User::find($uid);
+            $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$uid,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
+                'from_user_id'=> $question->user_id,
+                'question_id'=> $question->id,
+                'user_id'=> $uid,
+                'send_to'=> 'auto' //标示自动匹配
+            ]);
+
+            //已邀请
+            $question->invitedAnswer();
+            //记录动态
+            TaskLogic::doing($question->user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'');
+            //记录任务
+            TaskLogic::task($uid,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
+            //推送
+            event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+        }
         return;
         $payData = [
             'body'    => 'test',
