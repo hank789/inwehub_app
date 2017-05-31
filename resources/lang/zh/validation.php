@@ -104,7 +104,8 @@ return [
     |
     */
     'attributes' => [
-        'email'     => '邮箱'
+        'email'     => '邮箱',
+        'begin_time' => '开始时间'
     ],
 
 ];
