@@ -29,6 +29,7 @@ class QuestionEventListener implements ShouldQueue
         $userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',$tagIds)->where('user_tags.skills','>=','1')->pluck('user_tags.user_id')->toArray();
         $userTags = array_unique($userTags);
         foreach($userTags as $uid){
+            if($uid == $question->user_id) continue;
             $toUser = User::find($uid);
             $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$uid,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
                 'from_user_id'=> $question->user_id,
