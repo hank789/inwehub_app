@@ -27,9 +27,6 @@ class AdminController extends Controller {
         /*未审核评论数*/
         $notVerifiedData['comments'] = Comment::where('status','=',0)->count();
 
-
-        //当前是否开启小菜单
-        View::share('sidebar_collapse',Cookie::get('sidebar_collapse'));
         View::share('notVerifiedData',$notVerifiedData);
 
 

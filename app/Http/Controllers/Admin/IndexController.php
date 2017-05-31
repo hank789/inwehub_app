@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class IndexController extends AdminController
 {
@@ -31,9 +33,9 @@ class IndexController extends AdminController
 
     /*显示或隐藏sidebar*/
     public function sidebar(Request $request){
-        Cookie::forget('sidebar_collapse');
-        $cookie = Cookie::forever('sidebar_collapse',$request->get('collapse'));
-        return response()->json('ok')->withCookie($cookie);
+        Session::forget('sidebar_collapse');
+        Session::put("sidebar_collapse",$request->get('collapse'));
+        return response()->json(Session::get('sidebar_collapse'));
     }
 
 

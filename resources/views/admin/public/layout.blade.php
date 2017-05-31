@@ -28,7 +28,7 @@
     <script src="{{ asset('js/respond.min.js') }}"></script>
     <![endif]-->
 </head>
-<body class="skin-blue sidebar-mini @if($sidebar_collapse) sidebar-collapse @endif">
+<body class="skin-blue sidebar-mini @if(Session::get('sidebar_collapse') == 1) sidebar-collapse @endif">
 <div class="wrapper">
     <header class="main-header">
         <!-- Logo -->
