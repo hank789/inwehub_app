@@ -358,12 +358,15 @@ class QuestionController extends Controller
             return $this->ajaxError(50008,'该用户已被邀请，不能重复邀请');
         }
 
-        $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
-            'from_user_id'=> $question->user_id,
-            'question_id'=> $question->id,
-            'user_id'=> $toUser->id,
-            'send_to'=> $toUser->email
-        ]);
+        $invitation = QuestionInvitation::where('user_id',$toUser->id)->where('from_user_id',$question->user_id)->where('question_id',$question->id)->first();
+        if(empty($invitation)){
+            $invitation = QuestionInvitation::firstOrCreate([
+                'from_user_id'=> $question->user_id,
+                'question_id'=> $question->id,
+                'user_id'=> $toUser->id,
+                'send_to'=> $toUser->email
+            ]);
+        }
 
         //已邀请
         $question->invitedAnswer();
