@@ -205,7 +205,7 @@ class AuthController extends Controller
             if(empty($rcode)){
                 throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
             }
-            if(strtotime($rcode->expired_at) < time()){
+            if($rcode->expired_at && strtotime($rcode->expired_at) < time()){
                 throw new ApiException(ApiException::USER_REGISTRATION_CODE_OVERTIME);
             }
         }
