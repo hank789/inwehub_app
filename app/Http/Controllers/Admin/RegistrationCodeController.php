@@ -56,8 +56,10 @@ class RegistrationCodeController extends AdminController
         $request->flash();
 
         $this->validate($request,$this->validateRules);
-
-        UserRegistrationCode::create($request->all());
+        $data = $request->all();
+        $data['recommend_uid'] = $request->user()->id;
+        $data['expired_at']    = date('Y-m-d 23:59:59',strtotime('+3 days'));
+        UserRegistrationCode::create($data);
 
         return $this->success(route('admin.operate.rgcode.index'),'添加成功');
 

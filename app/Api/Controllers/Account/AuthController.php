@@ -205,6 +205,9 @@ class AuthController extends Controller
             if(empty($rcode)){
                 throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
             }
+            if(strtotime($rcode->expired_at) < time()){
+                throw new ApiException(ApiException::USER_REGISTRATION_CODE_OVERTIME);
+            }
         }
 
         //验证手机验证码
@@ -230,6 +233,7 @@ class AuthController extends Controller
         $user->userData->save();
         if(isset($rcode)){
             $rcode->status = UserRegistrationCode::CODE_STATUS_USED;
+            $rcode->register_uid = $user->id;
             $rcode->save();
         }
         $message = '注册成功!';

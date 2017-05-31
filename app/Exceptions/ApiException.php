@@ -44,6 +44,8 @@ class ApiException extends Exception
     const USER_DATE_RANGE_INVALID = 1107;
     const USER_REGISTRATION_CODE_INVALID = 1108;
     const USER_SUSPEND = 1109;
+    const USER_REGISTRATION_CODE_OVERTIME = 1110;
+
 
 
     //问答模块响应码
@@ -91,6 +93,7 @@ class ApiException extends Exception
         self::USER_DATE_RANGE_INVALID => '起始日期有误',
         self::USER_REGISTRATION_CODE_INVALID => '邀请码错误',
         self::USER_SUSPEND => '您的账户已被禁用',
+        self::USER_REGISTRATION_CODE_OVERTIME => '邀请码已过期',
 
 
         //问答模块
