@@ -38,7 +38,7 @@ class ConfirmOvertimeAlertSystem implements ShouldQueue
     public function __construct($question_id,$overtime)
     {
         $this->question_id = $question_id;
-        $this->overtime;
+        $this->overtime = $overtime;
     }
 
     /**
