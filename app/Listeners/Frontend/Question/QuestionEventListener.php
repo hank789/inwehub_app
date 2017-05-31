@@ -30,15 +30,12 @@ class QuestionEventListener implements ShouldQueue
         $userTags = array_unique($userTags);
         foreach($userTags as $uid){
             $toUser = User::find($uid);
-            $invitation = QuestionInvitation::where('user_id',$uid)->where('from_user_id',$question->user_id)->where('question_id',$question->id)->first();
-            if(empty($invitation)){
-                $invitation = QuestionInvitation::create([
-                    'from_user_id'=> $question->user_id,
-                    'question_id'=> $question->id,
-                    'user_id'=> $uid,
-                    'send_to'=> 'auto' //标示自动匹配
-                ]);
-            }
+            $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$uid,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
+                'from_user_id'=> $question->user_id,
+                'question_id'=> $question->id,
+                'user_id'=> $uid,
+                'send_to'=> 'auto' //标示自动匹配
+            ]);
 
             //已邀请
             $question->invitedAnswer();
