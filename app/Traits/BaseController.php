@@ -65,7 +65,7 @@ trait BaseController {
      */
     protected function doing($user_id,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content=null)
     {
-        TaskLogic::doing($user_id,$action,$source_type,$source_id,$subject,$content,$refer_id,$refer_user_id,$refer_content);
+        return TaskLogic::doing($user_id,$action,$source_type,$source_id,$subject,$content,$refer_id,$refer_user_id,$refer_content);
     }
 
 
@@ -78,7 +78,7 @@ trait BaseController {
      * @return \Illuminate\Database\Eloquent\Model
      */
     protected function task($user_id,$source_type,$source_id,$action){
-        TaskLogic::task($user_id,$source_type,$source_id,$action);
+        return TaskLogic::task($user_id,$source_type,$source_id,$action);
     }
 
     protected function finishTask($source_type,$source_id,$action,$user_ids,$expert_user_ids=[]){
