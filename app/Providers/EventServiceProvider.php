@@ -32,6 +32,8 @@ class EventServiceProvider extends ServiceProvider
          */
         \App\Listeners\Frontend\Expert\ExpertEventListener::class,
         \App\Listeners\Frontend\WithdrawEventListener::class,
+        \App\Listeners\Frontend\Question\QuestionEventListener::class,
+
 
         /*
          * Auth Subscribers

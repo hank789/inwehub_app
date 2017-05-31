@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Models\UserDevice;
 use App\Models\UserInfo\JobInfo;
 use App\Models\UserRegistrationCode;
+use App\Models\UserTag;
 use App\Services\City\CityData;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -55,7 +56,8 @@ class Test extends Command
      */
     public function handle()
     {
-
+        $userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
+        var_dump($userTags);
         return;
         $payData = [
             'body'    => 'test',

@@ -294,8 +294,8 @@ class Question extends Model
     }
 
     /*是否已经邀请用户回答了*/
-    public function isInvited($sendTo,$fromUserId){
-        return $this->invitations()->where("send_to","=",$sendTo)->where("from_user_id","=",$fromUserId)->count();
+    public function isInvited($toUserId,$fromUserId){
+        return $this->invitations()->where("user_id","=",$toUserId)->where("from_user_id","=",$fromUserId)->count();
     }
 
 

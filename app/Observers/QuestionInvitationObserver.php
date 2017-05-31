@@ -9,7 +9,7 @@ use App\Models\Question;
 use App\Models\QuestionInvitation;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class QuestionObserver implements ShouldQueue {
+class QuestionInvitationObserver implements ShouldQueue {
 
     /**
      * 任务最大尝试次数
@@ -21,16 +21,18 @@ class QuestionObserver implements ShouldQueue {
     /**
      * 监听问题创建的事件。
      *
-     * @param  Question  $question
+     * @param  QuestionInvitation  $invitation
      * @return void
      */
-    public function created(Question $question)
+    public function created(QuestionInvitation $invitation)
     {
-        $this->slackMsg($question)
-            ->send('用户['.$question->user->name.']新建了问题');
+        $this->slackMsg($invitation)
+            ->send('问题'.($invitation->send_to == 'auto'?'自动':'').'分配给了用户['.$invitation->user->name.']');
     }
 
-    protected function slackMsg(Question $question){
+
+    protected function slackMsg(QuestionInvitation $invitation){
+        $question = $invitation->question;
         $fields[] = [
             'title' => 'tags',
             'value' => implode(',',$question->tags()->pluck('name')->toArray())

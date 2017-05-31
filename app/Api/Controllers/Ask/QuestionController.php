@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Ask;
 
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
@@ -248,6 +249,9 @@ class QuestionController extends Controller
 
                 //推送
                 event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+            }else{
+                //非定向邀请的自动匹配一次
+                event(new AutoInvitation($question));
             }
 
             $res_data = [

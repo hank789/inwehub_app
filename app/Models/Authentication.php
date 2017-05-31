@@ -58,6 +58,10 @@ class Authentication extends Model
     {
         parent::boot();
 
+        static::created(function($authentication){
+            $authentication->userData->update(['authentication_status'=>$authentication->status]);
+        });
+
         static::updating(function($authentication){
             $authentication->userData->update(['authentication_status'=>$authentication->status]);
         });

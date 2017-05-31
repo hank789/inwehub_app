@@ -18,7 +18,7 @@ class AuthenticationObserver implements ShouldQueue {
     public $tries = 1;
 
 
-    public function creating(Authentication $authentication)
+    public function created(Authentication $authentication)
     {
         $this->slackMsg($authentication)
             ->send('用户['.$authentication->user->name.']申请专家认证');

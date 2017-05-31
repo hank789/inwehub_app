@@ -4,6 +4,7 @@
  * @date: 2017/4/7 下午1:32
  * @email: wanghui@yonglibao.com
  */
+use App\Logic\TaskLogic;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Notification;
@@ -64,23 +65,7 @@ trait BaseController {
      */
     protected function doing($user_id,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content=null)
     {
-        try{
-            return Doing::create([
-                'user_id' => $user_id,
-                'action' => $action,
-                'source_id' => $source_id,
-                'source_type' => $source_type,
-                'subject' => $subject,
-                'content' => strip_tags($content),
-                'refer_id' => $refer_id,
-                'refer_user_id' => $refer_user_id,
-                'refer_content' => strip_tags($refer_content),
-                'created_at' => Carbon::now()
-            ]);
-        }catch (\Exception $e){
-            exit($e->getMessage());
-        }
-
+        TaskLogic::doing($user_id,$action,$source_type,$source_id,$subject,$content,$refer_id,$refer_user_id,$refer_content);
     }
 
 
@@ -93,28 +78,11 @@ trait BaseController {
      * @return \Illuminate\Database\Eloquent\Model
      */
     protected function task($user_id,$source_type,$source_id,$action){
-        try{
-            return Task::create([
-                'user_id' => $user_id,
-                'source_id' => $source_id,
-                'source_type' => $source_type,
-                'action' => $action
-            ]);
-        }catch (\Exception $e){
-            exit($e->getMessage());
-        }
+        TaskLogic::task($user_id,$source_type,$source_id,$action);
     }
 
     protected function finishTask($source_type,$source_id,$action,$user_ids,$expert_user_ids=[]){
-        $query = Task::where('source_id',$source_id)
-            ->where('source_type',$source_type);
-        if($user_ids) {
-            $query->whereIn('user_id',$user_ids);
-        }
-        if($expert_user_ids){
-            $query->whereNotIn('user_id',$expert_user_ids);
-        }
-        return $query->where('action',$action)->update(['status'=>1]);
+        return TaskLogic::finishTask($source_type,$source_id,$action,$user_ids,$expert_user_ids);
     }
 
 

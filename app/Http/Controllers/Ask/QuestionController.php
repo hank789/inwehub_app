@@ -354,7 +354,7 @@ class QuestionController extends Controller
         }
 
         /*是否已邀请，不能重复邀请*/
-        if($question->isInvited($toUser->email,$question->user_id)){
+        if($question->isInvited($toUser->id,$question->user_id)){
             return $this->ajaxError(50008,'该用户已被邀请，不能重复邀请');
         }
 
