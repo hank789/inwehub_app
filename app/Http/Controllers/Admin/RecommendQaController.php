@@ -99,6 +99,7 @@ class RecommendQaController extends AdminController
 
         $recommendation->sort = $request->input('sort');
         $recommendation->status = $request->input('status');
+        $recommendation->type   = $request->input('type');
 
         $recommendation->save();
         return $this->success(route('admin.operate.recommendQa.index'),'推荐修改成功');

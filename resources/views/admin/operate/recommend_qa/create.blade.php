@@ -44,6 +44,17 @@
                                 <input type="text" name="sort" class="form-control "  placeholder="请输入整数，小的排前面" value="{{ old('sort','') }}">
                             </div>
                             <div class="form-group">
+                                <label>类型</label>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="type" value="1" checked /> 提问
+                                    </label>&nbsp;&nbsp;
+                                    <label>
+                                        <input type="radio" name="type" value="2" /> 回答
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label>状态</label>
                                 <div class="radio">
                                     <label>

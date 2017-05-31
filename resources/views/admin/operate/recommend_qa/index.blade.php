@@ -34,6 +34,7 @@
                                         <th>提问者头像</th>
                                         <th>价格</th>
                                         <th>状态</th>
+                                        <th>类型</th>
                                         <th>更新时间</th>
                                         <th>操作</th>
                                     </tr>
@@ -46,6 +47,7 @@
                                             <td>{{ $recommendation->user_avatar_url }}</td>
                                             <td>{{ $recommendation->price }}</td>
                                             <td>{{ trans_common_status($recommendation->status) }}</td>
+                                            <td>{{ $recommendation->type == 1 ? '提问':'回答' }}</td>
                                             <td>{{ $recommendation->updated_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
