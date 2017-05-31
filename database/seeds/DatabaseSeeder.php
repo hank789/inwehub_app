@@ -85,7 +85,17 @@ class DatabaseSeeder extends Seeder
             ['name' => 'register_title','value' => '欢迎加入英淘社区'],
             ['name' => 'website_slogan','value' => '做最好的咨询社区'],
             ['name' => 'website_welcome','value' => '欢迎加入英淘社区，一起成长'],
-            ['name' => 'is_inviter_must_expert', 'value' => '1']
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+            ['name' => 'question_invite_unanswer_alert_minute', 'value' => '10'],
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+            ['name' => 'is_inviter_must_expert', 'value' => '1'],
+
         ]);
 
 

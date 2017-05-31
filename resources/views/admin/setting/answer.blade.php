@@ -36,6 +36,14 @@
                                     </td>
                                 </tr>
 
+                                <tr>
+                                    <td>专家多久未回答进行告警(分钟)</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('question_invite_unanswer_alert_minute')) has-error @endif "><input type="text" class="form-control" name="question_invite_unanswer_alert_minute" value="{{ old('question_invite_unanswer_alert_minute',Setting()->get('question_invite_unanswer_alert_minute',10)) }}" /></div>
+                                        @if($errors->has('question_invite_unanswer_alert_minute')) <p class="help-block">{{ $errors->first('question_invite_unanswer_alert_minute') }}</p> @endif
+                                    </td>
+                                </tr>
+
                                 </tbody>
                             </table>
                         </div>
