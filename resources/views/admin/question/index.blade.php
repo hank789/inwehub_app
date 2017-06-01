@@ -70,7 +70,8 @@
                                         <th>匿名</th>
                                         <th>拒绝/邀请</th>
                                         <th>回答/查看</th>
-                                        <th>时间</th>
+                                        <th>承诺时间</th>
+                                        <th>创建时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -85,6 +86,7 @@
                                             <td>{{ $question->hide ? '匿名':'非匿名' }}</td>
                                             <td>{{ $question->invitations()->where('status',2)->count() }} / {{ $question->invitations()->count() }}</td>
                                             <td>{{ $question->answers }} / {{ $question->views }}</td>
+                                            <td>{{ $question->status >=6 ?$question->answers()->where('adopted_at','>',0)->first()->promise_time:'' }}</td>
                                             <td>{{ timestamp_format($question->created_at) }}</td>
                                             <td><span class="label @if($question->status===0) label-danger @elseif($question->status===1) label-warning @else label-success @endif">{{ trans_question_status($question->status) }}</span> </td>
                                             <td>
