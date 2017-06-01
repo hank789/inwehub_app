@@ -31,7 +31,7 @@ class QuestionObserver implements ShouldQueue {
         QuestionLogic::slackMsg($question,null,'')
             ->send('用户['.$question->user->name.']新建了问题','#C0C0C0');
         $overtime = Setting()->get('alert_minute_operator_question_uninvite',10);
-        dispatch((new InvitationOvertimeAlertSystem($this->id,$overtime))->delay(Carbon::now()->addMinutes($overtime)));
+        dispatch((new InvitationOvertimeAlertSystem($question->id,$overtime))->delay(Carbon::now()->addMinutes($overtime)));
     }
 
 }
