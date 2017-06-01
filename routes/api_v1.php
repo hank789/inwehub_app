@@ -148,6 +148,8 @@ Route::post('pay/config','SystemController@getPayConfig');
 Route::post('system/service_register','SystemController@serviceRegister');
 //获取关于我们
 Route::post('system/service_about','SystemController@serviceAbout');
+//获取常见问题
+Route::post('system/service_help','SystemController@serviceHelp');
 
 
 //消息模块

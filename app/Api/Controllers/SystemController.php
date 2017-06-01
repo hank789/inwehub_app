@@ -81,6 +81,7 @@ class SystemController extends Controller {
         return self::createJsonData(true,get_pay_config());
     }
 
+    //服务条款
     public function serviceRegister(){
         $data = [
             'html' => Setting()->get('register_license','')
@@ -89,9 +90,19 @@ class SystemController extends Controller {
         return self::createJsonData(true,$data);
     }
 
+    //关于我们
     public function serviceAbout(){
         $data = [
             'html' => Setting()->get('about_us','')
+        ];
+
+        return self::createJsonData(true,$data);
+    }
+
+    //常见问题
+    public function serviceHelp(){
+        $data = [
+            'html' => Setting()->get('app_help','')
         ];
 
         return self::createJsonData(true,$data);
