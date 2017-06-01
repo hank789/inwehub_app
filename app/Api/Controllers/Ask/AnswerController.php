@@ -272,9 +272,6 @@ class AnswerController extends Controller
         $answer->question()->update(['status'=>7]);
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
-        //推送通知
-        event(new Push($answer->user,'您的回答已点评,点击查看',$answer->content,['object_type'=>'answer','object_id'=>$answer->question_id]));
-
 
         return self::createJsonData(true,$request->all());
     }
