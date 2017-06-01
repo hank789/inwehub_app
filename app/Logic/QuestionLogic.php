@@ -10,7 +10,7 @@ use App\Models\Question;
 
 class QuestionLogic {
 
-    public static function slackMsg(Question $question, array $other_fields = null){
+    public static function slackMsg(Question $question, array $other_fields = null, $color = 'good'){
         $fields[] = [
             'title' => '标签',
             'value' => implode(',',$question->tags()->pluck('name')->toArray())
@@ -28,6 +28,7 @@ class QuestionLogic {
                     'author_name' => $question->user->name,
                     'author_link' => $url,
                     'mrkdwn_in' => ['pretext'],
+                    'color'     => $color,
                     'fields' => $fields
                 ]
             );

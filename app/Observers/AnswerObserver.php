@@ -83,7 +83,7 @@ class AnswerObserver implements ShouldQueue {
                     'title' => '拒绝标签',
                     'value' => implode(',',$answer->tags()->pluck('name')->toArray())
                 ];
-                $this->slackMsg($answer->question,$fields)
+                $this->slackMsg($answer->question,$fields,'warning')
                     ->send('用户['.$answer->user->name.']拒绝回答该问题');
                 break;
         }
