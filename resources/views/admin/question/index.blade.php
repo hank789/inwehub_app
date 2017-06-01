@@ -91,6 +91,9 @@
                                             <td><span class="label @if($question->status===0) label-danger @elseif($question->status===1) label-warning @else label-success @endif">{{ trans_question_status($question->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
+                                                    @if( !in_array($question->status, [4,6,7]) )
+                                                        <a class="btn btn-default" href="#" onclick="showInviteModal(this)" data-qid="{{ $question->id }}" data-qcontent="{{ $question->title }}" data-toggle="tooltip" title="邀请专家"><i class="fa fa-envelope"></i></a>
+                                                    @endif
                                                     <a class="btn btn-default" target="_blank" href="{{ route('ask.question.detail',['id'=>$question->id]) }}" data-toggle="tooltip" title="查看"><i class="fa fa-eye"></i></a>
                                                     <a class="btn btn-default" target="_blank" href="{{ route('ask.question.edit',['id'=>$question->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                 </div>
@@ -122,6 +125,57 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal" id="inviteAnswer" tabindex="-1" role="dialog" aria-labelledby="inviteAnswerLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="appendModalLabel">邀请回答</h4>
+                        <input type='hidden' id='question_id' name='question_id' value=''>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-success" role="alert" id="rewardAlert">
+                            <i class="fa fa-exclamation-circle"></i> <span id="question_description"></span>
+                        </div>
+                        <form class="invite-popup" id="inviteEmailForm"  action="#" method="get">
+                            <div style="position: relative;">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-by="username" href="#by-username" data-toggle="tab">站内邀请</a></li>
+                                </ul>
+                                <div class="tab-content invite-tab-content mt-10">
+                                    <div class="tab-pane active" id="by-username" data-type="username">
+                                        <div class="search-user" id="questionSlug">
+                                            <input id="invite_word" class="text-28 form-control" type="text" name="word" autocomplete="off" placeholder="搜索你要邀请的人">
+                                        </div>
+                                        <p class="help-block" id="questionInviteUsers"></p>
+                                        <div class="invite-question-modal">
+                                            <div class="row invite-question-list" id="invite_user_list">
+                                                <div class="text-center" id="invite_loading">
+                                                    <i class="fa fa-spinner fa-spin"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="by-email" data-type="email">
+                                        <div class="mb-10">
+                                            <input class="text-28 form-control" type="email" name="sendTo" placeholder="Email 地址">
+                                        </div>
+                                        <p><textarea class="textarea-13 form-control" name="message" rows="5">我在 {{ Setting()->get('website_name') }} 上遇到了问题，希望您能帮我解答 </textarea></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer" style="display:none;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary invite-email-btn">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </section>
 
 @endsection
@@ -130,5 +184,123 @@
     @include("admin.public.change_category_modal",['type'=>'questions','form_id'=>'item_form','form_action'=>route('admin.question.changeCategories')])
     <script type="text/javascript">
         set_active_menu('manage_content',"{{ route('admin.question.index') }}");
+        var invitation_timer = null;
+        $(document).ready(function() {
+            /*邀请回答模块逻辑处理*/
+            /*私信模块处理*/
+
+            $('#inviteAnswer').on('show.bs.modal', function (event) {
+
+                var button = $(event.relatedTarget);
+                var modal = $(this);
+                loadInviteUsers($("#question_id").val(),'');
+                loadQuestionInvitedUsers($("#question_id").val(),'part');
+
+            });
+
+
+            $("#invite_word").on("keydown",function(){
+                if(invitation_timer){
+                    clearTimeout(invitation_timer);
+                }
+                invitation_timer = setTimeout(function() {
+                    var word = $("#invite_word").val();
+                    console.log(word);
+                    loadInviteUsers($("#question_id").val(),word);
+                }, 500);
+            });
+
+            $(".invite-question-list").on("click",".invite-question-item-btn",function(){
+                var invite_btn = $(this);
+                var question_id = invite_btn.data('question_id');
+                var user_id = invite_btn.data('user_id');
+
+                $.ajax({
+                    type: "get",
+                    url:"/manager/question/invite/"+question_id+"/"+user_id,
+                    success: function(data){
+                        if(data.code > 0){
+                            alert(data.message);
+                            return false;
+                        }
+                        invite_btn.html('已邀请');
+                        invite_btn.attr("class","btn btn-default btn-xs invite-question-item-btn disabled");
+                        loadQuestionInvitedUsers(question_id,'part');
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                });
+            });
+
+            $("#inviteAnswer").on("click","#showAllInvitedUsers",function(){
+                loadQuestionInvitedUsers($("#question_id").val(),'all');
+            });
+
+            /*tag切换*/
+            $('#inviteAnswer a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var tabBy = $(this).data("by");
+                if( tabBy == 'email' ){
+                    $("#inviteAnswer .modal-footer").show();
+                }else{
+                    $("#inviteAnswer .modal-footer").hide();
+                }
+
+            });
+
+        });
+
+        /**
+         * @param questionId
+         * @param word
+         */
+        function loadInviteUsers(questionId,word){
+            $.ajax({
+                type: "get",
+                url: "/manager/ajax/loadInviteUsers",
+                data:{question_id:questionId,word:word},
+                success: function(data){
+                    console.log(data);
+                    var inviteItemHtml = '';
+                    if(data.code > 0){
+                        inviteItemHtml = '<div class="text-center" id="invite_loading"><p>暂无数据</p></div>';
+                    }else{
+                        $.each(data.message,function(i,item){
+                            inviteItemHtml+= '<div class="col-md-12 invite-question-item">' +
+                                    '<img src="'+item.avatar+'" />'+
+                                    '<div class="invite-question-user-info">'+
+                                    '<a class="invite-question-user-name" target="_blank" href="'+item.url+'">'+item.name+'</a>'+
+                                    (item.isExpert ? '<i class="fa fa-graduation-cap" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="" data-original-title="已通过行家认证"></i>':'') +
+                                    '<span class="invite-question-user-desc">'+item.tag_name+' 标签下有 '+item.tag_answers+' 个回答</span>'+
+                                    '</div>';
+                            if(item.isInvited>0){
+                                inviteItemHtml += '<button type="button" class="btn btn-default btn-xs invite-question-item-btn disabled" data-question_id="'+questionId+'"  data-user_id="'+item.id+'">已邀请</button>';
+                            }else{
+                                inviteItemHtml += '<button type="button" class="btn btn-default btn-xs invite-question-item-btn" data-question_id="'+questionId+'"  data-user_id="'+item.id+'">邀请回答</button>';
+                            }
+                            inviteItemHtml += '</div>';
+                        });
+                    }
+                    $("#invite_user_list").html(inviteItemHtml);
+                },
+                error: function(data){
+                    console.log(data);
+                    $("#invite_user_list").html('<div class="text-center" id="invite_loading"><p>操作出错</p></div>');
+
+                }
+            });
+        }
+
+        /*加载已被邀请的用户信息*/
+        function loadQuestionInvitedUsers(questionId,type){
+            $("#questionInviteUsers").load('/manager/question/'+questionId+'/invitations/'+type);
+        }
+
+        function showInviteModal(obj){
+            $('#question_id').val($(obj).data('qid'));
+            $('#question_description').html($(obj).data('qcontent'));
+            $('#inviteAnswer').modal('show');
+        }
+
     </script>
 @endsection
