@@ -19,7 +19,7 @@ class UserRegistrationCode extends Model {
      *
      * @var array
      */
-    protected $fillable = ['id','recommend_uid', 'keyword','code','status'];
+    protected $fillable = ['id','recommend_uid', 'keyword','code','status','expired_at'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -39,6 +39,19 @@ class UserRegistrationCode extends Model {
             $code = Str::random(6);
         }
         return $code;
+    }
+
+    public function getRecommendUser(){
+        return User::find($this->recommend_uid);
+    }
+
+    public function getRegisterUser(){
+        $user = User::find($this->register_uid);
+        if(!$user){
+            $user = new \stdClass();
+            $user->name = '';
+        }
+        return $user;
     }
 
 }

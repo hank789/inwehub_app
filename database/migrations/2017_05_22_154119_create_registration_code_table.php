@@ -20,7 +20,7 @@ class CreateRegistrationCodeTable extends Migration
             $table->string('keyword')->nullable()->comment('邀请对象关键词');
             $table->string('code',32)->unique()->commnet('注册码');
             $table->tinyInteger('status')->default(0)->comment('状态:0未生效,1已生效,2已使用');
-            $table->string('expired_at',18)->nullable()->comment('过期时间');
+            $table->string('expired_at',19)->nullable()->comment('过期时间');
             $table->timestamps();
         });
     }

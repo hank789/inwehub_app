@@ -55,7 +55,10 @@
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>邀请对象</th>
                                         <th>邀请码</th>
+                                        <th>注册用户</th>
+                                        <th>失效时间</th>
                                         <th>添加时间</th>
+                                        <th>创建者</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -64,7 +67,10 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $code->id }}"/></td>
                                             <td>{{ $code->keyword }}</td>
                                             <td>{{ $code->code }}</td>
+                                            <td>{{ $code->getRegisterUser()->name }}</td>
+                                            <td>{{ $code->expired_at }}</td>
                                             <td>{{ timestamp_format($code->created_at) }}</td>
+                                            <td>{{ $code->getRecommendUser()->name }}</td>
                                             <td><span class="label @if($code->status===0) label-danger  @else label-success @endif">{{ trans_rgcode_status($code->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
