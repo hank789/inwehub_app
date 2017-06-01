@@ -23,11 +23,11 @@
                     <hr />
                     <div class="space-header-social">
                         <span class="space-header-item">性别： @if($userInfo->gender===1) <i class="fa fa-mars"></i> @elseif($userInfo->gender===2) <i class="fa fa-venus"></i> @else <i class="fa fa-genderless"></i> @endif</span>
-                        <span class="space-header-item"><i class="fa fa-map-marker"></i> {{ Area()->getName($userInfo->province) }} @if($userInfo->city>0 &&  Area()->getName($userInfo->province)!=Area()->getName($userInfo->city)) - {{ Area()->getName($userInfo->city) }} @endif</span>
+                        <span class="space-header-item"><i class="fa fa-map-marker"></i> </span>
                         <span class="space-header-item"><i class="fa fa-calendar"></i> 注册于 {{ $userInfo->created_at->toDateString() }}</span>
                     </div>
                     @if($userInfo->userData->authentication_status === 1)
-                    <div class="space-authentication-skill mt-15"><p>擅长：{{ $userInfo->authentication->skill }}</p></div>
+                    <div class="space-authentication-skill mt-15"><p>擅长：</p></div>
                     @endif
                     <div class="space-header-desc mt-15"><p>{{ $userInfo->description }}</p></div>
                 </div>
