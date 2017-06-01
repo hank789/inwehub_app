@@ -1,5 +1,16 @@
 @extends('admin/public/layout')
 @section('title')问题管理@endsection
+@section('css')
+    <style>
+        .invite-question-modal{padding-top: 10px;}
+        .invite-question-list{height: 275px;overflow: scroll;}
+        .invite-question-item{height: 38px;margin-bottom: 20px;position: relative;}
+        .invite-question-item img{float: left;width: 32px;border-radius: 50%;margin-right: 10px;}
+        .invite-question-user-info{padding-right:70px;padding-left:40px;}
+        .invite-question-user-desc{display: block;color: #999;font-size: 13px;}
+        .invite-question-item-btn,.invite-question-item-btn_active{position: absolute;right: 15px;top: 10px;}
+    </style>
+@endsection
 @section('content')
     <section class="content-header">
         <h1>
