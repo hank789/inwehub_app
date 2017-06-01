@@ -1,4 +1,5 @@
 <?php namespace App\Logic;
+use App\Models\Answer;
 use App\Models\Question;
 
 /**
@@ -9,18 +10,21 @@ use App\Models\Question;
 
 class QuestionLogic {
 
-    public static function slackMsg(Question $question){
+    public static function slackMsg(Question $question, array $other_fields = null){
         $fields[] = [
-            'title' => 'tags',
+            'title' => '标签',
             'value' => implode(',',$question->tags()->pluck('name')->toArray())
         ];
+        if($other_fields){
+            $fields = array_merge($fields,$other_fields);
+        }
         $url = route('ask.question.detail',['id'=>$question->id]);
         return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
             ->attach(
                 [
                     'text' => $question->title,
-                    'pretext' => '[链接]('.$url.')',
+                    'pretext' => '[问题链接]('.$url.')',
                     'author_name' => $question->user->name,
                     'author_link' => $url,
                     'mrkdwn_in' => ['pretext'],

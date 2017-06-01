@@ -58,10 +58,16 @@ class Test extends Command
     public function handle()
     {
         //$userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
-        $invitation = QuestionInvitation::where('user_id',123)->where('from_user_id',2)->where('question_id',2)->first();
-        if(!$invitation){
-            echo 2;
-        }
+        $fields[] = [
+            'title' => '标签',
+            'value' => '1'
+        ];
+        $s[] = [
+            'title' => '标签',
+            'value' => '1'
+        ];
+        $fields = array_merge($fields,$s);
+        var_dump($fields);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

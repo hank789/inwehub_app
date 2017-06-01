@@ -9,6 +9,7 @@ use App\Jobs\Question\PromiseOvertime;
 use App\Logic\QuestionLogic;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\QuestionInvitation;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -27,8 +28,14 @@ class AnswerObserver implements ShouldQueue {
         switch($answer->status){
             case 3:
                 //承诺回答
-                $this->slackMsg($answer->question)
-                    ->send('用户['.$answer->user->name.']承诺在'.$answer->promise_time.'前回答该问题');
+                $response_time = Carbon::createFromTimestamp(strtotime($answer->promise_time))->diffInMinutes(Carbon::createFromTimestamp(strtotime($answer->created_at)));
+
+                $fields[] = [
+                    'title' => '承诺时间',
+                    'value' => $answer->promise_time
+                ];
+                $this->slackMsg($answer->question,$fields)
+                    ->send('用户['.$answer->user->name.']承诺在'.$response_time.'分钟内回答该问题');
                 //承诺告警
                 $overtime = Setting()->get('alert_minute_expert_over_question_promise_time',10);
                 $promise_datetime = Carbon::createFromTimestamp(strtotime($answer->promise_time))->subMinutes($overtime);
@@ -37,29 +44,58 @@ class AnswerObserver implements ShouldQueue {
             case 0:
             case 1:
                 //已回答
-            $this->slackMsg($answer->question)
-                ->send('用户['.$answer->user->name.']回答了该问题'.($answer->promise_time?',承诺时间是:'.$answer->promise_time:''));
-                break;
+                $question_invitation = QuestionInvitation::where("user_id","=",$answer->user_id)->where("question_id","=",$answer->question_id)->first();
+                $response_time = Carbon::createFromTimestamp(time())->diffInMinutes(Carbon::createFromTimestamp(strtotime($question_invitation->created_at)));
+                $cost_time = Carbon::createFromTimestamp(time())->diffInMinutes(Carbon::createFromTimestamp(strtotime($answer->question->created_at)));
+
+                $fields[] = [
+                    'title' => '回答内容',
+                    'value' => $answer->content
+                ];
+
+                if ($answer->promise_time){
+                    $fields[] = [
+                        'title' => '承诺时间',
+                        'value' => $answer->promise_time
+                    ];
+                }
+
+                $fields[] = [
+                    'title' => '响应时间',
+                    'value' => $response_time.'分钟'
+                ];
+
+                $fields[] = [
+                    'title' => '总耗时',
+                    'value' => $cost_time.'分钟'
+                ];
+
+                $this->slackMsg($answer->question,$fields)
+                    ->send('用户['.$answer->user->name.']回答了该问题');
+                    break;
             case 2:
                 //拒绝回答
-                $this->slackMsg($answer->question)
+                $fields[] = [
+                    'title' => '拒绝回答',
+                    'value' => $answer->content
+                ];
+                $fields[] = [
+                    'title' => '拒绝标签',
+                    'value' => implode(',',$answer->tags()->pluck('name')->toArray())
+                ];
+                $this->slackMsg($answer->question,$fields)
                     ->send('用户['.$answer->user->name.']拒绝回答该问题');
                 break;
         }
     }
 
     public function updated(Answer $answer){
-        switch($answer->status){
-            case 1:
-                $this->slackMsg($answer->question)
-                    ->send('用户['.$answer->user->name.']回答了该问题'.($answer->promise_time?',承诺时间是:'.$answer->promise_time:''));
-                break;
-        }
+        $this->created($answer);
     }
 
 
-    protected function slackMsg(Question $question){
-        return QuestionLogic::slackMsg($question);
+    protected function slackMsg(Question $question,array $other_fields = null){
+        return QuestionLogic::slackMsg($question,$other_fields);
     }
 
 }
