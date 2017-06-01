@@ -56,18 +56,21 @@ class AnswerObserver implements ShouldQueue {
                 if ($answer->promise_time){
                     $fields[] = [
                         'title' => '承诺时间',
-                        'value' => $answer->promise_time
+                        'value' => $answer->promise_time,
+                        'short' => true
                     ];
                 }
 
                 $fields[] = [
                     'title' => '响应时间',
-                    'value' => $response_time.'分钟'
+                    'value' => $response_time.'分钟',
+                    'short' => true
                 ];
 
                 $fields[] = [
                     'title' => '总耗时',
-                    'value' => $cost_time.'分钟'
+                    'value' => $cost_time.'分钟',
+                    'short' => true
                 ];
 
                 $this->slackMsg($answer->question,$fields)
@@ -77,11 +80,13 @@ class AnswerObserver implements ShouldQueue {
                 //拒绝回答
                 $fields[] = [
                     'title' => '拒绝回答',
-                    'value' => $answer->content
+                    'value' => $answer->content,
+                    'short' => true
                 ];
                 $fields[] = [
                     'title' => '拒绝标签',
-                    'value' => implode(',',$answer->tags()->pluck('name')->toArray())
+                    'value' => implode(',',$answer->tags()->pluck('name')->toArray()),
+                    'short' => true
                 ];
                 $this->slackMsg($answer->question,$fields,'warning')
                     ->send('用户['.$answer->user->name.']拒绝回答该问题');

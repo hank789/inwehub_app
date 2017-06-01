@@ -28,11 +28,13 @@ class AnswerEventListener implements ShouldQueue
         ];
         $fields[] = [
             'title' => '评价内容',
-            'value' => $feedback->content
+            'value' => $feedback->content,
+            'short' => true
         ];
         $fields[] = [
             'title' => '评价星数',
-            'value' => $feedback->star
+            'value' => $feedback->star,
+            'short' => true
         ];
 
         QuestionLogic::slackMsg($answer->question,$fields)->send('用户['.$feedback->user->name.']评价了回答');
