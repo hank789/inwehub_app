@@ -260,7 +260,7 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
-        Feedback::create([
+        $feedback = Feedback::create([
             'user_id' => $loginUser->id,
             'source_id' => $request->input('answer_id'),
             'source_type' => get_class($answer),
@@ -273,6 +273,7 @@ class AnswerController extends Controller
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
 
+        event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,$request->all());
     }
 
