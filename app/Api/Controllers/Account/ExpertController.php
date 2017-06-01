@@ -70,8 +70,7 @@ class ExpertController extends Controller {
             'work_years'      => 'required',
             'mobile'      => 'required|cn_phone',
             'industry_tags'      => 'required',
-            'description'      => 'required',
-            'images_0'  => 'required|image',
+            'description'      => 'required'
         ];
 
         $this->validate($request,$validateRules);
