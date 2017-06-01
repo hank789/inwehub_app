@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Services\City\CityData;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 
@@ -325,6 +326,40 @@ class ProfileController extends Controller
         }
 
         return self::createJsonData(true,$data);
+    }
+
+    //上传简历
+    public function uploadResume(Request $request){
+        $validateRules = [
+            'user_resume_1'  => 'required|image',
+        ];
+
+        $this->validate($request,$validateRules);
+        $user_id = $request->user()->id;
+
+        if(RateLimiter::instance()->increase('user:profile:upload:resume',$user_id,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        $count = $this->counter('user:resume:upload:'.date('Y-m-d').':'.$user_id,1);
+        if ($count >= 2) {
+            throw new ApiException(ApiException::USER_RESUME_UPLOAD_LIMIT);
+        }
+
+        for($i=1;$i<=5;$i++){
+            $name = 'user_resume_'.$i;
+            if($request->hasFile($name)){
+                $file_0 = $request->file($name);
+                $extension = strtolower($file_0->getClientOriginalExtension());
+                $extArray = array('png', 'gif', 'jpeg', 'jpg');
+                if(in_array($extension, $extArray)){
+                    $request->user()->addMediaFromRequest($name)->setFileName(time().'_'.md5($file_0->getFilename()).'.'.$extension)->toMediaCollection('resume');
+                }else{
+                    return self::createJsonData(false,[],ApiException::BAD_REQUEST,'格式错误');
+                }
+            }
+        }
+
+        return self::createJsonData(true);
     }
 
 }

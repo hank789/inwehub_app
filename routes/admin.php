@@ -40,7 +40,8 @@ Route::get('user/item/info',['as'=>'admin.user.item.info','uses'=>'UserControlle
 Route::post('user/item/store',['as'=>'admin.user.item.store','uses'=>'UserController@storeItemInfo']);
 /*用户经历删除*/
 Route::post('user/item/destroy',['as'=>'admin.user.item.destroy','uses'=>'UserController@destroyItemInfo']);
-
+/*用户简历*/
+Route::get('user/resume/info',['as'=>'admin.user.resume.info','uses'=>'UserController@resumeInfo']);
 
 /*认证管理*/
 Route::post('authentication/destroy',['as'=>'admin.authentication.destroy','uses'=>'AuthenticationController@destroy']);

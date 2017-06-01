@@ -58,9 +58,11 @@ class Test extends Command
     public function handle()
     {
         //$userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
-        $cost_time = Carbon::createFromTimestamp(time())->diffInMinutes(Carbon::createFromTimestamp(strtotime('2017-06-01 12:18:00')));
-
-        var_dump($cost_time);
+        $user = User::find(1);
+        $items = $user->getResumeMedias();
+        foreach($items as $item){
+            var_dump($item);
+        }
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

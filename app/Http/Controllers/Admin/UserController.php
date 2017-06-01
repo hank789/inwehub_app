@@ -325,8 +325,13 @@ class UserController extends AdminController
         UserCache::delUserInfoCache($data['user_id']);
 
         return $this->success(route('admin.user.item.info',['item_id'=>$data['id'],'user_id'=>$data['user_id'],'type'=>$type]),'删除成功');
+    }
 
-
+    public function resumeInfo(Request $request){
+        $user_id = $request->input('id');
+        $user = User::find($user_id);
+        $resumes = $user->getResumeMedias();
+        return view('admin.user.resume_info')->with('resumes',$resumes);
     }
 
 

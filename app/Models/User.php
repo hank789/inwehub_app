@@ -417,6 +417,17 @@ class User extends Model implements AuthenticatableContract,
             return $this->getMedia('avatar')->last()->getUrl();
     }
 
+    //获得用户简历地址
+    public function getResumeMedias(){
+        if($this->getMedia('resume')->isEmpty()){
+            return [];
+        }else{
+            return $this->getMedia('resume');
+        }
+    }
+
+
+
 
     /*是否回答过问题*/
     public function isAnswered($questionId)

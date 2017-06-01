@@ -45,6 +45,7 @@ class ApiException extends Exception
     const USER_REGISTRATION_CODE_INVALID = 1108;
     const USER_SUSPEND = 1109;
     const USER_REGISTRATION_CODE_OVERTIME = 1110;
+    const USER_RESUME_UPLOAD_LIMIT = 1111;
 
 
 
@@ -94,6 +95,7 @@ class ApiException extends Exception
         self::USER_REGISTRATION_CODE_INVALID => '邀请码错误',
         self::USER_SUSPEND => '您的账户已被禁用',
         self::USER_REGISTRATION_CODE_OVERTIME => '邀请码已过期',
+        self::USER_RESUME_UPLOAD_LIMIT => '请明天再来上传简历信息',
 
 
         //问答模块

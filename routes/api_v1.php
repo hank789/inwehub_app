@@ -35,6 +35,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //用户修改基本信息
     Route::post('profile/update','ProfileController@update');
 
+    //上传简历
+    Route::post('profile/uploadResume','ProfileController@uploadResume');
+
+
     //资金明细
     Route::post('account/money_log','ProfileController@moneyLog');
     //个人钱包
