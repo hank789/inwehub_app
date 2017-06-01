@@ -69,7 +69,7 @@ class ProfileController extends Controller
 
         $infos = '';
         if($info_percent['unfilled']){
-            $infos = '请添加'.User::getFieldHumanName($info_percent['unfilled'][0]).(count($info_percent['unfilled'])>1?'等':'').'字段';
+            $infos = '请完善'.User::getFieldHumanName($info_percent['unfilled'][0]).(count($info_percent['unfilled'])>1?'等':'').'信息';
         }
 
 
