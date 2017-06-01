@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class IndexController extends Controller {
     public function home(Request $request){
-        $recommend_qa = RecommendQa::select(['user_name','user_avatar_url','price','type','subject as description'])->where('status',1)->orderBy('sort','asc')->orderBy('updated_at','desc')->get()->take(2)->toArray();
+        $recommend_qa = RecommendQa::select(['user_name','user_avatar_url','price','type','subject as description'])->where('status',1)->orderBy('sort','asc')->orderBy('updated_at','desc')->get()->toArray();
         if(empty($recommend_qa)){
             //推荐问答
             $recommend_qa = [
