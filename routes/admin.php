@@ -65,6 +65,9 @@ Route::any('setting/aboutus',['as'=>'admin.setting.aboutus','uses'=>'SettingCont
 /*常见问题设置*/
 Route::any('setting/help',['as'=>'admin.setting.help','uses'=>'SettingController@appHelp']);
 
+/*提问帮助设置*/
+Route::any('setting/qahelp',['as'=>'admin.setting.qahelp','uses'=>'SettingController@qaHelp']);
+
 /*oauth2.0*/
 Route::any('setting/oauth',['as'=>'admin.setting.oauth','uses'=>'SettingController@oauth']);
 

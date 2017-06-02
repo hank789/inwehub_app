@@ -108,4 +108,13 @@ class SystemController extends Controller {
         return self::createJsonData(true,$data);
     }
 
+    //提问帮助页
+    public function serviceQaHelp(){
+        $data = [
+            'html' => Setting()->get('app_qa_help','')
+        ];
+
+        return self::createJsonData(true,$data);
+    }
+
 }

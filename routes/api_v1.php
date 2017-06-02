@@ -155,6 +155,9 @@ Route::post('system/service_register','SystemController@serviceRegister');
 Route::post('system/service_about','SystemController@serviceAbout');
 //获取常见问题
 Route::post('system/service_help','SystemController@serviceHelp');
+//获取提问帮助设置
+Route::post('system/service_qa_help','SystemController@serviceQaHelp');
+
 
 
 //消息模块

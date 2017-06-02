@@ -337,6 +337,23 @@ class SettingController extends AdminController
         return view('admin.setting.help');
     }
 
+    public function qaHelp(Request $request){
+        $validateRules = [
+            'app_qa_help' => 'required'
+        ];
+        if($request->isMethod('post')){
+            $this->validate($request,$validateRules);
+            $data = $request->except('_token');
+            unset($data['_token']);
+            foreach($data as $name=>$value){
+                Setting()->set($name,$value);
+            }
+            Setting()->clearAll();
 
+            return $this->success(route('admin.setting.help'),'设置成功');
+        }
+
+        return view('admin.setting.qaHelp');
+    }
 
 }

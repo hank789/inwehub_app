@@ -13,6 +13,7 @@
             <li><a href="{{ route('admin.setting.credits') }}"><i class="fa fa-circle-o"></i> 积分设置</a></li>
             <li><a href="{{ route('admin.setting.aboutus') }}"><i class="fa fa-circle-o"></i> 关于我们</a></li>
             <li><a href="{{ route('admin.setting.help') }}"><i class="fa fa-circle-o"></i> 常见问题</a></li>
+            <li><a href="{{ route('admin.setting.qahelp') }}"><i class="fa fa-circle-o"></i> 提问帮助页</a></li>
 
             {{--<li><a href="{{ route('admin.setting.website') }}"><i class="fa fa-circle-o"></i> 站点设置</a></li>
             <li><a href="{{ route('admin.setting.email') }}"><i class="fa fa-circle-o"></i> 邮箱设置</a></li>
