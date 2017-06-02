@@ -1,5 +1,6 @@
 <?php namespace App\Models\Pay;
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\UserOauth;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -32,5 +33,15 @@ class Withdraw extends Model {
 
     const WITHDRAW_CHANNEL_WX = 1;
     const WITHDRAW_CHANNEL_ALIPAY = 2;
+
+
+    public function getAccount(){
+        switch($this->withdraw_channel){
+            case self::WITHDRAW_CHANNEL_WX:
+                $user_oauth = UserOauth::where('user_id',$this->user_id)->where('auth_type','weixin')->first();
+                return $user_oauth->nickname;
+                break;
+        }
+    }
 
 }

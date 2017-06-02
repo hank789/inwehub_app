@@ -56,13 +56,15 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
-                                        <th>用户ID</th>
-                                        <th>用户名</th>
+                                        <th>ID</th>
+                                        <th>姓名</th>
                                         <th>手机</th>
                                         <th>金额</th>
-                                        <th>请求时间</th>
-                                        <th>状态</th>
+                                        <th>申请日期</th>
+                                        <th>入款账户</th>
+                                        <th>流水号</th>
                                         <th>信息</th>
+                                        <th>状态</th>
                                         <th>操作</th>
                                     </tr>
                                     @foreach($withdraws as $withdraw)
@@ -73,6 +75,8 @@
                                             <td>{{ $withdraw->user->mobile }}</td>
                                             <td>{{ $withdraw->amount }}</td>
                                             <td>{{ $withdraw->created_at }}</td>
+                                            <td>{{ $withdraw->getAccount() }}</td>
+                                            <td>{{ $withdraw->order_no }}</td>
                                             <td>{{ $withdraw->response_msg }}</td>
                                             <td><span class="label @if($withdraw->status===3) label-danger @elseif($withdraw->status<=1) label-default @elseif($withdraw->status===2) label-success @endif">{{ trans_withdraw_status($withdraw->status) }}</span> </td>
                                             <td>
