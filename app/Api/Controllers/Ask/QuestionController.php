@@ -323,8 +323,20 @@ class QuestionController extends Controller
     public function myList(Request $request){
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
+        $type = $request->input('type',0);
 
         $query = $request->user()->questions();
+        switch($type){
+            case 1:
+                //未完成
+                $query = $query->where('status','<=',6);
+                break;
+            case 2:
+                //已完成
+                $query = $query->where('status',7);
+                break;
+        }
+
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
