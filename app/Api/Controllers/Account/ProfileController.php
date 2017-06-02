@@ -7,6 +7,7 @@ use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserOauth;
 use App\Models\UserTag;
 use App\Services\City\CityData;
 use App\Services\RateLimiter;
@@ -318,6 +319,13 @@ class ProfileController extends Controller
 
         $data['total_money'] = 0;
         $data['pay_settlement_money'] = 0;
+        $data['is_bind_weixin'] = 0;
+        $data['bind_weixin_nickname'] = '';
+        $user_oauth = UserOauth::where('user_id',$user->id)->where('auth_type','weixin')->first();
+        if($user_oauth){
+            $data['is_bind_weixin'] = 1;
+            $data['bind_weixin_nickname'] = $user_oauth['nickname'];
+        }
 
         $user_money = UserMoney::find($user->id);
         if($user_money){

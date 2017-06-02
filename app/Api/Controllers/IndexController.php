@@ -34,10 +34,14 @@ class IndexController extends Controller {
         }
         $recommend_expert_is_followed = 0;
         $recommend_expert_uid = Setting()->get('recommend_expert_uid',2);
+        \Log::info('test',[$recommend_expert_uid]);
         $recommend_expert_user = User::find($recommend_expert_uid);
         $user = $request->user();
+        \Log::info('user',[$user]);
+
         if($user){
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($recommend_expert_user))->where('source_id','=',$recommend_expert_uid)->first();
+            \Log::info('test',[$attention]);
             if ($attention){
                 $recommend_expert_is_followed = 1;
             }

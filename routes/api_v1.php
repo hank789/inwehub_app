@@ -6,7 +6,7 @@
  */
 
 //app首页
-Route::post('home','IndexController@home');
+Route::post('home','IndexController@home')->middleware('jwt.auth');
 
 
 //登陆注册认证类
