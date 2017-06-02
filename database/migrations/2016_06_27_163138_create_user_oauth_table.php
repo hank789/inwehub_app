@@ -13,7 +13,7 @@ class CreateUserOauthTable extends Migration
     public function up()
     {
         Schema::create('user_oauth', function (Blueprint $table) {
-            $table->string("id",64)->primary();
+            $table->increments('id')->unsigned();
             $table->char("auth_type",64);
             $table->char("nickname",64);
             $table->char("avatar",255);
