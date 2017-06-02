@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Listeners\Frontend;
+use App\Events\Frontend\System\FuncZan;
 use App\Models\Credit as CreditModel;
 use App\Events\Frontend\System\Credit;
 use App\Events\Frontend\System\Feedback;
@@ -31,6 +32,14 @@ class SystemEventListener implements ShouldQueue
     public function feedback($event)
     {
         \Slack::to(config('slack.ask_activity_channel'))->send('用户['.$event->user->name.']['.$event->user->mobile.']对平台的意见反馈:'.$event->content);
+    }
+
+    /**
+     * @param $event
+     */
+    public function funcZan($event)
+    {
+        \Slack::to(config('slack.ask_activity_channel'))->send('用户['.$event->user->name.']['.$event->user->mobile.']对平台功能点了赞:'.$event->content);
     }
 
     /**
@@ -116,6 +125,11 @@ class SystemEventListener implements ShouldQueue
         $events->listen(
             Credit::class,
             'App\Listeners\Frontend\SystemEventListener@credit'
+        );
+
+        $events->listen(
+            FuncZan::class,
+            'App\Listeners\Frontend\SystemEventListener@funcZan'
         );
     }
 }

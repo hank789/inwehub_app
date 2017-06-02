@@ -140,6 +140,9 @@ Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
 //意见反馈
 Route::post('system/feedback','SystemController@feedback')->middleware('jwt.auth');
 
+//功能预告信息收集
+Route::post('system/func_zan','SystemController@funcZan')->middleware('jwt.auth');
+
 //保存用户设备信息
 Route::post('system/device','SystemController@device')->middleware('jwt.auth');
 

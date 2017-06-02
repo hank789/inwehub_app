@@ -6,6 +6,7 @@
  */
 
 use App\Events\Frontend\System\Feedback;
+use App\Events\Frontend\System\FuncZan;
 use App\Models\AppVersion;
 use App\Models\UserDevice;
 use Illuminate\Http\Request;
@@ -20,6 +21,16 @@ class SystemController extends Controller {
         ];
         $this->validate($request, $validateRules);
         event(new Feedback($request->user(),$request->input('content')));
+        return self::createJsonData(true);
+    }
+
+    public function funcZan(Request $request)
+    {
+        $validateRules = [
+            'content' => 'required'
+        ];
+        $this->validate($request, $validateRules);
+        event(new FuncZan($request->user(),$request->input('content')));
         return self::createJsonData(true);
     }
 
