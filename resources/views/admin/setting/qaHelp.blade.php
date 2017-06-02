@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box box-primary">
-                    <form role="form" name="addForm" id="register_form" method="POST" action="{{ route('admin.setting.aboutus') }}">
+                    <form role="form" name="addForm" id="register_form" method="POST" action="{{ route('admin.setting.qahelp') }}">
                         <input type="hidden" name="_token" id="editor_token" value="{{ csrf_token() }}">
                         <div class="box-body">
 
