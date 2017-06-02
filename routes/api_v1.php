@@ -39,6 +39,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/uploadResume','ProfileController@uploadResume');
 
 
+    //用户oauth
+    Route::post('oauth/{type}/callback',['uses'=>'OauthController@callback'])->where(['type'=>'(qq|weibo|weixin|weixinweb)']);
+
     //资金明细
     Route::post('account/money_log','ProfileController@moneyLog');
     //个人钱包
