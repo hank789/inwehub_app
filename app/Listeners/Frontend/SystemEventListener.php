@@ -41,7 +41,7 @@ class SystemEventListener implements ShouldQueue
      */
     public function funcZan($event)
     {
-        $key = 'func:zan:'.$event;
+        $key = 'func:zan:'.$event->content;
         $count = Cache::get($key,0);
         $count = $count + 1;
         Cache::forever($key,$count);
