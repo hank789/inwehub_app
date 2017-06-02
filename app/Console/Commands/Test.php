@@ -59,8 +59,8 @@ class Test extends Command
     {
         //$userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
 
-        $s = Tag::where('parent_id',0)->orderBy('name','desc')->orderBy('id','desc')->toSql();
-        var_dump($s);
+        $s = '2017-02-12 12:23:23';
+        echo date('Y-m-d H:i:s',strtotime($s.' + 23 seconds'));
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

@@ -2,6 +2,7 @@
 use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\Push;
 use App\Logic\TaskLogic;
+use App\Models\Doing;
 use App\Models\QuestionInvitation;
 use App\Models\Task;
 use App\Models\User;
@@ -40,8 +41,13 @@ class QuestionEventListener implements ShouldQueue
 
             //已邀请
             $question->invitedAnswer();
+            $last_doing = Doing::where('user_id',0)->where('source_id',$question->id)->where('source_type','App\Models\Question')->where('action','question_process')->first();
             //记录动态
-            TaskLogic::doing($question->user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'');
+            $doing_obj = TaskLogic::doing($question->user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'');
+            if($last_doing->created_at >= $doing_obj->created_at){
+                $doing_obj->created_at = date('Y-m-d H:i:s',strtotime($last_doing->created_at.' + '.rand(1,10).' seconds'));
+                $doing_obj->save();
+            }
             //记录任务
             TaskLogic::task($uid,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
             //推送
