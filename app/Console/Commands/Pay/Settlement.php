@@ -45,6 +45,9 @@ class Settlement extends Command {
                     $fee = MoneyLogLogic::getAnswerFee($answer);
                     $res = MoneyLogLogic::addMoney($answer->user_id,$answer->question->price,MoneyLog::MONEY_TYPE_ANSWER,$answer,$fee,1);
                     if($res) {
+                        $pending->actual_amount = $answer->question->price;
+                        $pending->actual_fee    = $fee;
+                        $pending->actual_settlement_date = date('Y-m-d H:i:s');
                         $pending->status = SettlementModel::SETTLEMENT_STATUS_SUCCESS;
                     } else {
                         $pending->status = SettlementModel::SETTLEMENT_STATUS_FAIL;

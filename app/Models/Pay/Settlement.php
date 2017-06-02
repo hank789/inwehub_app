@@ -60,4 +60,12 @@ class Settlement extends Model {
         }
     }
 
+    public function getSettlementName(){
+        switch($this->source_type){
+            case 'App\Models\Answer':
+                return "问答";
+                break;
+        }
+    }
+
 }

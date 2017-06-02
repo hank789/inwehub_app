@@ -20,6 +20,9 @@ class CreateSettlementTable extends Migration
             $table->morphs('source');
             $table->integer('status')->comment('结算状态:0待结算,1结算中,2已结算,3结算失败')->default('0');
             $table->timestamp('settlement_date')->index()->comment('结算日期:Y-m-d')->nullable();
+            $table->string('actual_amount')->nullable()->comment('实际结算金额');
+            $table->string('actual_fee')->nullable()->comment('实际结算手续费');
+            $table->timestamp('actual_settlement_date')->comment('实际结算日期:Y-m-d H:i:s')->nullable();
             $table->timestamps();
         });
     }
