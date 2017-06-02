@@ -8,6 +8,7 @@ use App\Events\Frontend\System\Push;
 use App\Models\Answer;
 use App\Models\AppVersion;
 use App\Models\Authentication;
+use App\Models\Doing;
 use App\Models\Pay\Order;
 use App\Models\Pay\Settlement;
 use App\Models\Pay\UserMoney;
@@ -58,8 +59,8 @@ class Test extends Command
     public function handle()
     {
         //$userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
-
-        $s = '2017-02-12 12:23:23';
+        $doing = Doing::find(357);
+        $s = $doing->created_at;
         echo date('Y-m-d H:i:s',strtotime($s.' + 23 seconds'));
         return;
         foreach($userTags as $uid){
