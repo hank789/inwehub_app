@@ -17,10 +17,6 @@ class Kernel extends ConsoleKernel
         Commands\Component\ComponentArchiveCommand::class,
         Commands\Component\ComponentCommand::class,
         Commands\Component\ComponentLinkCommand::class,
-        Commands\Scraper\RssPosts::class,
-        Commands\Scraper\AtomPosts::class,
-        Commands\Scraper\WechatPosts::class,
-        Commands\Scraper\WechatAuthor::class,
         Commands\Pay\Settlement::class,
     ];
 
@@ -34,8 +30,6 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('scraper:rss')->everyTenMinutes();
-        $schedule->command('scraper:atom')->everyTenMinutes();
         $schedule->command('backup:clean')->daily()->at('01:00');
         $schedule->command('backup:run')->twiceDaily();
         $schedule->command('pay:settlement')->daily()->at('00:10')->withoutOverlapping();
