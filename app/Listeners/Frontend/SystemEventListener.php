@@ -12,6 +12,8 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
 use Getui;
+use Illuminate\Support\Facades\Cache;
+
 
 /**
  * Class UserEventListener.
@@ -39,6 +41,11 @@ class SystemEventListener implements ShouldQueue
      */
     public function funcZan($event)
     {
+        $key = 'func:zan:'.$event;
+        $count = Cache::get($key,0);
+        $count = $count + 1;
+        Cache::forever($key,$count);
+
         \Slack::to(config('slack.ask_activity_channel'))->send('用户['.$event->user->name.']['.$event->user->mobile.']对平台功能点了赞:'.$event->content);
     }
 
