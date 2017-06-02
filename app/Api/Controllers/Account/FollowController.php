@@ -104,7 +104,7 @@ class FollowController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
 
-        $query = $this->user->attentions()->where('source_type','=',$sourceClassMap[$source_type]);
+        $query = $request->user()->attentions()->where('source_type','=',$sourceClassMap[$source_type]);
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){

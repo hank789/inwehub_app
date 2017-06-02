@@ -43,10 +43,5 @@ class OauthController extends Controller
         return self::createJsonData(true);
     }
 
-    public function unbind( $type , Request $request){
-        $request->user()->userOauth()->where('auth_type','=',$type)->delete();
-        return $this->success( route('auth.profile.oauth') , $type .'已解除绑定！');
-    }
-
 
 }
