@@ -22,7 +22,6 @@ class OauthController extends Controller
         $this->validate($request,$validateRules);
 
         $data = $request->all();
-        \Log::info('hanktest',$data);
         $user = $request->user();
 
         $oauthData = UserOauth::updateOrCreate([
@@ -38,7 +37,7 @@ class OauthController extends Controller
             'access_token'=>$data['access_token'],
             'refresh_token'=>$data['refresh_token'],
             'expires_in'=>$data['expires_in'],
-            'full_info'=>$data['full_info']??'',
+            'full_info'=>isset($data['full_info']) ? json_encode($data['full_info']):'',
             'scope'=>$data['scope']
         ]);
         return self::createJsonData(true);
