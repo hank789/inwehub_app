@@ -22,6 +22,7 @@ class OauthController extends Controller
         $this->validate($request,$validateRules);
 
         $data = $request->all();
+        \Log::info('hanktest',$data);
         $user = $request->user();
 
         $oauthData = UserOauth::updateOrCreate([
