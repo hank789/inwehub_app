@@ -3,6 +3,7 @@
 use App\Cache\UserCache;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
+use App\Models\Answer;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
 use App\Models\Tag;
@@ -82,6 +83,8 @@ class ProfileController extends Controller
         }
         $info['questions'] = $user->userData->questions;
         $info['answers'] = $user->userData->answers;
+        //加上承诺待回答的
+        $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['tasks'] = $user->tasks->where('status',0)->count();
         $info['projects'] = 0;
         $info['user_level'] = $user->getUserLevel();
