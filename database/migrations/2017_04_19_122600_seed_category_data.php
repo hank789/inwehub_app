@@ -25,11 +25,6 @@ class SeedCategoryData extends Migration
             ['id'=>21,'name' => 'SAP','slug'=>'question_sap','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
             ['id'=>22,'name' => '业务类','slug'=>'question_business','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
             ['id'=>23,'name' => '行业类','slug'=>'question_industry','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>24,'name' => 'Oracle','slug'=>'question_oracle','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>25,'name' => 'Microsoft','slug'=>'question_microsoft','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>26,'name' => 'Salesforce','slug'=>'question_salesforce','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>27,'name' => '金蝶','slug'=>'question_jindie','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>28,'name' => '用友','slug'=>'question_yongyou','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
             ['id'=>29,'name' => '其他','slug'=>'question_other','parent_id' =>'20','grade'=>'1','sort' =>'0','status'=>'1','type'=>'questions,answers,tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
 
             //拒绝回答
