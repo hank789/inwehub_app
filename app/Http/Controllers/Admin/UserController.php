@@ -124,7 +124,6 @@ class UserController extends AdminController
         if(!$user){
             abort(404);
         }
-        $this->validateRules['name'] = 'required|max:255|unique:users,name,'.$user->id;
         $this->validateRules['email'] = 'required|email|max:255|unique:users,email,'.$user->id;
         $this->validateRules['mobile'] = 'required|cn_phone|unique:users,mobile,'.$user->id;
         unset($this->validateRules['password']);
