@@ -350,7 +350,7 @@ class SettingController extends AdminController
             }
             Setting()->clearAll();
 
-            return $this->success(route('admin.setting.help'),'设置成功');
+            return $this->success(route('admin.setting.qahelp'),'设置成功');
         }
 
         return view('admin.setting.qaHelp');

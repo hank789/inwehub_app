@@ -42,8 +42,7 @@ return [
              * Only MySQL and PostgreSQL databases are supported.
              */
             'databases' => [
-                'mysql',
-                'inwehub_read'
+                'mysql'
             ],
         ],
 
