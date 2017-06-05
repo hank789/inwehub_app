@@ -110,7 +110,8 @@
                     <div class="header-content-inner">
                         <h1>不负期待 专家同行</h1>
                         <h3>为企业和咨询顾问<br/>
-                            提供高品质的资深专家辅助服务</h3>
+                            提供高品质资深专家辅助服务</h3>
+                        <br/>
                         <a href="#download" class="btn btn-outline btn-xl page-scroll">内测申请</a>
                     </div>
                 </div>
@@ -159,8 +160,8 @@
                 <h2 class="section-heading">各大应用市场陆续上线中...</h2>
                 <p></p>
                 <div class="badges">
-                    <a class="badge-link" data-toggle="modal" data-target="#myModal"><img src="img/google-play-badge.svg" alt="" style="cursor:pointer"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
-                    <a class="badge-link" data-toggle="modal" data-target="#myModal"><img src="img/google-play-badge.svg" alt="" style="cursor:pointer"><img src="{{ asset('/') }}web/img/app-store-badge.svg" alt=""></a>
+                    <a class="badge-link" data-toggle="modal" data-target="#myModal"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
+                    <a class="badge-link" data-toggle="modal" data-target="#myModal"><img src="{{ asset('/') }}web/img/app-store-badge.svg" alt=""></a>
                 </div>
             </div>
         </div>
