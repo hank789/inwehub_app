@@ -213,7 +213,7 @@
                             <div class="feature-item">
                                 <i class="myicon myicon-item-4"></i>
                                 <h3>把握行业脉搏</h3>
-                                <p class="text-muted">打造公平与客观的行业环境</p>
+                                <p class="text-muted">打造公平与客观的平台环境</p>
                             </div>
                         </div>
                         <div class="col-md-4">
