@@ -157,8 +157,8 @@
                 <h2 class="section-heading">各大应用市场陆续上线中...</h2>
                 <p></p>
                 <div class="badges">
-                    <a class="badge-link" href="https://www.pgyer.com/da334b81d06790d4dad81ca63d574674"><img src="{{ asset('/') }}img/google-play-badge.svg" alt=""></a>
-                    <a class="badge-link" href="https://www.pgyer.com/Zoy3"><img src="{{ asset('/') }}img/app-store-badge.svg" alt=""></a>
+                    <a class="badge-link" href="https://www.pgyer.com/da334b81d06790d4dad81ca63d574674"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
+                    <a class="badge-link" href="https://www.pgyer.com/Zoy3"><img src="{{ asset('/') }}web/img/app-store-badge.svg" alt=""></a>
                 </div>
             </div>
         </div>
@@ -238,10 +238,10 @@
         <h2>We <i class="fa fa-heart"></i> consulting!</h2>
         <ul class="list-inline list-social">
             <li class="social-twitter">
-                <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
+                <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
             </li>
             <li class="social-facebook">
-                <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="img/guwenxiaoha.jpeg" width="200">'><i class="fa myicon myicon-xiaoha"></i></a>
+                <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/guwenxiaoha.jpeg" width="200">'><i class="fa myicon myicon-xiaoha"></i></a>
             </li>
             <li class="social-google-plus">
                 <a href="mailto:hi@inwehub.com"><i class="fa fa-envelope"></i></a>
@@ -289,6 +289,10 @@
         paginationClickable: true,
         loop: true
     });
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
 </script>
 </body>
 
