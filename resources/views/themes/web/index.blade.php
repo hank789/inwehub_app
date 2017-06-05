@@ -160,8 +160,9 @@
                 <h2 class="section-heading">各大市场陆续上线</h2>
                 <p></p>
                 <div class="badges">
-                    <a class="badge-link" data-toggle="modal" data-target="#myModal"  style="cursor:pointer"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
+
                     <a class="badge-link" data-toggle="modal" data-target="#myModal"  style="cursor:pointer"><img src="{{ asset('/') }}web/img/app-store-badge.svg" alt=""></a>
+                    <a class="badge-link" data-toggle="modal" data-target="#myModal"  style="cursor:pointer"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
                 </div>
             </div>
         </div>
