@@ -87,7 +87,7 @@ p {
   font-family: '-apple-system', 'SF UI Text', 'Arial', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'sans-serif';
   text-transform: uppercase;
   letter-spacing: 2px;
-  font-size: 11px;
+  font-size: 18px;
 }
 .navbar-default .nav > li > a,
 .navbar-default .nav > li > a:focus {
@@ -263,8 +263,11 @@ section {
 section h2 {
   font-size: 50px;
 }
+section.contact {
+  padding: 62.5px 0;
+}
 section.download {
-  padding: 150px 0;
+  padding: 75px 0;
   position: relative;
 }
 section.download h2 {
@@ -483,4 +486,7 @@ img::-moz-selection {
 }
 body {
   webkit-tap-highlight-color: #222222;
+}
+.header-content-inner a {
+  font-size: 18px;
 }

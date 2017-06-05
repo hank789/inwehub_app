@@ -14,10 +14,10 @@
     <!-- Bootstrap Core CSS -->
     <link href="{{ asset('/web/lib/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
-    <!-- Custom Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
+    {{--<!-- Custom Fonts -->--}}
+    {{--<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">--}}
+    {{--<link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">--}}
+    {{--<link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">--}}
 
     <!-- Plugin CSS -->
     <link rel="stylesheet" href="{{ asset('/web/lib/font-awesome/css/font-awesome.min.css') }}">
@@ -65,8 +65,8 @@
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="{{ asset('/web/js/html5shiv.js') }}"></script>
+    <script src="{{ asset('/web/js/respond.min.js') }}"></script>
     <![endif]-->
 
 </head>
@@ -108,7 +108,9 @@
             <div class="col-sm-7">
                 <div class="header-content">
                     <div class="header-content-inner">
-                        <h1>不负期待 专家同行</h1>
+                        <h1>不负期待 专家同行<br/>
+                            为企业和咨询顾问<br/>
+                            提供高品质的资深专家辅助服务</h1>
                         <a href="#download" class="btn btn-outline btn-xl page-scroll">内测申请!</a>
                     </div>
                 </div>
@@ -157,8 +159,8 @@
                 <h2 class="section-heading">各大应用市场陆续上线中...</h2>
                 <p></p>
                 <div class="badges">
-                    <a class="badge-link" href="https://www.pgyer.com/da334b81d06790d4dad81ca63d574674"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
-                    <a class="badge-link" href="https://www.pgyer.com/Zoy3"><img src="{{ asset('/') }}web/img/app-store-badge.svg" alt=""></a>
+                    <a class="badge-link" data-toggle="modal" data-target="#myModal"><img src="img/google-play-badge.svg" alt="" style="cursor:pointer"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
+                    <a class="badge-link" data-toggle="modal" data-target="#myModal"><img src="img/google-play-badge.svg" alt="" style="cursor:pointer"><img src="{{ asset('/') }}web/img/app-store-badge.svg" alt=""></a>
                 </div>
             </div>
         </div>
@@ -170,8 +172,8 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="section-heading">
-                    <h2>Unlimited Features, Unlimited Fun</h2>
-                    <p class="text-muted">Check out what you can do with this app theme!</p>
+                    <h2>丰富功能，真诚为您打造</h2>
+                    <p class="text-muted">任何地方、任何时间、任何问题，轻松化解，顾问必备</p>
                     <hr>
                 </div>
             </div>
@@ -235,7 +237,7 @@
 
 <section id="contact" class="contact bg-primary">
     <div class="container">
-        <h2>We <i class="fa fa-heart"></i> consulting!</h2>
+        <h2>联系我们</h2>
         <ul class="list-inline list-social">
             <li class="social-twitter">
                 <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
@@ -250,20 +252,35 @@
     </div>
 </section>
 
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                您所选择的应用市场尚未上线，如果您已经得到邀请码，请在页面最下方以任何方式联系我们，我们会告诉您应用目前的下载方式。
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <footer>
     <div class="container">
-        <p>&copy; 2016 Start Bootstrap. All Rights Reserved.</p>
-        <ul class="list-inline">
-            <li>
-                <a href="#">Privacy</a>
-            </li>
-            <li>
-                <a href="#">Terms</a>
-            </li>
-            <li>
-                <a href="#">FAQ</a>
-            </li>
-        </ul>
+        <p>© 2017 InweHub.com All Rights Reserved.</p>
+        {{--<ul class="list-inline">--}}
+            {{--<li>--}}
+                {{--<a href="#">Privacy</a>--}}
+            {{--</li>--}}
+            {{--<li>--}}
+                {{--<a href="#">Terms</a>--}}
+            {{--</li>--}}
+            {{--<li>--}}
+                {{--<a href="#">FAQ</a>--}}
+            {{--</li>--}}
+        {{--</ul>--}}
     </div>
 </footer>
 
@@ -274,7 +291,7 @@
 <script src="{{ asset('/web/lib/bootstrap/js/bootstrap.min.js') }}"></script>
 
 <!-- Plugin JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="{{ asset('/web/js/jquery.easing.min.js') }}"></script>
 
 <!-- Theme JavaScript -->
 <script src="{{ asset('/web/js/new-age.min.js') }}"></script>
@@ -292,7 +309,18 @@
 
     $(function () {
         $('[data-toggle="popover"]').popover()
+
+        $('[data-toggle="model"]').modal({});
     })
+</script>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-97476315-2', 'auto');
+    ga('send', 'pageview');
 </script>
 </body>
 
