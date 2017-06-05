@@ -112,7 +112,7 @@
                         <h3>为企业和咨询顾问<br/>
                             提供高品质资深专家辅助服务</h3>
                         <br/>
-                        <a href="#download" class="btn btn-outline btn-xl page-scroll">内测申请</a>
+                        <a href="http://cn.mikecrm.com/ovYy1u4" target="_blank" class="btn btn-outline btn-xl page-scroll">内测申请</a>
                     </div>
                 </div>
             </div>
