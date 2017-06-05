@@ -165,8 +165,10 @@ p {
   display: inline-block;
 }
 .myicon-xiaoha {
-  background-image: url("../img/icon_xiaoha.png");
-  top: 5px;
+  width: 38px;
+  height: 38px;
+  top: 4px;
+  background-image: url("../img/kefu.png");
 }
 .myicon-item-1 {
   background-image: url("../img/icon-item-1.png");
@@ -350,11 +352,11 @@ section.cta {
   background-image: url('../img/bg-cta.jpg');
   padding: 250px 0;
 }
-section.cta .cta-content {
+section.cta f .cta-content {
   position: relative;
   z-index: 1;
 }
-section.cta .cta-content h2 {
+section.cta f .cta-content h2 {
   margin-top: 0;
   margin-bottom: 25px;
   color: white;
@@ -362,7 +364,7 @@ section.cta .cta-content h2 {
   font-size: 50px;
 }
 @media (min-width: 768px) {
-  section.cta .cta-content h2 {
+  section.cta f .cta-content h2 {
     font-size: 80px;
   }
 }
@@ -403,10 +405,10 @@ section.contact ul.list-social li.social-twitter a:hover {
   background-color: #0d95e8;
 }
 section.contact ul.list-social li.social-facebook a {
-  background-color: #fff;
+  background-color: #344e86;
 }
 section.contact ul.list-social li.social-facebook a:hover {
-  background-color: #f2f2f2;
+  background-color: #2d4374;
 }
 section.contact ul.list-social li.social-google-plus a {
   background-color: #dd4b39;
