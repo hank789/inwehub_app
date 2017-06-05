@@ -270,17 +270,17 @@
 <footer>
     <div class="container">
         <p>© 2017 InweHub.com All Rights Reserved.</p>
-        {{--<ul class="list-inline">--}}
-            {{--<li>--}}
-                {{--<a href="#">Privacy</a>--}}
-            {{--</li>--}}
-            {{--<li>--}}
-                {{--<a href="#">Terms</a>--}}
-            {{--</li>--}}
-            {{--<li>--}}
-                {{--<a href="#">FAQ</a>--}}
-            {{--</li>--}}
-        {{--</ul>--}}
+        <ul class="list-inline">
+            <li>
+                <a href="#">Privacy</a>
+            </li>
+            <li>
+                <a href="#">Terms</a>
+            </li>
+            <li>
+                <a href="#">FAQ</a>
+            </li>
+        </ul>
     </div>
 </footer>
 
