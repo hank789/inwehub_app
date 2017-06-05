@@ -24,8 +24,8 @@ class Handler extends ExceptionHandler
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
-        //ApiValidationException::class,
-        //ApiException::class,
+        ApiValidationException::class,
+        ApiException::class,
     ];
 
     /**
@@ -38,6 +38,17 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        $dev_should_reports = [
+            ApiValidationException::class,
+            ApiException::class,
+        ];
+        if(config('app.dev') != 'production'){
+            foreach($dev_should_reports as $dev_should_report){
+                if($exception instanceof $dev_should_report){
+                    app('sentry')->captureException($exception);
+                }
+            }
+        }
         if ($this->shouldReport($exception)) {
             app('sentry')->captureException($exception);
         }
