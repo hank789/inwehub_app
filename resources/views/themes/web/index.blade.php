@@ -34,8 +34,8 @@
             display: block;
             position: absolute;
             top:11.4%;
-            left:16px;
-            width: 90%;
+            left:5%;
+            width: 90.5%;
             height:77%;
             margin: 0 auto;
             text-align: center;
@@ -51,6 +51,13 @@
         .swiper-wrapper img {
             width: 100%;
             height: 100%;
+        }
+
+
+        @media (min-width: 768px){
+            .demo{
+                left:5%;
+            }
         }
 
     </style>
@@ -73,20 +80,20 @@
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
             </button>
-            <a class="navbar-brand page-scroll" href="#page-top">InweHub</a>
+            <a class="navbar-brand page-scroll" href="#page-top"><i class="myicon myicon-logo"></i> </a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a class="page-scroll" href="#download">Download</a>
+                    <a class="page-scroll" href="#download">即刻下载</a>
                 </li>
                 <li>
-                    <a class="page-scroll" href="#features">Features</a>
+                    <a class="page-scroll" href="#features">丰富功能</a>
                 </li>
                 <li>
-                    <a class="page-scroll" href="#contact">Contact</a>
+                    <a class="page-scroll" href="#contact">联系我们</a>
                 </li>
             </ul>
         </div>
@@ -231,10 +238,10 @@
         <h2>We <i class="fa fa-heart"></i> consulting!</h2>
         <ul class="list-inline list-social">
             <li class="social-twitter">
-                <a href="#"><i class="fa fa-wechat"></i></a>
+                <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
             </li>
             <li class="social-facebook">
-                <a href="#"><i class="fa myicon myicon-xiaoha"></i></a>
+                <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="img/guwenxiaoha.jpeg" width="200">'><i class="fa myicon myicon-xiaoha"></i></a>
             </li>
             <li class="social-google-plus">
                 <a href="mailto:hi@inwehub.com"><i class="fa fa-envelope"></i></a>

@@ -137,6 +137,9 @@ p {
   .navbar-default.affix .navbar-header .navbar-brand:focus {
     color: #fdcc52;
   }
+  .navbar-default.affix .navbar-header .navbar-brand .myicon-logo {
+    background-image: url("../img/logo_hei.png");
+  }
   .navbar-default.affix .nav > li > a,
   .navbar-default.affix .nav > li > a:focus {
     color: #222222;
@@ -176,6 +179,11 @@ p {
 }
 .myicon-item-6 {
   background-image: url("../img/icon-item-6.png");
+}
+.myicon-logo {
+  width: 100px;
+  height: 20px;
+  background-image: url("../img/logo_white.png");
 }
 header {
   position: relative;
@@ -239,7 +247,7 @@ header .device-container .screen img {
     font-size: 35px;
   }
   header .device-container {
-    max-width: 300px;
+    max-width: none;
     max-height: calc(0vh);
     margin: 100px auto 0;
   }
@@ -386,10 +394,10 @@ section.contact ul.list-social li.social-twitter a:hover {
   background-color: #0d95e8;
 }
 section.contact ul.list-social li.social-facebook a {
-  background-color: #3b5998;
+  background-color: #fff;
 }
 section.contact ul.list-social li.social-facebook a:hover {
-  background-color: #344e86;
+  background-color: #f2f2f2;
 }
 section.contact ul.list-social li.social-google-plus a {
   background-color: #dd4b39;
