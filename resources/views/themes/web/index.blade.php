@@ -14,10 +14,10 @@
     <!-- Bootstrap Core CSS -->
     <link href="{{ asset('/web/lib/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
-    <!-- Custom Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
+    {{--<!-- Custom Fonts -->--}}
+    {{--<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">--}}
+    {{--<link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">--}}
+    {{--<link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">--}}
 
     <!-- Plugin CSS -->
     <link rel="stylesheet" href="{{ asset('/web/lib/font-awesome/css/font-awesome.min.css') }}">
@@ -34,8 +34,8 @@
             display: block;
             position: absolute;
             top:11.4%;
-            left:16px;
-            width: 90%;
+            left:5%;
+            width: 90.5%;
             height:77%;
             margin: 0 auto;
             text-align: center;
@@ -53,13 +53,20 @@
             height: 100%;
         }
 
+
+        @media (min-width: 768px){
+            .demo{
+                left:5%;
+            }
+        }
+
     </style>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <script src="{{ asset('/web/js/html5shiv.js') }}"></script>
+    <script src="{{ asset('/web/js/respond.min.js') }}"></script>
     <![endif]-->
 
 </head>
@@ -73,20 +80,20 @@
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
             </button>
-            <a class="navbar-brand page-scroll" href="#page-top">InweHub</a>
+            <a class="navbar-brand page-scroll" href="#page-top"><i class="myicon myicon-logo"></i> </a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a class="page-scroll" href="#download">Download</a>
+                    <a class="page-scroll" href="#download">即刻下载</a>
                 </li>
                 <li>
-                    <a class="page-scroll" href="#features">Features</a>
+                    <a class="page-scroll" href="#features">丰富功能</a>
                 </li>
                 <li>
-                    <a class="page-scroll" href="#contact">Contact</a>
+                    <a class="page-scroll" href="#contact">联系我们</a>
                 </li>
             </ul>
         </div>
@@ -102,7 +109,10 @@
                 <div class="header-content">
                     <div class="header-content-inner">
                         <h1>不负期待 专家同行</h1>
-                        <a href="#download" class="btn btn-outline btn-xl page-scroll">内测申请!</a>
+                        <h3>为企业和咨询顾问<br/>
+                            提供高品质资深专家辅助服务</h3>
+                        <br/>
+                        <a href="#download" class="btn btn-outline btn-xl page-scroll">内测申请</a>
                     </div>
                 </div>
             </div>
@@ -147,11 +157,11 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h2 class="section-heading">各大应用市场陆续上线中...</h2>
+                <h2 class="section-heading">各大市场陆续上线</h2>
                 <p></p>
                 <div class="badges">
-                    <a class="badge-link" href="https://www.pgyer.com/da334b81d06790d4dad81ca63d574674"><img src="{{ asset('/') }}img/google-play-badge.svg" alt=""></a>
-                    <a class="badge-link" href="https://www.pgyer.com/Zoy3"><img src="{{ asset('/') }}img/app-store-badge.svg" alt=""></a>
+                    <a class="badge-link" data-toggle="modal" data-target="#myModal"  style="cursor:pointer"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
+                    <a class="badge-link" data-toggle="modal" data-target="#myModal"  style="cursor:pointer"><img src="{{ asset('/') }}web/img/app-store-badge.svg" alt=""></a>
                 </div>
             </div>
         </div>
@@ -163,8 +173,8 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="section-heading">
-                    <h2>Unlimited Features, Unlimited Fun</h2>
-                    <p class="text-muted">Check out what you can do with this app theme!</p>
+                    <h2>丰富功能，真诚为您打造</h2>
+                    <p class="text-muted">任何地方、任何时间、任何问题，轻松化解，顾问必备</p>
                     <hr>
                 </div>
             </div>
@@ -228,13 +238,13 @@
 
 <section id="contact" class="contact bg-primary">
     <div class="container">
-        <h2>We <i class="fa fa-heart"></i> consulting!</h2>
+        <h2>联系我们</h2>
         <ul class="list-inline list-social">
             <li class="social-twitter">
-                <a href="#"><i class="fa fa-wechat"></i></a>
+                <a href="javascript:void(0)" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
             </li>
             <li class="social-facebook">
-                <a href="#"><i class="fa myicon myicon-xiaoha"></i></a>
+                <a href="javascript:void(0)" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/guwenxiaoha.jpeg" width="200">'><i class="fa myicon myicon-xiaoha"></i></a>
             </li>
             <li class="social-google-plus">
                 <a href="mailto:hi@inwehub.com"><i class="fa fa-envelope"></i></a>
@@ -243,9 +253,28 @@
     </div>
 </section>
 
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                您所选择的应用市场尚未上线，如果您已经得到邀请码，请在页面最下方以任何方式联系我们，我们会告诉您应用目前的下载方式。
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="gototop js-top">
+    <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+</div>
+
 <footer>
     <div class="container">
-        <p>&copy; 2016 Start Bootstrap. All Rights Reserved.</p>
+        <p>© 2017 InweHub.com All Rights Reserved 沪ICP备17020197.</p>
         <ul class="list-inline">
             <li>
                 <a href="#">Privacy</a>
@@ -267,7 +296,7 @@
 <script src="{{ asset('/web/lib/bootstrap/js/bootstrap.min.js') }}"></script>
 
 <!-- Plugin JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="{{ asset('/web/js/jquery.easing.min.js') }}"></script>
 
 <!-- Theme JavaScript -->
 <script src="{{ asset('/web/js/new-age.min.js') }}"></script>
@@ -282,6 +311,51 @@
         paginationClickable: true,
         loop: true
     });
+
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+
+        $('[data-toggle="model"]').modal({});
+
+        goToTop();
+    })
+
+    var goToTop = function() {
+
+        $('.js-gotop').on('click', function(event){
+
+            event.preventDefault();
+
+            $('html, body').animate({
+                scrollTop: $('html').offset().top
+            }, 500, 'easeInOutExpo');
+
+            return false;
+        });
+
+        $(window).scroll(function(){
+
+            var $win = $(window);
+            if ($win.scrollTop() > 200) {
+                $('.js-top').addClass('active');
+            } else {
+                $('.js-top').removeClass('active');
+            }
+
+        });
+
+    };
+</script>
+
+
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-97476315-2', 'auto');
+    ga('send', 'pageview');
 </script>
 </body>
 
