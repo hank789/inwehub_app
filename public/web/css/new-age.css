@@ -496,3 +496,44 @@ body {
 .header-content-inner a {
   font-size: 18px;
 }
+@media (max-width: 992px) {
+  section.download h2 {
+    font-size: 30px;
+  }
+  section h2 {
+    font-size: 30px;
+  }
+}
+.gototop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  @include transition(.5s);
+}
+.gototop.active {
+  opacity: 1;
+  visibility: visible;
+}
+.gototop a {
+  width: 50px;
+  height: 50px;
+  display: table;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  text-align: center;
+  @include border-radius(4px);
+}
+.gototop a i {
+  height: 50px;
+  display: table-cell;
+  vertical-align: middle;
+}
+.gototop a:hover,
+.gototop a:active,
+.gototop a:focus {
+  text-decoration: none;
+  outline: none;
+}

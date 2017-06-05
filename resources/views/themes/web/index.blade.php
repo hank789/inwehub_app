@@ -157,7 +157,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                <h2 class="section-heading">各大应用市场陆续上线中...</h2>
+                <h2 class="section-heading">各大市场陆续上线</h2>
                 <p></p>
                 <div class="badges">
                     <a class="badge-link" data-toggle="modal" data-target="#myModal"  style="cursor:pointer"><img src="{{ asset('/') }}web/img/google-play-badge.svg" alt=""></a>
@@ -241,10 +241,10 @@
         <h2>联系我们</h2>
         <ul class="list-inline list-social">
             <li class="social-twitter">
-                <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
+                <a href="javascript:void(0)" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
             </li>
             <li class="social-facebook">
-                <a href="#" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/guwenxiaoha.jpeg" width="200">'><i class="fa myicon myicon-xiaoha"></i></a>
+                <a href="javascript:void(0)" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/guwenxiaoha.jpeg" width="200">'><i class="fa myicon myicon-xiaoha"></i></a>
             </li>
             <li class="social-google-plus">
                 <a href="mailto:hi@inwehub.com"><i class="fa fa-envelope"></i></a>
@@ -268,9 +268,13 @@
     </div>
 </div>
 
+<div class="gototop js-top">
+    <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+</div>
+
 <footer>
     <div class="container">
-        <p>© 2017 InweHub.com All Rights Reserved.</p>
+        <p>© 2017 InweHub.com All Rights Reserved 沪ICP备17020197.</p>
         <ul class="list-inline">
             <li>
                 <a href="#">Privacy</a>
@@ -312,8 +316,38 @@
         $('[data-toggle="popover"]').popover()
 
         $('[data-toggle="model"]').modal({});
+
+        goToTop();
     })
+
+    var goToTop = function() {
+
+        $('.js-gotop').on('click', function(event){
+
+            event.preventDefault();
+
+            $('html, body').animate({
+                scrollTop: $('html').offset().top
+            }, 500, 'easeInOutExpo');
+
+            return false;
+        });
+
+        $(window).scroll(function(){
+
+            var $win = $(window);
+            if ($win.scrollTop() > 200) {
+                $('.js-top').addClass('active');
+            } else {
+                $('.js-top').removeClass('active');
+            }
+
+        });
+
+    };
 </script>
+
+
 
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
