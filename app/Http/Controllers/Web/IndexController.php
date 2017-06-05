@@ -11,6 +11,6 @@ class IndexController extends Controller
 {
     public function index()
     {
-        return '这是英淘官网首页!内侧中,即将开放!';
+        return view('web::index');
     }
 }
