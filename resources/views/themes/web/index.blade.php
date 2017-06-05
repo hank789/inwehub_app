@@ -6,10 +6,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="企业管理咨询、SAP、Oracle、咨询顾问、consultant、业务流程、企业管理、解决方案、行业、consulting、信息化、数字企业、inwe、InweHub、InweTech">
-    <meta name="author" content="">
+    <meta name="keywords" content="企业管理咨询,SAP,Oracle,咨询顾问,consultant,业务流程,企业管理,解决方案,行业,consulting,信息化,数字企业,inwe,InweHub,InweTech">
+    <meta name="description" itemprop="description" content="InweHub - 不负期待 专家同行">
 
-    <title>InweHub</title>
+    <title>InweHub - 不负期待 专家同行</title>
+
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ asset('/web/lib/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -122,7 +123,7 @@
                         <div class="device">
                             <div class="screen">
                                 <!-- Demo image for screen mockup, you can put an image here, some HTML, an animation, video, or anything else! -->
-                                <img src="{{ asset('/web/img/demo-screen-1.jpg') }}" class="img-responsive" alt="">
+                                <img src="{{ asset('/web/assets/01.png') }}" class="img-responsive" alt="">
                             </div>
                             <div class="button">
                                 <!-- You can hook the "home button" to some JavaScript events or just remove it -->
@@ -242,10 +243,10 @@
         <h2>联系我们</h2>
         <ul class="list-inline list-social">
             <li class="social-twitter">
-                <a href="javascript:void(0)" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
+                <a href="javascript:void(0)" data-toggle="popover" data-trigger="click" data-placement="top" data-html="true" data-content='<img src="web/img/InweHub.jpg" width="200">'><i class="fa fa-wechat"></i></a>
             </li>
             <li class="social-facebook">
-                <a href="javascript:void(0)" data-toggle="popover" data-trigger="hover" data-html="true" data-content='<img src="web/img/guwenxiaoha.jpeg" width="200">'><i class="fa myicon myicon-xiaoha"></i></a>
+                <a href="javascript:void(0)" data-toggle="popover" data-trigger="click" data-placement="top" data-html="true" data-content='<img src="web/img/guwenxiaoha.jpeg" width="200">'><i class="fa myicon myicon-xiaoha"></i></a>
             </li>
             <li class="social-google-plus">
                 <a href="mailto:hi@inwehub.com"><i class="fa fa-envelope"></i></a>
