@@ -108,10 +108,10 @@
             <div class="col-sm-7">
                 <div class="header-content">
                     <div class="header-content-inner">
-                        <h1>不负期待 专家同行<br/>
-                            为企业和咨询顾问<br/>
-                            提供高品质的资深专家辅助服务</h1>
-                        <a href="#download" class="btn btn-outline btn-xl page-scroll">内测申请!</a>
+                        <h1>不负期待 专家同行</h1>
+                        <h3>为企业和咨询顾问<br/>
+                            提供高品质的资深专家辅助服务</h3>
+                        <a href="#download" class="btn btn-outline btn-xl page-scroll">内测申请</a>
                     </div>
                 </div>
             </div>
