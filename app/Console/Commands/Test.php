@@ -59,13 +59,12 @@ class Test extends Command
     public function handle()
     {
         //$userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',[1,2,3])->where('user_tags.skills','>=','1')->toSql();
-        $event = '最新活动';
-        $key = 'func:zan:'.$event;
-        $count = Cache::get($key,0);
-        $count = $count + 1;
-        var_dump($count);
-        Cache::forever($key,$count);
-
+        $list = User::where('status',1)->orderBy('id','DESC')->paginate(10);
+        $d = [];
+        foreach($list as $item){
+            $d[] = $item->toArray();
+        }
+        var_dump($d);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

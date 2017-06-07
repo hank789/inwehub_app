@@ -50,8 +50,12 @@ class ProjectController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $list = $query->orderBy('id','DESC')->paginate(10);
-        return self::createJsonData(true,$list->toArray());
+        $items = $query->orderBy('id','DESC')->paginate(10);
+        $list = [];
+        foreach($items as $item){
+            $list[] = $item->toArray();
+        }
+        return self::createJsonData(true,$list);
     }
 
     public function update(Request $request)
