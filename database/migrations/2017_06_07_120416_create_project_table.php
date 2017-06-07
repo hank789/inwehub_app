@@ -19,8 +19,8 @@ class CreateProjectTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->string("project_name")->nullable()->comment('项目名称');
             $table->decimal('project_amount')->nullable()->comment('项目预算');
-            $table->string('province',12)->nullable();       //省份
-            $table->string('city',12)->nullable();           //城市
+            $table->string('project_province',12)->nullable();       //省份
+            $table->string('project_city',12)->nullable();           //城市
             $table->string('company_name')->nullable()->comment('公司名称');
             $table->text('description')->nullable()->comment('描述');
             $table->integer('status')->comment('状态:0,待发布,1已发布')->default('1');
