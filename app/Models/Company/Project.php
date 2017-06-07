@@ -14,7 +14,7 @@ class Project extends Model
 {
     use BelongsToUserTrait,SoftDeletes;
     protected $table = 'projects';
-    protected $fillable = ['user_id', 'project_name','project_amount','project_address','company_name','status','description'];
+    protected $fillable = ['user_id', 'project_name','project_amount','project_province','project_city','company_name','status','description'];
 
     /**
      * 需要被转换成日期的属性。
