@@ -34,6 +34,26 @@ class ProfileController extends Controller
         $user = $request->user();
         $cache = UserCache::getUserInfoCache($user->id);
         if($cache){
+
+            $cache['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+            $cache['expert_level'] = $cache['is_expert'] === 1 ? $user->authentication->getLevelName():'';
+            $cache['is_company'] = $user->userData->is_company;
+
+            $cache['total_money'] = 0;
+            $user_money = UserMoney::find($user->id);
+            if($user_money){
+                $cache['total_money'] = $user_money->total_money;
+            }
+
+            $cache['questions'] = $user->userData->questions;
+            $cache['answers'] = $user->userData->answers;
+            //加上承诺待回答的
+            $cache['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
+            $cache['tasks'] = $user->tasks->where('status',0)->count();
+            $cache['projects'] = $user->companyProjects->count();
+            $cache['user_level'] = $user->getUserLevel();
+            $cache['user_credits'] = $user->userData->credits;
+            $cache['user_coins'] = $user->userData->coins;
             return self::createJsonData(true,$cache);
         }
 
