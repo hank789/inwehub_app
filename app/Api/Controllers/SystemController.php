@@ -88,6 +88,15 @@ class SystemController extends Controller {
         ]);
     }
 
+    public function getAppMarketUrl(){
+        $data = [
+            'ios_url' => 'https://itunes.apple.com/cn/app/jie-zou-da-shi/id493901993?mt=8',
+            'android_url' => 'https://itunes.apple.com/cn/app/jie-zou-da-shi/id493901993?mt=8'
+        ];
+
+        return self::createJsonData(true,$data);
+    }
+
     public function getPayConfig(){
         return self::createJsonData(true,get_pay_config());
     }

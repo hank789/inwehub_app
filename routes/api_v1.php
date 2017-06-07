@@ -160,7 +160,8 @@ Route::post('system/service_about','SystemController@serviceAbout');
 Route::post('system/service_help','SystemController@serviceHelp');
 //获取提问帮助设置
 Route::post('system/service_qa_help','SystemController@serviceQaHelp');
-
+//获取应用市场地址
+Route::post('system/app_market_url','SystemController@getAppMarketUrl')->middleware('jwt.auth');
 
 
 //消息模块
