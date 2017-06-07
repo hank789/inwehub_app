@@ -57,10 +57,10 @@ class ProjectController extends Controller {
         foreach($items as $item){
             $info = $item->toArray();
             unset($info['province'],$info['city']);
-            $info['province']['key'] = $item->province;
-            $info['province']['name'] = CityData::getProvinceName($item->province);
-            $info['city']['key'] = $item->city;
-            $info['city']['name'] = CityData::getCityName($item->hometown_province,$item->city);
+            $info['project_province']['key'] = $item->project_province;
+            $info['project_province']['name'] = CityData::getProvinceName($item->project_province);
+            $info['project_city']['key'] = $item->project_city;
+            $info['project_city']['name'] = CityData::getCityName($item->project_province,$item->project_city);
             $list[] = $info;
         }
         return self::createJsonData(true,$list);
