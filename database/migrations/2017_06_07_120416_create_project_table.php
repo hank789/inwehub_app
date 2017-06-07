@@ -42,5 +42,8 @@ class CreateProjectTable extends Migration
     public function down()
     {
         Schema::drop('projects');
+        Schema::table('user_data', function (Blueprint $table) {
+            $table->dropColumn(['is_company']);
+        });
     }
 }
