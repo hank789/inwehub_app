@@ -171,3 +171,17 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     Route::post('notification/count','NotificationController@count');
 
 });
+
+
+//项目模块
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','namespace'=>'Project'], function() {
+    //项目列表
+    Route::post('myList','ProjectController@myList');
+    //添加项目
+    Route::post('submit','ProjectController@submit');
+    //修改项目
+    Route::post('update','ProjectController@update');
+    //删除项目
+    Route::post('destroy','ProjectController@destroy');
+
+});

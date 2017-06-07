@@ -46,6 +46,7 @@ class ApiException extends Exception
     const USER_SUSPEND = 1109;
     const USER_REGISTRATION_CODE_OVERTIME = 1110;
     const USER_RESUME_UPLOAD_LIMIT = 1111;
+    const USER_SUBMIT_PROJECT_NEED_COMPANY = 1112;
 
 
 
@@ -96,6 +97,7 @@ class ApiException extends Exception
         self::USER_SUSPEND => '您的账户已被禁用',
         self::USER_REGISTRATION_CODE_OVERTIME => '邀请码已过期',
         self::USER_RESUME_UPLOAD_LIMIT => '请明天再来上传简历信息',
+        self::USER_SUBMIT_PROJECT_NEED_COMPANY => '您的账户类型，暂无法使用此功能，如需申请企业账户请发送基本信息到hi@inwehub.com',
 
 
         //问答模块

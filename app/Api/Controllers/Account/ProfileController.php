@@ -65,6 +65,7 @@ class ProfileController extends Controller
         $info['tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->get());
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
+        $info['is_company'] = $user->userData->is_company;
 
         $info_percent = $user->getInfoCompletePercent(true);
         $info['account_info_complete_percent'] = $info_percent['score'];

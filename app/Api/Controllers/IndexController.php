@@ -45,7 +45,6 @@ class IndexController extends Controller {
         }
 
         $data = [
-            'hide_unfinished' => 1,
             'recommend_expert_name' => Setting()->get('recommend_expert_name','郭小红'),//专家姓名
             'recommend_expert_description' => Setting()->get('recommend_expert_description','SAP咨询行业15年从业经历，熟悉离散制造行业，专注pp等模块，是一位非常自身的超级顾问'),//专家介绍
             'recommend_expert_uid' => $recommend_expert_uid,//专家id

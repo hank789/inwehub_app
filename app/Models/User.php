@@ -276,6 +276,10 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany('App\Models\Task');
     }
 
+    public function companyProjects(){
+        return $this->hasMany('App\Models\Company\Project');
+    }
+
 
     /**
      * 获取用户文章
