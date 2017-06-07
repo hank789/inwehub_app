@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Company\Project;
+use App\Services\City\CityData;
 use Illuminate\Http\Request;
 
 /**
@@ -15,7 +16,8 @@ class ProjectController extends Controller {
     protected $validateRules = [
         'project_name' => 'required|max:255',
         'project_amount'   => 'required|numeric',
-        'project_address'   => 'required|max:255',
+        'project_province'   => 'required|max:255',
+        'project_city'   => 'required|max:255',
         'company_name'   => 'required|max:255',
         'description' => 'nullable'
     ];
@@ -53,7 +55,13 @@ class ProjectController extends Controller {
         $items = $query->orderBy('id','DESC')->paginate(10);
         $list = [];
         foreach($items as $item){
-            $list[] = $item->toArray();
+            $info = $item->toArray();
+            unset($info['province'],$info['city']);
+            $info['province']['key'] = $item->province;
+            $info['province']['name'] = CityData::getProvinceName($item->province);
+            $info['city']['key'] = $item->city;
+            $info['city']['name'] = CityData::getCityName($item->hometown_province,$item->city);
+            $list[] = $info;
         }
         return self::createJsonData(true,$list);
     }
