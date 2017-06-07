@@ -87,7 +87,7 @@ class ProfileController extends Controller
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['tasks'] = $user->tasks->where('status',0)->count();
-        $info['projects'] = 0;
+        $info['projects'] = $user->companyProjects->count();
         $info['user_level'] = $user->getUserLevel();
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;

@@ -127,6 +127,12 @@ class FollowController extends Controller
                     $item['user_avatar_url'] = $info->getAvatarUrl();
                     $item['description'] = $info->description;
                     break;
+                case 'question':
+                    $item['question_id'] = $info->id;
+                    $item['user_name'] = $info->hide ? '匿名' : $info->user->name;
+                    $item['user_avatar_url'] = $info->hide ? config('image.user_default_avatar') : $info->user->getAvatarUrl();
+                    $item['description'] = $info->title;
+                    break;
             }
             $data[] = $item;
         }
