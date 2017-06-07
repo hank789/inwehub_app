@@ -34,7 +34,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $cache = UserCache::getUserInfoCache($user->id);
         if($cache){
-            //return self::createJsonData(true,$cache);
+            return self::createJsonData(true,$cache);
         }
 
         $info = [];
