@@ -56,7 +56,7 @@ class ProjectController extends Controller {
         $list = [];
         foreach($items as $item){
             $info = $item->toArray();
-            unset($info['province'],$info['city']);
+            unset($info['project_province'],$info['project_city']);
             $info['project_province']['key'] = $item->project_province;
             $info['project_province']['name'] = CityData::getProvinceName($item->project_province);
             $info['project_city']['key'] = $item->project_city;
