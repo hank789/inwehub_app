@@ -36,7 +36,7 @@ class NotificationController extends Controller
             $item = [];
             $item['id'] = $notification->id;
             $item['type'] = $notification->type;
-            $item['type_text'] = Config::get('intervapp.notification_types.'.$notification->type);
+            $item['type_text'] = Config::get('inwehub.notification_types.'.$notification->type);
             $item['description'] = $notification->content;
             $item['is_read'] = $notification->is_read;
             $item['created_at'] = (string)$notification->created_at;

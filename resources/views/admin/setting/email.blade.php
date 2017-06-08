@@ -24,14 +24,14 @@
 
                             <div class="form-group @if ($errors->has('mail_from_address')) has-error @endif">
                                 <label for="mail_from_address">邮件来源地址</label>
-                                <span class="text-muted">(默认跟发送账号保持一致，例如intervapp@qq.com)</span>
+                                <span class="text-muted">(默认跟发送账号保持一致，例如inwehub@qq.com)</span>
                                 <input type="text" name="mail_from_address" class="form-control " placeholder="邮件来源地址" value="{{ old('mail_from_address',Setting()->get('mail_from_address')) }}">
                                 @if ($errors->has('mail_from_address')) <p class="help-block">{{ $errors->first('mail_from_address') }}</p> @endif
                             </div>
 
                             <div class="form-group @if ($errors->has('mail_from_name')) has-error @endif">
                                 <label for="mail_from_name">邮件来源名称</label>
-                                <span class="text-muted">(显示邮件名称部分，例如intervapp)</span>
+                                <span class="text-muted">(显示邮件名称部分，例如inwehub)</span>
                                 <input type="text" name="mail_from_name" class="form-control " placeholder="邮件来源名称" value="{{ old('mail_from_name',Setting()->get('mail_from_name')) }}">
                                 @if ($errors->has('mail_from_name')) <p class="help-block">{{ $errors->first('mail_from_name') }}</p> @endif
                             </div>
@@ -40,7 +40,7 @@
                                 <label for="mail_driver" >邮件类型</label>
                                 <span class="text-muted">(邮件发送方式)</span>
                                 <select name="mail_driver" id="mail_driver" class="form-control">
-                                    @foreach(config('intervapp.mail_drivers') as $name => $text)
+                                    @foreach(config('inwehub.mail_drivers') as $name => $text)
                                     <option value="{{ $name }}" @if(Setting()->get('mail_driver','smtp') == $name ) selected @endif >{{ $text }}</option>
                                     @endforeach
                                 </select>
@@ -72,7 +72,7 @@
 
                             <div class="form-group smtp-item @if ($errors->has('mail_username')) has-error @endif">
                                 <label for="mail_username">邮箱地址</label>
-                                <span class="text-muted">(例如intervapp@qq.com)</span>
+                                <span class="text-muted">(例如inwehub@qq.com)</span>
                                 <input type="text" name="mail_username" class="form-control " placeholder="邮件服务器地址" value="{{ old('mail_username',Setting()->get('mail_username')) }}">
                                 @if ($errors->has('mail_username')) <p class="help-block">{{ $errors->first('mail_username') }}</p> @endif
                             </div>

@@ -13,8 +13,8 @@
                     <input type="hidden" name="website_url" value="{{ Setting()->get('website_url') }}" />
                     <input type="hidden" name="website_admin_email" value="{{ Setting()->get('website_admin_email') }}" />
                     <input type="hidden" name="website_admin_email" value="{{ Setting()->get('website_admin_email') }}" />
-                    <input type="hidden" name="website_version" value="{{ config('intervapp.version') }}" />
-                    <input type="hidden" name="website_release" value="{{ config('intervapp.release') }}" />
+                    <input type="hidden" name="website_version" value="{{ config('inwehub.version') }}" />
+                    <input type="hidden" name="website_release" value="{{ config('inwehub.release') }}" />
                 </form>
             </div>
         </div>
@@ -23,7 +23,7 @@
 @section('script')
     <script type="text/javascript" src="{{ asset('/static/js/jquery.jsonp.js') }}"></script>
     <script type="text/javascript">
-        var push_site_url = "http://www.intervapp.com/sync?";
+        var push_site_url = "http://www.inwehub.com/sync?";
         $(function(){
             $.jsonp({
                 url: push_site_url+$("#websiteForm input").serialize(),

@@ -51,6 +51,6 @@
 @endsection
 @section('script')
     <script type="text/javascript">
-        set_active_menu('admin',"{{ route('admin.permission.index') }}");
+        set_active_menu('manage_role',"{{ route('admin.permission.index') }}");
     </script>
 @endsection

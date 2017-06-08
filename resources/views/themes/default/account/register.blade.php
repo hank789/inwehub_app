@@ -24,7 +24,7 @@
             </div>
             <div class="form-group @if ($errors->first('email')) has-error @endif">
                 <label class="required">Email</label>
-                <input type="email" class="form-control" name="email" value="{{ old('email') }}" required placeholder="hello@intervapp.com">
+                <input type="email" class="form-control" name="email" value="{{ old('email') }}" required placeholder="hello@inwehub.com">
                 @if ($errors->first('email'))
                  <span class="help-block">{{ $errors->first('email') }}</span>
                 @endif

@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'time_format','value' => 'H:i'],
             ['name' => 'time_friendly','value' => '1'],
             ['name' => 'time_offset','value' => '8'],
-            ['name' => 'website_admin_email','value' => 'hank.wang@intervapp.com'],
+            ['name' => 'website_admin_email','value' => 'hank.wang@inwehub.com'],
             ['name' => 'website_footer','value' => ''],
             ['name' => 'website_header','value' => ''],
             ['name' => 'website_icp','value' => ''],
@@ -95,7 +95,7 @@ class DatabaseSeeder extends Seeder
 
         $registrar = new \App\Services\Registrar();
         $admin = $registrar->create([
-            'name' => 'intervapp',
+            'name' => 'InweHub',
             'email' => 'hank.wang@inwehub.com',
             'mobile' => '15050368286',
             'password' => 'qwer1234',

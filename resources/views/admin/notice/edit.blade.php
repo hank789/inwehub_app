@@ -30,7 +30,7 @@
                             </div>
                             <div class="form-group">
                                 <label>公告链接地址</label>
-                                <input type="text" name="url" class="form-control "  placeholder="http://www.intervapp.com" value="{{ old('url',$notice->url) }}">
+                                <input type="text" name="url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url',$notice->url) }}">
                             </div>
                             <div class="form-group">
                                 <label>状态</label>

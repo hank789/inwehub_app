@@ -38,7 +38,7 @@
 
                         <div class="form-group @if ($errors->has('website_url')) has-error @endif">
                             <label for="website_url">站点地址</label>
-                            <span class="text-muted">(您站点的完整域名。例如: http://www.intervapp.com，不要以斜杠 (“/”) 结尾)</span>
+                            <span class="text-muted">(您站点的完整域名。例如: http://www.inwehub.com，不要以斜杠 (“/”) 结尾)</span>
                             <input type="text" name="website_url" class="form-control " placeholder="填写您站点的完整域名" value="{{ old('website_url',Setting()->get('website_url')) }}">
                             @if ($errors->has('website_url')) <p class="help-block">{{ $errors->first('website_url') }}</p> @endif
                         </div>

@@ -14,9 +14,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\Test::class,
-        Commands\Component\ComponentArchiveCommand::class,
-        Commands\Component\ComponentCommand::class,
-        Commands\Component\ComponentLinkCommand::class,
         Commands\Pay\Settlement::class,
     ];
 

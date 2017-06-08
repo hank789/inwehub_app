@@ -78,6 +78,6 @@
 @endsection
 @section('script')
     <script type="text/javascript">
-        set_active_menu('admin',"{{ route('admin.role.index') }}");
+        set_active_menu('manage_role',"{{ route('admin.role.index') }}");
     </script>
 @endsection

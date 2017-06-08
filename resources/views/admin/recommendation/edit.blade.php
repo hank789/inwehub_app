@@ -31,7 +31,7 @@
                             </div>
                             <div class="form-group">
                                 <label>推荐链接地址</label>
-                                <input type="text" name="url" class="form-control "  placeholder="http://www.intervapp.com" value="{{ old('url',$recommendation->url) }}">
+                                <input type="text" name="url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url',$recommendation->url) }}">
                             </div>
                             <div class="form-group">
                                 <label>logo图片</label>

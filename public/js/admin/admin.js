@@ -703,4 +703,4 @@ function _init() {
     };
 }(jQuery));
 
-var push_site_url = "http://www.intervapp.com/sync?";
+var push_site_url = "http://www.inwehub.com/sync?";

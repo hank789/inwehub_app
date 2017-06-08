@@ -40,7 +40,7 @@
             <i class="fa fa-users"></i> <span>权限管理</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
-        <ul class="treeview-menu" id="manage_user">
+        <ul class="treeview-menu" id="manage_role">
             <li><a href="{{ route('admin.permission.index') }}"><i class="fa fa-circle-o"></i> 权限管理</a></li>
             <li><a href="{{ route('admin.role.index') }}"><i class="fa fa-circle-o"></i> 角色管理</a></li>
         </ul>

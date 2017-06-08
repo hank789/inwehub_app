@@ -41,7 +41,7 @@ trait BaseController {
 
 
     protected function creditAccountInfoCompletePercent($uid,$percent){
-        $valid_percent = config('intervapp.user_info_valid_percent',90);
+        $valid_percent = config('inwehub.user_info_valid_percent',90);
         $count = 0;
         if ($percent >= $valid_percent) {
             $count = Cache::increment('account_info_complete_credit:'.$uid);

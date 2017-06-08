@@ -105,7 +105,7 @@
                 lang: 'zh-CN',
                 height: 350,
                 placeholder:'撰写文章',
-                toolbar: [ {!! config('intervapp.summernote.blog') !!} ],
+                toolbar: [ {!! config('inwehub.summernote.blog') !!} ],
                 callbacks: {
                     onChange:function (contents, $editable) {
                         var code = $(this).summernote("code");

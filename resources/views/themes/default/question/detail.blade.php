@@ -350,7 +350,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-success" role="alert" id="rewardAlert">
-                        <i class="fa fa-exclamation-circle"></i> 不知道答案？你还可以邀请他人进行解答，每天可以邀请{{ config('intervapp.user_invite_limit') }}次。
+                        <i class="fa fa-exclamation-circle"></i> 不知道答案？你还可以邀请他人进行解答，每天可以邀请{{ config('inwehub.user_invite_limit') }}次。
                     </div>
                     <form class="invite-popup" id="inviteEmailForm"  action="{{ route('ask.question.inviteEmail',['question_id'=>$question->id]) }}" method="get">
                         <div style="position: relative;">
@@ -422,7 +422,7 @@
                 lang: 'zh-CN',
                 height: 160,
                 placeholder:'撰写答案',
-                toolbar: [ {!! config('intervapp.summernote.ask') !!} ],
+                toolbar: [ {!! config('inwehub.summernote.ask') !!} ],
                 callbacks: {
                     onChange:function (contents, $editable) {
                         var code = $(this).summernote("code");

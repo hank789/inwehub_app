@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     <meta name="author" content="英淘社区" />
-    <meta name="copyright" content="2017 intervapp.com" />
+    <meta name="copyright" content="2017 inwehub.com" />
     {!! Setting()->get('website_header') !!}
     <link href="{{ asset('/static/css/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('/static/css/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" />

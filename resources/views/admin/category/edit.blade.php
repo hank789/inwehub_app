@@ -37,7 +37,7 @@
                                 <label>栏目</label>
                                 <span class="text-muted">(允许显示的栏目)</span>
                                 <div class="checkbox">
-                                    @foreach( config('intervapp.category_types') as $key => $name )
+                                    @foreach( config('inwehub.category_types') as $key => $name )
                                         <input type="checkbox" checked name="types[]" value="{{ $key }}" @if(str_contains($category->type,$key)) checked @endif > {{ $name }} &nbsp;&nbsp;
                                     @endforeach
                                 </div>

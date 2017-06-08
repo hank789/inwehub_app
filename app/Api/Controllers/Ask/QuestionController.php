@@ -377,7 +377,7 @@ class QuestionController extends Controller
     protected function checkUserInfoPercent($user){
         //字段完成度为90%才能创建问题
         $percent = $user->getInfoCompletePercent();
-        $valid_percent = config('intervapp.user_info_valid_percent',90);
+        $valid_percent = config('inwehub.user_info_valid_percent',90);
         if($percent < $valid_percent){
             throw new ApiException(ApiException::ASK_NEED_USER_INFORMATION);
         }

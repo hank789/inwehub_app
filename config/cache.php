@@ -86,6 +86,6 @@ return [
     |
     */
 
-    'prefix' => 'intervapp',
+    'prefix' => 'inwehub',
 
 ];

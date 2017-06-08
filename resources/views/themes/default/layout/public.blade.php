@@ -8,13 +8,13 @@
     <title>@yield('seo_title',Setting()->get('website_name'))</title>
     <meta name="keywords" content="@yield('seo_keyword',parse_seo_template('seo_index_keyword','default'))" />
     <meta name="description" content="@yield('seo_description',parse_seo_template('seo_index_description','default'))" />
-    <meta name="author" content="Intervapp Team" />
-    <meta name="copyright" content="2017 intervapp.com" />
+    <meta name="author" content="inwehub Team" />
+    <meta name="copyright" content="2017 inwehub.com" />
     {!! Setting()->get('website_header') !!}
     <!-- Bootstrap -->
     <link href="{{ asset('/static/css/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('/static/css/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('/css/default/global.css')}}?v={{ config('intervapp.release') }}" rel="stylesheet" />
+    <link href="{{ asset('/css/default/global.css')}}?v={{ config('inwehub.release') }}" rel="stylesheet" />
     @yield('css')
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -146,7 +146,7 @@
             <a href="http://www.miibeian.gov.cn" target="_blank">{{ Setting()->get('website_icp') }}</a>
         </div>
         <div class="copyright mt-10">
-            Powered By <a href="#" target="_blank">{{ config('intervapp.version') }}</a> Release {{ config('intervapp.release') }} ©2017-{{ gmdate('Y') }} intervapp.com
+            Powered By <a href="#" target="_blank">{{ config('inwehub.version') }}</a> Release {{ config('inwehub.release') }} ©2017-{{ gmdate('Y') }} inwehub.com
         </div>
     </div>
 </footer>
@@ -220,7 +220,7 @@
 <script type="text/javascript">
     var is_login = Boolean("{{ Auth()->check() }}");
 </script>
-<script src="{{ asset('js/global.js') }}?v={{ config('intervapp.release') }}"></script>
+<script src="{{ asset('js/global.js') }}?v={{ config('inwehub.release') }}"></script>
 @yield('script')
 
 {!! Setting()->get('website_footer') !!}

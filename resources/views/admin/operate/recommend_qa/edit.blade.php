@@ -35,7 +35,7 @@
                             </div>
                             <div class="form-group">
                                 <label>推荐提问者头像地址</label>
-                                <input type="text" name="user_avatar_url" class="form-control "  placeholder="http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg" value="{{ old('user_avatar_url',$recommendation->user_avatar_url) }}">
+                                <input type="text" name="user_avatar_url" class="form-control "  placeholder="http://inwehub-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg" value="{{ old('user_avatar_url',$recommendation->user_avatar_url) }}">
                             </div>
                             <div class="form-group">
                                 <label>问题价格</label>

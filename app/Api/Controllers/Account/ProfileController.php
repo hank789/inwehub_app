@@ -96,7 +96,7 @@ class ProfileController extends Controller
         }
 
 
-        $info['account_info_valid_percent'] = config('intervapp.user_info_valid_percent');
+        $info['account_info_valid_percent'] = config('inwehub.user_info_valid_percent');
         $info['total_money'] = 0;
         $user_money = UserMoney::find($user->id);
         if($user_money){
