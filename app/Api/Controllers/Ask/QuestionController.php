@@ -85,7 +85,7 @@ class QuestionController extends Controller
                 'user_id' => $bestAnswer->user_id,
                 'user_name' => $bestAnswer->user->name,
                 'user_avatar_url' => $bestAnswer->user->getAvatarUrl(),
-                'content' => json_decode($bestAnswer->content,true),
+                'content' => $bestAnswer->content,
                 'promise_time' => $bestAnswer->promise_time,
                 'created_at' => (string)$bestAnswer->created_at
             ];
