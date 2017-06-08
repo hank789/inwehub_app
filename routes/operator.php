@@ -24,10 +24,6 @@ Route::get('/experts/{categorySlug?}/{provinceId?}',['as'=>'website.experts','us
 /*积分商城*/
 Route::get('/shop',['as'=>'website.shop','uses'=>'IndexController@shop'])->middleware(['auth','auth.admin']);
 
-/*sitemap*/
-Route::get('/sitemap',['as'=>'website.sitemap','uses'=>'SiteMapController@index']);
-
-
 
 
 /*用户账号管理，包含用户登录注册等操作*/
