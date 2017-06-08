@@ -50,7 +50,9 @@ class ConfirmOvertime implements ShouldQueue
         $question = Question::find($this->question_id);
         if($question->status == 2) {
             $question_invitation = QuestionInvitation::find($this->invitation_id);
-            event(new Push($question_invitation->user,'请您尽快确认回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+            if ($question_invitation->status == 0) {
+                event(new Push($question_invitation->user,'请您尽快确认回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+            }
         }
     }
 }
