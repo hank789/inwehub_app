@@ -25,7 +25,7 @@ class PermissionController extends AdminController
     public function index(Request $request)
     {
         $word = $request->input("word",'');
-        $permissions = Permission::where('name','like',"%$word%")->paginate(Config::get('tipask.admin.page_size'));
+        $permissions = Permission::where('name','like',"%$word%")->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.permission.index')->with('permissions',$permissions)->with('word',$word);
     }
 

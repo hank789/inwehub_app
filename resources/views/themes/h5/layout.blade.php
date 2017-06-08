@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
-    <meta name="author" content="英淘社区" />
+    <meta name="author" content="樱维社区" />
     <meta name="copyright" content="2017 inwehub.com" />
     {!! Setting()->get('website_header') !!}
     <link href="{{ asset('/static/css/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />

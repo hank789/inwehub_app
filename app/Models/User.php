@@ -200,7 +200,7 @@ class User extends Model implements AuthenticatableContract,
     public static function findFromCache($userId)
     {
 
-        $data = Cache::remember('user_cache_'.$userId,Config::get('tipask.user_cache_time'),function() use($userId) {
+        $data = Cache::remember('user_cache_'.$userId,Config::get('inwehub.user_cache_time'),function() use($userId) {
             return  self::select('name','title','gender')->find($userId);
         });
 

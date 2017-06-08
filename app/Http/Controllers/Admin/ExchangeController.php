@@ -26,7 +26,7 @@ class ExchangeController extends AdminController
      */
     public function index(Request $request)
     {
-        $exchanges = Exchange::orderBy('created_at','desc')->paginate(Config::get('tipask.admin.page_size'));
+        $exchanges = Exchange::orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.exchange.index')->with('exchanges',$exchanges);
 
     }

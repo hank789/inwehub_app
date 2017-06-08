@@ -21,7 +21,7 @@ class DoingsController extends Controller
     {
         $doings = Doing::correlation($request->user())->paginate(20);
         $doings->map(function($doing){
-            $doing->action_text = Config::get('tipask.user_actions.'.$doing->action);
+            $doing->action_text = Config::get('inwehub.user_actions.'.$doing->action);
         });
         return view('theme::doing.index')->with('doings',$doings);
     }

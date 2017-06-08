@@ -9,7 +9,7 @@
                 <img src="{{ asset('/css/default/login-logo.png') }}" alt="{{ Setting()->get('website_name') }}">
             </a>
         </h1>
-        <p class="description text-muted">{{ Setting()->get('register_title','欢迎加入英淘社区') }}</p>
+        <p class="description text-muted">{{ Setting()->get('register_title','欢迎加入樱维社区') }}</p>
     </div>
     <div class="col-md-6 col-md-offset-3 bg-white login-wrap">
         <h1 class="h4 text-center text-muted login-title">创建新账号</h1>

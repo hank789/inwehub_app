@@ -26,7 +26,7 @@ class RecommendationController extends AdminController
     public function index(Request $request)
     {
         $word = $request->input("word",'');
-        $recommendations = Recommendation::where('subject','like',"%$word%")->orderBy('sort','asc')->orderBy('updated_at','desc')->paginate(Config::get('tipask.admin.page_size'));
+        $recommendations = Recommendation::where('subject','like',"%$word%")->orderBy('sort','asc')->orderBy('updated_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.recommendation.index')->with('recommendations',$recommendations)->with('word',$word);
     }
 

@@ -21,7 +21,7 @@ class NotificationController extends Controller
     {
         $notifications = Notification::where('to_user_id',$request->user()->id)->orderBy('created_at','DESC')->paginate(10);
         $notifications->map(function($notification){
-          $notification->type_text = Config::get('tipask.notification_types.'.$notification->type);
+          $notification->type_text = Config::get('inwehub.notification_types.'.$notification->type);
         });
         $this->readNotifications(0,'user');
         return view('theme::notification.index')->with('notifications',$notifications);

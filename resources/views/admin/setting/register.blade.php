@@ -54,7 +54,7 @@
 
                             <div class="form-group">
                                 <label for="website_url">注册欢迎语</label>
-                                <input type="text" class="form-control" name="register_title" placeholder="欢迎加入英淘社区" value="{{ old('register_title',Setting()->get('register_title')) }}"  />
+                                <input type="text" class="form-control" name="register_title" placeholder="欢迎加入樱维社区" value="{{ old('register_title',Setting()->get('register_title')) }}"  />
                             </div>
 
                             <div class="form-group">

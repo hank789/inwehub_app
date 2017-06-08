@@ -137,6 +137,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Withdraw'], 
 //加载标签
 Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
 
+//上传图片
+Route::post('upload/img','ImageController@upload')->middleware('jwt.auth');
+
 //意见反馈
 Route::post('system/feedback','SystemController@feedback')->middleware('jwt.auth');
 

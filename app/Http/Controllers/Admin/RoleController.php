@@ -23,7 +23,7 @@ class RoleController extends AdminController
     public function index(Request $request)
     {
         $word = $request->input("word",'');
-        $roles = Role::where('name','like',"%$word%")->paginate(Config::get('tipask.admin.page_size'));
+        $roles = Role::where('name','like',"%$word%")->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.role.index')->with('roles',$roles)->with('word',$word);
     }
 

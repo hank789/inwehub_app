@@ -27,7 +27,7 @@ class RegistrationCodeController extends AdminController
      */
     public function index(Request $request)
     {
-        $codes = UserRegistrationCode::orderBy('id','desc')->paginate(Config::get('tipask.admin.page_size'));
+        $codes = UserRegistrationCode::orderBy('id','desc')->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.operate.rgcode.index')->with('codes',$codes);
     }
 

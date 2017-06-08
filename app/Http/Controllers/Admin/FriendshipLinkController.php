@@ -26,7 +26,7 @@ class FriendshipLinkController extends AdminController
      */
     public function index()
     {
-        $links = FriendshipLink::orderBy('sort','asc')->orderBy('updated_at','desc')->paginate(Config::get('tipask.admin.page_size'));
+        $links = FriendshipLink::orderBy('sort','asc')->orderBy('updated_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.friendshipLink.index')->with(compact('links'));
     }
 

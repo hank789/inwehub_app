@@ -27,7 +27,7 @@ class GoodsController extends AdminController
     public function index(Request $request)
     {
         $word = $request->input("word",'');
-        $goods = Goods::where('name','like',"%$word%")->orderBy('updated_at','DESC')->paginate(Config::get('tipask.admin.page_size'));
+        $goods = Goods::where('name','like',"%$word%")->orderBy('updated_at','DESC')->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.goods.index')->with('goods',$goods)->with('word',$word);
     }
 

@@ -36,7 +36,7 @@ class WithdrawController extends AdminController {
             $filter['status'] = Withdraw::WITHDRAW_STATUS_PENDING;
         }
 
-        $withdraws = $query->orderBy('created_at','desc')->paginate(Config::get('tipask.admin.page_size'));
+        $withdraws = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.finance.withdraw.index')->with('withdraws',$withdraws)->with('filter',$filter);
     }
 

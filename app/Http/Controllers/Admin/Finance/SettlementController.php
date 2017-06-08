@@ -36,7 +36,7 @@ class SettlementController extends AdminController {
             $filter['status'] = Settlement::SETTLEMENT_STATUS_PENDING;
         }
 
-        $settlements = $query->orderBy('settlement_date','desc')->paginate(Config::get('tipask.admin.page_size'));
+        $settlements = $query->orderBy('settlement_date','desc')->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.finance.settlement.index')->with('settlements',$settlements)->with('filter',$filter);
     }
 
