@@ -74,7 +74,10 @@ class AnswerController extends Controller
 
         $promise_time = $request->input('promise_time');
 
-        $answerContent = trim($request->input('description'));
+        $answerContent = $request->input('description');
+        if (is_array($answerContent)){
+            $answerContent = json_encode($answerContent);
+        }
         $data = [
             'user_id'      => $loginUser->id,
             'question_id'      => $question_id,
