@@ -120,21 +120,27 @@ class SystemEventListener implements ShouldQueue
      * @param LogNotify $event
      */
     public function logNotify($event){
-        switch($event->level){
-            case 'error':
-                //Notify team of error
-                \Slack::attach([
-                    'pretext' => '错误详细信息',
-                    'color' => 'bad',
-                    'fields' => [
-                        [
-                            'title' => '',
-                            'value' => json_encode($event->context,JSON_UNESCAPED_UNICODE)
+        try{
+            //var_dump($event);return;
+            switch($event->level){
+                case 'error':
+                    //Notify team of error
+                    \Slack::to(config('slack.ask_activity_channel'))->attach([
+                        'pretext' => '错误详细信息',
+                        'color' => 'bad',
+                        'fields' => [
+                            [
+                                'title' => '',
+                                'value' => json_encode($event->context,JSON_UNESCAPED_UNICODE)
+                            ]
                         ]
-                    ]
-                ])->send($event->message);
-                break;
+                    ])->send($event->message);
+                    break;
+            }
+        }catch (\Exception $e){
+            var_dump($e->getMessage());
         }
+
     }
 
     /**

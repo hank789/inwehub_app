@@ -48,12 +48,11 @@ class AppServiceProvider extends ServiceProvider
             // Notify team of failing job...
             Log::error('队列任务执行出错',['connection'=>$connection,'job'=>$job,'data'=>$data]);
         });
-        Log::listen(function($level, $message, $context=[])
+        Log::listen(function($log)
         {
-            if($message instanceof \Exception){
-                $message = $message->getMessage();
+            if($log->level == 'error'){
+                event(new LogNotify($log->level,$log->message,$log->context));
             }
-            event(new LogNotify($level,$message,$context));
         });
 
         //事件监听
