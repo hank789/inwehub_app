@@ -14,7 +14,7 @@ return [
         'md5_key'           => env('PAYMENT_WECHAT_MD5_KEY'),// md5 秘钥
         'app_cert_pem'      => storage_path('payment/wx/pem') . DIRECTORY_SEPARATOR . 'apiclient_cert.pem',
         'app_key_pem'       => storage_path('payment/wx/pem') . DIRECTORY_SEPARATOR . 'apiclient_key.pem',
-        'sign_type'         => 'HMAC-SHA256',// MD5  HMAC-SHA256
+        'sign_type'         => 'MD5',// MD5  HMAC-SHA256
         'limit_pay'         => [
             'no_credit',
         ],// 指定不能使用信用卡支付   不传入，则均可使用
