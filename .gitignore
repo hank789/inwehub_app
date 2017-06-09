@@ -5,3 +5,4 @@ vendor/
 /composer.lock
 /_ide_helper.php
 /config/component_routes.php
+.pem
