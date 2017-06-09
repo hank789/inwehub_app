@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class QuillLogic {
 
-    public static function parseTmages($json_content){
+    public static function parseImages($json_content){
         $deltas = json_decode($json_content, true);
         if ($deltas !== null && count($deltas) > 0) {
             $ops = $deltas['ops'];
@@ -29,6 +29,15 @@ class QuillLogic {
             $deltas['ops'] = $ops;
             return json_encode($deltas);
         } else {
+            return false;
+        }
+    }
+
+    public static function parseText($json_content){
+        try {
+            $quill = new \App\Third\Quill\Render($json_content, 'TEXT');
+            return $quill->render();
+        } catch (\Exception $e) {
             return false;
         }
     }

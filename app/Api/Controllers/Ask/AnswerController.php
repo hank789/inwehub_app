@@ -77,7 +77,7 @@ class AnswerController extends Controller
 
         $answerContent = $request->input('description');
 
-        $answerContent = QuillLogic::parseTmages($answerContent);
+        $answerContent = QuillLogic::parseImages($answerContent);
         if ($answerContent === false){
             $answerContent = $request->input('description');
         }
@@ -234,7 +234,7 @@ class AnswerController extends Controller
                 'user_name' => $question->hide ? '匿名' : $question->user->name,
                 'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
                 'description'  => $question->title,
-                'answer_content' => $answer->status ==1 ? $answer->content:'',
+                'answer_content' => $answer->status ==1 ? QuillLogic::parseText($answer->content):'',
                 'tags' => $question->tags()->pluck('name'),
                 'hide' => $question->hide,
                 'price' => $question->price,
