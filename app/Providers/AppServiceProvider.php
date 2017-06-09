@@ -51,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
         });
         Log::listen(function($log)
         {
-            if($log instanceof MessageLogged && $log->level === 'error'){
+            if( get_class($log) === 'Illuminate\Log\Events\MessageLogged' && $log->level === 'error'){
                 event(new LogNotify($log->level,$log->message,$log->context));
             }
         });
