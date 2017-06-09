@@ -76,11 +76,10 @@ class AnswerController extends Controller
 
         $answerContent = $request->input('description');
         \Log::info('test',[$answerContent]);
-        \Log::info('test2',[json_encode($answerContent,true)]);
-        \Log::info('test3',[json_encode($answerContent)]);
+        \Log::info('test2',[json_encode($answerContent,JSON_UNESCAPED_UNICODE)]);
 
         if (is_array($answerContent)){
-            $answerContent = serialize($answerContent);
+            $answerContent = json_encode($answerContent,JSON_UNESCAPED_UNICODE);
         }
         $data = [
             'user_id'      => $loginUser->id,
