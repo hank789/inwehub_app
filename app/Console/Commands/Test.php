@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Cache\UserCache;
 use App\Events\Frontend\Expert\Recommend;
 use App\Events\Frontend\System\Push;
+use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\AppVersion;
 use App\Models\Authentication;
@@ -58,7 +59,8 @@ class Test extends Command
      */
     public function handle()
     {
-        var_dump(config('payment.wechat'));
+        $answer = Answer::find(150);
+        echo QuillLogic::parseText($answer->content);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
