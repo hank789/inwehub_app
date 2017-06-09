@@ -13,9 +13,8 @@ use Payment\Common\PayException;
 
 class NotifyController extends Controller
 {
-    public function payNotify(Request $request)
+    public function payNotify($type,Request $request)
     {
-        $type = $request->get('type');
         switch($type){
             case 'wx_charge':
                 $config = config('payment')['wechat'];
