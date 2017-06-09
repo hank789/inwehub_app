@@ -38,7 +38,9 @@ class Text extends Render
     public function render()
     {
         foreach ($this->content as $content) {
-            $this->html .= $content['insert'];
+            if(!is_array($content['insert'])){
+                $this->html .= $content['insert'];
+            }
         }
 
         return $this->html;
