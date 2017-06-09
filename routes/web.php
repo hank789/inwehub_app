@@ -18,4 +18,6 @@ Route::group(['namespace'=>'Web'], function() {
 //支付异步通知
 Route::group(['namespace'=>'Pay'], function() {
     Route::get('pay/notify/{type}',['as'=>'website.pay.notify','uses'=>'NotifyController@payNotify']);
+    Route::post('pay/notify/{type}',['as'=>'website.pay.notify','uses'=>'NotifyController@payNotify']);
+
 });
