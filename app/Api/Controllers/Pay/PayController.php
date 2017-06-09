@@ -65,7 +65,7 @@ class PayController extends Controller {
         $orderNo = gen_order_number();
         $amount = $data['amount'];
         if(config('app.env') == 'test'){
-            $amount = 2;
+            $amount = 0.01;
         }
         // 订单信息
         $payData = [
@@ -93,6 +93,7 @@ class PayController extends Controller {
         }
 
         try {
+            \Log::info('pay_data',['channel'=>$channel,'config'=>$config,'data'=>$payData]);
             $ret = Charge::run($channel, $config, $payData);
         } catch (PayException $e) {
             return self::createJsonData(false,[],$e->getCode(),$e->getMessage());
