@@ -21,6 +21,7 @@ use App\Observers\UserObserver;
 use App\Observers\UserProjectObserver;
 use App\Observers\UserTrainObserver;
 use Carbon\Carbon;
+use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -50,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
         });
         Log::listen(function($log)
         {
-            if($log->level == 'error'){
+            if($log instanceof MessageLogged && $log->level === 'error'){
                 event(new LogNotify($log->level,$log->message,$log->context));
             }
         });
