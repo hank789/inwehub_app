@@ -45,9 +45,9 @@ class AppServiceProvider extends ServiceProvider
             return preg_match('/^(\+?0?86\-?)?((13\d|14[57]|15[^4,\D]|17[678]|18\d)\d{8}|170[059]\d{7})$/', $value);
         });
 
-        Queue::failing(function ($connection, $job, $data) {
+        Queue::failing(function ($job) {
             // Notify team of failing job...
-            Log::error('队列任务执行出错',['connection'=>$connection,'job'=>$job,'data'=>$data]);
+            Log::error('队列任务执行出错',['connection'=>$job->connectionName,'job'=>$job->job,'msg'=>$job->exception->getMessage()]);
         });
         Log::listen(function($log)
         {
