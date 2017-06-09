@@ -7,6 +7,7 @@
 
 use App\Jobs\Question\PromiseOvertime;
 use App\Logic\QuestionLogic;
+use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
@@ -50,7 +51,7 @@ class AnswerObserver implements ShouldQueue {
 
                 $fields[] = [
                     'title' => '回答内容',
-                    'value' => $answer->content
+                    'value' => QuillLogic::parseText($answer->content)
                 ];
 
                 if ($answer->promise_time){
