@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Providers;
+use App\Events\LogNotify;
 use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Question;
