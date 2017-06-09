@@ -125,7 +125,7 @@ class SystemEventListener implements ShouldQueue
             switch($event->level){
                 case 'error':
                     //Notify team of error
-                    \Slack::to(config('slack.ask_activity_channel'))->attach([
+                    \Slack::to(config('slack.exception_channel'))->attach([
                         'pretext' => '错误详细信息',
                         'color' => 'danger',
                         'fields' => [
