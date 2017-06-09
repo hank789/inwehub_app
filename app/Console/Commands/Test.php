@@ -59,8 +59,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $answer = Answer::find(150);
-        echo QuillLogic::parseText($answer->content);
+        var_dump(config('payment')['wechat']);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

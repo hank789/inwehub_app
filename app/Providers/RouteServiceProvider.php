@@ -44,7 +44,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapWebRoutes();
 
         $this->mapThirdCallbackRoutes();
-        
+
         // vendor
         $this->mapVendorRoutes();
     }

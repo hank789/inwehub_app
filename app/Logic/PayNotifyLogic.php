@@ -15,6 +15,7 @@ class PayNotifyLogic implements PayNotifyInterface {
 
     public function notifyProcess(array $data)
     {
+        \Log::info('pay_ret_data',$data);
         $channel = $data['channel'];
         if ($channel === Config::ALI_CHARGE) {// 支付宝支付
 

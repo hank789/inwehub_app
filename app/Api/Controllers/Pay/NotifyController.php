@@ -15,9 +15,6 @@ class NotifyController extends Controller
 {
     public function payNotify($type,Request $request)
     {
-        \Log::info('pay_notify_type',[$type]);
-        \Log::info('pay_notify',$request->all());
-        \Log::info('pay_notify_data',[@file_get_contents('php://input')]);
         switch($type){
             case 'wx_charge':
                 $config = config('payment')['wechat'];
