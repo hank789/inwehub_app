@@ -23,7 +23,7 @@ class PayNotifyLogic implements PayNotifyInterface {
             $order_no = $data['order_no'];
             $order = Order::where('order_no',$order_no)->first();
             if($order->status != Order::PAY_STATUS_SUCCESS){
-                if($data['total_fee'] != $order->amount){
+                if($data['amount'] != $order->amount){
                     \Log::error('订单金额与返回结果不一致',['order'=>$order,'return'=>$data]);
                 }
                 $order->status = Order::PAY_STATUS_SUCCESS;
