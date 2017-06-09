@@ -75,8 +75,12 @@ class AnswerController extends Controller
         $promise_time = $request->input('promise_time');
 
         $answerContent = $request->input('description');
+        \Log::info('test',[$answerContent]);
+        \Log::info('test2',[json_encode($answerContent,true)]);
+        \Log::info('test3',[json_encode($answerContent)]);
+
         if (is_array($answerContent)){
-            $answerContent = json_encode($answerContent,true);
+            $answerContent = serialize($answerContent);
         }
         $data = [
             'user_id'      => $loginUser->id,
