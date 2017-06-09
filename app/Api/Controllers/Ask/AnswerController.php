@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\MoneyLogLogic;
+use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Feedback;
@@ -76,9 +77,11 @@ class AnswerController extends Controller
 
         $answerContent = $request->input('description');
 
-        if (is_array($answerContent)){
-            $answerContent = json_encode($answerContent);
+        $answerContent = QuillLogic::parseTmages($answerContent);
+        if ($answerContent === false){
+            $answerContent = $request->input('description');
         }
+
         $data = [
             'user_id'      => $loginUser->id,
             'question_id'      => $question_id,
