@@ -21,8 +21,10 @@ class NotifyController extends Controller
                 $config = config('payment')['wechat'];
                 break;
             case 'ali_charge':
+                return 'false';
                 break;
             default:
+                return 'false';
                 break;
         }
         $callback = new PayNotifyLogic();
