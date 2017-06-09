@@ -12,8 +12,8 @@ return [
         'app_id'            => env('PAYMENT_WECHAT_APP_ID'),  // 公众账号ID
         'mch_id'            => env('PAYMENT_WECHAT_MCH_ID'),// 商户id
         'md5_key'           => env('PAYMENT_WECHAT_MD5_KEY'),// md5 秘钥
-        'app_cert_pem'      => storage_path('payment/wx/pem') . DIRECTORY_SEPARATOR . 'weixin_app_cert.pem',
-        'app_key_pem'       => storage_path('payment/wx/pem') . DIRECTORY_SEPARATOR . 'weixin_app_key.pem',
+        'app_cert_pem'      => storage_path('payment/wx/pem') . DIRECTORY_SEPARATOR . 'apiclient_cert.pem',
+        'app_key_pem'       => storage_path('payment/wx/pem') . DIRECTORY_SEPARATOR . 'apiclient_key.pem',
         'sign_type'         => 'HMAC-SHA256',// MD5  HMAC-SHA256
         'limit_pay'         => [
             'no_credit',
