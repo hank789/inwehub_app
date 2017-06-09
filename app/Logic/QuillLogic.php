@@ -24,7 +24,7 @@ class QuillLogic {
                 }
             }
             $deltas['ops'] = $ops;
-            return $deltas;
+            return json_encode($deltas);
         } else {
             return false;
         }
