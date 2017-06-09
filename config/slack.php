@@ -29,6 +29,7 @@ return [
     'channel' => env('SLACK_CHANNEL','#general'),
 
     'ask_activity_channel' => env('SLACK_ASK_CHANNEL','#app_ask_activity'),
+    'exception_channel' => env('SLACK_EXCEPTION_CHANNEL','#app_ask_activity'),
     /*
     |-------------------------------------------------------------
     | Default username
