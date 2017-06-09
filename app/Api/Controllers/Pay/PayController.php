@@ -65,7 +65,7 @@ class PayController extends Controller {
         $orderNo = gen_order_number();
         $amount = $data['amount'];
         if(config('app.env') == 'test'){
-            $amount = '0.01';
+            $amount = 2;
         }
         // 订单信息
         $payData = [
