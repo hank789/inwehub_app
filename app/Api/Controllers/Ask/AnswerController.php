@@ -76,7 +76,7 @@ class AnswerController extends Controller
 
         $answerContent = $request->input('description');
         if (is_array($answerContent)){
-            $answerContent = json_encode($answerContent);
+            $answerContent = json_encode($answerContent,true);
         }
         $data = [
             'user_id'      => $loginUser->id,
