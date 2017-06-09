@@ -26,6 +26,8 @@ class NotifyController extends Controller
                 return 'false';
                 break;
         }
+        \Log::info('pay_notify',$request->all());
+        \Log::info('pay_notify_data',[@file_get_contents('php://input')]);
         $callback = new PayNotifyLogic();
         try {
             //$retData = Notify::getNotifyData($type, $config);// 获取第三方的原始数据，未进行签名检查
