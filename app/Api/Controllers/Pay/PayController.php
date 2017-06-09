@@ -63,6 +63,10 @@ class PayController extends Controller {
                 break;
         }
         $orderNo = gen_order_number();
+        $amount = $data['amount'];
+        if(config('app.env') == 'test'){
+            $amount = '0.01';
+        }
         // 订单信息
         $payData = [
             'user_id' => $loginUser->id,
@@ -70,7 +74,7 @@ class PayController extends Controller {
             'subject'    => $subject,
             'order_no'    => $orderNo,
             'timeout_express' => time() + 600,// 表示必须 600s 内付款
-            'amount'    => $data['amount'],// 微信沙箱模式，需要金额固定为3.01
+            'amount'    => $amount,// 微信沙箱模式，需要金额固定为3.01
             'return_param' => $data['pay_object_type'],
             'pay_channel'  => $channel_type,
             'client_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',// 客户地址
