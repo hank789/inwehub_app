@@ -93,7 +93,6 @@ class PayController extends Controller {
         }
 
         try {
-            \Log::info('pay_data',['channel'=>$channel,'config'=>$config,'data'=>$payData]);
             $ret = Charge::run($channel, $config, $payData);
         } catch (PayException $e) {
             return self::createJsonData(false,[],$e->getCode(),$e->getMessage());
@@ -104,7 +103,6 @@ class PayController extends Controller {
         $return['pay_channel'] = $pay_channel;
         $return['order_id'] = $order->id;
         $return['debug'] = 0;
-        \Log::info('pay',$return);
 
         return self::createJsonData(true,$return);
 
