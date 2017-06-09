@@ -171,7 +171,7 @@ class QuestionController extends Controller
 
         //查看支付订单是否成功
         $order = Order::find($request->input('order_id'));
-        if((empty($order) || $order->status != Order::PAY_STATUS_SUCCESS) && Setting()->get('need_pay_actual',1)){
+        if(empty($order) && Setting()->get('need_pay_actual',1)){
             throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
         }
 
@@ -195,6 +195,14 @@ class QuestionController extends Controller
                     throw new ApiException(ApiException::ASK_INVITE_USER_MUST_EXPERT);
                 }
             }
+        }
+
+        //如果订单存在且状态为处理中,有可能还未回调
+        if($order && $order->status == Order::PAY_STATUS_PROCESS && Setting()->get('need_pay_actual',1)){
+            $data['status'] = 0;
+            $question = Question::create($data);
+            \Log::error('提问支付订单还在处理中',[$question]);
+            throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
         }
 
         $question = Question::create($data);

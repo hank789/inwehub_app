@@ -94,6 +94,8 @@ class PayController extends Controller {
 
         try {
             $ret = Charge::run($channel, $config, $payData);
+            $order->status = Order::PAY_STATUS_PROCESS;
+            $order->save();
         } catch (PayException $e) {
             return self::createJsonData(false,[],$e->getCode(),$e->getMessage());
         }

@@ -23,6 +23,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
+use Queue;
+use Log;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +41,18 @@ class AppServiceProvider extends ServiceProvider
         // 添加验证手机号码规则
         Validator::extend('cn_phone', function ($attribute, $value,$parameters, $validator) {
             return preg_match('/^(\+?0?86\-?)?((13\d|14[57]|15[^4,\D]|17[678]|18\d)\d{8}|170[059]\d{7})$/', $value);
+        });
+
+        Queue::failing(function ($connection, $job, $data) {
+            // Notify team of failing job...
+            Log::error('队列任务执行出错',['connection'=>$connection,'job'=>$job,'data'=>$data]);
+        });
+        Log::listen(function($level, $message, $context)
+        {
+            if($message instanceof \Exception){
+                $message = $message->getMessage();
+            }
+            event(new LogNotify($level,$message,$context));
         });
 
         //事件监听

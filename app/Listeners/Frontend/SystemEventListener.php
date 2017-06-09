@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Frontend;
 use App\Events\Frontend\System\FuncZan;
+use App\Events\LogNotify;
 use App\Models\Credit as CreditModel;
 use App\Events\Frontend\System\Credit;
 use App\Events\Frontend\System\Feedback;
@@ -113,6 +114,29 @@ class SystemEventListener implements ShouldQueue
         }
     }
 
+
+    /**
+     * 错误日志告警
+     * @param LogNotify $event
+     */
+    public function logNotify($event){
+        switch($event->level){
+            case 'error':
+                //Notify team of error
+                \Slack::attach([
+                    'pretext' => '错误详细信息',
+                    'color' => 'bad',
+                    'fields' => [
+                        [
+                            'title' => '',
+                            'value' => json_encode($event->context,JSON_UNESCAPED_UNICODE)
+                        ]
+                    ]
+                ])->send($event->message);
+                break;
+        }
+    }
+
     /**
      * Register the listeners for the subscriber.
      *
@@ -137,6 +161,11 @@ class SystemEventListener implements ShouldQueue
         $events->listen(
             FuncZan::class,
             'App\Listeners\Frontend\SystemEventListener@funcZan'
+        );
+
+        $events->listen(
+            LogNotify::class,
+            'App\Listeners\Frontend\SystemEventListener@logNotify'
         );
     }
 }
