@@ -46,7 +46,7 @@ class Registrar {
             UserData::create([
                 'user_id' => $user->id,
                 'coins' => 0,
-                'credits' => 20,
+                'credits' => 0,
                 'registered_at' => Carbon::now(),
                 'last_visit' => Carbon::now(),
                 'last_login_ip' => $data['visit_ip'],
