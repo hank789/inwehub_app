@@ -37,10 +37,10 @@ class GetUserFromToken extends BaseMiddleware
             $user = $this->auth->authenticate($token);
         } catch (TokenExpiredException $e) {
             $this->respond('tymon.jwt.expired', 'token_expired', $e->getStatusCode(), [$e]);
-            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_EXPIRED,'token已失效');
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_EXPIRED,'您的登录已过期');
         } catch (JWTException $e) {
              $this->respond('tymon.jwt.invalid', 'token_invalid', $e->getStatusCode(), [$e]);
-            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_INVALID,'token无效');
+            return CreateJsonResponseData::createJsonData(false,[],ApiException::TOKEN_INVALID,'您的登录已过期');
         }
 
         if (! $user) {
