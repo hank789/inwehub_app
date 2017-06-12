@@ -293,9 +293,12 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
 
-        $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->where('status',0)->first();
+        $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
         if(empty($question_invitation)){
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+        }
+        if($question_invitation->status != 0){
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
         }
 
         $data = [
