@@ -83,6 +83,9 @@
                                             <td>{{ $settlement->getSettlementName() }}:{{ $settlement->source_id }}</td>
                                             <td>{{ $settlement->created_at }}</td>
                                             <td>{{ $settlement->settlement_date }}</td>
+                                            <td>{{ $settlement->actual_amount }}</td>
+                                            <td>{{ $settlement->actual_fee }}</td>
+                                            <td>{{ $settlement->actual_settlement_date }}</td>
                                             <td><span class="label @if($settlement->status>=3) label-danger @elseif($settlement->status<=1) label-default @elseif($settlement->status===2) label-success @endif">{{ trans_withdraw_status($settlement->status) }}</span> </td>
                                         </tr>
                                     @endforeach
