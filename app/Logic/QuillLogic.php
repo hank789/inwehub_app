@@ -17,8 +17,10 @@ class QuillLogic {
                     is_array($delta['insert']) === true &&
                     isset($delta['insert']['image'])) {
                     $base64 = $delta['insert']['image'];
-
                     $url = explode(';',$base64);
+                    if(count($url) <=1){
+                        continue;
+                    }
                     $url_type = explode('/',$url[0]);
                     $file_name = 'quill/'.date('Ymd').md5($base64).'.'.$url_type[1];
                     Storage::disk('oss')->put($file_name,base64_decode(substr($url[1],6)));

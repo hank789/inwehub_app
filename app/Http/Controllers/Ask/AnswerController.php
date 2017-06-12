@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Logic\QuillLogic;
 
 class AnswerController extends Controller
 {
@@ -154,7 +155,7 @@ class AnswerController extends Controller
 
         $this->validate($request,$this->validateRules);
 
-        $answer->content = clean($request->input('content'));
+        $answer->content = $request->input('content');
         $answer->status = 1;
 
         $answer->save();

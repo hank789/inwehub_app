@@ -89,7 +89,7 @@ class Answer extends Model
     }
 
     public function getContentHtml(){
-        return QuillLogic::parseText($this->content);
+        return QuillLogic::parseHtml($this->content);
     }
 
 }

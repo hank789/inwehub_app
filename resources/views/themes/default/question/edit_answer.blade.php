@@ -40,7 +40,7 @@
                 </div>
                 <div class="col-xs-12 col-md-1">
                     <input type="hidden" id="answer_editor_content"  name="content" value="{{ $answer->content }}"  />
-                    <button type="submit" class="btn btn-primary pull-right editor-submit" >保存修改</button>
+                    <button type="submit" class="btn btn-primary pull-right editor-submit" onclick="setContent()">保存修改</button>
                 </div>
             </div>
         </form>
@@ -50,17 +50,19 @@
 @section('script')
     <script src="//cdn.quilljs.com/1.0.0/quill.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-        $(document).ready(function() {
-            /*回答编辑器初始化*/
-            var editor = new Quill('#answer_editor', {
-                modules: { toolbar: [
-                    [{ header: [1, 2, false] }],
-                    ['bold', 'italic', 'underline'],
-                    ['image', 'code-block']
-                ] },
-                theme: 'snow'
-            });
-            editor.setContents($.parseJSON('{{ $answer->content }}'));
+
+        /*回答编辑器初始化*/
+        var editor = new Quill('#answer_editor', {
+            modules: { toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline']
+            ] },
+            theme: 'snow'
         });
+        editor.setContents({!! $answer->content !!});
+
+        function setContent(){
+            $("#answer_editor_content").val(JSON.stringify(editor.getContents()));
+        }
     </script>
 @endsection
