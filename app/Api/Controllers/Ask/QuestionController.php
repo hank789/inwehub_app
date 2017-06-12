@@ -126,10 +126,36 @@ class QuestionController extends Controller
                 return self::createJsonData(false,[],ApiException::VISIT_LIMIT,'你已超过每小时最大提问数'.Setting()->get('question_limit_num').'，如有疑问请联系管理员!');
             }
         }
+        $expert_uid = $request->input('uid');
+        if($expert_uid){
+            $this->checkAnswerUser($user,$expert_uid);
+        }
+
         $this->checkUserInfoPercent($user);
         $tags = TagsLogic::loadTags(1,'');
 
         return self::createJsonData(true,$tags);
+    }
+
+    protected function checkAnswerUser($loginUser,$answer_user_id){
+        if ($loginUser->id == $answer_user_id) {
+            throw new ApiException(ApiException::ASK_CANNOT_INVITE_SELF);
+        }
+
+        $toUser = User::find(intval($answer_user_id));
+        if (!$toUser) {
+            throw new ApiException(ApiException::ASK_INVITE_USER_NOT_FOUND);
+        }
+
+        //是否设置了邀请者必须为专家
+        if (Setting()->get('is_inviter_must_expert', 1) == 1) {
+            if (($toUser->authentication && $toUser->authentication->status === 1)) {
+
+            } else {
+                //非专家
+                throw new ApiException(ApiException::ASK_INVITE_USER_MUST_EXPERT);
+            }
+        }
     }
 
 
@@ -177,24 +203,7 @@ class QuestionController extends Controller
 
         $to_user_id = $request->input('answer_uid');
         if($to_user_id) {
-            if ($loginUser->id == $to_user_id) {
-                throw new ApiException(ApiException::ASK_CANNOT_INVITE_SELF);
-            }
-
-            $toUser = User::find(intval($to_user_id));
-            if (!$toUser) {
-                throw new ApiException(ApiException::ASK_INVITE_USER_NOT_FOUND);
-            }
-
-            //是否设置了邀请者必须为专家
-            if (Setting()->get('is_inviter_must_expert', 1) == 1) {
-                if (($toUser->authentication && $toUser->authentication->status === 1)) {
-
-                } else {
-                    //非专家
-                    throw new ApiException(ApiException::ASK_INVITE_USER_MUST_EXPERT);
-                }
-            }
+            $this->checkAnswerUser($loginUser,$to_user_id);
         }
 
         //如果订单存在且状态为处理中,有可能还未回调
