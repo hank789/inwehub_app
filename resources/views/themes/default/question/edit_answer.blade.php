@@ -60,7 +60,7 @@
                 ] },
                 theme: 'snow'
             });
-            editor.setContents(jquery.parseJSON({{ $answer->content }}));
+            editor.setContents(jquery.parseJSON('{{ $answer->content }}'));
         });
     </script>
 @endsection
