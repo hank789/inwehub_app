@@ -36,8 +36,8 @@
                                     <th>ID</th>
                                     <th>用户</th>
                                     <th>类型</th>
-                                    <th>经验值</th>
-                                    <th>金币数</th>
+                                    <th>成长值</th>
+                                    <th>贡献值</th>
                                     <th>记录时间</th>
                                 </tr>
                                 @foreach($credits as $credit)

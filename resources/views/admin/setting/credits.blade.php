@@ -21,7 +21,7 @@
                                 <tr role="row">
                                     <th>用户行为</th>
                                     <th>成长值</th>
-                                    <th>哈币数</th>
+                                    <th>贡献值</th>
                                 </tr>
                                 </thead>
 
