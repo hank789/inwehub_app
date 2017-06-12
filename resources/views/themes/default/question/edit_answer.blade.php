@@ -18,13 +18,8 @@
             <input type="hidden" id="editor_token" name="_token" value="{{ csrf_token() }}">
 
             <div class="form-group  @if($errors->has('content')) has-error @endif">
-                <div id="answer_editor">{!! old('content',$answer->content) !!}</div>
+                <div id="answer_editor"></div>
                 @if($errors->has('content')) <p class="help-block">{{ $errors->first('content') }}</p> @endif
-            </div>
-            <!-- Create the toolbar container -->
-            <div id="toolbar">
-                <button class="ql-bold">Bold</button>
-                <button class="ql-italic">Italic</button>
             </div>
 
             <div class="row mt-20">
@@ -58,9 +53,14 @@
         $(document).ready(function() {
             /*回答编辑器初始化*/
             var editor = new Quill('#answer_editor', {
-                modules: { toolbar: '#toolbar' },
+                modules: { toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    ['image', 'code-block']
+                ] },
                 theme: 'snow'
             });
+            editor.setContents({{ $answer->content }});
         });
     </script>
 @endsection
