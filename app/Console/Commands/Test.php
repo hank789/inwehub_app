@@ -59,7 +59,8 @@ class Test extends Command
      */
     public function handle()
     {
-        \Log::error('error test',['content']);
+        event(new Push(User::find(8),'有人向您发起了回答邀请',
+            'content:问题内容,有人向您发起了回答邀请,有人向您发起了回答邀请,有人向您发起了回答邀请',['payload'=>['object_type'=>'question','object_id'=>11]]));
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
