@@ -320,7 +320,7 @@ class QuestionController extends Controller
         $tagString = trim($request->input('tags'));
         Tag::multiSaveByIds($tagString,$answer);
         /*记录动态*/
-        $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->content);
+        $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->getContentText());
         /*修改问题邀请表的回答状态*/
         QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>2]);
 

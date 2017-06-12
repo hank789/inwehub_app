@@ -51,7 +51,7 @@ class AnswerObserver implements ShouldQueue {
 
                 $fields[] = [
                     'title' => '回答内容',
-                    'value' => QuillLogic::parseText($answer->content)
+                    'value' => $answer->getContentText()
                 ];
 
                 if ($answer->promise_time){

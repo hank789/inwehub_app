@@ -24,7 +24,7 @@ class AnswerEventListener implements ShouldQueue
         $answer = Answer::find($feedback->source_id);
         $fields[] = [
             'title' => '回答内容',
-            'value' => $answer->content
+            'value' => $answer->getContentText()
         ];
         $fields[] = [
             'title' => '评价内容',

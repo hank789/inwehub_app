@@ -132,10 +132,10 @@ class AnswerController extends Controller
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
 
                 /*记录动态*/
-                $this->doing($answer->user_id,'question_answered',get_class($question),$question->id,$question->title,$answer->content);
+                $this->doing($answer->user_id,'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText());
 
                 /*记录通知*/
-                $this->notify($answer->user_id,$question->user_id,'question_answered',$question->title,$question->id,$answer->content);
+                $this->notify($answer->user_id,$question->user_id,'question_answered',$question->title,$question->id,$answer->getContentText());
 
                 //推送通知
                 event(new Push($question->user,'您的提问专家已回答,请前往点评',$question->title,['object_type'=>'question','object_id'=>$question->id]));
@@ -161,11 +161,11 @@ class AnswerController extends Controller
                 $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
                 $message = '回答成功!';
                 /*记录积分*/
-                $this->credit($request->user()->id,'answer',$answer->id,$answer->content);
+                $this->credit($request->user()->id,'answer',$answer->id,$answer->getContentText());
                 //首次回答额外积分
                 if($loginUser->userData->answers == 1)
                 {
-                    $this->credit($request->user()->id,'first_answer',$answer->id,$answer->content);
+                    $this->credit($request->user()->id,'first_answer',$answer->id,$answer->getContentText());
                 }
 
                 //进入结算中心
@@ -177,7 +177,7 @@ class AnswerController extends Controller
                 $question->confirmedAnswer();
                 $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[],[$request->user()->id]);
                 /*记录动态*/
-                $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->content);
+                $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText());
                 //推送通知
                 event(new Push($question->user,'您的提问专家已响应,点击查看',$question->title,['object_type'=>'question','object_id'=>$question->id]));
 
@@ -234,7 +234,7 @@ class AnswerController extends Controller
                 'user_name' => $question->hide ? '匿名' : $question->user->name,
                 'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
                 'description'  => $question->title,
-                'answer_content' => $answer->status ==1 ? QuillLogic::parseText($answer->content):'',
+                'answer_content' => $answer->status ==1 ? $answer->getContentText():'',
                 'tags' => $question->tags()->pluck('name'),
                 'hide' => $question->hide,
                 'price' => $question->price,

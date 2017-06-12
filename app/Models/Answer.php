@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Logic\QuillLogic;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
 use App\Models\Relations\MorphManyFeedbackTrait;
@@ -82,4 +83,13 @@ class Answer extends Model
     public function question(){
         return $this->belongsTo('App\Models\Question');
     }
+
+    public function getContentText(){
+        return QuillLogic::parseText($this->content);
+    }
+
+    public function getContentHtml(){
+        return QuillLogic::parseText($this->content);
+    }
+
 }

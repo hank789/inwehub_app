@@ -69,7 +69,7 @@
                         </h3>
                     </div>
                     <div class="text-fmt">
-                        {!! $bestAnswer->content !!}
+                        {!! $bestAnswer->getContentHtml() !!}
                     </div>
                     <div class="options clearfix mt-10">
                         <ul class="list-inline pull-right">
@@ -168,7 +168,7 @@
                             @if($answer->user->authentication && $answer->user->authentication->status === 1)
                                 <span class="text-muted">擅长：{{ $answer->user->authentication->skill }}</span>
                             @endif
-                            <p>{!! $answer->content !!}</p>
+                            <p>{!! $answer->getContentHtml() !!}</p>
                         </div>
                         @if($answer->tags)
                             <ul class="taglist-inline">

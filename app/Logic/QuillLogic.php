@@ -38,7 +38,16 @@ class QuillLogic {
             $quill = new \App\Third\Quill\Render($json_content, 'TEXT');
             return $quill->render();
         } catch (\Exception $e) {
-            return false;
+            return $json_content;
+        }
+    }
+
+    public static function parseHtml($json_content){
+        try {
+            $quill = new \App\Third\Quill\Render($json_content, 'HTML');
+            return $quill->render();
+        } catch (\Exception $e) {
+            return $json_content;
         }
     }
 

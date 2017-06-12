@@ -66,7 +66,7 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $answer->id }}"/></td>
                                             <td width="60%" style="height:100px;">
                                                 <b><a href="{{ route('ask.answer.detail',['question_id'=>$answer->question_id,'id'=>$answer->id]) }}" target="_blank" >{{ $answer->question->title }}</a></b> <span class="text-muted">[QID:{{ $answer->question_id }}]</span>
-                                                <div style= "OVERFLOW-Y:auto;height:100px">{!! $answer->content !!}</div>
+                                                <div style= "OVERFLOW-Y:auto;height:100px">{!! $answer->getContentText() !!}</div>
                                             </td>
                                             <td>{{ $answer->user->name }} <span class="text-muted">[UID:{{ $answer->user_id }}]</span></td>
                                             <td>{{ $answer->supports }}</td>
