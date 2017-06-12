@@ -194,6 +194,6 @@
 @endsection
 @section('script')
 <script type="text/javascript">
-    set_active_menu('global',"{{ route('admin.setting.credits') }}");
+    set_active_menu('credit',"{{ route('admin.setting.credits') }}");
 </script>
 @endsection

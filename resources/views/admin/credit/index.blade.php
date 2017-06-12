@@ -76,6 +76,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('finance',"{{ route('admin.credit.index') }}");
+        set_active_menu('credit',"{{ route('admin.credit.index') }}");
     </script>
 @endsection

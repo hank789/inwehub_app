@@ -10,7 +10,6 @@
         <ul class="treeview-menu" id="global">
             <li><a href="{{ route('admin.setting.register') }}"><i class="fa fa-circle-o"></i> 注册设置</a></li>
             <li><a href="{{ route('admin.setting.answer') }}"><i class="fa fa-circle-o"></i> 问答设置</a></li>
-            <li><a href="{{ route('admin.setting.credits') }}"><i class="fa fa-circle-o"></i> 积分设置</a></li>
             <li><a href="{{ route('admin.setting.aboutus') }}"><i class="fa fa-circle-o"></i> 关于我们</a></li>
             <li><a href="{{ route('admin.setting.help') }}"><i class="fa fa-circle-o"></i> 常见问题</a></li>
             <li><a href="{{ route('admin.setting.qahelp') }}"><i class="fa fa-circle-o"></i> 提问帮助页</a></li>
@@ -83,6 +82,16 @@
             <li><a href="{{ route('admin.finance.setting.index') }}"><i class="fa fa-circle-o"></i> 参数设置</a></li>
             <li><a href="{{ route('admin.finance.settlement.index') }}"><i class="fa fa-circle-o"></i> 结算管理</a></li>
             <li><a href="{{ route('admin.finance.withdraw.index') }}"><i class="fa fa-circle-o"></i> 提现管理</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
+            <i class="fa fa-database"></i> <span>积分</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="credit">
+            <li><a href="{{ route('admin.setting.credits') }}"><i class="fa fa-circle-o"></i> 积分设置</a></li>
             <li><a href="{{ route('admin.credit.index') }}"><i class="fa fa-circle-o"></i> 积分管理</a></li>
         </ul>
     </li>

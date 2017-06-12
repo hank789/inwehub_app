@@ -57,7 +57,7 @@
 @section('script')
     <script type="text/javascript">
         $(function(){
-            set_active_menu('finance',"{{ route('admin.credit.index') }}");
+            set_active_menu('credit',"{{ route('admin.credit.index') }}");
         });
     </script>
 @endsection
