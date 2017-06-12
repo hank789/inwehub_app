@@ -100,6 +100,12 @@ class AuthController extends Controller
         {
 
             $user = $request->user();
+            $device_code = $request->input('device_code');
+            if($user->last_login_token && $device_code){
+                $JWTAuth->refresh($user->last_login_token);
+            }
+            $user->last_login_token = $token;
+            $user->save();
             if($user->status != 1) {
                 throw new ApiException(ApiException::USER_SUSPEND);
             }
@@ -109,7 +115,6 @@ class AuthController extends Controller
             if($this->credit($user->id,'login')){
                 $message = '登陆成功! ';
             }
-            $deviceCode = $request->input('device_code');
             // 登录记录
             $clientIp = $request->getClientIp();
             $loginrecord = new LoginRecord();
@@ -121,7 +126,7 @@ class AuthController extends Controller
             $loginrecord->device_system = $request->input('device_system');
             $loginrecord->device_name = $request->input('device_name');
             $loginrecord->device_model = $request->input('device_model');
-            $loginrecord->device_code = $deviceCode;
+            $loginrecord->device_code = $device_code;
             $loginrecord->user_id = $user->id;
             $loginrecord->save();
 

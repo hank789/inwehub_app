@@ -28,6 +28,7 @@ class CreateUsersTable extends Migration
             $table->string('site_notifications')->nullable();   //站内通知
             $table->string('email_notifications')->nullable();  //邮件通知策略
             $table->rememberToken();                            //记住登录状态
+            $table->string('last_login_token')->comment('上次登录token')->nullable();
             $table->timestamps();                               //注册时间，上次更新时间
         });
     }
