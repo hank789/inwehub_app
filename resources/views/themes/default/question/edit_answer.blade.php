@@ -3,7 +3,7 @@
 @section('seo_title')编辑回答 - {{ Setting()->get('website_name') }}>@endsection
 
 @section('css')
-    <link href="{{ asset('/static/js/summernote/summernote.css')}}" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -21,6 +21,12 @@
                 <div id="answer_editor">{!! old('content',$answer->content) !!}</div>
                 @if($errors->has('content')) <p class="help-block">{{ $errors->first('content') }}</p> @endif
             </div>
+            <!-- Create the toolbar container -->
+            <div id="toolbar">
+                <button class="ql-bold">Bold</button>
+                <button class="ql-italic">Italic</button>
+            </div>
+
             <div class="row mt-20">
                 <div class="col-xs-12 col-md-11">
                     <ul class="list-inline">
@@ -47,25 +53,13 @@
 
 @endsection
 @section('script')
-    <script src="{{ asset('/static/js/summernote/summernote.min.js') }}"></script>
-    <script src="{{ asset('/static/js/summernote/lang/summernote-zh-CN.min.js') }}"></script>
+    <script src="//cdn.quilljs.com/1.0.0/quill.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             /*回答编辑器初始化*/
-            $('#answer_editor').summernote({
-                lang: 'zh-CN',
-                height: 240,
-                placeholder:'撰写答案',
-                toolbar: [ {!! config('inwehub.summernote.ask') !!} ],
-                callbacks: {
-                    onChange:function (contents, $editable) {
-                        var code = $(this).summernote("code");
-                        $("#answer_editor_content").val(code);
-                    },
-                    onImageUpload: function(files) {
-                        upload_editor_image(files[0],'answer_editor');
-                    }
-                }
+            var editor = new Quill('#answer_editor', {
+                modules: { toolbar: '#toolbar' },
+                theme: 'snow'
             });
         });
     </script>
