@@ -44,7 +44,7 @@
                                     <tr>
                                         <td>{{ $credit->id }}</td>
                                         <td> @if($credit->user){{ $credit->user->name }} @else 未知 @endif [uid:{{ $credit->user_id }}]</td>
-                                        <td>{{ $credit->actionText }}</td>
+                                        <td>{{ $credit->action }}</td>
                                         <td>{{ $credit->credits }}</td>
                                         <td>{{ $credit->coins }}</td>
                                         <td>{{ timestamp_format($credit->created_at) }}</td>
