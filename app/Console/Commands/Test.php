@@ -59,7 +59,7 @@ class Test extends Command
      */
     public function handle()
     {
-        var_dump(config('payment')['wechat']);
+        \Log::error('error test',['content']);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
