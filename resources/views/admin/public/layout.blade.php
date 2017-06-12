@@ -109,7 +109,7 @@
                         <ul class="dropdown-menu">
                             <!-- User image -->
                             <li class="user-header">
-                                <img src="{{ get_user_avatar(Auth()->user()->id,'middle') }}" class="img-circle" alt="User Image" />
+                                <img src="{{ Auth()->user()->getAvatarUrl() }}" class="img-circle" alt="User Image" />
                                 <p>
                                     {{ Auth()->user()->name }}
                                     <small>{{ Auth()->user()->title }}</small>
