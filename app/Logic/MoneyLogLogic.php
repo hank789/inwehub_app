@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Models\Pay\MoneyLog;
+use App\Models\Pay\Order;
 use App\Models\Pay\UserMoney;
 use Illuminate\Support\Facades\DB;
 
@@ -104,6 +105,15 @@ class MoneyLogLogic {
     public static function getAnswerFee($answer){
         //目前都是20%的手续费
         $fee_rate = Setting()->get('pay_answer_normal_fee_rate',0.2);
+        //是否使用iap支付
+        $question = $answer->question;
+        $order = $question->orders()->get()->last();
+        switch($order->pay_channel){
+            case Order::PAY_CHANNEL_IOS_IAP:
+                $iap_fee_rate = Setting()->get('pay_answer_iap_fee_rate',0.32);
+                $fee_rate += $iap_fee_rate;
+                break;
+        }
         return bcmul($fee_rate ,$answer->question->price,2);
     }
 

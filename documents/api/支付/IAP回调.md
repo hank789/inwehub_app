@@ -16,6 +16,7 @@
 
 | name     | type     | must     | description |
 |----------|:--------:|:--------:|:--------:|
+| orderId   | string   | yes      | 订单号 |
 | payment   | string   | yes      | 购买商品的信息 |
 | transactionDate   | string   | yes      | 购买商品的交易日期 |
 | transactionIdentifier   | string   | yes      | 购买商品的交易订单标识 |

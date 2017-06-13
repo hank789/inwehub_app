@@ -37,7 +37,6 @@ class CreatePayOrderTable extends Migration
             $table->increments('id');
             $table->integer('pay_order_id')->unsigned()->index();  //订单ID
             $table->morphs('pay_order_gable');
-            $table->timestamps();
         });
 
         //提现表
@@ -88,7 +87,8 @@ class CreatePayOrderTable extends Migration
             ['name' => 'pay_method_weixin','value' => '1'],
             ['name' => 'pay_method_ali','value' => '0'],
             ['name' => 'pay_method_iap','value' => '0'],
-            ['name' => 'pay_settlement_cycle','value' => '3']
+            ['name' => 'pay_settlement_cycle','value' => '3'],
+            ['name' => 'pay_answer_iap_fee_rate','value' => '0.32']
         ]);
     }
 

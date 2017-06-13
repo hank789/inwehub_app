@@ -229,7 +229,7 @@ class QuestionController extends Controller
             //记录动态
             $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
 
-            $waiting_second = rand(1,15);
+            $waiting_second = rand(1,10);
 
             if(!$to_user_id){
                 $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');

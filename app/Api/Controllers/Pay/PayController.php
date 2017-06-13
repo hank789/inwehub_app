@@ -49,6 +49,7 @@ class PayController extends Controller {
                 if(Setting()->get('pay_method_ali',0) != 1){
                     throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 }
+                $channel_type = Order::PAY_CHANNEL_ALIPAY_APP;
                 break;
             case 'appleiap':
                 if(Setting()->get('pay_method_iap',0) != 1){

@@ -59,9 +59,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $b = 'V2UgY2xvc2VkIG91ciAkMTVNIHNlcmllcyBCIGZ1bmRpbmcuIExvdmUgeW91IGFsbC4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRnJvbSBQaW5nQ0FQ';
-        $s = base64_decode($b,true);
-        echo $s;
+        $s = Question::find(1);
+        $t = $s->orders()->get()->last();
+        var_dump($t->pay_channel);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
