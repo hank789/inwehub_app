@@ -62,7 +62,7 @@ class NotifyController extends Controller
         $product = $data['payment']['productid'];
         $config = config('payment.iap');
         $amount = 0;
-        foreach($config as $key=>$value){
+        foreach($config['ids'] as $key=>$value){
             if($value == $product) $amount = $value;
         }
         $ret_data = [
