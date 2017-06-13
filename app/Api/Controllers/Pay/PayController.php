@@ -74,9 +74,7 @@ class PayController extends Controller {
                 break;
         }
         $orderNo = gen_order_number();
-        if(config('app.env') == 'test'){
-            $amount = 0.01;
-        }
+        
         // 订单信息
         $payData = [
             'user_id' => $loginUser->id,
