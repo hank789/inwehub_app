@@ -25,5 +25,8 @@ return [
         'redirect_url'      => env('PAYMENT_WECHAT_REDIRECT_URL'),// 如果是h5支付，可以设置该值，返回到指定页面
 
         'return_raw'        => false,// 在处理回调时，是否直接返回原始数据，默认为true
+    ],
+    'iap' => [
+        'ids' => [1=>'ask',6=>'ask6'],//请求商品的标识,key表示金额
     ]
 ];

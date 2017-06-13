@@ -22,7 +22,7 @@ class PayController extends Controller {
         $validateRules = [
             'app_id' => 'required',
             'amount' => 'required|integer',
-            'pay_channel' => 'required|in:alipay,wxpay',
+            'pay_channel' => 'required|in:alipay,wxpay,appleiap',
             'pay_object_type' => 'required|in:ask'
         ];
         $this->validate($request, $validateRules);
@@ -33,6 +33,7 @@ class PayController extends Controller {
         }
 
         $data = $request->all();
+        $amount = $data['amount'];
         $pay_channel = $data['pay_channel'];
         switch($pay_channel){
             case 'wxpay':
@@ -49,6 +50,14 @@ class PayController extends Controller {
                     throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 }
                 break;
+            case 'appleiap':
+                if(Setting()->get('pay_method_iap',0) != 1){
+                    throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
+                }
+                $config = config('payment.iap');
+                $ids = $config['ids'];
+                $iap_id = $ids[$amount];
+                break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 break;
@@ -63,7 +72,6 @@ class PayController extends Controller {
                 break;
         }
         $orderNo = gen_order_number();
-        $amount = $data['amount'];
         if(config('app.env') == 'test'){
             $amount = 0.01;
         }
@@ -91,16 +99,20 @@ class PayController extends Controller {
                 'debug'       => 1
             ]);
         }
-
+        $return = [];
         try {
-            $ret = Charge::run($channel, $config, $payData);
+            if($pay_channel == 'appleiap'){
+                $ret = ['productid'=>$iap_id];
+                $return['iap_ids'] = array_values($ids);
+            } else {
+                $ret = Charge::run($channel, $config, $payData);
+            }
             $order->status = Order::PAY_STATUS_PROCESS;
             $order->save();
         } catch (PayException $e) {
             return self::createJsonData(false,[],$e->getCode(),$e->getMessage());
         }
 
-        $return = [];
         $return['order_info'] = $ret;
         $return['pay_channel'] = $pay_channel;
         $return['order_id'] = $order->id;

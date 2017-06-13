@@ -59,8 +59,9 @@ class Test extends Command
      */
     public function handle()
     {
-        event(new Push(User::find(8),'有人向您发起了回答邀请',
-            'content:问题内容,有人向您发起了回答邀请,有人向您发起了回答邀请,有人向您发起了回答邀请',['payload'=>['object_type'=>'question','object_id'=>11]]));
+        $b = 'V2UgY2xvc2VkIG91ciAkMTVNIHNlcmllcyBCIGZ1bmRpbmcuIExvdmUgeW91IGFsbC4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRnJvbSBQaW5nQ0FQ';
+        $s = base64_decode($b,true);
+        echo $s;
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

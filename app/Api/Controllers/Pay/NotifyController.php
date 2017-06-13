@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Pay;
 use App\Api\Controllers\Controller;
 use App\Logic\PayNotifyLogic;
+use App\Services\ItunesReceiptValidator;
 use Illuminate\Http\Request;
 use Payment\Client\Notify;
 use Payment\Common\PayException;
@@ -37,4 +38,25 @@ class NotifyController extends Controller
         }
         return $ret;
     }
+
+    public function iapNotify(Request $request){
+        \Log::info('iap_notify',$request->all());
+        $validateRules = [
+            'transactionReceipt' => 'required',//购买商品的交易收据
+            'transactionState'   => 'required',//购买商品的交易状态,可取值："1"为支付成功；"2"为支付失败；"3"为支付已恢复。
+            'transactionIdentifier' => 'required',//购买商品的交易订单标识
+            'transactionDate'    => 'required',//购买商品的交易日期
+        ];
+        $this->validate($request,$validateRules);
+        $data = $request->all();
+        $endpoint = isset($_GET['sandbox']) ? ItunesReceiptValidator::SANDBOX_URL : ItunesReceiptValidator::PRODUCTION_URL;
+        $rv = new ItunesReceiptValidator($endpoint, $data['transactionReceipt']);
+        print 'Environment: ' .
+            ($rv->getEndpoint() === ItunesReceiptValidator::SANDBOX_URL) ? 'Sandbox' : 'Production' .
+            '<br />';
+        $info = $rv->validateReceipt();
+        \Log::info('iap_notify_result',[$info]);
+        echo 'Success';
+    }
+
 }

@@ -490,6 +490,7 @@ if (!function_exists('get_pay_config')){
             "withdraw_suspend"=> Setting()->get('withdraw_suspend',0),//是否暂停提现,0否,1暂停提现
             "pay_method_weixin"=> Setting()->get('pay_method_weixin',1),//是否开启微信支付,1开启
             "pay_method_ali"=> Setting()->get('pay_method_ali',0),//是否开启阿里支付,0未开启
+            "pay_method_iap"=> Setting()->get('pay_method_iap',0),//是否开启iap支付,0未开启
             "withdraw_day_limit"=> Setting()->get('withdraw_day_limit',1),//用户每天最大提现次数
             "withdraw_per_min_money"=> Setting()->get('withdraw_per_min_money',10),//用户单次最低提现金额
             "withdraw_per_max_money"=> Setting()->get('withdraw_per_max_money',2000),//用户单次最高提现金额

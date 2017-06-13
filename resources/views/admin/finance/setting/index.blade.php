@@ -68,6 +68,7 @@
                                             <div class="checkbox">
                                                 <input type="checkbox" name="pay_method_weixin" value="1"  @if(Setting()->get('pay_method_weixin',1) == 1) checked @endif /> 微信
                                                 <label><input type="checkbox" name="pay_method_ali" value="1" @if(Setting()->get('pay_method_ali',0) == 1) checked @endif /> 支付宝</label>
+                                                <label><input type="checkbox" name="pay_method_iap" value="1" @if(Setting()->get('pay_method_iap',0) == 1) checked @endif /> IAP支付</label>
                                             </div>
                                         </div>
                                     </td>

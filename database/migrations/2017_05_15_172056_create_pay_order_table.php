@@ -87,6 +87,7 @@ class CreatePayOrderTable extends Migration
             ['name' => 'withdraw_per_max_money','value' => '2000'],
             ['name' => 'pay_method_weixin','value' => '1'],
             ['name' => 'pay_method_ali','value' => '0'],
+            ['name' => 'pay_method_iap','value' => '0'],
             ['name' => 'pay_settlement_cycle','value' => '3']
         ]);
     }

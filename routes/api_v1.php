@@ -123,7 +123,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], func
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Pay'], function() {
     //支付请求
     Route::post('pay/request','PayController@request');
-
+    //IAP结果验证
+    Route::post('pay/iap_notify','NotifyController@iapNotify');
 });
 
 //提现
@@ -154,6 +155,7 @@ Route::post('system/version','SystemController@appVersion');
 
 //支付参数
 Route::post('pay/config','SystemController@getPayConfig');
+
 
 //获取服务条款
 Route::post('system/service_register','SystemController@serviceRegister');
