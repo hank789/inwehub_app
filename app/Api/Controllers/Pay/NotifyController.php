@@ -63,7 +63,7 @@ class NotifyController extends Controller
         $config = config('payment.iap');
         $amount = 0;
         foreach($config['ids'] as $key=>$value){
-            if($value == $product) $amount = $value;
+            if($value == $product) $amount = $key;
         }
         $ret_data = [
             'channel' => Order::PAY_CHANNEL_IOS_IAP,
