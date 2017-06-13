@@ -51,12 +51,12 @@ class NotifyController extends Controller
         $data = $request->all();
         $endpoint = isset($_GET['sandbox']) ? ItunesReceiptValidator::SANDBOX_URL : ItunesReceiptValidator::PRODUCTION_URL;
         $rv = new ItunesReceiptValidator($endpoint, $data['transactionReceipt']);
-        print 'Environment: ' .
+        \Log::info('Environment: ' .
             ($rv->getEndpoint() === ItunesReceiptValidator::SANDBOX_URL) ? 'Sandbox' : 'Production' .
-            '<br />';
+            '<br />');
         $info = $rv->validateReceipt();
         \Log::info('iap_notify_result',[$info]);
-        echo 'Success';
+        return self::createJsonData(true);
     }
 
 }
