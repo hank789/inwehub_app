@@ -1,27 +1,6 @@
 <ul class="sidebar-menu" id="root_menu">
     <li class="header">管理菜单</li>
-    <li><a href="{{ route('admin.index.index') }}"><i class="fa fa-dashboard"></i> <span>首页</span> </a></li>
-
-    <li class="treeview">
-        <a href="#">
-            <i class="fa fa-wrench"></i> <span>全局</span>
-            <i class="fa fa-angle-left pull-right"></i>
-        </a>
-        <ul class="treeview-menu" id="global">
-            <li><a href="{{ route('admin.setting.register') }}"><i class="fa fa-circle-o"></i> 注册设置</a></li>
-            <li><a href="{{ route('admin.setting.answer') }}"><i class="fa fa-circle-o"></i> 问答设置</a></li>
-            <li><a href="{{ route('admin.setting.aboutus') }}"><i class="fa fa-circle-o"></i> 关于我们</a></li>
-            <li><a href="{{ route('admin.setting.help') }}"><i class="fa fa-circle-o"></i> 常见问题</a></li>
-            <li><a href="{{ route('admin.setting.qahelp') }}"><i class="fa fa-circle-o"></i> 提问帮助页</a></li>
-
-            {{--<li><a href="{{ route('admin.setting.website') }}"><i class="fa fa-circle-o"></i> 站点设置</a></li>
-            <li><a href="{{ route('admin.setting.email') }}"><i class="fa fa-circle-o"></i> 邮箱设置</a></li>
-            <li><a href="{{ route('admin.setting.time') }}"><i class="fa fa-circle-o"></i> 时间设置</a></li>
-            <li><a href="{{ route('admin.setting.irrigation') }}"><i class="fa fa-circle-o"></i> 防灌水设置</a></li>
-            <li><a href="{{ route('admin.setting.seo') }}"><i class="fa fa-circle-o"></i> SEO设置</a></li>
-            <li><a href="{{ route('admin.setting.variables') }}"><i class="fa fa-circle-o"></i> 变量设置</a></li>--}}
-        </ul>
-    </li>
+    <li><a href="{{ route('admin.index.index') }}"><i class="fa fa-dashboard"></i> <span>运营监控</span> </a></li>
 
     <li class="treeview">
         <a href="#">
@@ -36,7 +15,7 @@
 
     <li class="treeview">
         <a href="#">
-            <i class="fa fa-users"></i> <span>权限管理</span>
+            <i class="fa fa-users"></i> <span>权限</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="manage_role">
@@ -47,7 +26,7 @@
 
     <li class="treeview">
         <a href="#">
-            <i class="fa fa-comments-o"></i> <span>内容</span>
+            <i class="fa fa-comments-o"></i> <span>问答</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="manage_content">
@@ -93,6 +72,27 @@
         <ul class="treeview-menu" id="credit">
             <li><a href="{{ route('admin.setting.credits') }}"><i class="fa fa-circle-o"></i> 积分设置</a></li>
             <li><a href="{{ route('admin.credit.index') }}"><i class="fa fa-circle-o"></i> 积分管理</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
+            <i class="fa fa-wrench"></i> <span>站点配置</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="global">
+            <li><a href="{{ route('admin.setting.register') }}"><i class="fa fa-circle-o"></i> 注册设置</a></li>
+            <li><a href="{{ route('admin.setting.answer') }}"><i class="fa fa-circle-o"></i> 问答设置</a></li>
+            <li><a href="{{ route('admin.setting.aboutus') }}"><i class="fa fa-circle-o"></i> 关于我们</a></li>
+            <li><a href="{{ route('admin.setting.help') }}"><i class="fa fa-circle-o"></i> 常见问题</a></li>
+            <li><a href="{{ route('admin.setting.qahelp') }}"><i class="fa fa-circle-o"></i> 提问帮助页</a></li>
+
+            {{--<li><a href="{{ route('admin.setting.website') }}"><i class="fa fa-circle-o"></i> 站点设置</a></li>
+            <li><a href="{{ route('admin.setting.email') }}"><i class="fa fa-circle-o"></i> 邮箱设置</a></li>
+            <li><a href="{{ route('admin.setting.time') }}"><i class="fa fa-circle-o"></i> 时间设置</a></li>
+            <li><a href="{{ route('admin.setting.irrigation') }}"><i class="fa fa-circle-o"></i> 防灌水设置</a></li>
+            <li><a href="{{ route('admin.setting.seo') }}"><i class="fa fa-circle-o"></i> SEO设置</a></li>
+            <li><a href="{{ route('admin.setting.variables') }}"><i class="fa fa-circle-o"></i> 变量设置</a></li>--}}
         </ul>
     </li>
 
