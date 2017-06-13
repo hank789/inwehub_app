@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Pay;
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Logic\PayNotifyLogic;
 use App\Models\Pay\Order;
 use App\Services\ItunesReceiptValidator;
@@ -58,11 +59,16 @@ class NotifyController extends Controller
             '<br />');
         $info = $rv->validateReceipt();
         \Log::info('iap_notify_result',[$info]);
+        $config = config('payment.iap');
+        $ids = $config['ids'];
+        if(!in_array($info->product_id,$ids) || $info->bid != 'com.inwehub.InwehubApp'){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
         $callback = new PayNotifyLogic();
         $product = $data['payment']['productid'];
-        $config = config('payment.iap');
+
         $amount = 0;
-        foreach($config['ids'] as $key=>$value){
+        foreach($ids as $key=>$value){
             if($value == $product) $amount = $key;
         }
         $ret_data = [
