@@ -32,7 +32,8 @@ class PayNotifyLogic implements PayNotifyInterface {
                 $order->response_msg = $data['trade_state'];
                 $order->response_data = json_encode($data);
                 $order->save();
-                $return_param = $data['return_param'];
+                //这里不产生平台的资金记录
+                /*$return_param = $data['return_param'];
                 $io = 1;
                 $money_type = 1;
                 switch($return_param){
@@ -52,7 +53,7 @@ class PayNotifyLogic implements PayNotifyInterface {
                     'io'           => $io,
                     'money_type'   => $money_type,
                     'before_money' => $userMoney->total_money
-                ]);
+                ]);*/
             }
         } elseif ($channel === Config::CMB_CHARGE) {// 招商支付
 
