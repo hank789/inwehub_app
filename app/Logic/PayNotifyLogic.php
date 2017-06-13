@@ -1,4 +1,5 @@
 <?php namespace App\Logic;
+use App\Exceptions\ApiException;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Order;
 use App\Models\Pay\UserMoney;
@@ -42,6 +43,7 @@ class PayNotifyLogic implements PayNotifyInterface {
         if($order->status != Order::PAY_STATUS_SUCCESS){
             if($ret_data['amount'] != $order->amount){
                 \Log::error('订单金额与返回结果不一致',['order'=>$order,'return'=>$ret_data]);
+                throw new ApiException(ApiException::BAD_REQUEST);
             }
             $order->status = Order::PAY_STATUS_SUCCESS;
             $order->finish_time = date('Y-m-d H:i:s');
