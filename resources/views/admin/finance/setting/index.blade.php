@@ -99,6 +99,18 @@
                                 </tr>
 
                                 <tr>
+                                    <td>苹果IAP支付环境</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('pay_answer_iap_sandbox')) has-error @endif ">
+                                            <div class="radio">
+                                                <label><input type="radio" name="pay_answer_iap_sandbox" value="0" @if ( Setting()->get('pay_answer_iap_sandbox',0) == 0) checked @endif >正式环境</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="radio" name="pay_answer_iap_sandbox" value="1" @if ( Setting()->get('pay_answer_iap_sandbox',0) == 1) checked @endif>测试环境</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
                                     <td>用户每天最大提现次数</td>
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('withdraw_day_limit')) has-error @endif "><input type="text" class="form-control" name="withdraw_day_limit" value="{{ old('withdraw_day_limit',Setting()->get('withdraw_day_limit')) }}" /></div>

@@ -88,7 +88,8 @@ class CreatePayOrderTable extends Migration
             ['name' => 'pay_method_ali','value' => '0'],
             ['name' => 'pay_method_iap','value' => '0'],
             ['name' => 'pay_settlement_cycle','value' => '3'],
-            ['name' => 'pay_answer_iap_fee_rate','value' => '0.32']
+            ['name' => 'pay_answer_iap_fee_rate','value' => '0.32'],
+            ['name' => 'pay_answer_iap_sandbox','value'=>0]
         ]);
     }
 

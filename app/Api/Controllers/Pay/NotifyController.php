@@ -51,7 +51,7 @@ class NotifyController extends Controller
         ];
         $this->validate($request,$validateRules);
         $data = $request->all();
-        $endpoint = isset($_GET['sandbox']) ? ItunesReceiptValidator::SANDBOX_URL : ItunesReceiptValidator::PRODUCTION_URL;
+        $endpoint = Setting()->get('pay_answer_iap_sandbox',0) ? ItunesReceiptValidator::SANDBOX_URL : ItunesReceiptValidator::PRODUCTION_URL;
         $rv = new ItunesReceiptValidator($endpoint, $data['transactionReceipt']);
         \Log::info('Environment: ' .
             ($rv->getEndpoint() === ItunesReceiptValidator::SANDBOX_URL) ? 'Sandbox' : 'Production' .

@@ -20,7 +20,8 @@ class SettingController extends AdminController {
             'withdraw_per_min_money' => 'required|integer',
             'withdraw_per_max_money' => 'required|integer',
             'pay_answer_normal_fee_rate' => 'numeric|min:0|max:1',
-            'pay_answer_iap_fee_rate'    => 'numeric|min:0|max:1'
+            'pay_answer_iap_fee_rate'    => 'numeric|min:0|max:1',
+            'pay_answer_iap_sandbox'     => 'required|integer'
         ];
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);
