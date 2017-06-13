@@ -59,10 +59,16 @@ class NotifyController extends Controller
         $info = $rv->validateReceipt();
         \Log::info('iap_notify_result',[$info]);
         $callback = new PayNotifyLogic();
+        $product = $data['payment']['productid'];
+        $config = config('payment.iap');
+        $amount = 0;
+        foreach($config as $key=>$value){
+            if($value == $product) $amount = $value;
+        }
         $ret_data = [
             'channel' => Order::PAY_CHANNEL_IOS_IAP,
             'orderId' => $data['orderId'],
-            'amount'  => 0,
+            'amount'  => $amount,
             'transaction_id' => $data['transactionIdentifier'],
             'trade_state'    => $data['transactionState'],
             'origin_data'    => $data
