@@ -102,7 +102,11 @@ class AuthController extends Controller
             $user = $request->user();
             $device_code = $request->input('device_code');
             if($user->last_login_token && $device_code){
-                $JWTAuth->refresh($user->last_login_token);
+                try {
+                    $JWTAuth->refresh($user->last_login_token);
+                } catch (\Exception $e){
+                    \Log::error($e->getMessage());
+                }
             }
             $user->last_login_token = $token;
             $user->save();
