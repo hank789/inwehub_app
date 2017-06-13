@@ -28,7 +28,7 @@ class PayController extends Controller {
         $this->validate($request, $validateRules);
         $loginUser = $request->user();
 
-        if(RateLimiter::instance()->increase('expert:recommend',$loginUser->id,10,1)){
+        if(RateLimiter::instance()->increase('expert:recommend',$loginUser->id,2,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -74,7 +74,7 @@ class PayController extends Controller {
                 break;
         }
         $orderNo = gen_order_number();
-        
+
         // 订单信息
         $payData = [
             'user_id' => $loginUser->id,
