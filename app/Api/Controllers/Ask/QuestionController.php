@@ -250,6 +250,7 @@ class QuestionController extends Controller
             $this->counter( 'question_num_'. $question->user_id , 1 , 3600 );
 
             if($to_user_id){
+                $toUser = User::find($to_user_id);
                 $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
                     'from_user_id'=> $question->user_id,
                     'question_id'=> $question->id,
