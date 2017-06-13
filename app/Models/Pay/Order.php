@@ -48,6 +48,8 @@ class Order extends Model
 
     const PAY_CHANNEL_ALIPAY_APP = 7;
 
+    const PAY_CHANNEL_IOS_IAP = 11;
+
     public function questions()
     {
         return $this->morphedByMany('App\Models\Question', 'pay_order_gable');

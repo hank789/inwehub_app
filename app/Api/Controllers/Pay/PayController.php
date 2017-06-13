@@ -57,6 +57,7 @@ class PayController extends Controller {
                 $config = config('payment.iap');
                 $ids = $config['ids'];
                 $iap_id = $ids[$amount];
+                $channel_type = Order::PAY_CHANNEL_IOS_IAP;
                 break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
