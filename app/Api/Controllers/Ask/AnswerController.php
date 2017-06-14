@@ -40,14 +40,6 @@ class AnswerController extends Controller
     {
         $loginUser = $request->user();
 
-        /*防灌水检查*/
-        if( Setting()->get('answer_limit_num') > 0 ){
-            $questionCount = $this->counter('answer_num_'. $loginUser->id);
-            if( $questionCount > Setting()->get('answer_limit_num')){
-                return self::createJsonData(false,[],ApiException::VISIT_LIMIT,'你已超过每小时回答限制数'.Setting()->get('answer_limit_num').'，请稍后再进行该操作，如有疑问请联系管理员!');
-            }
-        }
-
         if(RateLimiter::instance()->increase('question:answer:create',$loginUser->id,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }

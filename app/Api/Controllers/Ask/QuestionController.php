@@ -128,13 +128,7 @@ class QuestionController extends Controller
     public function request(Request $request)
     {
         $user = $request->user();
-        /*防灌水检查*/
-        if( Setting()->get('question_limit_num') > 0 ){
-            $questionCount = $this->counter('question_num_'. $user->id);
-            if( $questionCount > Setting()->get('question_limit_num')){
-                return self::createJsonData(false,[],ApiException::VISIT_LIMIT,'你已超过每小时最大提问数'.Setting()->get('question_limit_num').'，如有疑问请联系管理员!');
-            }
-        }
+
         $expert_uid = $request->input('uid');
         if($expert_uid){
             $this->checkAnswerUser($user,$expert_uid);
@@ -172,14 +166,6 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
         $loginUser = $request->user();
-
-        /*防灌水检查*/
-        if( Setting()->get('question_limit_num') > 0 ){
-            $questionCount = $this->counter('question_num_'. $loginUser->id);
-            if( $questionCount > Setting()->get('question_limit_num')){
-                return self::createJsonData(false,[],ApiException::VISIT_LIMIT,'你已超过每小时最大提问数'.Setting()->get('question_limit_num').'，如有疑问请联系管理员!');
-            }
-        }
 
         $this->validate($request,$this->validateRules);
 
