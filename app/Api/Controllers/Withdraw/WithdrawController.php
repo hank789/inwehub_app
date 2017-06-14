@@ -33,7 +33,7 @@ class WithdrawController extends Controller {
             throw new ApiException(ApiException::WITHDRAW_UNBIND_WEXIN);
         }
 
-        if(RateLimiter::instance()->increase('withdraw',$user->id,60,1)){
+        if(RateLimiter::instance()->increase('withdraw',$user->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
