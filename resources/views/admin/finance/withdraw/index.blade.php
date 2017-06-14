@@ -65,7 +65,6 @@
                                         <th>流水号</th>
                                         <th>信息</th>
                                         <th>状态</th>
-                                        <th>操作</th>
                                     </tr>
                                     @foreach($withdraws as $withdraw)
                                         <tr>
@@ -79,11 +78,6 @@
                                             <td>{{ $withdraw->order_no }}</td>
                                             <td>{{ $withdraw->response_msg }}</td>
                                             <td><span class="label @if($withdraw->status===3) label-danger @elseif($withdraw->status<=1) label-default @elseif($withdraw->status===2) label-success @endif">{{ trans_withdraw_status($withdraw->status) }}</span> </td>
-                                            <td>
-                                                <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.finance.withdraw.verify',['id'=>[$withdraw->id]]) }}" data-toggle="tooltip" title="审核通过"><i class="fa fa-check-square-o"></i></a>
-                                                </div>
-                                            </td>
                                         </tr>
                                     @endforeach
                                 </table>

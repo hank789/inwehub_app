@@ -38,7 +38,7 @@ class WithdrawLogic {
         }
         $data = [
             'trans_no' => $withdraw->order_no,
-            'openid' => $user_oauth->access_token,
+            'openid' => $user_oauth->openid,
             'check_name' => 'NO_CHECK',// NO_CHECK：不校验真实姓名  FORCE_CHECK：强校验真实姓名   OPTION_CHECK：针对已实名认证的用户才校验真实姓名
             'payer_real_name' => '',
             'amount' => $withdraw->amount,
