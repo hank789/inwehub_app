@@ -19,7 +19,8 @@
                         <div class="row">
                             <div class="col-xs-3">
                                 <div class="btn-group">
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="处理提现" onclick="confirm_submit('item_form','{{  route('admin.finance.withdraw.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="走线上转账" onclick="confirm_submit('item_form','{{  route('admin.finance.withdraw.verify') }}','确认选中项进行线上提现？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="已走线下转账" onclick="confirm_submit('item_form','{{  route('admin.finance.withdraw.verify_offline') }}','确认选中项已通过线下转账？')"><i class="fa fa-check-square"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-9">
@@ -88,7 +89,8 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="btn-group">
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="处理提现" onclick="confirm_submit('item_form','{{  route('admin.finance.withdraw.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="走线上转账" onclick="confirm_submit('item_form','{{  route('admin.finance.withdraw.verify') }}','确认选中项进行线上提现？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="已走线下转账" onclick="confirm_submit('item_form','{{  route('admin.finance.withdraw.verify_offline') }}','确认选中项已通过线下转账？')"><i class="fa fa-check-square"></i></button>
                                 </div>
                             </div>
                             <div class="col-sm-9">

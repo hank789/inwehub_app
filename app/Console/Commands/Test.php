@@ -59,9 +59,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $question = Question::find(3);
-        $bestAnswers = $question->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
-        var_dump($bestAnswers);
+        $u = UserMoney::find(1);
+        var_dump($u);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

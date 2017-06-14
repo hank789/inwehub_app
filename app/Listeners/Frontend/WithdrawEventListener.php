@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Events\Frontend\Withdraw\WithdrawCreate;
+use App\Events\Frontend\Withdraw\WithdrawOffline;
 use App\Events\Frontend\Withdraw\WithdrawProcess;
 use App\Exceptions\ApiException;
 use App\Logic\MoneyLogLogic;
@@ -14,6 +15,7 @@ use App\Models\Pay\UserMoney;
 use App\Models\Pay\Withdraw;
 use App\Models\UserOauth;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Payment\Config;
 
 
 class WithdrawEventListener implements ShouldQueue {
@@ -93,6 +95,38 @@ class WithdrawEventListener implements ShouldQueue {
         }
     }
 
+    public function offline($event){
+        $withdraw = Withdraw::find($event->withdraw_id);
+        if($withdraw->status != Withdraw::WITHDRAW_STATUS_PROCESS){
+            return false;
+        }
+        $withdraw->response_msg = '线下转账';
+        $withdraw->status = Withdraw::WITHDRAW_STATUS_SUCCESS;
+        $withdraw->transaction_id = '';
+        $withdraw->finish_time = date('Y-m-d H:i:s');
+        $withdraw->response_data = '';
+        $withdraw->save();
+
+        switch($withdraw->withdraw_channel){
+            case Withdraw::WITHDRAW_CHANNEL_WX:
+                $channel = Config::WX_TRANSFER;
+                break;
+            case Withdraw::WITHDRAW_CHANNEL_ALIPAY:
+                $channel = Config::ALI_TRANSFER;
+                break;
+            default:
+                return false;
+                break;
+        }
+
+        //记数
+        WithdrawLogic::incUserWithdrawCount($withdraw->user_id, $channel);
+        WithdrawLogic::incUserWithdrawAmount($withdraw->user_id, $channel,$withdraw->amount);
+        MoneyLog::where('source_id',$withdraw->id)->where('source_type',get_class($withdraw))->update([
+            'status' => MoneyLog::STATUS_SUCCESS
+        ]);
+    }
+
 
     /**
      * Register the listeners for the subscriber.
@@ -108,6 +142,10 @@ class WithdrawEventListener implements ShouldQueue {
         $events->listen(
             WithdrawProcess::class,
             'App\Listeners\Frontend\WithdrawEventListener@process'
+        );
+        $events->listen(
+            WithdrawOffline::class,
+            'App\Listeners\Frontend\WithdrawEventListener@offline'
         );
 
     }

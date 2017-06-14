@@ -1,4 +1,5 @@
 <?php namespace App\Http\Controllers\Admin\Finance;
+use App\Events\Frontend\Withdraw\WithdrawOffline;
 use App\Events\Frontend\Withdraw\WithdrawProcess;
 use App\Http\Controllers\Admin\AdminController;
 use App\Models\Pay\Withdraw;
@@ -52,6 +53,22 @@ class WithdrawController extends AdminController {
                 $withdraw->status = Withdraw::WITHDRAW_STATUS_PROCESS;
                 $withdraw->save();
                 event(new WithdrawProcess($id));
+            }
+        }
+        return $this->success(route('admin.finance.withdraw.index').'?status=0','开始处理提现');
+    }
+
+    public function verifyOffline(Request $request)
+    {
+        $ids = $request->input('id');
+        foreach($ids as $id){
+            $withdraw = Withdraw::find($id);
+            if($withdraw->status == Withdraw::WITHDRAW_STATUS_PENDING ||
+                $withdraw->status == Withdraw::WITHDRAW_STATUS_FAIL)
+            {
+                $withdraw->status = Withdraw::WITHDRAW_STATUS_PROCESS;
+                $withdraw->save();
+                event(new WithdrawOffline($id));
             }
         }
         return $this->success(route('admin.finance.withdraw.index').'?status=0','开始处理提现');
