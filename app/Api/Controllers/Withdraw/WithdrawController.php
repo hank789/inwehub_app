@@ -22,7 +22,7 @@ class WithdrawController extends Controller {
         $max = Setting()->get('withdraw_per_max_money',2000);
 
         $validateRules = [
-            'amount' => 'required|min:'.$min.'|max:'.$max,
+            'amount' => 'required|digits_between:'.$min.','.$max,
         ];
         $this->validate($request, $validateRules);
         $amount = $request->input('amount');
