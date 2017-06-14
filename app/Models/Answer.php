@@ -48,6 +48,11 @@ class Answer extends Model
     protected $table = 'answers';
     protected $fillable = ['question_title','question_id','user_id','adopted_at', 'content','status','promise_time'];
 
+    const ANSWER_STATUS_FINISH = 1;
+    const ANSWER_STATUS_REJECT = 2;
+    const ANSWER_STATUS_PROMISE = 3;
+
+
     public static function boot()
     {
         parent::boot();

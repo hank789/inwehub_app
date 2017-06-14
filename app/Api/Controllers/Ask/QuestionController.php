@@ -47,9 +47,9 @@ class QuestionController extends Controller
         $user = $request->user();
 
         /*已解决问题*/
-        $bestAnswers = [];
+        $bestAnswer = [];
         if($question->status >= 6 ){
-            $bestAnswers = $question->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get();
+            $bestAnswer = $question->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
         }
 
         /*设置通知为已读*/
@@ -60,6 +60,27 @@ class QuestionController extends Controller
         $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
         if(empty($question_invitation) && $request->user()->id != $question->user->id){
             throw new ApiException(ApiException::BAD_REQUEST);
+        }
+
+        $answers_data = [];
+        $promise_answer_time = '';
+
+        if($bestAnswer){
+            $answers_data[] = [
+                'id' => $bestAnswer->id,
+                'user_id' => $bestAnswer->user_id,
+                'user_name' => $bestAnswer->user->name,
+                'user_avatar_url' => $bestAnswer->user->getAvatarUrl(),
+                'content' => $bestAnswer->content,
+                'promise_time' => $bestAnswer->promise_time,
+                'created_at' => (string)$bestAnswer->created_at
+            ];
+            $promise_answer_time = $bestAnswer->promise_time;
+        }else {
+            $promise_answer = $question->answers()->where('status',Answer::ANSWER_STATUS_PROMISE)->orderBy('id','desc')->get()->last();
+            if ($promise_answer){
+                $promise_answer_time = $promise_answer->promise_time;
+            }
         }
 
         $question_data = [
@@ -74,29 +95,17 @@ class QuestionController extends Controller
             'price' => $question->price,
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
+            'promise_answer_time' => $promise_answer_time,
             'created_at' => (string)$question->created_at
         ];
 
-        $answers_data = [];
-
-        foreach($bestAnswers as $bestAnswer){
-            $answers_data[] = [
-                'id' => $bestAnswer->id,
-                'user_id' => $bestAnswer->user_id,
-                'user_name' => $bestAnswer->user->name,
-                'user_avatar_url' => $bestAnswer->user->getAvatarUrl(),
-                'content' => $bestAnswer->content,
-                'promise_time' => $bestAnswer->promise_time,
-                'created_at' => (string)$bestAnswer->created_at
-            ];
-        }
 
         $timeline = $question->formatTimeline();
 
         //feedback
         $feedback_data = [];
         if($answers_data){
-            $feedback = $bestAnswers->last()->feedbacks()->orderBy('id','desc')->first();
+            $feedback = $bestAnswer->feedbacks()->orderBy('id','desc')->first();
             if(!empty($feedback)){
                 $feedback_data = [
                     'answer_id' => $feedback->source_id,
@@ -315,7 +324,7 @@ class QuestionController extends Controller
             'user_id'      => $loginUser->id,
             'question_id'      => $request->input('question_id'),
             'content'  => $request->input('description',''),
-            'status'   => 2,
+            'status'   => Answer::ANSWER_STATUS_REJECT,
         ];
 
         $answer = Answer::create($data);

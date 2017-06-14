@@ -103,11 +103,11 @@ class AnswerController extends Controller
                 $hours = substr($promise_time,0,2);
                 $minutes = substr($promise_time,2,2);
                 $data['promise_time'] = date('Y-m-d H:i:00',strtotime('+ '.$hours.' hours + '.$minutes.' minutes'));
-                $data['status'] = 3;
+                $data['status'] = Answer::ANSWER_STATUS_PROMISE;
                 $data['content'] = '承诺在:'.$data['promise_time'].'前回答该问题';
             }else{
                 $data['adopted_at'] = date('Y-m-d H:i:s');
-                $data['status'] = 1;
+                $data['status'] = Answer::ANSWER_STATUS_FINISH;
             }
             $answer = Answer::create($data);
         }
@@ -124,7 +124,7 @@ class AnswerController extends Controller
                 //问题变为已回答
                 $question->answered();
 
-                $answer->status = 1;
+                $answer->status = Answer::ANSWER_STATUS_FINISH;
                 $answer->content = $answerContent;
                 $answer->adopted_at = date('Y-m-d H:i:s');
                 $answer->save();
