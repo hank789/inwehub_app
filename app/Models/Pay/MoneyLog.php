@@ -21,7 +21,7 @@ class MoneyLog extends Model {
      *
      * @var array
      */
-    protected $fillable = ['user_id','source_type','source_id','change_money','io','money_type'];
+    protected $fillable = ['user_id','source_type','source_id','change_money','io','money_type','before_money','status'];
 
 
     const MONEY_TYPE_ASK = 1;
