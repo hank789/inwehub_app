@@ -65,6 +65,10 @@ class Authentication extends Model
         static::updating(function($authentication){
             $authentication->userData->update(['authentication_status'=>$authentication->status]);
         });
+        static::deleting(function($authentication){
+            $authentication->userData->update(['authentication_status'=>0]);
+        });
+
     }
 
     public function userData()
