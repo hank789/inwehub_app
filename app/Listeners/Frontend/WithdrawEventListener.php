@@ -104,7 +104,6 @@ class WithdrawEventListener implements ShouldQueue {
         $withdraw->status = Withdraw::WITHDRAW_STATUS_SUCCESS;
         $withdraw->transaction_id = '';
         $withdraw->finish_time = date('Y-m-d H:i:s');
-        $withdraw->response_data = '';
         $withdraw->save();
 
         switch($withdraw->withdraw_channel){
