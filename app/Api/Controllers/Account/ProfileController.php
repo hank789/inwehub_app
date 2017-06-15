@@ -325,6 +325,7 @@ class ProfileController extends Controller
         $data['pay_settlement_money'] = 0;
         $data['is_bind_weixin'] = 0;
         $data['bind_weixin_nickname'] = '';
+        $data['user_phone'] = secret_mobile($user->mobile);
         $user_oauth = UserOauth::where('user_id',$user->id)->where('auth_type','weixin')->first();
         if($user_oauth){
             $data['is_bind_weixin'] = 1;

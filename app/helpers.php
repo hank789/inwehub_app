@@ -388,6 +388,12 @@ if( !function_exists('is_mobile') ){
     }
 }
 
+if (!function_exists('secret_mobile')) {
+    function secret_mobile($mobile) {
+        return substr($mobile, 0, 5).'****'.substr($mobile, 9);
+    }
+}
+
 //生成验证码
 if( !function_exists('makeVerifyCode') ){
     function makeVerifyCode(int $min = 1000, int $max = 9999)
