@@ -106,11 +106,6 @@ class User extends Model implements AuthenticatableContract,
     public static function boot()
     {
         parent::boot();
-        static::saved(function($user){
-            if(Setting()->get('xunsearch_open',0) == 1) {
-                App::offsetGet('search')->update($user);
-            }
-        });
         static::deleted(function($user){
 
             /*删除用户扩展信息*/
@@ -149,10 +144,6 @@ class User extends Model implements AuthenticatableContract,
 
             /*删除角色管理*/
             $user->detachAllRoles();
-
-            if(Setting()->get('xunsearch_open',0) == 1) {
-                App::offsetGet('search')->delete($user);
-            }
         });
     }
 
@@ -511,7 +502,6 @@ class User extends Model implements AuthenticatableContract,
             }
             return $fields['score'];
         }catch (\Exception $e) {
-            var_dump($e);
             return 0;
         }
     }

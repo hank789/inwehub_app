@@ -18,6 +18,7 @@ use App\Models\QuestionInvitation;
 use App\Models\RecommendQa;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserData;
 use App\Models\UserDevice;
 use App\Models\UserInfo\JobInfo;
 use App\Models\UserRegistrationCode;
@@ -59,8 +60,22 @@ class Test extends Command
      */
     public function handle()
     {
-        $u = UserMoney::find(1);
-        var_dump($u);
+        UserData::create([
+            'user_id' => 1,
+            'coins' => 0,
+            'credits' => 0,
+            'registered_at' => Carbon::now(),
+            'last_visit' => Carbon::now(),
+            'last_login_ip' => '127.0.0.1',
+        ]);
+        UserData::create([
+            'user_id' => 2,
+            'coins' => 0,
+            'credits' => 0,
+            'registered_at' => Carbon::now(),
+            'last_visit' => Carbon::now(),
+            'last_login_ip' => '127.0.0.1',
+        ]);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
