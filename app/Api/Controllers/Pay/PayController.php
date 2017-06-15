@@ -41,6 +41,9 @@ class PayController extends Controller {
                 if(Setting()->get('pay_method_weixin',1) != 1){
                     throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 }
+                if (config('app.env') != 'production') {
+                    $amount = 0.01;
+                }
                 $config = config('payment')['wechat'];
                 $channel = Config::WX_CHANNEL_APP;
                 $channel_type = Order::PAY_CHANNEL_WX_APP;
