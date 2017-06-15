@@ -109,41 +109,41 @@ class User extends Model implements AuthenticatableContract,
         static::deleted(function($user){
 
             /*删除用户扩展信息*/
-            $user->userData()->delete();
+            /*$user->userData()->delete();
             $user->userOauth()->delete();
-            $user->authentication()->delete();
+            $user->authentication()->delete();*/
             /*删除用户提问*/
-            $user->questions()->delete();
+            /*$user->questions()->delete();*/
             /*删除用户回答*/
-            $user->answers()->delete();
+            //$user->answers()->delete();
 
             /*删除用户文章*/
-            $user->articles()->delete();
+            //$user->articles()->delete();
 
             /*删除粉丝*/
-            $user->followers()->delete();
+            //$user->followers()->delete();
 
             /*删除收藏*/
-            $user->collections()->delete();
+            //$user->collections()->delete();
 
             /*删除积分设置*/
-            $user->credits()->delete();
+            //$user->credits()->delete();
             /*删除动态*/
-            $user->doings()->delete();
+            //$user->doings()->delete();
 
             /*删除积分兑换*/
-            $user->exchanges()->delete();
+            //$user->exchanges()->delete();
 
             /*删除统计标签*/
-            $user->userTags()->delete();
+            //$user->userTags()->delete();
 
             /*删除问题邀请*/
-            $user->questionInvitations()->delete();
+            //$user->questionInvitations()->delete();
             /*删除评论*/
-            $user->comments()->delete();
+            //$user->comments()->delete();
 
             /*删除角色管理*/
-            $user->detachAllRoles();
+            //$user->detachAllRoles();
         });
     }
 
