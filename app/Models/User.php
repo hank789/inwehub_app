@@ -477,38 +477,43 @@ class User extends Model implements AuthenticatableContract,
 
     //获取信息完整度百分比
     public function getInfoCompletePercent($include_unfilled_fields = false){
-        $user = $this->toArray();
-        $info = [];
-        $info['name'] = [5=>$user['name']];
-        $info['mobile'] = [5=>$user['mobile']];
-        $info['email'] = [5=>$user['email']];
-        $info['gender'] = [5=>$user['gender']];
-        $info['birthday'] = [5=>$user['birthday']];
-        $info['city'] = [5=>$user['city']];
-        $info['hometown_city'] = [1=>$user['hometown_city']];
-        $info['company'] = [5=>$user['company']];
-        $info['title'] = [5=>$user['title']];
-        $info['description'] = [1=>$user['description']];
-        $info['address_detail'] = [5=>$user['address_detail']];
-        $info['industry_tags'] = [5=>array_column($this->industryTags(),'name')];
-        $info['avatar_url'] = [10=>$this->getAvatarUrl()];
+        try{
+            $user = $this->toArray();
+            $info = [];
+            $info['name'] = [5=>$user['name']];
+            $info['mobile'] = [5=>$user['mobile']];
+            $info['email'] = [5=>$user['email']];
+            $info['gender'] = [5=>$user['gender']];
+            $info['birthday'] = [5=>$user['birthday']];
+            $info['city'] = [5=>$user['city']];
+            $info['hometown_city'] = [1=>$user['hometown_city']];
+            $info['company'] = [5=>$user['company']];
+            $info['title'] = [5=>$user['title']];
+            $info['description'] = [1=>$user['description']];
+            $info['address_detail'] = [5=>$user['address_detail']];
+            $info['industry_tags'] = [5=>array_column($this->industryTags(),'name')];
+            $info['avatar_url'] = [10=>$this->getAvatarUrl()];
 
-        $edu = [10=>$this->edus()->pluck('id')];
-        $job = [10=>$this->jobs()->pluck('id')];
-        $project = [10=>$this->projects()->pluck('id')];
-        $train = [2=>$this->trains()->pluck('id')];
-        $data = [];
-        $data['info'] = $info;
-        $data['jobs'] = $job;
-        $data['edus'] = $edu;
-        $data['projects'] = $project;
-        $data['trains'] = $train;
+            $edu = [10=>$this->edus()->pluck('id')];
+            $job = [10=>$this->jobs()->pluck('id')];
+            $project = [10=>$this->projects()->pluck('id')];
+            $train = [2=>$this->trains()->pluck('id')];
+            $data = [];
+            $data['info'] = $info;
+            $data['jobs'] = $job;
+            $data['edus'] = $edu;
+            $data['projects'] = $project;
+            $data['trains'] = $train;
 
-        $fields = cal_account_info_finish($data);
-        if ($include_unfilled_fields) {
-            return $fields;
+            $fields = cal_account_info_finish($data);
+            if ($include_unfilled_fields) {
+                return $fields;
+            }
+            return $fields['score'];
+        }catch (\Exception $e) {
+            var_dump($e);
+            return 0;
         }
-        return $fields['score'];
     }
 
     public static function getFieldHumanName($field){
