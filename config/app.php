@@ -191,6 +191,7 @@ return [
         Spatie\MediaLibrary\MediaLibraryServiceProvider::class,
         Spatie\Backup\BackupServiceProvider::class,
         App\Third\Push\Getui\GetuiServiceProvider::class,
+        App\Third\Weapp\WxxcxServiceProvider::class,
     ],
 
     /*
