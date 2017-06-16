@@ -17,7 +17,7 @@ class Wxxcx
     function __construct()
     {
         $this->appId = config('weapp.appid', '');
-        $this->secret = config('wapp.secret', '');
+        $this->secret = config('weapp.secret', '');
         $this->code2session_url = config('weapp.code2session_url', '');
     }
 

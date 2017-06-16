@@ -29,9 +29,8 @@ class UserController extends controller {
         //encryptedData 和 iv 在小程序端使用 wx.getUserInfo 获取
         $encryptedData = request('encryptedData', '');
         $iv = request('iv', '');
-        \Log::info('test',$request->all());
 
-        \Log::info('testtest',[$code,$encryptedData,$iv]);
+        \Log::info('test',[$code,$encryptedData,$iv]);
         //根据 code 获取用户 session_key 等信息, 返回用户openid 和 session_key
         $userInfo = $this->wxxcx->getLoginInfo($code);
 
