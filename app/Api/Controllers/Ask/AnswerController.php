@@ -82,6 +82,7 @@ class AnswerController extends Controller
             'user_id'      => $loginUser->id,
             'question_id'      => $question_id,
             'content'  => $answerContent,
+            'device'       => intval($request->input('device'))
         ];
 
         //先检查是否已有回答

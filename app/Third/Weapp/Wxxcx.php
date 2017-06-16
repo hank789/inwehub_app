@@ -41,10 +41,7 @@ class Wxxcx
         $decodeData = "";
         $errCode = $pc->decryptData($encryptedData, $iv, $decodeData);
         if ($errCode !=0 ) {
-            return [
-                'code' => 10001,
-                'message' => 'encryptedData 解密失败'
-            ];
+            throw new WxxcxException('encryptedData 解密失败');
         }
         return $decodeData;
     }
@@ -58,10 +55,7 @@ class Wxxcx
         $code2session_url = sprintf($this->code2session_url,$this->appId,$this->secret,$code);
         $userInfo = $this->httpRequest($code2session_url);
         if(!isset($userInfo['session_key'])){
-            return [
-                'code' => 10000,
-                'message' => '获取 session_key 失败',
-            ];
+            throw new WxxcxException('获取 session_key 失败');
         }
         $this->sessionKey = $userInfo['session_key'];
         return $userInfo;

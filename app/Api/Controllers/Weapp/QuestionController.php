@@ -11,7 +11,22 @@ use Illuminate\Http\Request;
 class QuestionController extends Controller {
 
     public function store(Request $request){
+        $validateRules = [
+            'description' => 'required|max:500',
+            'is_public'=> 'required'
+        ];
+        \Log::info('test',$request->all());
+    }
+
+    public function myList(Request $request){
 
     }
 
+    public function allList(Request $request){
+
+    }
+
+    public function info(Request $request){
+
+    }
 }

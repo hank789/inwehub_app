@@ -24,6 +24,7 @@ use App\Models\UserInfo\JobInfo;
 use App\Models\UserRegistrationCode;
 use App\Models\UserTag;
 use App\Services\City\CityData;
+use App\Third\Weapp\Wxxcx;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
@@ -60,22 +61,9 @@ class Test extends Command
      */
     public function handle()
     {
-        UserData::create([
-            'user_id' => 1,
-            'coins' => 0,
-            'credits' => 0,
-            'registered_at' => Carbon::now(),
-            'last_visit' => Carbon::now(),
-            'last_login_ip' => '127.0.0.1',
-        ]);
-        UserData::create([
-            'user_id' => 2,
-            'coins' => 0,
-            'credits' => 0,
-            'registered_at' => Carbon::now(),
-            'last_visit' => Carbon::now(),
-            'last_login_ip' => '127.0.0.1',
-        ]);
+        $amount = 1.4;
+        $s = intval($amount);
+        echo $s;
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

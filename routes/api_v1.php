@@ -196,4 +196,16 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','nam
 Route::group(['namespace'=>'Weapp'], function() {
     //获取用户登陆信息
     Route::post('weapp/user/info','UserController@getWxUserInfo');
+    //提问
+    Route::post('weapp/question/store','QuestionController@store');
+    //提问列表
+    Route::post('weapp/question/allList','QuestionController@allList');
+    //问题详情
+    Route::post('weapp/question/info','QuestionController@info');
+    //我的提问列表
+    Route::post('weapp/question/myList','QuestionController@myList');
+    //回答
+    Route::post('weapp/answer/store','AnswerController@store');
+
+
 });

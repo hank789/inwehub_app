@@ -46,7 +46,7 @@ class Answer extends Model
 {
     use MorphManyCommentsTrait,BelongsToUserTrait,MorphManyTagsTrait,MorphManyFeedbackTrait;
     protected $table = 'answers';
-    protected $fillable = ['question_title','question_id','user_id','adopted_at', 'content','status','promise_time'];
+    protected $fillable = ['question_title','question_id','user_id','adopted_at', 'content','status','promise_time', 'device'];
 
     const ANSWER_STATUS_FINISH = 1;
     const ANSWER_STATUS_REJECT = 2;

@@ -53,8 +53,7 @@ class UserOauth extends Model
     protected $hidden = [];
 
 
-
-
-
+    const AUTH_TYPE_WEIXIN = 'weixin';
+    const AUTH_TYPE_WEAPP  = 'weapp';//微信小程序
 
 }

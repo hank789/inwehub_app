@@ -188,6 +188,7 @@ class QuestionController extends Controller
             'price'        => $price,
             'hide'         => intval($request->input('hide')),
             'status'       => 1,
+            'device'       => intval($request->input('device'))
         ];
 
         //查看支付订单是否成功

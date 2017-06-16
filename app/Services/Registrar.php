@@ -38,6 +38,7 @@ class Registrar {
             'gender' => 0,
             'password' => bcrypt($data['password']),
             'status' => $data['status'],
+            'source' => $data['source']??0,
             'site_notifications' => 'follow_user,invite_answer,comment_question,comment_article,adopt_answer,comment_answer,reply_comment',
             'email_notifications' => 'adopt_answer,invite_answer'
         ]);

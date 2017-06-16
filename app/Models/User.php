@@ -103,6 +103,10 @@ class User extends Model implements AuthenticatableContract,
      */
     protected $hidden = ['password', 'remember_token'];
 
+
+    const USER_SOURCE_APP = 0;//用户来源:app注册
+    const USER_SOURCE_WEAPP = 1;//用户来源:微信小程序自动注册
+
     public static function boot()
     {
         parent::boot();

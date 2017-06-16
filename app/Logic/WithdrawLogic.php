@@ -111,7 +111,7 @@ class WithdrawLogic {
 
     public static function incUserWithdrawAmount($user_id,$channel,$amount)
     {
-        return RateLimiter::instance()->increaseBy('withdraw_amount_'.date('Ymd').'_'.$channel,$user_id,$amount,86400);
+        return RateLimiter::instance()->increaseBy('withdraw_amount_'.date('Ymd').'_'.$channel,$user_id,intval($amount),86400);
     }
 
     public static function getUserWithdrawCount($user_id,$channel){
