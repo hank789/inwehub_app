@@ -27,6 +27,6 @@ return [
         'return_raw'        => false,// 在处理回调时，是否直接返回原始数据，默认为true
     ],
     'iap' => [
-        'ids' => [28=>'question28', 88=>'question88',188=>'question188'],//请求商品的标识,key表示金额
+        'ids' => [28=>'qa28', 88=>'qa88',188=>'qa188'],//请求商品的标识,key表示金额
     ]
 ];
