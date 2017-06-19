@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Weapp;
 use App\Api\Controllers\Controller;
+use App\Models\Comment;
 use App\Models\WeappQuestion\WeappQuestion;
 use Illuminate\Http\Request;
 
@@ -60,7 +61,36 @@ class QuestionController extends Controller {
     }
 
     public function myList(Request $request){
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
 
+        $user = $request->user();
+
+        $query = WeappQuestion::where('user_id',$user->id)->where('status',1);
+
+        if($top_id){
+            $query = $query->where('id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('id','<',$bottom_id);
+        }else{
+            $query = $query->where('id','>',0);
+        }
+        $questions = $query->orderBy('id','DESC')->paginate(10);
+
+        $list = [];
+        foreach($questions as $question){
+            $list[] = [
+                'id' => $question->id,
+                'user_id' => $question->user_id,
+                'user_name' => $question->user->name,
+                'user_avatar_url' => $question->user->getAvatarUrl(),
+                'description'  => $question->title,
+                'status' => $question->status,
+                'comments' => $question->comments,
+                'created_at' => (string)$question->created_at
+            ];
+        }
+        return self::createJsonData(true,$list);
     }
 
     public function allList(Request $request){
@@ -68,6 +98,33 @@ class QuestionController extends Controller {
     }
 
     public function info(Request $request){
+        $validateRules = [
+            'id' => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $data = $request->all();
+        $user = $request->user();
+        $question = WeappQuestion::find($data['id']);
+        $info = [
+            'id' => $question->id,
+            'user_id' => $question->user_id,
+            'user_name' => $question->user->name,
+            'user_avatar_url' => $question->user->getAvatarUrl(),
+            'description'  => $question->title,
+            'status' => $question->status,
+            'comments' => $question->comments,
+            'created_at' => (string)$question->created_at
+        ];
+        $comments_query = $question->comments()->where('status',1);
+        if (!$question->is_public && $user->id != $question->user_id){
+            $comments_query = $comments_query->where('user_id',$user->id);
+        }
+
+        $comments = $comments_query->orderBy('created_at','desc')->get();
+
+        $info['comments'] = $comments;
+
+        return self::createJsonData(true,$info);
 
     }
 }
