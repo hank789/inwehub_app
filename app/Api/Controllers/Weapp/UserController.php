@@ -62,6 +62,8 @@ class UserController extends controller {
             );
         } else {
             $user = $registrar->create([
+                'mobile' => null,
+                'email'  => null,
                 'name' => $return['nickName'],
                 'gender' => $return['gender'],
                 'password' => md5(time()),
