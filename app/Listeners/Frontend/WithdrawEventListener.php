@@ -66,6 +66,9 @@ class WithdrawEventListener implements ShouldQueue {
             $withdraw->response_msg = '扣除余额失败';
             $withdraw->save();
         }else{
+            //计数
+            WithdrawLogic::incUserWithdrawCount($withdraw->user_id, Config::WX_TRANSFER);
+            WithdrawLogic::incUserWithdrawAmount($withdraw->user_id, Config::WX_TRANSFER,$withdraw->amount);
             //是否设置了自动提现
             $is_auto = Setting()->get('withdraw_auto',0);
             if($is_auto){

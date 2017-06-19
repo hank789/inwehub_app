@@ -66,9 +66,6 @@ class WithdrawLogic {
             $withdraw->finish_time = date('Y-m-d H:i:s');
             $withdraw->response_data = json_encode($response);
             $withdraw->save();
-            //记数
-            self::incUserWithdrawCount($withdraw->user_id, $channel);
-            self::incUserWithdrawAmount($withdraw->user_id, $channel,$withdraw->amount);
             return true;
         }
 
