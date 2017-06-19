@@ -64,7 +64,7 @@ class UserController extends controller {
                 'password' => md5(time()),
                 'visit_ip' => $request->getClientIp(),
                 'status' => 1,
-                'source' => 1
+                'source' => User::USER_SOURCE_WEAPP
             ]);
             $user->attachRole(2); //默认注册为普通用户角色
             $user->userData->email_status = 1;

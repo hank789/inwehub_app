@@ -70,6 +70,7 @@
                                         <th>档案完整度(%)</th>
                                         <th>注册时间</th>
                                         <th>更新时间</th>
+                                        <th>注册来源</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -86,6 +87,7 @@
                                             <td>{{ $user->getInfoCompletePercent() }}</td>
                                             <td>{{ $user->created_at }}</td>
                                             <td>{{ $user->updated_at }}</td>
+                                            <td>{{ $user->source ? '微信小程序':'APP' }}</td>
                                             <td><span class="label @if($user->status===0) label-danger @elseif($user->status===-1) label-default @elseif($user->status===1) label-success @endif">{{ trans_common_status($user->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
