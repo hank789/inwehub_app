@@ -411,7 +411,7 @@ class User extends Model implements AuthenticatableContract,
     //获得用户头像地址
     public function getAvatarUrl(){
         if($this->getMedia('avatar')->isEmpty()){
-            if ($this->userOauth && $this->userOauth->avatar) {
+            if ($this->userOauth->count() && $this->userOauth->last()->avatar) {
                 return $this->userOauth->avatar;
             }
             return config('image.user_default_avatar');
@@ -427,6 +427,7 @@ class User extends Model implements AuthenticatableContract,
             return $this->getMedia('resume');
         }
     }
+
 
 
 

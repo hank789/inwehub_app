@@ -61,9 +61,10 @@ class Test extends Command
      */
     public function handle()
     {
-        $amount = 1.4;
-        $s = intval($amount);
-        echo $s;
+        $user = User::find(1);
+        if ($user->userOauth->count() && $user->userOauth->last()->avatar) {
+            var_dump($user->userOauth->last()->avatar);
+        }
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
