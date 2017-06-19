@@ -13,7 +13,7 @@ use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 /**
  * @mixin \Eloquent
  */
-class WeappQuestion extends Model
+class WeappQuestion extends Model implements HasMedia
 {
     use BelongsToUserTrait, MorphManyCommentsTrait, HasMediaTrait;
     protected $table = 'weapp_questions';
