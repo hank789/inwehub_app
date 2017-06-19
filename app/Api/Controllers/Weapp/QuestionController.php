@@ -126,8 +126,9 @@ class QuestionController extends Controller {
         }
 
         $comments = $comments_query->orderBy('created_at','desc')->get();
-
-        $info['comments'] = $comments;
+        $res_data = [];
+        $res_data['question'] = $info;
+        $res_data['comments'] = $comments;
 
         return self::createJsonData(true,$info);
 
