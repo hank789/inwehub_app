@@ -71,7 +71,6 @@ class QuestionController extends Controller {
 
         $user = $request->user();
 
-        \Log::info('test',$user);
         $query = WeappQuestion::where('user_id',$user->id)->where('status',1);
 
         if($top_id){
