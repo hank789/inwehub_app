@@ -42,6 +42,7 @@ class UserController extends controller {
         //ex:{\"openId\":\"oW2D-0DjAQNvKiMqiDME5wpDdymE\",\"nickName\":\"hank\",\"gender\":1,\"language\":\"zh_CN\",\"city\":\"Pudong New District\",\"province\":\"Shanghai\",\"country\":\"CN\",\"avatarUrl\":\"http://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKibUNMkQ0sVd8jUPHGXia2G78608O9qs9eGAd06jeI2ZRHiaH4DbxI9ppsucxbemxuPawrBh95Sd3PA/0\",\"watermark\":{\"timestamp\":1497602544,\"appid\":\"wx5f163b8ab1c05647\"}}
         $return = $this->wxxcx->getUserInfo($encryptedData, $iv);
 
+        \Log::info('return',$return);
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
             ->where('openid',$userInfo['openid'])->first();
 
