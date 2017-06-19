@@ -16,7 +16,7 @@ use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 class WeappQuestion extends Model
 {
     use BelongsToUserTrait, MorphManyCommentsTrait, HasMediaTrait;
-    protected $table = 'questions';
+    protected $table = 'weapp_questions';
     protected $fillable = ['title', 'user_id', 'description', 'is_public', 'status'];
 
 

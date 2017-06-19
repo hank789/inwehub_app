@@ -21,7 +21,7 @@ class QuestionController extends Controller {
         $data = $request->all();
         $question = WeappQuestion::create([
             'title' => $data['description'],
-            'is_public' => $data['is_public'],
+            'is_public' => $data['is_public']?1:0,
             'status'    => 1
         ]);
         $image_file = 'image_file';
