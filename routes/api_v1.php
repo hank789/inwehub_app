@@ -198,6 +198,8 @@ Route::group(['namespace'=>'Weapp'], function() {
     Route::post('weapp/user/info','UserController@getWxUserInfo');
     //提问
     Route::post('weapp/question/store','QuestionController@store');
+    //添加提问图片
+    Route::post('weapp/question/add_image','QuestionController@addImage');
     //提问列表
     Route::post('weapp/question/allList','QuestionController@allList');
     //问题详情

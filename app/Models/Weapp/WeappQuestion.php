@@ -7,10 +7,15 @@
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 
-class Question extends Model
+/**
+ * @mixin \Eloquent
+ */
+class WeappQuestion extends Model
 {
-    use BelongsToUserTrait, MorphManyCommentsTrait;
+    use BelongsToUserTrait, MorphManyCommentsTrait, HasMediaTrait;
     protected $table = 'questions';
     protected $fillable = ['title', 'user_id', 'description', 'is_public', 'status'];
 
