@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Weapp;
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Models\Comment;
 use App\Models\WeappQuestion\WeappQuestion;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class QuestionController extends Controller {
 
         $data = $request->all();
         $question = WeappQuestion::create([
+            'user_id' => $request->user()->id,
             'title' => $data['description'],
             'is_public' => $data['is_public']?1:0,
             'status'    => 1
@@ -47,6 +49,9 @@ class QuestionController extends Controller {
 
         $data = $request->all();
         $question = WeappQuestion::find($data['id']);
+        if ($question->user_id != $request->user()->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
         $image_file = 'image_file';
         if($request->hasFile($image_file)){
             $file_0 = $request->file($image_file);
@@ -66,6 +71,7 @@ class QuestionController extends Controller {
 
         $user = $request->user();
 
+        \Log::info('test',$user);
         $query = WeappQuestion::where('user_id',$user->id)->where('status',1);
 
         if($top_id){
