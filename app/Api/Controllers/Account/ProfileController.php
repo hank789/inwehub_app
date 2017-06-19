@@ -3,6 +3,7 @@
 use App\Cache\UserCache;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
+use App\Logic\WithdrawLogic;
 use App\Models\Answer;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
@@ -336,6 +337,11 @@ class ProfileController extends Controller
         if($user_money){
             $data['total_money'] = $user_money->total_money;
             $data['pay_settlement_money'] = $user_money->settlement_money;
+        }
+        $data['withdraw_day_remain'] = $data['withdraw_day_limit'];
+        $withdraw_used = WithdrawLogic::getUserWithdrawCount($user->id,'wx_transfer');
+        if($withdraw_used){
+            $data['withdraw_day_remain'] -= $withdraw_used;
         }
 
         return self::createJsonData(true,$data);
