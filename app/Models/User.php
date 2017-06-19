@@ -412,7 +412,7 @@ class User extends Model implements AuthenticatableContract,
     public function getAvatarUrl(){
         if($this->getMedia('avatar')->isEmpty()){
             if ($this->userOauth->count() && $this->userOauth->last()->avatar) {
-                return $this->userOauth->avatar;
+                return $this->userOauth->last()->avatar;
             }
             return config('image.user_default_avatar');
         }else
