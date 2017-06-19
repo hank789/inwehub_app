@@ -43,7 +43,7 @@ class Wxxcx
         if ($errCode !=0 ) {
             throw new WxxcxException('encryptedData 解密失败');
         }
-        return $decodeData;
+        return json_decode($decodeData,true);
     }
 
     /**
