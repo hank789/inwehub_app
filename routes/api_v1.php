@@ -193,9 +193,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','nam
 });
 
 //微信小程序
-Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {
+Route::group(['namespace'=>'Weapp'], function() {
     //获取用户登陆信息
     Route::post('weapp/user/info','UserController@getWxUserInfo');
+});
+
+Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {
     //提问
     Route::post('weapp/question/store','QuestionController@store');
     //添加提问图片
