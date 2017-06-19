@@ -20,13 +20,8 @@ class UserController extends controller {
         $this->wxxcx = $wxxcx;
     }
 
-    /**
-     * 小程序登录获取用户信息
-     * @author 晚黎
-     * @date   2017-05-27T14:37:08+0800
-     * @return [type]                   [description]
-     */
-    public function getWxUserInfo(JWTAuth $JWTAuth,Registrar $registrar)
+    //小程序登录获取用户信息
+    public function getWxUserInfo(Request $request,JWTAuth $JWTAuth,Registrar $registrar)
     {
         //code 在小程序端使用 wx.login 获取
         $code = request('code', '');
@@ -67,6 +62,7 @@ class UserController extends controller {
                 'name' => $return['nickName'],
                 'gender' => $return['gender'],
                 'password' => md5(time()),
+                'visit_ip' => $request->getClientIp(),
                 'status' => 1,
                 'source' => 1
             ]);
