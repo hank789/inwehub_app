@@ -130,7 +130,7 @@ class QuestionController extends Controller {
         $res_data['question'] = $info;
         $res_data['comments'] = $comments;
 
-        return self::createJsonData(true,$info);
+        return self::createJsonData(true,$res_data);
 
     }
 }
