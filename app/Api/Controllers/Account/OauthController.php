@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Models\UserOauth;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,10 @@ class OauthController extends Controller
 
         $data = $request->all();
         $user = $request->user();
+        $object = UserOauth::where('auth_type',$type)->where('openid',$data['openid'])->first();
+        if($object && $object->user_id != $user->id){
+            throw new ApiException(ApiException::USER_OAUTH_BIND_OTHERS);
+        }
 
         $oauthData = UserOauth::updateOrCreate([
             'auth_type'=>$type,

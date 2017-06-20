@@ -14,11 +14,11 @@ class CreateUserOauthTable extends Migration
     {
         Schema::create('user_oauth', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->char("auth_type",64);
+            $table->char("auth_type",64)->index();
             $table->char("nickname",64);
             $table->char("avatar",255);
             $table->integer('user_id')->index()->default(0);              //用户UID
-            $table->string("openid",128);
+            $table->string("openid",128)->index();
             $table->string("access_token",64);
             $table->string("refresh_token",64)->nullable();
             $table->string("scope",64)->nullable();
