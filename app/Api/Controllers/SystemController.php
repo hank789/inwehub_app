@@ -43,8 +43,8 @@ class SystemController extends Controller {
         $this->validate($request, $validateRules);
         $data = $request->all();
         $user = $request->user();
-        //将该用户同类型的设备置为不可用状态
-        UserDevice::where('user_id',$user->id)->where('device_type',$data['device_type'])->update(['status'=>0]);
+        //将该用户所有类型的设备置为不可用状态
+        UserDevice::where('user_id',$user->id)->update(['status'=>0]);
         $user_device = UserDevice::firstOrCreate(['user_id'=>$user->id,
             'client_id'=>$data['client_id'],
             'device_type'=>$data['device_type']],
