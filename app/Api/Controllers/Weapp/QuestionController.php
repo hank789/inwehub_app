@@ -141,7 +141,7 @@ class QuestionController extends Controller {
 
     public function loadAnswer(Request $request){
         $validateRules = [
-            'description' => 'question_id|integer'
+            'question_id' => 'required|integer'
         ];
         $this->validate($request,$validateRules);
 
