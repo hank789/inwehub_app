@@ -39,7 +39,6 @@ class AnswerController extends Controller {
         $comment = Comment::create($data);
         $comment->source()->increment('comments');
         return self::createJsonData(true,['id'=>$comment->id]);
-
     }
 
 }

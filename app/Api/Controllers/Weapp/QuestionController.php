@@ -125,20 +125,10 @@ class QuestionController extends Controller {
             $comments_query = $comments_query->where('user_id',$user->id);
         }
 
-        $comments = $comments_query->orderBy('created_at','desc')->get();
         $res_data = [];
         $res_data['question'] = $info;
-        $res_data['comments'] = [];
-        foreach($comments as $comment) {
-            $res_data['comments'][] = [
-                'id' => $comment->id,
-                'content' => $comment->content,
-                'user_avatar_url' => $comment->user->getAvatarUrl(),
-                'user_id'   => $comment->user_id,
-                'user_name' => $comment->user->name,
-                'created_at' => (string)$comment->created_at
-            ];
-        }
+        $res_data['comments_count'] = $comments_query->orderBy('created_at','desc')->count();
+
         $res_data['images'] = [];
         if(!$question->getMedia('weapp')->isEmpty()){
             foreach($question->getMedia('weapp') as $image){
@@ -147,6 +137,46 @@ class QuestionController extends Controller {
         }
 
         return self::createJsonData(true,$res_data);
-
     }
+
+    public function loadAnswer(Request $request){
+        $validateRules = [
+            'description' => 'question_id|integer'
+        ];
+        $this->validate($request,$validateRules);
+
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+        $question_id = $request->input('question_id',0);
+        $question = WeappQuestion::find($question_id);
+        $user = $request->user();
+
+        $query = $question->comments()->where('status',1);
+        if (!$question->is_public && $user->id != $question->user_id){
+            $query = $query->where('user_id',$user->id);
+        }
+
+        if($top_id){
+            $query = $query->where('id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('id','<',$bottom_id);
+        }else{
+            $query = $query->where('id','>',0);
+        }
+        $comments = $query->orderBy('id','DESC')->paginate(10);
+
+        $list = [];
+        foreach($comments as $comment){
+            $list[] = [
+                'id' => $comment->id,
+                'content' => $comment->content,
+                'user_avatar_url' => $comment->user->getAvatarUrl(),
+                'user_id'   => $comment->user_id,
+                'user_name' => $comment->user->name,
+                'created_at' => (string)$comment->created_at
+            ];
+        }
+        return self::createJsonData(true,$list);
+    }
+
 }

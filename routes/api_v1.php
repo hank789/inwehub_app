@@ -205,6 +205,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
     Route::post('weapp/question/add_image','QuestionController@addImage');
     //提问列表
     Route::post('weapp/question/allList','QuestionController@allList');
+    //问题回复列表
+    Route::post('weapp/question/loadAnswer','QuestionController@loadAnswer');
+
+
     //问题详情
     Route::post('weapp/question/info','QuestionController@info');
     //我的提问列表
