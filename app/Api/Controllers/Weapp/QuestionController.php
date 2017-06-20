@@ -136,7 +136,7 @@ class QuestionController extends Controller {
                 'user_avatar_url' => $comment->user->getAvatarUrl(),
                 'user_id'   => $comment->user_id,
                 'user_name' => $comment->user->name,
-                'created_at' => $comment->created_at
+                'created_at' => (string)$comment->created_at
             ];
         }
         $res_data['images'] = [];
