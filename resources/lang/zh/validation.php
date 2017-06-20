@@ -105,7 +105,8 @@ return [
     */
     'attributes' => [
         'email'     => '邮箱',
-        'begin_time' => '开始时间'
+        'begin_time' => '开始时间',
+        'amount'    => '金额'
     ],
 
 ];

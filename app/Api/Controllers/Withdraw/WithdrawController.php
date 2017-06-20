@@ -22,10 +22,13 @@ class WithdrawController extends Controller {
         $max = Setting()->get('withdraw_per_max_money',2000);
 
         $validateRules = [
-            'amount' => 'required|numeric|between:'.$min.','.$max,
+            'amount' => 'required|numeric',
         ];
         $this->validate($request, $validateRules);
         $amount = $request->input('amount');
+        if ($amount < $min || $amount > $max) {
+            throw new ApiException(ApiException::WITHDRAW_AMOUNT_INVALID);
+        }
         $user = $request->user();
         //是否绑定了微信
         $user_oauth = UserOauth::where('user_id',$user->id)->where('auth_type','weixin')->first();
