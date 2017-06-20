@@ -128,7 +128,23 @@ class QuestionController extends Controller {
         $comments = $comments_query->orderBy('created_at','desc')->get();
         $res_data = [];
         $res_data['question'] = $info;
-        $res_data['comments'] = $comments;
+        $res_data['comments'] = [];
+        foreach($comments as $comment) {
+            $res_data['comments'][] = [
+                'id' => $comment->id,
+                'content' => $comment->content,
+                'user_avatar_url' => $comment->user->getAvatarUrl(),
+                'user_id'   => $comment->user_id,
+                'user_name' => $comment->user->name,
+                'created_at' => $comment->created_at
+            ];
+        }
+        $res_data['images'] = [];
+        if(!$question->getMedia('weapp')->isEmpty()){
+            foreach($question->getMedia('weapp') as $image){
+                $res_data['images'][] = $image->getUrl();
+            }
+        }
 
         return self::createJsonData(true,$res_data);
 
