@@ -181,7 +181,6 @@ return [
         Mews\Purifier\PurifierServiceProvider::class,
         Bican\Roles\RolesServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
-        SocialiteProviders\Manager\ServiceProvider::class,
         Sentry\SentryLaravel\SentryLaravelServiceProvider::class,
         Jacobcyl\AliOSS\AliOssServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
