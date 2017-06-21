@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\Registrar;
 use Tymon\JWTAuth\JWTAuth;
 use App\Models\UserOauth;
+use Illuminate\Support\Facades\Session;
 
 /**
  * @author: wanghui
@@ -72,7 +73,7 @@ class WechatController extends Controller
 
     public function oauth(Request $request){
         Log::info('oauth_request');
-        $user = $_SESSION['wechat_user'];
+        $user = session('wechat_user');
         // 未登录
         if (empty($user)) {
             $wechat = app('wechat');
@@ -91,7 +92,7 @@ class WechatController extends Controller
         // 获取 OAuth 授权结果用户信息
         $user = $oauth->user();
         $userInfo = $user->toArray();
-        $_SESSION['wechat_user'] = $userInfo;
+        Session::put("wechat_user",$userInfo);
 
         //判断用户是否已注册完成,如未完成,走注册流程
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
@@ -129,9 +130,8 @@ class WechatController extends Controller
             );
         }
 
-        $targetUrl = empty($_SESSION['target_url']) ? '/' : $_SESSION['target_url'];
 
-        Log::info('oauth_callback_data',[$_SESSION['wechat_user'],$targetUrl]);
+        Log::info('oauth_callback_data',[session('wechat_user')]);
     }
 
 
