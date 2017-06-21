@@ -192,6 +192,7 @@ return [
         Spatie\Backup\BackupServiceProvider::class,
         App\Third\Push\Getui\GetuiServiceProvider::class,
         App\Third\Weapp\WxxcxServiceProvider::class,
+        Overtrue\LaravelWechat\ServiceProvider::class,
     ],
 
     /*
@@ -250,6 +251,7 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'Getui' => App\Third\Push\Getui\Facades\Getui::class,
+        'EasyWeChat' => Overtrue\LaravelWechat\Facade::class,
     ],
 
 ];

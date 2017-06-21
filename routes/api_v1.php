@@ -216,5 +216,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
     //回答
     Route::post('weapp/answer/store','AnswerController@store');
 
+});
 
+//微信公众号
+Route::group(['namespace'=>'Wechat'], function() {
+    Route::any('/wechat', 'WechatController@serve');
 });

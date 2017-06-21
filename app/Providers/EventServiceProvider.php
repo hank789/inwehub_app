@@ -13,12 +13,7 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        \SocialiteProviders\Manager\SocialiteWasCalled::class => [
-            'SocialiteProviders\QQ\QqExtendSocialite@handle',
-            'SocialiteProviders\Weibo\WeiboExtendSocialite@handle',
-            'SocialiteProviders\Weixin\WeixinExtendSocialite@handle',
-            'SocialiteProviders\WeixinWeb\WeixinWebExtendSocialite@handle',
-        ]
+
     ];
 
     /**
