@@ -106,6 +106,7 @@ class User extends Model implements AuthenticatableContract,
 
     const USER_SOURCE_APP = 0;//用户来源:app注册
     const USER_SOURCE_WEAPP = 1;//用户来源:微信小程序自动注册
+    const USER_SOURCE_WEIXIN_GZH = 2;//用户来源:微信公众号
 
     public static function boot()
     {

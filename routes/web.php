@@ -14,3 +14,11 @@ Route::group(['namespace'=>'Web'], function() {
     Route::get('/service/about',['as'=>'website.service.about','uses'=>'ServiceController@about']);
 
 });
+
+
+//微信公众号
+Route::group(['namespace'=>'Wechat'], function() {
+    Route::any('/wechat', 'WechatController@serve');
+    Route::get('/wechat/oauth', 'WechatController@oauth');
+    Route::any('/wechat/oauthCallback', 'WechatController@oauthCallback');
+});

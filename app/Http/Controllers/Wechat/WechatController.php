@@ -1,7 +1,11 @@
-<?php namespace App\Api\Controllers\Wechat;
-use App\Api\Controllers\Controller;
+<?php namespace App\Http\Controllers\Wechat;
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use Log;
 use Illuminate\Http\Request;
+use App\Services\Registrar;
+use Tymon\JWTAuth\JWTAuth;
+use App\Models\UserOauth;
 
 /**
  * @author: wanghui
@@ -67,19 +71,64 @@ class WechatController extends Controller
 
 
     public function oauth(Request $request){
-        $wechat = app('wechat');
-        return $wechat->oauth->scopes(['snsapi_userinfo'])
-            ->setRequest($request)
-            ->redirect();
+        Log::info('oauth_request');
+        $user = $_SESSION['wechat_user'];
+        // 未登录
+        if (empty($user)) {
+            $wechat = app('wechat');
+            return $wechat->oauth->scopes(['snsapi_userinfo'])
+                ->setRequest($request)
+                ->redirect();
+        } else {
+            Log::info('已等录');
+        }
     }
 
-    public function oauthCallback(Request $request){
+    public function oauthCallback(Request $request,Registrar $registrar){
         Log::info('oauth_callback',$request->all());
         $wechat = app('wechat');
         $oauth = $wechat->oauth;
         // 获取 OAuth 授权结果用户信息
         $user = $oauth->user();
-        $_SESSION['wechat_user'] = $user->toArray();
+        $userInfo = $user->toArray();
+        $_SESSION['wechat_user'] = $userInfo;
+
+        //判断用户是否已注册完成,如未完成,走注册流程
+        $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
+            ->where('openid',$userInfo['id'])->first();
+
+        if ($oauthData) {
+            $user = User::find($oauthData->user_id);
+            $oauthData->update(
+                [
+                    'openid'   => $userInfo['id'],
+                    'nickname'=>$userInfo['nickname'],
+                    'avatar'=>$userInfo['avatar'],
+                    'access_token'=>$userInfo['token'],
+                    'refresh_token'=>'',
+                    'unionid' => isset($userInfo['original']['unionid'])?$userInfo['original']['unionid']:'',
+                    'expires_in'=>3600,
+                    'full_info'=>json_encode($userInfo['original']),
+                    'scope'=>'snsapi_userinfo'
+                ]
+            );
+        } else {
+            UserOauth::create(
+                [
+                    'auth_type'=>UserOauth::AUTH_TYPE_WEIXIN_GZH,
+                    'user_id'=> 0,
+                    'openid'   => $userInfo['id'],
+                    'nickname'=>$userInfo['nickname'],
+                    'avatar'=>$userInfo['avatar'],
+                    'access_token'=>$userInfo['token'],
+                    'refresh_token'=>'',
+                    'expires_in'=>3600,
+                    'full_info'=>json_encode($userInfo['original']),
+                    'scope'=>'snsapi_userinfo'
+                ]
+            );
+        }
+
         $targetUrl = empty($_SESSION['target_url']) ? '/' : $_SESSION['target_url'];
 
         Log::info('oauth_callback_data',[$_SESSION['wechat_user'],$targetUrl]);
