@@ -25,8 +25,9 @@ class WechatController extends Controller
             return "欢迎关注 Inwehub！";
         });
 
-        Log::info('return response.');
+        $return = $wechat->server->serve();
+        Log::info('return response.',[$return]);
+        return $return;
 
-        return $wechat->server->serve();
     }
 }
