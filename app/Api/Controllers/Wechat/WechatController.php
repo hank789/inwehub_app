@@ -24,7 +24,15 @@ class WechatController extends Controller
         $wechat->server->setMessageHandler(function($message){
             switch ($message->MsgType) {
                 case 'event':
-                    return '收到事件消息';
+                    //'收到事件消息';
+                    switch ($message->Event) {
+                        case 'subscribe':
+                            return '欢迎关注 Inwehub!';
+                            break;
+                        default:
+                            return '欢迎关注 Inwehub!';
+                            break;
+                    }
                     break;
                 case 'text':
                     return '收到文字消息';
@@ -50,11 +58,6 @@ class WechatController extends Controller
                     break;
             }
         });
-        try {
-            $return = $wechat->server->serve();
-            return $return->send();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-        }
+        
     }
 }
