@@ -19,6 +19,7 @@ class WechatController extends Controller
     public function serve()
     {
         Log::info('request arrived.');
+
         $wechat = app('wechat');
         $wechat->server->setMessageHandler(function($message){
             switch ($message->MsgType) {
@@ -49,5 +50,11 @@ class WechatController extends Controller
                     break;
             }
         });
+        try {
+            $return = $wechat->server->serve();
+            return $return->send();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 }
