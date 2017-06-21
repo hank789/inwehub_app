@@ -58,6 +58,11 @@ class WechatController extends Controller
                     break;
             }
         });
-        
+        try {
+            $return = $wechat->server->serve();
+            return $return->send();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 }
