@@ -44,7 +44,7 @@ class AddMenu extends Command
                     [
                         "type" => "view",
                         "name" => "授权登陆",
-                        "url"  => "http://api.ywhub.com/api/wechat/oauth"
+                        "url"  => "http://api.ywhub.com/wechat/oauth"
                     ],
                     [
                         "type" => "click",
