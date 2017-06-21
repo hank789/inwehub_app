@@ -223,8 +223,4 @@ Route::group(['namespace'=>'Wechat'], function() {
     Route::any('/wechat', 'WechatController@serve');
     Route::get('/wechat/oauth', 'WechatController@oauth');
     Route::any('/wechat/oauthCallback', 'WechatController@oauthCallback');
-
-    //添加菜单,只有管理员才能操作
-    Route::get('/wechat/addMenus', 'WechatController@addMenus')->middleware(['auth','auth.admin']);
-
 });
