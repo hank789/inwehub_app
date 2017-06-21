@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Wechat;
 use App\Api\Controllers\Controller;
 use Log;
+use Illuminate\Http\Request;
 
 /**
  * @author: wanghui
@@ -18,8 +19,6 @@ class WechatController extends Controller
      */
     public function serve()
     {
-        Log::info('request arrived.');
-
         $wechat = app('wechat');
         $wechat->server->setMessageHandler(function($message){
             switch ($message->MsgType) {
@@ -64,5 +63,17 @@ class WechatController extends Controller
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
+    }
+
+
+    public function oauth(Request $request){
+        $wechat = app('wechat');
+        return $wechat->oauth->scopes(['snsapi_userinfo'])
+            ->setRequest($request)
+            ->redirect();
+    }
+
+    public function oauthCallback(Request $request){
+        Log::info('oauth_callback',$request->all());
     }
 }

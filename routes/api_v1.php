@@ -221,4 +221,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
 //微信公众号
 Route::group(['namespace'=>'Wechat'], function() {
     Route::any('/wechat', 'WechatController@serve');
+    Route::get('/wechat/oauth', 'WechatController@oauth');
+    Route::any('/wechat/oauthCallback', 'WechatController@oauthCallback');
+
 });
