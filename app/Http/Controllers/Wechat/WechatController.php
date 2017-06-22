@@ -81,23 +81,24 @@ class WechatController extends Controller
                 ->setRequest($request)
                 ->redirect();
         } else {
-            Log::info('已等录');
+            //已登录跳转到内页
+            return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$user['id'].'&token='.$user['app_token']);
         }
     }
 
-    public function oauthCallback(Request $request,Registrar $registrar){
+    public function oauthCallback(Request $request,JWTAuth $JWTAuth){
         Log::info('oauth_callback',$request->all());
         $wechat = app('wechat');
         $oauth = $wechat->oauth;
         // 获取 OAuth 授权结果用户信息
         $user = $oauth->user();
         $userInfo = $user->toArray();
-        Session::put("wechat_user",$userInfo);
 
         //判断用户是否已注册完成,如未完成,走注册流程
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
             ->where('openid',$userInfo['id'])->first();
 
+        $token = '';
         if ($oauthData) {
             $user = User::find($oauthData->user_id);
             $oauthData->update(
@@ -113,6 +114,10 @@ class WechatController extends Controller
                     'scope'=>'snsapi_userinfo'
                 ]
             );
+            if ($user){
+                $token = $JWTAuth->fromUser($user);
+                $userInfo['app_token'] = $token;
+            }
         } else {
             UserOauth::create(
                 [
@@ -125,13 +130,14 @@ class WechatController extends Controller
                     'refresh_token'=>'',
                     'expires_in'=>3600,
                     'full_info'=>json_encode($userInfo['original']),
+                    'unionid' => isset($userInfo['original']['unionid'])?$userInfo['original']['unionid']:'',
                     'scope'=>'snsapi_userinfo'
                 ]
             );
         }
+        Session::put("wechat_user",$userInfo);
 
-
-        Log::info('oauth_callback_data',[session('wechat_user')]);
+        return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token);
     }
 
 

@@ -48,7 +48,8 @@ class ApiException extends Exception
     const USER_RESUME_UPLOAD_LIMIT = 1111;
     const USER_SUBMIT_PROJECT_NEED_COMPANY = 1112;
     const USER_OAUTH_BIND_OTHERS = 1113;
-
+    const USER_WEIXIN_UNOAUTH = 1114;
+    const USER_WEIXIN_NEED_REGISTER = 1115;
 
 
     //问答模块响应码
@@ -100,6 +101,8 @@ class ApiException extends Exception
         self::USER_RESUME_UPLOAD_LIMIT => '请明天再来上传简历信息',
         self::USER_SUBMIT_PROJECT_NEED_COMPANY => '您的账户类型，暂无法使用此功能，如需申请企业账户请发送基本信息到hi@inwehub.com',
         self::USER_OAUTH_BIND_OTHERS => '该微信号已经绑定过其他InweHub账号，请更换其他微信账号绑定。如有疑惑请联系客服小哈hi@inwehub.com',
+        self::USER_WEIXIN_UNOAUTH    => '微信未授权',
+        self::USER_WEIXIN_NEED_REGISTER => '需要注册',
 
 
         //问答模块

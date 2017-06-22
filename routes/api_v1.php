@@ -15,11 +15,15 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('login', 'AuthController@login');
     Route::post('refresh', ['uses'=>'AuthController@refreshToken']);
 
-
     Route::post('forgot', 'AuthController@forgetPassword');
     Route::post('sendPhoneCode', 'AuthController@sendPhoneCode');
 
     Route::post('logout', 'AuthController@logout')->middleware('jwt.auth');
+
+    //微信公众号注册验证
+    Route::post('wxgzh/check_rg', 'AuthController@checkWeiXinGzh');
+    //微信公众号注册
+    Route::post('wxgzh/register', 'AuthController@registerWeiXinGzh');
 
 });
 

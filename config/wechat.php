@@ -54,6 +54,7 @@ return [
          'only_wechat_browser' => false,
          'scopes'   => array_map('trim', explode(',', env('WECHAT_OAUTH_SCOPES', 'snsapi_userinfo'))),
          'callback' => env('WECHAT_OAUTH_CALLBACK', '/examples/oauth_callback.php'),
+         'callback_redirect_url' => env('WECHAT_OAUTH_CALLBACK_REDIRECT_URL', 'https://www.baidu.com/'),
     ],
 
     /*

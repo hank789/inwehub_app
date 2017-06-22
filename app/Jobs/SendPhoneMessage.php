@@ -79,7 +79,7 @@ class SendPhoneMessage implements ShouldQueue
         $sub_code = isset($response->sub_code) ? $response->sub_code : null;
         $sub_msg = isset($response->sub_msg) ? $response->sub_msg : null;
 
-        Cache::put(self::getCacheKey($this->type,$this->phone), $this->code, 60);
+        Cache::put(self::getCacheKey($this->type,$this->phone), $this->code, 600);
 
         if ($result && $result->success == true) {
             // 发送成功～
