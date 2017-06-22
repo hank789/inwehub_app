@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Pay\Order;
+use App\Models\UserOauth;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Payment\Client\Charge;
@@ -22,7 +23,7 @@ class PayController extends Controller {
         $validateRules = [
             'app_id' => 'required',
             'amount' => 'required|integer',
-            'pay_channel' => 'required|in:alipay,wxpay,appleiap',
+            'pay_channel' => 'required|in:alipay,wxpay,appleiap,wx_pub',
             'pay_object_type' => 'required|in:ask'
         ];
         $this->validate($request, $validateRules);
@@ -47,6 +48,24 @@ class PayController extends Controller {
                 $config = config('payment')['wechat'];
                 $channel = Config::WX_CHANNEL_APP;
                 $channel_type = Order::PAY_CHANNEL_WX_APP;
+                break;
+            case 'wx_pub':
+                //微信公众号支付
+                if(Setting()->get('pay_method_weixin',1) != 1){
+                    throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
+                }
+                //是否绑定了微信
+                $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
+                    ->where('user_id',$loginUser->id)->first();
+                if(!$oauthData) {
+                    throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
+                }
+                if (config('app.env') != 'production') {
+                    $amount = 0.01;
+                }
+                $config = config('payment')['wechat'];
+                $channel = Config::WX_CHANNEL_PUB;
+                $channel_type = Order::PAY_CHANNEL_WX_PUB;
                 break;
             case 'alipay':
                 if(Setting()->get('pay_method_ali',0) != 1){
@@ -108,6 +127,13 @@ class PayController extends Controller {
                 $ret = ['productid'=>$iap_id];
                 $return['iap_ids'] = array_values($ids);
             } else {
+                switch($pay_channel){
+                    case 'wx_pub':
+                        //微信公众号支付
+                        $payData['openid'] = $oauthData->openid;
+                        $payData['product_id'] = $order->id;
+                        break;
+                }
                 $ret = Charge::run($channel, $config, $payData);
             }
             $order->status = Order::PAY_STATUS_PROCESS;
