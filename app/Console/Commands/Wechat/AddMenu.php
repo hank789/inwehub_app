@@ -32,25 +32,42 @@ class AddMenu extends Command
     {
         $wechat = app('wechat');
         $menu = $wechat->menu;
+        $url = config('app.url');
+        $mobile_url = config('app.mobile_url');
         $buttons = [
             [
-                "type" => "click",
-                "name" => "今日歌曲",
-                "key"  => "V1001_TODAY_MUSIC"
-            ],
-            [
-                "name"       => "菜单",
+                "name"       => "平台服务",
                 "sub_button" => [
                     [
                         "type" => "view",
-                        "name" => "授权登陆",
-                        "url"  => "http://api.ywhub.com/wechat/oauth"
+                        "name" => "马上提问",
+                        "url"  => $url."/wechat/oauth?redirect=".$mobile_url
                     ],
                     [
-                        "type" => "click",
-                        "name" => "赞一下我们",
-                        "key" => "V1001_GOOD"
+                        "type" => "view",
+                        "name" => "顾问名片",
+                        "url" => $url."/wechat/oauth?redirect=".$mobile_url.'#my'
                     ],
+                    [
+                        "type" => "view",
+                        "name" => "推荐专家",
+                        "url" => "http://cn.mikecrm.com/tgx3vq8"
+                    ],
+                    [
+                        "type" => "view",
+                        "name" => "注册申请",
+                        "url" => "http://cn.mikecrm.com/ovYy1u4"
+                    ],
+                ],
+            ],
+            [
+                "name"       => "关于我们",
+                "sub_button" => [
+                    [
+                        "type" => "view",
+                        "name" => "公司官网",
+                        "url"  => "https://www.inwehub.com"
+                    ]
                 ],
             ],
         ];
