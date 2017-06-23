@@ -22,7 +22,7 @@ class WechatController extends Controller
      *
      * @return string
      */
-    public function serve()
+    public function serve(Request $request)
     {
         $wechat = app('wechat');
         $wechat->server->setMessageHandler(function($message){
