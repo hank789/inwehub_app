@@ -9,6 +9,7 @@ use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\Push;
 use App\Models\UserData;
 use App\Models\UserDevice;
+use App\Models\UserOauth;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
@@ -64,13 +65,29 @@ class SystemEventListener implements ShouldQueue
             'content' => json_encode($event->content),
             'payload' => $event->payload
         ];
+
         foreach($devices as $device){
             $tmp_id = $event->template_id;
             if($device->device_type == UserDevice::DEVICE_TYPE_IOS){
                 $tmp_id = 4;
             }
             Getui::pushMessageToSingle($device->client_id,$data,$tmp_id);
-
+        }
+        //微信通知
+        $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
+            ->where('user_id',$event->user->id)->first();
+        $templateId = get_wechat_notice_template_id($event->payload['object_type']);
+        if($oauthData && $templateId) {
+            $wechat = app('wechat');
+            $notice = $wechat->notice;
+            $wx_notice_data = [
+                "first"  => $event->title,
+                "question"   => $event->body,
+                "remark" => ""
+            ];
+            $url = get_app_object_url($event->payload['object_type'],$event->payload['object_id']);
+            $result = $notice->uses($templateId)->withUrl($url)->andData($wx_notice_data)->andReceiver($oauthData->openid)->send();
+            var_dump($result);
         }
     }
 

@@ -504,5 +504,34 @@ if (!function_exists('get_pay_config')){
         ];
     }
 }
+if (!function_exists('get_app_object_url')) {
+    function get_app_object_url($object_type,$object_id){
+        $url = config('app.mobile_url');
+        switch($object_type){
+            case 'question':
+                $url .= '/ask/'.$object_id;
+                break;
+            case 'answer':
+                $url .= '/answer/'.$object_id;
+                break;
+        }
+        return $url;
+    }
+}
+
+if (!function_exists('get_wechat_notice_template_id')){
+    function get_wechat_notice_template_id($object_type){
+        $template_id = '';
+        switch($object_type){
+            case 'question':
+                $template_id = config('wechat.notice_template.question');
+                break;
+            case 'answer':
+                $template_id = config('wechat.notice_template.answer');
+                break;
+        }
+        return $template_id;
+    }
+}
 
 

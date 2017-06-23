@@ -56,6 +56,11 @@ return [
          'callback' => env('WECHAT_OAUTH_CALLBACK', '/examples/oauth_callback.php'),
          'callback_redirect_url' => env('WECHAT_OAUTH_CALLBACK_REDIRECT_URL', 'https://www.baidu.com/'),
     ],
+    //消息模板id
+    'notice_template' => [
+        'question' => env('WECHAT_NOTICE_TEMPLATE_ID_QUESTION',''),
+        'answer'   => env('WECHAT_NOTICE_TEMPLATE_ID_ANSWER',''),
+    ],
 
     /*
      * 微信支付
