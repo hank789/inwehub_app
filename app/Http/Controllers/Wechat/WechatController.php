@@ -81,8 +81,9 @@ class WechatController extends Controller
                 ->setRequest($request)
                 ->redirect();
         } else {
+            $redirect = $request->get('redirect',config('app.mobile_url'));
             //已登录跳转到内页
-            return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$user['id'].'&token='.$user['app_token']);
+            return redirect($redirect.'?openid='.$user['id'].'&token='.$user['app_token']);
         }
     }
 
@@ -99,6 +100,7 @@ class WechatController extends Controller
             ->where('openid',$userInfo['id'])->first();
 
         $token = '';
+        $userInfo['app_token'] = $token;
         if ($oauthData) {
             $user = User::find($oauthData->user_id);
             $oauthData->update(
