@@ -19,7 +19,6 @@ class PayController extends Controller {
 
     public function request(Request $request)
     {
-        \Log::info('pay_request_1',$request->all());
         $validateRules = [
             'app_id' => 'required',
             'amount' => 'required|integer',
@@ -32,7 +31,7 @@ class PayController extends Controller {
         if(RateLimiter::instance()->increase('pay:request',$loginUser->id,2,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
-        \Log::info('pay_request_2',$request->all());
+        \Log::info('pay_request',$request->all());
 
 
         $data = $request->all();
