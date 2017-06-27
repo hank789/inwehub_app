@@ -24,6 +24,7 @@ class NotifyController extends Controller
                 break;
             case 'wx_pub_charge':
                 $config = config('payment')['wechat_pub'];
+                $type = 'wx_charge';
                 break;
             case 'ali_charge':
                 return 'false';
@@ -38,6 +39,7 @@ class NotifyController extends Controller
             //$retData = Notify::getNotifyData($type, $config);// 获取第三方的原始数据，未进行签名检查
             $ret = Notify::run($type, $config, $callback);// 处理回调，内部进行了签名检查
         } catch (PayException $e) {
+            \Log::error('wx_pay_notify_error',['msg'=>$e->getMessage()]);
             echo $e->errorMessage();
             exit;
         }
