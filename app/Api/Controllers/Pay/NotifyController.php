@@ -22,6 +22,9 @@ class NotifyController extends Controller
             case 'wx_charge':
                 $config = config('payment')['wechat'];
                 break;
+            case 'wx_pub_charge':
+                $config = config('payment')['wechat_pub'];
+                break;
             case 'ali_charge':
                 return 'false';
                 break;

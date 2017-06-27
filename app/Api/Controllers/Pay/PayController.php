@@ -62,7 +62,7 @@ class PayController extends Controller {
                 if (config('app.env') != 'production') {
                     $amount = 0.01;
                 }
-                $config = config('payment')['wechat'];
+                $config = config('payment')['wechat_pub'];
                 $channel = Config::WX_CHANNEL_PUB;
                 $channel_type = Order::PAY_CHANNEL_WX_PUB;
                 break;
