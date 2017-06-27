@@ -286,7 +286,7 @@ class AuthController extends Controller
         }
 
         //验证手机验证码
-        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('register',$mobile));
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('wx_gzh_register',$mobile));
         $code = $request->input('code');
         if($code_cache != $code){
             throw new ApiException(ApiException::ARGS_YZM_ERROR);
