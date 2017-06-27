@@ -410,6 +410,8 @@ class AuthController extends Controller
             $rcode->register_uid = $user->id;
             $rcode->save();
         }
+        $oauthData->user_id = $user->id;
+        $oauthData->save();
         $message = '注册成功!';
         $this->credit($user->id,'register');
         //注册事件通知
