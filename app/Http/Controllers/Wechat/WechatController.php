@@ -71,25 +71,12 @@ class WechatController extends Controller
     }
 
 
-    public function oauth(Request $request){
+    public function oauth(Request $request,JWTAuth $JWTAuth){
         Log::info('oauth_request');
-        $user = session('wechat_user');
-        // 未登录
-        if (empty($user)) {
-            $wechat = app('wechat');
-            return $wechat->oauth->scopes(['snsapi_userinfo'])
-                ->setRequest($request)
-                ->redirect();
-        } else {
-            $token = $user['app_token'];
-            if($token) {
-                $redirect = $request->get('redirect',config('app.mobile_url'));
-                //已登录跳转到内页
-                return redirect($redirect.'?openid='.$user['id'].'&token='.$user['app_token']);
-            } else {
-                return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$user['id'].'&token='.$token);
-            }
-        }
+        $wechat = app('wechat');
+        return $wechat->oauth->scopes(['snsapi_userinfo'])
+            ->setRequest($request)
+            ->redirect();
     }
 
     public function oauthCallback(Request $request,JWTAuth $JWTAuth){
@@ -142,7 +129,6 @@ class WechatController extends Controller
                 ]
             );
         }
-        Session::put("wechat_user",$userInfo);
 
         return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token);
     }
