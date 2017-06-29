@@ -25,14 +25,14 @@ class WechatNotice {
                 $title = '您好，已有专家响应了您的专业问答任务';
                 $keyword2 = $object->user->name;
                 $remark = '可点击详情查看处理进度';
-                $target_url = $url.'#/question/'.$object->question->id;
+                $target_url = $url.'#/ask/'.$object->question->id;
                 $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
                 break;
             case 'question_answered':
                 $title = '您好，已有专家回答了您的专业问答任务';
                 $keyword2 = $object->user->name;
                 $remark = '可点击详情查看回答内容';
-                $target_url = $url.'#/question/'.$object->question->id;
+                $target_url = $url.'#/ask/'.$object->question->id;
                 $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
                 break;
             default:
