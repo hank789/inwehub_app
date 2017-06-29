@@ -108,7 +108,7 @@ class ApiException extends Exception
 
 
         //问答模块
-        self::ASK_NEED_USER_INFORMATION => '稍微花点时间,完成下个人信息,平台为您匹配专家会更精确哦!',
+        self::ASK_NEED_USER_INFORMATION => '稍微花点时间补充下个人信息，平台为您匹配专家才会更精准额！个人信息完整度90%以上才能解锁问答等功能。',
         self::ASK_ANSWER_PROMISE_TIME_INVALID => '格式错误',
         self::ASK_QUESTION_NOT_EXIST => '问题不存在',
         self::ASK_QUESTION_ALREADY_CONFIRMED => '手慢了一步，已经有专家赶在您前面确认应答了，下次加油啊！',
