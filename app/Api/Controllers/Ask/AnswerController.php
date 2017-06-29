@@ -56,13 +56,12 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
 
-        if($question_invitation->status == QuestionInvitation::STATUS_ANSWERED){
-            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
-        }
-
         $this->validate($request,$this->validateRules);
         $lock_key = 'question_answer_action';
         RateLimiter::instance()->lock_acquire($lock_key,1,20);
+        if($question_invitation->status == QuestionInvitation::STATUS_ANSWERED){
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
+        }
         //检查问题是否已经被其它人回答
         $exit_answers = Answer::where('question_id',$question_id)->whereIn('status',[1,3])->where('user_id','!=',$loginUser->id)->get()->last();
         if($exit_answers){
@@ -104,8 +103,10 @@ class AnswerController extends Controller
                 $data['status'] = Answer::ANSWER_STATUS_FINISH;
             }
             $answer = Answer::create($data);
+        }elseif($promise_time){
+            //重复响应
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_SELF_CONFIRMED);
         }
-        RateLimiter::instance()->lock_release($lock_key);
 
         if($answer){
             if(empty($promise_time)){
@@ -158,6 +159,7 @@ class AnswerController extends Controller
                 }
                 /*修改问题邀请表的回答状态*/
                 QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_ANSWERED]);
+                RateLimiter::instance()->lock_release($lock_key);
 
                 $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
                 $message = '回答成功!';
@@ -181,6 +183,8 @@ class AnswerController extends Controller
                 QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_CONFIRMED]);
                 /*记录动态*/
                 $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText());
+                RateLimiter::instance()->lock_release($lock_key);
+
                 //推送通知
                 event(new Push($question->user,'您的提问专家已响应,点击查看',$question->title,['object_type'=>'question','object_id'=>$question->id]));
                 //微信通知
