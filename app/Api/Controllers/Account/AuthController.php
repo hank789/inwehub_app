@@ -326,7 +326,7 @@ class AuthController extends Controller
         }
 
         //如果此微信号已绑定用户
-        if($oauthData->user_id){
+        if($oauthData->user_id && $user){
             $token = $JWTAuth->fromUser($user);
             return static::createJsonData(true,['token'=>$token]);
         }
