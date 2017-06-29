@@ -62,6 +62,10 @@ class QuestionController extends Controller
         if(empty($question_invitation) && $request->user()->id != $question->user->id){
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        //已经拒绝了
+        if($question_invitation && $question_invitation->status == QuestionInvitation::STATUS_REJECTED){
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_REJECTED);
+        }
         //虽然邀请他回答了,但是已被其他人回答了
         if($request->user()->id != $question->user->id){
             $question_invitation_confirmed = QuestionInvitation::where('question_id','=',$question->id)->whereIn('status',[QuestionInvitation::STATUS_ANSWERED,QuestionInvitation::STATUS_CONFIRMED])->first();
@@ -342,7 +346,7 @@ class QuestionController extends Controller
         /*记录动态*/
         $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->getContentText());
         /*修改问题邀请表的回答状态*/
-        QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>2]);
+        QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_REJECTED]);
 
         return self::createJsonData(true,['question_id'=>$data['question_id'],'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
     }

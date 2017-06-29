@@ -37,6 +37,7 @@ class QuestionInvitation extends Model
     const STATUS_PENDING = 0;
     const STATUS_CONFIRMED = 1;
     const STATUS_ANSWERED  = 2;
+    const STATUS_REJECTED = 3;
 
     public function question(){
         return $this->belongsTo('App\Models\Question');
