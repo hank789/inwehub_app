@@ -41,12 +41,12 @@ class AddMenu extends Command
                     [
                         "type" => "view",
                         "name" => "马上提问",
-                        "url"  => $url."/wechat/oauth?redirect=".$mobile_url
+                        "url"  => $url."/wechat/oauth?redirect=/home"
                     ],
                     [
                         "type" => "view",
                         "name" => "顾问名片",
-                        "url" => $url."/wechat/oauth?redirect=".$mobile_url.'#my'
+                        "url" => $url."/wechat/oauth?redirect=/my"
                     ],
                     [
                         "type" => "view",
