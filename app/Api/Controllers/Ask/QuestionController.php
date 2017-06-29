@@ -65,7 +65,7 @@ class QuestionController extends Controller
         //虽然邀请他回答了,但是已被其他人回答了
         if($request->user()->id != $question->user->id){
             $question_invitation_confirmed = QuestionInvitation::where('question_id','=',$question->id)->whereIn('status',[QuestionInvitation::STATUS_ANSWERED,QuestionInvitation::STATUS_CONFIRMED])->first();
-            if($question_invitation_confirmed->user_id != $request->user()->id) {
+            if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $request->user()->id) {
                 throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
             }
         }
