@@ -70,7 +70,7 @@ class AuthController extends Controller
                 } else {
                     //验证已注册用户
                     if(!$user && Setting()->get('registration_code_open',1)){
-                        throw new ApiException(ApiException::USER_NOT_FOUND);
+                        throw new ApiException(ApiException::USER_WEIXIN_NOT_FOUND);
                     }
                 }
                 break;
