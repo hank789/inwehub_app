@@ -50,7 +50,7 @@ class ApiException extends Exception
     const USER_OAUTH_BIND_OTHERS = 1113;
     const USER_WEIXIN_UNOAUTH = 1114;
     const USER_WEIXIN_NEED_REGISTER = 1115;
-    const USER_WEIXIN_NOT_FOUND = 1116;
+    const USER_WEIXIN_REGISTER_NEED_CODE = 1116;
 
 
     //问答模块响应码
@@ -104,7 +104,7 @@ class ApiException extends Exception
         self::USER_OAUTH_BIND_OTHERS => '该微信号已经绑定过其他InweHub账号，请更换其他微信账号绑定。如有疑惑请联系客服小哈hi@inwehub.com',
         self::USER_WEIXIN_UNOAUTH    => '微信未授权',
         self::USER_WEIXIN_NEED_REGISTER => '需要注册',
-        self::USER_WEIXIN_NOT_FOUND => '新注册用户需要填写邀请码',
+        self::USER_WEIXIN_REGISTER_NEED_CODE => '新注册用户需要填写邀请码',
 
 
         //问答模块
