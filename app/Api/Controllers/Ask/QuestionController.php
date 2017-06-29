@@ -5,6 +5,7 @@ use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
+use App\Logic\WechatNotice;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Pay\Order;
@@ -263,6 +264,8 @@ class QuestionController extends Controller
 
                 //推送
                 event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+                //微信通知
+                WechatNotice::newTaskNotice($toUser,$question->title,'question_invite_answer_confirming',$question);
             }else{
                 //非定向邀请的自动匹配一次
                 event(new AutoInvitation($question));

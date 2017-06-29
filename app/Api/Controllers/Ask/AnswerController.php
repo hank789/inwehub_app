@@ -5,6 +5,7 @@ use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\MoneyLogLogic;
 use App\Logic\QuillLogic;
+use App\Logic\WechatNotice;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Feedback;
@@ -136,6 +137,9 @@ class AnswerController extends Controller
 
                 //推送通知
                 event(new Push($question->user,'您的提问专家已回答,请前往点评',$question->title,['object_type'=>'question','object_id'=>$question->id]));
+                //微信通知
+                WechatNotice::newTaskNotice($question->user,$question->title,'question_answered',$answer);
+
 
                 /*回答后通知关注问题*/
                 if(true){
@@ -177,7 +181,8 @@ class AnswerController extends Controller
                 $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText());
                 //推送通知
                 event(new Push($question->user,'您的提问专家已响应,点击查看',$question->title,['object_type'=>'question','object_id'=>$question->id]));
-
+                //微信通知
+                WechatNotice::newTaskNotice($question->user,$question->title,'question_answer_confirmed',$answer);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
             }
         }

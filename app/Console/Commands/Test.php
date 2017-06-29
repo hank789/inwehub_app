@@ -61,9 +61,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        if ($user->userOauth->count() && $user->userOauth->last()->avatar) {
-            var_dump($user->userOauth->last()->avatar);
+        $user = User::where('mobile','123')->first();
+        if(!$user){
+            echo 2;
         }
         return;
         foreach($userTags as $uid){

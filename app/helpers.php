@@ -509,10 +509,10 @@ if (!function_exists('get_app_object_url')) {
         $url = config('app.mobile_url');
         switch($object_type){
             case 'question':
-                $url .= '/#/ask/'.$object_id;
+                $url .= '#/ask/'.$object_id;
                 break;
             case 'answer':
-                $url .= '/#/answer/'.$object_id;
+                $url .= '#/answer/'.$object_id;
                 break;
         }
         return $url;

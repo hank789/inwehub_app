@@ -33,7 +33,6 @@ class AddMenu extends Command
         $wechat = app('wechat');
         $menu = $wechat->menu;
         $url = config('app.url');
-        $mobile_url = config('app.mobile_url');
         $buttons = [
             [
                 "name"       => "平台服务",

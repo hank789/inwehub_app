@@ -2,6 +2,7 @@
 use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\Push;
 use App\Logic\TaskLogic;
+use App\Logic\WechatNotice;
 use App\Models\Doing;
 use App\Models\QuestionInvitation;
 use App\Models\Task;
@@ -52,6 +53,8 @@ class QuestionEventListener implements ShouldQueue
             TaskLogic::task($uid,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
             //推送
             event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+            //微信通知
+            WechatNotice::newTaskNotice($toUser,$question->title,'question_invite_answer_confirming',$question);
         }
     }
 
