@@ -56,8 +56,8 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
 
-        if($question_invitation->status != 0){
-            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+        if($question_invitation->status == QuestionInvitation::STATUS_ANSWERED){
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
         }
 
         $this->validate($request,$this->validateRules);
@@ -157,7 +157,7 @@ class AnswerController extends Controller
                     }
                 }
                 /*修改问题邀请表的回答状态*/
-                QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>1]);
+                QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_ANSWERED]);
 
                 $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
                 $message = '回答成功!';
@@ -177,6 +177,8 @@ class AnswerController extends Controller
                 //问题变为待回答
                 $question->confirmedAnswer();
                 $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[],[$request->user()->id]);
+                /*修改问题邀请表的回答状态*/
+                QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_CONFIRMED]);
                 /*记录动态*/
                 $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText());
                 //推送通知

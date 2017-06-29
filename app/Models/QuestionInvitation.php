@@ -34,6 +34,10 @@ class QuestionInvitation extends Model
     protected $table = 'question_invitations';
     protected $fillable = ['question_id','user_id','from_user_id','send_to'];
 
+    const STATUS_PENDING = 0;
+    const STATUS_CONFIRMED = 1;
+    const STATUS_ANSWERED  = 2;
+
     public function question(){
         return $this->belongsTo('App\Models\Question');
     }

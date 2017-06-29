@@ -61,10 +61,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::where('mobile','123')->first();
-        if(!$user){
-            echo 2;
-        }
+        $url = config('app.mobile_url');
+        echo $url;
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
