@@ -137,7 +137,7 @@ class AnswerController extends Controller
                 $this->notify($answer->user_id,$question->user_id,'question_answered',$question->title,$question->id,$answer->getContentText());
 
                 //推送通知
-                event(new Push($question->user,'您的提问专家已回答,请前往点评',$question->title,['object_type'=>'question','object_id'=>$question->id]));
+                event(new Push($question->user,'您的提问专家已回答,请前往点评',$question->title,['object_type'=>'question_answered','object_id'=>$question->id]));
                 //微信通知
                 WechatNotice::newTaskNotice($question->user,$question->title,'question_answered',$answer);
 
@@ -186,7 +186,7 @@ class AnswerController extends Controller
                 RateLimiter::instance()->lock_release($lock_key);
 
                 //推送通知
-                event(new Push($question->user,'您的提问专家已响应,点击查看',$question->title,['object_type'=>'question','object_id'=>$question->id]));
+                event(new Push($question->user,'您的提问专家已响应,点击查看',$question->title,['object_type'=>'question_answer_confirmed','object_id'=>$question->id]));
                 //微信通知
                 WechatNotice::newTaskNotice($question->user,$question->title,'question_answer_confirmed',$answer);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
