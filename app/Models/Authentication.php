@@ -106,7 +106,7 @@ class Authentication extends Model
             ->orderBy('user_data.answers','DESC')
             ->orderBy('user_data.articles','DESC')
             ->orderBy('authentications.updated_at','DESC')
-            ->select('authentications.user_id','authentications.real_name','authentications.title','user_data.coins','user_data.credits','user_data.followers','user_data.supports','user_data.answers','user_data.articles','user_data.authentication_status')
+            ->select('authentications.user_id','user_data.coins','user_data.credits','user_data.followers','user_data.supports','user_data.answers','user_data.articles','user_data.authentication_status')
             ->take($size)->get();
     }
 

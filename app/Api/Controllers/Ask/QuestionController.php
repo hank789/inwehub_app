@@ -4,7 +4,9 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
+use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
+use App\Logic\WechatNotice;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Pay\Order;
@@ -20,6 +22,8 @@ use App\Http\Requests;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Payment\Client\Query;
+use Payment\Config;
 
 class QuestionController extends Controller
 {
@@ -61,6 +65,18 @@ class QuestionController extends Controller
         if(empty($question_invitation) && $request->user()->id != $question->user->id){
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        //已经拒绝了
+        if($question_invitation && $question_invitation->status == QuestionInvitation::STATUS_REJECTED){
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_REJECTED);
+        }
+        //虽然邀请他回答了,但是已被其他人回答了
+        if($request->user()->id != $question->user->id){
+            $question_invitation_confirmed = QuestionInvitation::where('question_id','=',$question->id)->whereIn('status',[QuestionInvitation::STATUS_ANSWERED,QuestionInvitation::STATUS_CONFIRMED])->first();
+            if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $request->user()->id) {
+                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+            }
+        }
+
 
         $answers_data = [];
         $promise_answer_time = '';
@@ -204,10 +220,14 @@ class QuestionController extends Controller
 
         //如果订单存在且状态为处理中,有可能还未回调
         if($order && $order->status == Order::PAY_STATUS_PROCESS && Setting()->get('need_pay_actual',1)){
-            $data['status'] = 0;
-            $question = Question::create($data);
-            \Log::error('提问支付订单还在处理中',[$question]);
-            throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
+            if (PayQueryLogic::queryWechatPayOrder($order->id)){
+
+            } else {
+                $data['status'] = 0;
+                $question = Question::create($data);
+                \Log::error('提问支付订单还在处理中',[$question]);
+                throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
+            }
         }
 
         $question = Question::create($data);
@@ -225,7 +245,7 @@ class QuestionController extends Controller
             //记录动态
             $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
 
-            $waiting_second = rand(1,10);
+            $waiting_second = rand(1,5);
 
             if(!$to_user_id){
                 $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
@@ -263,6 +283,8 @@ class QuestionController extends Controller
 
                 //推送
                 event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+                //微信通知
+                WechatNotice::newTaskNotice($toUser,$question->title,'question_invite_answer_confirming',$question);
             }else{
                 //非定向邀请的自动匹配一次
                 event(new AutoInvitation($question));
@@ -331,7 +353,7 @@ class QuestionController extends Controller
         /*记录动态*/
         $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->getContentText());
         /*修改问题邀请表的回答状态*/
-        QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>2]);
+        QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_REJECTED]);
 
         return self::createJsonData(true,['question_id'=>$data['question_id'],'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
     }

@@ -5,6 +5,7 @@ use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\MoneyLogLogic;
 use App\Logic\QuillLogic;
+use App\Logic\WechatNotice;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Feedback;
@@ -55,13 +56,12 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
 
-        if($question_invitation->status != 0){
-            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
-        }
-
         $this->validate($request,$this->validateRules);
         $lock_key = 'question_answer_action';
         RateLimiter::instance()->lock_acquire($lock_key,1,20);
+        if($question_invitation->status == QuestionInvitation::STATUS_ANSWERED){
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
+        }
         //检查问题是否已经被其它人回答
         $exit_answers = Answer::where('question_id',$question_id)->whereIn('status',[1,3])->where('user_id','!=',$loginUser->id)->get()->last();
         if($exit_answers){
@@ -103,8 +103,10 @@ class AnswerController extends Controller
                 $data['status'] = Answer::ANSWER_STATUS_FINISH;
             }
             $answer = Answer::create($data);
+        }elseif($promise_time){
+            //重复响应
+            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_SELF_CONFIRMED);
         }
-        RateLimiter::instance()->lock_release($lock_key);
 
         if($answer){
             if(empty($promise_time)){
@@ -135,7 +137,10 @@ class AnswerController extends Controller
                 $this->notify($answer->user_id,$question->user_id,'question_answered',$question->title,$question->id,$answer->getContentText());
 
                 //推送通知
-                event(new Push($question->user,'您的提问专家已回答,请前往点评',$question->title,['object_type'=>'question','object_id'=>$question->id]));
+                event(new Push($question->user,'您的提问专家已回答,请前往点评',$question->title,['object_type'=>'question_answered','object_id'=>$question->id]));
+                //微信通知
+                WechatNotice::newTaskNotice($question->user,$question->title,'question_answered',$answer);
+
 
                 /*回答后通知关注问题*/
                 if(true){
@@ -153,7 +158,8 @@ class AnswerController extends Controller
                     }
                 }
                 /*修改问题邀请表的回答状态*/
-                QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>1]);
+                QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_ANSWERED]);
+                RateLimiter::instance()->lock_release($lock_key);
 
                 $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
                 $message = '回答成功!';
@@ -173,11 +179,16 @@ class AnswerController extends Controller
                 //问题变为待回答
                 $question->confirmedAnswer();
                 $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[],[$request->user()->id]);
+                /*修改问题邀请表的回答状态*/
+                QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_CONFIRMED]);
                 /*记录动态*/
                 $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText());
-                //推送通知
-                event(new Push($question->user,'您的提问专家已响应,点击查看',$question->title,['object_type'=>'question','object_id'=>$question->id]));
+                RateLimiter::instance()->lock_release($lock_key);
 
+                //推送通知
+                event(new Push($question->user,'您的提问专家已响应,点击查看',$question->title,['object_type'=>'question_answer_confirmed','object_id'=>$question->id]));
+                //微信通知
+                WechatNotice::newTaskNotice($question->user,$question->title,'question_answer_confirmed',$answer);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
             }
         }

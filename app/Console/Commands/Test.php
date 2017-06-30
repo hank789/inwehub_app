@@ -61,10 +61,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        if ($user->userOauth->count() && $user->userOauth->last()->avatar) {
-            var_dump($user->userOauth->last()->avatar);
-        }
+        $url = config('app.mobile_url');
+        echo $url;
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

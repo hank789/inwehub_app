@@ -58,19 +58,18 @@ class AuthController extends Controller
                 break;
             case 'wx_gzh_register':
                 $code = $request->input('registration_code','');
-                if ($code) {
-                    //新用户注册
-                    if($user){
-                        throw new ApiException(ApiException::USER_PHONE_EXIST);
-                    }
-                    $rcode = UserRegistrationCode::where('code',$request->input('registration_code',''))->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
-                    if(empty($rcode)){
-                        throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
-                    }
+                if($user){
+
                 } else {
-                    //验证已注册用户
-                    if(!$user && Setting()->get('registration_code_open',1)){
-                        throw new ApiException(ApiException::USER_NOT_FOUND);
+                    if(Setting()->get('registration_code_open',1)){
+                        if($code){
+                            $rcode = UserRegistrationCode::where('code',$code)->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
+                            if(empty($rcode)){
+                                throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
+                            }
+                        } else {
+                            throw new ApiException(ApiException::USER_WEIXIN_REGISTER_NEED_CODE);
+                        }
                     }
                 }
                 break;
@@ -286,7 +285,7 @@ class AuthController extends Controller
         }
 
         //验证手机验证码
-        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('register',$mobile));
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('wx_gzh_register',$mobile));
         $code = $request->input('code');
         if($code_cache != $code){
             throw new ApiException(ApiException::ARGS_YZM_ERROR);
@@ -300,18 +299,16 @@ class AuthController extends Controller
         }
         $user = User::where('mobile',$mobile)->first();
 
-        //如果有邀请码,则走注册流程,验证邀请码
-        if(Setting()->get('registration_code_open',1) && $registration_code){
-            //用户不能已存在
-            if ($user) {
-                throw new ApiException(ApiException::USER_PHONE_EXIST);
-            }
-            $rcode = UserRegistrationCode::where('code',$registration_code)->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
-            if(empty($rcode)){
-                throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
-            }
-            if($rcode->expired_at && strtotime($rcode->expired_at) < time()){
-                throw new ApiException(ApiException::USER_REGISTRATION_CODE_OVERTIME);
+        //如果用户不存在,验证邀请码,走注册流程
+        if(!$user){
+            if (Setting()->get('registration_code_open',1) && $registration_code) {
+                $rcode = UserRegistrationCode::where('code',$registration_code)->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
+                if(empty($rcode)){
+                    throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
+                }
+                if($rcode->expired_at && strtotime($rcode->expired_at) < time()){
+                    throw new ApiException(ApiException::USER_REGISTRATION_CODE_OVERTIME);
+                }
             }
         }
 
@@ -329,7 +326,7 @@ class AuthController extends Controller
         }
 
         //如果此微信号已绑定用户
-        if($oauthData->user_id){
+        if($oauthData->user_id && $user){
             $token = $JWTAuth->fromUser($user);
             return static::createJsonData(true,['token'=>$token]);
         }
@@ -347,7 +344,7 @@ class AuthController extends Controller
         ];
         //是否开启了邀请码注册
         if(Setting()->get('registration_code_open',1)){
-            $validateRules['registration_code'] = 'required';
+            $validateRules['registration_code'] = 'required|min:4';
         }
 
         $this->validate($request,$validateRules);
@@ -357,7 +354,7 @@ class AuthController extends Controller
         }
 
         //验证手机验证码
-        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('register',$mobile));
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('wx_gzh_register',$mobile));
         $code = $request->input('code');
         if($code_cache != $code){
             throw new ApiException(ApiException::ARGS_YZM_ERROR);
@@ -410,6 +407,8 @@ class AuthController extends Controller
             $rcode->register_uid = $user->id;
             $rcode->save();
         }
+        $oauthData->user_id = $user->id;
+        $oauthData->save();
         $message = '注册成功!';
         $this->credit($user->id,'register');
         //注册事件通知

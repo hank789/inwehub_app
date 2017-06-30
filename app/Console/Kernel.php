@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\Test::class,
         Commands\Pay\Settlement::class,
+        Commands\Pay\WechatQueryPay::class,
         Commands\Wechat\AddMenu::class,
     ];
 

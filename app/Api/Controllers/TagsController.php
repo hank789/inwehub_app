@@ -27,7 +27,6 @@ class TagsController extends Controller {
 
         $word = $request->input('word');
 
-
         $data = TagsLogic::loadTags($tag_type,$word);
 
         return self::createJsonData(true,$data);

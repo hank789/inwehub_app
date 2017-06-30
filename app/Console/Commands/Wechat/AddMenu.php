@@ -33,20 +33,19 @@ class AddMenu extends Command
         $wechat = app('wechat');
         $menu = $wechat->menu;
         $url = config('app.url');
-        $mobile_url = config('app.mobile_url');
-        $buttons = [
+        /*$buttons = [
             [
                 "name"       => "平台服务",
                 "sub_button" => [
                     [
                         "type" => "view",
                         "name" => "马上提问",
-                        "url"  => $url."/wechat/oauth?redirect=".$mobile_url
+                        "url"  => $url."/wechat/oauth?redirect=/home"
                     ],
                     [
                         "type" => "view",
                         "name" => "顾问名片",
-                        "url" => $url."/wechat/oauth?redirect=".$mobile_url.'#my'
+                        "url" => $url."/wechat/oauth?redirect=/my"
                     ],
                     [
                         "type" => "view",
@@ -68,6 +67,28 @@ class AddMenu extends Command
                         "name" => "公司官网",
                         "url"  => "https://www.inwehub.com"
                     ]
+                ],
+            ],
+        ];*/
+        $buttons = [
+            [
+                "type" => "view",
+                "name" => "进入平台",
+                "url"  => $url."/wechat/oauth?redirect=/home"
+            ],
+            [
+                "name"       => "更多信息",
+                "sub_button" => [
+                    [
+                        "type" => "view",
+                        "name" => "产品官网",
+                        "url"  => "https://www.inwehub.com"
+                    ],
+                    [
+                        "type" => "view",
+                        "name" => "推荐专家",
+                        "url" => "http://cn.mikecrm.com/tgx3vq8"
+                    ],
                 ],
             ],
         ];

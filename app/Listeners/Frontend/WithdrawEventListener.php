@@ -42,7 +42,7 @@ class WithdrawEventListener implements ShouldQueue {
             return;
         }
         //是否绑定了微信
-        $user_oauth = UserOauth::where('user_id',$user_id)->where('auth_type','weixin')->first();
+        $user_oauth = UserOauth::where('user_id',$user_id)->whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])->where('status',1)->orderBy('updated_at','desc')->first();
         if(empty($user_oauth)){
             return;
         }
@@ -51,12 +51,21 @@ class WithdrawEventListener implements ShouldQueue {
         } catch (\Exception $e){
             return;
         }
+        $withdraw_channel = Withdraw::WITHDRAW_CHANNEL_WX;
+        switch($user_oauth->auth_type){
+            case UserOauth::AUTH_TYPE_WEIXIN:
+                $withdraw_channel = Withdraw::WITHDRAW_CHANNEL_WX;
+                break;
+            case UserOauth::AUTH_TYPE_WEIXIN_GZH:
+                $withdraw_channel = Withdraw::WITHDRAW_CHANNEL_WX_PUB;
+                break;
+        }
 
         $withdraw = Withdraw::create([
             'user_id' => $user_id,
             'order_no' => gen_order_number(),
             'amount'  => $amount,
-            'withdraw_channel' => Setting()->get('withdraw_channel',Withdraw::WITHDRAW_CHANNEL_WX),
+            'withdraw_channel' => $withdraw_channel,
             'client_ip' => $event->client_ip
         ]);
         //减少余额

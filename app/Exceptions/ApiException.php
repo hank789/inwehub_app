@@ -50,6 +50,7 @@ class ApiException extends Exception
     const USER_OAUTH_BIND_OTHERS = 1113;
     const USER_WEIXIN_UNOAUTH = 1114;
     const USER_WEIXIN_NEED_REGISTER = 1115;
+    const USER_WEIXIN_REGISTER_NEED_CODE = 1116;
 
 
     //问答模块响应码
@@ -61,6 +62,9 @@ class ApiException extends Exception
     const ASK_CANNOT_INVITE_SELF = 3005;
     const ASK_INVITE_USER_NOT_FOUND = 3006;
     const ASK_INVITE_USER_MUST_EXPERT = 3007;
+    const ASK_QUESTION_ALREADY_ANSWERED = 3008;
+    const ASK_QUESTION_ALREADY_REJECTED = 3009;
+    const ASK_QUESTION_ALREADY_SELF_CONFIRMED = 3010;
 
     //支付模块响应码
     const PAYMENT_UNKNOWN_CHANNEL = 4004;
@@ -103,10 +107,11 @@ class ApiException extends Exception
         self::USER_OAUTH_BIND_OTHERS => '该微信号已经绑定过其他InweHub账号，请更换其他微信账号绑定。如有疑惑请联系客服小哈hi@inwehub.com',
         self::USER_WEIXIN_UNOAUTH    => '微信未授权',
         self::USER_WEIXIN_NEED_REGISTER => '需要注册',
+        self::USER_WEIXIN_REGISTER_NEED_CODE => '新注册用户需要填写邀请码',
 
 
         //问答模块
-        self::ASK_NEED_USER_INFORMATION => '稍微花点时间,完成下个人信息,平台为您匹配专家会更精确哦!',
+        self::ASK_NEED_USER_INFORMATION => '稍微花点时间补充下个人信息，平台为您匹配专家才会更精准额！个人信息完整度90%以上才能解锁问答等功能。',
         self::ASK_ANSWER_PROMISE_TIME_INVALID => '格式错误',
         self::ASK_QUESTION_NOT_EXIST => '问题不存在',
         self::ASK_QUESTION_ALREADY_CONFIRMED => '手慢了一步，已经有专家赶在您前面确认应答了，下次加油啊！',
@@ -114,6 +119,9 @@ class ApiException extends Exception
         self::ASK_CANNOT_INVITE_SELF => '不能邀请自己',
         self::ASK_INVITE_USER_NOT_FOUND => '邀请者不存在',
         self::ASK_INVITE_USER_MUST_EXPERT => '邀请者必须为专家',
+        self::ASK_QUESTION_ALREADY_ANSWERED => '您已回答过此问题',
+        self::ASK_QUESTION_ALREADY_REJECTED => '您已拒绝回答该问题',
+        self::ASK_QUESTION_ALREADY_SELF_CONFIRMED => '您已经确认过此问题',
 
         //支付模块
         self::PAYMENT_UNKNOWN_CHANNEL => '暂不支持该支付渠道',
