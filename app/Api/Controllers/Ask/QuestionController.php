@@ -21,6 +21,8 @@ use App\Http\Requests;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Payment\Client\Query;
+use Payment\Config;
 
 class QuestionController extends Controller
 {
@@ -217,6 +219,23 @@ class QuestionController extends Controller
 
         //如果订单存在且状态为处理中,有可能还未回调
         if($order && $order->status == Order::PAY_STATUS_PROCESS && Setting()->get('need_pay_actual',1)){
+            //查询一次订单状态
+            switch($order->pay_channel){
+                case Order::PAY_CHANNEL_WX_PUB:
+                    $pay_config = config('payment')['wechat_pub'];
+                    break;
+                case Order::PAY_CHANNEL_WX_APP:
+                    $pay_config = config('payment')['wechat'];
+                    break;
+            }
+            if(isset($pay_config)){
+                try{
+                    $ret = Query::run(Config::WX_CHARGE,$pay_config,['out_trade_no'=>$order->order_no]);
+                } catch (\Exception $e){
+                    \Log::error('查询微信支付订单失败',['msg'=>$e->getMessage(),'order'=>$order]);
+                }
+
+            }
             $data['status'] = 0;
             $question = Question::create($data);
             \Log::error('提问支付订单还在处理中',[$question]);
@@ -238,7 +257,7 @@ class QuestionController extends Controller
             //记录动态
             $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
 
-            $waiting_second = rand(1,10);
+            $waiting_second = rand(1,5);
 
             if(!$to_user_id){
                 $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
