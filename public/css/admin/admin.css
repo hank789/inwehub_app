@@ -4344,7 +4344,8 @@ fieldset[disabled] .btn-vk.active {
     width: 120px;
     margin-left: 30px;
     background-image: url("./img/logo.png");
-    background-size: 120px 50px;
+    background-size: contain;
+    background-position: center;
     background-repeat: no-repeat;
 }
 
