@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
+use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
 use App\Logic\WechatNotice;
 use App\Models\Answer;
@@ -219,27 +220,14 @@ class QuestionController extends Controller
 
         //如果订单存在且状态为处理中,有可能还未回调
         if($order && $order->status == Order::PAY_STATUS_PROCESS && Setting()->get('need_pay_actual',1)){
-            //查询一次订单状态
-            switch($order->pay_channel){
-                case Order::PAY_CHANNEL_WX_PUB:
-                    $pay_config = config('payment')['wechat_pub'];
-                    break;
-                case Order::PAY_CHANNEL_WX_APP:
-                    $pay_config = config('payment')['wechat'];
-                    break;
-            }
-            if(isset($pay_config)){
-                try{
-                    $ret = Query::run(Config::WX_CHARGE,$pay_config,['out_trade_no'=>$order->order_no]);
-                } catch (\Exception $e){
-                    \Log::error('查询微信支付订单失败',['msg'=>$e->getMessage(),'order'=>$order]);
-                }
+            if (PayQueryLogic::queryWechatPayOrder($order->id)){
 
+            } else {
+                $data['status'] = 0;
+                $question = Question::create($data);
+                \Log::error('提问支付订单还在处理中',[$question]);
+                throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
             }
-            $data['status'] = 0;
-            $question = Question::create($data);
-            \Log::error('提问支付订单还在处理中',[$question]);
-            throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
         }
 
         $question = Question::create($data);

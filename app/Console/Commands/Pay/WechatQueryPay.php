@@ -47,6 +47,7 @@ class WechatQueryPay extends Command {
                 $ret = Query::run(Config::WX_CHARGE,$pay_config,['out_trade_no'=>$order->order_no]);
                 var_dump($ret);
             } catch (\Exception $e){
+                var_dump($e->getMessage());
                 \Log::error('查询微信支付订单失败',['msg'=>$e->getMessage(),'order'=>$order]);
             }
 
