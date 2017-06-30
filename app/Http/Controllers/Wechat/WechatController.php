@@ -108,6 +108,7 @@ class WechatController extends Controller
                     'refresh_token'=>'',
                     'unionid' => isset($userInfo['original']['unionid'])?$userInfo['original']['unionid']:'',
                     'expires_in'=>3600,
+                    'status' => 1,
                     'full_info'=>json_encode($userInfo['original']),
                     'scope'=>'snsapi_userinfo'
                 ]

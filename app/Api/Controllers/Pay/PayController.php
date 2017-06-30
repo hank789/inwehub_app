@@ -56,7 +56,7 @@ class PayController extends Controller {
                 }
                 //是否绑定了微信
                 $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
-                    ->where('user_id',$loginUser->id)->first();
+                    ->where('user_id',$loginUser->id)->where('status',1)->orderBy('updated_at','desc')->first();
                 if(!$oauthData) {
                     throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
                 }
