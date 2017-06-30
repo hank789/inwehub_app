@@ -1,5 +1,6 @@
 <?php namespace App\Logic;
 use App\Models\Category;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * @author: wanghui
@@ -9,6 +10,12 @@ use App\Models\Category;
 
 class TagsLogic {
     public static function loadTags($tag_type,$word){
+
+        $cache_key = 'tags:'.$tag_type.':'.$word;
+        $cache = Cache::get($cache_key);
+        if ($cache){
+            return $cache;
+        }
 
         switch($tag_type){
             case 1:
@@ -69,6 +76,7 @@ class TagsLogic {
         $data = [];
         $data['tags'] = $tags;
         $data['level'] = $level;
+        Cache::forever($cache_key,$data);
         return $data;
     }
 
