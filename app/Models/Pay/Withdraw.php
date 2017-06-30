@@ -31,14 +31,20 @@ class Withdraw extends Model {
     const WITHDRAW_STATUS_FAIL    = 3;
 
 
-    const WITHDRAW_CHANNEL_WX = 1;
-    const WITHDRAW_CHANNEL_ALIPAY = 2;
+    const WITHDRAW_CHANNEL_WX = 1;//微信app
+    const WITHDRAW_CHANNEL_WX_PUB = 2;//微信公众号
+
+    const WITHDRAW_CHANNEL_ALIPAY = 6;
 
 
     public function getAccount(){
         switch($this->withdraw_channel){
             case self::WITHDRAW_CHANNEL_WX:
-                $user_oauth = UserOauth::where('user_id',$this->user_id)->where('auth_type','weixin')->first();
+                $user_oauth = UserOauth::where('user_id',$this->user_id)->where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)->where('status',1)->orderBy('updated_at','desc')->first();
+                return $user_oauth->nickname;
+                break;
+            case self::WITHDRAW_CHANNEL_WX_PUB:
+                $user_oauth = UserOauth::where('user_id',$this->user_id)->where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)->where('status',1)->orderBy('updated_at','desc')->first();
                 return $user_oauth->nickname;
                 break;
         }

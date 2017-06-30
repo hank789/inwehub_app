@@ -328,7 +328,7 @@ class ProfileController extends Controller
         $data['is_bind_weixin'] = 0;
         $data['bind_weixin_nickname'] = '';
         $data['user_phone'] = secret_mobile($user->mobile);
-        $user_oauth = UserOauth::where('user_id',$user->id)->where('auth_type','weixin')->first();
+        $user_oauth = UserOauth::where('user_id',$user->id)->whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])->where('status',1)->orderBy('updated_at','desc')->first();
         if($user_oauth){
             $data['is_bind_weixin'] = 1;
             $data['bind_weixin_nickname'] = $user_oauth['nickname'];

@@ -31,7 +31,7 @@ class WithdrawController extends Controller {
         }
         $user = $request->user();
         //是否绑定了微信
-        $user_oauth = UserOauth::where('user_id',$user->id)->where('auth_type','weixin')->first();
+        $user_oauth = UserOauth::where('user_id',$user->id)->whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])->where('status',1)->orderBy('updated_at','desc')->first();
         if(empty($user_oauth)){
             throw new ApiException(ApiException::WITHDRAW_UNBIND_WEXIN);
         }

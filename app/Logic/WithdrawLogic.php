@@ -21,11 +21,28 @@ class WithdrawLogic {
         if($withdraw->status != Withdraw::WITHDRAW_STATUS_PROCESS){
             return false;
         }
-        $user_oauth = UserOauth::where('user_id',$withdraw->user_id)->where('auth_type','weixin')->first();
 
         switch($withdraw->withdraw_channel){
             case Withdraw::WITHDRAW_CHANNEL_WX:
+                $user_oauth = UserOauth::where('user_id',$withdraw->user_id)->where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)->where('status',1)->orderBy('updated_at','desc')->first();
+                if(!$user_oauth){
+                    $withdraw->response_msg = '未绑定微信';
+                    $withdraw->status = Withdraw::WITHDRAW_STATUS_FAIL;
+                    $withdraw->save();
+                    return false;
+                }
                 $config = config('payment')['wechat'];
+                $channel = Config::WX_TRANSFER;
+                break;
+            case Withdraw::WITHDRAW_CHANNEL_WX_PUB:
+                $user_oauth = UserOauth::where('user_id',$withdraw->user_id)->where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)->where('status',1)->orderBy('updated_at','desc')->first();
+                if(!$user_oauth){
+                    $withdraw->response_msg = '未绑定微信';
+                    $withdraw->status = Withdraw::WITHDRAW_STATUS_FAIL;
+                    $withdraw->save();
+                    return false;
+                }
+                $config = config('payment')['wechat_pub'];
                 $channel = Config::WX_TRANSFER;
                 break;
             case Withdraw::WITHDRAW_CHANNEL_ALIPAY:
