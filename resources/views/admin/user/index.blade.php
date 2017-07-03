@@ -89,7 +89,7 @@
                                             <td>{{ $user->userMoney->total_money }}</td>
                                             <td>{{ $user->created_at }}</td>
                                             <td>{{ $user->updated_at }}</td>
-                                            <td>{{ $user->source ? '微信小程序':'APP' }}</td>
+                                            <td>{{ $user->getRegisterSource() }}</td>
                                             <td><span class="label @if($user->status===0) label-danger @elseif($user->status===-1) label-default @elseif($user->status===1) label-success @endif">{{ trans_common_status($user->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
