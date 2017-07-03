@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -23,6 +24,11 @@ class AuthenticationObserver implements ShouldQueue {
     {
         $this->slackMsg($authentication)
             ->send('用户['.$authentication->user->name.']申请专家认证');
+    }
+
+    public function deleting(Authentication $authentication){
+        //删除关注
+        Attention::where('source_type','App\Models\User')->where('source_id',$authentication->user_id)->delete();
     }
 
 
