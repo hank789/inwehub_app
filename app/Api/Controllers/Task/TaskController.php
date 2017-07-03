@@ -94,7 +94,7 @@ class TaskController extends Controller {
                 'priority' => $priority
             ];
         }
-        return self::createJsonData(true,$list);
+        return self::createJsonData(true,['list'=>$list,'total'=>$request->user()->tasks->where('status',0)->count()]);
     }
 
 }
