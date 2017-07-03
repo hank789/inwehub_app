@@ -246,7 +246,7 @@ class ProfileController extends Controller
         }
         $percent = $request->user()->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user_id,$percent);
-        return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$percent]);
+        return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$percent],ApiException::SUCCESS,'上传成功');
     }
 
     /**
