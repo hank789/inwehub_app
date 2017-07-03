@@ -46,9 +46,7 @@ class PayController extends Controller {
                     $amount = 0.01;
                 }
                 $config = config('payment')['wechat'];
-                if($config['use_sandbox']){
-                    $amount = 3.01;
-                }
+
                 $channel = Config::WX_CHANNEL_APP;
                 $channel_type = Order::PAY_CHANNEL_WX_APP;
                 break;
@@ -67,9 +65,6 @@ class PayController extends Controller {
                     $amount = 0.01;
                 }
                 $config = config('payment')['wechat_pub'];
-                if($config['use_sandbox']){
-                    $amount = 3.01;
-                }
 
                 $channel = Config::WX_CHANNEL_PUB;
                 $channel_type = Order::PAY_CHANNEL_WX_PUB;
