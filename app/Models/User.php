@@ -210,6 +210,18 @@ class User extends Model implements AuthenticatableContract,
         return $list;
     }
 
+    public function getRegisterSource(){
+        switch($this->source){
+            case self::USER_SOURCE_APP:
+                return 'APP';
+            case self::USER_SOURCE_WEIXIN_GZH:
+                return '微信公众号';
+            case self::USER_SOURCE_WEAPP:
+                return '微信小程序';
+        }
+        return 'APP';
+    }
+
     /**
      * 用户登录记录关系.
      *
