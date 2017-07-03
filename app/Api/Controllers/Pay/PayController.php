@@ -37,6 +37,7 @@ class PayController extends Controller {
         $data = $request->all();
         $amount = $data['amount'];
         $pay_channel = $data['pay_channel'];
+        $need_pay_actual = true;
         switch($pay_channel){
             case 'wxpay':
                 if(Setting()->get('pay_method_weixin',1) != 1){
@@ -63,6 +64,7 @@ class PayController extends Controller {
                 }
                 if (config('app.env') != 'production') {
                     $amount = 0.01;
+                    $need_pay_actual = false;
                 }
                 $config = config('payment')['wechat_pub'];
 
@@ -114,7 +116,7 @@ class PayController extends Controller {
 
         $order = Order::create($payData);
 
-        if(Setting()->get('need_pay_actual',1) != 1) {
+        if(Setting()->get('need_pay_actual',1) != 1 || $need_pay_actual==false) {
             //如果开启了非强制支付
             return self::createJsonData(true,[
                 'order_info' => [],
