@@ -28,7 +28,7 @@ class WechatEventListener implements ShouldQueue
     public function notice($event){
         //微信通知
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
-            ->where('user_id',$event->user->id)->first();
+            ->where('user_id',$event->user->id)->where('status',1)->orderBy('updated_at','desc')->first();
         if($oauthData) {
             $wechat = app('wechat');
             $notice = $wechat->notice;
