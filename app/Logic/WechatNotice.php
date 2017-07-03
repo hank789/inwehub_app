@@ -20,6 +20,9 @@ class WechatNotice {
                 $remark = '请立即前往确认回答';
                 $target_url = $url.'#/answer/'.$object->id;
                 $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
+                if (config('app.env') != 'production') {
+                    $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
+                }
                 break;
             case 'question_answer_confirmed':
                 $title = '您好，已有专家响应了您的专业问答任务';
@@ -27,6 +30,9 @@ class WechatNotice {
                 $remark = '可点击详情查看处理进度';
                 $target_url = $url.'#/ask/'.$object->question->id;
                 $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+                if (config('app.env') != 'production') {
+                    $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+                }
                 break;
             case 'question_answered':
                 $title = '您好，已有专家回答了您的专业问答任务';
@@ -34,6 +40,9 @@ class WechatNotice {
                 $remark = '可点击详情查看回答内容';
                 $target_url = $url.'#/ask/'.$object->question->id;
                 $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+                if (config('app.env') != 'production') {
+                    $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+                }
                 break;
             default:
                 return;
