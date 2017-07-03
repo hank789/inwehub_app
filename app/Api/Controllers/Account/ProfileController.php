@@ -235,7 +235,7 @@ class ProfileController extends Controller
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
             }
         }else {
-            $request->user()->addMedia($request->input('user_avatar'))->toMediaCollection('avatar');
+            $request->user()->addMediaFromBase64($request->input('user_avatar'))->toMediaCollection('avatar');
             $upload_count = Cache::increment('user_avatar_upload:'.$user_id);
         }
 
