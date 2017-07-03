@@ -68,6 +68,7 @@
                                         <th>地区</th>
                                         <th>企业用户</th>
                                         <th>档案完整度(%)</th>
+                                        <th>账户余额</th>
                                         <th>注册时间</th>
                                         <th>更新时间</th>
                                         <th>注册来源</th>
@@ -85,6 +86,7 @@
                                             <td>{{ get_province_name($user->province) }} - {{ get_city_name($user->province, $user->city) }}</td>
                                             <td>{{ $user->userData->is_company ? '是':'否' }}</td>
                                             <td>{{ $user->getInfoCompletePercent() }}</td>
+                                            <td>{{ $user->userMoney->total_money }}</td>
                                             <td>{{ $user->created_at }}</td>
                                             <td>{{ $user->updated_at }}</td>
                                             <td>{{ $user->source ? '微信小程序':'APP' }}</td>
