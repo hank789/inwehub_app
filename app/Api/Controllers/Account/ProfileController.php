@@ -33,13 +33,10 @@ class ProfileController extends Controller
          * @var User
          */
         $user = $request->user();
-        $cache = UserCache::getUserInfoCache($user->id);
-        if($cache){
-
-        }
 
         $info = [];
         $info['id'] = $user->id;
+        $info['uuid'] = $user->uuid;
         $info['name'] = $user->name;
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
@@ -127,9 +124,97 @@ class ProfileController extends Controller
             'trains'  => $train_desc
         ];
 
-        UserCache::setUserInfoCache($user->id,$data);
-
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
+    }
+
+    //用户个人名片
+    public function resumeInfo(Request $request){
+        $validateRules = [
+            'uuid' => 'required|min:10',
+        ];
+        $this->validate($request,$validateRules);
+        $uuid = $request->input('uuid');
+        $user = User::where('uuid',$uuid)->first();
+        $loginUser = $request->user();
+
+        $info = [];
+        $info['id'] = $user->id;
+        $info['uuid'] = $user->uuid;
+        $info['name'] = $user->name;
+        $info['mobile'] = $user->mobile;
+        $info['email'] = $user->email;
+        $info['avatar_url'] = $user->getAvatarUrl();
+        $info['gender'] = $user->gender;
+        $info['birthday'] = $user->birthday;
+        $info['province']['key'] = $user->province;
+        $info['province']['name'] = CityData::getProvinceName($user->province);
+        $info['city']['key'] = $user->city;
+        $info['city']['name'] = CityData::getCityName($user->province,$user->city);
+
+        $info['hometown_province']['key'] = $user->hometown_province;
+        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province);
+        $info['hometown_city']['key'] = $user->hometown_city;
+        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city);
+
+        $info['company'] = $user->company;
+        $info['title'] = $user->title;
+        $info['description'] = $user->description;
+        $info['status'] = $user->status;
+        $info['address_detail'] = $user->address_detail;
+        $info['industry_tags'] = TagsLogic::formatTags($user->industryTags());
+        if(empty($info['industry_tags'])) $info['industry_tags'] = '';
+        $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+        $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
+
+        $info['questions'] = $user->userData->questions;
+        $info['answers'] = $user->userData->answers;
+        //加上承诺待回答的
+        $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
+        $info['projects'] = $user->companyProjects->count();
+        $info['user_level'] = $user->getUserLevel();
+        $info['is_job_info_public'] = $user->userData->job_public;
+        $info['is_project_info_public'] = $user->userData->project_public;
+        $info['is_edu_info_public'] = $user->userData->edu_public;
+        $info['total_score'] = '综合评分暂无';
+        $info['work_years'] = 0;
+        $info['followers'] = $user->followers()->count();
+        $info['feedbacks'] = 0;
+
+        $projects = [];
+        $jobs = [];
+        $edus = [];
+
+        if($info['is_job_info_public']){
+            $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
+            $jobs = $jobs->toArray();
+        }
+
+        if($info['is_project_info_public']){
+            $projects = $user->projects()->orderBy('begin_time','desc')->get();
+
+            foreach($projects as &$project){
+                $project->industry_tags = '';
+                $project->product_tags = '';
+
+                $project->industry_tags = TagsLogic::formatTags($project->tags()->where('category_id',9)->get());
+                $project->product_tags = TagsLogic::formatTags($project->tags()->where('category_id',10)->get());
+            }
+            $projects = $projects->toArray();
+        }
+
+        if($info['is_edu_info_public']){
+            $edus = $request->user()->edus()->orderBy('begin_time','desc')->get();
+            $edus = $edus->toArray();
+        }
+
+        $data = [
+            'info'   => $info,
+            'jobs'   => $jobs,
+            'projects' => $projects,
+            'edus'   => $edus,
+        ];
+        return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
+
     }
 
     //修改用户资料

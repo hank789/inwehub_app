@@ -534,4 +534,11 @@ if (!function_exists('get_wechat_notice_template_id')){
     }
 }
 
+if (!function_exists('gen_user_uuid')){
+    function gen_user_uuid(){
+        $uuid1 = \Ramsey\Uuid\Uuid::uuid1();
+        return $uuid1->getHex();
+    }
+}
+
 

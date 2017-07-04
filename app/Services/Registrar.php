@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\UserData;
 use Carbon\Carbon;
 use Validator;
+use Ramsey\Uuid\Uuid;
 
 class Registrar {
 
@@ -32,6 +33,7 @@ class Registrar {
     public function create(array $data)
     {
         $user =  User::create([
+            'uuid' => gen_user_uuid(),
             'name' => $data['name'],
             'email' => strtolower($data['email']),
             'mobile' => $data['mobile'],

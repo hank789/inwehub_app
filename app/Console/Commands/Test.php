@@ -36,7 +36,7 @@ use Payment\Client\Charge;
 use Payment\Common\PayException;
 use Payment\Config;
 use Illuminate\Support\Facades\DB;
-
+use Ramsey\Uuid\Uuid;
 
 class Test extends Command
 {
@@ -61,8 +61,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $url = config('app.mobile_url');
-        echo $url;
+        $uuid1 = Uuid::uuid1();
+        $str = $uuid1->getHex();
+        echo $str;
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

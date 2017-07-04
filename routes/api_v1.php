@@ -8,7 +8,6 @@
 //app首页
 Route::post('home','IndexController@home')->middleware('jwt.auth');
 
-
 //登陆注册认证类
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('register', 'AuthController@register');
@@ -27,7 +26,10 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 
 });
 
-
+Route::group(['namespace'=>'Account'], function() {
+    //用户个人名片
+    Route::post('profile/resumeInfo','ProfileController@resumeInfo');
+});
 //用户信息
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
