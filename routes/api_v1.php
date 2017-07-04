@@ -44,6 +44,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //上传简历
     Route::post('profile/uploadResume','ProfileController@uploadResume');
 
+    //隐私详情
+    Route::post('profile/privacy/info','ProfileController@privacyInfo');
+    //隐私设置
+    Route::post('profile/privacy/update','ProfileController@privacyUpdate');
+
 
     //用户oauth
     Route::post('oauth/{type}/callback',['uses'=>'OauthController@callback'])->where(['type'=>'(weixinapp|weixin_gzh)']);

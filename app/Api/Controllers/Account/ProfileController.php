@@ -440,6 +440,52 @@ class ProfileController extends Controller
         return self::createJsonData(true,$data);
     }
 
+
+    public function privacyInfo(Request $request){
+        $user = $request->user();
+        $return = [
+            'is_job_info_public' => $user->userData->job_public,
+            'is_project_info_public' => $user->userData->project_public,
+            'is_edu_info_public' => $user->userData->edu_public
+        ];
+        return self::createJsonData(true,$return);
+    }
+
+    public function privacyUpdate(Request $request){
+        $validateRules = [
+            'is_edu_info_public' => 'integer',
+            'is_project_info_public' => 'integer',
+            'is_job_info_public' => 'integer',
+        ];
+        $user = $request->user();
+        $this->validate($request,$validateRules);
+        $userData = $user->userData;
+        $message = '设置成功';
+        if($request->input('is_edu_info_public') !== null){
+            $userData->edu_public = $request->input('is_edu_info_public');
+            $message = $request->input('is_edu_info_public') ? '教育经历公开':'教育经历仅自己可见';
+        }
+
+        if($request->input('is_project_info_public') !== null){
+            $userData->project_public = $request->input('is_project_info_public');
+            $message = $request->input('is_project_info_public') ? '项目经历公开':'项目经历仅自己可见';
+        }
+
+        if($request->input('is_job_info_public') !== null){
+            $userData->job_public = $request->input('is_job_info_public');
+            $message = $request->input('is_job_info_public') ? '工作经历公开':'工作经历仅自己可见';
+        }
+        $userData->save();
+
+        return self::createJsonData(true,[
+            'is_edu_info_public'=> $userData->edu_public,
+            'is_project_info_public' => $userData->project_public,
+            'is_job_info_public'     => $userData->job_public
+        ],ApiException::SUCCESS,$message);
+
+    }
+
+
     //上传简历
     public function uploadResume(Request $request){
         $validateRules = [
