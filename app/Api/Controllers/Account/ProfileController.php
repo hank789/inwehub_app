@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
+use Tymon\JWTAuth\JWTAuth;
 
 class ProfileController extends Controller
 {
@@ -129,14 +130,14 @@ class ProfileController extends Controller
     }
 
     //用户个人名片
-    public function resumeInfo(Request $request){
+    public function resumeInfo(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'uuid' => 'required|min:10',
         ];
         $this->validate($request,$validateRules);
         $uuid = $request->input('uuid');
         $user = User::where('uuid',$uuid)->first();
-        $loginUser = $request->user();
+        $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
         $is_self = false;
         if($loginUser && $loginUser->id == $user->id){
             $is_self = true;
@@ -208,7 +209,7 @@ class ProfileController extends Controller
         }
 
         if($info['is_edu_info_public'] || $is_self){
-            $edus = $request->user()->edus()->orderBy('begin_time','desc')->get();
+            $edus = $user->edus()->orderBy('begin_time','desc')->get();
             $edus = $edus->toArray();
         }
 
