@@ -14,7 +14,7 @@ class AddFeedbackToUserIdField extends Migration
     public function up()
     {
         Schema::table('feedback', function (Blueprint $table) {
-            $table->integer('to_user_id')->unsigned()->default(0)->index();
+            $table->integer('to_user_id')->unsigned()->default(0)->index()->after('user_id');;
         });
     }
 
