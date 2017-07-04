@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\Pay\Settlement::class,
         Commands\Pay\WechatQueryPay::class,
         Commands\Wechat\AddMenu::class,
+        Commands\User\GenUuid::class,
     ];
 
     /**
