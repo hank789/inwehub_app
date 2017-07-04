@@ -10,6 +10,7 @@ use App\Models\Answer;
 use App\Models\AppVersion;
 use App\Models\Authentication;
 use App\Models\Doing;
+use App\Models\Feedback;
 use App\Models\Pay\Order;
 use App\Models\Pay\Settlement;
 use App\Models\Pay\UserMoney;
@@ -61,9 +62,12 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(4);
-        $s = $user->getWorkYears();
-        var_dump($s);
+        $feedbacks = Feedback::get();
+        foreach($feedbacks as $feedback){
+            $answer = Answer::find($feedback->source_id);
+            $feedback->to_user_id = $answer->user_id;
+            $feedback->save();
+        }
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
