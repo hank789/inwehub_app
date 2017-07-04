@@ -3,6 +3,7 @@
 namespace App\Models;
 use App\Models\Relations\HasRoleAndPermission;
 use App\Models\Relations\MorphManyTagsTrait;
+use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -362,6 +363,21 @@ class User extends Model implements AuthenticatableContract,
     //工作经历
     public function jobs(){
         return $this->hasMany('App\Models\UserInfo\JobInfo','user_id');
+    }
+
+    public function getWorkYears(){
+        $begin = $this->jobs()->orderBy('begin_time','asc')->first();
+        $end = $this->jobs()->orderBy('end_time','desc')->first();
+        if($begin){
+            $begin_time = new Carbon($begin->begin_time);
+            $end_time = $end->end_time;
+            if($end_time == '至今'){
+                $end_time = date('Y-m');
+            }
+            $end_time = new Carbon($end_time);
+            return $end_time->diffInYears($begin_time);
+        }
+        return '';
     }
 
     //教育经历

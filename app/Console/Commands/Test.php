@@ -61,9 +61,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $uuid1 = Uuid::uuid1();
-        $str = $uuid1->getHex();
-        echo $str;
+        $user = User::find(4);
+        $s = $user->getWorkYears();
+        var_dump($s);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

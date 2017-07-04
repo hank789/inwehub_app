@@ -281,6 +281,7 @@ class AnswerController extends Controller
             'source_id' => $request->input('answer_id'),
             'source_type' => get_class($answer),
             'star' => $request->input('rate_star'),
+            'to_user_id' => $answer->user_id,
             'content' => $request->input('description'),
             'created_at' => date('Y-m-d H:i:s')
         ]);

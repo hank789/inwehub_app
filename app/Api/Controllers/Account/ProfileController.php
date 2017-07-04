@@ -5,6 +5,7 @@ use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
 use App\Models\Answer;
+use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
 use App\Models\Tag;
@@ -136,6 +137,10 @@ class ProfileController extends Controller
         $uuid = $request->input('uuid');
         $user = User::where('uuid',$uuid)->first();
         $loginUser = $request->user();
+        $is_self = false;
+        if($loginUser && $loginUser->id == $user->id){
+            $is_self = true;
+        }
 
         $info = [];
         $info['id'] = $user->id;
@@ -176,20 +181,20 @@ class ProfileController extends Controller
         $info['is_project_info_public'] = $user->userData->project_public;
         $info['is_edu_info_public'] = $user->userData->edu_public;
         $info['total_score'] = '综合评分暂无';
-        $info['work_years'] = 0;
+        $info['work_years'] = $user->getWorkYears();
         $info['followers'] = $user->followers()->count();
-        $info['feedbacks'] = 0;
+        $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
 
         $projects = [];
         $jobs = [];
         $edus = [];
 
-        if($info['is_job_info_public']){
+        if($info['is_job_info_public'] || $is_self){
             $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
             $jobs = $jobs->toArray();
         }
 
-        if($info['is_project_info_public']){
+        if($info['is_project_info_public'] || $is_self){
             $projects = $user->projects()->orderBy('begin_time','desc')->get();
 
             foreach($projects as &$project){
@@ -202,7 +207,7 @@ class ProfileController extends Controller
             $projects = $projects->toArray();
         }
 
-        if($info['is_edu_info_public']){
+        if($info['is_edu_info_public'] || $is_self){
             $edus = $request->user()->edus()->orderBy('begin_time','desc')->get();
             $edus = $edus->toArray();
         }
