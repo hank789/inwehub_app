@@ -17,10 +17,11 @@ class WechatController extends Controller
 
         $this->validate($request,$validateRules);
         $current_url = $request->input('current_url');
+        \Log::info('test',[$current_url]);
         $wechat = app('wechat');
         $js = $wechat->js;
         $js->setUrl($current_url);
-        return self::createJsonData(true,['config'=>$js->config(['onMenuShareTimeline','onMenuShareQQ','onMenuShareAppMessage', 'onMenuShareWeibo'],false,false,false)]);
+        return self::createJsonData(true,['config'=>$js->config(['onMenuShareTimeline','onMenuShareQQ','onMenuShareAppMessage', 'onMenuShareWeibo'],true,false,false)]);
     }
 
 }
