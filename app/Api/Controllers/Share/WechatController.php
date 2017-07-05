@@ -13,7 +13,7 @@ class WechatController extends Controller
     {
         $wechat = app('wechat');
         $js = $wechat->js;
-        return self::createJsonData(true,['config'=>$js->config(['onMenuShareQQ', 'onMenuShareWeibo'],false,false,false)]);
+        return self::createJsonData(true,['config'=>$js->config(['onMenuShareTimeline','onMenuShareQQ','onMenuShareAppMessage', 'onMenuShareWeibo'],false,false,false)]);
     }
 
 }
