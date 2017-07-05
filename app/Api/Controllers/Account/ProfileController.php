@@ -137,7 +137,11 @@ class ProfileController extends Controller
         $this->validate($request,$validateRules);
         $uuid = $request->input('uuid');
         $user = User::where('uuid',$uuid)->first();
-        $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
+        $jwtToken = $JWTAuth->getToken();
+        $loginUser = '';
+        if($jwtToken){
+            $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
+        }
         $is_self = false;
         if($loginUser && $loginUser->id == $user->id){
             $is_self = true;
