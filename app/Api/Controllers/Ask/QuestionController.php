@@ -145,9 +145,10 @@ class QuestionController extends Controller
     {
         $user = $request->user();
 
-        $expert_uid = $request->input('uid');
-        if($expert_uid){
-            $this->checkAnswerUser($user,$expert_uid);
+        $expert_uuid = $request->input('uuid');
+        if($expert_uuid){
+            $expert_user = User::where('uuid',$expert_uuid)->firstOrFail();
+            $this->checkAnswerUser($user,$expert_user->id);
         }
 
         $this->checkUserInfoPercent($user);
@@ -213,9 +214,10 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
         }
 
-        $to_user_id = $request->input('answer_uid');
-        if($to_user_id) {
-            $this->checkAnswerUser($loginUser,$to_user_id);
+        $to_user_uuid = $request->input('answer_uuid');
+        if($to_user_uuid) {
+            $toUser = User::where('uuid',$to_user_uuid)->firstOrFail();
+            $this->checkAnswerUser($loginUser,$toUser->id);
         }
 
         //如果订单存在且状态为处理中,有可能还未回调
@@ -247,7 +249,7 @@ class QuestionController extends Controller
 
             $waiting_second = rand(1,5);
 
-            if(!$to_user_id){
+            if(!$to_user_uuid){
                 $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
                 $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
                 $doing_obj->save();
@@ -265,8 +267,7 @@ class QuestionController extends Controller
 
             $this->counter( 'question_num_'. $question->user_id , 1 , 3600 );
 
-            if($to_user_id){
-                $toUser = User::find($to_user_id);
+            if($to_user_uuid){
                 $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
                     'from_user_id'=> $question->user_id,
                     'question_id'=> $question->id,
@@ -279,7 +280,7 @@ class QuestionController extends Controller
                 //记录动态
                 $this->doing($question->user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'');
                 //记录任务
-                $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
+                $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
                 //推送
                 event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
