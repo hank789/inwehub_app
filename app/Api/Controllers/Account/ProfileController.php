@@ -485,13 +485,6 @@ class ProfileController extends Controller
         ],ApiException::SUCCESS,$message);
     }
 
-    public function resumeShareWechat(Request $request){
-        $wechat = app('wechat');
-        $js = $wechat->js;
-        return self::createJsonData(true,['config'=>$js->config(['onMenuShareQQ', 'onMenuShareWeibo'])]);
-
-    }
-
 
     //上传简历
     public function uploadResume(Request $request){
