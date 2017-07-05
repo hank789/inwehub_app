@@ -483,6 +483,12 @@ class ProfileController extends Controller
             'is_project_info_public' => $userData->project_public,
             'is_job_info_public'     => $userData->job_public
         ],ApiException::SUCCESS,$message);
+    }
+
+    public function resumeShareWechat(Request $request){
+        $wechat = app('wechat');
+        $js = $wechat->js;
+        return self::createJsonData(true,['config'=>$js->config(['onMenuShareQQ', 'onMenuShareWeibo'])]);
 
     }
 

@@ -29,6 +29,8 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 Route::group(['namespace'=>'Account'], function() {
     //用户个人名片
     Route::any('profile/resumeInfo','ProfileController@resumeInfo');
+    //微信分享
+    Route::any('profile/resumeShareWechat','ProfileController@resumeShareWechat');
 });
 //用户信息
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {

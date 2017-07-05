@@ -175,12 +175,10 @@
                         backgroundColor: "rgba(51,102,102,0.8)",
                         borderColor: "rgba(51,102,102,0.8)",
                         fill: false,
-
                         data: [{{ implode(",",$userChart['registerUsers']) }}]
                     },
                     {
                         fill: false,
-
                         backgroundColor: "rgba(153,51,51,0.8)",
                         borderColor: "rgba(153,51,51,0.8)",
 
@@ -189,7 +187,6 @@
                     },
                     {
                         fill: false,
-
                         backgroundColor: "rgba(153,102,0,0.8)",
                         borderColor: "rgba(153,102,0,0.8)",
 
