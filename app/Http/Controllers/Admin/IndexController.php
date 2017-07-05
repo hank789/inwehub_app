@@ -56,6 +56,7 @@ class IndexController extends AdminController
         //问题平均接单时间
         $questionConfirmeds = Doing::where('action','question_answer_confirmed')->get();
         $questionCount = $questionConfirmeds->count();
+        $questionAnswerCount = Doing::where('action','question_answered')->get();
         $questionConfirmSecond = 0;
         $questionAnswerSecond = 0;
 
@@ -64,11 +65,13 @@ class IndexController extends AdminController
             $questionConfirmSecond += strtotime($questionConfirmed->created_at) - strtotime($questionSubmit->created_at);
 
             $questionAnswer = Doing::where('action','question_answered')->where('source_id',$questionConfirmed->source_id)->where('source_type','App\Models\Question')->first();
-            $questionAnswerSecond += strtotime($questionAnswer->created_at) - strtotime($questionConfirmed->created_at);
+            if($questionAnswer){
+                $questionAnswerSecond += strtotime($questionAnswer->created_at) - strtotime($questionConfirmed->created_at);
+            }
 
         }
         $questionAvaConfirmTime = $questionCount ? round($questionConfirmSecond/60/$questionCount,2) : 0;
-        $questionAvgAnswerTime = $questionCount ? round($questionAnswerSecond/60/$questionCount,2): 0;
+        $questionAvgAnswerTime = $questionAnswerCount ? round($questionAnswerSecond/60/$questionAnswerCount,2): 0;
 
         $userChart = $this->drawUserChart();
         $questionChart = $this->drawQuestionChart();
