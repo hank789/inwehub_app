@@ -40,17 +40,92 @@
                 <div class="info-box">
                     <span class="info-box-icon bg-green"><i class="fa fa-edit"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">文章总数</span>
-                        <span class="info-box-number">{{ $totalArticleNum }}</span>
+                        <span class="info-box-text">评价总数</span>
+                        <span class="info-box-number">{{ $totalFeedbackNum }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-yellow"><i class="fa fa-comment-o" aria-hidden="true"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">回答总数</span>
                         <span class="info-box-number">{{ $totalAnswerNum }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-box-text">邀请码总数</span>
+                        <span class="info-box-number">{{ $totalUrcNum }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-box-text">邀请码激活数</span>
+                        <span class="info-box-number">{{ $totalActiveUrcNum }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
+            <!-- fix for small devices only -->
+            <div class="clearfix visible-sm-block"></div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-box-text">邀请码失效数</span>
+                        <span class="info-box-number">{{ $totalInActiveUrcNum }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-box-text">转化率</span>
+                        <span class="info-box-number">{{ $totalUrcNum?100*round($totalActiveUrcNum/$totalUrcNum,2):0 }}%</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-box-text">简历完成率</span>
+                        <span class="info-box-number">{{ $userInfoCompletePercent }}%</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-box-text">简历平均完成时间</span>
+                        <span class="info-box-number">{{ $userInfoCompleteTime }}min</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
+            <!-- fix for small devices only -->
+            <div class="clearfix visible-sm-block"></div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-box-text">问题平均接单时间</span>
+                        <span class="info-box-number">{{ $questionAvaConfirmTime }}min</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-box-text">问题平均回答时间</span>
+                        <span class="info-box-number">{{ $questionAvgAnswerTime }}min</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
@@ -68,7 +143,7 @@
                                     <strong>一周用户趋势数据</strong>
                                 </p>
                                 <div class="chart">
-                                    <canvas id="user_chart" height="100"></canvas>
+                                    <canvas id="user_chart" height="400"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -86,10 +161,10 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <p class="text-center">
-                                    <strong>问题、文章、回答统计</strong>
+                                    <strong>问题、回答、评价统计</strong>
                                 </p>
                                 <div class="chart">
-                                    <canvas id="question_chart" height="100"></canvas>
+                                    <canvas id="question_chart" height="400"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -161,7 +236,7 @@
     @endsection
 
 @section('script')
-<script type="text/javascript" src="{{ asset('/static/js/chartjs/chartjs.js') }}"></script>
+<script type="text/javascript" src="{{ asset('/static/js/chartjs/Chart.min.js') }}"></script>
 <script type="text/javascript">
     $(function(){
         set_active_menu('root_menu',"{{ route('admin.index.index') }}");
@@ -196,6 +271,14 @@
                 ]
             },
             options: {
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
                 scales: {
                     yAxes: [{
                         ticks: {
@@ -221,13 +304,21 @@
                         data: [{{ implode(",",$questionChart['answerRange']) }}]
                     },
                     {
-                        label: '文章',
+                        label: '评价',
                         backgroundColor: "rgba(0,166,90,0.9)",
-                        data: [{{ implode(",",$questionChart['articleRange']) }}]
+                        data: [{{ implode(",",$questionChart['feedbackRange']) }}]
                     },
                 ]
             },
             options: {
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
                 scales: {
                     yAxes: [{
                         ticks: {

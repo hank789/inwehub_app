@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Answer;
 use App\Models\Article;
+use App\Models\Credit;
+use App\Models\Doing;
+use App\Models\Feedback;
 use App\Models\Question;
 use App\Models\User;
+use App\Models\UserRegistrationCode;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -22,12 +26,63 @@ class IndexController extends AdminController
     {
         $totalUserNum = User::count();
         $totalQuestionNum = Question::count();
-        $totalArticleNum = Article::count();
+        $totalFeedbackNum = Feedback::count();
         $totalAnswerNum = Answer::count();
+        //邀请码总数
+        $totalUrcNum = UserRegistrationCode::count();
+        //邀请码激活数
+        $totalActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_USED)->count();
+        //邀请码失效数
+        $totalInActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_EXPIRED)->count();
+
+        //简历平均完成时间
+        $userInfoCompletes = Credit::where('action','user_info_complete')->get();
+        $userInfoCompleteCount = $userInfoCompletes->count();
+        $userInfoCompleteTime = 0;
+        $diffSecond = 0;
+        foreach($userInfoCompletes as $userInfoComplete){
+            $registerTime = Credit::where('user_id',$userInfoComplete->user_id)->where('action','register')->first();
+            $diffSecond += strtotime($userInfoComplete->created_at) - strtotime($registerTime->created_at);
+        }
+        if($userInfoCompleteCount){
+            $userInfoCompleteTime = round($diffSecond/$userInfoCompleteCount/60,2);
+        }
+        //简历完成率
+        $userInfoCompletePercent = 0;
+        if($userInfoCompleteCount){
+            $userInfoCompletePercent = 100 * round($userInfoCompleteCount/$totalUserNum,2);
+        }
+
+        //问题平均接单时间
+        $questionConfirmeds = Doing::where('action','question_answer_confirmed')->get();
+        $questionCount = $questionConfirmeds->count();
+        $questionConfirmSecond = 0;
+        $questionAnswerSecond = 0;
+
+        foreach($questionConfirmeds as $questionConfirmed){
+            $questionSubmit = Doing::where('action','question_submit')->where('source_id',$questionConfirmed->source_id)->where('source_type','App\Models\Question')->first();
+            $questionConfirmSecond += strtotime($questionConfirmed->created_at) - strtotime($questionSubmit->created_at);
+
+            $questionAnswer = Doing::where('action','question_answered')->where('source_id',$questionConfirmed->source_id)->where('source_type','App\Models\Question')->first();
+            $questionAnswerSecond += strtotime($questionAnswer->created_at) - strtotime($questionConfirmed->created_at);
+
+        }
+        $questionAvaConfirmTime = $questionCount ? round($questionConfirmSecond/60/$questionCount,2) : 0;
+        $questionAvgAnswerTime = $questionCount ? round($questionAnswerSecond/60/$questionCount,2): 0;
+
         $userChart = $this->drawUserChart();
         $questionChart = $this->drawQuestionChart();
         $systemInfo = $this->getSystemInfo();
-        return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalArticleNum','totalAnswerNum','userChart','questionChart','systemInfo'));
+        return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
+            'totalAnswerNum',
+            'totalUrcNum',
+            'totalActiveUrcNum',
+            'totalInActiveUrcNum',
+            'userInfoCompleteTime',
+            'userInfoCompletePercent',
+            'questionAvaConfirmTime',
+            'questionAvgAnswerTime',
+            'userChart','questionChart','systemInfo'));
     }
 
 
@@ -95,9 +150,9 @@ class IndexController extends AdminController
 
         $questions = Question::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
         $answers = Answer::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
-        $articles = Article::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
+        $feedbacks = Feedback::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
-        $questionRange = $answerRange = $articleRange = [0,0,0,0,0,0,0];
+        $questionRange = $answerRange = $feedbackRange = [0,0,0,0,0,0,0];
 
         for( $i=0 ; $i < 7 ; $i++ ){
             $startTime = $labelTimes[$i];
@@ -119,10 +174,10 @@ class IndexController extends AdminController
                     $answerRange[$i]++;
                 }
             }
-            /*文章统计*/
-            foreach($articles as $article){
-                if( $article->created_at > $startTime && $article->created_at < $endTime ){
-                    $articleRange[$i]++;
+            /*评价统计*/
+            foreach($feedbacks as $feedback){
+                if( $feedback->created_at > $startTime && $feedback->created_at < $endTime ){
+                    $feedbackRange[$i]++;
                 }
             }
 
@@ -132,7 +187,7 @@ class IndexController extends AdminController
             'labels'  => $chartLabels,
             'questionRange' => $questionRange,
             'answerRange' => $answerRange,
-            'articleRange' => $articleRange,
+            'feedbackRange' => $feedbackRange,
         ];
 
     }

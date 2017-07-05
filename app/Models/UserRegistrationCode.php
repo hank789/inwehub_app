@@ -31,6 +31,7 @@ class UserRegistrationCode extends Model {
     const CODE_STATUS_DRAFT = 0;
     const CODE_STATUS_PENDING = 1;
     const CODE_STATUS_USED = 2;
+    const CODE_STATUS_EXPIRED = 3;
 
 
     public static function genCode(){
