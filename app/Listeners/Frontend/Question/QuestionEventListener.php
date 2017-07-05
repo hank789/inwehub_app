@@ -44,7 +44,7 @@ class QuestionEventListener implements ShouldQueue
             $question->invitedAnswer();
             $last_doing = Doing::where('user_id',0)->where('source_id',$question->id)->where('source_type','App\Models\Question')->where('action','question_process')->first();
             //记录动态
-            $doing_obj = TaskLogic::doing($question->user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'');
+            $doing_obj = TaskLogic::doing($uid,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
             if($last_doing->created_at >= $doing_obj->created_at){
                 $doing_obj->created_at = date('Y-m-d H:i:s',strtotime($last_doing->created_at.' + '.rand(1,10).' seconds'));
                 $doing_obj->save();

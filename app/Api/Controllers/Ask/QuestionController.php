@@ -278,7 +278,7 @@ class QuestionController extends Controller
                 //已邀请
                 $question->invitedAnswer();
                 //记录动态
-                $this->doing($question->user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'');
+                $this->doing($toUser->id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
                 //记录任务
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
@@ -352,7 +352,7 @@ class QuestionController extends Controller
         $tagString = trim($request->input('tags'));
         Tag::multiSaveByIds($tagString,$answer);
         /*记录动态*/
-        $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->getContentText());
+        $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id);
         /*修改问题邀请表的回答状态*/
         QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_REJECTED]);
 

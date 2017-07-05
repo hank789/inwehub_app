@@ -369,7 +369,7 @@ class QuestionController extends Controller
         //已邀请
         $question->invitedAnswer();
         //记录动态
-        $this->doing($question->user_id,'question_answer_confirming',get_class($question),$question->id,$question->title,'');
+        $this->doing($to_user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
         //记录任务
         $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 

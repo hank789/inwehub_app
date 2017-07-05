@@ -131,7 +131,7 @@ class AnswerController extends Controller
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
 
                 /*记录动态*/
-                $this->doing($answer->user_id,'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText());
+                $this->doing($answer->user_id,'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
 
                 /*记录通知*/
                 $this->notify($answer->user_id,$question->user_id,'question_answered',$question->title,$question->id,$answer->getContentText());
@@ -182,7 +182,7 @@ class AnswerController extends Controller
                 /*修改问题邀请表的回答状态*/
                 QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_CONFIRMED]);
                 /*记录动态*/
-                $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText());
+                $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
                 RateLimiter::instance()->lock_release($lock_key);
 
                 //推送通知
@@ -289,6 +289,8 @@ class AnswerController extends Controller
         $answer->question()->update(['status'=>7]);
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
+
+        $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
 
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,$request->all());
