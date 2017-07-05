@@ -11,8 +11,15 @@ class WechatController extends Controller
 
     public function jssdk(Request $request)
     {
+        $validateRules = [
+            'current_url' => 'required'
+        ];
+
+        $this->validate($request,$validateRules);
+        $current_url = $request->input('current_url');
         $wechat = app('wechat');
         $js = $wechat->js;
+        $js->setUrl($current_url);
         return self::createJsonData(true,['config'=>$js->config(['onMenuShareTimeline','onMenuShareQQ','onMenuShareAppMessage', 'onMenuShareWeibo'],false,false,false)]);
     }
 
