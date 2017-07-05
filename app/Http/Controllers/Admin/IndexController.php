@@ -56,7 +56,7 @@ class IndexController extends AdminController
         //问题平均接单时间
         $questionConfirmeds = Doing::where('action','question_answer_confirmed')->get();
         $questionCount = $questionConfirmeds->count();
-        $questionAnswerCount = Doing::where('action','question_answered')->get();
+        $questionAnswerCount = Doing::where('action','question_answered')->get()->count();
         $questionConfirmSecond = 0;
         $questionAnswerSecond = 0;
 
