@@ -21,6 +21,7 @@
 
 require __DIR__.'/../bootstrap/autoload.php';
 
+\App\Third\StatisticClient::tick($_SERVER['HTTP_HOST'],$_SERVER['PHP_SELF']);
 /*
 |--------------------------------------------------------------------------
 | Turn On The Lights
@@ -56,3 +57,4 @@ $response = $kernel->handle(
 $response->send();
 
 $kernel->terminate($request, $response);
+\App\Third\StatisticClient::report($_SERVER['HTTP_HOST'],$_SERVER['PHP_SELF'],true,200,'ok');
