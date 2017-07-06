@@ -42,7 +42,9 @@ class IndexController extends AdminController
         $diffSecond = 0;
         foreach($userInfoCompletes as $userInfoComplete){
             $registerTime = Credit::where('user_id',$userInfoComplete->user_id)->where('action','register')->first();
-            $diffSecond += strtotime($userInfoComplete->created_at) - strtotime($registerTime->created_at);
+            if($registerTime){
+                $diffSecond += strtotime($userInfoComplete->created_at) - strtotime($registerTime->created_at);
+            }
         }
         if($userInfoCompleteCount){
             $userInfoCompleteTime = round($diffSecond/$userInfoCompleteCount/60,2);
