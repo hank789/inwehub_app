@@ -67,6 +67,11 @@ class ProfileController extends Controller
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
         $info['is_company'] = $user->userData->is_company;
         $info['show_my_wallet'] = $user->userMoney->total_money > 0 ? true:false;
+        $info['show_ios_resume'] = true;
+        if(config('app.env') == 'production'){
+            //ios正在审核,暂时不显示个人名片
+            $info['show_ios_resume'] = false;
+        }
 
         $info_percent = $user->getInfoCompletePercent(true);
         $info['account_info_complete_percent'] = $info_percent['score'];
