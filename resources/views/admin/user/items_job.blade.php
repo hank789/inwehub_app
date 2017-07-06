@@ -54,6 +54,9 @@
                                                         <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
                                                     @endforeach
                                                 @endif
+                                                @foreach( $industry_tags as $tag)
+                                                    <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                                @endforeach
                                             </select>
                                             @if ($errors->first('industry_tags'))
                                                 <span class="help-block">{{ $errors->first('industry_tags') }}</span>
@@ -72,6 +75,9 @@
                                                         <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
                                                     @endforeach
                                                 @endif
+                                                @foreach( $product_tags as $tag)
+                                                    <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                                @endforeach
                                             </select>
                                             @if ($errors->first('product_tags'))
                                                 <span class="help-block">{{ $errors->first('product_tags') }}</span>
@@ -173,31 +179,14 @@
 
 @section('script')
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
+    <script src="{{ asset('/static/js/autosize.min.js')}}"></script>
 
     <script type="text/javascript">
         $(function(){
-
+            autosize($('textarea'));
             $("#select_industry_tags").select2({
                 theme:'bootstrap',
                 placeholder: "所在行业",
-                ajax: {
-                    url: '/manager/ajax/loadTags',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            word: params.term,
-                            type: 3
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength:2,
                 tags:false
             });
 
@@ -209,24 +198,6 @@
             $("#select_product_tags").select2({
                 theme:'bootstrap',
                 placeholder: "产品标签",
-                ajax: {
-                    url: '/manager/ajax/loadTags',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            word: params.term,
-                            type: 4
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength:2,
                 tags:false
             });
 

@@ -140,8 +140,11 @@
 @endsection
 
 @section('script')
+    <script src="{{ asset('/static/js/autosize.min.js')}}"></script>
+
     <script type="text/javascript">
         $(function(){
+            autosize($('textarea'));
             set_active_menu('manage_user',"{{ route('admin.user.index') }}");
         });
 

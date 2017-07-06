@@ -199,9 +199,11 @@
     <script src="{{ asset('/static/js/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('/static/js/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js') }}"></script>
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
+    <script src="{{ asset('/static/js/autosize.min.js')}}"></script>
 
     <script type="text/javascript">
         $(function(){
+            autosize($('textarea'));
             /*生日日历*/
             $(".datepicker").datepicker({
                 format: "yyyy-mm-dd",

@@ -205,6 +205,8 @@ class UserController extends AdminController
         $user = User::find($user_id);
         $title = '';
         $view = '';
+        $product_tags = Tag::where('category_id',10)->get();
+        $industry_tags = Tag::where('category_id',9)->get();
         switch($type){
             case 'jobs':
                 $items = $user->jobs()->orderBy('begin_time','desc')->get();
@@ -233,7 +235,7 @@ class UserController extends AdminController
         }
 
         return view($view)->with('items',$items)->with('type',$type)->with('user_id',$user_id)
-            ->with('title',$title)->with('object_item',$object_item);
+            ->with('title',$title)->with('object_item',$object_item)->with('product_tags',$product_tags)->with('industry_tags',$industry_tags);
     }
 
     public function storeItemInfo(Request $request)
