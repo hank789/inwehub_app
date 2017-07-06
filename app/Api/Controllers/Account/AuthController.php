@@ -63,9 +63,12 @@ class AuthController extends Controller
                 } else {
                     if(Setting()->get('registration_code_open',1)){
                         if($code){
-                            $rcode = UserRegistrationCode::where('code',$code)->where('status',UserRegistrationCode::CODE_STATUS_PENDING)->first();
+                            $rcode = UserRegistrationCode::where('code',$code)->first();
                             if(empty($rcode)){
                                 throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
+                            }
+                            if($rcode->status != UserRegistrationCode::CODE_STATUS_PENDING){
+                                throw new ApiException(ApiException::USER_REGISTRATION_CODE_USED);
                             }
                         } else {
                             throw new ApiException(ApiException::USER_WEIXIN_REGISTER_NEED_CODE);

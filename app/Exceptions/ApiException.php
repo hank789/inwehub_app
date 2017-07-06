@@ -51,7 +51,7 @@ class ApiException extends Exception
     const USER_WEIXIN_UNOAUTH = 1114;
     const USER_WEIXIN_NEED_REGISTER = 1115;
     const USER_WEIXIN_REGISTER_NEED_CODE = 1116;
-
+    const USER_REGISTRATION_CODE_USED = 1117;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -108,6 +108,7 @@ class ApiException extends Exception
         self::USER_WEIXIN_UNOAUTH    => '微信未授权',
         self::USER_WEIXIN_NEED_REGISTER => '需要注册',
         self::USER_WEIXIN_REGISTER_NEED_CODE => '新注册用户需要填写邀请码',
+        self::USER_REGISTRATION_CODE_USED => '此邀请码已被使用，谢谢您的支持！',
 
 
         //问答模块
