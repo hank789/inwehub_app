@@ -72,7 +72,7 @@ class SystemController extends Controller {
 
         if(config('app.env') == 'production'){
             $ios_force_update_url = 'https://www.pgyer.com/Zoy3';//正式环境换成苹果商店的地址
-            $android_force_update_url = 'https://www.pgyer.com/hfkG';//正式环境换成android商店的地址
+            $android_force_update_url = 'https://www.pgyer.com/s9AN';//正式环境换成android商店的地址
         }
         $app_version = $last->app_version??'1.0.0';
         $is_force = $last->is_force??0;

@@ -35,9 +35,9 @@ class UserRegistrationCode extends Model {
 
 
     public static function genCode(){
-        $code = Str::random(6);
+        $code = strtolower(Str::random(6));
         while(self::where('code',$code)->first()){
-            $code = Str::random(6);
+            $code = strtolower(Str::random(6));
         }
         return $code;
     }
