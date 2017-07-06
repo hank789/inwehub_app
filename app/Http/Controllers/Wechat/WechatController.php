@@ -77,7 +77,7 @@ class WechatController extends Controller
         $redirect = $request->get('redirect','');
         Session::put("wechat_user_redirect",$redirect);
 
-        return $wechat->oauth->scopes(['snsapi_base','snsapi_userinfo'])
+        return $wechat->oauth->scopes(['snsapi_userinfo'])
             ->setRequest($request)
             ->redirect();
     }
