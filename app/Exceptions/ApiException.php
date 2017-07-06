@@ -117,7 +117,7 @@ class ApiException extends Exception
         self::ASK_QUESTION_NOT_EXIST => '问题不存在',
         self::ASK_QUESTION_ALREADY_CONFIRMED => '手慢了一步，已经有专家赶在您前面确认应答了，下次加油啊！',
         self::ASK_PAYMENT_EXCEPTION => '支付异常',
-        self::ASK_CANNOT_INVITE_SELF => '不能邀请自己',
+        self::ASK_CANNOT_INVITE_SELF => '不能向自己提问',
         self::ASK_INVITE_USER_NOT_FOUND => '邀请者不存在',
         self::ASK_INVITE_USER_MUST_EXPERT => '邀请者必须为专家',
         self::ASK_QUESTION_ALREADY_ANSWERED => '您已回答过此问题',
