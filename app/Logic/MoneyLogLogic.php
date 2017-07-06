@@ -73,7 +73,7 @@ class MoneyLogLogic {
                 'change_money' => $money,
                 'source_id'    => $object_class->id,
                 'source_type'  => get_class($object_class),
-                'io'           => 1,
+                'io'           => -1,
                 'status'       => $log_status,
                 'money_type'   => $money_type,
                 'before_money' => $userMoney->total_money

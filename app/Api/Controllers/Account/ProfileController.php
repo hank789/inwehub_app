@@ -66,7 +66,7 @@ class ProfileController extends Controller
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
         $info['is_company'] = $user->userData->is_company;
-        $info['show_my_wallet'] = $user->userMoney->total_money > 0 ? true:false;
+        $info['show_my_wallet'] = $user->moneyLogs()->count() ? true:false;
         $info['show_ios_resume'] = true;
         if(config('app.env') == 'production'){
             //ios正在审核,暂时不显示个人名片
