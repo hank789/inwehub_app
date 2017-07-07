@@ -76,6 +76,10 @@ class WechatController extends Controller
         $wechat = app('wechat');
         $redirect = $request->get('redirect','');
         Session::put("wechat_user_redirect",$redirect);
+        $userInfo = session('wechat_userinfo');
+        if($userInfo && isset($userInfo['app_token'])){
+            return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$userInfo['app_token'].'&redirect='.$redirect);
+        }
 
         return $wechat->oauth->scopes(['snsapi_userinfo'])
             ->setRequest($request)
@@ -116,6 +120,7 @@ class WechatController extends Controller
             if ($user){
                 $token = $JWTAuth->fromUser($user);
                 $userInfo['app_token'] = $token;
+                Session::put("wechat_userinfo",$userInfo);
             }
         } else {
             UserOauth::create(
