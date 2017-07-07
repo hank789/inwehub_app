@@ -6,6 +6,11 @@
 
 @section('css')
     <link href="{{ asset('/static/js/summernote/summernote.css')}}" rel="stylesheet">
+    <style>
+        .text-fmt img {
+            position: absolute;
+        }
+    </style>
 @endsection
 
 @section('content')
