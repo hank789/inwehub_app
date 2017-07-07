@@ -5,6 +5,7 @@ use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
 use App\Models\Answer;
+use App\Models\Attention;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
@@ -148,8 +149,14 @@ class ProfileController extends Controller
             $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
         }
         $is_self = false;
+        $is_followed = 0;
         if($loginUser && $loginUser->id == $user->id){
             $is_self = true;
+        }elseif($loginUser) {
+            $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($user))->where('source_id','=',$user->id)->first();
+            if ($attention){
+                $is_followed = 1;
+            }
         }
 
         $info = [];
@@ -224,6 +231,7 @@ class ProfileController extends Controller
 
         $data = [
             'info'   => $info,
+            'is_followed' => $is_followed,
             'jobs'   => $jobs,
             'projects' => $projects,
             'edus'   => $edus,

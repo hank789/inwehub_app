@@ -34,7 +34,10 @@ class FollowController extends Controller
             $source  = Question::find($source_id);
             $subject = $source->title;
         }else if($source_type === 'user'){
-            $source  = User::find($source_id);
+            $source = User::where('uuid',$source_id)->first();
+            if(empty($source)){
+                $source  = User::findOrFail($source_id);
+            }
             $subject = $source->name;
         }else if($source_type==='tag'){
             $source  = Tag::find($source_id);
