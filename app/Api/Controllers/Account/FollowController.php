@@ -23,7 +23,7 @@ class FollowController extends Controller
     {
 
         $validateRules = [
-            'id' => 'required|integer',
+            'id' => 'required',
         ];
 
         $this->validate($request,$validateRules);
