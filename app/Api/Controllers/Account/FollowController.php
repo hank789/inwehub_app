@@ -29,6 +29,7 @@ class FollowController extends Controller
         $this->validate($request,$validateRules);
 
         $source_id = $request->input('id');
+        $loginUser = $request->user();
 
         if($source_type === 'question'){
             $source  = Question::findOrFail($source_id);
@@ -39,6 +40,9 @@ class FollowController extends Controller
                 $source  = User::findOrFail($source_id);
             }
             $source_id = $source->id;
+            if($source_id == $loginUser->id){
+                throw new ApiException(ApiException::USER_CANNOT_FOLLOWED_SELF);
+            }
             $subject = $source->name;
         }else if($source_type==='tag'){
             $source  = Tag::findOrFail($source_id);
@@ -46,7 +50,7 @@ class FollowController extends Controller
         }
 
         /*再次关注相当于是取消关注*/
-        $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($source))->where('source_id','=',$source_id)->first();
+        $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($source))->where('source_id','=',$source_id)->first();
         if($attention){
             $attention->delete();
             if($source_type==='user'){
@@ -58,7 +62,7 @@ class FollowController extends Controller
         }
 
         $data = [
-            'user_id'     => $request->user()->id,
+            'user_id'     => $loginUser->id,
             'source_id'   => $source_id,
             'source_type' => get_class($source),
         ];
@@ -68,13 +72,13 @@ class FollowController extends Controller
         if($attention){
             switch($source_type){
                 case 'question' :
-                    $this->notify($request->user()->id,$source->user_id,'follow_question',$subject,$source->id);
-                    $this->doing($request->user()->id,'follow_question',get_class($source),$source_id,$subject);
+                    $this->notify($loginUser->id,$source->user_id,'follow_question',$subject,$source->id);
+                    $this->doing($loginUser->id,'follow_question',get_class($source),$source_id,$subject);
                     $source->increment('followers');
                     break;
                 case 'user':
                     $source->userData->increment('followers');
-                    $this->notify($request->user()->id,$source->id,'follow_user');
+                    $this->notify($loginUser->id,$source->id,'follow_user');
                     break;
                 case 'tag':
                     $source->increment('followers');

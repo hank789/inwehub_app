@@ -85,6 +85,7 @@ class QuestionController extends Controller
             $answers_data[] = [
                 'id' => $bestAnswer->id,
                 'user_id' => $bestAnswer->user_id,
+                'uuid' => $bestAnswer->user->uuid,
                 'user_name' => $bestAnswer->user->name,
                 'user_avatar_url' => $bestAnswer->user->getAvatarUrl(),
                 'content' => $bestAnswer->content,
