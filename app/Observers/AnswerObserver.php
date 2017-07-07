@@ -51,7 +51,7 @@ class AnswerObserver implements ShouldQueue {
 
                 $fields[] = [
                     'title' => '回答内容',
-                    'value' => $answer->getContentHtml()
+                    'value' => $answer->getContentText()
                 ];
 
                 if ($answer->promise_time){
