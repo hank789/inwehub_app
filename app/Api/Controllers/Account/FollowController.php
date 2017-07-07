@@ -31,21 +31,18 @@ class FollowController extends Controller
         $source_id = $request->input('id');
 
         if($source_type === 'question'){
-            $source  = Question::find($source_id);
+            $source  = Question::findOrFail($source_id);
             $subject = $source->title;
         }else if($source_type === 'user'){
             $source = User::where('uuid',$source_id)->first();
             if(empty($source)){
                 $source  = User::findOrFail($source_id);
             }
+            $source_id = $source->id;
             $subject = $source->name;
         }else if($source_type==='tag'){
-            $source  = Tag::find($source_id);
+            $source  = Tag::findOrFail($source_id);
             $subject = $source->name;
-        }
-
-        if(!$source){
-            abort(404);
         }
 
         /*再次关注相当于是取消关注*/
