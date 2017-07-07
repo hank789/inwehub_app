@@ -39,6 +39,6 @@ stdout_logfile=/tmp/queue_worker.log
 注意事项:
 在服务器上创建软链:`ln -s /usr/local/php/bin/php /usr/bin/php`
 ### 测试环境部署
-`envoy run deploy-test`
+`envoy run test`
 ### 正式环境部署
-`envoy run deploy-pro`
+`envoy run pro`

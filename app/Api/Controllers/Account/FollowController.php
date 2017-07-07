@@ -127,6 +127,7 @@ class FollowController extends Controller
             switch($source_type){
                 case 'users':
                     $item['user_id'] = $info->id;
+                    $item['uuid'] = $info->uuid;
                     $item['user_name'] = $info->name;
                     $item['user_avatar_url'] = $info->getAvatarUrl();
                     $item['description'] = $info->description;

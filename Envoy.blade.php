@@ -1,6 +1,6 @@
 @servers(['web-test1' => 'web@47.92.24.67'],'web-pro' => 'web@47.92.64.32')
 
-@task('deploy-test',['on' => ['web-test1']])
+@task('test-f',['on' => ['web-test1']])
     cd /home/web/www/intervapp
     git pull origin master
     composer update --no-scripts
@@ -11,7 +11,12 @@
     php artisan queue:restart
 @endtask
 
-@task('deploy-pro',['on' => ['web-pro']])
+@task('test-m',['on' => ['web-test1']])
+cd /home/web/www/intervapp
+git pull origin master
+@endtask
+
+@task('pro',['on' => ['web-pro']])
 cd /home/web/www/intervapp
 git pull origin master
 composer update --no-scripts
