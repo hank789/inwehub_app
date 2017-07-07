@@ -21,8 +21,8 @@
 
 require __DIR__.'/../bootstrap/autoload.php';
 $report_interface = explode('?',$_SERVER['REQUEST_URI']);
-
-\App\Third\StatisticClient::tick($_SERVER['HTTP_HOST'],$report_interface[0]);
+$report_http_host = $_SERVER['HTTP_HOST'];
+\App\Third\StatisticClient::tick($report_http_host,$report_interface[0]);
 
 /*
 |--------------------------------------------------------------------------
@@ -59,4 +59,4 @@ $response = $kernel->handle(
 $response->send();
 
 $kernel->terminate($request, $response);
-\App\Third\StatisticClient::report($_SERVER['HTTP_HOST'],$report_interface[0],true,200,'ok');
+\App\Third\StatisticClient::report($report_http_host,$report_interface[0],true,200,'ok');
