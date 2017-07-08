@@ -4,6 +4,11 @@
 
 @section('css')
     <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
+    <style>
+        .quill-editor img {
+            max-width: 100%;
+        }
+    </style>
 @endsection
 
 @section('content')
