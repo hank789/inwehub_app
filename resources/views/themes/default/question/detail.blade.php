@@ -5,7 +5,7 @@
 @section('seo_description'){{ parse_seo_template('seo_question_description',$question) }}@endsection
 
 @section('css')
-    <link href="{{ asset('/static/js/summernote/summernote.css')}}" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -68,7 +68,7 @@
                             <span class="pull-right text-muted adopt_time">{{ timestamp_format($bestAnswer->created_at) }}</span>
                         </h3>
                     </div>
-                    <div class="text-fmt">
+                    <div class="text-fmt" id="bestAnswerContent">
                         {!! $bestAnswer->getContentHtml() !!}
                     </div>
                     <div class="options clearfix mt-10">
@@ -234,7 +234,7 @@
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <input type="hidden" id="answer_editor_content"  name="content" value="{{ old('content','') }}"  />
-                                <button type="submit" class="btn btn-primary pull-right">提交回答</button>
+                                <button type="submit" disabled class="btn btn-primary pull-right" onclick="setContent()">提交回答</button>
                             </div>
                         </div>
                     </form>
@@ -394,8 +394,8 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('/static/js/summernote/summernote.min.js') }}"></script>
-    <script src="{{ asset('/static/js/summernote/lang/summernote-zh-CN.min.js') }}"></script>
+    <script src="//cdn.quilljs.com/1.0.0/quill.min.js" type="text/javascript"></script>
+
     <script type="text/javascript">
         var invitation_timer = null;
         var question_id = "{{ $question->id }}";
@@ -417,22 +417,17 @@
             });
            @endif
 
-            /*回答编辑器初始化*/
-            $('#answer_editor').summernote({
-                lang: 'zh-CN',
-                height: 160,
-                placeholder:'撰写答案',
-                toolbar: [ {!! config('inwehub.summernote.ask') !!} ],
-                callbacks: {
-                    onChange:function (contents, $editable) {
-                        var code = $(this).summernote("code");
-                        $("#answer_editor_content").val(code);
-                    },
-                    onImageUpload:function(files) {
-                        upload_editor_image(files[0],'answer_editor');
-                    }
-                }
-            });
+            var bestAnswerOptions = {
+                placeholder:' ',
+                modules: {
+                    toolbar: [
+                    ]
+                },
+                readOnly: true
+                };
+            var bestAnswerContentEditor = new Quill('#bestAnswerContent', bestAnswerOptions);
+
+            bestAnswerContentEditor.setContents({!! $bestAnswer->content !!});
 
             /*评论提交*/
             $(".comment-btn").click(function(){
@@ -573,6 +568,18 @@
 
         });
 
+
+        /*回答编辑器初始化*/
+        var editor = new Quill('#answer_editor', {
+            modules: { toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline']
+            ] },
+            theme: 'snow'
+        });
+        function setContent(){
+            $("#answer_editor_content").val(JSON.stringify(editor.getContents()));
+        }
 
         /**
          * @param questionId

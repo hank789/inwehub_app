@@ -63,7 +63,6 @@ class AnswerController extends Controller
         $data = [
             'user_id'      => $loginUser->id,
             'question_id'      => $question_id,
-            'question_title'        => $question->title,
             'content'  => $answerContent,
             'status'   => 1,
         ];
