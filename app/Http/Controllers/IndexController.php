@@ -182,6 +182,7 @@ class IndexController extends Controller
 
     public function experts(Request $request,$categorySlug='all',$provinceId='all'){
         $categories = load_categories('experts');
+
         $hotProvinces = Cache::remember('hot_expert_cities',Setting()->get('website_cache_time',1),function() {
             return  Authentication::select('province', DB::raw('COUNT(user_id) as total'))->groupBy('province')->orderBy('total','desc')->get();
         });

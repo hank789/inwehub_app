@@ -541,4 +541,10 @@ if (!function_exists('gen_user_uuid')){
     }
 }
 
+if (!function_exists('get_user_avatar_url_by_id')){
+    function get_user_avatar_url_by_id($uid){
+        $user = \App\Models\User::find($uid);
+        return $user->getAvatarUrl();
+    }
+}
 

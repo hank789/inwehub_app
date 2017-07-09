@@ -88,7 +88,7 @@
                 <ol class="widget-top10">
                     @foreach($hotUsers as $index => $hotUser)
                         <li class="text-muted">
-                            <img class="avatar-32" src="">
+                            <img class="avatar-32" src="{{ get_user_avatar_url_by_id($hotUser['id']) }}">
                             <a href="{{ route('auth.space.index',['user_id'=>$hotUser['id']]) }}" class="ellipsis">{{ $hotUser['name'] }}</a>
                             <span class="text-muted pull-right">{{ $hotUser['credits'] }} 经验</span>
                         </li>

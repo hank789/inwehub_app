@@ -23,7 +23,7 @@
                             </div>
                             <div class="pull-left mr-10">
                                 <a href="{{ route('auth.space.index',['id'=>$user->user_id]) }}" target="_blank">
-                                    <img class="media-object avatar-64" src="{{ get_user_avatar($user->user_id,'big') }}" alt="{{ $user->user->name }}">
+                                    <img class="media-object avatar-64" src="{{ $user->user->getAvatarUrl() }}" alt="{{ $user->user->name }}">
                                 </a>
                             </div>
                             <div class="media-body">
@@ -32,7 +32,7 @@
                                     @if($user->authentication_status===1)<span class="text-gold"><i class="fa fa-graduation-cap" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="" data-original-title="已通过行家认证"></i></span> @endif
                                 </h4>
                                 <p class="text-muted">{{ $user->user->title }}</p>
-                                <p class="text-muted">{{ $user->coins }}金币 / {{ $user->supports }}赞同 / {{ $user->followers }}关注 / {{ $user->answers }}回答</p>
+                                <p class="text-muted">{{ $user->credits }} 成长值 / {{ $user->coins }}贡献值 / {{ $user->user->getInfoCompletePercent() }}简历完整度 / {{ $user->followers }}关注 / {{ $user->answers }}回答</p>
                                 <ul class="taglist-inline ib">
                                     @if($user->user->hotTags())
                                         @foreach( $user->user->hotTags() as $tag)
