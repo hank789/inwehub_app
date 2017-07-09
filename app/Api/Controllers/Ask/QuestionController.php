@@ -250,6 +250,19 @@ class QuestionController extends Controller
 
             $waiting_second = rand(1,5);
 
+            //因为微信支付要有30天的流水,所以指定用户id为3的每天做流水
+            if(config('app.env') == 'production' && $loginUser->id == 3){
+                $res_data = [
+                    'id'=>$question->id,
+                    'price'=> $price,
+                    "tips_1"=> "平台已为您支付",
+                    "tips_2"=> "受理反馈中",
+                    "waiting_second" => $waiting_second,
+                    'create_time'=>(string)$question->created_at
+                ];
+                return self::createJsonData(true,$res_data,ApiException::SUCCESS,'发起提问成功!');
+            }
+
             if(!$to_user_uuid){
                 $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
                 $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
