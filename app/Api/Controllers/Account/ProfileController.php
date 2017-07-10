@@ -146,7 +146,11 @@ class ProfileController extends Controller
         $jwtToken = $JWTAuth->getToken();
         $loginUser = '';
         if($jwtToken){
-            $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
+            try{
+                $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
+            } catch (\Exception $e){
+
+            }
         }
         $is_self = false;
         $is_followed = 0;
