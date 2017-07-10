@@ -427,7 +427,9 @@
                 };
             var bestAnswerContentEditor = new Quill('#bestAnswerContent', bestAnswerOptions);
 
+            @if($bestAnswer)
             bestAnswerContentEditor.setContents({!! $bestAnswer->content !!});
+            @endif
 
             /*评论提交*/
             $(".comment-btn").click(function(){

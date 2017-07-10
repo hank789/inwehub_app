@@ -21,7 +21,7 @@
                             </div>
                             <div class="pull-left mr-10">
                                 <a href="{{ route('auth.space.index',['id'=>$user['id']]) }}" target="_blank">
-                                    <img class="media-object avatar-64" src="{{ get_user_avatar($user['id'],'big') }}" alt="{{ $user['name'] }}">
+                                    <img class="media-object avatar-64" src="{{ get_user_avatar_url_by_id($user['id']) }}" alt="{{ $user['name'] }}">
                                 </a>
                             </div>
                             <div class="media-body">
@@ -30,7 +30,7 @@
                                     @if($user['authentication_status']===1)<span class="text-gold"><i class="fa fa-graduation-cap" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="" data-original-title="已通过行家认证"></i></span> @endif
                                 </h4>
                                 <p class="text-muted">{{ $user['title'] }}</p>
-                                <p class="text-muted">{{ $user['coins'] }}金币 / {{ $user['supports'] }}赞同 / {{ $user['followers'] }}关注</p>
+                                <p class="text-muted">{{ $user['coins'] }}成长值 / {{ $user['supports'] }}赞同 / {{ $user['followers'] }}关注</p>
                             </div>
                         </div>
                         <div class="col-md-3">
