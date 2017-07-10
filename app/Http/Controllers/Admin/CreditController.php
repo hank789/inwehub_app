@@ -16,8 +16,9 @@ use Illuminate\Http\Request;
 class CreditController extends AdminController
 {
 
-    public function index(){
+    public function index(Request $request){
         $query = Credit::query();
+        $filter =  $request->all();
         $query->where(function($query){
             $query->where('credits','<>',0)
                   ->orWhere('coins','<>',0);
@@ -34,7 +35,7 @@ class CreditController extends AdminController
         $credits->map(function($credit){
             $credit->actionText = config('inwehub.user_actions.'.$credit->action);
         });
-        return view('admin.credit.index')->with(compact('credits'));
+        return view('admin.credit.index')->with(compact('credits','filter'));
     }
 
     public function create(){

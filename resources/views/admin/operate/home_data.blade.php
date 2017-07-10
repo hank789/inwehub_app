@@ -45,13 +45,6 @@
                                     </td>
                                 </tr>
 
-                                <tr>
-                                    <td>推荐专家头像地址</td>
-                                    <td>
-                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('recommend_expert_avatar_url')) has-error @endif "><input type="text" class="form-control" name="recommend_expert_avatar_url" value="{{ old('recommend_expert_avatar_url',Setting()->get('recommend_expert_avatar_url')) }}" /></div>
-                                    </td>
-                                </tr>
-
                                 </tbody>
                             </table>
                         </div>

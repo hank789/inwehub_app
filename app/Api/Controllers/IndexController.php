@@ -50,7 +50,7 @@ class IndexController extends Controller {
             'recommend_expert_uuid' => $recommend_expert_user->uuid,//专家uuid
             'recommend_expert_uid' => $recommend_expert_uid,//专家id
             'recommend_expert_is_followed' => $recommend_expert_is_followed,
-            'recommend_expert_avatar_url' => Setting()->get('recommend_expert_avatar_url','http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/default/WechatIMG1.jpeg'),//资深专家头像
+            'recommend_expert_avatar_url' => $recommend_expert_user->getAvatarUrl(),//资深专家头像
             'recommend_qa' => $recommend_qa
         ];
 
