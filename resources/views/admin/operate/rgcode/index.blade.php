@@ -25,7 +25,7 @@
                                     <form name="searchForm" action="{{ route('admin.operate.rgcode.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-2">
-                                            <input type="text" class="form-control" name="mobile" placeholder="手机号" value="{{ $filter['mobile'] or '' }}"/>
+                                            <input type="text" class="form-control" name="keyword" placeholder="邀请对象" value="{{ $filter['keyword'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
                                             <input type="text" class="form-control" name="code" placeholder="邀请码" value="{{ $filter['code'] or '' }}"/>

@@ -27,8 +27,20 @@ class RegistrationCodeController extends AdminController
      */
     public function index(Request $request)
     {
-        $codes = UserRegistrationCode::orderBy('id','desc')->paginate(Config::get('inwehub.admin.page_size'));
-        return view('admin.operate.rgcode.index')->with('codes',$codes);
+        $filter =  $request->all();
+        $query = UserRegistrationCode::orderBy('id','desc');
+        if( isset($filter['keyword']) &&  $filter['keyword']){
+            $query->where('keyword','=',$filter['keyword']);
+        }
+        if( isset($filter['code']) && $filter['code'] ){
+            $query->where('code',$filter['code']);
+        }
+
+        if( isset($filter['status']) && $filter['status']>=0 ){
+            $query->where('status',$filter['status']);
+        }
+        $codes = $query->paginate(Config::get('inwehub.admin.page_size'));
+        return view('admin.operate.rgcode.index')->with('codes',$codes)->with('filter',$filter);
     }
 
 
