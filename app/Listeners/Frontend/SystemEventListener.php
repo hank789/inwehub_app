@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Listeners\Frontend;
+use App\Events\Frontend\System\ErrorNotify;
 use App\Events\Frontend\System\FuncZan;
 use App\Events\LogNotify;
 use App\Logic\WechatNotice;
@@ -74,6 +75,24 @@ class SystemEventListener implements ShouldQueue
             Getui::pushMessageToSingle($device->client_id,$data,$tmp_id);
         }
     }
+
+    /**
+     * @param ErrorNotify $event
+     */
+    public function errorNotify($event){
+        \Slack::to(config('slack.exception_channel'))->attach([
+            'pretext' => '错误详细信息',
+            'color' => 'danger',
+            'fields' => [
+                [
+                    'title' => '',
+                    'value' => json_encode($event->context,JSON_UNESCAPED_UNICODE)
+                ]
+            ]
+        ])->send($event->message);
+    }
+
+
 
     /**
      * 用户积分
@@ -173,6 +192,11 @@ class SystemEventListener implements ShouldQueue
         $events->listen(
             LogNotify::class,
             'App\Listeners\Frontend\SystemEventListener@logNotify'
+        );
+
+        $events->listen(
+            ErrorNotify::class,
+            'App\Listeners\Frontend\SystemEventListener@errorNotify'
         );
     }
 }

@@ -1,4 +1,4 @@
-@servers(['web-test1' => 'web@47.92.24.67'],'web-pro' => 'web@47.92.64.32')
+@servers(['web-test1' => 'web@47.92.24.67','web-pro' => 'web@47.92.64.32'])
 
 @task('test',['on' => ['web-test1']])
     cd /home/web/www/intervapp
@@ -17,7 +17,7 @@ git pull origin master
 @endtask
 
 @task('pro',['on' => ['web-pro']])
-cd home/web/www/inwehub_app
+cd /home/web/www/inwehub_app
 git pull origin master
 composer update --no-scripts
 php artisan optimize
@@ -28,7 +28,7 @@ php artisan queue:restart
 @endtask
 
 @task('pro-m',['on' => ['web-pro']])
-cd home/web/www/inwehub_app
+cd /home/web/www/inwehub_app
 git pull origin master
 @endtask
 

@@ -8,7 +8,7 @@
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Class UserRegistered.
+ * Class Push.
  */
 class Push
 {

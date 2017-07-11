@@ -1,4 +1,5 @@
 <?php namespace App\Http\Controllers\Wechat;
+use App\Events\Frontend\System\ErrorNotify;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Log;
@@ -122,7 +123,7 @@ class WechatController extends Controller
                 $userInfo['app_token'] = $token;
                 Session::put("wechat_userinfo",$userInfo);
             }
-        } else {
+        } elseif($userInfo['id']) {
             UserOauth::create(
                 [
                     'auth_type'=>UserOauth::AUTH_TYPE_WEIXIN_GZH,
@@ -138,6 +139,9 @@ class WechatController extends Controller
                     'scope'=>'snsapi_userinfo'
                 ]
             );
+        } else {
+            event(new ErrorNotify('微信认证失败',['userinfo'=>$userInfo]));
+            return '服务器繁忙,请稍后再试';
         }
 
         return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);
