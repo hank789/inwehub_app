@@ -28,89 +28,31 @@ class CompanyController extends AdminController
         $filter =  $request->all();
 
         /*认证申请状态过滤*/
-        if(isset($filter['status']) && $filter['status'] > -1){
-            $query->where('status','=',$filter['status']);
+        if(isset($filter['apply_status']) && $filter['apply_status'] > -1){
+            $query->where('apply_status','=',$filter['apply_status']);
         }
 
-        if( $filter['user_id'] > 0 ){
+        if(isset($filter['user_id']) && $filter['user_id'] > 0 ){
             $query->where('user_id','=',$filter['user_id']);
         }
 
         $companies = $query->orderBy('updated_at','desc')->paginate(20);
-        return view('admin.authentication.index')->with(compact('filter','companies'));
+        return view('admin.company.index')->with(compact('filter','companies'));
     }
 
-    public function create(){
-        return view('admin.authentication.create');
-    }
-
-    public function store(Request $request){
-        $data = $request->all();
-
-        \Log::info('test',$data);
-        if($data['skill_tags'] !== null ){
-            $skill_tags = $data['skill_tags'];
-            $tags = Tag::whereIn('id',explode(',',$skill_tags))->get();
-            UserTag::detachByField($data['user_id'],'skills');
-            UserTag::multiIncrement($data['user_id'],$tags,'skills');
-        }
-
-        $object = Authentication::create($data);
-        if($object && isset($data['status']) && $data['status'] == 1){
-            $action = 'expert_valid';
-            event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$data['user_id'],'专家认证'));
-        }
-        return $this->success(route('admin.authentication.index'),'行家认证信息添加成功');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function destroy(Request $request)
     {
-        $authentication = Authentication::find($id);
-        return view('admin.authentication.edit')->with(compact('authentication'));
-
+        Company::whereIn('id',$request->input('id'))->update(['apply_status'=>Company::APPLY_STATUS_REJECT]);
+        return $this->success(route('admin.company.index'),'审核不通过成功');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    /*审核*/
+    public function verify(Request $request)
     {
-        $authentication = Authentication::find($id);
-        if(!$authentication){
-            return $this->error(route('admin.authentication.index'),'行家认证信息不存在，请核实');
-        }
+        $ids = $request->input('id');
+        Company::whereIn('id',$ids)->update(['apply_status'=>Company::APPLY_STATUS_SUCCESS]);
 
-
-        $data = $request->all();
-
-        $old_status = $authentication->status;
-        $new_status = $data['status'];
-        $authentication->update($data);
-
-        if($data['skill_tags'] !== null ){
-            $skill_tags = $data['skill_tags'];
-            $tags = Tag::whereIn('id',explode(',',$skill_tags))->get();
-            UserTag::detachByField($authentication->user_id,'skills');
-            UserTag::multiIncrement($authentication->user_id,$tags,'skills');
-        }
-
-        if($old_status != 1 && $new_status == 1){
-            $action = 'expert_valid';
-            event(new Credit($authentication->user_id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$id,'专家认证'));
-        }
-
-        return $this->success(route('admin.authentication.index'),'行家认证信息修改成功');
-
+        return $this->success(route('admin.company.index'),'审核成功');
 
     }
 

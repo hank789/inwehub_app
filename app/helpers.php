@@ -80,6 +80,30 @@ if (! function_exists('trans_authentication_status')) {
 
 }
 
+/*企业认证状态文字定义*/
+if (! function_exists('trans_company_apply_status')) {
+
+    function trans_company_apply_status($status){
+        $map = [
+            1 => '待审核',
+            2 => '审核通过',
+            3 => '审核失败',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+
+}
 
 /*公告状态文字定义*/
 if (! function_exists('trans_exchange_status')) {

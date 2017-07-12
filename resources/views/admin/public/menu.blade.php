@@ -15,6 +15,16 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-users"></i> <span>企业</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_company">
+            <li><a href="{{ route('admin.company.index') }}"><i class="fa fa-circle-o"></i> 认证管理</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-users"></i> <span>权限</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>

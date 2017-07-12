@@ -19,4 +19,9 @@ class Company extends Model
         'company_address','company_work_phone','company_represent_person_type','company_represent_person_name',
         'company_represent_person_title','company_represent_person_phone','company_represent_person_email','company_auth_mode','apply_status'];
 
+
+    const APPLY_STATUS_PENDING = 1;
+    const APPLY_STATUS_SUCCESS = 2;
+    const APPLY_STATUS_REJECT = 3;
+
 }

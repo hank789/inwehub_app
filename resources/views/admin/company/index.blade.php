@@ -15,8 +15,8 @@
                         <div class="row">
                             <div class="col-xs-3">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.authentication.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新专家"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.authentication.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.company.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="审核不通过" onclick="confirm_submit('item_form','{{  route('admin.company.destroy') }}','确认禁用选中项？')"><i class="fa fa-lock"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-9">
@@ -24,10 +24,10 @@
                                     <form name="searchForm" action="{{ route('admin.company.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-3">
-                                            <select class="form-control" name="status">
+                                            <select class="form-control" name="apply_status">
                                                 <option value="-1">--状态--</option>
-                                                @foreach(trans_authentication_status('all') as $key => $status)
-                                                    <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
+                                                @foreach(trans_company_apply_status('all') as $key => $status)
+                                                    <option value="{{ $key }}" @if( isset($filter['apply_status']) && $filter['apply_status']==$key) selected @endif >{{ $status }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -66,7 +66,6 @@
                                         <th>验证模式</th>
                                         <th>状态</th>
                                         <th>更新时间</th>
-                                        <th>操作</th>
                                     </tr>
                                     @foreach($companies as $company)
                                         <tr>
@@ -86,13 +85,8 @@
                                             <td>{{ $company->company_represent_person_phone }}</td>
                                             <td>{{ $company->company_represent_person_email }}</td>
                                             <td>{{ $company->company_auth_mode }}</td>
-                                            <td><span class="label @if($company->apply_status===0) label-warning  @elseif($company->apply_status===1) label-success @else label-default  @endif">{{ trans_authentication_status($company->apply_status) }}</span> </td>
+                                            <td><span class="label @if($company->apply_status===0) label-warning  @elseif($company->apply_status===1) label-success @else label-default  @endif">{{ trans_company_apply_status($company->apply_status) }}</span> </td>
                                             <td>{{ timestamp_format($authentication->updated_at) }}</td>
-                                            <td>
-                                                <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.authentication.edit',['user_id'=>$authentication->user_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
-                                                </div>
-                                            </td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -103,8 +97,8 @@
                         <div class="row">
                             <div class="col-sm-9">
                                 <div class="text-right">
-                                    <span class="total-num">共 {{ $authentications->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $authentications->render()) !!}
+                                    <span class="total-num">共 {{ $companies->total() }} 条数据</span>
+                                    {!! str_replace('/?', '?', $companies->render()) !!}
                                 </div>
                             </div>
                         </div>
@@ -119,8 +113,7 @@
 @endsection
 
 @section('script')
-    @include("admin.public.change_category_modal",['type'=>'experts','form_id'=>'item_form','form_action'=>route('admin.authentication.changeCategories')])
     <script type="text/javascript">
-        set_active_menu('manage_user',"{{ route('admin.authentication.index') }}");
+        set_active_menu('manage_company',"{{ route('admin.company.index') }}");
     </script>
 @endsection

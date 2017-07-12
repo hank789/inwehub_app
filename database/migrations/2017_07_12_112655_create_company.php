@@ -30,7 +30,7 @@ class CreateCompany extends Migration
             $table->string('company_represent_person_email')->nullable()->comment('公司对接人邮箱');
 
             $table->tinyInteger('company_auth_mode')->default(1)->comment('公司认证模式,1为协议验证,2为打款验证');
-            $table->tinyInteger('apply_status')->default(0)->comment('认证状态:0未认证,1审核中,2认证成功,3认证失败');
+            $table->tinyInteger('apply_status')->default(0)->comment('认证状态:1待认证,2认证成功,3认证失败');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -188,3 +188,12 @@ Route::get('rgcode/edit/{id}',['as'=>'admin.operate.rgcode.edit','uses'=>'Regist
 Route::post('rgcode/update',['as'=>'admin.operate.rgcode.update','uses'=>'RegistrationCodeController@update']);
 Route::post('rgcode/destroy',['as'=>'admin.operate.rgcode.destroy','uses'=>'RegistrationCodeController@destroy']);
 Route::post('rgcode/verify',['as'=>'admin.operate.rgcode.verify','uses'=>'RegistrationCodeController@verify']);
+
+//企业管理
+Route::group(['prefix' => 'company','namespace'=>'Company'], function() {
+    //认证列表
+    Route::get('index',['as'=>'admin.company.index','uses'=>'CompanyController@index']);
+    Route::post('destroy',['as'=>'admin.company.destroy','uses'=>'CompanyController@destroy']);
+    Route::post('verify',['as'=>'admin.company.verify','uses'=>'CompanyController@verify']);
+
+});
