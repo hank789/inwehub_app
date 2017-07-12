@@ -21,6 +21,17 @@ cd /home/web/www/intervapp
 git pull origin dev
 @endtask
 
+@task('test-dev',['on' => ['web-test1']])
+cd /home/web/www/intervapp
+git pull origin dev
+composer update --no-scripts
+php artisan optimize
+php artisan config:cache
+php artisan route:cache
+php artisan migrate
+php artisan queue:restart
+@endtask
+
 @task('pro',['on' => ['web-pro']])
 cd /home/web/www/inwehub_app
 git pull origin master
