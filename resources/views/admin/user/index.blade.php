@@ -94,7 +94,7 @@
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.user.edit',['id'=>$user->id]) }}" data-toggle="tooltip" title="基本信息"><i class="fa fa-edit"></i></a>
-                                                    <a class="btn btn-default" href="{{ route('admin.user.resume.info',['id'=>$user->id]) }}" target="_blank" data-toggle="tooltip" title="查看简历"><i class="fa fa-book"></i></a>
+                                                    <a class="btn btn-default" href="{{ config('app.mobile_url').'?#/share/resume?id='.$user->uuid }}" target="_blank" data-toggle="tooltip" title="查看个人名片"><i class="fa fa-book"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.user.item.info',['item_id'=>0,'user_id'=>$user->id,'type'=>'jobs']) }}" data-toggle="tooltip" title="工作经历"><i class="fa fa-user-md"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.user.item.info',['item_id'=>0,'user_id'=>$user->id,'type'=>'projects']) }}" data-toggle="tooltip" title="项目经历"><i class="fa fa-briefcase"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.user.item.info',['item_id'=>0,'user_id'=>$user->id,'type'=>'edus']) }}" data-toggle="tooltip" title="教育经历"><i class="fa fa-book"></i></a>
