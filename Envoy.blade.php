@@ -16,6 +16,11 @@ cd /home/web/www/intervapp
 git pull origin master
 @endtask
 
+@task('test-dev-m',['on' => ['web-test1']])
+cd /home/web/www/intervapp
+git pull origin dev
+@endtask
+
 @task('pro',['on' => ['web-pro']])
 cd /home/web/www/inwehub_app
 git pull origin master
