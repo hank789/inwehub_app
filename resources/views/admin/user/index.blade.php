@@ -67,10 +67,13 @@
                                         <th>身份职业</th>
                                         <th>地区</th>
                                         <th>企业用户</th>
+                                        <th>问题数</th>
+                                        <th>回答数</th>
                                         <th>档案完整度(%)</th>
                                         <th>账户余额</th>
+                                        <th>成长值</th>
+                                        <th>贡献值</th>
                                         <th>注册时间</th>
-                                        <th>更新时间</th>
                                         <th>注册来源</th>
                                         <th>状态</th>
                                         <th>操作</th>
@@ -85,10 +88,13 @@
                                             <td>{{ $user->title }}</td>
                                             <td>{{ get_province_name($user->province) }} - {{ get_city_name($user->province, $user->city) }}</td>
                                             <td>{{ $user->userData->is_company ? '是':'否' }}</td>
+                                            <td>{{ $user->userData->questions }}</td>
+                                            <td>{{ $user->userData->answers }}</td>
                                             <td>{{ $user->getInfoCompletePercent() }}</td>
                                             <td>{{ $user->userMoney->total_money }}</td>
+                                            <td>{{ $user->userData->credits }}</td>
+                                            <td>{{ $user->userData->coins }}</td>
                                             <td>{{ $user->created_at }}</td>
-                                            <td>{{ $user->updated_at }}</td>
                                             <td>{{ $user->getRegisterSource() }}</td>
                                             <td><span class="label @if($user->status===0) label-danger @elseif($user->status===-1) label-default @elseif($user->status===1) label-success @endif">{{ trans_common_status($user->status) }}</span> </td>
                                             <td>
