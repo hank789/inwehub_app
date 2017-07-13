@@ -72,7 +72,7 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $company->user_id }}"/></td>
                                             <td>{{ $company->user_id }}</td>
                                             <td>{{ $company->company_name }}</td>
-                                            <td>{{ implode(',',array_column($authentication->user->skillTags(),'name')) }}</td>
+                                            <td>{{ implode(',',array_column($company->tags(),'name')) }}</td>
                                             <td>{{ $company->company_workers }}</td>
                                             <td>{{ $company->company_credit_code }}</td>
                                             <td>{{ $company->company_bank }}</td>
@@ -86,7 +86,7 @@
                                             <td>{{ $company->company_represent_person_email }}</td>
                                             <td>{{ $company->company_auth_mode }}</td>
                                             <td><span class="label @if($company->apply_status===0) label-warning  @elseif($company->apply_status===1) label-success @else label-default  @endif">{{ trans_company_apply_status($company->apply_status) }}</span> </td>
-                                            <td>{{ timestamp_format($authentication->updated_at) }}</td>
+                                            <td>{{ timestamp_format($company->updated_at) }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
