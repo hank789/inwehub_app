@@ -66,7 +66,7 @@ class CompanyController extends Controller {
             'company_represent_person_phone' => $data['company_represent_person_phone'],
             'company_represent_person_email' => $data['company_represent_person_email'],
             'company_auth_mode' => $data['company_auth_mode'],
-            'apply_status' => 0
+            'apply_status' => Company::APPLY_STATUS_PENDING
         ]);
 
         /*添加标签*/
