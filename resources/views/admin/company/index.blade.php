@@ -85,7 +85,7 @@
                                             <td>{{ $company->company_represent_person_phone }}</td>
                                             <td>{{ $company->company_represent_person_email }}</td>
                                             <td>{{ $company->company_auth_mode }}</td>
-                                            <td><span class="label @if($company->apply_status===1) label-warning  @elseif($company->apply_status===2) label-success @else label-default  @endif">{{ trans_company_apply_status($company->apply_status) }}</span> </td>
+                                            <td><span class="label @if($company->apply_status===1) label-warning  @elseif($company->apply_status===2) label-success @else label-error  @endif">{{ trans_company_apply_status($company->apply_status) }}</span> </td>
                                             <td>{{ timestamp_format($company->updated_at) }}</td>
                                         </tr>
                                     @endforeach
