@@ -46,12 +46,7 @@ class CompanyController extends Controller {
 
         unset($data['industry_tags']);
 
-        $exist = Company::find($user_id);
-        if($exist){
-            throw new ApiException(ApiException::USER_COMPANY_APPLY_REPEAT);
-        }
-
-        $company = Company::create([
+        $newData = [
             'user_id' => $user_id,
             'company_name' => $data['company_name'],
             'company_workers' => $data['company_workers'],
@@ -67,7 +62,15 @@ class CompanyController extends Controller {
             'company_represent_person_email' => $data['company_represent_person_email'],
             'company_auth_mode' => $data['company_auth_mode'],
             'apply_status' => Company::APPLY_STATUS_PENDING
-        ]);
+        ];
+        $company = Company::find($user_id);
+        if($company && $company->apply_status != Company::APPLY_STATUS_REJECT){
+            throw new ApiException(ApiException::USER_COMPANY_APPLY_REPEAT);
+        } elseif($company){
+            $company->update($newData);
+        } else {
+            $company = Company::create($newData);
+        }
 
         /*添加标签*/
         if($industry_tags){
@@ -76,4 +79,12 @@ class CompanyController extends Controller {
 
         return self::createJsonData(true,['tips'=>'企业用户申请成功']);
     }
+
+    public function applyInfo(Request $request){
+        $user_id = $request->user()->id;
+        $company = Company::findOrNew($user_id);
+
+        return self::createJsonData(true,$company->toArray());
+    }
+
 }

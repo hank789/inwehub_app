@@ -212,6 +212,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','nam
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','namespace'=>'Company'], function() {
     //申请认证
     Route::post('apply','CompanyController@apply');
+    //认证信息
+    Route::post('applyInfo','CompanyController@applyInfo');
 
 });
 
