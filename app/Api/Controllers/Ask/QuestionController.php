@@ -7,6 +7,7 @@ use App\Exceptions\ApiException;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
 use App\Logic\WechatNotice;
+use App\Models\Activity\Coupon\Coupon;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Pay\Order;
@@ -154,6 +155,7 @@ class QuestionController extends Controller
 
         $this->checkUserInfoPercent($user);
         $tags = TagsLogic::loadTags(1,'');
+        $tags['is_first_ask'] = !$user->userData->questions;
 
         return self::createJsonData(true,$tags);
     }
@@ -276,6 +278,12 @@ class QuestionController extends Controller
             //首次提问
             if($loginUser->userData->questions == 1){
                 $this->credit($request->user()->id,'first_ask',$question->id,$question->title);
+                $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
+                if($coupon){
+                    $coupon->coupon_status = Coupon::COUPON_STATUS_USED;
+                    $coupon->used_at = date('Y-m-d H:i:s');
+                    $coupon->save();
+                }
             }
             $message = '发起提问成功!';
 

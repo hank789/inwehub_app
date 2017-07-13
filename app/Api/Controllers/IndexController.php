@@ -1,4 +1,5 @@
 <?php namespace App\Api\Controllers;
+use App\Models\Activity\Coupon\Coupon;
 use App\Models\Attention;
 use App\Models\RecommendQa;
 use App\Models\User;
@@ -37,10 +38,17 @@ class IndexController extends Controller {
         $recommend_expert_user = User::find($recommend_expert_uid);
         $user = $request->user();
 
+        $show_ad = false;
         if($user){
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($recommend_expert_user))->where('source_id','=',$recommend_expert_uid)->first();
             if ($attention){
                 $recommend_expert_is_followed = 1;
+            }
+            $is_first_ask = !$user->userData->questions;
+            //用户是否已经领过红包
+            $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
+            if(!$coupon && $is_first_ask){
+                $show_ad = true;
             }
         }
 
@@ -51,7 +59,8 @@ class IndexController extends Controller {
             'recommend_expert_uid' => $recommend_expert_uid,//专家id
             'recommend_expert_is_followed' => $recommend_expert_is_followed,
             'recommend_expert_avatar_url' => $recommend_expert_user->getAvatarUrl(),//资深专家头像
-            'recommend_qa' => $recommend_qa
+            'recommend_qa' => $recommend_qa,
+            'show_ad' => $show_ad
         ];
 
         return self::createJsonData(true,$data);

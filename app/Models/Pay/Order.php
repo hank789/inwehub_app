@@ -22,7 +22,7 @@ class Order extends Model
      *
      * @var array
      */
-    protected $fillable = ['id','user_id', 'order_no','transaction_id','subject','body','amount','return_param',
+    protected $fillable = ['id','user_id', 'order_no','transaction_id','subject','body','amount','actual_amount','return_param',
         'client_ip','response_msg','finish_time','response_data','pay_channel','status'];
 
     /**

@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Pay;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Models\Activity\Coupon\Coupon;
 use App\Models\Pay\Order;
 use App\Models\UserOauth;
 use App\Services\RateLimiter;
@@ -112,14 +113,31 @@ class PayController extends Controller {
             'order_no'    => $orderNo,
             'timeout_express' => time() + 600,// 表示必须 600s 内付款
             'amount'    => $amount,// 微信沙箱模式，需要金额固定为3.01
+            'actual_amount' => $amount,//实际支付金额
             'return_param' => $data['pay_object_type'],
             'pay_channel'  => $channel_type,
             'client_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',// 客户地址
         ];
 
         $order = Order::create($payData);
+        //首次提问免费
+        if($data['pay_object_type'] == 'ask' && $loginUser->userData->questions<=0){
+            $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
+            if($coupon && $coupon->coupon_status == Coupon::COUPON_STATUS_PENDING && $coupon->expire_at < date('Y-m-d H:i:s')){
+                $need_pay_actual = false;
+                $coupon->used_object_type = get_class($order);
+                $coupon->used_object_id = $order->id;
+                $coupon->coupon_value = $order->amount;
+                $coupon->save();
+                //首次提问领取红包后免费
+                $order->actual_amount = 0;
+            }
+        }
 
         if(Setting()->get('need_pay_actual',1) != 1 || $need_pay_actual==false) {
+            $order->status = Order::PAY_STATUS_SUCCESS;
+            $order->finish_time = date('Y-m-d H:i:s');
+            $order->save();
             //如果开启了非强制支付
             return self::createJsonData(true,[
                 'order_info' => [],

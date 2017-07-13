@@ -208,6 +208,13 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','nam
 
 });
 
+//活动模块
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','namespace'=>'Activity'], function() {
+    //获取红包
+    Route::post('getCoupon','CouponController@getCoupon');
+});
+
+
 //微信小程序
 Route::group(['namespace'=>'Weapp'], function() {
     //获取用户登陆信息
