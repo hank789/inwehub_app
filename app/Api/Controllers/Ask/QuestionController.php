@@ -156,7 +156,10 @@ class QuestionController extends Controller
         $this->checkUserInfoPercent($user);
         $tags = TagsLogic::loadTags(1,'');
         $tags['is_first_ask'] = !$user->userData->questions;
-
+        $tags['tips'] = '';
+        if($tags['is_first_ask']){
+            $tags['tips'] = '首次提问领取红包后免费,红包有效期72小时';
+        }
         return self::createJsonData(true,$tags);
     }
 
