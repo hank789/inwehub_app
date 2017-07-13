@@ -24,4 +24,21 @@ class Company extends Model
     const APPLY_STATUS_SUCCESS = 2;
     const APPLY_STATUS_REJECT = 3;
 
+    public static function boot()
+    {
+        parent::boot();
+
+
+        static::updating(function($company){
+
+            $company->userData->update(['is_company'=>$company->apply_status == self::APPLY_STATUS_SUCCESS ? 1:0 ]);
+        });
+
+    }
+
+    public function userData()
+    {
+        return $this->belongsTo('App\Models\UserData','user_id','user_id');
+    }
+
 }
