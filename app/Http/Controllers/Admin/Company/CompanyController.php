@@ -42,7 +42,7 @@ class CompanyController extends AdminController
 
     public function destroy(Request $request)
     {
-        Company::whereIn('id',$request->input('id'))->update(['apply_status'=>Company::APPLY_STATUS_REJECT]);
+        Company::whereIn('user_id',$request->input('id'))->update(['apply_status'=>Company::APPLY_STATUS_REJECT]);
         return $this->success(route('admin.company.index'),'审核不通过成功');
     }
 
@@ -50,7 +50,7 @@ class CompanyController extends AdminController
     public function verify(Request $request)
     {
         $ids = $request->input('id');
-        Company::whereIn('id',$ids)->update(['apply_status'=>Company::APPLY_STATUS_SUCCESS]);
+        Company::whereIn('user_id',$ids)->update(['apply_status'=>Company::APPLY_STATUS_SUCCESS]);
 
         return $this->success(route('admin.company.index'),'审核成功');
 
