@@ -28,12 +28,12 @@ class CompanyController extends Controller {
             'company_bank_account'      => 'required',
             'company_address'      => 'required',
             'company_work_phone'      => 'required',
-            'company_represent_person_is_self'      => 'required|in,0,1',
+            'company_represent_person_is_self'      => 'required|in:0,1',
             'company_represent_person_name'      => 'required_if:company_represent_person_is_self,0',
             'company_represent_person_title'      => 'required_if:company_represent_person_is_self,0',
             'company_represent_person_phone'      => 'required_if:company_represent_person_is_self,0',
             'company_represent_person_email'      => 'required_if:company_represent_person_is_self,0',
-            'company_auth_mode' => 'required|in,1,2'
+            'company_auth_mode' => 'required|in:1,2'
         ];
 
         $this->validate($request,$validateRules);
