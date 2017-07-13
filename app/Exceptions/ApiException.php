@@ -53,6 +53,7 @@ class ApiException extends Exception
     const USER_WEIXIN_REGISTER_NEED_CODE = 1116;
     const USER_REGISTRATION_CODE_USED = 1117;
     const USER_CANNOT_FOLLOWED_SELF = 1118;
+    const USER_COMPANY_APPLY_REPEAT = 1119;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -111,6 +112,7 @@ class ApiException extends Exception
         self::USER_WEIXIN_REGISTER_NEED_CODE => '新注册用户需要填写邀请码',
         self::USER_REGISTRATION_CODE_USED => '此邀请码已被使用，谢谢您的支持！',
         self::USER_CANNOT_FOLLOWED_SELF => '您不能关注自己',
+        self::USER_COMPANY_APPLY_REPEAT => '企业申请已经提交,请耐心等待',
 
 
         //问答模块

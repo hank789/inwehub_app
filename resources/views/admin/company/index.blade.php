@@ -72,7 +72,7 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $company->user_id }}"/></td>
                                             <td>{{ $company->user_id }}</td>
                                             <td>{{ $company->company_name }}</td>
-                                            <td>{{ implode(',',array_column($company->tags()->toArray(),'name')) }}</td>
+                                            <td>{{ implode(',',array_column($company->tags()->pluck('name')->toArray(),'name')) }}</td>
                                             <td>{{ $company->company_workers }}</td>
                                             <td>{{ $company->company_credit_code }}</td>
                                             <td>{{ $company->company_bank }}</td>

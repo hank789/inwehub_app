@@ -46,6 +46,11 @@ class CompanyController extends Controller {
 
         unset($data['industry_tags']);
 
+        $exist = Company::find($user_id);
+        if($exist){
+            throw new ApiException(ApiException::USER_COMPANY_APPLY_REPEAT);
+        }
+
         $company = Company::create([
             'user_id' => $user_id,
             'company_name' => $data['company_name'],
