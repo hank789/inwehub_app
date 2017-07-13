@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Company;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Logic\TagsLogic;
 use App\Models\Company\Company;
 use App\Models\Tag;
 use App\Services\City\CityData;
@@ -83,6 +84,8 @@ class CompanyController extends Controller {
     public function applyInfo(Request $request){
         $user_id = $request->user()->id;
         $company = Company::findOrNew($user_id);
+        $return = $company->toArray();
+        $return['industry_tags'] = TagsLogic::formatTags($company->tags()->get());
 
         return self::createJsonData(true,$company->toArray());
     }
