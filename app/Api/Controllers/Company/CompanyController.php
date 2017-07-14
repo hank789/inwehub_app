@@ -87,7 +87,7 @@ class CompanyController extends Controller {
         $return = $company->toArray();
         $return['industry_tags'] = TagsLogic::formatTags($company->tags()->get());
         $return['company_represent_person_is_self'] = $return['company_represent_person_type']??0;
-        $return['company_workers'] = ['value'=>$return['company_workers'],'text'=>trans_company_workers($return['company_workers'])];
+        $return['company_workers'] = ['value'=>$return['company_workers']??0,'text'=>trans_company_workers($return['company_workers']??0)];
 
         return self::createJsonData(true,$return);
     }
