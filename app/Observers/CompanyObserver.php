@@ -12,6 +12,7 @@ use App\Models\Answer;
 use App\Models\Company\Company;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -51,6 +52,7 @@ class CompanyObserver implements ShouldQueue {
             'short' => false
         ];
 
+        $user = User::find($company->user_id);
         return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
             ->attach(
@@ -58,7 +60,7 @@ class CompanyObserver implements ShouldQueue {
                     'color'     => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$company->user->name.']提交了企业认证');
+            )->send('用户['.$user->name.']提交了企业认证');
     }
 
     public function updated(Company $company){
