@@ -67,6 +67,7 @@ class ApiException extends Exception
     const ASK_QUESTION_ALREADY_ANSWERED = 3008;
     const ASK_QUESTION_ALREADY_REJECTED = 3009;
     const ASK_QUESTION_ALREADY_SELF_CONFIRMED = 3010;
+    const ASK_ANSWER_CONTENT_TOO_SHORT = 3011;
 
     //支付模块响应码
     const PAYMENT_UNKNOWN_CHANNEL = 4004;
@@ -127,6 +128,7 @@ class ApiException extends Exception
         self::ASK_QUESTION_ALREADY_ANSWERED => '您已回答过此问题',
         self::ASK_QUESTION_ALREADY_REJECTED => '您已拒绝回答该问题',
         self::ASK_QUESTION_ALREADY_SELF_CONFIRMED => '您已经确认过此问题',
+        self::ASK_ANSWER_CONTENT_TOO_SHORT => '您的回答内容太少了,请完善内容',
 
         //支付模块
         self::PAYMENT_UNKNOWN_CHANNEL => '暂不支持该支付渠道',
