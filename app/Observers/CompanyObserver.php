@@ -40,6 +40,12 @@ class CompanyObserver implements ShouldQueue {
         ];
 
         $fields[] = [
+            'title' => '对接人',
+            'value' => $company->company_represent_person_name,
+            'short' => true
+        ];
+
+        $fields[] = [
             'title' => '行业领域',
             'value' => implode(',',$company->tags()->pluck('name')->toArray()),
             'short' => false
@@ -49,8 +55,6 @@ class CompanyObserver implements ShouldQueue {
             ->disableMarkdown()
             ->attach(
                 [
-                    'text' => $company->company_name,
-                    'author_name' => $company->user->name,
                     'color'     => 'good',
                     'fields' => $fields
                 ]
