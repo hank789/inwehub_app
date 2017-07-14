@@ -102,7 +102,32 @@ if (! function_exists('trans_company_apply_status')) {
         return '';
 
     }
+}
 
+/*企业规模*/
+if (! function_exists('trans_company_workers')) {
+
+    function trans_company_workers($key){
+        $map = [
+            1 => '1-10人',
+            2 => '10-20人',
+            3 => '20-100人',
+            4 => '100-1000人',
+            5 => '1000人以上'
+        ];
+
+        if($key==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$key])){
+            return $map[$key];
+        }
+
+        return '';
+
+    }
 }
 
 if (! function_exists('trans_company_auth_mode')) {

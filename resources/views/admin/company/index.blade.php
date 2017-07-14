@@ -73,7 +73,7 @@
                                             <td>{{ $company->user_id }}</td>
                                             <td>{{ $company->company_name }}</td>
                                             <td>{{ implode(',',$company->tags()->pluck('name')->toArray()) }}</td>
-                                            <td>{{ $company->company_workers }}</td>
+                                            <td>{{ trans_company_workers($company->company_workers) }}</td>
                                             <td>{{ $company->company_credit_code }}</td>
                                             <td>{{ $company->company_bank }}</td>
                                             <td>{{ $company->company_bank_account }}</td>

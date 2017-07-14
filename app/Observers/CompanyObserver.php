@@ -36,7 +36,7 @@ class CompanyObserver implements ShouldQueue {
 
         $fields[] = [
             'title' => '规模',
-            'value' => $company->company_workers,
+            'value' => trans_company_workers($company->company_workers),
             'short' => true
         ];
 
