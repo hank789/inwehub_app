@@ -105,6 +105,29 @@ if (! function_exists('trans_company_apply_status')) {
 
 }
 
+if (! function_exists('trans_company_auth_mode')) {
+
+    function trans_company_auth_mode($mode){
+        $map = [
+            1 => '协议认证',
+            2 => '打款认证',
+        ];
+
+        if($mode==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+
+        return '';
+
+    }
+
+}
+
 /*公告状态文字定义*/
 if (! function_exists('trans_exchange_status')) {
 

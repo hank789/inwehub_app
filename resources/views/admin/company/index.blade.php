@@ -72,7 +72,7 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $company->user_id }}"/></td>
                                             <td>{{ $company->user_id }}</td>
                                             <td>{{ $company->company_name }}</td>
-                                            <td>{{ implode(',',array_column($company->tags()->pluck('name')->toArray(),'name')) }}</td>
+                                            <td>{{ implode(',',$company->tags()->pluck('name')->toArray()) }}</td>
                                             <td>{{ $company->company_workers }}</td>
                                             <td>{{ $company->company_credit_code }}</td>
                                             <td>{{ $company->company_bank }}</td>
@@ -84,7 +84,7 @@
                                             <td>{{ $company->company_represent_person_title }}</td>
                                             <td>{{ $company->company_represent_person_phone }}</td>
                                             <td>{{ $company->company_represent_person_email }}</td>
-                                            <td>{{ $company->company_auth_mode }}</td>
+                                            <td>{{ trans_company_auth_mode($company->company_auth_mode) }}</td>
                                             <td><span class="label @if($company->apply_status===1) label-default  @elseif($company->apply_status===2) label-success @else label-warning  @endif">{{ trans_company_apply_status($company->apply_status) }}</span> </td>
                                             <td>{{ timestamp_format($company->updated_at) }}</td>
                                         </tr>
