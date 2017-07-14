@@ -4,6 +4,7 @@ namespace App\Providers;
 use App\Events\LogNotify;
 use App\Models\Answer;
 use App\Models\Authentication;
+use App\Models\Company\Company;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\User;
@@ -13,6 +14,7 @@ use App\Models\UserInfo\ProjectInfo;
 use App\Models\UserInfo\TrainInfo;
 use App\Observers\AnswerObserver;
 use App\Observers\AuthenticationObserver;
+use App\Observers\CompanyObserver;
 use App\Observers\QuestionInvitationObserver;
 use App\Observers\QuestionObserver;
 use App\Observers\UserEduObserver;
@@ -66,6 +68,7 @@ class AppServiceProvider extends ServiceProvider
         ProjectInfo::observe(UserProjectObserver::class);
         TrainInfo::observe(UserTrainObserver::class);
         QuestionInvitation::observe(QuestionInvitationObserver::class);
+        Company::observe(CompanyObserver::class);
     }
 
     /**

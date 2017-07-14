@@ -208,6 +208,16 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','nam
 
 });
 
+//企业
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','namespace'=>'Company'], function() {
+    //申请认证
+    Route::post('apply','CompanyController@apply');
+    //认证信息
+    Route::post('applyInfo','CompanyController@applyInfo');
+
+});
+
+
 //微信小程序
 Route::group(['namespace'=>'Weapp'], function() {
     //获取用户登陆信息

@@ -73,6 +73,10 @@ class AnswerController extends Controller
 
         $answerContent = $request->input('description');
 
+        if(empty($promise_time) && strlen(trim($answerContent)) <= 4){
+            throw new ApiException(ApiException::ASK_ANSWER_CONTENT_TOO_SHORT);
+        }
+
         $answerContent = QuillLogic::parseImages($answerContent);
         if ($answerContent === false){
             $answerContent = $request->input('description');

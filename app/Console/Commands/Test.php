@@ -62,12 +62,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $feedbacks = Feedback::get();
-        foreach($feedbacks as $feedback){
-            $answer = Answer::find($feedback->source_id);
-            $feedback->to_user_id = $answer->user_id;
-            $feedback->save();
-        }
+        $user = User::find(1);
+        var_dump($user->toArray());
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

@@ -67,6 +67,7 @@ class ProfileController extends Controller
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
         $info['is_company'] = $user->userData->is_company;
+        $info['company_status'] = $user->userCompany->apply_status??0;
         $info['show_my_wallet'] = $user->moneyLogs()->count() ? true:false;
         $info['show_ios_resume'] = true;
         if(config('app.env') == 'production'){

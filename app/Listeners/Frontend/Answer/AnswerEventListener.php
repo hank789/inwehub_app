@@ -13,7 +13,7 @@ class AnswerEventListener implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 2;
 
     /**
      * @param Feedback $event
