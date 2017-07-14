@@ -23,7 +23,7 @@ class CreateCoupon extends Migration
             $table->string('expire_at',19)->nullable()->comment('过期时间');
             $table->tinyInteger('days')->nullable()->comment('有效期');
             $table->string('used_at',19)->comment('使用日期')->default('');
-            $table->integer('used_object_id',19)->nullable()->comment('使用对象id');
+            $table->integer('used_object_id')->nullable()->comment('使用对象id');
             $table->tinyInteger('used_object_type')->nullable()->comment('使用对象类型');
             $table->softDeletes();
             $table->timestamps();
@@ -31,6 +31,7 @@ class CreateCoupon extends Migration
         Schema::table('pay_order', function (Blueprint $table) {
             $table->string('actual_amount')->default(0)->after('amount');;
         });
+        DB::table('pay_order')->update(['actual_amount'=>DB::raw('amount')]);
     }
 
     /**

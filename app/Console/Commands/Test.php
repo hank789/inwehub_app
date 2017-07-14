@@ -62,12 +62,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $feedbacks = Feedback::get();
-        foreach($feedbacks as $feedback){
-            $answer = Answer::find($feedback->source_id);
-            $feedback->to_user_id = $answer->user_id;
-            $feedback->save();
-        }
+        DB::table('pay_order')->update(['actual_amount'=>DB::raw('amount')]);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
