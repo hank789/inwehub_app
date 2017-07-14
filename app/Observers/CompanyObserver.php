@@ -23,7 +23,7 @@ class CompanyObserver implements ShouldQueue {
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 2;
 
 
     public function creating(Company $company)
@@ -52,8 +52,6 @@ class CompanyObserver implements ShouldQueue {
             'short' => false
         ];
 
-        $user = User::find($company->user_id);
-        \Log::info('test',['company'=>$company,'user'=>$user]);
         return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
             ->attach(
@@ -61,7 +59,7 @@ class CompanyObserver implements ShouldQueue {
                     'color'     => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$user->name.']提交了企业认证');
+            )->send('用户['.$company->user->name.']提交了企业认证');
     }
 
     public function updated(Company $company){
