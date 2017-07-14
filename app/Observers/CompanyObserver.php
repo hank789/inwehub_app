@@ -26,7 +26,7 @@ class CompanyObserver implements ShouldQueue {
     public $tries = 1;
 
 
-    public function created(Company $company)
+    public function creating(Company $company)
     {
         $fields[] = [
             'title' => '企业',
@@ -53,6 +53,7 @@ class CompanyObserver implements ShouldQueue {
         ];
 
         $user = User::find($company->user_id);
+        \Log::info('test',['company'=>$company,'user'=>$user]);
         return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
             ->attach(
@@ -64,7 +65,7 @@ class CompanyObserver implements ShouldQueue {
     }
 
     public function updated(Company $company){
-        $this->created($company);
+        $this->creating($company);
     }
 
 }
