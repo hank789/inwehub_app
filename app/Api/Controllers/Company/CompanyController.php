@@ -23,7 +23,7 @@ class CompanyController extends Controller {
         $validateRules = [
             'company_name'      => 'required',
             'industry_tags'      => 'required',
-            'company_workers'      => 'required',
+            'company_workers'      => 'required|in:1,2,3,4,5',
             'company_credit_code'      => 'required',
             'company_bank'      => 'required',
             'company_bank_account'      => 'required',
