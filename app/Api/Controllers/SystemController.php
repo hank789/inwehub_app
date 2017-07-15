@@ -71,7 +71,7 @@ class SystemController extends Controller {
         $android_force_update_url = 'https://www.pgyer.com/hfkG';
 
         if(config('app.env') == 'production'){
-            $ios_force_update_url = 'https://www.pgyer.com/Zoy3';//正式环境换成苹果商店的地址
+            $ios_force_update_url = 'https://itunes.apple.com/cn/app/inwehub/id1244660980?l=zh&ls=1&mt=8';//正式环境换成苹果商店的地址
             $android_force_update_url = 'https://www.pgyer.com/s9AN';//正式环境换成android商店的地址
         }
         $app_version = $last->app_version??'1.0.0';
@@ -90,8 +90,8 @@ class SystemController extends Controller {
 
     public function getAppMarketUrl(){
         $data = [
-            'ios_url' => 'https://itunes.apple.com/cn/app/jie-zou-da-shi/id493901993?mt=8',
-            'android_url' => 'https://itunes.apple.com/cn/app/jie-zou-da-shi/id493901993?mt=8'
+            'ios_url' => 'https://itunes.apple.com/cn/app/inwehub/id1244660980?l=zh&ls=1&mt=8',
+            'android_url' => 'https://itunes.apple.com/cn/app/inwehub/id1244660980?l=zh&ls=1&mt=8'
         ];
 
         return self::createJsonData(true,$data);
