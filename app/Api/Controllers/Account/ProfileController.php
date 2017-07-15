@@ -72,7 +72,7 @@ class ProfileController extends Controller
         $info['show_ios_resume'] = true;
         if(config('app.env') == 'production'){
             //ios正在审核,暂时不显示个人名片
-            $info['show_ios_resume'] = false;
+            $info['show_ios_resume'] = true;
         }
 
         $info_percent = $user->getInfoCompletePercent(true);
