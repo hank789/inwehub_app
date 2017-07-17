@@ -103,6 +103,7 @@ class PayController extends Controller {
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_PAY_TYPE);
                 break;
         }
+
         $orderNo = gen_order_number();
 
         // 订单信息
@@ -120,17 +121,19 @@ class PayController extends Controller {
         ];
 
         $order = Order::create($payData);
-        //首次提问免费
-        if($data['pay_object_type'] == 'ask' && $loginUser->userData->questions<=0){
+
+        //首次提问
+        if($data['pay_object_type'] == 'ask' && $amount == 1)
+        {
             $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
-            if($coupon && $coupon->coupon_status == Coupon::COUPON_STATUS_PENDING && $coupon->expire_at < date('Y-m-d H:i:s')){
-                $need_pay_actual = false;
+            if($coupon && $coupon->coupon_status == Coupon::COUPON_STATUS_PENDING){
                 $coupon->used_object_type = get_class($order);
                 $coupon->used_object_id = $order->id;
-                $coupon->coupon_value = $order->amount;
                 $coupon->save();
-                //首次提问领取红包后免费
-                $order->actual_amount = 0;
+            } else {
+                $order->status = Order::PAY_STATUS_QUIT;
+                $order->save();
+                throw new ApiException(ApiException::BAD_REQUEST);
             }
         }
 

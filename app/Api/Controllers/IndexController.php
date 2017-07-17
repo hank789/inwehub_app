@@ -39,6 +39,7 @@ class IndexController extends Controller {
         $user = $request->user();
 
         $show_ad = false;
+        $expire_at = '';
         if($user){
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($recommend_expert_user))->where('source_id','=',$recommend_expert_uid)->first();
             if ($attention){
@@ -50,6 +51,10 @@ class IndexController extends Controller {
             if(!$coupon && $is_first_ask){
                 $show_ad = true;
             }
+            if($coupon && $coupon->expire_at > date('Y-m-d H:i:s'))
+            {
+                $expire_at = $coupon->expire_at;
+            }
         }
 
         $data = [
@@ -60,7 +65,7 @@ class IndexController extends Controller {
             'recommend_expert_is_followed' => $recommend_expert_is_followed,
             'recommend_expert_avatar_url' => $recommend_expert_user->getAvatarUrl(),//资深专家头像
             'recommend_qa' => $recommend_qa,
-            'show_ad' => $show_ad
+            'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at]
         ];
 
         return self::createJsonData(true,$data);
