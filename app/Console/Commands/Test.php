@@ -62,8 +62,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        var_dump($user->toArray());
+        event(new Push(User::find(5),'您有新的回答邀请','来回答',['object_type'=>'answer','object_id'=>2]));
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
