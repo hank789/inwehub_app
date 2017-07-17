@@ -1,5 +1,5 @@
 <?php namespace App\Api\Controllers;
-use App\Models\Activity\Coupon\Coupon;
+use App\Models\Activity\Coupon;
 use App\Models\Attention;
 use App\Models\RecommendQa;
 use App\Models\User;

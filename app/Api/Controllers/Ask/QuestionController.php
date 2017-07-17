@@ -7,7 +7,7 @@ use App\Exceptions\ApiException;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
 use App\Logic\WechatNotice;
-use App\Models\Activity\Coupon\Coupon;
+use App\Models\Activity\Coupon;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Pay\Order;

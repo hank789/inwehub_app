@@ -1,7 +1,7 @@
 <?php namespace App\Api\Controllers\Pay;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
-use App\Models\Activity\Coupon\Coupon;
+use App\Models\Activity\Coupon;
 use App\Models\Pay\Order;
 use App\Models\UserOauth;
 use App\Services\RateLimiter;

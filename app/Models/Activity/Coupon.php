@@ -1,4 +1,4 @@
-<?php namespace App\Models\Activity\Coupon;
+<?php namespace App\Models\Activity;
 
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyTagsTrait;
