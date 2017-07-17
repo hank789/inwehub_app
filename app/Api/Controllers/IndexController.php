@@ -57,7 +57,7 @@ class IndexController extends Controller {
                 $expire_at = $coupon->expire_at;
             }
         }
-        $notices = Notice::where('status',1)->orderBy('order','DESC')->take(5)->toArray();
+        $notices = Notice::where('status',1)->orderBy('sort','DESC')->take(5)->toArray();
 
         $data = [
             'recommend_expert_name' => Setting()->get('recommend_expert_name','郭小红'),//专家姓名
