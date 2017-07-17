@@ -19,7 +19,7 @@ class QuestionInvitationObserver implements ShouldQueue {
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 2;
 
     /**
      * 监听问题创建的事件。

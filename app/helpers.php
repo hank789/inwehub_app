@@ -80,6 +80,78 @@ if (! function_exists('trans_authentication_status')) {
 
 }
 
+/*企业认证状态文字定义*/
+if (! function_exists('trans_company_apply_status')) {
+
+    function trans_company_apply_status($status){
+        $map = [
+            1 => '待审核',
+            2 => '审核通过',
+            3 => '审核失败',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+}
+
+/*企业规模*/
+if (! function_exists('trans_company_workers')) {
+
+    function trans_company_workers($key){
+        $map = [
+            1 => '1-10人',
+            2 => '10-20人',
+            3 => '20-100人',
+            4 => '100-1000人',
+            5 => '1000人以上'
+        ];
+
+        if($key==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$key])){
+            return $map[$key];
+        }
+
+        return '';
+
+    }
+}
+
+if (! function_exists('trans_company_auth_mode')) {
+
+    function trans_company_auth_mode($mode){
+        $map = [
+            1 => '协议认证',
+            2 => '打款认证',
+        ];
+
+        if($mode==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+
+        return '';
+
+    }
+
+}
 
 /*公告状态文字定义*/
 if (! function_exists('trans_exchange_status')) {

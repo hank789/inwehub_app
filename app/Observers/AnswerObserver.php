@@ -21,7 +21,7 @@ class AnswerObserver implements ShouldQueue {
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 2;
 
 
     public function created(Answer $answer)

@@ -55,6 +55,7 @@
                                         <th>UID</th>
                                         <th>真实姓名</th>
                                         <th>城市</th>
+                                        <th>当前公司</th>
                                         <th>职称</th>
                                         <th>擅长领域</th>
                                         <th>更新时间</th>
@@ -67,6 +68,7 @@
                                             <td>{{ $authentication->user_id }}</td>
                                             <td>{{ $authentication->user->name }}</td>
                                             <td>{{ get_province_name($authentication->user->province) }} - {{ get_city_name($authentication->user->province,$authentication->user->city) }}</td>
+                                            <td>{{ $authentication->user->company }}</td>
                                             <td>{{ $authentication->user->title }}</td>
                                             <td>{{ implode(',',array_column($authentication->user->skillTags(),'name')) }}</td>
                                             <td>{{ timestamp_format($authentication->updated_at) }}</td>

@@ -62,7 +62,7 @@ class Test extends Command
      */
     public function handle()
     {
-        DB::table('pay_order')->update(['actual_amount'=>DB::raw('amount')]);
+        event(new Push(User::find(5),'您有新的回答邀请','来回答',['object_type'=>'answer','object_id'=>2]));
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
