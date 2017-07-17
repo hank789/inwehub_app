@@ -34,11 +34,11 @@
                             </div>
                             <div class="form-group">
                                 <label>公告图片地址</label>
-                                <input type="text" name="img_url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url',$notice->img_url) }}">
+                                <input type="text" name="img_url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url',$notice->img_url) }}">
                             </div>
                             <div class="form-group">
                                 <label>排序</label>
-                                <input type="text" name="order" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url',$notice->order) }}">
+                                <input type="text" name="sort" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('sort',$notice->sort) }}">
                             </div>
                             <div class="form-group">
                                 <label>状态</label>

@@ -42,7 +42,7 @@
                                             <td>{{ $notice->subject }}</td>
                                             <td>{{ $notice->url }}</td>
                                             <td>{{ $notice->img_url }}</td>
-                                            <td>{{ $notice->order }}</td>
+                                            <td>{{ $notice->sort }}</td>
                                             <td>{{ trans_common_status($notice->status) }}</td>
                                             <td>{{ $notice->updated_at }}</td>
                                             <td>

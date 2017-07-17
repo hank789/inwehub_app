@@ -17,7 +17,7 @@ class NoticeController extends AdminController
         'subject' => 'required|max:255',
         'url' => 'required|max:255',
         'img_url' => 'required|max:255',
-        'order' => 'required'
+        'sort' => 'required'
     ];
 
 
@@ -41,11 +41,11 @@ class NoticeController extends AdminController
     public function create()
     {
         $notice = Notice::orderBy('order','DESC')->first();
-        $order = 1;
+        $sort = 1;
         if($notice){
-            $order = $notice->order + 1;
+            $sort = $notice->sort + 1;
         }
-        return view('admin.notice.create')->with('order',$order);
+        return view('admin.notice.create')->with('sort',$sort);
     }
 
 
@@ -109,7 +109,7 @@ class NoticeController extends AdminController
         $notice->subject = $request->input('subject');
         $notice->url = $request->input('url');
         $notice->img_url = $request->input('img_url');
-        $notice->order = $request->input('order');
+        $notice->sort = $request->input('sort');
         $notice->status = $request->input('status');
         $notice->save();
         return $this->success(route('admin.notice.index'),'公告修改成功');

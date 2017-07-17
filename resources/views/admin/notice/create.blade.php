@@ -37,7 +37,7 @@
                             </div>
                             <div class="form-group">
                                 <label>公告排序(越大越靠前)</label>
-                                <input type="text" name="order" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('order',$order) }}">
+                                <input type="text" name="sort" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('sort',$sort) }}">
                             </div>
                             <div class="form-group">
                                 <label>状态</label>

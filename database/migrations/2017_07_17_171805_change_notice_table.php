@@ -16,7 +16,7 @@ class ChangeNoticeTable extends Migration
         //
         Schema::table('notices', function (Blueprint $table) {
             $table->string('img_url')->nullable()->after('url')->comment('图片地址');
-            $table->integer('order')->default(0)->after('img_url')->comment('排序');
+            $table->integer('sort')->default(0)->after('img_url')->comment('排序');
 
         });
     }
