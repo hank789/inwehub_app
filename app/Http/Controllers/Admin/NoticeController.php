@@ -16,6 +16,8 @@ class NoticeController extends AdminController
     protected $validateRules = [
         'subject' => 'required|max:255',
         'url' => 'required|max:255',
+        'img_url' => 'required|max:255',
+        'order' => 'required'
     ];
 
 
@@ -26,9 +28,8 @@ class NoticeController extends AdminController
      */
     public function index(Request $request)
     {
-        $word = $request->input("word",'');
-        $notices = Notice::where('subject','like',"%$word%")->orderBy('updated_at','DESC')->paginate(Config::get('inwehub.admin.page_size'));
-        return view('admin.notice.index')->with('notices',$notices)->with('word',$word);
+        $notices = Notice::orderBy('updated_at','DESC')->paginate(Config::get('inwehub.admin.page_size'));
+        return view('admin.notice.index')->with('notices',$notices);
     }
 
 
@@ -39,7 +40,12 @@ class NoticeController extends AdminController
      */
     public function create()
     {
-        return view('admin.notice.create');
+        $notice = Notice::orderBy('order','DESC')->first();
+        $order = 1;
+        if($notice){
+            $order = $notice->order + 1;
+        }
+        return view('admin.notice.create')->with('order',$order);
     }
 
 
@@ -102,6 +108,8 @@ class NoticeController extends AdminController
         $this->validate($request,$this->validateRules);
         $notice->subject = $request->input('subject');
         $notice->url = $request->input('url');
+        $notice->img_url = $request->input('img_url');
+        $notice->order = $request->input('order');
         $notice->status = $request->input('status');
         $notice->save();
         return $this->success(route('admin.notice.index'),'公告修改成功');

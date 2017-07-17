@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers;
 use App\Models\Activity\Coupon;
 use App\Models\Attention;
+use App\Models\Notice;
 use App\Models\RecommendQa;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -56,6 +57,7 @@ class IndexController extends Controller {
                 $expire_at = $coupon->expire_at;
             }
         }
+        $notices = Notice::where('status',1)->orderBy('order','DESC')->take(5)->toArray();
 
         $data = [
             'recommend_expert_name' => Setting()->get('recommend_expert_name','郭小红'),//专家姓名
@@ -65,7 +67,8 @@ class IndexController extends Controller {
             'recommend_expert_is_followed' => $recommend_expert_is_followed,
             'recommend_expert_avatar_url' => $recommend_expert_user->getAvatarUrl(),//资深专家头像
             'recommend_qa' => $recommend_qa,
-            'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at]
+            'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
+            'notices' => $notices
         ];
 
         return self::createJsonData(true,$data);

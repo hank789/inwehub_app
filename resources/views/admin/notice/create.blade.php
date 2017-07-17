@@ -32,6 +32,14 @@
                                 <input type="text" name="url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url','') }}">
                             </div>
                             <div class="form-group">
+                                <label>公告图片地址</label>
+                                <input type="text" name="img_url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url','') }}">
+                            </div>
+                            <div class="form-group">
+                                <label>公告排序(越大越靠前)</label>
+                                <input type="text" name="order" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('order',$order) }}">
+                            </div>
+                            <div class="form-group">
                                 <label>状态</label>
                                 <div class="radio">
                                     <label>
