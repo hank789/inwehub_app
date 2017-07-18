@@ -40,7 +40,7 @@ class NoticeController extends AdminController
      */
     public function create()
     {
-        $notice = Notice::orderBy('order','DESC')->first();
+        $notice = Notice::orderBy('sort','DESC')->first();
         $sort = 1;
         if($notice){
             $sort = $notice->sort + 1;
