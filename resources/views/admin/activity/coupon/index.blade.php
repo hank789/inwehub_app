@@ -72,7 +72,7 @@
                                             <td>{{ $coupon->created_at }}</td>
                                             <td>{{ $coupon->used_at }}</td>
                                             <td>{{ $coupon->expire_at }}</td>
-                                            <td><a href="{{ $coupon->getObjectTypeLink() }}" target="_blank">链接</a></td>
+                                            <td>@if($coupon->used_object_id) <a href="{{ $coupon->getObjectTypeLink() }}" target="_blank">链接</a> @endif</td>
                                             <td><span class="label @if($coupon->coupon_status==3) label-danger @elseif($coupon->coupon_status<=1) label-default @elseif($coupon->coupon_status===2) label-success @endif">{{ trans_coupon_status($coupon->coupon_status) }}</span> </td>
                                         </tr>
                                     @endforeach
