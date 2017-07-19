@@ -56,7 +56,7 @@ class IndexController extends Controller {
                 if(!$coupon && $is_first_ask){
                     $show_ad = true;
                 }
-                if($coupon && $coupon->expire_at > date('Y-m-d H:i:s'))
+                if($coupon && $coupon->coupon_status == Coupon::COUPON_STATUS_PENDING  && $coupon->expire_at > date('Y-m-d H:i:s'))
                 {
                     $expire_at = $coupon->expire_at;
                 }
