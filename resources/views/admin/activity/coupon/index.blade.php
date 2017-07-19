@@ -20,7 +20,7 @@
 
                             <div class="col-xs-10">
                                 <div class="row">
-                                    <form name="searchForm" action="{{ route('admin.finance.settlement.index') }}" method="GET">
+                                    <form name="searchForm" action="{{ route('admin.activity.coupon') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
@@ -64,7 +64,7 @@
                                     </tr>
                                     @foreach($coupons as $coupon)
                                         <tr>
-                                            <td>{{ $settlement->id }}</td>
+                                            <td>{{ $coupon->id }}</td>
                                             <td>{{ $coupon->user->name }}</td>
                                             <td>{{ $coupon->user->mobile }}</td>
                                             <td>{{ $coupon->getCouponTypeName() }}</td>
