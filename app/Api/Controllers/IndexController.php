@@ -46,15 +46,20 @@ class IndexController extends Controller {
             if ($attention){
                 $recommend_expert_is_followed = 1;
             }
-            $is_first_ask = !$user->userData->questions;
-            //用户是否已经领过红包
-            $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
-            if(!$coupon && $is_first_ask){
-                $show_ad = true;
-            }
-            if($coupon && $coupon->expire_at > date('Y-m-d H:i:s'))
-            {
-                $expire_at = $coupon->expire_at;
+            //检查活动时间
+            $ac_first_ask_begin_time = Setting()->get('ac_first_ask_begin_time');
+            $ac_first_ask_end_time = Setting()->get('ac_first_ask_end_time');
+            if($ac_first_ask_begin_time && $ac_first_ask_end_time && $ac_first_ask_begin_time<=date('Y-m-d H:i') && $ac_first_ask_end_time>date('Y-m-d H:i')){
+                $is_first_ask = !$user->userData->questions;
+                //用户是否已经领过红包
+                $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
+                if(!$coupon && $is_first_ask){
+                    $show_ad = true;
+                }
+                if($coupon && $coupon->expire_at > date('Y-m-d H:i:s'))
+                {
+                    $expire_at = $coupon->expire_at;
+                }
             }
         }
         $notices = Notice::where('status',1)->orderBy('sort','DESC')->take(5)->get()->toArray();

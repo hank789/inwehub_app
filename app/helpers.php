@@ -251,6 +251,28 @@ if (! function_exists('trans_withdraw_status')) {
     }
 }
 
+if (! function_exists('trans_coupon_status')) {
+
+    function trans_coupon_status($status){
+        $map = [
+            1 => '待使用',
+            2 => '已使用',
+            3 => '已过期',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+    }
+}
+
 /*回答状态文字定义*/
 if (! function_exists('trans_answer_status')) {
 

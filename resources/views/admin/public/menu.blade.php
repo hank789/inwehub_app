@@ -64,6 +64,17 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-gift"></i> <span>活动</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="activity">
+            <li><a href="{{ route('admin.activity.config') }}"><i class="fa fa-circle-o"></i> 活动配置</a></li>
+            <li><a href="{{ route('admin.activity.coupon') }}"><i class="fa fa-circle-o"></i> 红包</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-rmb"></i> <span>财务</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>

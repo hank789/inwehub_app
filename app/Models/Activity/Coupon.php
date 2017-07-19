@@ -26,4 +26,19 @@ class Coupon extends Model
     const COUPON_STATUS_EXPIRED = 3;
 
 
+    public function getCouponTypeName(){
+        switch($this->coupon_type){
+            case self::COUPON_TYPE_FIRST_ASK:
+                return '首次提问1元';
+                break;
+        }
+    }
+
+    public function getObjectTypeLink(){
+        switch($this->used_object_type){
+            case 'App\Models\Question':
+                return route('ask.question.detail',['id'=>$this->used_object_id]);
+                break;
+        }
+    }
 }
