@@ -208,6 +208,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','nam
 
 });
 
+//活动模块
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','namespace'=>'Activity'], function() {
+    //获取红包
+    Route::post('getCoupon', 'CouponController@getCoupon');
+});
+
 //企业
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','namespace'=>'Company'], function() {
     //申请认证

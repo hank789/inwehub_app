@@ -202,7 +202,29 @@ if (! function_exists('trans_common_status')) {
     }
 }
 
-/*公告状态文字定义*/
+if (! function_exists('trans_app_version_status')) {
+
+    function trans_app_version_status($status){
+        $map = [
+            0 => 'IOS审核中',
+            1 => '已审核',
+            -1 => '已禁止'
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+}
+
 if (! function_exists('trans_rgcode_status')) {
 
     function trans_rgcode_status($status){
@@ -248,6 +270,28 @@ if (! function_exists('trans_withdraw_status')) {
 
         return '';
 
+    }
+}
+
+if (! function_exists('trans_coupon_status')) {
+
+    function trans_coupon_status($status){
+        $map = [
+            1 => '待使用',
+            2 => '已使用',
+            3 => '已过期',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
     }
 }
 

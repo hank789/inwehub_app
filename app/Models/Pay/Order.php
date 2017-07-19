@@ -22,7 +22,7 @@ class Order extends Model
      *
      * @var array
      */
-    protected $fillable = ['id','user_id', 'order_no','transaction_id','subject','body','amount','return_param',
+    protected $fillable = ['id','user_id', 'order_no','transaction_id','subject','body','amount','actual_amount','return_param',
         'client_ip','response_msg','finish_time','response_data','pay_channel','status'];
 
     /**
@@ -37,6 +37,7 @@ class Order extends Model
     const PAY_STATUS_PROCESS = 1;
     const PAY_STATUS_SUCCESS = 2;
     const PAY_STATUS_FAIL    = 3;
+    const PAY_STATUS_QUIT    = 4;
 
 
     const PAY_CHANNEL_WX_APP = 1;

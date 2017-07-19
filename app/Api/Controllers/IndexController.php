@@ -1,5 +1,7 @@
 <?php namespace App\Api\Controllers;
+use App\Models\Activity\Coupon;
 use App\Models\Attention;
+use App\Models\Notice;
 use App\Models\RecommendQa;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -37,12 +39,30 @@ class IndexController extends Controller {
         $recommend_expert_user = User::find($recommend_expert_uid);
         $user = $request->user();
 
+        $show_ad = false;
+        $expire_at = '';
         if($user){
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($recommend_expert_user))->where('source_id','=',$recommend_expert_uid)->first();
             if ($attention){
                 $recommend_expert_is_followed = 1;
             }
+            //检查活动时间
+            $ac_first_ask_begin_time = Setting()->get('ac_first_ask_begin_time');
+            $ac_first_ask_end_time = Setting()->get('ac_first_ask_end_time');
+            if($ac_first_ask_begin_time && $ac_first_ask_end_time && $ac_first_ask_begin_time<=date('Y-m-d H:i') && $ac_first_ask_end_time>date('Y-m-d H:i')){
+                $is_first_ask = !$user->userData->questions;
+                //用户是否已经领过红包
+                $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
+                if(!$coupon && $is_first_ask){
+                    $show_ad = true;
+                }
+                if($coupon && $coupon->coupon_status == Coupon::COUPON_STATUS_PENDING  && $coupon->expire_at > date('Y-m-d H:i:s'))
+                {
+                    $expire_at = $coupon->expire_at;
+                }
+            }
         }
+        $notices = Notice::where('status',1)->orderBy('sort','DESC')->take(5)->get()->toArray();
 
         $data = [
             'recommend_expert_name' => Setting()->get('recommend_expert_name','郭小红'),//专家姓名
@@ -51,7 +71,9 @@ class IndexController extends Controller {
             'recommend_expert_uid' => $recommend_expert_uid,//专家id
             'recommend_expert_is_followed' => $recommend_expert_is_followed,
             'recommend_expert_avatar_url' => $recommend_expert_user->getAvatarUrl(),//资深专家头像
-            'recommend_qa' => $recommend_qa
+            'recommend_qa' => $recommend_qa,
+            'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
+            'notices' => $notices
         ];
 
         return self::createJsonData(true,$data);

@@ -7,6 +7,7 @@ use App\Exceptions\ApiException;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
 use App\Logic\WechatNotice;
+use App\Models\Activity\Coupon;
 use App\Models\Answer;
 use App\Models\Category;
 use App\Models\Pay\Order;
@@ -154,6 +155,37 @@ class QuestionController extends Controller
 
         $this->checkUserInfoPercent($user);
         $tags = TagsLogic::loadTags(1,'');
+        $show_free_ask = false;
+        $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->where('coupon_status',Coupon::COUPON_STATUS_PENDING)->first();
+        if($coupon && $coupon->expire_at > date('Y-m-d H:i:s')){
+            $show_free_ask = true;
+        }
+
+        $tags['pay_items'] = [
+            [
+                'value'=>88,
+                'text'=>'积极参与（ ¥ 88.00 ）',
+                'default' => true
+            ],
+            [
+                'value'=>188,
+                'text'=>'鼎力支持（ ¥188.00 ）',
+                'default' => false
+            ],
+            [
+                'value'=>28,
+                'text'=>'略表心意（ ¥ 28.00 ）',
+                'default' => false
+            ]
+        ];
+        if($show_free_ask){
+            $tags['pay_items'][0]['default'] = false;
+            $tags['pay_items'][] = [
+                'value'=>1,
+                'text'=>'首问优惠（￥1.00）',
+                'default' => true
+            ];
+        }
 
         return self::createJsonData(true,$tags);
     }
@@ -277,6 +309,16 @@ class QuestionController extends Controller
             if($loginUser->userData->questions == 1){
                 $this->credit($request->user()->id,'first_ask',$question->id,$question->title);
             }
+            //1元优惠使用红包
+            if($price == 1){
+                $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
+                if($coupon && $coupon->used_object_id){
+                    $coupon->coupon_status = Coupon::COUPON_STATUS_USED;
+                    $coupon->used_at = date('Y-m-d H:i:s');
+                    $coupon->save();
+                }
+            }
+
             $message = '发起提问成功!';
 
             $this->counter( 'question_num_'. $question->user_id , 1 , 3600 );

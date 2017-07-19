@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Logic\PayNotifyLogic;
+use App\Models\AppVersion;
 use App\Models\Pay\Order;
 use App\Services\ItunesReceiptValidator;
 use Illuminate\Http\Request;
@@ -57,7 +58,14 @@ class NotifyController extends Controller
         ];
         $this->validate($request,$validateRules);
         $data = $request->all();
-        $endpoint = Setting()->get('pay_answer_iap_sandbox',0) ? ItunesReceiptValidator::SANDBOX_URL : ItunesReceiptValidator::PRODUCTION_URL;
+        $endpoint = ItunesReceiptValidator::PRODUCTION_URL;
+        $pending_version = AppVersion::where('status',0)->orderBy('app_version','desc')->first();
+        $current_version = $request->input('current_version');
+        //苹果待审核版本使用沙箱支付
+        if($pending_version && $pending_version->app_version == $current_version){
+            $endpoint = ItunesReceiptValidator::SANDBOX_URL;
+        }
+
         $rv = new ItunesReceiptValidator($endpoint, $data['transactionReceipt']);
         \Log::info('Environment: ' .
             ($rv->getEndpoint() === ItunesReceiptValidator::SANDBOX_URL) ? 'Sandbox' : 'Production' .

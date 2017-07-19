@@ -15,7 +15,7 @@
 
     <li class="treeview">
         <a href="#">
-            <i class="fa fa-users"></i> <span>企业</span>
+            <i class="fa fa-building"></i> <span>企业</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="manage_company">
@@ -25,7 +25,7 @@
 
     <li class="treeview">
         <a href="#">
-            <i class="fa fa-users"></i> <span>权限</span>
+            <i class="fa fa-user-secret"></i> <span>权限</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="manage_role">
@@ -64,7 +64,18 @@
 
     <li class="treeview">
         <a href="#">
-            <i class="fa fa-database"></i> <span>财务</span>
+            <i class="fa fa-gift"></i> <span>活动</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="activity">
+            <li><a href="{{ route('admin.activity.config') }}"><i class="fa fa-circle-o"></i> 活动配置</a></li>
+            <li><a href="{{ route('admin.activity.coupon') }}"><i class="fa fa-circle-o"></i> 红包</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
+            <i class="fa fa-rmb"></i> <span>财务</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="finance">
@@ -103,6 +114,18 @@
             <li><a href="{{ route('admin.setting.irrigation') }}"><i class="fa fa-circle-o"></i> 防灌水设置</a></li>
             <li><a href="{{ route('admin.setting.seo') }}"><i class="fa fa-circle-o"></i> SEO设置</a></li>
             <li><a href="{{ route('admin.setting.variables') }}"><i class="fa fa-circle-o"></i> 变量设置</a></li>--}}
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
+            <i class="fa fa-file"></i> <span>日志</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="logger">
+            <li><a href="{{ route('admin.logger.login') }}"><i class="fa fa-circle-o"></i> 登陆日志</a></li>
+            <li><a target="_blank" href="{{ route('admin.logger.system') }}"><i class="fa fa-circle-o"></i> 系统日志</a></li>
+
         </ul>
     </li>
 

@@ -197,3 +197,16 @@ Route::group(['prefix' => 'company','namespace'=>'Company'], function() {
     Route::post('verify',['as'=>'admin.company.verify','uses'=>'CompanyController@verify']);
 
 });
+
+//活动管理
+Route::group(['prefix' => 'activity','namespace'=>'Activity'], function() {
+    Route::get('config',['as'=>'admin.activity.config','uses'=>'ConfigController@index']);
+    Route::post('config',['as'=>'admin.activity.config','uses'=>'ConfigController@index']);
+
+    Route::get('coupon',['as'=>'admin.activity.coupon','uses'=>'CouponController@index']);
+
+});
+
+//日志查看
+Route::get('loginLog',['as'=>'admin.logger.login','uses'=>'LoggerController@loginLog']);
+Route::get('sysLogs', ['as'=>'admin.logger.system','uses'=>'\Rap2hpoutre\LaravelLogViewer\LogViewerController@index']);

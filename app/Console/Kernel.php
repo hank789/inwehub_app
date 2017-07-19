@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\Wechat\AddMenu::class,
         Commands\User\GenUuid::class,
         Commands\User\CheckRgCode::class,
+        Commands\Activity\CheckCoupon::class
     ];
 
     /**
@@ -35,6 +36,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:run')->twiceDaily();
         $schedule->command('pay:settlement')->daily()->at('00:10')->withoutOverlapping();
         $schedule->command('user:check:rg_code')->daily()->at('00:30');
+        $schedule->command('ac:check:coupon')->daily()->at('00:20');
 
         //$schedule->command('scraper:wechat:author')->hourly();
     }
