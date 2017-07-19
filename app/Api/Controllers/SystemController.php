@@ -67,8 +67,8 @@ class SystemController extends Controller {
     public function appVersion(){
         $last = AppVersion::where('status',1)->orderBy('app_version','desc')->first();
 
-        $ios_force_update_url = 'https://www.pgyer.com/Zoy3';
-        $android_force_update_url = 'https://www.pgyer.com/hfkG';
+        $ios_force_update_url = 'https://www.pgyer.com/FLBT';
+        $android_force_update_url = 'https://www.pgyer.com/mpKs';
 
         if(config('app.env') == 'production'){
             $ios_force_update_url = 'https://itunes.apple.com/cn/app/inwehub/id1244660980?mt=8';//正式环境换成苹果商店的地址
