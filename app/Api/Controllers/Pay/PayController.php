@@ -64,7 +64,6 @@ class PayController extends Controller {
                     throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
                 }
                 if (config('app.env') != 'production') {
-                    $amount = 0.01;
                     $need_pay_actual = false;
                 }
                 if(config('app.env') == 'production' && $loginUser->id == 3){
@@ -121,10 +120,11 @@ class PayController extends Controller {
         ];
 
         $order = Order::create($payData);
-
+        \Log::info('test0',$payData);
         //首次提问
         if($data['pay_object_type'] == 'ask' && $amount == 1)
         {
+            \Log::info('test1',$payData);
             $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
             if($coupon && $coupon->coupon_status == Coupon::COUPON_STATUS_PENDING){
                 $coupon->used_object_type = get_class($order);
