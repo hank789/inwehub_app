@@ -1,6 +1,6 @@
 <?php namespace App\Api\Controllers\Activity;
 use App\Api\Controllers\Controller;
-use App\Models\Activity\Coupon\Coupon;
+use App\Models\Activity\Coupon;
 use Illuminate\Http\Request;
 
 /**
