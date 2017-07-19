@@ -44,7 +44,7 @@ class PayController extends Controller {
                 if(Setting()->get('pay_method_weixin',1) != 1){
                     throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 }
-                if ($loginUser->id == 3) {
+                if (config('app.env') == 'production' && $loginUser->id == 3) {
                     $amount = 0.01;
                 }
                 $config = config('payment')['wechat'];
@@ -120,11 +120,9 @@ class PayController extends Controller {
         ];
 
         $order = Order::create($payData);
-        \Log::info('test0',$payData);
         //首次提问
         if($data['pay_object_type'] == 'ask' && $amount == 1)
         {
-            \Log::info('test1',$payData);
             $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
             if($coupon && $coupon->coupon_status == Coupon::COUPON_STATUS_PENDING){
                 $coupon->used_object_type = get_class($order);

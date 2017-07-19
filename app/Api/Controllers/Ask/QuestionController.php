@@ -309,12 +309,16 @@ class QuestionController extends Controller
             if($loginUser->userData->questions == 1){
                 $this->credit($request->user()->id,'first_ask',$question->id,$question->title);
             }
-            $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
-            if($coupon && $coupon->used_object_id){
-                $coupon->coupon_status = Coupon::COUPON_STATUS_USED;
-                $coupon->used_at = date('Y-m-d H:i:s');
-                $coupon->save();
+            //1元优惠使用红包
+            if($price == 1){
+                $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
+                if($coupon && $coupon->used_object_id){
+                    $coupon->coupon_status = Coupon::COUPON_STATUS_USED;
+                    $coupon->used_at = date('Y-m-d H:i:s');
+                    $coupon->save();
+                }
             }
+
             $message = '发起提问成功!';
 
             $this->counter( 'question_num_'. $question->user_id , 1 , 3600 );
