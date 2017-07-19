@@ -5,6 +5,7 @@ use App\Events\LogNotify;
 use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Company\Company;
+use App\Models\Pay\Withdraw;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\User;
@@ -22,6 +23,7 @@ use App\Observers\UserJobObserver;
 use App\Observers\UserObserver;
 use App\Observers\UserProjectObserver;
 use App\Observers\UserTrainObserver;
+use App\Observers\WithdrawObserver;
 use Carbon\Carbon;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Facades\Validator;
@@ -69,6 +71,7 @@ class AppServiceProvider extends ServiceProvider
         TrainInfo::observe(UserTrainObserver::class);
         QuestionInvitation::observe(QuestionInvitationObserver::class);
         Company::observe(CompanyObserver::class);
+        Withdraw::observe(WithdrawObserver::class);
     }
 
     /**

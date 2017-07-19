@@ -50,4 +50,15 @@ class Withdraw extends Model {
         }
     }
 
+    public function getWithdrawChannelName(){
+        switch($this->withdraw_channel){
+            case self::WITHDRAW_CHANNEL_WX:
+                return '微信app';
+                break;
+            case self::WITHDRAW_CHANNEL_WX_PUB:
+                return '微信公众号';
+                break;
+        }
+    }
+
 }
