@@ -375,8 +375,7 @@ class User extends Model implements AuthenticatableContract,
         $begin = $this->jobs()->orderBy('begin_time','asc')->first();
         if($begin){
             $begin_time = new Carbon($begin->begin_time);
-            $end_time = date('Y-m');
-            $end_time = new Carbon($end_time);
+            $end_time = new Carbon(date('Y-m'));
             return $end_time->diffInYears($begin_time);
         }
         return '';

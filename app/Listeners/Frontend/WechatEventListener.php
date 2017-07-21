@@ -34,7 +34,7 @@ class WechatEventListener implements ShouldQueue
             $notice = $wechat->notice;
             $wx_notice_data = [
                 "first"  => $event->title,
-                "keyword1"   => $event->keyword1,
+                "keyword1"   => str_limit($event->keyword1,100),
                 "keyword2"   => $event->keyword2,
                 "remark" => $event->remark
             ];

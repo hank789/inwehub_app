@@ -1,5 +1,6 @@
 <?php namespace App\Models\Activity;
 
+use App\Models\Pay\Ordergable;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -36,9 +37,15 @@ class Coupon extends Model
 
     public function getObjectTypeLink(){
         switch($this->used_object_type){
-            case 'App\Models\Question':
-                return route('ask.question.detail',['id'=>$this->used_object_id]);
+            case 'App\Models\Pay\Order':
+                $orderGable = Ordergable::where('pay_order_id',$this->used_object_id)->first();
+                switch($orderGable->pay_order_gable_type){
+                    case 'App\Models\Question':
+                        return route('ask.question.detail',['id'=>$orderGable->pay_order_gable_id]);
+                        break;
+                }
                 break;
         }
+        return '';
     }
 }
