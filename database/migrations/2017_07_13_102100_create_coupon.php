@@ -24,7 +24,7 @@ class CreateCoupon extends Migration
             $table->tinyInteger('days')->nullable()->comment('有效期');
             $table->string('used_at',19)->comment('使用日期')->default('');
             $table->integer('used_object_id')->nullable()->comment('使用对象id');
-            $table->tinyInteger('used_object_type')->nullable()->comment('使用对象类型');
+            $table->string('used_object_type')->nullable()->comment('使用对象类型');
             $table->softDeletes();
             $table->timestamps();
         });
