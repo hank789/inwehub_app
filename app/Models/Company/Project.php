@@ -25,9 +25,33 @@ class Project extends Model implements HasMedia
      */
     protected $dates = ['deleted_at'];
 
+    //项目状态
     const STATUS_DRAFT = 0;
     const STATUS_PENDING = 1;
     const STATUS_PUBLISH = 2;
     const STATUS_REJECT = 3;
 
+    //项目类型
+    const PROJECT_TYPE_ONCE = 1;//一次性
+    const PROJECT_TYPE_CONTINUED = 2;//持续性
+
+    //项目阶段
+    const PROJECT_STAGE_1 = 1;//只有个想法
+    const PROJECT_STAGE_2 = 2;//已立项
+    const PROJECT_STAGE_3 = 3;//进行中
+
+
+
+    public static function boot()
+    {
+        parent::boot();
+        static::deleted(function($project){
+            $project->detailInfo()->delete();
+        });
+    }
+
+    public function detailInfo()
+    {
+        return $this->hasOne('App\Models\Company\ProjectDetail');
+    }
 }

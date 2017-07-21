@@ -197,12 +197,18 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
 
 //项目模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','namespace'=>'Project'], function() {
-    //项目列表
+    //需求列表
     Route::post('myList','ProjectController@myList');
-    //添加项目
-    Route::post('submit','ProjectController@submit');
-    //修改项目
-    Route::post('update','ProjectController@update');
+    //需求详情
+    Route::post('info','ProjectController@info');
+    //发布需求第一步
+    Route::post('step_one','ProjectController@publishStepOne');
+    //发布需求第二步
+    Route::post('step_two','ProjectController@publishStepTwo');
+    //发布需求第三步
+    Route::post('step_three','ProjectController@publishStepThree');
+    //发布需求第四步
+    Route::post('step_four','ProjectController@publishStepFour');
     //删除项目
     Route::post('destroy','ProjectController@destroy');
 
