@@ -111,10 +111,10 @@ class ProjectController extends Controller {
     public function publishStepOne(Request $request)
     {
         $validateRules = [
-            'project_name'      => 'required',
+            'project_name'      => 'required|max:1024',
             'project_type'      => 'required|in:1,2',
             'project_stage'     => 'required|in:1,2,3',
-            'project_description'     => 'required'
+            'project_description'     => 'required|max:3072'
         ];
 
         $this->validate($request,$validateRules);
@@ -136,6 +136,9 @@ class ProjectController extends Controller {
         ];
         if(isset($data['project_id']) && $data['project_id']){
             $project = Project::findOrFail($data['project_id']);
+            if($project->user_id != $user_id) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
             $project->update($newData);
         } else {
             $project = Project::create($newData);
@@ -180,7 +183,7 @@ class ProjectController extends Controller {
             'worker_level'     => 'required|in:1,2,3',
             'project_amount'     => 'required|numeric',
             'billing_mode'     => 'required|in:1,2',
-            'begin_time'     => 'required',
+            'project_begin_time'     => 'required|max:12',
             'project_cycle'     => 'required|in:1,2,3,4,5,6,7,8,9',
             'work_intensity'     => 'required|in:1,2,3,4,5,6,7,8,9',
             'remote_work'     => 'required|in:1,2',
@@ -200,7 +203,9 @@ class ProjectController extends Controller {
         if(!$project){
             throw new ApiException(ApiException::PROJECT_NOT_FIND);
         }
-
+        if($project->user_id != $user_id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
 
         $newData = [
             'user_id' => $user_id,
@@ -209,7 +214,7 @@ class ProjectController extends Controller {
             'worker_level' => $data['worker_level'],
             'project_amount' => $data['project_amount'],
             'billing_mode' => $data['billing_mode'],
-            'begin_time' => $data['begin_time'],
+            'project_begin_time' => $data['project_begin_time'],
             'project_cycle' => $data['project_cycle'],
             'work_intensity' => $data['work_intensity'],
             'remote_work' => $data['remote_work'],
@@ -230,18 +235,18 @@ class ProjectController extends Controller {
     {
         $validateRules = [
             'project_id'      => 'required|integer',
-            'company_name'      => 'required',
-            'company_description'     => 'required',
+            'company_name'      => 'required|max:1024',
+            'company_description'     => 'required|max:3072',
             'company_industry_tags'     => 'required|array',
             'company_represent_person_is_self'     => 'required|in:0,1',
-            'company_represent_person_name'     => 'required',
-            'company_represent_person_title'     => 'required',
-            'company_represent_person_phone'     => 'required',
-            'company_represent_person_email'     => 'required|email',
-            'company_billing_title'     => 'required',
-            'company_billing_bank'     => 'required',
-            'company_billing_account'     => 'required',
-            'company_billing_taxes'     => 'required',
+            'company_represent_person_name'     => 'required|max:64',
+            'company_represent_person_title'     => 'required|max:64',
+            'company_represent_person_phone'     => 'required|max:64',
+            'company_represent_person_email'     => 'required|email|max:68',
+            'company_billing_title'     => 'required|max:68',
+            'company_billing_bank'     => 'required|max:68',
+            'company_billing_account'     => 'required|max:68',
+            'company_billing_taxes'     => 'required|max:68',
         ];
 
         $this->validate($request,$validateRules);
@@ -255,6 +260,9 @@ class ProjectController extends Controller {
         $project = Project::find($data['project_id']);
         if(!$project){
             throw new ApiException(ApiException::PROJECT_NOT_FIND);
+        }
+        if($project->user_id != $user_id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
         }
 
 
@@ -308,6 +316,10 @@ class ProjectController extends Controller {
         $project = Project::find($data['project_id']);
         if(!$project){
             throw new ApiException(ApiException::PROJECT_NOT_FIND);
+        }
+
+        if($project->user_id != $user_id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
         }
 
 

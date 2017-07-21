@@ -16,7 +16,7 @@ class ModifyProjects extends Migration
         Schema::drop('projects');
         Schema::create('projects', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned()->index();
             $table->string("project_name",1024)->comment('项目名称');
             $table->tinyInteger("project_type")->comment('项目类型');
             $table->tinyInteger("project_stage")->comment('项目阶段');
