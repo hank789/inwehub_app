@@ -78,6 +78,8 @@ class ApiException extends Exception
     const WITHDRAW_UNBIND_WEXIN = 4009;
     const WITHDRAW_SYSTEM_SUSPEND = 4010;
 
+    //企业模块响应码
+    const PROJECT_NOT_FIND = 5000;
 
     public static $errorMessages = [
         //全局响应吗
@@ -137,7 +139,12 @@ class ApiException extends Exception
         self::WITHDRAW_DAY_COUNT_LIMIT => '提现单日超次数',
         self::WITHDRAW_DAY_AMOUNT_LIMIT => '提现单日额度超限',
         self::WITHDRAW_UNBIND_WEXIN => '未绑定微信',
-        self::WITHDRAW_SYSTEM_SUSPEND => '系统暂停提现'
+        self::WITHDRAW_SYSTEM_SUSPEND => '系统暂停提现',
+
+
+        //企业模块
+        self::PROJECT_NOT_FIND => '需求不存在',
+
     ];
 
 

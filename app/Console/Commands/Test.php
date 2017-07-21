@@ -62,7 +62,8 @@ class Test extends Command
      */
     public function handle()
     {
-        event(new Push(User::find(5),'您有新的回答邀请','来回答',['object_type'=>'answer','object_id'=>2]));
+        $user = User::find(78);
+        echo $user->getWorkYears();
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

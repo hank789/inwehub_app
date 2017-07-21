@@ -373,13 +373,9 @@ class User extends Model implements AuthenticatableContract,
 
     public function getWorkYears(){
         $begin = $this->jobs()->orderBy('begin_time','asc')->first();
-        $end = $this->jobs()->orderBy('end_time','desc')->first();
         if($begin){
             $begin_time = new Carbon($begin->begin_time);
-            $end_time = $end->end_time;
-            if($end_time == '至今'){
-                $end_time = date('Y-m');
-            }
+            $end_time = date('Y-m');
             $end_time = new Carbon($end_time);
             return $end_time->diffInYears($begin_time);
         }
