@@ -79,7 +79,7 @@
                                             <td>{{ $company->company_bank_account }}</td>
                                             <td>{{ $company->company_address }}</td>
                                             <td>{{ $company->company_work_phone }}</td>
-                                            <td>{{ $company->company_represent_person_type ? '其他人':'申请者' }}</td>
+                                            <td>{{ $company->company_represent_person_type ? '申请者':'其他人' }}</td>
                                             <td>{{ $company->company_represent_person_name }}</td>
                                             <td>{{ $company->company_represent_person_title }}</td>
                                             <td>{{ $company->company_represent_person_phone }}</td>
