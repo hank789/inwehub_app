@@ -201,6 +201,7 @@ Route::group(['prefix' => 'company','namespace'=>'Company'], function() {
 //项目需求管理
 Route::group(['prefix' => 'project','namespace'=>'Project'], function() {
     Route::get('index',['as'=>'admin.project.index','uses'=>'ProjectController@index']);
+    Route::get('detail',['as'=>'admin.project.detail','uses'=>'ProjectController@detail']);
     Route::post('destroy',['as'=>'admin.project.destroy','uses'=>'ProjectController@destroy']);
     Route::post('verify',['as'=>'admin.project.verify','uses'=>'ProjectController@verify']);
 
