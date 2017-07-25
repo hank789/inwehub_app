@@ -179,6 +179,6 @@
 @endsection
 @section('script')
     <script type="text/javascript">
-        set_active_menu('operations',"{{ route('admin.appVersion.index') }}");
+        set_active_menu('manage_project',"{{ route('admin.project.index') }}");
     </script>
 @endsection
