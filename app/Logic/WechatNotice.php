@@ -44,6 +44,16 @@ class WechatNotice {
                     $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
                 }
                 break;
+            case 'question_answer_promise_overtime';
+                $title = '您好，您有专业问答任务即将延期,请及时处理!';
+                $keyword2 = date('Y-m-d H:i',strtotime($object->promise_time));
+                $remark = '可点击详情立即前往回答';
+                $target_url = $url.'#/answer/'.$object->question->id;
+                $template_id = 'aOeQPpVu_aHC1xuJgMlZqkkI4j9mmqjLXn3SvX2b3hg';
+                if (config('app.env') != 'production') {
+                    $template_id = 'zvZO6wKROVb3fWCE8TGIOtQ3y3k4527wD_Lsk6dyNnM';
+                }
+                break;
             default:
                 return;
                 break;
