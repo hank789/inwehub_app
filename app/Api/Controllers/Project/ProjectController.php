@@ -325,10 +325,10 @@ class ProjectController extends Controller {
 
         $newData = [
             'project_id' => $data['project_id'],
-            'qualification_requirements' => json_encode($data['company_name']),
-            'other_requirements' => json_encode($data['company_description']),
-            'is_view_resume' => $data['company_represent_person_is_self'],
-            'is_apply_request' => $data['company_represent_person_name'],
+            'qualification_requirements' => json_encode($data['qualification_requirements']),
+            'other_requirements' => json_encode($data['other_requirements']),
+            'is_view_resume' => $data['is_view_resume'],
+            'is_apply_request' => $data['is_apply_request'],
         ];
         $detail = ProjectDetail::findOrFail($data['project_id']);
         $detail->update($newData);
