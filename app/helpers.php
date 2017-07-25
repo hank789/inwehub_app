@@ -853,3 +853,17 @@ if (!function_exists('get_user_avatar_url_by_id')){
     }
 }
 
+
+if (!function_exists('format_json_string')){
+    function format_json_string($json,$field=''){
+        $arr = json_decode($json,true);
+        if($arr) {
+            if($field){
+                return implode(',',array_column($arr,$field));
+            } else {
+                return implode(',',array_values($arr));
+            }
+        }
+        return '';
+    }
+}
