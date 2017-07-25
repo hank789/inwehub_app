@@ -15,7 +15,7 @@ class ModifyAppVersionTable extends Migration
     {
         Schema::table('app_version', function (Blueprint $table) {
             $table->renameColumn('is_force','is_ios_force');
-            $table->tinyInteger('is_android_force')->default(0)->after('is_ios_force')->comment('是否android强更:0非强更,1强更');
+            $table->tinyInteger('is_android_force')->default(0)->after('is_force')->comment('是否android强更:0非强更,1强更');
 
         });
     }
