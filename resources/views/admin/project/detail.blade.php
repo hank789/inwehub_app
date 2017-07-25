@@ -85,7 +85,7 @@
 
                             <div class="form-group">
                                 <label>工作地点:</label>
-                                <label>{{ array_column(json_decode($detail->work_address,true),'text') }}</label>
+                                <label>{{ implode(',',array_column(json_decode($detail->work_address,true),'text')) }}</label>
                             </div>
 
                             <div class="form-group">
@@ -145,12 +145,12 @@
 
                             <div class="form-group">
                                 <label>认证资质:</label>
-                                <label>{{ array_values(json_decode($detail->qualification_requirements,true)) }}</label>
+                                <label>{{ implode(',',array_values(json_decode($detail->qualification_requirements,true))) }}</label>
                             </div>
 
                             <div class="form-group">
                                 <label>其它资质:</label>
-                                <label>{{ array_values(json_decode($detail->other_requirements,true)) }}</label>
+                                <label>{{ implode(',',array_values(json_decode($detail->other_requirements,true))) }}</label>
                             </div>
 
                             <div class="form-group">
