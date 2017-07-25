@@ -243,10 +243,10 @@ class ProjectController extends Controller {
             'company_represent_person_title'     => 'required|max:64',
             'company_represent_person_phone'     => 'required|max:64',
             'company_represent_person_email'     => 'required|email|max:68',
-            'company_billing_title'     => 'required|max:68',
-            'company_billing_bank'     => 'required|max:68',
-            'company_billing_account'     => 'required|max:68',
-            'company_billing_taxes'     => 'required|max:68',
+            'company_billing_title'     => 'max:68',
+            'company_billing_bank'     => 'max:68',
+            'company_billing_account'     => 'max:68',
+            'company_billing_taxes'     => 'max:68',
         ];
 
         $this->validate($request,$validateRules);
