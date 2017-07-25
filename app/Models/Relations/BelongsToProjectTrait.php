@@ -10,7 +10,7 @@ trait BelongsToProjectTrait
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function project()
     {
         return $this->belongsTo('App\Models\Company\Project');
     }

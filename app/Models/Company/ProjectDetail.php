@@ -15,6 +15,8 @@ class ProjectDetail extends Model
 {
     use BelongsToUserTrait,BelongsToProjectTrait,SoftDeletes,MorphManyTagsTrait;
     protected $table = 'project_detail';
+    protected $primaryKey = 'project_id';
+
     protected $fillable = ['user_id', 'project_id','worker_num','worker_level','project_amount','billing_mode',
     'project_begin_time','project_cycle','work_intensity','remote_work','travel_expense','work_address','company_name',
         'company_description','company_represent_person_is_self','company_represent_person_name','company_represent_person_title',
