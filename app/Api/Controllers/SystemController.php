@@ -71,7 +71,7 @@ class SystemController extends Controller {
         $android_force_update_url = 'https://www.pgyer.com/mpKs';
 
         if(config('app.env') == 'production'){
-            $ios_force_update_url = 'https://itunes.apple.com/cn/app/inwehub/id1244660980';//正式环境换成苹果商店的地址
+            $ios_force_update_url = 'itms-apps://itunes.apple.com/cn/app/inwehub/id1244660980?l=zh&mt=8';//正式环境换成苹果商店的地址
             $android_force_update_url = 'http://android.app.qq.com/myapp/detail.htm?apkName=com.inwehub.InwehubApp';//正式环境换成android商店的地址
         }
         $app_version = $last->app_version??'1.0.0';
