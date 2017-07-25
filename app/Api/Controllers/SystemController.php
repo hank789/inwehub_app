@@ -75,12 +75,14 @@ class SystemController extends Controller {
             $android_force_update_url = 'https://www.pgyer.com/s9AN';//正式环境换成android商店的地址
         }
         $app_version = $last->app_version??'1.0.0';
-        $is_force = $last->is_force??0;
+        $is_ios_force = $last->is_ios_force??0;
+        $is_android_force = $last->is_android_force??0;
         $update_msg = $last->update_msg??'1、大额提现t+1到账。\n2、变现进度做了优化。\n3、修复了一些bug。';
         $package_url = $last->package_url??'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/app_version/com.inwehub.InwehubApp.wgt';
         return self::createJsonData(true,[
             'app_version'           => $app_version,
-            'is_force'              => $is_force,
+            'is_ios_force'          => $is_ios_force,
+            'is_android_force'      => $is_android_force,
             'package_url'           => $package_url,
             'update_msg'            => $update_msg,
             'ios_force_update_url'  => $ios_force_update_url,
