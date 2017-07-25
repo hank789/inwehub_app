@@ -62,7 +62,7 @@ class ProjectController extends AdminController
     {
         $id = $request->input('id');
         $project = Project::find($id);
-        $detail = ProjectDetail::find($id);
+        $detail = ProjectDetail::findOrNew($id);
 
         return view('admin.project.detail')->with(compact('project','detail'));
 
