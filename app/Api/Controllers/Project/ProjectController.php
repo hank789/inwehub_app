@@ -299,8 +299,8 @@ class ProjectController extends Controller {
     {
         $validateRules = [
             'project_id'      => 'required|integer',
-            'qualification_requirements'      => 'array',
-            'other_requirements'     => 'array',
+            'qualification_requirements'      => 'nullable|array',
+            'other_requirements'     => 'nullable|array',
             'is_view_resume'     => 'required|in:0,1',
             'is_apply_request'     => 'required|in:0,1'
         ];
