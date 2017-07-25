@@ -33,7 +33,7 @@ class CheckCoupon extends Command
     {
         $coupons = Coupon::where('coupon_status',Coupon::COUPON_STATUS_PENDING)->where('expire_at','<=',date('Y-m-d H:i:s'))->get();
         foreach($coupons as $coupon){
-            $coupon->status = Coupon::COUPON_STATUS_EXPIRED;
+            $coupon->coupon_status = Coupon::COUPON_STATUS_EXPIRED;
             $coupon->save();
         }
     }
