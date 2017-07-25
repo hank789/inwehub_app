@@ -58,7 +58,7 @@ class ProjectController extends AdminController
 
     }
 
-    public function view(Request $request)
+    public function detail(Request $request)
     {
         $id = $request->input('id');
         $project = Project::find($id);
