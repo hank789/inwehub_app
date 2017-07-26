@@ -69,7 +69,7 @@ class ProjectController extends Controller {
             'company_billing_taxes' => $detail->company_billing_taxes,
             'qualification_requirements' => json_decode($detail->qualification_requirements),
             'other_requirements' => json_decode($detail->other_requirements),
-            'is_view_resume' => $detail->company_billing_account,
+            'is_view_resume' => $detail->is_view_resume,
             'is_apply_request' => $detail->is_apply_request,
 
         ];
