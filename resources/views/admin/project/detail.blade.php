@@ -33,6 +33,16 @@
                                 <label>项目简介:</label>
                                 <label>{{ $project->project_description }}</label>
                             </div>
+
+                            <div class="form-group">
+                                <label>项目附件:</label>
+                                <div style="margin-top: 10px;">
+                                    @foreach($project->getMedia('project') as $img)
+                                        <img src="{{ $img->getUrl() }}" width="100"/>
+                                    @endforeach
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label>项目状态:</label>
                                 <label>{{ trans_company_apply_status($project->status) }}</label>
