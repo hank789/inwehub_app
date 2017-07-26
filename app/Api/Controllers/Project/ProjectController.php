@@ -94,7 +94,7 @@ class ProjectController extends Controller {
         $list = [];
         foreach($items as $item){
             $info = $item->toArray();
-            $detail = ProjectDetail::find($info['id']);
+            $detail = ProjectDetail::findOrNew($info['id']);
             $list[] = [
                 'id' => $item['id'],
                 'project_name' => $item['project_name'],
