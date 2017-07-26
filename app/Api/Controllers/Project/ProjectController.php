@@ -170,9 +170,14 @@ class ProjectController extends Controller {
                 $project->addMediaFromBase64($data[$filename])->toMediaCollection('project');
             }
         }
+        $images_url = [];
+        foreach($project->getMedia('project') as $img){
+            $images_url[] = $img->getUrl();
+        }
 
 
-        return self::createJsonData(true,['id'=>$project->id]);
+
+        return self::createJsonData(true,['id'=>$project->id,'images'=>$images_url]);
     }
 
     public function publishStepTwo(Request $request)
