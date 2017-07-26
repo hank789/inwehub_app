@@ -49,7 +49,7 @@ class ProjectController extends Controller {
             'worker_level' => $detail->worker_level,
             'project_amount' => $detail->project_amount,
             'billing_mode' => $detail->billing_mode,
-            'begin_time' => $detail->begin_time,
+            'project_begin_time' => $detail->project_begin_time,
             'project_cycle' => $detail->project_cycle,
             'work_intensity' => $detail->work_intensity,
             'remote_work' => $detail->remote_work,
