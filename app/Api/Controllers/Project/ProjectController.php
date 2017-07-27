@@ -90,7 +90,7 @@ class ProjectController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $items = $query->orderBy('id','DESC')->paginate(10);
+        $items = $query->where('status','!=',Project::STATUS_DRAFT)->orderBy('id','DESC')->paginate(10);
         $list = [];
         foreach($items as $item){
             $info = $item->toArray();
