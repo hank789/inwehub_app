@@ -100,7 +100,7 @@ class ProjectController extends Controller {
                 'project_name' => $item['project_name'],
                 'company_represent_person_name' => $detail->company_represent_person_name,
                 'company_name' => $detail->company_name,
-                'status'       => $detail->status,
+                'status'       => $item['status'],
                 'updated_at'   => (string)$detail->updated_at
             ];
         }
@@ -151,7 +151,6 @@ class ProjectController extends Controller {
             }
             foreach($data['deleted_images'] as $deleted_image){
                 if(isset($mediaItemUrls[$deleted_image])){
-                    $project->deleteMedia($mediaItemUrls[$deleted_image]);
                     $mediaItemUrls[$deleted_image]->delete();
                 }
             }
@@ -173,7 +172,11 @@ class ProjectController extends Controller {
         }
         $images_url = [];
         foreach($project->getMedia('project') as $img){
-            $images_url[] = $img->getUrl();
+            try{
+                $images_url[] = $img->getUrl();
+            } catch (\Exception $e) {
+                
+            }
         }
 
 
