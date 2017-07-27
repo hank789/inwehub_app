@@ -25,7 +25,8 @@
         "riverslei/payment": "~3.1",
         "sentry/sentry-laravel": "^0.6.1",
         "spatie/laravel-backup": "^4.13",
-        "spatie/laravel-medialibrary": "^5.8",
+        "spatie/laravel-medialibrary": "5.*",
+        "symfony/filesystem": "^3.3",
         "tlapi/slack-laravel": "dev-master",
         "tymon/jwt-auth": "^0.5.10",
         "zhuzhichao/ip-location-zh": "^2.2"

@@ -175,7 +175,7 @@ class ProjectController extends Controller {
             try{
                 $images_url[] = $img->getUrl();
             } catch (\Exception $e) {
-                
+
             }
         }
 
