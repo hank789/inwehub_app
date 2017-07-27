@@ -131,8 +131,7 @@ class ProjectController extends Controller {
             'project_name' => $data['project_name'],
             'project_type' => $data['project_type'],
             'project_stage' => $data['project_stage'],
-            'project_description' => $data['project_description'],
-            'status' => Project::STATUS_DRAFT
+            'project_description' => $data['project_description']
         ];
         if(isset($data['project_id']) && $data['project_id']){
             $project = Project::findOrFail($data['project_id']);
