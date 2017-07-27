@@ -93,7 +93,7 @@ class SystemController extends Controller {
     public function getAppMarketUrl(){
         $data = [
             'ios_url' => 'https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=1244660980&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8',
-            'android_url' => 'https://itunes.apple.com/cn/app/inwehub/id1244660980'
+            'android_url' => 'http://android.app.qq.com/myapp/detail.htm?apkName=com.inwehub.InwehubApp'
         ];
 
         return self::createJsonData(true,$data);

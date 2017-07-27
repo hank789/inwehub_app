@@ -62,7 +62,7 @@
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>用户ID</th>
                                         <th>用户姓名</th>
-                                        <th>邮箱</th>
+                                        <th>微信昵称</th>
                                         <th>手机</th>
                                         <th>身份职业</th>
                                         <th>地区</th>
@@ -83,7 +83,7 @@
                                             <td><input type="checkbox" value="{{ $user->id }}" name="id[]"/></td>
                                             <td>{{ $user->id }}</td>
                                             <td>{{ $user->name }}</td>
-                                            <td>{{ $user->email }}</td>
+                                            <td>{{ implode(',',$user->userOauth()->where('status',1)->pluck('nickname')->toArray()) }}</td>
                                             <td>{{ $user->mobile }}</td>
                                             <td>{{ $user->title }}</td>
                                             <td>{{ get_province_name($user->province) }} - {{ get_city_name($user->province, $user->city) }}</td>
