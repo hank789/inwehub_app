@@ -127,7 +127,7 @@ class UserController extends AdminController
         if($request->input('email')){
             $this->validateRules['email'] = 'required|email|max:255|unique:users,email,'.$user->id;
         }
-        $this->validateRules['mobile'] = 'required|cn_phone|unique:users,mobile,'.$user->id;
+        $this->validateRules['mobile'] = 'required|unique:users,mobile,'.$user->id;
         unset($this->validateRules['password']);
         $this->validate($request,$this->validateRules);
         $this->validateRules['password'] = 'sometimes|min:6';
