@@ -151,6 +151,7 @@ class ProjectController extends Controller {
             }
             foreach($data['deleted_images'] as $deleted_image){
                 if(isset($mediaItemUrls[$deleted_image])){
+                    $project->deleteMedia($mediaItemUrls[$deleted_image]);
                     $mediaItemUrls[$deleted_image]->delete();
                 }
             }
