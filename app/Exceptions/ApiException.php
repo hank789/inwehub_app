@@ -54,6 +54,7 @@ class ApiException extends Exception
     const USER_REGISTRATION_CODE_USED = 1117;
     const USER_CANNOT_FOLLOWED_SELF = 1118;
     const USER_COMPANY_APPLY_REPEAT = 1119;
+    const USER_REGISTRATION_CODE_EXPIRED = 1120;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -114,6 +115,7 @@ class ApiException extends Exception
         self::USER_REGISTRATION_CODE_USED => '此邀请码已被使用，谢谢您的支持！',
         self::USER_CANNOT_FOLLOWED_SELF => '您不能关注自己',
         self::USER_COMPANY_APPLY_REPEAT => '企业申请已经提交,请耐心等待',
+        self::USER_REGISTRATION_CODE_EXPIRED => '您的邀请码已经过期，请重新获取有效邀请码',
 
 
         //问答模块

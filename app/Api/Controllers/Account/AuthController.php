@@ -67,6 +67,9 @@ class AuthController extends Controller
                             if(empty($rcode)){
                                 throw new ApiException(ApiException::USER_REGISTRATION_CODE_INVALID);
                             }
+                            if($rcode->status == UserRegistrationCode::CODE_STATUS_EXPIRED){
+                                throw new ApiException(ApiException::USER_REGISTRATION_CODE_EXPIRED);
+                            }
                             if($rcode->status != UserRegistrationCode::CODE_STATUS_PENDING){
                                 throw new ApiException(ApiException::USER_REGISTRATION_CODE_USED);
                             }
