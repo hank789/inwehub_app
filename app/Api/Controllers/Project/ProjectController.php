@@ -340,8 +340,10 @@ class ProjectController extends Controller {
         ];
         $detail = ProjectDetail::findOrFail($data['project_id']);
         $detail->update($newData);
-        $project->status = $data['status'];
-        $project->save();
+        if ($project->status != Project::STATUS_PENDING){
+            $project->status = $data['status'];
+            $project->save();
+        }
 
         return self::createJsonData(true,['id'=>$project->id]);
     }
