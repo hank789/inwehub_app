@@ -32,6 +32,8 @@ class ProjectController extends AdminController
         /*认证申请状态过滤*/
         if(isset($filter['apply_status']) && $filter['apply_status'] > -1){
             $query->where('status','=',$filter['apply_status']);
+        }else {
+            $query->whereIn('status',[1,2,3]);
         }
 
         if(isset($filter['user_id']) && $filter['user_id'] > 0 ){

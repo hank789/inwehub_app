@@ -51,6 +51,7 @@
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>ID</th>
                                         <th>项目名称</th>
+                                        <th>发布者</th>
                                         <th>项目类型</th>
                                         <th>项目阶段</th>
                                         <th>状态</th>
@@ -62,9 +63,10 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $project->id }}"/></td>
                                             <td>{{ $project->id }}</td>
                                             <td>{{ $project->project_name }}</td>
+                                            <td>{{ $project->user->name }}</td>
                                             <td>{{ trans_project_type($project->project_type) }}</td>
                                             <td>{{ trans_project_stage($project->project_stage) }}</td>
-                                            <td><span class="label @if($project->status===0) label-default  @elseif($project->status===1) label-success @else label-warning  @endif">{{ trans_company_apply_status($project->status) }}</span> </td>
+                                            <td><span class="label @if($project->status===1) label-default  @elseif($project->status===2) label-success @else label-warning  @endif">{{ trans_company_apply_status($project->status) }}</span> </td>
                                             <td>{{ timestamp_format($project->updated_at) }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
