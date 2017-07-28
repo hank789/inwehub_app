@@ -135,7 +135,7 @@ class ProjectController extends Controller {
         ];
         if(isset($data['project_id']) && $data['project_id']){
             $project = Project::findOrFail($data['project_id']);
-            if($project->user_id != $user_id) {
+            if($project->user_id != $user_id || $project->status == Project::STATUS_PUBLISH) {
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
             $project->update($newData);
@@ -211,7 +211,7 @@ class ProjectController extends Controller {
         if(!$project){
             throw new ApiException(ApiException::PROJECT_NOT_FIND);
         }
-        if($project->user_id != $user_id) {
+        if($project->user_id != $user_id || $project->status == Project::STATUS_PUBLISH) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
@@ -269,7 +269,7 @@ class ProjectController extends Controller {
         if(!$project){
             throw new ApiException(ApiException::PROJECT_NOT_FIND);
         }
-        if($project->user_id != $user_id) {
+        if($project->user_id != $user_id || $project->status == Project::STATUS_PUBLISH) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
@@ -327,7 +327,7 @@ class ProjectController extends Controller {
             throw new ApiException(ApiException::PROJECT_NOT_FIND);
         }
 
-        if($project->user_id != $user_id) {
+        if($project->user_id != $user_id || $project->status == Project::STATUS_PUBLISH) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
