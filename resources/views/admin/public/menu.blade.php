@@ -25,6 +25,17 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-suitcase"></i> <span>项目</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_project">
+            <li><a href="{{ route('admin.project.index') }}"><i class="fa fa-circle-o"></i> 需求管理</a></li>
+        </ul>
+    </li>
+
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-user-secret"></i> <span>权限</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>

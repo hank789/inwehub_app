@@ -21,7 +21,7 @@ class AppVersion extends Model
      *
      * @var array
      */
-    protected $fillable = ['id','user_id', 'app_version','package_url','is_force','update_msg','status'];
+    protected $fillable = ['id','user_id', 'app_version','package_url','is_ios_force','is_android_force','update_msg','status'];
 
     /**
      * The attributes excluded from the model's JSON form.

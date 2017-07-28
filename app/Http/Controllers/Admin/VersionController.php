@@ -14,7 +14,8 @@ class VersionController extends AdminController
     protected $validateRules = [
         'app_version'        => 'required|regex:/^([0-9]+.[0-9]+.[0-9])/',
         'package_url' => 'required|max:255',
-        'is_force' => 'required|in:0,1',
+        'is_ios_force' => 'required|in:0,1',
+        'is_android_force' => 'required|in:0,1',
         'update_msg' => 'required|max:255',
     ];
 
@@ -70,7 +71,8 @@ class VersionController extends AdminController
             'user_id'      => $loginUser->id,
             'app_version'        => trim($request->input('app_version')),
             'package_url'  =>$request->input('package_url'),
-            'is_force' => $request->input('is_force'),
+            'is_ios_force' => $request->input('is_ios_force'),
+            'is_android_force' => $request->input('is_android_force'),
             'update_msg'   => $request->input('update_msg'),
             'status'       => 0,
         ];
@@ -124,7 +126,8 @@ class VersionController extends AdminController
 
         $version->app_version = trim($request->input('app_version'));
         $version->package_url = trim($request->input('package_url'));
-        $version->is_force = trim($request->input('is_force'));
+        $version->is_ios_force = trim($request->input('is_ios_force'));
+        $version->is_android_force = trim($request->input('is_android_force'));
         $version->update_msg = $request->input('update_msg');
 
         $version->save();

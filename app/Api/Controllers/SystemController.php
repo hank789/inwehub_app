@@ -72,15 +72,17 @@ class SystemController extends Controller {
 
         if(config('app.env') == 'production'){
             $ios_force_update_url = 'itms-apps://itunes.apple.com/cn/app/inwehub/id1244660980?l=zh&mt=8';//正式环境换成苹果商店的地址
-            $android_force_update_url = 'http://android.app.qq.com/myapp/detail.htm?apkName=com.inwehub.InwehubApp';//正式环境换成android商店的地址
+            $android_force_update_url = 'market://details?id=com.inwehub.InwehubApp';//正式环境换成android商店的地址
         }
         $app_version = $last->app_version??'1.0.0';
-        $is_force = $last->is_force??0;
+        $is_ios_force = $last->is_ios_force??0;
+        $is_android_force = $last->is_android_force??0;
         $update_msg = $last->update_msg??'1、大额提现t+1到账。\n2、变现进度做了优化。\n3、修复了一些bug。';
         $package_url = $last->package_url??'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/app_version/com.inwehub.InwehubApp.wgt';
         return self::createJsonData(true,[
             'app_version'           => $app_version,
-            'is_force'              => $is_force,
+            'is_ios_force'          => $is_ios_force,
+            'is_android_force'      => $is_android_force,
             'package_url'           => $package_url,
             'update_msg'            => $update_msg,
             'ios_force_update_url'  => $ios_force_update_url,
@@ -91,7 +93,7 @@ class SystemController extends Controller {
     public function getAppMarketUrl(){
         $data = [
             'ios_url' => 'https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=1244660980&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8',
-            'android_url' => 'http://android.app.qq.com/myapp/detail.htm?apkName=com.inwehub.InwehubApp'
+            'android_url' => 'market://details?id=com.inwehub.InwehubApp'
         ];
 
         return self::createJsonData(true,$data);

@@ -51,7 +51,8 @@
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>版本号</th>
-                                        <th>是否强更</th>
+                                        <th>是否ios强更</th>
+                                        <th>是否android强更</th>
                                         <th>发布者</th>
                                         <th>时间</th>
                                         <th>包地址</th>
@@ -63,7 +64,8 @@
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $version->id }}"/></td>
                                             <td>{{ $version->app_version }}</td>
-                                            <td>{{ $version->is_force }}</td>
+                                            <td>{{ $version->is_ios_force }}</td>
+                                            <td>{{ $version->is_android_force }}</td>
                                             <td>{{ $version->user_id }}</td>
                                             <td>{{ timestamp_format($version->created_at) }}</td>
                                             <td>{{ $version->package_url }}</td>

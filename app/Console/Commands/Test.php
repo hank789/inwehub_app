@@ -9,6 +9,7 @@ use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\AppVersion;
 use App\Models\Authentication;
+use App\Models\Company\Project;
 use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Pay\Order;
@@ -62,9 +63,12 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $s = $user->userOauth()->where('status',1)->pluck('nickname')->toArray();
-        var_dump($s);
+        $project = Project::find(60);
+        $project->deleteMedia(59);
+        foreach($project->getMedia('project') as $img){
+            $images_url[] = $img->getUrl();
+        }
+        var_dump($images_url);
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

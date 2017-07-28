@@ -85,6 +85,7 @@ if (! function_exists('trans_company_apply_status')) {
 
     function trans_company_apply_status($status){
         $map = [
+            0 => '草稿',
             1 => '待审核',
             2 => '审核通过',
             3 => '审核失败',
@@ -150,8 +151,196 @@ if (! function_exists('trans_company_auth_mode')) {
         return '';
 
     }
-
 }
+
+// 项目阶段
+if (! function_exists('trans_project_stage')) {
+
+    function trans_project_stage($mode){
+        $map = [
+            1 => '只有个想法',
+            2 => '项目已立项',
+            3 => '项目进行中'
+        ];
+
+        if($mode==='all'){
+            return $map;
+        }
+
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+
+        return '';
+    }
+}
+
+
+// 项目类型
+if (! function_exists('trans_project_type')) {
+
+    function trans_project_type($mode){
+        $map = [
+            1 => '一次性',
+            2 => '持续',
+        ];
+
+        if($mode==='all'){
+            return $map;
+        }
+
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+
+        return '';
+    }
+}
+
+// 项目顾问数量
+if (! function_exists('trans_project_worker_num')) {
+
+    function trans_project_worker_num($mode){
+        $map = [
+            1 => '一个',
+            2 => '2个',
+            3 => '3~5个',
+            4 => '5~8个',
+            5 => '8个以上',
+            6 => '其它',
+            7 => '不确定'
+        ];
+
+        if($mode==='all'){
+            return $map;
+        }
+
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+
+        return '';
+    }
+}
+
+// 项目顾问级别
+if (! function_exists('trans_project_worker_level')) {
+    function trans_project_worker_level($mode){
+        $map = [
+            1 => '熟练',
+            2 => '精通',
+            3 => '资深'
+        ];
+        if($mode==='all'){
+            return $map;
+        }
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+        return '';
+    }
+}
+
+// 项目计费模式
+if (! function_exists('trans_project_billing_mode')) {
+    function trans_project_billing_mode($mode){
+        $map = [
+            1 => '按人计算',
+            2 => '整体打包',
+        ];
+        if($mode==='all'){
+            return $map;
+        }
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+        return '';
+    }
+}
+
+// 项目计费模式
+if (! function_exists('trans_project_billing_mode')) {
+    function trans_project_billing_mode($mode){
+        $map = [
+            1 => '按人计算',
+            2 => '整体打包',
+        ];
+        if($mode==='all'){
+            return $map;
+        }
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+        return '';
+    }
+}
+
+// 项目周期
+if (! function_exists('trans_project_project_cycle')) {
+    function trans_project_project_cycle($mode){
+        $map = [
+            1 => '小于1周',
+            2 => '1~2周',
+            3 => '2~4周',
+            4 => '1~2月',
+            5 => '2~4月',
+            6 => '4~6月',
+            7 => '半年以上',
+            8 => '不确定',
+            9 => '其它'
+        ];
+        if($mode==='all'){
+            return $map;
+        }
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+        return '';
+    }
+}
+
+// 项目工作密度
+if (! function_exists('trans_project_work_intensity')) {
+    function trans_project_work_intensity($mode){
+        $map = [
+            1 => '2H/W',
+            2 => '4H/W',
+            3 => '8H/W',
+            4 => '16H/W',
+            5 => '24H/W',
+            6 => '32H/W',
+            7 => '40H/W',
+            8 => '其它',
+            9 => '不确定'
+        ];
+        if($mode==='all'){
+            return $map;
+        }
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+        return '';
+    }
+}
+
+// 项目差旅费用
+if (! function_exists('trans_project_travel_expense')) {
+    function trans_project_travel_expense($mode){
+        $map = [
+            1 => '包含在项目内',
+            2 => '单独结算',
+        ];
+        if($mode==='all'){
+            return $map;
+        }
+        if(isset($map[$mode])){
+            return $map[$mode];
+        }
+        return '';
+    }
+}
+
+
 
 /*公告状态文字定义*/
 if (! function_exists('trans_exchange_status')) {
@@ -664,3 +853,17 @@ if (!function_exists('get_user_avatar_url_by_id')){
     }
 }
 
+
+if (!function_exists('format_json_string')){
+    function format_json_string($json,$field=''){
+        $arr = json_decode($json,true);
+        if($arr) {
+            if($field){
+                return implode(',',array_column($arr,$field));
+            } else {
+                return implode(',',array_values($arr));
+            }
+        }
+        return '';
+    }
+}
