@@ -310,7 +310,8 @@ class ProjectController extends Controller {
             'qualification_requirements'      => 'nullable|array',
             'other_requirements'     => 'nullable|array',
             'is_view_resume'     => 'required|in:0,1',
-            'is_apply_request'     => 'required|in:0,1'
+            'is_apply_request'     => 'required|in:0,1',
+            'status'             => 'required|in:0,1'
         ];
 
         $this->validate($request,$validateRules);
@@ -330,7 +331,6 @@ class ProjectController extends Controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
-
         $newData = [
             'project_id' => $data['project_id'],
             'qualification_requirements' => json_encode($data['qualification_requirements']),
@@ -340,7 +340,7 @@ class ProjectController extends Controller {
         ];
         $detail = ProjectDetail::findOrFail($data['project_id']);
         $detail->update($newData);
-        $project->status = Project::STATUS_PENDING;
+        $project->status = $data['status'];
         $project->save();
 
         return self::createJsonData(true,['id'=>$project->id]);
