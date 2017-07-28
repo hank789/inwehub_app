@@ -120,7 +120,7 @@ class ProjectController extends Controller {
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
 
-        if(RateLimiter::instance()->increase('project:apply',$user_id,3,1)){
+        if(RateLimiter::instance()->increase('project:apply:one',$user_id,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -201,7 +201,7 @@ class ProjectController extends Controller {
 
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
-        if(RateLimiter::instance()->increase('project:apply',$user_id,3,1)){
+        if(RateLimiter::instance()->increase('project:apply:two',$user_id,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -259,7 +259,7 @@ class ProjectController extends Controller {
 
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
-        if(RateLimiter::instance()->increase('project:apply',$user_id,3,1)){
+        if(RateLimiter::instance()->increase('project:apply:three',$user_id,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -316,7 +316,7 @@ class ProjectController extends Controller {
 
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
-        if(RateLimiter::instance()->increase('project:apply',$user_id,3,1)){
+        if(RateLimiter::instance()->increase('project:apply:four',$user_id,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 

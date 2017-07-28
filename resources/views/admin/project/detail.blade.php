@@ -80,7 +80,7 @@
 
                             <div class="form-group">
                                 <label>工作密度:</label>
-                                <label>{{ $detail->work_intensity }}</label>
+                                <label>{{ trans_project_work_intensity($detail->work_intensity) }}</label>
                             </div>
 
                             <div class="form-group">
@@ -101,6 +101,11 @@
                             <div class="form-group">
                                 <label>企业名称:</label>
                                 <label>{{ $detail->company_name }}</label>
+                            </div>
+
+                            <div class="form-group">
+                                <label>企业行业领域:</label>
+                                <label>{{ implode(',',$detail->tags()->pluck('name')->toArray()) }}</label>
                             </div>
 
                             <div class="form-group">
