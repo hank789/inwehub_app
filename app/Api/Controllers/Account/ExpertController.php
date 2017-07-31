@@ -27,17 +27,32 @@ class ExpertController extends Controller {
             throw new ApiException(ApiException::EXPERT_NEED_CONFIRM);
         }
 
+        $validateRules = [
+            'name' => 'required|max:128',
+            'gender'    => 'required|in:1,2',
+            'company'   => 'required|max:128',
+            'address_detail'  => 'required|max:255',
+            'email'            => 'required|email',
+            'description'         => 'required|max:1000',
+            'title' => 'required|max:255'
+        ];
+        $user = $request->user();
+        $validateRules['email'] = 'required|email|max:255|unique:users,email,'.$user->id;
+        $this->validate($request,$validateRules);
+
         $data['user_id'] = $user->id;
-        $data['real_name'] = $user->name;
-        $data['title'] = $user->title;
-        $data['gender'] = $user->gender;
-        $data['id_card'] = '';
-        $data['id_card_image'] = '';
-        $data['skill'] = '';
-        $data['skill_image'] = '';
         $data['status'] = 0;
 
         Authentication::create($data);
+
+        $user->name = $request->input('name');
+        $user->email = strtolower($request->input('email'));
+        $user->gender = $request->input('gender');
+        $user->title = $request->input('title');
+        $user->company = $request->input('company');
+        $user->description = $request->input('description');
+        $user->address_detail = $request->input('address_detail');
+        $user->save();
 
         return self::createJsonData(true,['status'=>1,'tips'=>'稍安勿躁，我们正在审核中!']);
     }

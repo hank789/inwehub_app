@@ -192,6 +192,20 @@ class ProfileController extends Controller
         if(empty($info['industry_tags'])) $info['industry_tags'] = '';
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
+        $info['expert_apply_status'] = 0;
+        $info['expert_apply_tips'] = '点击前往认证';
+        if(!empty($user->authentication)){
+            if($user->authentication->status == 0){
+                $info['expert_apply_status'] = 1;
+                $info['expert_apply_tips'] = '认证处理中!';
+            }elseif($user->authentication->status == 1){
+                $info['expert_apply_status'] = 2;
+                $info['expert_apply_tips'] = '身份已认证!';
+            }else{
+                $info['expert_apply_status'] = 3;
+                $info['expert_apply_tips'] = '认证失败,重新认证';
+            }
+        }
 
         $info['questions'] = $user->userData->questions;
         $info['answers'] = $user->userData->answers;
