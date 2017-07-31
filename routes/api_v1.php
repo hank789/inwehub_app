@@ -102,6 +102,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     /*我的关注*/
     Route::post('followed/{source_type}',['uses'=>'FollowController@attentions'])->where(['source_type'=>'(questions|tags|users)']);
 
+    //关注我的
+    Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
 });
 
 

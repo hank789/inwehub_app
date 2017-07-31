@@ -145,6 +145,41 @@ class FollowController extends Controller
     }
 
 
+    /*关注我的用户*/
+    public function followMe(Request $request)
+    {
+
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+
+        $user = $request->user();
+        $query = Attention::where('source_type','=','App\Models\User')->where('source_id',$user->id);
+        if($top_id){
+            $query = $query->where('id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('id','<',$bottom_id);
+        }else{
+            $query = $query->where('id','>',0);
+        }
+
+        $attentions = $query->orderBy('created_at','desc')->paginate(10);
+
+        $data = [];
+        foreach($attentions as $attention){
+            $info = User::find($attention->user_id);
+            $item = [];
+            $item['id'] = $attention->id;
+            $item['user_id'] = $info->id;
+            $item['uuid'] = $info->uuid;
+            $item['user_name'] = $info->name;
+            $item['user_avatar_url'] = $info->getAvatarUrl();
+            $item['description'] = $info->description;
+            $data[] = $item;
+        }
+        return self::createJsonData(true,$data);
+    }
+
+
 
 
 }
