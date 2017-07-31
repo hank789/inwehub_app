@@ -244,7 +244,6 @@ class ProjectController extends Controller {
         $validateRules = [
             'project_id'      => 'required|integer',
             'company_name'      => 'required|max:1024',
-            'company_description'     => 'required|max:3072',
             'company_industry_tags'     => 'required|array',
             'company_represent_person_is_self'     => 'required|in:0,1',
             'company_represent_person_name'     => 'required|max:64',
@@ -277,7 +276,7 @@ class ProjectController extends Controller {
         $newData = [
             'project_id' => $data['project_id'],
             'company_name' => $data['company_name'],
-            'company_description' => $data['company_description'],
+            'company_description' => $data['company_description']??'',
             'company_represent_person_is_self' => $data['company_represent_person_is_self'],
             'company_represent_person_name' => $data['company_represent_person_name'],
             'company_represent_person_title' => $data['company_represent_person_title'],
