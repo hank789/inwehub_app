@@ -40,37 +40,7 @@ class UserEventListener implements ShouldQueue
     public function onRegistered($event)
     {
         // read站点同步注册用户
-        $exist = ReadHubUser::where('username','=',$event->user->name)->first();
-        $username = $event->user->name;
-        if ($exist) {
-            $username = $event->user->name.'_'.$event->user->id;
-        }
-        ReadHubUser::create([
-            'username' => $username,
-            'uuid'     => $event->user->uuid,
-            'name'     => $event->user->name,
-            'active'   => 1,
-            'confirmed' => 1,
-            'verfied'   => 1,
-            'password' => $event->user->password,
-            'avatar'   => $event->user->getAvatarUrl(),
-            'info' => [
-                'website' => null,
-                'twitter' => null,
-            ],
-            'settings'  => [
-                'font'                          => 'Lato',
-                'sidebar_color'                 => 'Gray',
-                'nsfw'                          => false,
-                'nsfw_media'                    => false,
-                'notify_submissions_replied'    => true,
-                'notify_comments_replied'       => true,
-                'notify_mentions'               => true,
-                'exclude_upvoted_submissions'   => false,
-                'exclude_downvoted_submissions' => true,
-                'submission_small_thumbnail'    => true,
-            ],
-        ]);
+         ReadHubUser::initUser($event->user);
         \Slack::send('User Registered: '.$event->user->name);
     }
 

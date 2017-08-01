@@ -9,6 +9,7 @@ use App\Models\Attention;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
+use App\Models\Readhub\ReadHubUser;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserOauth;
@@ -373,6 +374,8 @@ class ProfileController extends Controller
         }
         $percent = $request->user()->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user_id,$percent);
+        // 同步阅读站用户头像
+        ReadHubUser::syncAvatar($request->user());
         return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$percent],ApiException::SUCCESS,'上传成功');
     }
 
