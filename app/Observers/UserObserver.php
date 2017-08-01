@@ -6,6 +6,7 @@
  */
 
 use App\Cache\UserCache;
+use App\Models\Readhub\ReadHubUser;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -20,6 +21,11 @@ class UserObserver implements ShouldQueue {
 
     public function updated(User $user){
         UserCache::delUserInfoCache($user->id);
+        // 更新readhub用户资料
+        $readUser = ReadHubUser::where('uuid',$user->uuid)->first();
+        if ($readUser) {
+            //$readUser->
+        }
     }
 
 }

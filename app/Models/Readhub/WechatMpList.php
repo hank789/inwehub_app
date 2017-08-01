@@ -1,4 +1,4 @@
-<?php namespace App\Models\Inwehub;
+<?php namespace App\Models\Readhub;
 
 use Illuminate\Database\Eloquent\Model;
 /**
@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * @package App\Models\Inwehub
  * @mixin \Eloquent
  */
-class Feeds extends Model {
+class WechatMpList extends Model {
 
-    protected $table = 'feeds';
+    protected $table = 'wechat_add_mp_list';
     /**
      * 此模型的连接名称。
      *
@@ -22,7 +22,8 @@ class Feeds extends Model {
      */
     protected $connection = 'inwehub_read';
 
+    protected $primaryKey = '_id';
 
-    protected $fillable = ['name', 'user_id', 'description','source_type','source_link','status'];
+    protected $fillable = ['name', 'wx_hao'];
 
 }
