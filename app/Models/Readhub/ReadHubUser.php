@@ -86,15 +86,7 @@ class ReadHubUser extends Model {
             $exist->password = $user->password;
             $exist->bio = $user->description;
             $exist->email = $user->email;
-            $exist->save();
-        }
-    }
-
-    public static function syncAvatar(User $user){
-        $exist = ReadHubUser::where('uuid','=',$user->uuid)->first();
-
-        if ($exist) {
-            $exist->avatar = $user->getAvatarUrl();
+            $exist->avatar = $user->avatar;
             $exist->save();
         }
     }

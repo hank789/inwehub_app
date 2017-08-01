@@ -34,6 +34,8 @@ class InitUser extends Command
     {
         $users = User::get();
         foreach($users as $user){
+            $user->avatar = $user->getAvatarUrl();
+            $user->save();
             ReadHubUser::initUser($user);
         }
     }

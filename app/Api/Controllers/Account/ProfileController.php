@@ -374,8 +374,9 @@ class ProfileController extends Controller
         }
         $percent = $request->user()->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user_id,$percent);
-        // 同步阅读站用户头像
-        ReadHubUser::syncAvatar($request->user());
+        $user = $request->user();
+        $user->avatar = $user->getMedia('avatar')->last()->getUrl();
+        $user->save();
         return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$percent],ApiException::SUCCESS,'上传成功');
     }
 
