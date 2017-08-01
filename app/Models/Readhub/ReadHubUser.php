@@ -25,7 +25,7 @@ class ReadHubUser extends Model {
     protected $connection = 'inwehub_read';
 
     protected $fillable = [
-        'username', 'name', 'email', 'password', 'location', 'bio',
+        'username', 'name','uuid', 'email', 'password', 'location', 'bio',
         'website', 'settings', 'color', 'avatar', 'confirmed',
         'active', 'info', 'comment_karma', 'submission_karma',
     ];
