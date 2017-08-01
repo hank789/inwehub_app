@@ -75,6 +75,26 @@ class ProfileController extends Controller
             $info['show_ios_resume'] = true;
         }
 
+        $info['expert_apply_status'] = 0;
+        $info['expert_apply_tips'] = '点击前往认证';
+        if(!empty($user->authentication)){
+            if($user->authentication->status == 0){
+                $info['expert_apply_status'] = 1;
+                $info['expert_apply_tips'] = '认证处理中!';
+            }elseif($user->authentication->status == 1){
+                $info['expert_apply_status'] = 2;
+                $info['expert_apply_tips'] = '身份已认证!';
+            }else{
+                $info['expert_apply_status'] = 3;
+                $info['expert_apply_tips'] = '认证失败,重新认证';
+            }
+        }
+
+        $info['followers'] = $user->followers()->count();
+        $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
+        $info['total_score'] = '综合评分暂无';
+
+
         $info_percent = $user->getInfoCompletePercent(true);
         $info['account_info_complete_percent'] = $info_percent['score'];
 
