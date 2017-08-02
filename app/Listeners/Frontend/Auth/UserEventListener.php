@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Listeners\Frontend\Auth;
+use App\Models\Readhub\ReadHubUser;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
@@ -14,7 +15,7 @@ class UserEventListener implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 3;
+    public $tries = 1;
 
     /**
      * @param $event
@@ -38,6 +39,8 @@ class UserEventListener implements ShouldQueue
      */
     public function onRegistered($event)
     {
+        // read站点同步注册用户
+         ReadHubUser::initUser($event->user);
         \Slack::send('User Registered: '.$event->user->name);
     }
 

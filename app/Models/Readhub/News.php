@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Inwehub;
+namespace App\Models\Readhub;
 
 use Illuminate\Database\Eloquent\Model;
 

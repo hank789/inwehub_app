@@ -19,7 +19,12 @@ class Kernel extends ConsoleKernel
         Commands\Wechat\AddMenu::class,
         Commands\User\GenUuid::class,
         Commands\User\CheckRgCode::class,
-        Commands\Activity\CheckCoupon::class
+        Commands\Activity\CheckCoupon::class,
+
+        //阅读站
+        Commands\Readhub\InitUser::class,
+
+
     ];
 
     /**
