@@ -129,6 +129,8 @@ class FollowController extends Controller
                     $item['user_id'] = $info->id;
                     $item['uuid'] = $info->uuid;
                     $item['user_name'] = $info->name;
+                    $item['company'] = $info->company;
+                    $item['title'] = $info->title;
                     $item['user_avatar_url'] = $info->getAvatarUrl();
                     $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
                     $item['description'] = $info->description;
@@ -172,6 +174,8 @@ class FollowController extends Controller
             $item['id'] = $attention->id;
             $item['user_id'] = $info->id;
             $item['uuid'] = $info->uuid;
+            $item['company'] = $info->company;
+            $item['title'] = $info->title;
             $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
             $item['user_name'] = $info->name;
             $item['user_avatar_url'] = $info->getAvatarUrl();

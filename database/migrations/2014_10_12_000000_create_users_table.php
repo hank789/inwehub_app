@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('mobile',24)->unique()->nullable();  //登录手机
             $table->string('password', 64);                     //登录密码
             $table->tinyInteger('gender')->nullable();          //性别: 1-男，2-女，0-保密
+            $table->string('avatar')->default('');
             $table->date('birthday')->nullable();               //出生日期
             $table->string('province',12)->nullable();       //工作省份
             $table->string('city',12)->nullable();           //工作城市
