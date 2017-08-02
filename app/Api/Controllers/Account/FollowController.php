@@ -130,6 +130,7 @@ class FollowController extends Controller
                     $item['uuid'] = $info->uuid;
                     $item['user_name'] = $info->name;
                     $item['user_avatar_url'] = $info->getAvatarUrl();
+                    $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
                     $item['description'] = $info->description;
                     break;
                 case 'question':
@@ -171,6 +172,7 @@ class FollowController extends Controller
             $item['id'] = $attention->id;
             $item['user_id'] = $info->id;
             $item['uuid'] = $info->uuid;
+            $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
             $item['user_name'] = $info->name;
             $item['user_avatar_url'] = $info->getAvatarUrl();
             $item['description'] = $info->description;
