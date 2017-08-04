@@ -48,7 +48,6 @@ class UserController extends AdminController
         if( isset($filter['word']) && $filter['word'] ){
             $query->where(function($subQuery) use ($filter) {
                 return $subQuery->where('name','like',$filter['word'].'%')
-                         ->orWhere('email','like',$filter['word'].'%')
                          ->orWhere('mobile','like',$filter['word'].'%');
             });
         }
@@ -61,6 +60,10 @@ class UserController extends AdminController
         /*状态过滤*/
         if( isset($filter['status']) && $filter['status'] > -2 ){
             $query->where('status','=',$filter['status']);
+        }
+        //是否专家过滤
+        if( isset($filter['is_expert']) && $filter['is_expert'] >= 0 ){
+            $query->leftJoin('user_data','users.id','=','user_data.user_id')->where('user_data.authentication_status',$filter['is_expert']);
         }
 
         $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));

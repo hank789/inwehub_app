@@ -32,19 +32,25 @@
                                             <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-3 hidden-xs">
-                                            <input type="text" class="form-control" name="word" placeholder="用户名|邮箱" value="{{ $filter['word'] or '' }}"/>
+                                            <input type="text" class="form-control" name="word" placeholder="用户名|手机" value="{{ $filter['word'] or '' }}"/>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="is_expert">
+                                                <option value="-9">是否专家</option>
+                                                <option value="0" @if( isset($filter['is_expert']) && $filter['is_expert']==0) selected @endif >否</option>
+                                                <option value="1" @if( isset($filter['is_expert']) && $filter['is_expert']==1) selected @endif >是</option>
+
+                                            </select>
                                         </div>
                                         <div class="col-xs-2">
                                             <select class="form-control" name="status">
-                                                <option value="-9">不选择</option>
+                                                <option value="-9">状态</option>
                                                 @foreach(trans_common_status('all') as $key => $status)
                                                     <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-xs-3 hidden-xs">
-                                            <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
-                                        </div>
+                                        
                                         <div class="col-xs-1">
                                             <button type="submit" class="btn btn-primary">搜索</button>
                                         </div>
@@ -65,6 +71,7 @@
                                         <th>微信昵称</th>
                                         <th>手机</th>
                                         <th>身份职业</th>
+                                        <th>专家认证</th>
                                         <th>地区</th>
                                         <th>企业用户</th>
                                         <th>问题数</th>
@@ -86,6 +93,7 @@
                                             <td>{{ implode(',',$user->userOauth()->where('status',1)->pluck('nickname')->toArray()) }}</td>
                                             <td>{{ $user->mobile }}</td>
                                             <td>{{ $user->title }}</td>
+                                            <td>{{ $user->userData->authentication_status ? '是':'否' }}</td>
                                             <td>{{ get_province_name($user->province) }} - {{ get_city_name($user->province, $user->city) }}</td>
                                             <td>{{ $user->userData->is_company ? '是':'否' }}</td>
                                             <td>{{ $user->userData->questions }}</td>
