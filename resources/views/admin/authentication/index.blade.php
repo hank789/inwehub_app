@@ -89,7 +89,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $authentications->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $authentications->render()) !!}
+                                    {!! str_replace('/?', '?', $authentications->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>
