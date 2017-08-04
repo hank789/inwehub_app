@@ -183,7 +183,6 @@ class FollowController extends Controller
             if ($attention){
                 $item['is_following'] = 1;
             }
-            $item['is_following'] = $info->name;
             $item['user_avatar_url'] = $info->getAvatarUrl();
             $item['description'] = $info->description;
             $data[] = $item;
