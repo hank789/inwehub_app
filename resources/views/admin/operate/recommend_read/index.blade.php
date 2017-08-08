@@ -40,7 +40,7 @@
                                             <td><input type="checkbox" value="{{ $recommendation->id }}" name="ids[]"/></td>
                                             <td>{{ $recommendation->recommend_sort }}</td>
                                             <td>{{ $recommendation->title }}</td>
-                                            <td><img width="100" height="100" src="{{ $recommendation->data['img'] }}"></td>
+                                            <td><img width="100" height="100" src="{{ $recommendation->data['img'] ??'' }}"></td>
                                             <td>{{ $recommendation->category_name }}</td>
                                             <td><span class="label @if($recommendation->recommend_status===1) label-warning  @else label-success @endif">{{ trans_recommend_submission_status($recommendation->recommend_status) }}</span> </td>
                                             <td>{{ $recommendation->updated_at }}</td>
