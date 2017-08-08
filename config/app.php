@@ -57,6 +57,7 @@ return [
 
     'time_report_address' => env('APP_TIME_REPORT_ADDRESS',false),
 
+    'readhub_url' => env('READHUB_URL', 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------

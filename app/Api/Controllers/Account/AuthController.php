@@ -408,6 +408,8 @@ class AuthController extends Controller
         $user->attachRole(2); //默认注册为普通用户角色
         $user->userData->email_status = 1;
         $user->userData->save();
+        $user->avatar = $oauthData->avatar;
+        $user->save();
         if(isset($rcode)){
             $rcode->status = UserRegistrationCode::CODE_STATUS_USED;
             $rcode->register_uid = $user->id;
