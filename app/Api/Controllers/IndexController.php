@@ -72,8 +72,9 @@ class IndexController extends Controller {
         if (!$cache_experts){
             $experts = Authentication::where('status',1)->pluck('user_id')->toArray();
             shuffle($experts);
-            $cache_experts = array_slice($experts,0,7);
-            foreach ($cache_experts as $key=>$expert_uid) {
+            $cache_experts = [];
+            $expert_uids = array_slice($experts,0,7);
+            foreach ($expert_uids as $key=>$expert_uid) {
                 $expert_user = User::find($expert_uid);
                 $cache_experts[$key]['name'] = $expert_user->name;
                 $cache_experts[$key]['title'] = $expert_user->title;
