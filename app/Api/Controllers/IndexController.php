@@ -44,6 +44,8 @@ class IndexController extends Controller {
 
         $show_ad = false;
         $expire_at = '';
+        $is_expert = $user->userData->authentication_status;
+
         if($user){
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($recommend_expert_user))->where('source_id','=',$recommend_expert_uid)->first();
             if ($attention){
@@ -111,7 +113,8 @@ class IndexController extends Controller {
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'notices' => $notices,
             'recommend_experts' => $cache_experts,
-            'recommend_read' => $recommend_read
+            'recommend_read' => $recommend_read,
+            'is_expert' => $is_expert
         ];
 
         return self::createJsonData(true,$data);
