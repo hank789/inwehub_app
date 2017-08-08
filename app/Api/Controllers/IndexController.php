@@ -92,7 +92,7 @@ class IndexController extends Controller {
         foreach ($recommend_list as $read){
             $item = [];
             $item['title'] = $read['title'];
-            $item['img_url'] = $read['data']['img'];
+            $item['img_url'] = $read['data']['img']??'';
             $item['publish_at'] = date('Y/m/d H:i',strtotime($read['created_at']));
             $item['upvotes'] = $read['upvotes'];
             $item['view_url'] = $read['data']['url'];
