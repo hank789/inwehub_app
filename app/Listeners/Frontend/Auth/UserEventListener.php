@@ -39,8 +39,6 @@ class UserEventListener implements ShouldQueue
      */
     public function onRegistered($event)
     {
-        // read站点同步注册用户
-         ReadHubUser::initUser($event->user);
         \Slack::send('User Registered: '.$event->user->name);
     }
 
