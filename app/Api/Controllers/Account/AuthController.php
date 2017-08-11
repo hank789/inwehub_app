@@ -426,7 +426,7 @@ class AuthController extends Controller
         $this->credit($user->id,'register');
 
         // read站点同步注册用户
-        ReadHubUser::initUser($user);
+        ReadHubUser::initUser(User::find($user->id));
 
         //注册事件通知
         event(new UserRegistered($user));
