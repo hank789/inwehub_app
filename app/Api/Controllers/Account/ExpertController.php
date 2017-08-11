@@ -23,8 +23,15 @@ class ExpertController extends Controller {
         $data = [];
         $user = $request->user();
         $authentication = $user->authentication;
-        if(!empty($authentication)){
-            throw new ApiException(ApiException::EXPERT_NEED_CONFIRM);
+        $update = false;
+        if($authentication){
+            if ($authentication->status == 0){
+                throw new ApiException(ApiException::EXPERT_NEED_CONFIRM);
+            } else if ($authentication->status == 1) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            } else {
+                $update = true;
+            }
         }
 
         $validateRules = [
@@ -43,7 +50,12 @@ class ExpertController extends Controller {
         $data['user_id'] = $user->id;
         $data['status'] = 0;
 
-        Authentication::create($data);
+        if ($update){
+            $authentication->update($data);
+        } else {
+            Authentication::create($data);
+        }
+
 
         $user->name = $request->input('name');
         $user->email = strtolower($request->input('email'));
