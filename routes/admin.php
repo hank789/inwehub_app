@@ -170,6 +170,8 @@ Route::resource('recommendQa', 'RecommendQaController',['except' => ['show'],'as
 /*首页阅读推荐*/
 Route::resource('recommendRead', 'RecommendReadController',['except' => ['show'],'as'=>'admin.operate']);
 
+/*刷新首页专家推荐*/
+Route::get('recommendExpert/refresh',['as'=>'admin.operate.recommendExpert.refresh','uses'=>'OperateController@refreshExpert']);
 
 /*app版本管理*/
 Route::get('version/index',['as'=>'admin.appVersion.index','uses'=>'VersionController@index']);
