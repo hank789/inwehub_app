@@ -47,33 +47,7 @@ class ReadHubUser extends Model {
 
     public static function initUser(User $user){
         // read站点同步注册用户
-        $username = $user->name;
-        ReadHubUser::create([
-            'username' => $username,
-            'uuid'     => $user->uuid,
-            'name'     => $user->name,
-            'active'   => 1,
-            'confirmed' => 1,
-            'verfied'   => 1,
-            'password' => $user->password,
-            'avatar'   => $user->getAvatarUrl(),
-            'info' => [
-                'website' => null,
-                'twitter' => null,
-            ],
-            'settings'  => [
-                'font'                          => 'Lato',
-                'sidebar_color'                 => 'Gray',
-                'nsfw'                          => false,
-                'nsfw_media'                    => false,
-                'notify_submissions_replied'    => true,
-                'notify_comments_replied'       => true,
-                'notify_mentions'               => true,
-                'exclude_upvoted_submissions'   => false,
-                'exclude_downvoted_submissions' => true,
-                'submission_small_thumbnail'    => true,
-            ],
-        ]);
+        self::syncUser($user);
     }
 
     public static function syncUser(User $user){
@@ -88,6 +62,33 @@ class ReadHubUser extends Model {
             $exist->email = $user->email;
             $exist->avatar = $user->avatar;
             $exist->save();
+        } else {
+            ReadHubUser::create([
+                'username' => $user->name,
+                'uuid'     => $user->uuid,
+                'name'     => $user->name,
+                'active'   => 1,
+                'confirmed' => 1,
+                'verfied'   => 1,
+                'password' => $user->password,
+                'avatar'   => $user->getAvatarUrl(),
+                'info' => [
+                    'website' => null,
+                    'twitter' => null,
+                ],
+                'settings'  => [
+                    'font'                          => 'Lato',
+                    'sidebar_color'                 => 'Gray',
+                    'nsfw'                          => false,
+                    'nsfw_media'                    => false,
+                    'notify_submissions_replied'    => true,
+                    'notify_comments_replied'       => true,
+                    'notify_mentions'               => true,
+                    'exclude_upvoted_submissions'   => false,
+                    'exclude_downvoted_submissions' => true,
+                    'submission_small_thumbnail'    => true,
+                ],
+            ]);
         }
     }
 
