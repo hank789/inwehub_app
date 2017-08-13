@@ -59,7 +59,9 @@ class ReadHubUser extends Model {
             $exist->name = $user->name;
             $exist->password = $user->password;
             $exist->bio = $user->description;
-            $exist->email = $user->email??null;
+            if ($user->email) {
+                $exist->email = $user->email;
+            }
             $exist->avatar = $user->avatar;
             $exist->save();
         } else {
