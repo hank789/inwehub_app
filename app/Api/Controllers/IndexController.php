@@ -46,6 +46,22 @@ class IndexController extends Controller {
         $expire_at = '';
         $is_expert = $user->userData->authentication_status;
 
+        $expert_apply_status = 0;
+        $expert_apply_tips = '点击前往认证';
+        if(!empty($user->authentication)){
+            if($user->authentication->status == 0){
+                $expert_apply_status = 1;
+                $expert_apply_tips = '认证处理中!';
+            }elseif($user->authentication->status == 1){
+                $expert_apply_status = 2;
+                $expert_apply_tips = '身份已认证!';
+            }else{
+                $expert_apply_status = 3;
+                $expert_apply_tips = '认证失败,重新认证';
+            }
+        }
+
+
         if($user){
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($recommend_expert_user))->where('source_id','=',$recommend_expert_uid)->first();
             if ($attention){
@@ -114,7 +130,9 @@ class IndexController extends Controller {
             'notices' => $notices,
             'recommend_experts' => $cache_experts,
             'recommend_read' => $recommend_read,
-            'is_expert' => $is_expert
+            'is_expert' => $is_expert,
+            'expert_apply_status' => $expert_apply_status,
+            'expert_apply_tips' => $expert_apply_tips
         ];
 
         return self::createJsonData(true,$data);
