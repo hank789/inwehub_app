@@ -397,7 +397,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $user->avatar = $user->getAvatarUrl();
         $user->save();
-        return self::createJsonData(true,['user_avatar_url'=>$request->user()->getAvatarUrl(),'account_info_complete_percent'=>$percent],ApiException::SUCCESS,'上传成功');
+        return self::createJsonData(true,['user_avatar_url'=>$user->avatar,'account_info_complete_percent'=>$percent],ApiException::SUCCESS,'上传成功');
     }
 
     /**
