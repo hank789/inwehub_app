@@ -25,7 +25,7 @@ class ReadHubUser extends Model {
     protected $connection = 'inwehub_read';
 
     protected $fillable = [
-        'username', 'name','uuid', 'email', 'password', 'location', 'bio',
+        'id','username', 'name','uuid', 'email', 'password', 'location', 'bio',
         'website', 'settings', 'color', 'avatar', 'confirmed',
         'active', 'info', 'comment_karma', 'submission_karma',
     ];
@@ -66,6 +66,7 @@ class ReadHubUser extends Model {
             $exist->save();
         } else {
             ReadHubUser::create([
+                'id'       => $user->id,
                 'username' => $user->name,
                 'uuid'     => $user->uuid,
                 'name'     => $user->name,

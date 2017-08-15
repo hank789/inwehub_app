@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Cache\UserCache;
 use App\Events\Frontend\Expert\Recommend;
+use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\Push;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
@@ -63,12 +64,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $project = Project::find(60);
-        $project->deleteMedia(59);
-        foreach($project->getMedia('project') as $img){
-            $images_url[] = $img->getUrl();
-        }
-        var_dump($images_url);
+        event(new FuncZan('test'));
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

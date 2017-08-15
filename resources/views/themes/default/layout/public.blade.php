@@ -64,7 +64,6 @@
                     </ul>
                 @else
                     <ul class="nav navbar-nav user-menu navbar-right">
-                        <li><a href="{{ route('auth.notification.index') }}" class="active" id="unread_notifications"><span class="fa fa-bell-o fa-lg"></span></a></li>
                         <li><a href="{{ route('auth.message.index') }}" class="active" id="unread_messages"><i class="fa fa-envelope-o fa-lg"></i></a></li>
                         <li class="dropdown user-avatar">
                             <a href="{{ route('auth.profile.base') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
