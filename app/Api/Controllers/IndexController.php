@@ -114,6 +114,7 @@ class IndexController extends Controller {
             $item['publish_at'] = date('Y/m/d H:i',strtotime($read['created_at']));
             $item['upvotes'] = $read['upvotes'];
             $item['view_url'] = $read['data']['url'];
+            $item['comment_url'] = '/c/'.$read['category_name'].'/'.$read['slug'];
             $item['id'] = $read['id'];
             $recommend_read[] = $item;
         }

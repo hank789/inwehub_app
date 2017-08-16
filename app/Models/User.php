@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * App\Models\User
@@ -81,7 +82,7 @@ class User extends Model implements AuthenticatableContract,
     HasRoleAndPermissionContract,
     HasMedia
 {
-    use Authenticatable, CanResetPassword,HasRoleAndPermission,MorphManyTagsTrait,HasMediaTrait;
+    use Notifiable, Authenticatable, CanResetPassword,HasRoleAndPermission,MorphManyTagsTrait,HasMediaTrait;
 
     /**
      * The database table used by the model.
