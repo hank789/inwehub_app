@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Inwehub;
+namespace App\Models\Readhub;
 
 use App\Models\Relations\BelongsToCategoryTrait;
 use App\Models\Relations\BelongsToUserTrait;

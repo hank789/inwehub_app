@@ -97,6 +97,7 @@ trait BaseController {
      */
     protected function notify($from_user_id,$to_user_id,$type,$subject='',$source_id=0,$content='',$refer_type='',$refer_id=0)
     {
+        return;
         /*不能自己给自己发通知*/
         if( $from_user_id == $to_user_id ){
             return false;
@@ -136,6 +137,7 @@ trait BaseController {
      */
     protected function readNotifications($source_id,$refer_type='question')
     {
+        return;
         $types = [];
         if($refer_type=='article'){
             $types = ['comment_article'];

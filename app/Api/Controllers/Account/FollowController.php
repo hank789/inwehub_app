@@ -72,13 +72,11 @@ class FollowController extends Controller
         if($attention){
             switch($source_type){
                 case 'question' :
-                    $this->notify($loginUser->id,$source->user_id,'follow_question',$subject,$source->id);
                     $this->doing($loginUser->id,'follow_question',get_class($source),$source_id,$subject);
                     $source->increment('followers');
                     break;
                 case 'user':
                     $source->userData->increment('followers');
-                    $this->notify($loginUser->id,$source->id,'follow_user');
                     break;
                 case 'tag':
                     $source->increment('followers');
@@ -129,7 +127,10 @@ class FollowController extends Controller
                     $item['user_id'] = $info->id;
                     $item['uuid'] = $info->uuid;
                     $item['user_name'] = $info->name;
+                    $item['company'] = $info->company;
+                    $item['title'] = $info->title;
                     $item['user_avatar_url'] = $info->getAvatarUrl();
+                    $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
                     $item['description'] = $info->description;
                     break;
                 case 'question':
@@ -171,7 +172,15 @@ class FollowController extends Controller
             $item['id'] = $attention->id;
             $item['user_id'] = $info->id;
             $item['uuid'] = $info->uuid;
+            $item['company'] = $info->company;
+            $item['title'] = $info->title;
+            $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
             $item['user_name'] = $info->name;
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($info))->where('source_id','=',$info->id)->first();
+            $item['is_following'] = 0;
+            if ($attention){
+                $item['is_following'] = 1;
+            }
             $item['user_avatar_url'] = $info->getAvatarUrl();
             $item['description'] = $info->description;
             $data[] = $item;

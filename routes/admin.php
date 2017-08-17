@@ -164,11 +164,14 @@ Route::post('tool/sendTestEmail',['as'=>'admin.tool.sendTestEmail','uses'=>'Tool
 Route::get("xunSearch/clear",['as'=>'admin.xunSearch.clear','uses'=>'XunSearchController@clear']);
 Route::get("xunSearch/rebuild",['as'=>'admin.xunSearch.rebuild','uses'=>'XunSearchController@rebuild']);
 
-/*首页运营数据管理*/
-Route::any('operate/home_data',['as'=>'admin.operate.home_data','uses'=>'OperateController@homeData']);
-
 /*首页问答推荐*/
 Route::resource('recommendQa', 'RecommendQaController',['except' => ['show'],'as'=>'admin.operate']);
+
+/*首页阅读推荐*/
+Route::resource('recommendRead', 'RecommendReadController',['except' => ['show'],'as'=>'admin.operate']);
+
+/*刷新首页专家推荐*/
+Route::get('recommendExpert/refresh',['as'=>'admin.operate.recommendExpert.refresh','uses'=>'OperateController@refreshExpert']);
 
 /*app版本管理*/
 Route::get('version/index',['as'=>'admin.appVersion.index','uses'=>'VersionController@index']);

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\DatabaseNotification;
 
 /**
  * App\Models\Notification
@@ -36,16 +36,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Notification whereUserId($value)
  * @mixin \Eloquent
  */
-class Notification extends Model
+class Notification extends DatabaseNotification
 {
-    use BelongsToUserTrait;
-    protected $table = 'notifications';
-    protected $fillable = ['user_id', 'to_user_id','type','subject','source_id','content','refer_type','refer_id'];
-
-
-    public function toUser()
-    {
-        return $this->belongsTo('App\Models\User','to_user_id');
-    }
-
+    const NOTIFICATION_TYPE_NOTICE = 1;//普通通知
+    const NOTIFICATION_TYPE_MONEY = 2;//资金类型的通知
+    const NOTIFICATION_TYPE_TASK = 3;//任务类型的通知
+    const NOTIFICATION_TYPE_READ = 4;//发现类型的通知
 }

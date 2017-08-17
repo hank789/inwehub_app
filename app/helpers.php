@@ -462,6 +462,28 @@ if (! function_exists('trans_withdraw_status')) {
     }
 }
 
+if (!function_exists('trans_recommend_submission_status')){
+    function trans_recommend_submission_status($status){
+        $map = [
+            0 => '未推荐',
+            1 => '待审核',
+            2 => '已推荐',
+            3 => '已下线'
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+    }
+}
+
 if (! function_exists('trans_coupon_status')) {
 
     function trans_coupon_status($status){

@@ -7,6 +7,7 @@ use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
 use App\Models\LoginRecord;
+use App\Models\Readhub\ReadHubUser;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserDevice;
@@ -266,6 +267,10 @@ class AuthController extends Controller
         }
         $message = '注册成功!';
         $this->credit($user->id,'register');
+
+        // read站点同步注册用户
+        ReadHubUser::initUser($user);
+
         //注册事件通知
         event(new UserRegistered($user));
 
@@ -408,6 +413,8 @@ class AuthController extends Controller
         $user->attachRole(2); //默认注册为普通用户角色
         $user->userData->email_status = 1;
         $user->userData->save();
+        $user->avatar = $oauthData->avatar;
+        $user->save();
         if(isset($rcode)){
             $rcode->status = UserRegistrationCode::CODE_STATUS_USED;
             $rcode->register_uid = $user->id;
@@ -417,6 +424,10 @@ class AuthController extends Controller
         $oauthData->save();
         $message = '注册成功!';
         $this->credit($user->id,'register');
+
+        // read站点同步注册用户
+        ReadHubUser::initUser(User::find($user->id));
+
         //注册事件通知
         event(new UserRegistered($user));
 

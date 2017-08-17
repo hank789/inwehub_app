@@ -65,8 +65,9 @@
             <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="operations">
-            <li><a href="{{ route('admin.operate.home_data') }}"><i class="fa fa-circle-o"></i> 首页运营数据</a></li>
+            <li><a href="{{ route('admin.operate.recommendRead.index') }}"><i class="fa fa-circle-o"></i> 首页阅读推荐</a></li>
             <li><a href="{{ route('admin.operate.recommendQa.index') }}"><i class="fa fa-circle-o"></i> 首页问答推荐</a></li>
+            <li><a href="{{ route('admin.operate.recommendExpert.refresh') }}"><i class="fa fa-circle-o"></i> 更新首页专家</a></li>
             <li><a href="{{ route('admin.operate.rgcode.index') }}"><i class="fa fa-circle-o"></i> 邀请码管理</a></li>
             <li><a href="{{ route('admin.appVersion.index') }}"><i class="fa fa-circle-o"></i> APP版本管理</a></li>
             <li><a href="{{ route('admin.notice.index') }}"><i class="fa fa-circle-o"></i> 公告管理</a></li>
@@ -143,5 +144,6 @@
 
     <li class="header">常用菜单</li>
     <li><a href="{{ route('website.index') }}" target="_blank"><i class="fa fa-circle-o text-success"></i> <span>网站首页</span></a></li>
+    <li><a href="{{ config('app.readhub_url').'/backend' }}" target="_blank"><i class="fa fa-circle-o text-success"></i> <span>阅读站</span></a></li>
     <li><a href="{{ route('admin.tool.clearCache') }}"><i class="fa fa-circle-o text-info"></i> <span>清空缓存</span></a></li>
 </ul>

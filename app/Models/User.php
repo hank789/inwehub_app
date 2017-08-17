@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * App\Models\User
@@ -81,7 +82,7 @@ class User extends Model implements AuthenticatableContract,
     HasRoleAndPermissionContract,
     HasMedia
 {
-    use Authenticatable, CanResetPassword,HasRoleAndPermission,MorphManyTagsTrait,HasMediaTrait;
+    use Notifiable, Authenticatable, CanResetPassword,HasRoleAndPermission,MorphManyTagsTrait,HasMediaTrait;
 
     /**
      * The database table used by the model.
@@ -95,7 +96,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name','uuid','mobile' ,'email', 'password','status','site_notifications','email_notifications','last_login_token','source'];
+    protected $fillable = ['name','uuid','mobile' ,'avatar','email', 'password','status','site_notifications','email_notifications','last_login_token','source'];
 
     /**
      * The attributes excluded from the model's JSON form.

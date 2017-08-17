@@ -7,6 +7,7 @@ use App\Models\Area;
 use App\Models\Authentication;
 use App\Models\Tag;
 use App\Models\UserTag;
+use App\Notifications\AuthenticationUpdated;
 use App\Services\City\CityData;
 use Illuminate\Http\Request;
 
@@ -107,6 +108,10 @@ class AuthenticationController extends AdminController
         if($old_status != 1 && $new_status == 1){
             $action = 'expert_valid';
             event(new Credit($authentication->user_id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$id,'专家认证'));
+        }
+        if ($old_status != $new_status && $new_status != 0) {
+            $user = $authentication->user;
+            $user->notify(new AuthenticationUpdated($authentication));
         }
 
         return $this->success(route('admin.authentication.index'),'行家认证信息修改成功');

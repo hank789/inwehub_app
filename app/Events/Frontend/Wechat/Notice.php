@@ -19,7 +19,7 @@ class Notice
     /**
      * @var
      */
-    public $user;
+    public $user_id;
 
     public $title;
 
@@ -33,9 +33,9 @@ class Notice
 
     public $target_url;
 
-    public function __construct($user, $title, $keyword1, $keyword2, $remark, $template_id, $target_url)
+    public function __construct($user_id, $title, $keyword1, $keyword2, $remark, $template_id, $target_url)
     {
-        $this->user = $user;
+        $this->user_id = $user_id;
         $this->title = $title;
         $this->keyword1 = $keyword1;
         $this->keyword2 = $keyword2;

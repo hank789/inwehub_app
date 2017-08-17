@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Listeners\Frontend\Auth;
+use App\Models\Readhub\ReadHubUser;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
@@ -14,7 +15,7 @@ class UserEventListener implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 3;
+    public $tries = 1;
 
     /**
      * @param $event

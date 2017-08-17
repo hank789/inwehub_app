@@ -15,7 +15,22 @@ return [
     |
     */
 
-    'default' => env('BROADCAST_DRIVER', 'null'),
+    'default' => env('BROADCAST_DRIVER', 'redis'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Broadcast service
+    |--------------------------------------------------------------------------
+    |
+    | The service used for broadcasting needs. While Pusher is recommented
+    | for development, Voten uses a custom echo service runned on our own
+    | server. More info: "github.com/tlaverdure/laravel-echo-server"
+    |
+    | Supported: "pusher", "echo"
+    |
+    */
+
+    'service' => env('BROADCAST_SERVICE', 'echo'),
 
     /*
     |--------------------------------------------------------------------------
@@ -38,6 +53,12 @@ return [
             'options' => [
                 //
             ],
+        ],
+        'echo' => [
+            'app_address'  => env('ECHO_ADDRESS','http://localhost:6001'),
+            'app_origin_address'  => env('ECHO_ORIGIN_ADDRESS','http://localhost:6001'),
+            'app_id'       => env('ECHO_APP_ID'),
+            'auth_key'     => env('ECHO_AUTH_KEY'),
         ],
 
         'redis' => [

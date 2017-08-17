@@ -11,7 +11,7 @@ use App\Models\Answer;
 class WechatNotice {
 
     //新任务处理通知
-    public static function newTaskNotice($toUser,$content,$object_type,$object){
+    public static function newTaskNotice($toUserId,$content,$object_type,$object){
         $url = config('app.mobile_url');
         switch($object_type){
             case 'question_invite_answer_confirming':
@@ -58,7 +58,7 @@ class WechatNotice {
                 return;
                 break;
         }
-        event(new Notice($toUser,$title,$content,$keyword2,$remark,$template_id,$target_url));
+        event(new Notice($toUserId,$title,$content,$keyword2,$remark,$template_id,$target_url));
     }
 
 }

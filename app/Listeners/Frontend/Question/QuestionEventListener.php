@@ -32,7 +32,6 @@ class QuestionEventListener implements ShouldQueue
         $userTags = array_unique($userTags);
         foreach($userTags as $uid){
             if($uid == $question->user_id) continue;
-            $toUser = User::find($uid);
             $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$uid,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
                 'from_user_id'=> $question->user_id,
                 'question_id'=> $question->id,
@@ -52,9 +51,9 @@ class QuestionEventListener implements ShouldQueue
             //记录任务
             TaskLogic::task($uid,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
             //推送
-            event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+            event(new Push($uid,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
             //微信通知
-            WechatNotice::newTaskNotice($toUser,$question->title,'question_invite_answer_confirming',$question);
+            WechatNotice::newTaskNotice($uid,$question->title,'question_invite_answer_confirming',$question);
         }
     }
 

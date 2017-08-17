@@ -1,4 +1,4 @@
-<?php namespace App\Models\Inwehub;
+<?php namespace App\Models\Readhub;
 
 use Illuminate\Database\Eloquent\Model;
 /**
@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * @package App\Models\Inwehub
  * @mixin \Eloquent
  */
-class WechatWenzhangInfo extends Model {
+class WechatMpInfo extends Model {
 
-    protected $table = 'news_info';
+    protected $table = 'wechat_mp_info';
     /**
      * 此模型的连接名称。
      *
@@ -26,8 +26,6 @@ class WechatWenzhangInfo extends Model {
 
     public $timestamps = false;
 
-    public function withAuthor(){
-        return WechatMpInfo::find($this->mp_id);
-    }
+    protected $fillable = ['status','logo_url','qr_url'];
 
 }

@@ -53,8 +53,8 @@ class PromiseOvertime implements ShouldQueue
         $answer = Answer::find($this->answer_id);
         if($answer->status == 3) {
             $question = $answer->question;
-            event(new Push($answer->user,'距离您的承诺时间还有'.$this->overtime.'分钟',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
-            WechatNotice::newTaskNotice($answer->user,$question->title,'question_answer_promise_overtime',$answer);
+            event(new Push($answer->user_id,'距离您的承诺时间还有'.$this->overtime.'分钟',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+            WechatNotice::newTaskNotice($answer->user_id,$question->title,'question_answer_promise_overtime',$answer);
         }
     }
 }
