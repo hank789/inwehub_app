@@ -68,11 +68,9 @@
     </div>
 
     <div class="text-center col-md-12 login-link">
-        <a href="{{ route('auth.user.register') }}">注册新账号</a>
-        |
+        
         <a href="{{ route('website.index') }}">首页</a>
-        |
-        <a href="{{ route('auth.user.forgetPassword') }}">找回密码</a>
+
     </div>
 @endsection
 

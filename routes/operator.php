@@ -29,11 +29,11 @@ Route::get('/shop',['as'=>'website.shop','uses'=>'IndexController@shop'])->middl
 /*用户账号管理，包含用户登录注册等操作*/
 Route::Group(['namespace'=>'Account'],function(){
     Route::match(['get','post'],'login',['as'=>'auth.user.login','uses'=>'UserController@login']);
-    Route::match(['get','post'],'register',['as'=>'auth.user.register','uses'=>'UserController@register']);
+    //Route::match(['get','post'],'register',['as'=>'auth.user.register','uses'=>'UserController@register']);
     Route::get('logout',['as'=>'auth.user.logout','uses'=>'UserController@logout']);
     /*密码找回*/
-    Route::match(['get','post'],'forgetPassword',['as'=>'auth.user.forgetPassword','uses'=>'UserController@forgetPassword']);
-    Route::match(['get','post'],'findPassword/{token}',['as'=>'auth.user.findPassword','uses'=>'UserController@findPassword']);
+    //Route::match(['get','post'],'forgetPassword',['as'=>'auth.user.forgetPassword','uses'=>'UserController@forgetPassword']);
+    //Route::match(['get','post'],'findPassword/{token}',['as'=>'auth.user.findPassword','uses'=>'UserController@findPassword']);
 
     /*用户auth2.0*/
     Route::get('oauth/{type}/login',['as'=>'auth.oauth.login','uses'=>'OauthController@login'])->where(['type'=>'(qq|weibo|weixin|weixinweb)']);
