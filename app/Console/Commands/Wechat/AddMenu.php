@@ -86,14 +86,20 @@ class AddMenu extends Command
                     ],
                     [
                         "type" => "view",
-                        "name" => "推荐专家",
-                        "url" => "http://cn.mikecrm.com/tgx3vq8"
+                        "name" => "小哈公社",
+                        "url"  => "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIzODkzMjg0NA==&scene=124#wechat_redirect"
                     ],
                     [
                         "type" => "view",
                         "name" => "下载APP",
                         "url" => "http://a.app.qq.com/o/simple.jsp?pkgname=com.inwehub.InwehubApp"
                     ],
+                    /*[
+                        "type" => "view",
+                        "name" => "推荐专家",
+                        "url" => "http://cn.mikecrm.com/tgx3vq8"
+                    ],*/
+
                 ],
             ],
         ];
