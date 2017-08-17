@@ -374,9 +374,9 @@ class QuestionController extends Controller
         $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
         //推送
-        event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
+        event(new Push($toUser->id,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
         //微信通知
-        WechatNotice::newTaskNotice($toUser,$question->title,'question_invite_answer_confirming',$question);
+        WechatNotice::newTaskNotice($toUser->id,$question->title,'question_invite_answer_confirming',$question);
 
         return $this->ajaxSuccess('邀请成功');
     }

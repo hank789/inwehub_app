@@ -13,7 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-
+        'Illuminate\Notifications\Events\NotificationSent' => [
+            'App\Listeners\LogNotificationListener',
+        ],
     ];
 
     /**
@@ -30,7 +32,6 @@ class EventServiceProvider extends ServiceProvider
         \App\Listeners\Frontend\Question\QuestionEventListener::class,
         \App\Listeners\Frontend\Answer\AnswerEventListener::class,
         \App\Listeners\Frontend\WechatEventListener::class,
-
 
         /*
          * Auth Subscribers

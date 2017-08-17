@@ -57,7 +57,7 @@ class SystemEventListener implements ShouldQueue
      * @param Push $event
      */
     public function push($event){
-        $devices = UserDevice::where('user_id',$event->user->id)->where('status',1)->get();
+        $devices = UserDevice::where('user_id',$event->user_id)->where('status',1)->get();
 
         $data = [
             'title' => $event->title,

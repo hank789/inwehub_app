@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\DatabaseNotification;
 
 /**
  * App\Models\Notification
@@ -35,8 +36,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Notification whereUserId($value)
  * @mixin \Eloquent
  */
-class Notification extends Model
+class Notification extends DatabaseNotification
 {
-    protected $table = 'notifications';
-
+    const NOTIFICATION_TYPE_NOTICE = 1;//普通通知
+    const NOTIFICATION_TYPE_MONEY = 2;//资金类型的通知
+    const NOTIFICATION_TYPE_TASK = 3;//任务类型的通知
+    const NOTIFICATION_TYPE_READ = 4;//发现类型的通知
 }

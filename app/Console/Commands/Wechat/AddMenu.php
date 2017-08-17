@@ -89,6 +89,11 @@ class AddMenu extends Command
                         "name" => "推荐专家",
                         "url" => "http://cn.mikecrm.com/tgx3vq8"
                     ],
+                    [
+                        "type" => "view",
+                        "name" => "下载APP",
+                        "url" => "http://a.app.qq.com/o/simple.jsp?pkgname=com.inwehub.InwehubApp"
+                    ],
                 ],
             ],
         ];
