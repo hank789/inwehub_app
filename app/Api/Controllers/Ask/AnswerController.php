@@ -16,6 +16,8 @@ use App\Models\QuestionInvitation;
 use App\Models\Setting;
 use App\Models\Task;
 use App\Models\UserTag;
+use App\Notifications\NewQuestionAnswered;
+use App\Notifications\NewQuestionConfirm;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -138,13 +140,7 @@ class AnswerController extends Controller
                 $this->doing($answer->user_id,'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
 
                 /*记录通知*/
-                $this->notify($answer->user_id,$question->user_id,'question_answered',$question->title,$question->id,$answer->getContentText());
-
-                //推送通知
-                event(new Push($question->user_id,'您的提问专家已回答,请前往点评',$question->title,['object_type'=>'question_answered','object_id'=>$question->id]));
-                //微信通知
-                WechatNotice::newTaskNotice($question->user_id,$question->title,'question_answered',$answer);
-
+                $question->user->notify(new NewQuestionAnswered($question->user_id,$question,$answer));
 
                 /*回答后通知关注问题*/
                 if(true){
@@ -188,11 +184,7 @@ class AnswerController extends Controller
                 /*记录动态*/
                 $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
                 RateLimiter::instance()->lock_release($lock_key);
-
-                //推送通知
-                event(new Push($question->user_id,'您的提问专家已响应,点击查看',$question->title,['object_type'=>'question_answer_confirmed','object_id'=>$question->id]));
-                //微信通知
-                WechatNotice::newTaskNotice($question->user_id,$question->title,'question_answer_confirmed',$answer);
+                $question->user->notify(new NewQuestionConfirm($question->user_id,$question,$answer));
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
             }
         }

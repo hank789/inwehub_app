@@ -6,9 +6,6 @@ use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use Illuminate\Support\Facades\Config;
-
 class NotificationController extends Controller
 {
 
@@ -16,6 +13,13 @@ class NotificationController extends Controller
         $page = $request->input('page',1);
         $user = $request->user();
         $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->simplePaginate(10)->toArray();
+        return self::createJsonData(true, $data);
+    }
+
+    public function taskList(Request $request){
+        $page = $request->input('page',1);
+        $user = $request->user();
+        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->simplePaginate(10)->toArray();
         return self::createJsonData(true, $data);
     }
 
@@ -40,11 +44,5 @@ class NotificationController extends Controller
 
         return self::createJsonData(true,$data);
     }
-
-
-
-
-
-
 
 }

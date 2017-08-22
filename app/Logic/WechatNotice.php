@@ -1,6 +1,7 @@
 <?php namespace App\Logic;
 use App\Events\Frontend\Wechat\Notice;
 use App\Models\Answer;
+use App\Models\Question;
 
 /**
  * @author: wanghui
@@ -11,10 +12,11 @@ use App\Models\Answer;
 class WechatNotice {
 
     //新任务处理通知
-    public static function newTaskNotice($toUserId,$content,$object_type,$object){
+    public static function newTaskNotice($toUserId,$content,$object_type,$object_id){
         $url = config('app.mobile_url');
         switch($object_type){
             case 'question_invite_answer_confirming':
+                $object = Question::find($object_id);
                 $title = '您好，您有新的回答邀请';
                 $keyword2 = '专业问答任务邀请';
                 $remark = '请立即前往确认回答';
@@ -25,6 +27,7 @@ class WechatNotice {
                 }
                 break;
             case 'question_answer_confirmed':
+                $object = Answer::find($object_id);
                 $title = '您好，已有专家响应了您的专业问答任务';
                 $keyword2 = $object->user->name;
                 $remark = '可点击详情查看处理进度';
@@ -35,6 +38,7 @@ class WechatNotice {
                 }
                 break;
             case 'question_answered':
+                $object = Answer::find($object_id);
                 $title = '您好，已有专家回答了您的专业问答任务';
                 $keyword2 = $object->user->name;
                 $remark = '可点击详情查看回答内容';
@@ -45,6 +49,7 @@ class WechatNotice {
                 }
                 break;
             case 'question_answer_promise_overtime';
+                $object = Answer::find($object_id);
                 $title = '您好，您有专业问答任务即将延期,请及时处理!';
                 $keyword2 = date('Y-m-d H:i',strtotime($object->promise_time));
                 $remark = '可点击详情立即前往回答';

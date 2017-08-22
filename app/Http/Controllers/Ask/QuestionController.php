@@ -13,6 +13,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Models\XsSearch;
+use App\Notifications\NewQuestionInvitation;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
@@ -373,10 +374,7 @@ class QuestionController extends Controller
         //记录任务
         $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
-        //推送
-        event(new Push($toUser->id,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
-        //微信通知
-        WechatNotice::newTaskNotice($toUser->id,$question->title,'question_invite_answer_confirming',$question);
+        $toUser->notify(new NewQuestionInvitation($toUser->id, $question));
 
         return $this->ajaxSuccess('邀请成功');
     }
