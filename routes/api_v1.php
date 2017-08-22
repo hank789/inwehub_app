@@ -189,8 +189,10 @@ Route::post('system/app_market_url','SystemController@getAppMarketUrl')->middlew
 
 //消息模块
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
-    //通知列表
-    Route::post('notification/list','NotificationController@list');
+    //阅读发现通知列表
+    Route::post('notification/readhub_list','NotificationController@readhubList');
+    //标记通知为已读
+    Route::post('notification/mark_as_read','NotificationController@readhubList');
     //统计
     Route::post('notification/count','NotificationController@count');
 

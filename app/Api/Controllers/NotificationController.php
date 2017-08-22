@@ -3,54 +3,32 @@
 namespace App\Api\Controllers;
 
 use App\Models\Notification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 
 class NotificationController extends Controller
 {
-    /**
-     * 显示用户通知
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function list(Request $request)
-    {
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
 
-        $query = Notification::where('to_user_id',$request->user()->id);
-        if($top_id){
-            $query = $query->where('id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('id','<',$bottom_id);
-        }else{
-            $query = $query->where('id','>',0);
-        }
-
-        $notifications = $query->orderBy('created_at','DESC')->paginate(10);
-        $list = [];
-        foreach($notifications as $notification){
-            $item = [];
-            $item['id'] = $notification->id;
-            $item['type'] = $notification->type;
-            $item['type_text'] = Config::get('inwehub.notification_types.'.$notification->type);
-            $item['description'] = $notification->content;
-            $item['is_read'] = $notification->is_read;
-            $item['created_at'] = (string)$notification->created_at;
-            $list[] = $item;
-        }
-
-        $this->readNotifications(0,'user');
-        return self::createJsonData(true,$list);
+    public function readhubList(Request $request){
+        $page = $request->input('page',1);
+        $user = $request->user();
+        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->simplePaginate(10)->toArray();
+        return self::createJsonData(true, $data);
     }
 
 
-    public function readAll()
+    public function markAsRead(Request $request)
     {
-        Notification::where('to_user_id','=',Auth()->user()->id)->where('is_read','=',0)->update(['is_read'=>1]);
+        $notification_type = $request->input('notification_type',0);
+        $user = $request->user();
+        $query = $user->unreadNotifications();
+        if ($notification_type) {
+            $query = $query->where('notification_type',$notification_type);
+        }
+        $query->update(['read_at' => Carbon::now()]);
         return self::createJsonData(true);
     }
 
