@@ -193,6 +193,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     Route::post('notification/readhub_list','NotificationController@readhubList');
     //任务通知列表
     Route::post('notification/task_list','NotificationController@taskList');
+    //公告通知列表
+    Route::post('notification/notice_list','NotificationController@noticeList');
     //标记通知为已读
     Route::post('notification/mark_as_read','NotificationController@readhubList');
     //统计

@@ -8,7 +8,9 @@ use App\Models\Area;
 use App\Models\Authentication;
 use App\Models\Company\Company;
 use App\Models\Tag;
+use App\Models\User;
 use App\Models\UserTag;
+use App\Notifications\CompanyAuth;
 use App\Services\City\CityData;
 use Illuminate\Http\Request;
 
@@ -42,7 +44,12 @@ class CompanyController extends AdminController
 
     public function destroy(Request $request)
     {
-        Company::whereIn('user_id',$request->input('id'))->update(['apply_status'=>Company::APPLY_STATUS_REJECT]);
+        $ids = $request->input('id');
+        Company::whereIn('user_id',$ids)->update(['apply_status'=>Company::APPLY_STATUS_REJECT]);
+        foreach ($ids as $id) {
+            $user = User::find($id);
+            $user->notify(new CompanyAuth(Company::find($id)));
+        }
         return $this->success(route('admin.company.index'),'审核不通过成功');
     }
 
@@ -51,6 +58,10 @@ class CompanyController extends AdminController
     {
         $ids = $request->input('id');
         Company::whereIn('user_id',$ids)->update(['apply_status'=>Company::APPLY_STATUS_SUCCESS]);
+        foreach ($ids as $id) {
+            $user = User::find($id);
+            $user->notify(new CompanyAuth(Company::find($id)));
+        }
 
         return $this->success(route('admin.company.index'),'审核成功');
 

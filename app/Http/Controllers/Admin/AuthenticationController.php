@@ -47,8 +47,6 @@ class AuthenticationController extends AdminController
 
     public function store(Request $request){
         $data = $request->all();
-
-        \Log::info('test',$data);
         if($data['skill_tags'] !== null ){
             $skill_tags = $data['skill_tags'];
             $tags = Tag::whereIn('id',explode(',',$skill_tags))->get();
@@ -59,6 +57,7 @@ class AuthenticationController extends AdminController
         $object = Authentication::create($data);
         if($object && isset($data['status']) && $data['status'] == 1){
             $action = 'expert_valid';
+            $object->user->notify(new AuthenticationUpdated($object));
             event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$data['user_id'],'专家认证'));
         }
         return $this->success(route('admin.authentication.index'),'行家认证信息添加成功');

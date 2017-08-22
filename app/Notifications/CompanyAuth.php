@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Authentication;
+use App\Models\Company\Company;
 use App\Models\Notification as NotificationModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -13,20 +14,20 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBroadcast
+class CompanyAuth extends Notification implements ShouldQueue,ShouldBroadcast
 {
     use Queueable,InteractsWithSockets;
 
-    protected $authentication;
+    protected $company;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Authentication $authentication)
+    public function __construct(Company $company)
     {
-        $this->authentication = $authentication;
+        $this->company = $company;
     }
 
     /**
@@ -64,7 +65,7 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
     {
         $title = $this->getTitle();
         return [
-            'url'    => '/my',
+            'url'    => '/company/my',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
             'avatar' => config('image.user_default_avatar'),
             'title'  => $title,
@@ -75,12 +76,12 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
 
     protected function getTitle(){
         $title = '';
-        switch ($this->authentication->status){
-            case 1:
-                $title = '恭喜你成为平台认证专家！';
+        switch ($this->company->apply_status){
+            case Company::APPLY_STATUS_SUCCESS:
+                $title = '恭喜你成为平台认证企业！';
                 break;
-            case 4:
-                $title = '很抱歉，您的专家认证未通过审核：'.$this->authentication->failed_reason;
+            case Company::APPLY_STATUS_REJECT:
+                $title = '很抱歉，您的企业认证未通过审核';
                 break;
         }
         return $title;
@@ -89,37 +90,34 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
     public function toPush($notifiable)
     {
         $title = '';
-        $body = '';
-        $object_type = '';
-        switch ($this->authentication->status){
-            case 1:
-                $title = '恭喜你成为平台认证专家！';
-                $object_type = 'authentication_success';
+        switch ($this->company->apply_status){
+            case Company::APPLY_STATUS_SUCCESS:
+                $title = '恭喜你成为平台认证企业！';
+                $object_type = 'company_auth_success';
                 break;
-            case 4:
-                $title = '很抱歉，您的专家认证未通过审核';
-                $body  = $this->authentication->failed_reason;
-                $object_type = 'authentication_fail';
+            case Company::APPLY_STATUS_REJECT:
+                $title = '很抱歉，您的企业认证未通过审核';
+                $object_type = 'company_auth_fail';
                 break;
         }
 
         return [
             'title' => $title,
-            'body'  => $body,
-            'payload' => ['object_type'=>$object_type,'object_id'=>$this->authentication->user_id],
+            'body'  => '',
+            'payload' => ['object_type'=>$object_type,'object_id'=>$this->company->user_id],
         ];
     }
 
     public function toWechatNotice($notifiable){
 
         return [
-            'content' => '平台专家身份认证',
-            'object_type'  => 'authentication',
-            'object_id' => $this->authentication->user_id,
+            'content' => '企业账户申请认证',
+            'object_type'  => 'company_auth',
+            'object_id' => $this->company->user_id,
         ];
     }
 
     public function broadcastOn(){
-        return ['notification.user.'.$this->authentication->user_id];
+        return ['notification.user.'.$this->company->user_id];
     }
 }
