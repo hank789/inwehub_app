@@ -47,9 +47,14 @@ class NotificationController extends Controller
     }
 
     public function count(Request $request){
-        $todo_task = $request->user()->tasks()->where('status',0)->count();
+        $user = $request->user();
+        $todo_task = $user->tasks()->where('status',0)->count();
         $data = [
-            'todo_tasks' => $todo_task
+            'todo_tasks' => $todo_task,
+            'unread_notice_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->count(),
+            'unread_task_message'   => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->count(),
+            'unread_readhub_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->count(),
+            'unread_money_message'   => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->count()
         ];
 
         return self::createJsonData(true,$data);
