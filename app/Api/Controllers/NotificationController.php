@@ -27,6 +27,12 @@ class NotificationController extends Controller
         return self::createJsonData(true, $data);
     }
 
+    public function moneyList(Request $request){
+        $user = $request->user();
+        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->simplePaginate(10)->toArray();
+        return self::createJsonData(true, $data);
+    }
+
 
     public function markAsRead(Request $request)
     {
