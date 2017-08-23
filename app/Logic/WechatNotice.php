@@ -3,6 +3,7 @@ use App\Events\Frontend\Wechat\Notice;
 use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Company\Company;
+use App\Models\Pay\MoneyLog;
 use App\Models\Question;
 
 /**
@@ -74,7 +75,7 @@ class WechatNotice {
                         $keyword3 = '很抱歉，您的专家认证未通过审核：'.$object->failed_reason;;
                         break;
                 }
-                $remark = '可点击详情立即前往回答';
+                $remark = '点击查看';
                 $target_url = $url.'#/my';
                 $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
                 if (config('app.env') != 'production') {
@@ -93,12 +94,25 @@ class WechatNotice {
                         $keyword3 = '很抱歉，您的企业认证未通过审核';
                         break;
                 }
-                $remark = '可点击详情立即前往回答';
+                $remark = '点击查看';
                 $target_url = $url.'#/company/my';
                 $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
                 if (config('app.env') != 'production') {
                     $template_id = 'IOdf5wfUUoF1ojLAF2_rDAzfxtghfkQ0sJMgFpht_gY';
                 }
+                break;
+            case 'notification_money_fee':
+            case 'notification_money_settlement':
+                $object = MoneyLog::find($object_id);
+                $title = '您的账户资金发生以下变动!';
+                $keyword2 = ($object->io >= 1 ? '+' : '-').$object->change_money.'元';
+                $keyword3 = date('Y-m-d H:i:s',strtotime($object->updated_at));
+                $target_url = $url.'#/my/finance';
+                $template_id = '5djK0UUvpHq9TjWFEYujXwqzf7qUR-O8_C_Wzl7W6lg';
+                if (config('app.env') != 'production') {
+                    $template_id = 'WOt-iIVBMYJUjazUVOZ3lbGFjyO_VbpBH1sEohbnBtA';
+                }
+                $remark = '点击查看';
                 break;
             default:
                 return;
