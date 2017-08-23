@@ -86,6 +86,11 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
     public function toArray($notifiable)
     {
         $title = $this->getTitle();
+        if ($this->moneyLog->io >=1){
+            $current_balance = $this->moneyLog->before_money + $this->moneyLog->change_money;
+        } else {
+            $current_balance = $this->moneyLog->before_money - $this->moneyLog->change_money;
+        }
         return [
             'url'    => '/my/finance',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_MONEY,
@@ -94,9 +99,10 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
             'title'  => $title,
             'change_money'  => $this->moneyLog->change_money,
             'before_money'  => $this->moneyLog->before_money,
+            'current_balance'  => $current_balance,
             'io'     => $this->moneyLog->io,
-            'body'   => '',
-            'extra_body' => ''
+            'body'   => '交易成功',
+            'extra_body' => '感谢您对InweHub的信任!'
         ];
     }
 
