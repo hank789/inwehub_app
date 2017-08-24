@@ -5,6 +5,8 @@ use App\Models\Authentication;
 use App\Models\Company\Company;
 use App\Models\Pay\MoneyLog;
 use App\Models\Question;
+use App\Models\Readhub\Comment;
+use App\Models\User;
 
 /**
  * @author: wanghui
@@ -15,7 +17,7 @@ use App\Models\Question;
 class WechatNotice {
 
     //新任务处理通知
-    public static function newTaskNotice($toUserId,$content,$object_type,$object_id){
+    public static function newTaskNotice($toUserId,$content,$object_type,$object_id, $target_url =''){
         $url = config('app.mobile_url');
         $keyword3 = '';
         switch($object_type){
@@ -75,7 +77,7 @@ class WechatNotice {
                         $keyword3 = '很抱歉，您的专家认证未通过审核：'.$object->failed_reason;;
                         break;
                 }
-                $remark = '点击查看';
+                $remark = '请点击查看详情！';
                 $target_url = $url.'#/my';
                 $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
                 if (config('app.env') != 'production') {
@@ -94,7 +96,7 @@ class WechatNotice {
                         $keyword3 = '很抱歉，您的企业认证未通过审核';
                         break;
                 }
-                $remark = '点击查看';
+                $remark = '请点击查看详情！';
                 $target_url = $url.'#/company/my';
                 $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
                 if (config('app.env') != 'production') {
@@ -112,7 +114,46 @@ class WechatNotice {
                 if (config('app.env') != 'production') {
                     $template_id = 'WOt-iIVBMYJUjazUVOZ3lbGFjyO_VbpBH1sEohbnBtA';
                 }
-                $remark = '点击查看';
+                $remark = '请点击查看详情！';
+                break;
+            case 'readhub_comment_replied':
+                $title = '您好，您的回复收到一条评论';
+                $object = Comment::find($object_id);
+                $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
+                $keyword3 = $object->body;
+                $remark = '请点击查看详情！';
+                $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
+                if (config('app.env') != 'production') {
+                    $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+                }
+                $user = User::find($toUserId);
+                $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$target_url;
+                break;
+            case 'readhub_submission_replied':
+                $title = '您好，您的文章收到一条评论';
+                $object = Comment::find($object_id);
+                $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
+                $keyword3 = $object->body;
+                $remark = '请点击查看详情！';
+                $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
+                if (config('app.env') != 'production') {
+                    $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+                }
+                $user = User::find($toUserId);
+                $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$target_url;
+                break;
+            case 'readhub_username_mentioned':
+                $title = '您好，'.$content.'在回复中提到了你';
+                $object = Comment::find($object_id);
+                $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
+                $keyword3 = $object->body;
+                $remark = '请点击查看详情！';
+                $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
+                if (config('app.env') != 'production') {
+                    $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+                }
+                $user = User::find($toUserId);
+                $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$target_url;
                 break;
             default:
                 return;

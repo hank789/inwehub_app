@@ -2,6 +2,8 @@
 
 namespace App\Notifications\Readhub;
 
+use App\Channels\PushChannel;
+use App\Channels\WechatNoticeChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -34,7 +36,7 @@ class CommentReplied extends Notification implements ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
     }
 
     /**
@@ -64,6 +66,27 @@ class CommentReplied extends Notification implements ShouldBroadcast
     public function toArray($notifiable)
     {
         return $this->message;
+    }
+
+    public function toPush($notifiable)
+    {
+        $title = $this->message['title'];
+        $body = $this->message['body'];
+        return [
+            'title' => $title,
+            'body'  => $body,
+            'payload' => ['object_type'=>'readhub_comment_replied','object_id'=>$this->message['url']],
+        ];
+    }
+
+    public function toWechatNotice($notifiable){
+
+        return [
+            'content' => $this->message['name'],
+            'object_type'  => 'readhub_comment_replied',
+            'object_id' => $this->message['comment_id'],
+            'target_url' => $this->message['url']
+        ];
     }
 
     public function broadcastOn(){
