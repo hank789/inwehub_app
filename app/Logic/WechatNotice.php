@@ -163,7 +163,7 @@ class WechatNotice {
                 $remark = '点击查看Ta的顾问名片';
                 $template_id = '24x-vyoHM0SncChmtbRv_uoPCBnI8JXFrmTsWfqccQs';
                 if (config('app.env') != 'production') {
-                    $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+                    $template_id = 'mCMHMPCPc1ceoQy66mWPee-krVmAxAB9g7kCQex6bUs';
                 }
                 $user = User::find($object->user_id);
                 $content = $user->name;
