@@ -244,7 +244,7 @@ class User extends Model implements AuthenticatableContract,
      */
     public function notificationSettings()
     {
-        return new NotificationSettings($this->site_notifications, $this);
+        return new NotificationSettings($this->site_notifications?:[], $this);
     }
 
     /**
