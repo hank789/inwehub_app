@@ -92,6 +92,12 @@ class ReadHubUser extends Model {
                     'submission_small_thumbnail'    => true,
                 ],
             ]);
+            // 设置默认订阅频道
+            Subscription::create([
+                'user_id' => $user->id,
+                'category_id' => 3
+            ]);
+
         }
     }
 
