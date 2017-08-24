@@ -49,12 +49,25 @@ class NotificationController extends Controller
     public function count(Request $request){
         $user = $request->user();
         $todo_task = $user->tasks()->where('status',0)->count();
+
         $data = [
             'todo_tasks' => $todo_task,
-            'unread_notice_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->count(),
-            'unread_task_message'   => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->count(),
-            'unread_readhub_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->count(),
-            'unread_money_message'   => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->count()
+            'notice_message' => [
+                'unread_count' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->count(),
+                'last_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first()
+            ],
+            'task_message'   => [
+                'unread_count' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->count(),
+                'last_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->first()
+            ],
+            'readhub_message' => [
+                'unread_count' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->count(),
+                'last_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->first(),
+            ],
+            'money_message'   => [
+                'unread_count' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->count(),
+                'last_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->first(),
+            ]
         ];
 
         return self::createJsonData(true,$data);
