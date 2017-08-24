@@ -198,7 +198,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     //资金通知列表
     Route::post('notification/money_list','NotificationController@moneyList');
     //标记通知为已读
-    Route::post('notification/mark_as_read','NotificationController@readhubList');
+    Route::post('notification/mark_as_read','NotificationController@markAsRead');
     //统计
     Route::post('notification/count','NotificationController@count');
 
