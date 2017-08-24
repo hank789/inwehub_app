@@ -26,6 +26,8 @@ class CreateNotificationsTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn("site_notifications");
             $table->dropColumn("email_notifications");
+        });
+        Schema::table('users', function (Blueprint $table) {
             $table->json('site_notifications');
         });
     }
