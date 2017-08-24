@@ -38,7 +38,14 @@ class SubmissionReplied extends Notification implements ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast',PushChannel::class, WechatNoticeChannel::class];
+        $via = ['database', 'broadcast'];
+        if ($notifiable->notificationSettings['push_notify_submissions_replied']){
+            $via[] = PushChannel::class;
+        }
+        if ($notifiable->notificationSettings['wechat_notify_submissions_replied']){
+            $via[] = WechatNoticeChannel::class;
+        }
+        return $via;
     }
 
     /**

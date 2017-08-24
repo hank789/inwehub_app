@@ -36,7 +36,14 @@ class UsernameMentioned extends Notification implements ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast',PushChannel::class, WechatNoticeChannel::class];
+        $via = ['database', 'broadcast'];
+        if ($notifiable->notificationSettings['push_notify_mentions']){
+            $via[] = PushChannel::class;
+        }
+        if ($notifiable->notificationSettings['wechat_notify_mentions']){
+            $via[] = WechatNoticeChannel::class;
+        }
+        return $via;
     }
 
     /**
