@@ -82,10 +82,12 @@ class NewUserFollowing extends Notification implements ShouldBroadcast
 
     public function toPush($notifiable)
     {
+        $user = User::find($this->attention->user_id);
+        $title = '用户'.$user->name.'关注了你';
         return [
-            'title' => $this->getTitle(),
+            'title' => $title,
             'body'  => '',
-            'payload' => ['object_type'=>'user_following','object_id'=>$this->attention->user_id],
+            'payload' => ['object_type'=>'user_following','object_id'=>$user->uuid],
         ];
     }
 
