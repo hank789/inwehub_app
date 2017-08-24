@@ -1,6 +1,7 @@
 <?php namespace App\Logic;
 use App\Events\Frontend\Wechat\Notice;
 use App\Models\Answer;
+use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Company\Company;
 use App\Models\Pay\MoneyLog;
@@ -154,6 +155,19 @@ class WechatNotice {
                 }
                 $user = User::find($toUserId);
                 $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$target_url;
+                break;
+            case 'user_following':
+                $title = '又有新用户关注了你';
+                $object = Attention::find($object_id);
+                $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
+                $remark = '点击查看Ta的顾问名片';
+                $template_id = '24x-vyoHM0SncChmtbRv_uoPCBnI8JXFrmTsWfqccQs';
+                if (config('app.env') != 'production') {
+                    $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+                }
+                $user = User::find($object->user_id);
+                $content = $user->name;
+                $target_url = $url.'#/share/resume?id='.$user->uuid;
                 break;
             default:
                 return;
