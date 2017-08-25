@@ -12,8 +12,9 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NewUserFollowing extends Notification implements ShouldBroadcast
+class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 

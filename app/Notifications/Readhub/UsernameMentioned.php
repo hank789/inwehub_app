@@ -8,8 +8,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UsernameMentioned extends Notification implements ShouldBroadcast
+class UsernameMentioned extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable;
 

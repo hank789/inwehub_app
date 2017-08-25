@@ -10,8 +10,9 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SubmissionReplied extends Notification implements ShouldBroadcast
+class SubmissionReplied extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable, InteractsWithSockets, SerializesModels;
 

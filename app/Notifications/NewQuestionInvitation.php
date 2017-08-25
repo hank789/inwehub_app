@@ -11,8 +11,9 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NewQuestionInvitation extends Notification implements ShouldBroadcast
+class NewQuestionInvitation extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 
