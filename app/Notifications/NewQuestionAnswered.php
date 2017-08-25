@@ -89,7 +89,7 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast
         return [
             'content' => $this->question->title,
             'object_type'  => 'question_answered',
-            'object_id' => $this->question->id,
+            'object_id' => $this->answer->id,
         ];
     }
 
