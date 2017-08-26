@@ -23,5 +23,8 @@ class Subscription extends Model {
      */
     protected $connection = 'inwehub_read';
 
+    protected $fillable = [
+        'user_id','category_id'
+    ];
 
 }
