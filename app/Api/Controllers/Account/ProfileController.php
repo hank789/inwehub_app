@@ -165,6 +165,9 @@ class ProfileController extends Controller
         $this->validate($request,$validateRules);
         $uuid = $request->input('uuid');
         $user = User::where('uuid',$uuid)->first();
+        if (empty($user)) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
         $jwtToken = $JWTAuth->getToken();
         $loginUser = '';
         if($jwtToken){
