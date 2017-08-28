@@ -89,7 +89,7 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
     public function toPush($notifiable)
     {
         $title = '';
-        $body = '';
+        $body = '点击前往查看';
         $object_type = '';
         switch ($this->authentication->status){
             case 1:

@@ -90,6 +90,11 @@ class AuthenticationController extends AdminController
             return $this->error(route('admin.authentication.index'),'行家认证信息不存在，请核实');
         }
 
+        $validateRules = [
+            'failed_reason' => 'required_if:status,4'
+        ];
+
+        $this->validate($request, $validateRules);
 
         $data = $request->all();
 
