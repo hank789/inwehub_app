@@ -17,9 +17,6 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
 {
     use Queueable,InteractsWithSockets;
 
-    //使用资金队列进行通知，保证时间不错乱
-    public $queue = 'withdraw';
-
     protected $user_id;
 
     protected $moneyLog;
