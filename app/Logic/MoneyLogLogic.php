@@ -53,9 +53,9 @@ class MoneyLogLogic {
             DB::commit();
             if ($is_settlement) {
                 $user = User::find($user_id);
-                $user->notify((new MoneyLogNotify($user_id,$moneyLog1))->onQueue('withdraw'));
+                $user->notify(new MoneyLogNotify($user_id,$moneyLog1,date('Y-m-d H:i:s')));
                 if (isset($moneyLog2)) {
-                    $user->notify((new MoneyLogNotify($user_id,$moneyLog2))->onQueue('withdraw'));
+                    $user->notify(new MoneyLogNotify($user_id,$moneyLog2,date('Y-m-d H:i:s',strtotime('+1 second'))));
                 }
             }
             return true;

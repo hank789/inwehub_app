@@ -21,15 +21,18 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
 
     protected $moneyLog;
 
+    protected $created_at;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, MoneyLogModel $moneyLog)
+    public function __construct($user_id, MoneyLogModel $moneyLog, $created_at = null)
     {
         $this->user_id = $user_id;
         $this->moneyLog = $moneyLog;
+        $this->created_at = $created_at;
     }
 
     /**
@@ -102,7 +105,8 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
             'current_balance'  => $current_balance,
             'io'     => $this->moneyLog->io,
             'body'   => '交易成功',
-            'extra_body' => '感谢您对InweHub的信任!'
+            'extra_body' => '感谢您对InweHub的信任!',
+            'created_at' => $this->created_at
         ];
     }
 
