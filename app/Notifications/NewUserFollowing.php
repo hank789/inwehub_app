@@ -71,8 +71,9 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
      */
     public function toArray($notifiable)
     {
+        $user = User::find($this->attention->user_id);
         return [
-            'url'    => '/my/focus',
+            'url'    => '/share/resume?id='.$user->uuid,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
             'avatar' => config('image.user_default_avatar'),
             'title'  => $this->getTitle(),
