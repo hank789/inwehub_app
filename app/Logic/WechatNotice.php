@@ -70,16 +70,19 @@ class WechatNotice {
                 $object = Authentication::find($object_id);
                 $title = '您的专家申请已处理';
                 $keyword2 = date('Y-m-d H:i',strtotime($object->created_at));
+                $target_url = $url.'#/my';
                 switch ($object->status){
                     case 1:
                         $keyword3 = '恭喜你成为平台认证专家！';
+                        $target_url = $url.'#/my';
                         break;
                     case 4:
-                        $keyword3 = '很抱歉，您的专家认证未通过审核：'.$object->failed_reason;;
+                        $keyword3 = '很抱歉，您的专家认证未通过审核：'.$object->failed_reason;
+                        $target_url = $url.'#/my/pilot';
                         break;
                 }
                 $remark = '请点击查看详情！';
-                $target_url = $url.'#/my';
+
                 $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
                 if (config('app.env') != 'production') {
                     $template_id = 'IOdf5wfUUoF1ojLAF2_rDAzfxtghfkQ0sJMgFpht_gY';
