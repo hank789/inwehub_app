@@ -103,7 +103,7 @@ class CompanyAuth extends Notification implements ShouldQueue,ShouldBroadcast
 
         return [
             'title' => $title,
-            'body'  => '',
+            'body'  => '点击前往查看',
             'payload' => ['object_type'=>$object_type,'object_id'=>$this->company->user_id],
         ];
     }

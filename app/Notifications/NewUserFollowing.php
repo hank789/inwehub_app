@@ -88,7 +88,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
         $title = '用户'.$user->name.'关注了你';
         return [
             'title' => $title,
-            'body'  => '',
+            'body'  => '点击前往查看',
             'payload' => ['object_type'=>'user_following','object_id'=>$user->uuid],
         ];
     }
