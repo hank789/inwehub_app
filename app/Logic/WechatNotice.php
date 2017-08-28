@@ -71,6 +71,7 @@ class WechatNotice {
                 $title = '您的专家申请已处理';
                 $keyword2 = date('Y-m-d H:i',strtotime($object->created_at));
                 $target_url = $url.'#/my';
+                $remark = '请点击查看详情！';
                 switch ($object->status){
                     case 1:
                         $keyword3 = '恭喜你成为平台认证专家！';
@@ -79,9 +80,10 @@ class WechatNotice {
                     case 4:
                         $keyword3 = '很抱歉，您的专家认证未通过审核：'.$object->failed_reason;
                         $target_url = $url.'#/my/pilot';
+                        $remark = '点击前往重新申请！';
                         break;
                 }
-                $remark = '请点击查看详情！';
+
 
                 $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
                 if (config('app.env') != 'production') {
@@ -92,15 +94,17 @@ class WechatNotice {
                 $object = Company::find($object_id);
                 $title = '您的企业申请已处理';
                 $keyword2 = date('Y-m-d H:i',strtotime($object->created_at));
+                $remark = '请点击查看详情！';
                 switch ($object->apply_status){
                     case Company::APPLY_STATUS_SUCCESS:
                         $keyword3 = '恭喜你成为平台认证企业！';
                         break;
                     case Company::APPLY_STATUS_REJECT:
                         $keyword3 = '很抱歉，您的企业认证未通过审核';
+                        $remark = '点击前往重新申请！';
                         break;
                 }
-                $remark = '请点击查看详情！';
+
                 $target_url = $url.'#/company/my';
                 $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
                 if (config('app.env') != 'production') {
