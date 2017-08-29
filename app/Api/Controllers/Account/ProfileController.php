@@ -9,7 +9,9 @@ use App\Models\Attention;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
+use App\Models\Readhub\Comment;
 use App\Models\Readhub\ReadHubUser;
+use App\Models\Readhub\Submission;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserOauth;
@@ -94,6 +96,10 @@ class ProfileController extends Controller
         $info['followers'] = $user->followers()->count();
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
         $info['total_score'] = '综合评分暂无';
+
+        $readhubUser = ReadHubUser::find($user->id);
+        $info['submission_karma'] = $readhubUser->submission_karma;
+        $info['comment_karma'] = $readhubUser->comment_karma;
 
 
         $info_percent = $user->getInfoCompletePercent(true);
@@ -244,6 +250,9 @@ class ProfileController extends Controller
         $info['work_years'] = $user->getWorkYears();
         $info['followers'] = $user->followers()->count();
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
+
+        $info['submission_count'] = Submission::where('user_id',$user->id)->whereNull('deleted_at')->count();
+        $info['comment_count'] = Comment::where('user_id',$user->id)->whereNull('deleted_at')->count();
 
         $projects = [];
         $jobs = [];
