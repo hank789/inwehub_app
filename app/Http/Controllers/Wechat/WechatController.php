@@ -5,6 +5,8 @@ use App\Models\User;
 use Log;
 use Illuminate\Http\Request;
 use App\Services\Registrar;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\JWTAuth;
 use App\Models\UserOauth;
 use Illuminate\Support\Facades\Session;
@@ -80,11 +82,22 @@ class WechatController extends Controller
         $userInfo = session('wechat_userinfo');
         if($userInfo && isset($userInfo['app_token'])){
             $token = $userInfo['app_token'];
-            if (false === $JWTAuth->authenticate($token)){
+            try {
+                if (false === $JWTAuth->authenticate($token)){
+                    return $wechat->oauth->scopes(['snsapi_userinfo'])
+                        ->setRequest($request)
+                        ->redirect();
+                }
+            } catch (TokenExpiredException $e) {
                 $token = $JWTAuth->refresh($userInfo['app_token']);
                 $userInfo['app_token'] = $token;
                 Session::put("wechat_userinfo",$userInfo);
+            } catch (JWTException $e) {
+                return $wechat->oauth->scopes(['snsapi_userinfo'])
+                    ->setRequest($request)
+                    ->redirect();
             }
+
             return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);
         }
 
