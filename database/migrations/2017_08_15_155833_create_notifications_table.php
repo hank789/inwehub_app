@@ -23,6 +23,13 @@ class CreateNotificationsTable extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn("site_notifications");
+            $table->dropColumn("email_notifications");
+        });
+        Schema::table('users', function (Blueprint $table) {
+            $table->json('site_notifications')->after('status');;
+        });
     }
 
     /**

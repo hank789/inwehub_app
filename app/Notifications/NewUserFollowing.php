@@ -4,8 +4,9 @@ namespace App\Notifications;
 
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
-use App\Models\Authentication;
+use App\Models\Attention;
 use App\Models\Notification as NotificationModel;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -13,20 +14,23 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBroadcast
+class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 
-    protected $authentication;
+    protected $user_id;
+
+    protected $attention;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Authentication $authentication)
+    public function __construct($user_id, Attention $attention)
     {
-        $this->authentication = $authentication;
+        $this->user_id = $user_id;
+        $this->attention = $attention;
     }
 
     /**
@@ -54,6 +58,11 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
                     ->line('Thank you for using our application!');
     }
 
+    protected function getTitle(){
+        $user = User::find($this->attention->user_id);
+        return '用户'.$user->name.'关注了你';
+    }
+
     /**
      * Get the array representation of the notification.
      *
@@ -62,64 +71,37 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
      */
     public function toArray($notifiable)
     {
-        $title = $this->getTitle();
+        $user = User::find($this->attention->user_id);
         return [
-            'url'    => '/my',
+            'url'    => '/share/resume?id='.$user->uuid,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
             'avatar' => config('image.user_default_avatar'),
-            'title'  => $title,
+            'title'  => $this->getTitle(),
             'body'   => '',
             'extra_body' => ''
         ];
     }
 
-    protected function getTitle(){
-        $title = '';
-        switch ($this->authentication->status){
-            case 1:
-                $title = '恭喜你成为平台认证专家！';
-                break;
-            case 4:
-                $title = '很抱歉，您的专家认证未通过审核：'.$this->authentication->failed_reason;
-                break;
-        }
-        return $title;
-    }
-
     public function toPush($notifiable)
     {
-        $title = '';
-        $body = '点击前往查看';
-        $object_type = '';
-        switch ($this->authentication->status){
-            case 1:
-                $title = '恭喜你成为平台认证专家！';
-                $object_type = 'authentication_success';
-                break;
-            case 4:
-                $title = '很抱歉，您的专家认证未通过审核';
-                $body  = $this->authentication->failed_reason;
-                $object_type = 'authentication_fail';
-                break;
-        }
-
+        $user = User::find($this->attention->user_id);
+        $title = '用户'.$user->name.'关注了你';
         return [
             'title' => $title,
-            'body'  => $body,
-            'payload' => ['object_type'=>$object_type,'object_id'=>$this->authentication->user_id],
+            'body'  => '点击前往查看',
+            'payload' => ['object_type'=>'user_following','object_id'=>$user->uuid],
         ];
     }
 
     public function toWechatNotice($notifiable){
-
         return [
-            'content' => '平台专家身份认证',
-            'object_type'  => 'authentication',
-            'object_id' => $this->authentication->user_id,
+            'content' => '',
+            'object_type'  => 'user_following',
+            'object_id' => $this->attention->id,
         ];
     }
 
     public function broadcastOn(){
-        return ['notification.user.'.$this->authentication->user_id];
+        return ['notification.user.'.$this->user_id];
     }
 }

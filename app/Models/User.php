@@ -3,6 +3,7 @@
 namespace App\Models;
 use App\Models\Relations\HasRoleAndPermission;
 use App\Models\Relations\MorphManyTagsTrait;
+use App\Services\NotificationSettings;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -34,7 +35,6 @@ use Illuminate\Notifications\Notifiable;
  * @property string $description
  * @property bool $status
  * @property string $site_notifications
- * @property string $email_notifications
  * @property string $remember_token
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -97,6 +97,10 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $fillable = ['name','uuid','mobile' ,'avatar','email', 'password','status','site_notifications','email_notifications','last_login_token','source'];
+
+    protected $casts = [
+        'site_notifications' => 'json',
+    ];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -233,6 +237,14 @@ class User extends Model implements AuthenticatableContract,
     public function loginRecords()
     {
         return $this->hasMany(loginRecord::class, 'user_id');
+    }
+
+    /**
+     * @return NotificationSettings
+     */
+    public function notificationSettings()
+    {
+        return new NotificationSettings($this->site_notifications?:[], $this);
     }
 
     /**

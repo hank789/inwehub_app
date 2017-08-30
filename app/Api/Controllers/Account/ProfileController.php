@@ -9,7 +9,9 @@ use App\Models\Attention;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
+use App\Models\Readhub\Comment;
 use App\Models\Readhub\ReadHubUser;
+use App\Models\Readhub\Submission;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserOauth;
@@ -95,6 +97,10 @@ class ProfileController extends Controller
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
         $info['total_score'] = '综合评分暂无';
 
+        $readhubUser = ReadHubUser::find($user->id);
+        $info['submission_karma'] = $readhubUser->submission_karma;
+        $info['comment_karma'] = $readhubUser->comment_karma;
+
 
         $info_percent = $user->getInfoCompletePercent(true);
         $info['account_info_complete_percent'] = $info_percent['score'];
@@ -116,7 +122,7 @@ class ProfileController extends Controller
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['tasks'] = $user->tasks->where('status',0)->count();
-        $info['projects'] = $user->companyProjects->count();
+        $info['projects'] = $user->companyProjects->where('status','!=',0)->count();
         $info['user_level'] = $user->getUserLevel();
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
@@ -165,6 +171,9 @@ class ProfileController extends Controller
         $this->validate($request,$validateRules);
         $uuid = $request->input('uuid');
         $user = User::where('uuid',$uuid)->first();
+        if (empty($user)) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
         $jwtToken = $JWTAuth->getToken();
         $loginUser = '';
         if($jwtToken){
@@ -241,6 +250,9 @@ class ProfileController extends Controller
         $info['work_years'] = $user->getWorkYears();
         $info['followers'] = $user->followers()->count();
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
+
+        $info['submission_count'] = Submission::where('user_id',$user->id)->whereNull('deleted_at')->count();
+        $info['comment_count'] = Comment::where('user_id',$user->id)->whereNull('deleted_at')->count();
 
         $projects = [];
         $jobs = [];

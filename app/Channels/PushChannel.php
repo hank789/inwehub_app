@@ -7,7 +7,7 @@
 use App\Events\Frontend\System\Push;
 use Illuminate\Notifications\Notification;
 
-class PusherChannel {
+class PushChannel {
 
 
     /**
@@ -19,11 +19,9 @@ class PusherChannel {
      */
     public function send($notifiable, Notification $notification)
     {
-        $message = $notification->toPusher($notifiable);
-
+        $message = $notification->toPush($notifiable);
         // 将通知发送给 $notifiable 实例
-        event(new Push($toUser,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
-
+        event(new Push($notifiable->id,$message['title'],$message['body'],$message['payload']));
     }
 
 }

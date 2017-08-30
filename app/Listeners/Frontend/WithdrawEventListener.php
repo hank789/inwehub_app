@@ -13,9 +13,11 @@ use App\Logic\WithdrawLogic;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
 use App\Models\Pay\Withdraw;
+use App\Models\User;
 use App\Models\UserOauth;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Payment\Config;
+use App\Notifications\MoneyLog as MoneyLogNotify;
 
 
 class WithdrawEventListener implements ShouldQueue {
@@ -104,6 +106,9 @@ class WithdrawEventListener implements ShouldQueue {
             MoneyLog::where('source_id',$withdraw->id)->where('source_type',get_class($withdraw))->update([
                 'status' => MoneyLog::STATUS_SUCCESS
             ]);
+            $user = User::find($withdraw->user_id);
+            $moneyLog = MoneyLog::where('source_id',$withdraw->id)->where('source_type',get_class($withdraw))->first();
+            $user->notify(new MoneyLogNotify($withdraw->user_id, $moneyLog));
         }
     }
 
@@ -136,6 +141,9 @@ class WithdrawEventListener implements ShouldQueue {
         MoneyLog::where('source_id',$withdraw->id)->where('source_type',get_class($withdraw))->update([
             'status' => MoneyLog::STATUS_SUCCESS
         ]);
+        $user = User::find($withdraw->user_id);
+        $moneyLog = MoneyLog::where('source_id',$withdraw->id)->where('source_type',get_class($withdraw))->first();
+        $user->notify(new MoneyLogNotify($withdraw->user_id, $moneyLog));
     }
 
 

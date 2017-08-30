@@ -17,6 +17,7 @@ use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
+use App\Notifications\NewQuestionInvitation;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -337,11 +338,8 @@ class QuestionController extends Controller
                 $this->doing($toUser->id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
                 //记录任务
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
-
-                //推送
-                event(new Push($toUser->id,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
-                //微信通知
-                WechatNotice::newTaskNotice($toUser->id,$question->title,'question_invite_answer_confirming',$question);
+                //通知
+                $toUser->notify(new NewQuestionInvitation($toUser->id,$question));
             }else{
                 //非定向邀请的自动匹配一次
                 event(new AutoInvitation($question));

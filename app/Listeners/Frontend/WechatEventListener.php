@@ -36,6 +36,7 @@ class WechatEventListener implements ShouldQueue
                 "first"  => $event->title,
                 "keyword1"   => str_limit($event->keyword1,100),
                 "keyword2"   => $event->keyword2,
+                "keyword3"   => $event->keyword3,
                 "remark" => $event->remark
             ];
             $notice->uses($event->template_id)->withUrl($event->target_url)->andData($wx_notice_data)->andReceiver($oauthData->openid)->send();

@@ -71,6 +71,7 @@
                             <div class="form-group">
                                 <label>审核失败的原因</label>
                                 <textarea class="form-control" name="failed_reason" placeholder="仅审核失败的情况下填写">{{ $authentication->failed_reason }}</textarea>
+                                @if ($errors->has('failed_reason')) <p class="help-block">{{ $errors->first('failed_reason') }}</p> @endif
                             </div>
 
                         </div>

@@ -5,6 +5,8 @@ use App\Models\User;
 use Log;
 use Illuminate\Http\Request;
 use App\Services\Registrar;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\JWTAuth;
 use App\Models\UserOauth;
 use Illuminate\Support\Facades\Session;
@@ -79,7 +81,20 @@ class WechatController extends Controller
         Session::put("wechat_user_redirect",$redirect);
         $userInfo = session('wechat_userinfo');
         if($userInfo && isset($userInfo['app_token'])){
-            return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$userInfo['app_token'].'&redirect='.$redirect);
+            $token = $userInfo['app_token'];
+            try {
+                if (false === $JWTAuth->authenticate($token)){
+                    return $wechat->oauth->scopes(['snsapi_userinfo'])
+                        ->setRequest($request)
+                        ->redirect();
+                }
+            } catch (JWTException $e) {
+                return $wechat->oauth->scopes(['snsapi_userinfo'])
+                    ->setRequest($request)
+                    ->redirect();
+            }
+
+            return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);
         }
 
         return $wechat->oauth->scopes(['snsapi_userinfo'])
@@ -140,8 +155,8 @@ class WechatController extends Controller
                 ]
             );
         } else {
-            event(new ErrorNotify('微信认证失败',['userinfo'=>$userInfo]));
-            return '服务器繁忙,请稍后再试';
+            Log::info('微信认证失败',['userinfo'=>$userInfo,'request'=>$request->all()]);
+            return redirect('/wechat/oauth');
         }
 
         return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);

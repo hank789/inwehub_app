@@ -5,6 +5,7 @@ use App\Models\Attention;
 use App\Models\Question;
 use App\Models\Tag;
 use App\Models\User;
+use App\Notifications\NewUserFollowing;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 use App\Http\Requests;
@@ -77,6 +78,7 @@ class FollowController extends Controller
                     break;
                 case 'user':
                     $source->userData->increment('followers');
+                    $source->notify(new NewUserFollowing($source->id,$attention));
                     break;
                 case 'tag':
                     $source->increment('followers');

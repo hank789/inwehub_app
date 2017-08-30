@@ -8,6 +8,7 @@ use App\Models\QuestionInvitation;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
+use App\Notifications\NewQuestionInvitation;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 
@@ -50,10 +51,9 @@ class QuestionEventListener implements ShouldQueue
             }
             //记录任务
             TaskLogic::task($uid,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
-            //推送
-            event(new Push($uid,'您有新的回答邀请',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
-            //微信通知
-            WechatNotice::newTaskNotice($uid,$question->title,'question_invite_answer_confirming',$question);
+
+            $user = User::find($uid);
+            $user->notify(new NewQuestionInvitation($uid, $question));
         }
     }
 

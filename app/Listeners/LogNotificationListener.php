@@ -27,6 +27,9 @@ class LogNotificationListener implements ShouldQueue {
             case 'database':
                 $notification = Notification::find($event->notification->id);
                 if ($notification && isset($notification->data['notification_type'])){
+                    if (isset($notification->data['created_at']) && $notification->data['created_at']){
+                        $notification->created_at = $notification->data['created_at'];
+                    }
                     $notification->notification_type = $notification->data['notification_type'];
                     $notification->save();
                 }

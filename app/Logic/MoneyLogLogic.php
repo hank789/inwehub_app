@@ -7,7 +7,10 @@
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Order;
 use App\Models\Pay\UserMoney;
+use App\Models\User;
+use App\Services\RateLimiter;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\MoneyLog as MoneyLogNotify;
 
 class MoneyLogLogic {
 
@@ -26,7 +29,7 @@ class MoneyLogLogic {
             }
 
             //资金记录
-            MoneyLog::create([
+            $moneyLog1 = MoneyLog::create([
                 'user_id' => $user_id,
                 'change_money' => $money,
                 'source_id'    => $object_class->id,
@@ -38,7 +41,7 @@ class MoneyLogLogic {
             if($fee>0){
                 $userMoney = UserMoney::find($user_id);
                 UserMoney::find($user_id)->decrement('total_money',$fee);
-                MoneyLog::create([
+                $moneyLog2 = MoneyLog::create([
                     'user_id' => $user_id,
                     'change_money' => $fee,
                     'source_id'    => $object_class->id,
@@ -49,6 +52,15 @@ class MoneyLogLogic {
                 ]);
             }
             DB::commit();
+            if ($is_settlement) {
+                $user = User::find($user_id);
+                $settlement_count = RateLimiter::instance()->increaseBy('settlement_count_'.$user_id, date('Y-m-d'),1,3600*24*5);
+                $user->notify(new MoneyLogNotify($user_id,$moneyLog1,date('Y-m-d H:i:s',strtotime('+'.$settlement_count.' seconds'))));
+                if (isset($moneyLog2)) {
+                    $settlement_count = RateLimiter::instance()->increaseBy('settlement_count_'.$user_id, date('Y-m-d'),1,3600*24*5);
+                    $user->notify(new MoneyLogNotify($user_id,$moneyLog2,date('Y-m-d H:i:s',strtotime('+'.$settlement_count.' seconds'))));
+                }
+            }
             return true;
         }catch (\Exception $e) {
             DB::rollBack();

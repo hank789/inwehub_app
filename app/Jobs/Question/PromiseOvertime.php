@@ -5,6 +5,7 @@ use App\Logic\WechatNotice;
 use App\Models\Answer;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Notifications\AnswerPromiseOvertime;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -52,9 +53,7 @@ class PromiseOvertime implements ShouldQueue
     {
         $answer = Answer::find($this->answer_id);
         if($answer->status == 3) {
-            $question = $answer->question;
-            event(new Push($answer->user_id,'距离您的承诺时间还有'.$this->overtime.'分钟',$question->title,['object_type'=>'answer','object_id'=>$question->id]));
-            WechatNotice::newTaskNotice($answer->user_id,$question->title,'question_answer_promise_overtime',$answer);
+            $answer->user->notify(new AnswerPromiseOvertime($answer->user_id,$this->overtime,$answer));
         }
     }
 }
