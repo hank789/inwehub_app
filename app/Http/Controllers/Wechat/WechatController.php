@@ -140,8 +140,8 @@ class WechatController extends Controller
                 ]
             );
         } else {
-            event(new ErrorNotify('微信认证失败',['userinfo'=>$userInfo]));
-            return '服务器繁忙,请稍后再试';
+            Log::info('微信认证失败',['userinfo'=>$userInfo,'request'=>$request->all()]);
+            return redirect('/wechat/oauth');
         }
 
         return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);
