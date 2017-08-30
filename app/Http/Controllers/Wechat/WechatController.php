@@ -88,10 +88,6 @@ class WechatController extends Controller
                         ->setRequest($request)
                         ->redirect();
                 }
-            } catch (TokenExpiredException $e) {
-                $token = $JWTAuth->refresh($userInfo['app_token']);
-                $userInfo['app_token'] = $token;
-                Session::put("wechat_userinfo",$userInfo);
             } catch (JWTException $e) {
                 return $wechat->oauth->scopes(['snsapi_userinfo'])
                     ->setRequest($request)
