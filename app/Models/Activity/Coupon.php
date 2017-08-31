@@ -39,6 +39,7 @@ class Coupon extends Model
         switch($this->used_object_type){
             case 'App\Models\Pay\Order':
                 $orderGable = Ordergable::where('pay_order_id',$this->used_object_id)->first();
+                if (!$orderGable) return '#';
                 switch($orderGable->pay_order_gable_type){
                     case 'App\Models\Question':
                         return route('ask.question.detail',['id'=>$orderGable->pay_order_gable_id]);
