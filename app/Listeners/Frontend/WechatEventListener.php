@@ -39,7 +39,11 @@ class WechatEventListener implements ShouldQueue
                 "keyword3"   => $event->keyword3,
                 "remark" => $event->remark
             ];
-            $notice->uses($event->template_id)->withUrl($event->target_url)->andData($wx_notice_data)->andReceiver($oauthData->openid)->send();
+            try {
+                $notice->uses($event->template_id)->withUrl($event->target_url)->andData($wx_notice_data)->andReceiver($oauthData->openid)->send();
+            } catch (\Exception $e) {
+                app('sentry')->captureException($e);
+            }
         }
     }
 
