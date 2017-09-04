@@ -81,6 +81,11 @@ class AddMenu extends Command
                 "sub_button" => [
                     [
                         "type" => "view",
+                        "name" => "邀请码",
+                        "url"  => "https://jinshuju.net/f/bWXY8y"
+                    ],
+                    [
+                        "type" => "view",
                         "name" => "产品官网",
                         "url"  => "https://www.inwehub.com"
                     ],
