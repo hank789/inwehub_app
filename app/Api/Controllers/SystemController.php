@@ -57,6 +57,9 @@ class SystemController extends Controller {
                 'appkey'       => $data['appkey'],
                 'created_at'   => date('Y-m-d H:i:s')
             ]);
+        $user_device->device_token = $data['device_token'];
+        $user_device->appid = $data['appid'];
+        $user_device->appkey = $data['appkey'];
         $user_device->status = 1;
         $user_device->updated_at = date('Y-m-d H:i:s');
         $user_device->save();
