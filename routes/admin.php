@@ -68,9 +68,6 @@ Route::any('setting/help',['as'=>'admin.setting.help','uses'=>'SettingController
 /*提问帮助设置*/
 Route::any('setting/qahelp',['as'=>'admin.setting.qahelp','uses'=>'SettingController@qaHelp']);
 
-/*oauth2.0*/
-Route::any('setting/oauth',['as'=>'admin.setting.oauth','uses'=>'SettingController@oauth']);
-
 /*财务管理*/
 Route::resource('credit', 'CreditController',['except' => ['show'],'as'=>'admin']);
 Route::group(['namespace'=>'Finance'],function(){
@@ -147,14 +144,7 @@ Route::resource('notice', 'NoticeController',['except' => ['show'],'as'=>'admin'
 /*首页推荐*/
 Route::resource('recommendation', 'RecommendationController',['except' => ['show'],'as'=>'admin']);
 
-/*商品管理*/
-Route::resource('goods', 'GoodsController',['except' => ['show'],'as'=>'admin']);
-/*商品兑换*/
-Route::resource('exchange', 'ExchangeController',['except' => ['show'],'as'=>'admin']);
-Route::get('exchange/{id}/{status}',['as'=>'admin.exchange.changeStatus','uses'=>'ExchangeController@changeStatus'])->where(['id'=>'[0-9]+','status'=>'(success|failed)']);
 
-/*友情链接*/
-Route::resource('friendshipLink', 'FriendshipLinkController',['except' => ['show'],'as'=>'admin']);
 
 /*工具管理*/
 Route::match(['get','post'],'tool/clearCache',['as'=>'admin.tool.clearCache','uses'=>'ToolController@clearCache']);
@@ -217,6 +207,17 @@ Route::group(['prefix' => 'activity','namespace'=>'Activity'], function() {
 
     Route::get('coupon',['as'=>'admin.activity.coupon','uses'=>'CouponController@index']);
 
+});
+
+//推送管理
+Route::group(['prefix' => 'push'], function() {
+    Route::get('index',['as'=>'admin.operate.pushNotice.index','uses'=>'PushNoticeController@index']);
+    Route::get('create',['as'=>'admin.operate.pushNotice.create','uses'=>'PushNoticeController@create']);
+    Route::get('edit/{id}',['as'=>'admin.operate.pushNotice.edit','uses'=>'PushNoticeController@edit'])->where(['id'=>'[0-9]+']);
+    Route::post('update',['as'=>'admin.operate.pushNotice.update','uses'=>'PushNoticeController@update']);
+    Route::post('verify',['as'=>'admin.operate.pushNotice.verify','uses'=>'PushNoticeController@verify']);
+    Route::post('testPush',['as'=>'admin.operate.pushNotice.test','uses'=>'PushNoticeController@testPush']);
+    Route::post('destroy',['as'=>'admin.operate.pushNotice.destroy','uses'=>'PushNoticeController@destroy']);
 });
 
 //日志查看
