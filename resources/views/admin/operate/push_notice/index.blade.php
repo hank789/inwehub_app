@@ -138,8 +138,6 @@
             });
 
             $("#true_push_notice_modal_submit").click(function(){
-                var test_push_user_id = $("#test_push_user_id").val();
-
                 $("#push_notice_from").submit();
 
             });

@@ -90,10 +90,10 @@ class PushNoticeController extends AdminController
 
     public function verify(Request $request) {
         $validateRules = [
-            'test_push_id'   => 'required',
+            'push_id'   => 'required',
         ];
         $this->validate($request,$validateRules);
-        $push = PushNotice::findOrFail($request->input('test_push_id'));
+        $push = PushNotice::findOrFail($request->input('push_id'));
         if ($push->status != PushNotice::PUSH_STATUS_TESTED) {
             return $this->error(route('admin.operate.pushNotice.index'),'请先测试推送无误再发送给所有用户');
         }
