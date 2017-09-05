@@ -217,7 +217,7 @@ Route::group(['prefix' => 'push'], function() {
     Route::post('update',['as'=>'admin.operate.pushNotice.update','uses'=>'PushNoticeController@update']);
     Route::post('verify',['as'=>'admin.operate.pushNotice.verify','uses'=>'PushNoticeController@verify']);
     Route::post('testPush',['as'=>'admin.operate.pushNotice.test','uses'=>'PushNoticeController@testPush']);
-    Route::post('destroy',['as'=>'admin.operate.pushNotice.destroy','uses'=>'PushNoticeController@destroy']);
+    Route::delete('destroy',['as'=>'admin.operate.pushNotice.destroy','uses'=>'PushNoticeController@destroy']);
 });
 
 //日志查看

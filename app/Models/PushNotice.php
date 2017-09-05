@@ -26,4 +26,10 @@ class PushNotice extends Model
     protected $table = 'push_notice';
     protected $fillable = ['title', 'url','status','notification_type','setting'];
 
+    const PUSH_STATUS_DRAFT = 0;
+    const PUSH_STATUS_TESTED = 1;
+    const PUSH_STATUS_SEND  = 2;
+
+    const PUSH_NOTIFICATION_TYPE_READHUB = 1;
+    const PUSH_NOTIFICATION_TYPE_NOTICE_ARTICLE = 2;
 }

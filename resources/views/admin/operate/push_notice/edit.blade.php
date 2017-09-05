@@ -46,7 +46,7 @@
                                 <label>发送时间</label>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="is_push" value="2" checked /> 稍后再发
+                                        <input type="radio" name="is_push" value="2" checked /> 稍后再发(请先在列表页面测试推送没问题后再正式发送)
                                     </label>
                                 </div>
                             </div>

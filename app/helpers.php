@@ -506,6 +506,49 @@ if (! function_exists('trans_coupon_status')) {
     }
 }
 
+if (! function_exists('trans_push_notice_status')) {
+
+    function trans_push_notice_status($status){
+        $map = [
+            0 => '待测试',
+            1 => '已测试',
+            2 => '已发送',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+    }
+}
+
+if (! function_exists('trans_push_notice_notification_type')) {
+
+    function trans_push_notice_notification_type($status){
+        $map = [
+            1 => '阅读发现',
+            2 => '公告文章',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+    }
+}
+
 /*回答状态文字定义*/
 if (! function_exists('trans_answer_status')) {
 

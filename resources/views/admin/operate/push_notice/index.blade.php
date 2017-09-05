@@ -42,14 +42,17 @@
                                             <td>{{ $notice->id }}</td>
                                             <td>{{ $notice->title }}</td>
                                             <td>{{ $notice->url }}</td>
-                                            <td>{{ $notice->notification_type }}</td>
-                                            <td><span class="label @if($notice->status===1) label-warning  @else label-success @endif">{{ trans_recommend_submission_status($notice->status) }}</span> </td>
+                                            <td>{{ trans_push_notice_notification_type($notice->notification_type) }}</td>
+                                            <td><span class="label @if($notice->status===0) label-warning @elseif ($notice->status===1) label-default
+                                                  @else label-success @endif">{{ trans_push_notice_status($notice->status) }}</span> </td>
                                             <td>{{ $notice->updated_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.operate.pushNotice.edit',['id'=>$notice->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
-                                                    <a class="btn btn-warning" href="#" onclick="showTestPushModal(this)" data-pid="{{ $notice->id }}" data-ptitle="{{ $notice->title }}" data-toggle="tooltip" title="推送测试">推送测试</a>
-                                                    <a class="btn btn-danger" href="#" onclick="showPushModal(this)" data-pid="{{ $notice->id }}" data-ptitle="{{ $notice->title }}" data-toggle="tooltip" title="发送推送">发送推送</a>
+                                                    @if ($notice->status != 2)
+                                                        <a class="btn btn-default" href="{{ route('admin.operate.pushNotice.edit',['id'=>$notice->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
+                                                        <a class="btn btn-warning" href="#" onclick="showTestPushModal(this)" data-pid="{{ $notice->id }}" data-ptitle="{{ $notice->title }}" data-toggle="tooltip" title="推送测试">推送测试</a>
+                                                        <a class="btn btn-danger" href="#" onclick="showPushModal(this)" data-pid="{{ $notice->id }}" data-ptitle="{{ $notice->title }}" data-toggle="tooltip" title="发送推送">发送推送</a>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>

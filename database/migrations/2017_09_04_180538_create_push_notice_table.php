@@ -18,7 +18,7 @@ class CreatePushNoticeTable extends Migration
             $table->tinyInteger('notification_type')->default(1)->comment('通知分类');
             $table->string('title');
             $table->string('url');
-            $table->tinyInteger('status')->default(1);   //状态
+            $table->tinyInteger('status')->default(0);   //状态
             $table->string('setting')->nullable();;
             $table->timestamps();
         });
