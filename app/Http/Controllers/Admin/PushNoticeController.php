@@ -66,10 +66,19 @@ class PushNoticeController extends AdminController
         $validateRules = [
             'id'      => 'required',
             'title'   => 'required',
-            'url' => 'required|url',
+            'url' => 'required',
             'notification_type' => 'required|integer',
         ];
         $this->validate($request,$validateRules);
+
+        switch ($request->input('notification_type')) {
+            case PushNotice::PUSH_NOTIFICATION_TYPE_READHUB:
+                $recommendation = Submission::where('id',$request->input('url'))->where('recommend_status','>=',Submission::RECOMMEND_STATUS_PENDING)->first();;
+                if(!$recommendation){
+                    return $this->error(route('admin.operate.pushNotice.edit'),'推荐不存在，请核实');
+                }
+                break;
+        }
 
         $notice = PushNotice::find($request->get('id'));
         $status = PushNotice::PUSH_STATUS_DRAFT;

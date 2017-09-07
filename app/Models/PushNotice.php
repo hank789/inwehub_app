@@ -32,4 +32,6 @@ class PushNotice extends Model
 
     const PUSH_NOTIFICATION_TYPE_READHUB = 1;
     const PUSH_NOTIFICATION_TYPE_NOTICE_ARTICLE = 2;
+    const PUSH_NOTIFICATION_TYPE_APP_SELF = 3;
+
 }

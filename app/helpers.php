@@ -534,6 +534,7 @@ if (! function_exists('trans_push_notice_notification_type')) {
         $map = [
             1 => '阅读发现',
             2 => '公告文章',
+            3 => 'APP内页'
         ];
 
         if($status==='all'){

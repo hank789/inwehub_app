@@ -34,10 +34,13 @@
                                 <label>文章类型</label>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="notification_type" value="1" @if($notice->notification_type===1) checked @endif /> 阅读发现
+                                        <input type="radio" name="notification_type" value="1" @if($notice->notification_type===1) checked @endif /> 阅读发现(首页阅读推荐id)
                                     </label>&nbsp;&nbsp;
                                     <label>
-                                        <input type="radio" name="notification_type" value="2" @if($notice->notification_type===2) checked @endif /> 公告文章
+                                        <input type="radio" name="notification_type" value="2" @if($notice->notification_type===2) checked @endif /> 公告文章(外部url)
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="notification_type" value="3" @if($notice->notification_type===3) checked @endif /> app内页(内页地址)
                                     </label>
                                 </div>
                             </div>
