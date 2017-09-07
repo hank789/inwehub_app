@@ -75,7 +75,7 @@ class PushNoticeController extends AdminController
             case PushNotice::PUSH_NOTIFICATION_TYPE_READHUB:
                 $recommendation = Submission::where('id',$request->input('url'))->where('recommend_status','>=',Submission::RECOMMEND_STATUS_PENDING)->first();;
                 if(!$recommendation){
-                    return $this->error(route('admin.operate.pushNotice.edit'),'推荐不存在，请核实');
+                    return $this->error(route('admin.operate.pushNotice.edit',['id'=>$request->get('id')]),'推荐不存在，请核实');
                 }
                 break;
         }
