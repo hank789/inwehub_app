@@ -70,7 +70,7 @@ class SystemController extends Controller {
 
     public function appVersion(Request $request){
         $app_uuid = $request->input('app_uuid');
-        if($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,2,1)){
+        if($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,5,1)){
             return self::createJsonData(true,[
                 'app_version'           => 0,
                 'is_ios_force'          => 0,
