@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         Commands\User\GenUuid::class,
         Commands\User\CheckRgCode::class,
         Commands\Activity\CheckCoupon::class,
+        Commands\User\RefreshUserLoginToken::class,
 
         //阅读站
         Commands\Readhub\InitUser::class,
