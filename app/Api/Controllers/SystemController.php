@@ -9,6 +9,7 @@ use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\FuncZan;
 use App\Models\AppVersion;
 use App\Models\UserDevice;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
 
@@ -67,7 +68,19 @@ class SystemController extends Controller {
         return self::createJsonData(true);
     }
 
-    public function appVersion(){
+    public function appVersion(Request $request){
+        $app_uuid = $request->input('app_uuid');
+        if($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,2,1)){
+            return self::createJsonData(true,[
+                'app_version'           => 0,
+                'is_ios_force'          => 0,
+                'is_android_force'      => 0,
+                'package_url'           => '',
+                'update_msg'            => '',
+                'ios_force_update_url'  => '',
+                'android_force_update_url' => ''
+            ]);
+        }
         $last = AppVersion::where('status',1)->orderBy('app_version','desc')->first();
 
         $ios_force_update_url = 'https://www.pgyer.com/FLBT';
