@@ -27,6 +27,7 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
+                                        <th>ID</th>
                                         <th>排序</th>
                                         <th>标题</th>
                                         <th>封面图片</th>
@@ -38,6 +39,7 @@
                                     @foreach($recommendations as $recommendation)
                                         <tr>
                                             <td><input type="checkbox" value="{{ $recommendation->id }}" name="ids[]"/></td>
+                                            <td>{{ $recommendation->id }}</td>
                                             <td>{{ $recommendation->recommend_sort }}</td>
                                             <td>{{ $recommendation->title }}</td>
                                             <td><img width="100" height="100" src="{{ $recommendation->data['img'] ??'' }}"></td>
