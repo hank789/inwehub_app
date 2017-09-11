@@ -6,6 +6,7 @@ use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
+use App\Logic\TaskLogic;
 use App\Logic\WechatNotice;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
@@ -309,6 +310,7 @@ class QuestionController extends Controller
             //首次提问
             if($loginUser->userData->questions == 1){
                 $this->credit($request->user()->id,Credit::KEY_FIRST_ASK,$question->id,$question->title);
+                TaskLogic::finishTask('newbie_ask',0,'newbie_ask',[$request->user()->id]);
             } else {
                 $this->credit($request->user()->id,Credit::KEY_ASK,$question->id,$question->title);
             }

@@ -89,7 +89,7 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
             return [
                 'title' => '恭喜您升级到L'.$next_level,
                 'body'  => '',
-                'payload' => ['object_type'=>'notification_level_up','object_id'=>$notifiable->id],
+                'payload' => ['object_type'=>'notification_level_up','object_id'=>$next_level],
             ];
         } else {
             return null;
