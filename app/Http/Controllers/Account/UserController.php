@@ -57,10 +57,9 @@ class UserController extends Controller
             {
                 //登陆事件通知
                 event(new UserLoggedIn($request->user()));
-                if($this->credit($request->user()->id,'login',Setting()->get('coins_login'),Setting()->get('credits_login'))){
-                    $message = '登陆成功! '.get_credit_message(Setting()->get('credits_login'),Setting()->get('coins_login'));
-                   return $this->success(route('website.index'),$message);
-                }
+                $message = '登陆成功! ';
+                return $this->success(route('website.index'),$message);
+
 
                 /*认证成功后跳转到首页*/
                 return redirect()->to(route('admin.account.login'));

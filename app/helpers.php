@@ -673,10 +673,10 @@ if( ! function_exists('get_credit_message')){
     function get_credit_message($credits,$coins){
         $messages = [];
         if( $credits != 0 ){
-            $messages[] = '经验 '.integer_string($credits);
+            $messages[] = '成长值 '.integer_string($credits);
         }
         if( $coins != 0 ){
-            $messages[] = '金币 '.integer_string($coins);
+            $messages[] = '贡献值 '.integer_string($coins);
         }
         return implode("，",$messages);
     }

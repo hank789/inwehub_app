@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Credit;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -9,6 +10,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Models\Notification as NotificationModel;
+use App\Events\Frontend\System\Credit as CreditEvent;
+
 
 class NotifyInwehub implements ShouldQueue
 {
@@ -46,6 +49,16 @@ class NotifyInwehub implements ShouldQueue
     {
         $user = User::find($this->user_id);
         $class = $this->type;
+        switch ('class'){
+            case 'NewComment':
+                event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_COMMENT),$this->message['commnet_id'],''));
+                return;
+                break;
+            case 'NewSubmission':
+                event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$this->message['submission_id'],''));
+                return;
+                break;
+        }
         $this->message['notification_type'] = NotificationModel::NOTIFICATION_TYPE_READ;
         if (class_exists($class)) {
             $user->notify(new $class($this->user_id,$this->message));

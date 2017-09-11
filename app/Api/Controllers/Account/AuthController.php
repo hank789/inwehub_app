@@ -6,6 +6,7 @@ use App\Events\Frontend\Auth\UserLoggedOut;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
+use App\Models\Credit;
 use App\Models\LoginRecord;
 use App\Models\Readhub\ReadHubUser;
 use App\Models\Tag;
@@ -141,7 +142,7 @@ class AuthController extends Controller
             //登陆事件通知
             event(new UserLoggedIn($user));
             $message = 'ok';
-            if($this->credit($user->id,'login')){
+            if($this->credit($user->id,Credit::KEY_LOGIN)){
                 $message = '登陆成功! ';
             }
             // 登录记录
@@ -266,7 +267,7 @@ class AuthController extends Controller
             $rcode->save();
         }
         $message = '注册成功!';
-        $this->credit($user->id,'register');
+        $this->credit($user->id,Credit::KEY_REGISTER);
 
         // read站点同步注册用户
         ReadHubUser::initUser($user);
@@ -423,7 +424,7 @@ class AuthController extends Controller
         $oauthData->user_id = $user->id;
         $oauthData->save();
         $message = '注册成功!';
-        $this->credit($user->id,'register');
+        $this->credit($user->id,Credit::KEY_REGISTER);
 
         // read站点同步注册用户
         ReadHubUser::initUser(User::find($user->id));

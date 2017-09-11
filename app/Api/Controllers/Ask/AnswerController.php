@@ -8,6 +8,7 @@ use App\Logic\QuillLogic;
 use App\Logic\WechatNotice;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Credit;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Settlement;
@@ -163,12 +164,14 @@ class AnswerController extends Controller
 
                 $this->counter( 'answer_num_'. $answer->user_id , 1 , 3600 );
                 $message = '回答成功!';
-                /*记录积分*/
-                $this->credit($request->user()->id,'answer',$answer->id,$answer->getContentText());
+
                 //首次回答额外积分
                 if($loginUser->userData->answers == 1)
                 {
-                    $this->credit($request->user()->id,'first_answer',$answer->id,$answer->getContentText());
+                    $this->credit($request->user()->id,Credit::KEY_FIRST_ANSWER,$answer->id,$answer->getContentText());
+                } else {
+                    /*记录积分*/
+                    $this->credit($request->user()->id,Credit::KEY_ANSWER,$answer->id,$answer->getContentText());
                 }
 
                 //进入结算中心

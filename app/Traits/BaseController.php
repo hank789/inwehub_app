@@ -47,7 +47,7 @@ trait BaseController {
             $count = Cache::increment('account_info_complete_credit:'.$uid);
         }
         if ($count == 1){
-            $this->credit($uid,'user_info_complete');
+            $this->credit($uid,Credit::KEY_USER_INFO_COMPLETE);
         }
     }
 

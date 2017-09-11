@@ -10,6 +10,7 @@ use App\Logic\WechatNotice;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
 use App\Models\Category;
+use App\Models\Credit;
 use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
@@ -305,10 +306,11 @@ class QuestionController extends Controller
             /*用户提问数+1*/
             $loginUser->userData()->increment('questions');
             UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'questions');
-            $this->credit($request->user()->id,'ask',$question->id,$question->title);
             //首次提问
             if($loginUser->userData->questions == 1){
-                $this->credit($request->user()->id,'first_ask',$question->id,$question->title);
+                $this->credit($request->user()->id,Credit::KEY_FIRST_ASK,$question->id,$question->title);
+            } else {
+                $this->credit($request->user()->id,Credit::KEY_ASK,$question->id,$question->title);
             }
             //1元优惠使用红包
             if($price == 1){

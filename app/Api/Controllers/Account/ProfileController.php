@@ -6,6 +6,7 @@ use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Credit;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
@@ -402,7 +403,7 @@ class ProfileController extends Controller
         UserCache::delUserInfoCache($user_id);
         if($upload_count == 1){
             //只有首次上传头像才加积分
-            $this->credit($user_id,'upload_avatar');
+            $this->credit($user_id,Credit::KEY_UPLOAD_AVATAR);
         }
         $percent = $request->user()->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user_id,$percent);

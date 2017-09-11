@@ -11,6 +11,7 @@ use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\Push;
 use App\Models\UserData;
 use App\Models\UserDevice;
+use App\Notifications\IntegralLog;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
@@ -112,14 +113,17 @@ class SystemEventListener implements ShouldQueue
             }
             if($coins ==0 && $credits == 0) return false;
             DB::beginTransaction();
+            $user_data = UserData::find($user_id);
             /*记录详情数据*/
-            CreditModel::create([
+            $credit = CreditModel::create([
                 'user_id' => $user_id,
                 'action' => $action,
                 'source_id' => $source_id,
                 'source_subject' => $source_subject,
                 'coins' => $coins,
                 'credits' => $credits,
+                'current_coins' => $user_data->coins,
+                'current_credits' => $user_data->credits,
                 'created_at' => Carbon::now()
             ]);
 
@@ -127,6 +131,7 @@ class SystemEventListener implements ShouldQueue
             UserData::find($user_id)->increment('coins',$coins);
             UserData::find($user_id)->increment('credits',$credits);
             DB::commit();
+            $user_data->user->notify(new IntegralLog($user_id,$credit));
             return true;
         }catch (\Exception $e) {
             DB::rollBack();
