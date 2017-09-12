@@ -82,6 +82,8 @@ class ApiException extends Exception
     //企业模块响应码
     const PROJECT_NOT_FIND = 5000;
 
+    const ACTIVITY_TIME_OVER = 6000;
+
     public static $errorMessages = [
         //全局响应吗
         self::TOKEN_EXPIRED=>'token已过期',
@@ -146,6 +148,9 @@ class ApiException extends Exception
 
         //企业模块
         self::PROJECT_NOT_FIND => '需求不存在',
+
+        //活动模块
+        self::ACTIVITY_TIME_OVER => '活动已结束'
 
     ];
 

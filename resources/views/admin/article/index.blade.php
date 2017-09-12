@@ -1,10 +1,10 @@
 @extends('admin/public/layout')
-@section('title')文章管理@endsection
+@section('title')报名管理@endsection
 @section('content')
     <section class="content-header">
         <h1>
-            文章管理
-            <small>管理系统的所有文章</small>
+            活动管理
+            <small>管理系统的所有活动</small>
         </h1>
     </section>
     <section class="content">
@@ -66,7 +66,7 @@
                                         <th>标题</th>
                                         <th>分类</th>
                                         <th>作者</th>
-                                        <th>收藏/查看</th>
+                                        <th>报名</th>
                                         <th>时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
@@ -77,7 +77,7 @@
                                             <td><a href="{{ route('blog.article.detail',['id'=>$article->id]) }}" target="_blank">{{ $article->title }}</a></td>
                                             <td>@if($article->category) {{ $article->category->name }} @else 无 @endif</td>
                                             <td>{{ $article->user->name }}<span class="text-muted">[UID:{{ $article->user_id }}]</span></td>
-                                            <td>{{ $article->collections }} / {{ $article->views }}</td>
+                                            <td>{{ $article->collections }}</td>
                                             <td>{{ timestamp_format($article->created_at) }}</td>
                                             <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
                                             <td>
@@ -121,6 +121,6 @@
 @section('script')
     @include("admin.public.change_category_modal",['type'=>'articles','form_id'=>'item_form','form_action'=>route('admin.article.changeCategories')])
     <script type="text/javascript">
-        set_active_menu('manage_content',"{{ route('admin.article.index') }}");
+        set_active_menu('activity',"{{ route('admin.article.index') }}");
     </script>
 @endsection

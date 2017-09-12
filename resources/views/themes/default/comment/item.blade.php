@@ -1,7 +1,7 @@
 <div class="media">
     <div class="media-left">
         <a href="{{ route('auth.space.index',['user_id'=>$comment->user->id]) }}" target="_blank">
-            <img class="media-object avatar-27" alt="{{ $comment->user->name }}" src="{{ get_user_avatar($comment->user_id,'small') }}" >
+            <img class="media-object avatar-27" alt="{{ $comment->user->name }}" src="{{ $comment->user->avatar }}" >
         </a>
     </div>
     <div class="media-body">

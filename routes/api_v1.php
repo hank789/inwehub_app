@@ -228,6 +228,16 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','nam
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','namespace'=>'Activity'], function() {
     //获取红包
     Route::post('getCoupon', 'CouponController@getCoupon');
+    //活动列表
+    Route::post('activity/list', 'ActivityController@index');
+    //活动回复列表
+    Route::post('activity/commentList', 'ActivityController@commentList');
+    //活动报名
+    Route::post('activity/enroll', 'ActivityController@enroll');
+    //活动评论
+    Route::post('activity/commentCreate', 'ActivityController@commentStore');
+    //活动详情
+    Route::post('activity/detail', 'ActivityController@detail');
 });
 
 //企业

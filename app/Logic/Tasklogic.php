@@ -51,15 +51,17 @@ class TaskLogic {
      * @param $source_type
      * @param $source_id
      * @param $action
+     * @param $status
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public static function task($user_id,$source_type,$source_id,$action){
+    public static function task($user_id,$source_type,$source_id,$action,$status=0){
         try{
             return Task::create([
                 'user_id' => $user_id,
                 'source_id' => $source_id,
                 'source_type' => $source_type,
-                'action' => $action
+                'action' => $action,
+                'status' => $status
             ]);
         }catch (\Exception $e){
             exit($e->getMessage());

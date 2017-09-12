@@ -85,7 +85,7 @@ class ArticleController extends AdminController
     {
         $articleIds = $request->input('id');
         Article::whereIn('id',$articleIds)->update(['status'=>1]);
-        return $this->success(route('admin.article.index').'?status=0','文章审核成功');
+        return $this->success(route('admin.article.index').'?status=0','活动审核成功');
 
     }
 
@@ -109,6 +109,6 @@ class ArticleController extends AdminController
     public function destroy(Request $request)
     {
         Article::destroy($request->input('id'));
-        return $this->success(route('admin.article.index'),'文章删除成功');
+        return $this->success(route('admin.article.index'),'活动删除成功');
     }
 }

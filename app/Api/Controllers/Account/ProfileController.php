@@ -14,6 +14,7 @@ use App\Models\Readhub\Comment;
 use App\Models\Readhub\ReadHubUser;
 use App\Models\Readhub\Submission;
 use App\Models\Tag;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\UserOauth;
 use App\Models\UserTag;
@@ -127,6 +128,20 @@ class ProfileController extends Controller
         $info['user_level'] = $user->getUserLevel();
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
+        $info['newbie_unfinish_tasks'] = [];
+        $newbie_readhub_comment_task = Task::where('user_id',$user->id)->where('source_type','newbie_readhub_comment')->where('status',1)->first();
+        if (!$newbie_readhub_comment_task) {
+            $info['newbie_unfinish_tasks'][] = 'readhub_comment';
+        }
+        $newbie_ask_task = Task::where('user_id',$user->id)->where('source_type','newbie_ask')->where('status',1)->first();
+        if (!$newbie_ask_task) {
+            $info['newbie_unfinish_tasks'][] = 'ask';
+        }
+
+        $newbie_complete_userinfo_task = Task::where('user_id',$user->id)->where('source_type','newbie_complete_userinfo')->where('status',1)->first();
+        if (!$newbie_complete_userinfo_task) {
+            $info['newbie_unfinish_tasks'][] = 'complete_userinfo';
+        }
 
         $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
         $job_desc = '';

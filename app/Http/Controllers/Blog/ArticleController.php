@@ -50,13 +50,6 @@ class ArticleController extends Controller
             return $this->error(route('website.index'),'操作失败！您的邮箱还未验证，验证后才能进行该操作！');
         }
 
-        /*防灌水检查*/
-        if( Setting()->get('article_limit_num') > 0 ){
-            $questionCount = $this->counter('article_num_'. $loginUser->id);
-            if( $questionCount > Setting()->get('article_limit_num')){
-                return $this->showErrorMsg(route('website.index'),'你已超过每小时文章发表限制数'.Setting()->get('article_limit_num').'，请稍后再进行该操作，如有疑问请联系管理员!');
-            }
-        }
 
         $request->flash();
 
@@ -73,7 +66,7 @@ class ArticleController extends Controller
             'title'        => trim($request->input('title')),
             'content'  => clean($request->input('content')),
             'summary'  => $request->input('summary'),
-            'status'       => 1,
+            'status'       => 0,
         ];
 
         if($request->hasFile('logo')){
@@ -94,36 +87,18 @@ class ArticleController extends Controller
         /*判断问题是否添加成功*/
         if($article){
 
-            /*添加标签*/
-            $tagString = trim($request->input('tags'));
-            Tag::multiSave($tagString,$article);
-
-            //记录动态
-            $this->doing($article->user_id,'create_article',get_class($article),$article->id,$article->title,$article->summery);
-
-            /*用户提问数+1*/
-            $loginUser->userData()->increment('articles');
-
-            UserTag::multiIncrement($loginUser->id,$article->tags()->get(),'articles');
-
-
-            $this->credit($request->user()->id,'create_article',Setting()->get('coins_write_article'),Setting()->get('credits_write_article'),$article->id,$article->title);
-
             if($article->status === 1 ){
-                $message = '文章发布成功! '.get_credit_message(Setting()->get('credits_write_article'),Setting()->get('coins_write_article'));
+                $message = '活动发布成功! ';
             }else{
-                $message = '文章发布成功！为了确保文章的质量，我们会对您发布的文章进行审核。请耐心等待......';
+                $message = '活动发布成功！为了确保活动的质量，我们会对您发布的活动进行审核。请耐心等待......';
             }
-
-            $this->counter( 'article_num_'. $article->user_id , 1 , 3600 );
-
 
             return $this->success(route('blog.article.detail',['id'=>$article->id]),$message);
 
 
         }
 
-        return  $this->error("文章发布失败，请稍后再试",route('website.index'));
+        return  $this->error("活动发布失败，请稍后再试",route('website.index'));
 
     }
 
@@ -140,26 +115,12 @@ class ArticleController extends Controller
         /*问题查看数+1*/
         $article->increment('views');
 
-        $topUsers = Cache::remember('article_top_article_users',10,function() {
-            return  UserData::top('articles',8);
-        });
-
-        /*相关问题*/
-        $relatedQuestions = Question::correlations($article->tags()->pluck('tag_id'));
-
         /*相关文章*/
         $relatedArticles = Article::correlations($article->tags()->pluck('tag_id'));
 
-        /*设置通知为已读*/
-        if($request->user()){
-            $this->readNotifications($article->id,'article');
-        }
 
         return view("theme::article.show")->with('article',$article)
-                                          ->with('topUsers',$topUsers)
-                                          ->with('relatedQuestions',$relatedQuestions)
                                           ->with('relatedArticles',$relatedArticles);
-        ;
     }
 
     /**
