@@ -141,6 +141,10 @@ Route::Group(['namespace'=>'Account'],function(){
 
         Route::get('collect/{source_type}/{source_id}',['as'=>'auth.collection.store','uses'=>'CollectionController@store'])->where(['source_type'=>'(question|article)','source_id'=>'[0-9]+']);
 
+        Route::get('collect/article/{source_id}/verify',['as'=>'auth.collection.verify','uses'=>'CollectionController@verify'])->where(['source_id'=>'[0-9]+']);
+        Route::post('collect/article/unverify',['as'=>'auth.collection.unverify','uses'=>'CollectionController@unverify']);
+
+
         /*关注问题、人、标签*/
         Route::get('follow/{source_type}/{source_id}',['as'=>'auth.attention.store','uses'=>'AttentionController@store'])->where(['source_type'=>'(question|tag|user)','source_id'=>'[0-9]+']);
 

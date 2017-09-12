@@ -16,12 +16,17 @@ class SeedAcCategoryData extends Migration
         /*插入默认分类*/
         DB::table('categories')->insert([
             //问题分类
-            ['id'=>30,'name' => '活动报名','slug'=>'activity_enroll','parent_id' =>'0','grade'=>'1','sort' =>'0','status'=>'1','type'=>'tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
-            ['id'=>31,'name' => '项目机遇','slug'=>'project_enroll','parent_id' =>'0','grade'=>'1','sort' =>'0','status'=>'1','type'=>'tags','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
+            ['id'=>30,'name' => '活动报名','slug'=>'activity_enroll','parent_id' =>'0','grade'=>'1','sort' =>'0','status'=>'1','type'=>'tags,articles','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
+            ['id'=>31,'name' => '项目机遇','slug'=>'project_enroll','parent_id' =>'0','grade'=>'1','sort' =>'0','status'=>'1','type'=>'tags,articles','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
         ]);
 
         Schema::table('collections', function (Blueprint $table) {
-            $table->integer('status')->default(1)->after('subject');
+            $table->dropColumn('subject');
+        });
+
+        Schema::table('collections', function (Blueprint $table) {
+            $table->integer('status')->default(1)->after('source_type');
+            $table->string('subject',1024);
         });
     }
 

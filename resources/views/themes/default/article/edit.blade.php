@@ -32,7 +32,7 @@
                 <input type="file" name="logo" />
                 @if($article->logo)
                 <div style="margin-top: 10px;">
-                    <img src="{{ route('website.image.show',['image_name'=>$article->logo]) }}" />
+                    <img src="{{ $article->logo }}" />
                 </div>
                 @endif
                 @if($errors->has('logo')) <p class="help-block">{{ $errors->first('logo') }}</p> @endif

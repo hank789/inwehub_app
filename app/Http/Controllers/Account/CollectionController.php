@@ -56,6 +56,35 @@ class CollectionController extends Controller
         }
 
         return response('collected');
+    }
+
+    public function verify($source_id,Request $request)
+    {
+        $source  = Collection::find($source_id);
+
+        if(!$source){
+            abort(404);
+        }
+        $source->status = 2;
+        $source->subject = $request->input('message');
+        $source->save();
+
+        return response('ok');
+    }
+
+    public function unverify(Request $request)
+    {
+        $source  = Collection::find($request->input('collect_id'));
+
+        if(!$source){
+            abort(404);
+        }
+
+        $source->status = 3;
+        $source->subject = $request->input('message');
+        $source->save();
+
+        return $this->success(route('blog.article.detail',['id'=>$source->source_id]),"审核成功");
 
 
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -25,6 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Collection extends Model
 {
+    use BelongsToUserTrait;
+
     protected $table = 'collections';
     protected $fillable = ['user_id','source_id','source_type','subject'];
 

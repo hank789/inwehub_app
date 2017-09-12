@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Blog;
 
 use App\Models\Article;
+use App\Models\Collection;
 use App\Models\Question;
 use App\Models\Tag;
 use App\Models\UserData;
@@ -77,8 +78,9 @@ class ArticleController extends Controller
             $file = $request->file('logo');
             $extension = $file->getClientOriginalExtension();
             $filePath = 'articles/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
-            Storage::disk('local')->put($filePath,File::get($file));
-            $data['logo'] = str_replace("/","-",$filePath);
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $data['logo'] = $img_url;
         }
 
 
@@ -118,9 +120,13 @@ class ArticleController extends Controller
         /*相关文章*/
         $relatedArticles = Article::correlations($article->tags()->pluck('tag_id'));
 
+        //收藏人
+        $collectors = Collection::where('source_id',$id)->where('source_type',get_class($article))->get();
 
-        return view("theme::article.show")->with('article',$article)
-                                          ->with('relatedArticles',$relatedArticles);
+        return view("theme::article.show")
+            ->with('article',$article)
+            ->with('collectors',$collectors)
+            ->with('relatedArticles',$relatedArticles);
     }
 
     /**
@@ -194,16 +200,14 @@ class ArticleController extends Controller
             $file = $request->file('logo');
             $extension = $file->getClientOriginalExtension();
             $filePath = 'articles/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
-            Storage::disk('local')->put($filePath,File::get($file));
-            $article->logo = str_replace("/","-",$filePath);
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $article->logo = $img_url;
         }
 
 
         $article->save();
-        $tagString = trim($request->input('tags'));
 
-        /*更新标签*/
-        Tag::multiSave($tagString,$article);
 
         return $this->success(route('blog.article.detail',['id'=>$article->id]),"文章编辑成功");
 

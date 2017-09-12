@@ -45,12 +45,29 @@
                     <button id="support-button" class="btn btn-success btn-lg mr-5" data-source_id="{{ $article->id }}" data-source_type="article"  data-support_num="{{ $article->supports }}">报名人数：{{ $article->collections }}</button>
 
                 </div>
-                @if(Setting()->get('website_share_code')!='')
-                <div class="mb-10">
-                    {!! Setting()->get('website_share_code')  !!}
+
+                <div class="row row-horizon">
+                    @foreach($collectors as $collector)
+                        <div class="col-sm-2 col-md-2">
+                            <div class="thumbnail">
+                                <a href="">
+                                    <img class="avatar-32" alt="{{ $collector->user->name }}" src="{{ $collector->user->avatar }}">
+                                </a>
+                                <div class="caption">
+                                    <p class="text-center">{{ $collector->user->name }}</p>
+                                    <p class="text-center small" id="confirm-collect-rel-{{ $collector->id }}">{{ trans_article_collect_status($collector->status) }}</p>
+                                    <p class="text-center">
+                                        <button class="btn btn-primary btn-xs btn-verify-collect" data-toggle="tooltip" title="审核通过" data-source_id="{{ $collector->id }}"><i class="fa fa-check-square-o"></i></button>
+                                        <button class="btn btn-danger btn-xs btn-unverify-collect" data-toggle="tooltip" title="审核不通过" data-source_id="{{ $collector->id }}"><i class="fa fa-minus-square-o"></i></button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
                 </div>
-                @endif
             </div>
+
             <div class="widget-relation">
                 <div class="row">
                     <div class="col-md-6">
@@ -67,7 +84,6 @@
                         </ul>
                     </div>
                 </div>
-
             </div>
             <div class="widget-answers mt-15">
                 <h2 class="h4 post-title">{{ $article->comments }} 条评论</h2>
@@ -87,6 +103,30 @@
                         @endif
                         <p class="text-muted">{{ $article->user->userData->articles }} 篇文章</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="verify_modal" tabindex="-1"  role="dialog" aria-labelledby="change_category_modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">反馈信息</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="verify_modal_from" method="POST" action="{{ route('auth.collection.unverify') }}">
+                        {{ csrf_field() }}
+                        <input type="hidden" id="collect_id" name="collect_id" />
+                        <div class="form-group">
+                            <textarea name="message" id="message" placeholder="写下你的反馈" class="form-control"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="verify_modal_submit">确认</button>
                 </div>
             </div>
         </div>
@@ -111,6 +151,33 @@
                 add_comment(token,source_type,source_id,content,to_user_id);
                 $("#comment-content-"+source_id+"").val('');
             });
+
+            $("#verify_modal_submit").click(function(){
+                var message = $("#message").val();
+
+                if( message ){
+                    $("#verify_modal_from").submit();
+                }else{
+                    alert("您没有输入任何内容");
+                }
+            });
+
+            $(".thumbnail .btn-verify-collect").on("click",function(){
+                var btn_support = $(this);
+                var source_id = btn_support.data('source_id');
+                $.get('/manager/collect/article/'+source_id+'/verify',function(msg){
+                    console.log(msg);
+                    $("#confirm-collect-rel-" + source_id).html('审核通过');
+                });
+            });
+
+            $(".thumbnail .btn-unverify-collect").on("click",function(){
+                var btn_support = $(this);
+                var source_id = btn_support.data('source_id');
+                $('#collect_id').val(source_id);
+                $('#verify_modal').modal('show');
+            });
+
 
         });
     </script>

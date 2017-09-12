@@ -550,6 +550,28 @@ if (! function_exists('trans_push_notice_notification_type')) {
     }
 }
 
+if (! function_exists('trans_article_collect_status')) {
+
+    function trans_article_collect_status($status){
+        $map = [
+            1 => '待审核',
+            2 => '审核通过',
+            3 => '审核不通过'
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+    }
+}
+
 /*回答状态文字定义*/
 if (! function_exists('trans_answer_status')) {
 
