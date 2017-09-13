@@ -42,7 +42,7 @@ class ActivityController extends Controller {
         }
         $articles = Article::newest($category->id,10);
         $return = $articles->toArray();
-        unset($return['data']);
+        $return['data'] = [];
 
         foreach ($articles as $article) {
             $return['data'][] = [
@@ -143,7 +143,7 @@ class ActivityController extends Controller {
 
         $comments = $source->comments()->orderBy('created_at','desc')->simplePaginate(10);
         $return = $comments->toArray();
-        unset($return['data']);
+        $return['data'] = [];
 
         foreach ($comments as $comment) {
             $return['data'][] = [
