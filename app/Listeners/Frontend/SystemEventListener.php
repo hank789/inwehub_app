@@ -136,7 +136,7 @@ class SystemEventListener implements ShouldQueue
             $user = User::find($user_id);
             //更新用户等级
             $next_level = $user->getUserLevel();
-            if ($next_level > $user->userData->user_level) {
+            if ($next_level != $user->userData->user_level) {
                 $user->userData->user_level = $next_level;
                 $user->userData->save();
                 ReadHubUser::syncUser($user);
