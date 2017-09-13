@@ -229,15 +229,15 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','na
     //获取红包
     Route::post('getCoupon', 'CouponController@getCoupon');
     //活动列表
-    Route::post('activity/list', 'ActivityController@index');
+    Route::post('list', 'ActivityController@index');
     //活动回复列表
-    Route::post('activity/commentList', 'ActivityController@commentList');
+    Route::post('commentList', 'ActivityController@commentList');
     //活动报名
-    Route::post('activity/enroll', 'ActivityController@enroll');
+    Route::post('enroll', 'ActivityController@enroll');
     //活动评论
-    Route::post('activity/commentCreate', 'ActivityController@commentStore');
+    Route::post('commentCreate', 'ActivityController@commentStore');
     //活动详情
-    Route::post('activity/detail', 'ActivityController@detail');
+    Route::post('detail', 'ActivityController@detail');
 });
 
 //企业
