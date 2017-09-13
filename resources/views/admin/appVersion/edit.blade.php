@@ -31,7 +31,9 @@
                                 <label for="is_force">是否ios强更：</label>
                                 <div class="radio">
                                     <label><input type="radio" name="is_ios_force" value="0" @if ( $version->is_ios_force == 0) checked @endif >不强更(热更新,用户无感知)</label>&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <label><input type="radio" name="is_ios_force" value="1" @if ( $version->is_ios_force == 1) checked @endif>强更(需要强制跳转到App store下载)</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label><input type="radio" name="is_ios_force" value="1" @if ( $version->is_ios_force == 1) checked @endif>强更(需要强制跳转到App store下载)</label>&nbsp;&nbsp;
+                                    <label><input type="radio" name="is_ios_force" value="2" @if ( $version->is_ios_force == 2) checked @endif>不更新</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;
                                 </div>
                             </div>
 
@@ -40,6 +42,7 @@
                                 <div class="radio">
                                     <label><input type="radio" name="is_android_force" value="0" @if ( $version->is_android_force == 0) checked @endif >不强更(热更新,用户无感知)</label>&nbsp;&nbsp;&nbsp;&nbsp;
                                     <label><input type="radio" name="is_android_force" value="1" @if ( $version->is_android_force == 1) checked @endif>强更(需要强制跳转到安卓市场下载)</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label><input type="radio" name="is_android_force" value="2" @if ( $version->is_android_force == 2) checked @endif>不更新</label>&nbsp;&nbsp;&nbsp;&nbsp;
                                 </div>
                             </div>
 
