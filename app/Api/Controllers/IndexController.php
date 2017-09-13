@@ -1,7 +1,9 @@
 <?php namespace App\Api\Controllers;
 use App\Models\Activity\Coupon;
+use App\Models\Article;
 use App\Models\Attention;
 use App\Models\Authentication;
+use App\Models\Category;
 use App\Models\Notice;
 use App\Models\Readhub\Submission;
 use App\Models\RecommendQa;
@@ -119,6 +121,19 @@ class IndexController extends Controller {
             $recommend_read[] = $item;
         }
 
+
+        $recommend_ac_list = Article::where('status','>',0)->orderBy('supports','DESC')->get()->take(3)->toArray();
+        $recommend_activity = [];
+        foreach ($recommend_ac_list as $recommend_ac){
+            $category = Category::find($recommend_ac['category_id']);
+
+            $recommend_activity[] = [
+              'id' => $recommend_ac['id'],
+              'image_url' => $recommend_ac['logo'],
+              'activity_type' => $category->slug == 'activity_enroll' ? 1 : 2
+            ];
+        }
+
         $data = [
             'recommend_expert_name' => Setting()->get('recommend_expert_name','郭小红'),//专家姓名
             'recommend_expert_description' => Setting()->get('recommend_expert_description','SAP咨询行业15年从业经历，熟悉离散制造行业，专注pp等模块，是一位非常自身的超级顾问'),//专家介绍
@@ -131,6 +146,7 @@ class IndexController extends Controller {
             'notices' => $notices,
             'recommend_experts' => $cache_experts,
             'recommend_read' => $recommend_read,
+            'recommend_activity' => $recommend_activity,
             'is_expert' => $is_expert,
             'expert_apply_status' => $expert_apply_status,
             'expert_apply_tips' => $expert_apply_tips

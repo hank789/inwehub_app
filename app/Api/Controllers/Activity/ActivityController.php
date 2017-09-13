@@ -27,7 +27,6 @@ class ActivityController extends Controller {
             case 1:
                 // 活动
                 $category = Category::where("slug","=",'activity_enroll')->first();
-                $currentCategoryId = $category->id;
                 break;
             case 2:
                 // 机遇
@@ -50,7 +49,7 @@ class ActivityController extends Controller {
                 'image_url' => $article->logo,
                 'title'     => $article->title,
                 'status'      => $article->status,
-                'created_at'  => $article->created_at
+                'created_at'  => date('Y/m/d',strtotime($article->created_at))
             ];
         }
         return self::createJsonData(true, $return);
@@ -113,7 +112,7 @@ class ActivityController extends Controller {
             'title'     => $source->title,
             'description' => $source->content,
             'status'      => $source->status,
-            'created_at'  => $source->created_at
+            'created_at'  => date('Y/m/d',strtotime($source->created_at))
         ];
         $userCollect = $request->user()->isCollected(get_class($source),$source->id);
         $feedback = [
@@ -152,7 +151,7 @@ class ActivityController extends Controller {
                 'user_name' => $comment->user->name,
                 'user_avatar_url' => $comment->user->avatar,
                 'content'   => $comment->content,
-                'created_at' => $comment->created_at
+                'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
             ];
         }
 
