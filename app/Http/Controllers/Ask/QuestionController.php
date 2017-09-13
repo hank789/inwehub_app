@@ -336,10 +336,6 @@ class QuestionController extends Controller
             return $this->ajaxError(50005,'被邀请用户不存在');
         }
 
-        if(!$toUser->allowedEmailNotify('invite_answer')){
-            return $this->ajaxError(50006,'邀请人设置为不允许被邀请回答');
-        }
-
         //是否设置了邀请者必须为专家
         if(Setting()->get('is_inviter_must_expert',1) == 1){
             if(($toUser->authentication && $toUser->authentication->status === 1)){
