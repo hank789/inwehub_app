@@ -39,16 +39,43 @@ class ActivityController extends Controller {
         if(!$category){
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        $articles = Article::newest($category->id,10);
-        $return = $articles->toArray();
+        $is_mine = $request->input('is_mine');
+
+        if ($is_mine) {
+            $articles = Collection::where('collections.user_id',$request->user()->id)->where('collections.source_type','App\Models\Article')->leftJoin('articles','collections.source_id','=','articles.id')->select('articles.*','collections.status as c_status')->orderBy('articles.id','DESC')->paginate(10);
+            $return = $articles->toArray();
+        } else {
+            $articles = Article::where('articles.status','>',0)->where('collections.source_type','App\Models\Article')->leftJoin('collections','articles.id','=','collections.source_id')->select('articles.*','collections.status as c_status')->orderBy('articles.id','DESC')->paginate(10);
+            $return = $articles->toArray();
+        }
+
         $return['data'] = [];
 
         foreach ($articles as $article) {
+            $status = $article->status;
+            switch ($article->c_status) {
+                case 1:
+                    // 报名处理中
+                    $status = 3;
+                    break;
+                case 2:
+                    // 报名成功
+                    $status = 4;
+                    break;
+                case 3:
+                    // 报名失败
+                    if ($status != Article::ARTICLE_STATUS_CLOSED) $status = 5;
+                    break;
+                case 4:
+                    // 重新报名
+                    if ($status != Article::ARTICLE_STATUS_CLOSED) $status = 6;
+                    break;
+            }
             $return['data'][] = [
                 'id' => $article->id,
                 'image_url' => $article->logo,
                 'title'     => $article->title,
-                'status'      => $article->status,
+                'status'      => $status,
                 'created_at'  => date('Y/m/d',strtotime($article->created_at))
             ];
         }
@@ -106,22 +133,40 @@ class ActivityController extends Controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
+        $status = $source->status;
         $info = [
             'id' => $source->id,
             'image_url' => $source->logo,
             'title'     => $source->title,
             'description' => $source->content,
-            'status'      => $source->status,
+            'status'      => $status,
             'created_at'  => date('Y/m/d',strtotime($source->created_at))
         ];
         $userCollect = $request->user()->isCollected(get_class($source),$source->id);
         $feedback = [
-            'status' => 0,
             'description' => ''
         ];
         if ($userCollect) {
             $feedback['description'] = $userCollect->subject;
-            $feedback['status'] = $userCollect->status;
+            switch ($userCollect->status) {
+                case 1:
+                    // 报名处理中
+                    $status = 3;
+                    break;
+                case 2:
+                    // 报名成功
+                    $status = 4;
+                    break;
+                case 3:
+                    // 报名失败
+                    if ($status != Article::ARTICLE_STATUS_CLOSED) $status = 5;
+                    break;
+                case 4:
+                    // 重新报名
+                    if ($status != Article::ARTICLE_STATUS_CLOSED) $status = 6;
+                    break;
+            }
+            $info['status'] = $status;
         }
 
         return self::createJsonData(true, ['info'=>$info,'feedback'=>$feedback]);

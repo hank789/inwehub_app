@@ -20,6 +20,10 @@ class SeedAcCategoryData extends Migration
             ['id'=>31,'name' => '项目机遇','slug'=>'project_enroll','parent_id' =>'0','grade'=>'1','sort' =>'0','status'=>'1','type'=>'tags,articles','created_at' => '2016-09-29 18:25:54','updated_at' => '2016-09-29 18:28:05'],
         ]);
 
+        Schema::table('articles', function (Blueprint $table) {
+            $table->string('deadline','20')->nullable()->after('device');
+        });
+
         Schema::table('collections', function (Blueprint $table) {
             $table->dropColumn('subject');
         });
