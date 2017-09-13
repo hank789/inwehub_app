@@ -65,7 +65,7 @@ class CollectionController extends Controller
         if(!$source){
             abort(404);
         }
-        $source->status = 2;
+        $source->status = Collection::COLLECT_STATUS_VERIFY;
         $source->subject = $request->input('message');
         $source->save();
 
@@ -80,8 +80,12 @@ class CollectionController extends Controller
             abort(404);
         }
 
-        $source->status = 3;
+        $source->status = Collection::COLLECT_STATUS_NEED_RE_ENROLL;
         $source->subject = $request->input('message');
+        if ($request->input('reject_enroll')) {
+            $source->status = Collection::COLLECT_STATUS_REJECT;
+        }
+
         $source->save();
 
         return $this->success(route('blog.article.detail',['id'=>$source->source_id]),"审核成功");

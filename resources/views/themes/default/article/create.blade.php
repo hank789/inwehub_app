@@ -47,6 +47,9 @@
                         @include('admin.category.option',['type'=>'articles','select_id'=>old('category_id',0),'root'=>false])
                     </select>
                 </div>
+                <div class="col-xs-4">
+                    <input type="text" name="deadline" class="form-control datepicker" placeholder="截止日期，留空永久有效:2017-01-02 13:00" value="{{ old('deadline','') }}" />
+                </div>
             </div>
 
             <div class="row mt-20">

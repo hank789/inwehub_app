@@ -54,19 +54,19 @@ class ActivityController extends Controller {
         foreach ($articles as $article) {
             $status = $article->status;
             switch ($article->c_status) {
-                case 1:
+                case Collection::COLLECT_STATUS_PENDING:
                     // 报名处理中
                     $status = 3;
                     break;
-                case 2:
+                case Collection::COLLECT_STATUS_VERIFY:
                     // 报名成功
                     $status = 4;
                     break;
-                case 3:
+                case Collection::COLLECT_STATUS_REJECT:
                     // 报名失败
                     if ($status != Article::ARTICLE_STATUS_CLOSED) $status = 5;
                     break;
-                case 4:
+                case Collection::COLLECT_STATUS_NEED_RE_ENROLL:
                     // 重新报名
                     if ($status != Article::ARTICLE_STATUS_CLOSED) $status = 6;
                     break;
@@ -94,9 +94,16 @@ class ActivityController extends Controller {
         if (!$source) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        if ($source->status == 2) {
+
+        if ($source->status == Article::ARTICLE_STATUS_CLOSED) {
             throw  new ApiException(ApiException::ACTIVITY_TIME_OVER);
         }
+        if ($source->deadline && time()>= strtotime($source->deadline)){
+            $source->status = Article::ARTICLE_STATUS_CLOSED;
+            $source->save();
+            throw  new ApiException(ApiException::ACTIVITY_TIME_OVER);
+        }
+
         $subject = '';
 
         /*不能多次收藏*/
@@ -133,6 +140,11 @@ class ActivityController extends Controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
+        if ($source->status != Article::ARTICLE_STATUS_CLOSED && $source->deadline && time()>= strtotime($source->deadline)){
+            $source->status = Article::ARTICLE_STATUS_CLOSED;
+            $source->save();
+        }
+
         $status = $source->status;
         $info = [
             'id' => $source->id,
@@ -149,19 +161,19 @@ class ActivityController extends Controller {
         if ($userCollect) {
             $feedback['description'] = $userCollect->subject;
             switch ($userCollect->status) {
-                case 1:
+                case Collection::COLLECT_STATUS_PENDING:
                     // 报名处理中
                     $status = 3;
                     break;
-                case 2:
+                case Collection::COLLECT_STATUS_VERIFY:
                     // 报名成功
                     $status = 4;
                     break;
-                case 3:
+                case Collection::COLLECT_STATUS_REJECT:
                     // 报名失败
                     if ($status != Article::ARTICLE_STATUS_CLOSED) $status = 5;
                     break;
-                case 4:
+                case Collection::COLLECT_STATUS_NEED_RE_ENROLL:
                     // 重新报名
                     if ($status != Article::ARTICLE_STATUS_CLOSED) $status = 6;
                     break;

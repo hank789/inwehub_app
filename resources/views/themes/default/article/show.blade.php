@@ -120,6 +120,9 @@
                         {{ csrf_field() }}
                         <input type="hidden" id="collect_id" name="collect_id" />
                         <div class="form-group">
+                            <input type="checkbox" name="reject_enroll">不允许重新报名
+                        </div>
+                        <div class="form-group">
                             <textarea name="message" id="message" placeholder="写下你的反馈" class="form-control"></textarea>
                         </div>
                     </form>

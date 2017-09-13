@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Blog;
 
+use App\Jobs\CloseActivity;
 use App\Models\Article;
 use App\Models\Collection;
 use App\Models\Question;
 use App\Models\Tag;
 use App\Models\UserData;
 use App\Models\UserTag;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -61,6 +63,8 @@ class ArticleController extends Controller
 
         $this->validate($request,$this->validateRules);
 
+        $deadline = $request->input('deadline');
+
         $data = [
             'user_id'      => $loginUser->id,
             'category_id'      => intval($request->input('category_id',0)),
@@ -68,6 +72,7 @@ class ArticleController extends Controller
             'content'  => clean($request->input('content')),
             'summary'  => $request->input('summary'),
             'status'       => 0,
+            'deadline' => $deadline
         ];
 
         if($request->hasFile('logo')){
@@ -187,10 +192,20 @@ class ArticleController extends Controller
 
         $this->validate($request,$this->validateRules);
 
+        $deadline = $request->input('deadline');
+        if ($deadline && time() >= strtotime($deadline)) {
+            $article->status = Article::ARTICLE_STATUS_CLOSED;
+        } elseif ($deadline && $article->status == Article::ARTICLE_STATUS_ONLINE) {
+            $this->dispatch((new CloseActivity($article_id))->delay(Carbon::createFromTimestamp(strtotime($deadline))));
+        }
+
         $article->title = trim($request->input('title'));
         $article->content = clean($request->input('content'));
         $article->summary = $request->input('summary');
         $article->category_id = $request->input('category_id',0);
+        $article->deadline = $deadline;
+
+
 
         if($request->hasFile('logo')){
             $validateRules = [

@@ -374,7 +374,8 @@ if (! function_exists('trans_common_status')) {
         $map = [
             0 => '待审核',
             1 => '已审核',
-           -1 => '已禁止'
+           -1 => '已禁止',
+            2 => '已结束'
         ];
 
         if($status==='all'){
@@ -556,7 +557,8 @@ if (! function_exists('trans_article_collect_status')) {
         $map = [
             1 => '待审核',
             2 => '审核通过',
-            3 => '审核不通过'
+            3 => '需要重新报名',
+            4 => '已拒绝'
         ];
 
         if($status==='all'){

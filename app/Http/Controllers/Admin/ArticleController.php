@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Jobs\CloseActivity;
 use App\Models\Article;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -85,6 +87,12 @@ class ArticleController extends AdminController
     {
         $articleIds = $request->input('id');
         Article::whereIn('id',$articleIds)->update(['status'=>1]);
+        foreach ($articleIds as $articleId) {
+            $article = Article::find($articleId);
+            if ($article->deadline) {
+                $this->dispatch((new CloseActivity($articleId))->delay(Carbon::createFromTimestamp(strtotime($article->deadline))));
+            }
+        }
         return $this->success(route('admin.article.index').'?status=0','活动审核成功');
 
     }

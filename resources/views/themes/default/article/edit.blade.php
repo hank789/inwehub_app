@@ -57,6 +57,9 @@
                         @include('admin.category.option',['type'=>'articles','select_id'=>$article->category_id,'root'=>false])
                     </select>
                 </div>
+                <div class="col-xs-4">
+                    <input type="text" name="deadline" class="form-control datepicker" placeholder="截止日期,留空永久有效:2017-01-02 13:00" value="{{ $article->deadline }}" />
+                </div>
             </div>
 
             <div class="row mt-20">
@@ -92,6 +95,7 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+
             var category_id = "{{ $article->category_id }}";
 
             $('#article_editor').summernote({
