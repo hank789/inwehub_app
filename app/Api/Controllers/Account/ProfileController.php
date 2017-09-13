@@ -125,7 +125,7 @@ class ProfileController extends Controller
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['tasks'] = $user->tasks->where('status',0)->count();
         $info['projects'] = $user->companyProjects->where('status','!=',0)->count();
-        $info['user_level'] = $user->getUserLevel();
+        $info['user_level'] = $user->userData->user_level;
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
         $info['newbie_unfinish_tasks'] = [];
@@ -258,7 +258,7 @@ class ProfileController extends Controller
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['projects'] = $user->companyProjects->count();
-        $info['user_level'] = $user->getUserLevel();
+        $info['user_level'] = $user->userData->user_level;
         $info['is_job_info_public'] = $user->userData->job_public;
         $info['is_project_info_public'] = $user->userData->project_public;
         $info['is_edu_info_public'] = $user->userData->edu_public;

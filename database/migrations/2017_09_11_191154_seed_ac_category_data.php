@@ -32,6 +32,10 @@ class SeedAcCategoryData extends Migration
             $table->integer('status')->default(1)->after('source_type');
             $table->string('subject',1024);
         });
+
+        Schema::table('user_data', function (Blueprint $table) {
+            $table->integer("user_level")->after('user_id')->default(1);;
+        });
     }
 
     /**

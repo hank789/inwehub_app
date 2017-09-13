@@ -9,6 +9,8 @@ use App\Models\Credit as CreditModel;
 use App\Events\Frontend\System\Credit;
 use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\Push;
+use App\Models\Readhub\ReadHubUser;
+use App\Models\User;
 use App\Models\UserData;
 use App\Models\UserDevice;
 use App\Notifications\IntegralLog;
@@ -131,6 +133,14 @@ class SystemEventListener implements ShouldQueue
             UserData::find($user_id)->increment('coins',$coins);
             UserData::find($user_id)->increment('credits',$credits);
             DB::commit();
+            $user = User::find($user_id);
+            //更新用户等级
+            $next_level = $user->getUserLevel();
+            if ($next_level > $user->userData->user_level) {
+                $user->userData->user_level = $next_level;
+                $user->userData->save();
+                ReadHubUser::syncUser($user);
+            }
             $user_data->user->notify(new IntegralLog($user_id,$credit));
             return true;
         }catch (\Exception $e) {
