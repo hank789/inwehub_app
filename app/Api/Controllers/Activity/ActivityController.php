@@ -42,10 +42,16 @@ class ActivityController extends Controller {
         $is_mine = $request->input('is_mine');
 
         if ($is_mine) {
-            $articles = Collection::where('collections.user_id',$request->user()->id)->where('articles.category_id',$category->id)->where('collections.source_type','App\Models\Article')->leftJoin('articles','collections.source_id','=','articles.id')->select('articles.*','collections.status as c_status')->orderBy('articles.id','DESC')->paginate(10);
+            $articles = Collection::where('collections.user_id',$request->user()->id)->where('articles.category_id',$category->id)->where(function($query){
+                $query->whereNull('collections.source_type')->orwhere('collections.source_type','App\Models\Article');
+            })->leftJoin('articles','collections.source_id','=','articles.id')->select('articles.*','collections.status as c_status')->orderBy('articles.id','DESC')->paginate(10);
             $return = $articles->toArray();
         } else {
-            $articles = Article::where('articles.category_id',$category->id)->where('articles.status','>',0)->where('collections.source_type','App\Models\Article')->leftJoin('collections','articles.id','=','collections.source_id')->select('articles.*','collections.status as c_status')->orderBy('articles.id','DESC')->paginate(10);
+            $articles = Article::where('articles.category_id',$category->id)->where('articles.status','>',0)->where(
+                function($query) {
+                    $query->whereNull('collections.source_type')->orWhere('collections.source_type','App\Models\Article');
+                }
+            )->leftJoin('collections','articles.id','=','collections.source_id')->select('articles.*','collections.status as c_status')->orderBy('articles.id','DESC')->paginate(10);
             $return = $articles->toArray();
         }
 
