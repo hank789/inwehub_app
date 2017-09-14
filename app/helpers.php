@@ -957,3 +957,16 @@ if (!function_exists('format_json_string')){
         return '';
     }
 }
+
+if (!function_exists('judge_user_activity_level')){
+    function judge_user_activity_level($level,$activity){
+        switch ($activity){
+            case 'activity_enroll':
+                if ($level >= 2) {
+                    return true;
+                }
+                break;
+        }
+        return false;
+    }
+}

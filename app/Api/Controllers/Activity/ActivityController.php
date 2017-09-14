@@ -94,6 +94,9 @@ class ActivityController extends Controller {
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
+        if (false === judge_user_activity_level($user->userData->user_level,'activity_enroll')) {
+            throw new ApiException(ApiException::ACTIVITY_PERMISSION_LIMIT);
+        }
         $data = $request->all();
 
         $source  = Article::find($data['activity_id']);
