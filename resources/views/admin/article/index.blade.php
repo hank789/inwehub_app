@@ -65,9 +65,9 @@
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>标题</th>
                                         <th>分类</th>
-                                        <th>作者</th>
-                                        <th>报名</th>
-                                        <th>时间</th>
+                                        <th>报名人数</th>
+                                        <th>截止时间</th>
+                                        <th>发布时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -78,6 +78,7 @@
                                             <td>@if($article->category) {{ $article->category->name }} @else 无 @endif</td>
                                             <td>{{ $article->user->name }}<span class="text-muted">[UID:{{ $article->user_id }}]</span></td>
                                             <td>{{ $article->collections }}</td>
+                                            <td>{{ ($article->deadline ??'永久') }}</td>
                                             <td>{{ timestamp_format($article->created_at) }}</td>
                                             <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
                                             <td>
