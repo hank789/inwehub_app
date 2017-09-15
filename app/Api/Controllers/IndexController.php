@@ -85,6 +85,7 @@ class IndexController extends Controller {
                 }
             }
         }
+        $show_ad = false;
         $notices = Notice::where('status',1)->orderBy('sort','DESC')->take(5)->get()->toArray();
 
         //随机7个专家
