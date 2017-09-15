@@ -131,19 +131,19 @@ class ProfileController extends Controller
         $info['user_coins'] = $user->userData->coins;
         $info['my_activity_enroll'] = Collection::where('user_id',$user->id)->where('source_type','App\Models\Article')->count();
 
-        $info['newbie_unfinish_tasks']= ['readhub_comment','ask','complete_userinfo'];
+        $info['newbie_unfinish_tasks']= ['readhub_comment'=>'readhub_comment','ask'=>'ask','complete_userinfo'=>'complete_userinfo'];
         $newbie_readhub_comment_task = Task::where('user_id',$user->id)->where('source_type','newbie_readhub_comment')->where('status',1)->first();
         if ($newbie_readhub_comment_task) {
-            unset($info['newbie_unfinish_tasks'][0]);
+            unset($info['newbie_unfinish_tasks']['readhub_comment']);
         }
         $newbie_ask_task = Task::where('user_id',$user->id)->where('source_type','newbie_ask')->where('status',1)->first();
         if ($newbie_ask_task) {
-            unset($info['newbie_unfinish_tasks'][1]);
+            unset($info['newbie_unfinish_tasks']['ask']);
         }
 
         $newbie_complete_userinfo_task = Task::where('user_id',$user->id)->where('source_type','newbie_complete_userinfo')->where('status',1)->first();
         if ($newbie_complete_userinfo_task) {
-            unset($info['newbie_unfinish_tasks'][2]);
+            unset($info['newbie_unfinish_tasks']['complete_userinfo']);
         }
 
         $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
