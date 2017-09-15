@@ -6,6 +6,7 @@ use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Collection;
 use App\Models\Credit;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
@@ -128,6 +129,8 @@ class ProfileController extends Controller
         $info['user_level'] = $user->userData->user_level;
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
+        $info['my_activity_enroll'] = Collection::where('user_id',$user->id)->where('source_type','App\Models\Article')->count();
+
         $info['newbie_unfinish_tasks'] = [];
         $newbie_readhub_comment_task = Task::where('user_id',$user->id)->where('source_type','newbie_readhub_comment')->where('status',1)->first();
         if (!$newbie_readhub_comment_task) {
