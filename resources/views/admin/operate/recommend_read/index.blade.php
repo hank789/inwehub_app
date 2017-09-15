@@ -44,7 +44,7 @@
                                             <td>{{ $recommendation->title }}</td>
                                             <td><img width="100" height="100" src="{{ $recommendation->data['img'] ??'' }}"></td>
                                             <td>{{ $recommendation->category_name }}</td>
-                                            <td><span class="label @if($recommendation->recommend_status===1) label-warning  @else label-success @endif">{{ trans_recommend_submission_status($recommendation->recommend_status) }}</span> </td>
+                                            <td><span class="label @if($recommendation->recommend_status===1) label-warning  @else label-success @endif">{{ trans_recommend_submission_status($recommendation->recommend_status) }}<br>{{( $recommendation->id ==$recommend_readhub_id?' 已推荐到阅读发现':'') }}</span> </td>
                                             <td>{{ $recommendation->updated_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >

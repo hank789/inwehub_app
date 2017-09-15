@@ -76,7 +76,6 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
                                             <td><a href="{{ route('blog.article.detail',['id'=>$article->id]) }}" target="_blank">{{ $article->title }}</a></td>
                                             <td>@if($article->category) {{ $article->category->name }} @else 无 @endif</td>
-                                            <td>{{ $article->user->name }}<span class="text-muted">[UID:{{ $article->user_id }}]</span></td>
                                             <td>{{ $article->collections }}</td>
                                             <td>{{ ($article->deadline ??'永久') }}</td>
                                             <td>{{ timestamp_format($article->created_at) }}</td>
