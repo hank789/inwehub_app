@@ -42,16 +42,16 @@ class ActivityController extends Controller {
         $is_mine = $request->input('is_mine');
 
         if ($is_mine) {
-            $articles = Collection::where('collections.user_id',$request->user()->id)->where('articles.category_id',$category->id)->leftJoin('collections',function ($query) {
-                $query->on('collections.source_id','=','articles.id')
-                    ->Where('collections.source_type','App\Models\Article');
-            })->select('articles.*','collections.status as c_status')->orderBy('articles.id','DESC')->paginate(10);
+            $articles = Collection::leftJoin('articles','collections.source_id','=','articles.id')
+                ->where('collections.user_id',$request->user()->id)
+                ->where('articles.category_id',$category->id)
+                ->where('collections.source_type','App\Models\Article')
+                ->select('articles.*','collections.status as c_status')
+                ->orderBy('articles.id','DESC')
+                ->paginate(10);
             $return = $articles->toArray();
         } else {
-            $articles = Article::where('articles.category_id',$category->id)->where('articles.status','>',0)->leftJoin('collections',function ($query) {
-                $query->on('collections.source_id','=','articles.id')
-                    ->Where('collections.source_type','App\Models\Article');
-            })->select('articles.*','collections.status as c_status')->orderBy('articles.id','DESC')->paginate(10);
+            $articles = Article::where('category_id',$category->id)->where('status','>',0)->orderBy('articles.id','DESC')->paginate(10);
             $return = $articles->toArray();
         }
 
@@ -59,7 +59,16 @@ class ActivityController extends Controller {
 
         foreach ($articles as $article) {
             $status = $article->status;
-            switch ($article->c_status) {
+            $c_status = -1;
+            if (!isset($article->c_status)) {
+                $collection = Collection::where('source_id',$article->id)->where('source_type','App\Models\Article')->first();
+                if ($collection) {
+                    $c_status = $collection->status;
+                }
+            } else {
+                $c_status = $article->c_status;
+            }
+            switch ($c_status) {
                 case Collection::COLLECT_STATUS_PENDING:
                     // 报名处理中
                     $status = 3;
