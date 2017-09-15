@@ -49,7 +49,7 @@ class ProfileController extends Controller
         $info['name'] = $user->name;
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
-        $info['avatar_url'] = $user->getAvatarUrl();
+        $info['avatar_url'] = $user->avatar;
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province']['key'] = $user->province;
@@ -219,7 +219,7 @@ class ProfileController extends Controller
         $info['name'] = $user->name;
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
-        $info['avatar_url'] = $user->getAvatarUrl();
+        $info['avatar_url'] = $user->avatar;
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province']['key'] = $user->province;
