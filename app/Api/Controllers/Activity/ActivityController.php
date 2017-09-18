@@ -218,7 +218,7 @@ class ActivityController extends Controller {
         $comment_users = [$request->user()->id];
         $customer_service_role = Role::customerService()->first();
         if ($customer_service_role) {
-            $customer_service=$customer_service_role->users()->pluck('users.id');
+            $customer_service=$customer_service_role->users()->pluck('users.id')->toArray();
             if ($customer_service) {
                 $comment_users = array_merge($comment_users,$customer_service);
             }
