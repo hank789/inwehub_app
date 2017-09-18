@@ -215,15 +215,10 @@ class ActivityController extends Controller {
         if (!$source) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        $comment_users = [$request->user()->id];
-        $customer_service_role = Role::customerService()->first();
-        if ($customer_service_role) {
-            $customer_service=$customer_service_role->users()->pluck('users.id')->toArray();
-            if ($customer_service) {
-                $comment_users = array_merge($comment_users,$customer_service);
-            }
-        }
-        $comments = $source->comments()->whereIn('user_id',$comment_users)->orderBy('created_at','desc')->simplePaginate(10);
+        $user_id = $request->user()->id;
+        $comments = $source->comments()->where(function ($query) use ($user_id) {
+            $query->where('user_id',$user_id)->orWhere('to_user_id',$user_id);
+        })->orderBy('created_at','desc')->simplePaginate(10);
         $return = $comments->toArray();
         $return['data'] = [];
 
