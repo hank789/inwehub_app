@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redis;
 
 class ArticleController extends AdminController
 {
@@ -50,10 +51,10 @@ class ArticleController extends AdminController
         if( $filter['category_id']> 0 ){
             $query->where('category_id','=',$filter['category_id']);
         }
-
+        $recommend_home_ac = Redis::connection()->hgetall('recommend_home_ac');
 
         $articles = $query->orderBy('created_at','desc')->paginate(20);
-        return view("admin.article.index")->with('articles',$articles)->with('filter',$filter);
+        return view("admin.article.index")->with('articles',$articles)->with('filter',$filter)->with('recommend_home_ac',$recommend_home_ac);
     }
 
 

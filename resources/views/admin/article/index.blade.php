@@ -79,7 +79,7 @@
                                             <td>{{ $article->collections }}</td>
                                             <td>{{ ($article->deadline ??'永久') }}</td>
                                             <td>{{ timestamp_format($article->created_at) }}</td>
-                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
+                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}<br>{{ ($sort = array_search($article->id,$recommend_home_ac))?'首页排序：'.$sort:'' }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" target="_blank" href="{{ route('blog.article.edit',['id'=>$article->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>

@@ -16,6 +16,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
@@ -94,6 +95,11 @@ class ArticleController extends Controller
         /*判断问题是否添加成功*/
         if($article){
 
+            $recommend_home_sort = $request->input('recommend_home_sort');
+            if ($recommend_home_sort) {
+                Redis::connection()->hset('recommend_home_ac', $recommend_home_sort, $article->id);
+            }
+
             if($article->status === 1 ){
                 $message = '活动发布成功! ';
             }else{
@@ -157,7 +163,10 @@ class ArticleController extends Controller
                 return $this->showErrorMsg(route('website.index'),'你已超过文章可编辑的最大时长，不能进行编辑了。如有疑问请联系管理员!');
             }
         }
-        return view("theme::article.edit")->with(compact('article'));
+        $recommend_home_ac = Redis::connection()->hgetall('recommend_home_ac');
+
+
+        return view("theme::article.edit")->with(compact('article','recommend_home_ac'));
 
     }
 
@@ -197,6 +206,10 @@ class ArticleController extends Controller
             $article->status = Article::ARTICLE_STATUS_CLOSED;
         } elseif ($deadline && $article->status == Article::ARTICLE_STATUS_ONLINE) {
             $this->dispatch((new CloseActivity($article_id))->delay(Carbon::createFromTimestamp(strtotime($deadline))));
+        }
+        $recommend_home_sort = $request->input('recommend_home_sort');
+        if ($recommend_home_sort) {
+            Redis::connection()->hset('recommend_home_ac', $recommend_home_sort, $article_id);
         }
 
         $article->title = trim($request->input('title'));

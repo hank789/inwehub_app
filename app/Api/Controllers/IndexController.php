@@ -122,8 +122,16 @@ class IndexController extends Controller {
             $recommend_read[] = $item;
         }
 
+        $recommend_home_ac = Redis::connection()->hgetall('recommend_home_ac');
+        if ($recommend_home_ac) {
+            $recommend_ac_list = [];
+            foreach ($recommend_home_ac as $ac_sort=>$ac_id) {
+                $recommend_ac_list[$ac_sort] = Article::find($ac_id)->toArray();
+            }
+        } else {
+            $recommend_ac_list = Article::where('status','>',0)->orderBy('supports','DESC')->get()->take(3)->toArray();
+        }
 
-        $recommend_ac_list = Article::where('status','>',0)->orderBy('supports','DESC')->get()->take(3)->toArray();
         $recommend_activity = [];
         foreach ($recommend_ac_list as $recommend_ac){
             $category = Category::find($recommend_ac['category_id']);
