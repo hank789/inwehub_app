@@ -61,7 +61,7 @@ class ActivityController extends Controller {
             $status = $article->status;
             $c_status = -1;
             if (!isset($article->c_status)) {
-                $collection = Collection::where('source_id',$article->id)->where('source_type','App\Models\Article')->first();
+                $collection = Collection::where('user_id',$request->user()->id)->where('source_id',$article->id)->where('source_type','App\Models\Article')->first();
                 if ($collection) {
                     $c_status = $collection->status;
                 }
