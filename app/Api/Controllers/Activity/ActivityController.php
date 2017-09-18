@@ -61,9 +61,9 @@ class ActivityController extends Controller {
             $status = $article->status;
             $c_status = -1;
             if (!isset($article->c_status)) {
-                $collection = Collection::where('user_id',$request->user()->id)->where('source_id',$article->id)->where('source_type','App\Models\Article')->first();
-                if ($collection) {
-                    $c_status = $collection->status;
+                $userCollect = $request->user()->isCollected('App\Models\Article',$article->id);
+                if ($userCollect) {
+                    $c_status = $userCollect->status;
                 }
             } else {
                 $c_status = $article->c_status;
