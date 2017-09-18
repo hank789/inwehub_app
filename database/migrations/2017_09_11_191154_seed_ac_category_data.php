@@ -36,6 +36,17 @@ class SeedAcCategoryData extends Migration
         Schema::table('user_data', function (Blueprint $table) {
             $table->integer("user_level")->after('user_id')->default(1);;
         });
+
+        DB::table('roles')->insert([
+            ['id' => '3','name' => '客服','slug' => 'customerservice','description' => '客服人员','level'=>1,'created_at'=>'2016-02-16 09:52:13','updated_at'=>'2016-02-16 09:52:13'],
+        ]);
+        DB::table('permissions')->insert([
+            ['id' => '2','name' => '活动报名回复','slug' => 'activity.enroll.comment','description' => '对用户活动报名进行回复','created_at'=>'2016-02-16 17:57:51','updated_at'=>'2016-02-16 17:57:51'],
+        ]);
+
+        DB::table('permission_role')->insert([
+            ['id' => '2','permission_id' => '2','role_id' => '3','created_at'=>'2016-02-16 17:37:51','updated_at'=>'2016-04-16 17:57:51'],
+        ]);
     }
 
     /**

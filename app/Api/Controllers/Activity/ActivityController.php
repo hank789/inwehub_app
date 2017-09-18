@@ -5,6 +5,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Comment;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 /**
@@ -214,8 +215,15 @@ class ActivityController extends Controller {
         if (!$source) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-
-        $comments = $source->comments()->orderBy('created_at','desc')->simplePaginate(10);
+        $comment_users = [$request->user()->id];
+        $customer_service_role = Role::customerService()->first();
+        if ($customer_service_role) {
+            $customer_service=$customer_service_role->users()->pluck('users.id');
+            if ($customer_service) {
+                $comment_users = array_merge($comment_users,$customer_service);
+            }
+        }
+        $comments = $source->comments()->whereIn('user_id',$comment_users)->orderBy('created_at','desc')->simplePaginate(10);
         $return = $comments->toArray();
         $return['data'] = [];
 
