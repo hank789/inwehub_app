@@ -28,7 +28,7 @@ class ArticleController extends Controller
         'content' => 'required|min:50|max:16777215',
         'summary' => 'sometimes|max:255',
         'tags' => 'sometimes|max:128',
-        'category_id' => 'sometimes|numeric'
+        'category_id' => 'required|numeric'
     ];
 
     /**
