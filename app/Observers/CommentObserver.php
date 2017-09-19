@@ -25,7 +25,7 @@ class CommentObserver implements ShouldQueue {
      */
     public function created(Comment $comment)
     {
-        $article = $comment->source();
+        $article = $comment->source()->first();
         $fields[] = [
             'title' => '活动标题',
             'value' => $article->title,
