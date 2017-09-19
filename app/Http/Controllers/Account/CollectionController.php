@@ -83,7 +83,7 @@ class CollectionController extends Controller
         $source->status = Collection::COLLECT_STATUS_VERIFY;
         $source->subject = $request->input('message');
         $source->save();
-        $source->user()->notify(new ActivityEnroll($source));
+        $source->user->notify(new ActivityEnroll($source));
 
         return $this->success(route('blog.article.detail',['id'=>$source->source_id]),"审核成功");
     }
@@ -103,7 +103,7 @@ class CollectionController extends Controller
         }
 
         $source->save();
-        $source->user()->notify(new ActivityEnroll($source));
+        $source->user->notify(new ActivityEnroll($source));
 
         return $this->success(route('blog.article.detail',['id'=>$source->source_id]),"审核成功");
 
