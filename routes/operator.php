@@ -143,6 +143,7 @@ Route::Group(['namespace'=>'Account'],function(){
 
         Route::get('collect/article/{source_id}/verify',['as'=>'auth.collection.verify','uses'=>'CollectionController@verify'])->where(['source_id'=>'[0-9]+']);
         Route::post('collect/article/unverify',['as'=>'auth.collection.unverify','uses'=>'CollectionController@unverify']);
+        Route::post('collect/article/verifyok',['as'=>'auth.collection.verifyok','uses'=>'CollectionController@verifyok']);
 
 
         /*关注问题、人、标签*/

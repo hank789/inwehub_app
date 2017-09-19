@@ -72,6 +72,20 @@ class CollectionController extends Controller
         return response('ok');
     }
 
+    public function verifyok(Request $request)
+    {
+        $source  = Collection::find($request->input('collect_id'));
+
+        if(!$source){
+            abort(404);
+        }
+        $source->status = Collection::COLLECT_STATUS_VERIFY;
+        $source->subject = $request->input('message');
+        $source->save();
+
+        return $this->success(route('blog.article.detail',['id'=>$source->source_id]),"审核成功");
+    }
+
     public function unverify(Request $request)
     {
         $source  = Collection::find($request->input('collect_id'));
