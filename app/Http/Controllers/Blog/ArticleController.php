@@ -98,6 +98,8 @@ class ArticleController extends Controller
             $recommend_home_sort = $request->input('recommend_home_sort');
             if ($recommend_home_sort) {
                 Redis::connection()->hset('recommend_home_ac', $recommend_home_sort, $article->id);
+                $recommend_home_img = $request->input('recommend_home_img');
+                Redis::connection()->hset('recommend_home_ac_img', $recommend_home_sort, $recommend_home_img);
             }
 
             if($article->status === 1 ){
@@ -164,9 +166,11 @@ class ArticleController extends Controller
             }
         }
         $recommend_home_ac = Redis::connection()->hgetall('recommend_home_ac');
+        $recommend_home_imgs = Redis::connection()->hgetall('recommend_home_ac_img');
+        $recommend_home_sort = array_search($article->id,$recommend_home_ac)??'';
+        $recommend_home_img = $recommend_home_imgs[$recommend_home_sort]??'';
 
-
-        return view("theme::article.edit")->with(compact('article','recommend_home_ac'));
+        return view("theme::article.edit")->with(compact('article','recommend_home_img','recommend_home_sort'));
 
     }
 
@@ -213,6 +217,8 @@ class ArticleController extends Controller
         $recommend_home_sort = $request->input('recommend_home_sort');
         if ($recommend_home_sort) {
             Redis::connection()->hset('recommend_home_ac', $recommend_home_sort, $article_id);
+            $recommend_home_img = $request->input('recommend_home_img');
+            Redis::connection()->hset('recommend_home_ac_img', $recommend_home_sort, $recommend_home_img);
         }
 
         $article->title = trim($request->input('title'));

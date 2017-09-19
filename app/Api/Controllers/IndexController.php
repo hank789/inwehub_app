@@ -125,9 +125,13 @@ class IndexController extends Controller {
 
         $recommend_home_ac = Redis::connection()->hgetall('recommend_home_ac');
         if ($recommend_home_ac) {
+            $recommend_home_ac_img = Redis::connection()->hgetall('recommend_home_ac_img');
             $recommend_ac_list = [];
             foreach ($recommend_home_ac as $ac_sort=>$ac_id) {
                 $recommend_ac_list[$ac_sort] = Article::find($ac_id)->toArray();
+                if (isset($recommend_home_ac_img[$ac_sort])) {
+                    $recommend_ac_list[$ac_sort]['logo'] = $recommend_home_ac_img[$ac_sort];
+                }
             }
         } else {
             $recommend_ac_list = Article::where('status','>',0)->orderBy('supports','DESC')->get()->take(3)->toArray();

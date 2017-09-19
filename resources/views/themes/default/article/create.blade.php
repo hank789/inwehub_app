@@ -41,20 +41,24 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-4">
+                <div class="col-xs-3">
                     <label for="editor">分类：</label>
                     <select name="category_id" id="category_id" class="form-control">
                         <option value="0">请选择分类</option>
                         @include('admin.category.option',['type'=>'articles','select_id'=>old('category_id',0),'root'=>false])
                     </select>
                 </div>
-                <div class="col-xs-4">
-                    <label for="editor">截止时间：</label>
-                    <input type="text" name="deadline" class="form-control datepicker" placeholder="截止日期，留空永久有效:2017-01-02 13:00" value="{{ old('deadline','') }}" />
+                <div class="col-xs-3">
+                    <label for="editor">截止时间(Ex:2017-01-02 13:00)：</label>
+                    <input type="text" name="deadline" class="form-control datepicker" placeholder="截止日期，留空永久有效" value="{{ old('deadline','') }}" />
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-3">
                     <label for="editor">首页排序，留空则不推荐到首页：</label>
                     <input type="text" name="recommend_home_sort" class="form-control datepicker" placeholder="推荐到首页的排序(值越小，越靠前)，如不推荐到首页，留空" value="{{ old('recommend_home_sort','')}}" />
+                </div>
+                <div class="col-xs-3">
+                    <label for="editor">首页封面图地址：</label>
+                    <input type="text" name="recommend_home_img" class="form-control datepicker" placeholder="推荐到首页用的图片，如不推荐到首页，留空" value="{{ old('recommend_home_img','')  }}" />
                 </div>
             </div>
 
