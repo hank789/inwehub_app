@@ -793,7 +793,7 @@ if (!function_exists('secret_mobile')) {
 if( !function_exists('makeVerifyCode') ){
     function makeVerifyCode(int $min = 1000, int $max = 9999)
     {
-        //if(config('app.env') != 'production') return 6666;
+        if(config('app.env') != 'production') return 6666;
         $min = min($min, $max);
         $max = max($min, $max);
 
