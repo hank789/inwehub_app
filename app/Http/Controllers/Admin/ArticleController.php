@@ -117,7 +117,8 @@ class ArticleController extends AdminController
      */
     public function destroy(Request $request)
     {
-        Article::destroy($request->input('id'));
+        $ids = $request->input('id');
+        Article::where('status',Article::ARTICLE_STATUS_PENDING)->whereIn('id',$ids)->delete();
         return $this->success(route('admin.article.index'),'活动删除成功');
     }
 }
