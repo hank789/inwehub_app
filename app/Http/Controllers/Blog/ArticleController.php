@@ -206,6 +206,9 @@ class ArticleController extends Controller
             $article->status = Article::ARTICLE_STATUS_CLOSED;
         } elseif ($deadline && $article->status == Article::ARTICLE_STATUS_ONLINE) {
             $this->dispatch((new CloseActivity($article_id))->delay(Carbon::createFromTimestamp(strtotime($deadline))));
+        } elseif ($deadline && $article->status == Article::ARTICLE_STATUS_CLOSED && time()<strtotime($deadline)) {
+            $article->status = Article::ARTICLE_STATUS_ONLINE;
+            $this->dispatch((new CloseActivity($article_id))->delay(Carbon::createFromTimestamp(strtotime($deadline))));
         }
         $recommend_home_sort = $request->input('recommend_home_sort');
         if ($recommend_home_sort) {
