@@ -48,6 +48,8 @@ trait BaseController {
         }
         if ($count == 1){
             $this->credit($uid,Credit::KEY_USER_INFO_COMPLETE);
+        }
+        if ($count >= 1) {
             TaskLogic::finishTask('newbie_complete_userinfo',0,'newbie_complete_userinfo',[$uid]);
         }
     }
