@@ -188,7 +188,7 @@ return [
         Bican\Roles\RolesServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Sentry\SentryLaravel\SentryLaravelServiceProvider::class,
-        Jacobcyl\AliOSS\AliOssServiceProvider::class,
+        App\Third\AliOss\AliOssServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Maknz\Slack\Laravel\ServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,

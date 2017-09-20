@@ -53,6 +53,10 @@ class Article extends Model
     protected $table = 'articles';
     protected $fillable = ['title', 'user_id','category_id', 'content','tags','summary','status','logo'];
 
+    const ARTICLE_STATUS_PENDING = 0;//待审核
+    const ARTICLE_STATUS_ONLINE = 1;//审核成功
+    const ARTICLE_STATUS_CLOSED = 2;//已结束
+
 
     public static function boot()
     {

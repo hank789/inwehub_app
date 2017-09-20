@@ -42,4 +42,5 @@ class Notification extends DatabaseNotification
     const NOTIFICATION_TYPE_MONEY = 2;//资金类型的通知
     const NOTIFICATION_TYPE_TASK = 3;//任务类型的通知
     const NOTIFICATION_TYPE_READ = 4;//发现类型的通知
+    const NOTIFICATION_TYPE_INTEGRAL = 5;//积分类型的通知
 }

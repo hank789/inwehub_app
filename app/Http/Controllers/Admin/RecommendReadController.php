@@ -6,6 +6,7 @@ use App\Models\Readhub\Submission;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redis;
 
 class RecommendReadController extends AdminController
 {
@@ -18,7 +19,8 @@ class RecommendReadController extends AdminController
     public function index(Request $request)
     {
         $recommendations = Submission::where('recommend_status','>=',Submission::RECOMMEND_STATUS_PENDING)->orderBy('recommend_sort','desc')->orderBy('updated_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
-        return view('admin.operate.recommend_read.index')->with('recommendations',$recommendations);
+        $recommend_readhub_id = Redis::connection()->get('recommend_readhub_article');
+        return view('admin.operate.recommend_read.index')->with('recommendations',$recommendations)->with('recommend_readhub_id',$recommend_readhub_id);
     }
 
 
@@ -35,7 +37,9 @@ class RecommendReadController extends AdminController
         if(!$recommendation){
             return $this->error(route('admin.operate.recommendRead.index'),'推荐不存在，请核实');
         }
-        return view('admin.operate.recommend_read.edit')->with('recommendation',$recommendation);
+        $recommend_readhub_id = Redis::connection()->get('recommend_readhub_article');
+
+        return view('admin.operate.recommend_read.edit')->with('recommendation',$recommendation)->with('recommend_readhub_id',$recommend_readhub_id);
     }
 
     /**
@@ -56,7 +60,8 @@ class RecommendReadController extends AdminController
             'title'   => 'required',
             'img_url' => 'required',
             'recommend_status' => 'required|integer',
-            'recommend_sort'   => 'required|integer'
+            'recommend_sort'   => 'required|integer',
+            'recommend_readhub'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
 
@@ -67,6 +72,10 @@ class RecommendReadController extends AdminController
         $object_data['img'] = $request->input('img_url');
         $recommendation->data = $object_data;
         $recommendation->save();
+        if ($request->input('recommend_readhub')){
+            //推荐到阅读发现
+            Redis::connection()->set('recommend_readhub_article',$id);
+        }
         return $this->success(route('admin.operate.recommendRead.index'),'推荐修改成功');
     }
 

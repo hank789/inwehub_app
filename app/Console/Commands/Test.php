@@ -64,7 +64,7 @@ class Test extends Command
      */
     public function handle()
     {
-        event(new FuncZan('test'));
+        echo Storage::disk('oss')->url('media/239/user_origin_7.jpg');
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);

@@ -1,10 +1,10 @@
 @extends('admin/public/layout')
-@section('title')文章管理@endsection
+@section('title')报名管理@endsection
 @section('content')
     <section class="content-header">
         <h1>
-            文章管理
-            <small>管理系统的所有文章</small>
+            活动管理
+            <small>管理系统的所有活动</small>
         </h1>
     </section>
     <section class="content">
@@ -15,7 +15,7 @@
                         <div class="row">
                             <div class="col-xs-2">
                                 <div class="btn-group">
-                                    <a href="{{ route('blog.article.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新文章"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('blog.article.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="新建活动报名"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.article.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.article.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
@@ -65,9 +65,9 @@
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>标题</th>
                                         <th>分类</th>
-                                        <th>作者</th>
-                                        <th>收藏/查看</th>
-                                        <th>时间</th>
+                                        <th>报名人数</th>
+                                        <th>截止时间</th>
+                                        <th>发布时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -76,10 +76,10 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
                                             <td><a href="{{ route('blog.article.detail',['id'=>$article->id]) }}" target="_blank">{{ $article->title }}</a></td>
                                             <td>@if($article->category) {{ $article->category->name }} @else 无 @endif</td>
-                                            <td>{{ $article->user->name }}<span class="text-muted">[UID:{{ $article->user_id }}]</span></td>
-                                            <td>{{ $article->collections }} / {{ $article->views }}</td>
+                                            <td>{{ $article->collections }}</td>
+                                            <td>{{ ($article->deadline ??'永久') }}</td>
                                             <td>{{ timestamp_format($article->created_at) }}</td>
-                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
+                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}<br>{{ ($sort = array_search($article->id,$recommend_home_ac))?'首页排序：'.$sort:'' }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" target="_blank" href="{{ route('blog.article.edit',['id'=>$article->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
@@ -95,7 +95,7 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="btn-group">
-                                    <a href="{{ route('blog.article.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新文章"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('blog.article.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="新建活动报名"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.article.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.article.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
@@ -121,6 +121,6 @@
 @section('script')
     @include("admin.public.change_category_modal",['type'=>'articles','form_id'=>'item_form','form_action'=>route('admin.article.changeCategories')])
     <script type="text/javascript">
-        set_active_menu('manage_content',"{{ route('admin.article.index') }}");
+        set_active_menu('activity',"{{ route('admin.article.index') }}");
     </script>
 @endsection

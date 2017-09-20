@@ -73,7 +73,7 @@ function upload_editor_image(file,editorId){
         data: data,
         type: "POST",
         dataType : 'text',
-        url: "/image/upload",
+        url: "/manager/image/upload",
         cache: false,
         contentType: false,
         processData: false,

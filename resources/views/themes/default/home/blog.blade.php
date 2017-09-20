@@ -20,7 +20,7 @@
                 <section class="stream-list-item clearfix">
                     @if( $article->logo )
                     <div class="blog-rank hidden-xs">
-                        <a href="{{ route('blog.article.detail',['id'=>$article->id]) }}" target="_blank"><img style="width: 200px;height:120px;" src="{{ route('website.image.show',['image_name'=>$article->logo]) }}"></a>
+                        <a href="{{ route('blog.article.detail',['id'=>$article->id]) }}" target="_blank"><img style="width: 200px;height:120px;" src="{{ $article->logo }}"></a>
                     </div>
                     @endif
                     <div class="summary">
@@ -35,7 +35,7 @@
                             </li>
                             <li>
                                 <a href="{{ route('auth.space.index',['user_id'=>$article->user_id]) }}" target="_blank">
-                                    <img class="avatar-20 mr-10 hidden-xs" src="{{ get_user_avatar($article->user_id,'small') }}" alt="{{ $article->user->name }}"> {{ $article->user->name }}
+                                    <img class="avatar-20 mr-10 hidden-xs" src="{{ $article->user->avatar }}" alt="{{ $article->user->name }}"> {{ $article->user->name }}
                                 </a>
                             </li>
                             <li>发布于 {{ timestamp_format($article->created_at) }}</li>

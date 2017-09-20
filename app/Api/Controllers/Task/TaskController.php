@@ -78,6 +78,27 @@ class TaskController extends Controller {
                             break;
                     }
                     break;
+                case 'newbie_complete_userinfo':
+                    //新手完善用户信息
+                    $task_type_description = '新手任务';
+                    $status_description = '完善顾问名片';
+                    $task_type = 3;
+                    $description = '个人信息保持90%以上完整度';
+                    break;
+                case 'newbie_readhub_comment':
+                    //新手阅读回复
+                    $task_type_description = '新手任务';
+                    $status_description = '参与评论互动';
+                    $task_type = 4;
+                    $description = '前往发现阅读，参与评论';
+                    break;
+                case 'newbie_ask':
+                    //新手提问
+                    $task_type_description = '新手任务';
+                    $status_description = '发起专业提问';
+                    $task_type = 5;
+                    $description = '送你首次提问1元特惠券';
+                    break;
             }
             $list[] = [
                 'id'        => $task->id,

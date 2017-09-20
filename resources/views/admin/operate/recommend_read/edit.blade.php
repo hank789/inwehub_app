@@ -45,7 +45,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label>状态</label>
+                                <label>推荐到app首页</label>
                                 <div class="radio">
                                     <label>
                                         <input type="radio" name="recommend_status" value="1" @if($recommendation->recommend_status===1) checked @endif /> 推荐未审核
@@ -55,6 +55,17 @@
                                     </label>
                                     <label>
                                         <input type="radio" name="recommend_status" value="0" @if($recommendation->recommend_status===3) checked @endif /> 推荐已拒绝
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>推荐到阅读发现（顾问周刊，只能有一篇）</label>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="recommend_readhub" value="0" @if($recommendation->id != $recommend_readhub_id) checked @endif /> 不推荐
+                                    </label>&nbsp;&nbsp;
+                                    <label>
+                                        <input type="radio" name="recommend_readhub" value="1" @if($recommendation->id == $recommend_readhub_id) checked @endif /> 推荐
                                     </label>
                                 </div>
                             </div>

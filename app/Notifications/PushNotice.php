@@ -3,10 +3,6 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
-use App\Channels\WechatNoticeChannel;
-use App\Models\Authentication;
-use App\Models\Company\Company;
-use App\Models\Notification as NotificationModel;
 use App\Models\Readhub\Submission;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;

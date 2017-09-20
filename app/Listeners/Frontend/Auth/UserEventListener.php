@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Listeners\Frontend\Auth;
+use App\Logic\TaskLogic;
 use App\Models\Readhub\ReadHubUser;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -39,6 +40,14 @@ class UserEventListener implements ShouldQueue
      */
     public function onRegistered($event)
     {
+        // 生成新手任务
+        // 完善用户信息
+        TaskLogic::task($event->user->id,'newbie_complete_userinfo',0,'newbie_complete_userinfo');
+        // 阅读评论
+        TaskLogic::task($event->user->id,'newbie_readhub_comment',0,'newbie_readhub_comment');
+        // 发起提问
+        TaskLogic::task($event->user->id,'newbie_ask',0,'newbie_ask');
+
         \Slack::send('User Registered: '.$event->user->name);
     }
 

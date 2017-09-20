@@ -69,7 +69,7 @@
                                                 @if($comment->source()->first())
                                                     来源于@if(str_contains($comment->source_type,'Question'))问题[<a href="{{ route('ask.question.detail',['id'=>$comment->source_id]) }}" target="_blank" >{{ $comment->source()->first()->title }}</a>]
                                                     @elseif(str_contains($comment->source_type,'Answer'))回答[<a href="{{ route('ask.answer.detail',['question_id'=>$comment->source()->first()->question_id,'id'=>$comment->source_id]) }}" target="_blank" >{{ $comment->source()->first()->question_title }}</a>]
-                                                    @elseif(str_contains($comment->source_type,'Article'))文章[<a href="{{ route('blog.article.detail',['id'=>$comment->source_id]) }}" target="_blank" >{{ $comment->source()->first()->title }}</a>]
+                                                    @elseif(str_contains($comment->source_type,'Article'))活动[<a href="{{ route('blog.article.detail',['id'=>$comment->source_id]) }}" target="_blank" >{{ $comment->source()->first()->title }}</a>]
                                                     @endif
                                                 @endif
 
@@ -114,6 +114,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_content',"{{ route('admin.comment.index') }}");
+        set_active_menu('activity',"{{ route('admin.comment.index') }}");
     </script>
 @endsection

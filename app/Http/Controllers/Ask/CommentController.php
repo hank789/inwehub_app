@@ -71,13 +71,6 @@ class CommentController extends Controller
         /*问题、回答、文章评论数+1*/
         $comment->source()->increment('comments');
 
-        if( $comment->to_user_id > 0 ){
-            $this->notify($request->user()->id,$comment->to_user_id,'reply_comment',$notify_subject,$source_id,$comment->content,$notify_refer_type,$notify_refer_id);
-
-        }else{
-            $this->notify($request->user()->id,$source->user_id,$notify_type,$notify_subject,$source_id,$comment->content,$notify_refer_type,$notify_refer_id);
-        }
-
 
         return view('theme::comment.item')->with('comment',$comment)
                                             ->with('source_type',$source_type)

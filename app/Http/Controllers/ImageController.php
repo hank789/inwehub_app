@@ -51,8 +51,9 @@ class ImageController extends Controller
             $file = $request->file('file');
             $extension = $file->getClientOriginalExtension();
             $filePath = 'attachments/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
-            Storage::disk('local')->put($filePath,File::get($file));
-            return response(route("website.image.show",['image_name'=>str_replace("/","-",$filePath)]));
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            return response($img_url);
         }
         return response('error');
 

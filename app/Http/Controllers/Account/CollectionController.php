@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Account;
 use App\Models\Article;
 use App\Models\Collection;
 use App\Models\Question;
+use App\Notifications\ActivityEnroll;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -56,6 +57,55 @@ class CollectionController extends Controller
         }
 
         return response('collected');
+    }
+
+    public function verify($source_id,Request $request)
+    {
+        $source  = Collection::find($source_id);
+
+        if(!$source){
+            abort(404);
+        }
+        $source->status = Collection::COLLECT_STATUS_VERIFY;
+        $source->subject = $request->input('message');
+        $source->save();
+
+        return response('ok');
+    }
+
+    public function verifyok(Request $request)
+    {
+        $source  = Collection::find($request->input('collect_id'));
+
+        if(!$source){
+            abort(404);
+        }
+        $source->status = Collection::COLLECT_STATUS_VERIFY;
+        $source->subject = $request->input('message');
+        $source->save();
+        $source->user->notify(new ActivityEnroll($source));
+
+        return $this->success(route('blog.article.detail',['id'=>$source->source_id]),"审核成功");
+    }
+
+    public function unverify(Request $request)
+    {
+        $source  = Collection::find($request->input('collect_id'));
+
+        if(!$source){
+            abort(404);
+        }
+
+        $source->status = Collection::COLLECT_STATUS_NEED_RE_ENROLL;
+        $source->subject = $request->input('message');
+        if ($request->input('reject_enroll')) {
+            $source->status = Collection::COLLECT_STATUS_REJECT;
+        }
+
+        $source->save();
+        $source->user->notify(new ActivityEnroll($source));
+
+        return $this->success(route('blog.article.detail',['id'=>$source->source_id]),"审核成功");
 
 
     }

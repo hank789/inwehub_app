@@ -374,7 +374,8 @@ if (! function_exists('trans_common_status')) {
         $map = [
             0 => '待审核',
             1 => '已审核',
-           -1 => '已禁止'
+           -1 => '已禁止',
+            2 => '已结束'
         ];
 
         if($status==='all'){
@@ -550,6 +551,29 @@ if (! function_exists('trans_push_notice_notification_type')) {
     }
 }
 
+if (! function_exists('trans_article_collect_status')) {
+
+    function trans_article_collect_status($status){
+        $map = [
+            1 => '待审核',
+            2 => '审核通过',
+            3 => '需要重新报名',
+            4 => '已拒绝'
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+    }
+}
+
 /*回答状态文字定义*/
 if (! function_exists('trans_answer_status')) {
 
@@ -673,10 +697,10 @@ if( ! function_exists('get_credit_message')){
     function get_credit_message($credits,$coins){
         $messages = [];
         if( $credits != 0 ){
-            $messages[] = '经验 '.integer_string($credits);
+            $messages[] = '成长值 '.integer_string($credits);
         }
         if( $coins != 0 ){
-            $messages[] = '金币 '.integer_string($coins);
+            $messages[] = '贡献值 '.integer_string($coins);
         }
         return implode("，",$messages);
     }
@@ -769,7 +793,7 @@ if (!function_exists('secret_mobile')) {
 if( !function_exists('makeVerifyCode') ){
     function makeVerifyCode(int $min = 1000, int $max = 9999)
     {
-        //if(config('app.env') != 'production') return 6666;
+        if(config('app.env') != 'production') return 6666;
         $min = min($min, $max);
         $max = max($min, $max);
 
@@ -931,5 +955,18 @@ if (!function_exists('format_json_string')){
             }
         }
         return '';
+    }
+}
+
+if (!function_exists('judge_user_activity_level')){
+    function judge_user_activity_level($level,$activity){
+        switch ($activity){
+            case 'activity_enroll':
+                if ($level >= 2) {
+                    return true;
+                }
+                break;
+        }
+        return false;
     }
 }

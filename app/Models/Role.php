@@ -9,8 +9,7 @@
 namespace App\Models;
 
 
-use Illuminate\Database\Eloquent\Model;
-
+use Bican\Roles\Models\Role as BicanRole;
 /**
  * App\Models\Role
  *
@@ -30,10 +29,14 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Role whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Role extends Model
+class Role extends BicanRole
 {
     protected $table = 'roles';
-    protected $fillable = ['id', 'name','description','slug'];
+    protected $fillable = ['id', 'name','description','slug','level'];
 
+
+    public static function customerService(){
+        return self::where('slug','customerservice');
+    }
 
 }

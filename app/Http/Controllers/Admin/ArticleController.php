@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Jobs\CloseActivity;
 use App\Models\Article;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redis;
 
 class ArticleController extends AdminController
 {
@@ -48,10 +51,10 @@ class ArticleController extends AdminController
         if( $filter['category_id']> 0 ){
             $query->where('category_id','=',$filter['category_id']);
         }
-
+        $recommend_home_ac = Redis::connection()->hgetall('recommend_home_ac');
 
         $articles = $query->orderBy('created_at','desc')->paginate(20);
-        return view("admin.article.index")->with('articles',$articles)->with('filter',$filter);
+        return view("admin.article.index")->with('articles',$articles)->with('filter',$filter)->with('recommend_home_ac',$recommend_home_ac);
     }
 
 
@@ -85,7 +88,13 @@ class ArticleController extends AdminController
     {
         $articleIds = $request->input('id');
         Article::whereIn('id',$articleIds)->update(['status'=>1]);
-        return $this->success(route('admin.article.index').'?status=0','文章审核成功');
+        foreach ($articleIds as $articleId) {
+            $article = Article::find($articleId);
+            if ($article->deadline) {
+                $this->dispatch((new CloseActivity($articleId))->delay(Carbon::createFromTimestamp(strtotime($article->deadline))));
+            }
+        }
+        return $this->success(route('admin.article.index').'?status=0','活动审核成功');
 
     }
 
@@ -108,7 +117,8 @@ class ArticleController extends AdminController
      */
     public function destroy(Request $request)
     {
-        Article::destroy($request->input('id'));
-        return $this->success(route('admin.article.index'),'文章删除成功');
+        $ids = $request->input('id');
+        Article::where('status',Article::ARTICLE_STATUS_PENDING)->whereIn('id',$ids)->delete();
+        return $this->success(route('admin.article.index'),'活动删除成功');
     }
 }

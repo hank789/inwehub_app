@@ -135,7 +135,7 @@ $(function(){
         var source_id = $(this).data('source_id');
         var show_num = $(this).data('show_num');
 
-        $.get('/follow/'+source_type+'/'+source_id,function(msg){
+        $.get('/manager/follow/'+source_type+'/'+source_id,function(msg){
             follow_btn.removeClass('disabled');
             follow_btn.removeAttr('disabled');
             if(msg =='followed'){
@@ -166,7 +166,7 @@ $(function(){
         var btn_support = $(this);
         var source_type = btn_support.data('source_type');
         var source_id = btn_support.data('source_id');
-        $.get('/support/check/'+source_type+'/'+source_id,function(msg){
+        $.get('/manager/support/check/'+source_type+'/'+source_id,function(msg){
             btn_support.removeClass('btn-default');
             if(msg =='failed'){
                 btn_support.addClass('btn-warning');
@@ -191,7 +191,7 @@ $(function(){
         var source_type = btn_support.data('source_type');
         var source_id = btn_support.data('source_id');
         var support_num = parseInt(btn_support.data('support_num'));
-        $.get('/support/'+source_type+'/'+source_id,function(msg){
+        $.get('/manager/support/'+source_type+'/'+source_id,function(msg){
             if(msg =='success'){
                 support_num++
                 btn_support.html('<i class="fa fa-thumbs-o-up"></i> '+support_num);
@@ -216,7 +216,7 @@ $(function(){
             theme:'bootstrap',
             placeholder: "选择话题",
             ajax: {
-                url: '/ajax/loadTags',
+                url: '/manager/ajax/loadTags',
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
@@ -250,7 +250,7 @@ function add_comment(token,source_type,source_id,content,to_user_id){
     if(to_user_id>0){
         postData.to_user_id = to_user_id;
     }
-    $.post('/comment/store',postData,function(html){
+    $.post('/manager/comment/store',postData,function(html){
         $("#comments-"+source_type+"-"+source_id+" .widget-comment-list").append(html);
         $("#comment-"+source_type+"-content-"+source_id).val('');
     });
@@ -258,7 +258,7 @@ function add_comment(token,source_type,source_id,content,to_user_id){
 
 
 function load_comments(source_type,source_id){
-    $.get('/'+source_type+'/'+source_id+'/comments',function(html){
+    $.get('/manager/'+source_type+'/'+source_id+'/comments',function(html){
         $("#comments-"+source_type+"-"+source_id+" .widget-comment-list").append(html);
     });
 }
@@ -281,7 +281,7 @@ function upload_editor_image(file,editorId){
         data: data,
         type: "POST",
         dataType : 'text',
-        url: "/image/upload",
+        url: "/manager/image/upload",
         cache: false,
         contentType: false,
         processData: false,

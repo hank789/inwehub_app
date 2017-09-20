@@ -82,6 +82,8 @@
         <ul class="treeview-menu" id="activity">
             <li><a href="{{ route('admin.activity.config') }}"><i class="fa fa-circle-o"></i> 活动配置</a></li>
             <li><a href="{{ route('admin.activity.coupon') }}"><i class="fa fa-circle-o"></i> 红包</a></li>
+            <li><a href="{{ route('admin.article.index') }}"><i class="fa fa-circle-o"></i> 活动报名</a></li>
+            <li><a href="{{ route('admin.comment.index') }}"><i class="fa fa-circle-o"></i> 评论管理</a></li>
         </ul>
     </li>
 

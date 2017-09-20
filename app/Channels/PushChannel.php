@@ -20,8 +20,10 @@ class PushChannel {
     public function send($notifiable, Notification $notification)
     {
         $message = $notification->toPush($notifiable);
-        // 将通知发送给 $notifiable 实例
-        event(new Push($notifiable->id,$message['title'],$message['body'],$message['payload']));
+        if ($message) {
+            // 将通知发送给 $notifiable 实例
+            event(new Push($notifiable->id,$message['title'],$message['body'],$message['payload']));
+        }
     }
 
 }

@@ -27,7 +27,7 @@
                         <ul class="list-inline text-muted">
                             <li>
                                 <i class="fa fa-clock-o"></i>
-                                发表于 {{ timestamp_format($article->created_at) }}
+                                发布于 {{ timestamp_format($article->created_at) }}
                             </li>
                             <li>阅读 ( {{$article->views}} )</li>
                             @if($article->category)
@@ -35,31 +35,44 @@
                             @endif
                             </li>
                             @if($article->status !== 2 && Auth()->check() && (Auth()->user()->id === $article->user_id || Auth()->user()->isRole('admin') ) )
-                            <li><a href="{{ route('blog.article.edit',['id'=>$article->id]) }}" class="edit" data-toggle="tooltip" data-placement="right" title="" data-original-title="进一步完善文章内容"><i class="fa fa-edit"></i> 编辑</a></li>
+                            <li><a href="{{ route('blog.article.edit',['id'=>$article->id]) }}" class="edit" data-toggle="tooltip" data-placement="right" title="" data-original-title="进一步完善活动内容"><i class="fa fa-edit"></i> 编辑</a></li>
                             @endif
                         </ul>
                     </div>
                 </div>
                 <div class="text-center mt-10 mb-20">
 
-                    <button id="support-button" class="btn btn-success btn-lg mr-5" data-source_id="{{ $article->id }}" data-source_type="article"  data-support_num="{{ $article->supports }}">{{ $article->supports }} 推荐</button>
+                    <button id="support-button" class="btn btn-success btn-lg mr-5" data-source_id="{{ $article->id }}" data-source_type="article"  data-support_num="{{ $article->supports }}">报名人数：{{ $article->collections }}</button>
 
-                    @if(Auth()->check() && Auth()->user()->isCollected(get_class($article),$article->id))
-                        <button id="collect-button" class="btn btn-default btn-lg" data-loading-text="加载中..." data-source_type = "article" data-source_id = "{{ $article->id }}" > 已收藏</button>
-                    @else
-                        <button id="collect-button" class="btn btn-default btn-lg" data-loading-text="加载中..." data-source_type = "article" data-source_id = "{{ $article->id }}" > 收藏</button>
-                    @endif
                 </div>
-                @if(Setting()->get('website_share_code')!='')
-                <div class="mb-10">
-                    {!! Setting()->get('website_share_code')  !!}
+
+                <div class="row row-horizon">
+                    @foreach($collectors as $collector)
+                        <div class="col-sm-2 col-md-2">
+                            <div class="thumbnail">
+                                <a href="">
+                                    <img class="avatar-32" alt="{{ $collector->user->name }}" src="{{ $collector->user->avatar }}">
+                                </a>
+                                <div>
+                                    <p class="text-center">{{ $collector->user->name }}</p>
+                                    <p class="text-center small" id="confirm-collect-rel-{{ $collector->id }}">{{ trans_article_collect_status($collector->status) }}</p>
+                                    <p class="text-center">
+                                        <button class="btn btn-primary btn-xs comment-reply" data-toggle="tooltip" title="回复" data-source_id="{{ $article->id }}" data-to_user_id="{{ $collector->user_id }}" data-source_type="article" data-message="回复 {{ $collector->user->name }}"><i class="fa fa-comment-o"></i></button>
+                                        <button class="btn btn-primary btn-xs btn-verify-collect" data-toggle="tooltip" title="审核通过" data-source_id="{{ $collector->id }}"><i class="fa fa-check-square-o"></i></button>
+                                        <button class="btn btn-danger btn-xs btn-unverify-collect" data-toggle="tooltip" title="审核不通过" data-source_id="{{ $collector->id }}"><i class="fa fa-minus-square-o"></i></button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
                 </div>
-                @endif
             </div>
+
             <div class="widget-relation">
                 <div class="row">
                     <div class="col-md-6">
-                        <h4>你可能感兴趣的文章</h4>
+                        <h4>相关活动</h4>
                         <ul class="widget-links list-unstyled">
                             @foreach($relatedArticles as $relatedArticle)
                                 @if($relatedArticle->id != $article->id)
@@ -71,21 +84,7 @@
                             @endforeach
                         </ul>
                     </div>
-                    <div class="col-md-6">
-                        <h4>相关问题</h4>
-                        <ul class="widget-links list-unstyled">
-                            @foreach($relatedQuestions as $relatedQuestion)
-                                @if($relatedQuestion->id != $article->id)
-                                    <li class="widget-links-item">
-                                        <a title="{{ $relatedQuestion->title }}" href="{{ route('ask.question.detail',['question_id'=>$relatedQuestion->id]) }}">{{ $relatedQuestion->title }}</a>
-                                        <small class="text-muted">{{ $relatedQuestion->answers }} 回答</small>
-                                    </li>
-                                @endif
-                            @endforeach
-                        </ul>
-                    </div>
                 </div>
-
             </div>
             <div class="widget-answers mt-15">
                 <h2 class="h4 post-title">{{ $article->comments }} 条评论</h2>
@@ -97,7 +96,7 @@
         <div class="col-xs-12 col-md-3 side">
             <div class="widget-user">
                 <div class="media">
-                    <a class="pull-left" href="{{ route('auth.space.index',['user_id'=>$article->user_id]) }}"><img class="media-object avatar-64" src="{{ get_user_avatar($article->user_id) }}" alt="不写代码的码农"></a>
+                    <a class="pull-left" href="{{ route('auth.space.index',['user_id'=>$article->user_id]) }}"><img class="media-object avatar-64" src="{{ $article->user->avatar }}"></a>
                     <div class="media-body ">
                         <a href="{{ route('auth.space.index',['user_id'=>$article->user_id]) }}" class="media-heading">{{ $article->user->name }}</a>
                         @if($article->user->title)
@@ -107,21 +106,56 @@
                     </div>
                 </div>
             </div>
-            <div class="widget-box mt-30">
-                <h2 class="widget-box-title">
-                    作家榜
-                    <a href="{{ route('auth.top.articles') }}" title="更多">»</a>
-                </h2>
-                <ol class="widget-top10">
-                    @foreach($topUsers as $index => $topUser)
-                        <li class="text-muted">
-                            <img class="avatar-32" src="{{ get_user_avatar($topUser['id'],'middle') }}">
-                            <a href="{{ route('auth.space.index',['user_id'=>$topUser['id']]) }}" class="ellipsis">{{ $topUser['name'] }}</a>
-                            <span class="text-muted pull-right">{{ $topUser['articles'] }} 文章</span>
-                        </li>
-                    @endforeach
+        </div>
+    </div>
 
-                </ol>
+    <div class="modal fade" id="verify_modal" tabindex="-1"  role="dialog" aria-labelledby="change_category_modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">反馈信息</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="verify_modal_from" method="POST" action="{{ route('auth.collection.unverify') }}">
+                        {{ csrf_field() }}
+                        <input type="hidden" id="collect_id" name="collect_id" />
+                        <div class="form-group">
+                            <input type="checkbox" name="reject_enroll">不允许重新报名
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" id="message" placeholder="写下你的反馈" class="form-control"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="verify_modal_submit">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="verify_ok_modal" tabindex="-1"  role="dialog" aria-labelledby="change_category_modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">反馈信息</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="verify_ok_modal_from" method="POST" action="{{ route('auth.collection.verifyok') }}">
+                        {{ csrf_field() }}
+                        <input type="hidden" id="collect_ok_id" name="collect_id" />
+                        <div class="form-group">
+                            <textarea name="message" id="ok_message" placeholder="写下你的反馈" class="form-control"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="verify_ok_modal_submit">确认</button>
+                </div>
             </div>
         </div>
     </div>
@@ -146,40 +180,39 @@
                 $("#comment-content-"+source_id+"").val('');
             });
 
+            $("#verify_modal_submit").click(function(){
+                var message = $("#message").val();
 
-            /*文章推荐*/
-            $("#support-button").click(function() {
+                if( message ){
+                    $("#verify_modal_from").submit();
+                }else{
+                    alert("您没有输入任何内容");
+                }
+            });
+
+            $("#verify_ok_modal_submit").click(function(){
+                var message = $("#ok_message").val();
+
+                if( message ){
+                    $("#verify_ok_modal_from").submit();
+                }else{
+                    alert("您没有输入任何内容");
+                }
+            });
+
+            $(".thumbnail .btn-verify-collect").on("click",function(){
                 var btn_support = $(this);
-                var source_type = btn_support.data('source_type');
                 var source_id = btn_support.data('source_id');
-                var support_num = parseInt(btn_support.data('support_num'));
-                $.get('/support/' + source_type + '/' + source_id, function (msg) {
-                    if (msg == 'success') {
-                        support_num++
-                    }
-                    btn_support.html(support_num+' 已推荐');
-                    btn_support.data('support_num', support_num);
-                });
+                $('#collect_ok_id').val(source_id);
+                $('#verify_ok_modal').modal('show');
             });
 
-
-
-            /*收藏问题或文章*/
-            $("#collect-button").click(function(){
-                $("#collect-button").button('loading');
-                var source_type = $(this).data('source_type');
-                var source_id = $(this).data('source_id');
-                $.get('/collect/'+source_type+'/'+source_id,function(msg){
-                    $("#collect-button").removeClass('disabled');
-                    $("#collect-button").removeAttr('disabled');
-                    if(msg=='collected'){
-                        $("#collect-button").html('已收藏');
-                    }else{
-                        $("#collect-button").html('收藏');
-                    }
-                });
+            $(".thumbnail .btn-unverify-collect").on("click",function(){
+                var btn_support = $(this);
+                var source_id = btn_support.data('source_id');
+                $('#collect_id').val(source_id);
+                $('#verify_modal').modal('show');
             });
-
 
 
         });

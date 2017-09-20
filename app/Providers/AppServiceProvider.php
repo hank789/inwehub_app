@@ -4,6 +4,8 @@ namespace App\Providers;
 use App\Events\LogNotify;
 use App\Models\Answer;
 use App\Models\Authentication;
+use App\Models\Collection;
+use App\Models\Comment;
 use App\Models\Company\Company;
 use App\Models\Pay\Withdraw;
 use App\Models\Question;
@@ -15,6 +17,8 @@ use App\Models\UserInfo\ProjectInfo;
 use App\Models\UserInfo\TrainInfo;
 use App\Observers\AnswerObserver;
 use App\Observers\AuthenticationObserver;
+use App\Observers\CollectObserver;
+use App\Observers\CommentObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\QuestionInvitationObserver;
 use App\Observers\QuestionObserver;
@@ -46,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
 
         // 添加验证手机号码规则
         Validator::extend('cn_phone', function ($attribute, $value,$parameters, $validator) {
-            return preg_match('/^(\+?0?86\-?)?((13\d|14[57]|15[^4,\D]|17[5678]|18\d)\d{8}|170[059]\d{7})$/', $value);
+            return preg_match('/^(\+?0?86\-?)?((13\d|14[57]|15[^4,\D]|17[35678]|18\d)\d{8}|170[059]\d{7})$/', $value);
         });
 
         /*Queue::failing(function ($job) {
@@ -72,6 +76,8 @@ class AppServiceProvider extends ServiceProvider
         QuestionInvitation::observe(QuestionInvitationObserver::class);
         Company::observe(CompanyObserver::class);
         Withdraw::observe(WithdrawObserver::class);
+        Collection::observe(CollectObserver::class);
+        Comment::observe(CommentObserver::class);
     }
 
     /**

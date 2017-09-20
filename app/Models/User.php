@@ -605,8 +605,11 @@ class User extends Model implements AuthenticatableContract,
         return $name;
     }
 
-    public function getUserLevel(){
-        $credits = $this->userData->credits;
+    public function getUserLevel($credits = 0){
+        if ($credits == 0) {
+            $credits = $this->userData->credits;
+        }
+
         $level = 1;
         switch(true){
             case $credits <= 1000 :

@@ -6,6 +6,8 @@ use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Collection;
+use App\Models\Credit;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
@@ -13,6 +15,7 @@ use App\Models\Readhub\Comment;
 use App\Models\Readhub\ReadHubUser;
 use App\Models\Readhub\Submission;
 use App\Models\Tag;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\UserOauth;
 use App\Models\UserTag;
@@ -46,7 +49,7 @@ class ProfileController extends Controller
         $info['name'] = $user->name;
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
-        $info['avatar_url'] = $user->getAvatarUrl();
+        $info['avatar_url'] = $user->avatar;
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province']['key'] = $user->province;
@@ -123,9 +126,25 @@ class ProfileController extends Controller
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['tasks'] = $user->tasks->where('status',0)->count();
         $info['projects'] = $user->companyProjects->where('status','!=',0)->count();
-        $info['user_level'] = $user->getUserLevel();
+        $info['user_level'] = $user->userData->user_level;
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
+        $info['my_activity_enroll'] = Collection::where('user_id',$user->id)->where('source_type','App\Models\Article')->count();
+
+        $info['newbie_unfinish_tasks']= ['readhub_comment'=>false,'ask'=>false,'complete_userinfo'=>false];
+        $newbie_readhub_comment_task = Task::where('user_id',$user->id)->where('source_type','newbie_readhub_comment')->where('status',1)->first();
+        if ($newbie_readhub_comment_task) {
+            $info['newbie_unfinish_tasks']['readhub_comment'] = true;
+        }
+        $newbie_ask_task = Task::where('user_id',$user->id)->where('source_type','newbie_ask')->where('status',1)->first();
+        if ($newbie_ask_task) {
+            $info['newbie_unfinish_tasks']['ask'] = true;
+        }
+
+        $newbie_complete_userinfo_task = Task::where('user_id',$user->id)->where('source_type','newbie_complete_userinfo')->where('status',1)->first();
+        if ($newbie_complete_userinfo_task) {
+            $info['newbie_unfinish_tasks']['complete_userinfo'] = true;
+        }
 
         $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
         $job_desc = '';
@@ -200,7 +219,7 @@ class ProfileController extends Controller
         $info['name'] = $user->name;
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
-        $info['avatar_url'] = $user->getAvatarUrl();
+        $info['avatar_url'] = $user->avatar;
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province']['key'] = $user->province;
@@ -242,7 +261,7 @@ class ProfileController extends Controller
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['projects'] = $user->companyProjects->count();
-        $info['user_level'] = $user->getUserLevel();
+        $info['user_level'] = $user->userData->user_level;
         $info['is_job_info_public'] = $user->userData->job_public;
         $info['is_project_info_public'] = $user->userData->project_public;
         $info['is_edu_info_public'] = $user->userData->edu_public;
@@ -402,7 +421,7 @@ class ProfileController extends Controller
         UserCache::delUserInfoCache($user_id);
         if($upload_count == 1){
             //只有首次上传头像才加积分
-            $this->credit($user_id,'upload_avatar');
+            $this->credit($user_id,Credit::KEY_UPLOAD_AVATAR);
         }
         $percent = $request->user()->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user_id,$percent);

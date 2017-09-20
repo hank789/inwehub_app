@@ -30,6 +30,12 @@ class CouponController extends Controller {
                         'expire_at' => date('Y-m-d H:i:s',strtotime('+72 hours')),
                         'days' => 3
                     ]);
+                } else {
+                    if ($coupon->coupon_status == Coupon::COUPON_STATUS_EXPIRED) {
+                        $coupon->coupon_status = Coupon::COUPON_STATUS_PENDING;
+                    }
+                    $coupon->expire_at = date('Y-m-d H:i:s',strtotime('+72 hours'));
+                    $coupon->save();
                 }
                 break;
         }

@@ -63,6 +63,7 @@ class ReadHubUser extends Model {
                 $exist->email = $user->email;
             }
             $exist->avatar = $user->avatar;
+            $exist->user_level = $user->userData->user_level;
             $exist->save();
         } else {
             ReadHubUser::create([

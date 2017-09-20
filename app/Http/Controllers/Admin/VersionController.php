@@ -14,8 +14,8 @@ class VersionController extends AdminController
     protected $validateRules = [
         'app_version'        => 'required|regex:/^([0-9]+.[0-9]+.[0-9])/',
         'package_url' => 'required|max:255',
-        'is_ios_force' => 'required|in:0,1',
-        'is_android_force' => 'required|in:0,1',
+        'is_ios_force' => 'required|in:0,1,2',
+        'is_android_force' => 'required|in:0,1,2',
         'update_msg' => 'required|max:255',
     ];
 
