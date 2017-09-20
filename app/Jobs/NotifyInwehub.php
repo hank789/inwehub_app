@@ -54,7 +54,7 @@ class NotifyInwehub implements ShouldQueue
         switch ($class){
             case 'NewComment':
                 event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_COMMENT),$this->message['commnet_id'],''));
-                if (Redis::connection()->hget('user.'.$this->user_id.'.data', 'commentsCount') <= 1) {
+                if (Redis::connection()->hget('user.'.$this->user_id.'.data', 'commentsCount') <= 2) {
                     TaskLogic::finishTask('newbie_readhub_comment',0,'newbie_readhub_comment',[$this->user_id]);
                 }
                 return;
