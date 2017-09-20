@@ -35,7 +35,9 @@ class RefreshUserLoginToken extends Command
         $users = User::all();
         foreach($users as $user){
             try {
-                $JWTAuth->refresh($user->last_login_token);
+                if ($user->last_login_token) {
+                    $JWTAuth->refresh($user->last_login_token);
+                }
             } catch (\Exception $e){
                 \Log::error($e->getMessage());
             }

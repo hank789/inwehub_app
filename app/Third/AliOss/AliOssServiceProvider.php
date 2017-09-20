@@ -31,7 +31,6 @@ class AliOssServiceProvider extends ServiceProvider
 
         Storage::extend('oss', function($app, $config)
         {
-            Log::info('test',$config);
             $accessId  = $config['access_id'];
             $accessKey = $config['access_key'];
             $endPoint  = $config['endpoint']; // 默认作为外部节点
