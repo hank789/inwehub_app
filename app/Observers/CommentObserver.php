@@ -25,17 +25,24 @@ class CommentObserver implements ShouldQueue {
      */
     public function created(Comment $comment)
     {
-        $article = $comment->source()->first();
-        $fields[] = [
-            'title' => '活动标题',
-            'value' => $article->title,
-            'short' => false
-        ];
-        $fields[] = [
-            'title' => '活动地址',
-            'value' => route('blog.article.detail',['id'=>$article->id]),
-            'short' => false
-        ];
+        $source = $comment->source()->first();
+        switch ($comment->source_type) {
+            case 'App\Models\Article':
+                $fields[] = [
+                    'title' => '活动标题',
+                    'value' => $source->title,
+                    'short' => false
+                ];
+                $fields[] = [
+                    'title' => '活动地址',
+                    'value' => route('blog.article.detail',['id'=>$source->id]),
+                    'short' => false
+                ];
+                break;
+            default:
+                return;
+        }
+
         $fields[] = [
             'title' => '评论内容',
             'value' => $comment->content,

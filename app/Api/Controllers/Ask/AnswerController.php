@@ -4,13 +4,16 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\MoneyLogLogic;
+use App\Logic\PayQueryLogic;
 use App\Logic\QuillLogic;
 use App\Logic\WechatNotice;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
+use App\Models\Pay\Order;
 use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
@@ -206,8 +209,6 @@ class AnswerController extends Controller
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
             $query = $query->where('id','<',$bottom_id);
-        }else{
-            $query = $query->where('id','>',0);
         }
 
         $answers = $query->orderBy('id','DESC')->paginate(10);
@@ -236,10 +237,11 @@ class AnswerController extends Controller
             }
             $list[] = [
                 'id' => $answer->id,
+                'question_type' => $question->question_type,
                 'question_id' => $question->id,
                 'user_id' => $question->user_id,
                 'user_name' => $question->hide ? '匿名' : $question->user->name,
-                'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
+                'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
                 'description'  => $question->title,
                 'answer_content' => $answer->status ==1 ? $answer->getContentText():'',
                 'tags' => $question->tags()->pluck('name'),
@@ -263,10 +265,8 @@ class AnswerController extends Controller
             'rate_star' => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        $answer = Answer::find($request->input('answer_id'));
-        if(empty($answer)){
-            abort(404);
-        }
+        $answer = Answer::findOrFail($request->input('answer_id'));
+
         $loginUser = $request->user();
         if($answer->question->user->id != $loginUser->id){
             throw new ApiException(ApiException::BAD_REQUEST);
@@ -313,4 +313,126 @@ class AnswerController extends Controller
         ]);
 
     }
+
+
+
+    //付费围观
+    public function payForView(Request $request) {
+        $validateRules = [
+            'order_id'    => 'required|integer',
+            'answer_id' => 'required|integer',
+            'device' => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        //查看支付订单是否成功
+        $order = Order::find($request->input('order_id'));
+        if(empty($order) && Setting()->get('need_pay_actual',1)){
+            throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
+        }
+
+        //如果订单存在且状态为处理中,有可能还未回调
+        if($order && $order->status == Order::PAY_STATUS_PROCESS && Setting()->get('need_pay_actual',1)){
+            if (PayQueryLogic::queryWechatPayOrder($order->id)){
+
+            } else {
+                $data['status'] = 0;
+                \Log::error('付费围观支付订单还在处理中',[$request->all()]);
+                throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
+            }
+        }
+
+        $answer = Answer::findOrFail($request->input('answer_id'));
+        $loginUser = $request->user();
+        if ($order->user_id != $loginUser->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $answer->orders()->attach($order->id);
+        //记录动态
+        $this->doing($loginUser->user_id,'pay_for_view_question_answer',get_class($answer),$answer->id,$answer->question->title,'');
+
+        return self::createJsonData(true,[
+            'question_id' => $answer->question_id,
+            'answer_id'   => $answer->id
+        ]);
+    }
+
+    //问答留言列表
+    public function commentList(Request $request) {
+        $validateRules = [
+            'answer_id'    => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $data = $request->all();
+
+        $source  = Answer::find($data['answer_id']);
+        if (!$source) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $user_id = $request->user()->id;
+        //只有问题作者，回答者，付费围观的人才能看到回复
+        $is_question_author = $user_id == $source->question->user_id;
+        $is_answer_author = $user_id == $source->user_id;
+        if (!($is_question_author || $is_answer_author)) {
+            $payOrder = $source->orders()->where('return_param','view_answer')->first();
+            if (!$payOrder) {
+                return [];
+            }
+        }
+
+        $comments = $source->comments()->orderBy('created_at','desc')->simplePaginate(10);
+        $return = $comments->toArray();
+        $return['data'] = [];
+
+        foreach ($comments as $comment) {
+            $return['data'][] = [
+                'id' => $comment->id,
+                'user_id' => $comment->user_id,
+                'user_name' => $comment->user->name,
+                'user_avatar_url' => $comment->user->avatar,
+                'content'   => $comment->content,
+                'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
+            ];
+        }
+
+        return self::createJsonData(true,  $return);
+    }
+
+    //问答留言
+    public function comment(Request $request) {
+        /*问题创建校验*/
+        $validateRules = [
+            'answer_id'    => 'required|integer',
+            'content' => 'required|max:10000',
+        ];
+
+        $this->validate($request,$validateRules);
+        $data = $request->all();
+
+        $source  = Answer::find($data['answer_id']);
+        if (!$source) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $data = [
+            'user_id'     => $request->user()->id,
+            'content'     => $data['content'],
+            'source_id'   => $data['answer_id'],
+            'source_type' => get_class($source),
+            'to_user_id'  => 0,
+            'status'      => 1,
+            'supports'    => 0
+        ];
+
+
+        $comment = Comment::create($data);
+        /*问题、回答、文章评论数+1*/
+        $comment->source()->increment('comments');
+
+        return self::createJsonData(true,[
+            'tips'=>'评论成功',
+            'comment_id' => $comment->id,
+            'created_at' => date('Y/m/d H:i',strtotime($comment->created_at)),
+            'user_name'  => $request->user()->name
+        ]);
+    }
+
 }

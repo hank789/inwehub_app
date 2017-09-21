@@ -86,7 +86,11 @@ class PayController extends Controller {
                 }
                 $config = config('payment.iap');
                 $ids = $config['ids'];
-                $iap_id = $ids[$amount];
+                if ($data['pay_object_type'] == 'view_answer') {
+                    $iap_id = $ids['qa_see1'];
+                } else {
+                    $iap_id = $ids[$amount];
+                }
                 $channel_type = Order::PAY_CHANNEL_IOS_IAP;
                 break;
             default:
@@ -96,6 +100,10 @@ class PayController extends Controller {
         switch($data['pay_object_type']){
             case 'ask':
                 $subject = 'Inwehub-付费提问';
+                $body = $subject;
+                break;
+            case 'view_answer':
+                $subject = 'Inwehub-付费围观';
                 $body = $subject;
                 break;
             default:
