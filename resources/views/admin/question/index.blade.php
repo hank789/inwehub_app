@@ -27,7 +27,8 @@
                             <div class="col-xs-2">
                                 <div class="btn-group">
                                     <a href="{{ route('ask.question.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="发起提问"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.question.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-heart-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                 </div>
                             </div>
@@ -74,13 +75,14 @@
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>ID</th>
-                                        <th>悬赏</th>
-                                        <th>分类</th>
+                                        <th>金额</th>
+                                        <th>标签</th>
+                                        <th>类型</th>
                                         <th style="width: 25%">标题</th>
                                         <th>提问人</th>
                                         <th>匿名</th>
                                         <th>拒绝/邀请</th>
-                                        <th>回答/查看</th>
+                                        <th>回答</th>
                                         <th>承诺时间</th>
                                         <th>创建时间</th>
                                         <th>状态</th>
@@ -92,14 +94,15 @@
                                             <td>{{ $question->id }}</td>
                                             <td><span class="text-gold"><i class="fa fa-database"></i> {{ $question->price }}</span></td>
                                             <td>@if( $question->category ) {{ $question->category->name }} | {{ implode(',',$question->tags->pluck('name')->toArray()) }} @else 无 @endif</td>
+                                            <td>{{ $question->question_type == 1 ? '专业问答':'悬赏问答' }}</td>
                                             <td style="width: 25%"><a href="{{ route('ask.question.detail',['id'=>$question->id]) }}" target="_blank">{{ $question->title }}</a></td>
                                             <td>{{ $question->user->name }}<span class="text-muted">[UID:{{ $question->user_id }}]</span></td>
                                             <td>{{ $question->hide ? '匿名':'非匿名' }}</td>
                                             <td>{{ $question->invitations()->where('status',2)->count() }} / {{ $question->invitations()->count() }}</td>
-                                            <td>{{ $question->answers }} / {{ $question->views }}</td>
+                                            <td>{{ $question->answers }}</td>
                                             <td>{{ $question->status >=6 ?$question->answers()->where('adopted_at','>',0)->first()->promise_time:'' }}</td>
                                             <td>{{ timestamp_format($question->created_at) }}</td>
-                                            <td><span class="label @if($question->status===0) label-danger @elseif($question->status===1) label-warning @else label-success @endif">{{ trans_question_status($question->status) }}</span> </td>
+                                            <td><span class="label @if($question->status===0) label-danger @elseif($question->status===1) label-warning @else label-success @endif">{{ trans_question_status($question->status).($question->is_recommend?' | 已推荐':'').($question->is_hot?' | 热门':'') }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     @if( !in_array($question->status, [4,6,7]) )
@@ -120,7 +123,8 @@
                             <div class="col-sm-3">
                                 <div class="btn-group">
                                     <a href="{{ route('ask.question.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="发起提问"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.question.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-heart-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                 </div>
                             </div>
