@@ -1,5 +1,6 @@
 <?php namespace App\Listeners\Frontend\Answer;
 use App\Events\Frontend\Answer\Feedback;
+use App\Events\Frontend\Answer\PayForView;
 use App\Logic\QuestionLogic;
 use App\Models\Answer;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,6 +42,15 @@ class AnswerEventListener implements ShouldQueue
     }
 
     /**
+     * @param PayForView $event
+     */
+    public function payForView($event) {
+        $order = $event->order;
+        $answer = $order->answer()->first();
+        QuestionLogic::slackMsg($answer->question,[])->send('用户['.$order->user->name.']付费围观了回答');
+    }
+
+    /**
      * Register the listeners for the subscriber.
      *
      * @param \Illuminate\Events\Dispatcher $events
@@ -50,6 +60,10 @@ class AnswerEventListener implements ShouldQueue
         $events->listen(
             Feedback::class,
             'App\Listeners\Frontend\Answer\AnswerEventListener@feedback'
+        );
+        $events->listen(
+            PayForView::class,
+            'App\Listeners\Frontend\Answer\AnswerEventListener@payForView'
         );
     }
 }

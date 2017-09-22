@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Ask;
 
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\Answer\PayForView;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\MoneyLogLogic;
@@ -352,6 +353,7 @@ class AnswerController extends Controller
         //记录动态
         $this->doing($loginUser->user_id,'pay_for_view_question_answer',get_class($answer),$answer->id,$answer->question->title,'');
 
+        event(new PayForView($order));
         return self::createJsonData(true,[
             'question_id' => $answer->question_id,
             'answer_id'   => $answer->id
