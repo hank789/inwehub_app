@@ -80,6 +80,9 @@ Route::group(['namespace'=>'Finance'],function(){
     Route::get('finance/setting/index',['as'=>'admin.finance.setting.index','uses'=>'SettingController@index']);
     Route::post('finance/setting/index',['as'=>'admin.finance.setting.index','uses'=>'SettingController@index']);
 
+    Route::get('order/index',['as'=>'admin.finance.order.index','uses'=>'OrderController@index']);
+
+
     //结算管理
     Route::get('settlement/index',['as'=>'admin.finance.settlement.index','uses'=>'SettlementController@index']);
     Route::post('settlement/destroy',['as'=>'admin.finance.settlement.destroy','uses'=>'SettlementController@destroy']);

@@ -500,14 +500,20 @@ class QuestionController extends Controller
     public function majorList(Request $request) {
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
-        $query = Question::where('is_recommend',1);
+        $tag_id = $request->input('tag_id',0);
+
+        $query = Question::where('questions.is_recommend',1);
         if($top_id){
-            $query = $query->where('id','>',$top_id);
+            $query = $query->where('questions.id','>',$top_id);
         }elseif($bottom_id){
-            $query = $query->where('id','<',$bottom_id);
+            $query = $query->where('questions.id','<',$bottom_id);
         }
 
-        $questions = $query->orderBy('id','desc')->paginate(10);
+        if ($tag_id) {
+            $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
+        }
+
+        $questions = $query->orderBy('questions.id','desc')->paginate(10);
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/

@@ -96,6 +96,8 @@
             <li><a href="{{ route('admin.finance.setting.index') }}"><i class="fa fa-circle-o"></i> 参数设置</a></li>
             <li><a href="{{ route('admin.finance.settlement.index') }}"><i class="fa fa-circle-o"></i> 结算管理</a></li>
             <li><a href="{{ route('admin.finance.withdraw.index') }}"><i class="fa fa-circle-o"></i> 提现管理</a></li>
+            <li><a href="{{ route('admin.finance.order.index') }}"><i class="fa fa-circle-o"></i> 支付订单</a></li>
+
         </ul>
     </li>
 

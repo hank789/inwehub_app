@@ -347,6 +347,8 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $answer->orders()->attach($order->id);
+        //进入结算中心
+        Settlement::payForViewSettlement($order);
         //记录动态
         $this->doing($loginUser->user_id,'pay_for_view_question_answer',get_class($answer),$answer->id,$answer->question->title,'');
 
