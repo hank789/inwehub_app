@@ -27,6 +27,7 @@ use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AnswerController extends Controller
@@ -37,6 +38,20 @@ class AnswerController extends Controller
         'question_id' => 'required'
     ];
 
+
+    public function saveDraft(Request $request) {
+        $loginUser = $request->user();
+        $key = 'draft:answer:question:'.$request->get('question_id').':user:'.$loginUser->id;
+        Cache::put($key,$request->get('description'));
+        return self::createJsonData(true);
+    }
+
+    public function getDraft(Request $request) {
+        $loginUser = $request->user();
+        $key = 'draft:answer:question:'.$request->get('question_id').':user:'.$loginUser->id;
+        $draftContent = Cache::get($key);
+        return self::createJsonData(true,['draftContent'=>$draftContent]);
+    }
 
     /**
      * Store a newly created resource in storage.

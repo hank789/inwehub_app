@@ -2,15 +2,12 @@
 
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
-use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
 use App\Logic\TaskLogic;
-use App\Logic\WechatNotice;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
-use App\Models\Category;
 use App\Models\Credit;
 use App\Models\Pay\Order;
 use App\Models\Question;
@@ -22,14 +19,6 @@ use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Payment\Client\Query;
-use Payment\Config;
-
 class QuestionController extends Controller
 {
 
@@ -40,8 +29,6 @@ class QuestionController extends Controller
         'price'=> 'required|between:1,388',
         'tags' => 'required'
     ];
-
-    protected $draftQuestionCacheKey = 'question:draft:';
 
     /**
      * 问题详情查看
@@ -169,14 +156,6 @@ class QuestionController extends Controller
 
     }
 
-
-    public function draft(Request $request) {
-        $loginUser = $request->user();
-        $key = $this->draftQuestionCacheKey.$loginUser->id;
-        Cache::put($key,$request->get('description'));
-        return self::createJsonData(true);
-    }
-
     /**
      * 请求创建问题
      */
@@ -197,9 +176,7 @@ class QuestionController extends Controller
         if($coupon && $coupon->expire_at > date('Y-m-d H:i:s')){
             $show_free_ask = true;
         }
-        $draft_content = Cache::get($this->draftQuestionCacheKey.$user->id);
 
-        $tags['draft_content'] = $draft_content;
         $tags['pay_items'] = [
             [
                 'value'=>88,
@@ -318,10 +295,6 @@ class QuestionController extends Controller
 
             //记录动态
             $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
-
-
-            //情况暂存内容
-            Cache::put($this->draftQuestionCacheKey.$loginUser->id,'');
 
             $waiting_second = rand(1,5);
 

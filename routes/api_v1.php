@@ -137,8 +137,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('answer/commentList','AnswerController@commentList');
     //问答留言
     Route::post('answer/comment','AnswerController@comment');
-    //问题暂存
-    Route::post('question/draft','QuestionController@draft');
+    //回答暂存
+    Route::post('answer/saveDraft','AnswerController@saveDraft');
+    //取得回答暂存内容
+    Route::post('answer/getDraft','AnswerController@getDraft');
 
 
 });
