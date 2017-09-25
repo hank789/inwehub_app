@@ -40,6 +40,7 @@ class IndexController extends Controller {
                 'created_at' => (string)$question->created_at,
                 'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
+                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
                 'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
                 'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',

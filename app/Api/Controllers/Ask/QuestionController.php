@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Payment\Client\Query;
@@ -166,6 +167,13 @@ class QuestionController extends Controller
 
     }
 
+
+    public function draft(Request $request) {
+        $loginUser = $request->user();
+        $key = 'question:draft:'.$loginUser->id;
+        $draft = Cache::put($key,$request->get('draft_content'));
+
+    }
 
     /**
      * 请求创建问题
@@ -535,6 +543,7 @@ class QuestionController extends Controller
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
                 'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
                 'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
+                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
                 'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
             ];
@@ -566,6 +575,7 @@ class QuestionController extends Controller
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
                 'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
                 'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
+                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
                 'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
             ];
