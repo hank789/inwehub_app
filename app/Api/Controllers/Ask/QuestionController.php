@@ -8,6 +8,7 @@ use App\Logic\TagsLogic;
 use App\Logic\TaskLogic;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
+use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Pay\Order;
 use App\Models\Question;
@@ -93,6 +94,8 @@ class QuestionController extends Controller
             if ($payOrder) {
                 $is_pay_for_view = true;
             }
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($bestAnswer->user))->where('source_id','=',$bestAnswer->user_id)->first();
+
             $answers_data[] = [
                 'id' => $bestAnswer->id,
                 'user_id' => $bestAnswer->user_id,
@@ -104,6 +107,7 @@ class QuestionController extends Controller
                 'is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
                 'content' => ($is_self || $is_answer_author || $is_pay_for_view) ? $bestAnswer->content : '',
                 'promise_time' => $bestAnswer->promise_time,
+                'is_followed' => $attention?1:0,
                 'support_number' => $bestAnswer->supports,
                 'view_number'    => $bestAnswer->views,
                 'comment_number' => $bestAnswer->comments,
@@ -123,6 +127,8 @@ class QuestionController extends Controller
             'question_type' => $question->question_type,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
             'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
+            'title' => $question->hide ? '保密' : $question->user->title,
+            'company' => $question->hide ? '保密' : $question->user->company,
             'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
             'tags' => $question->tags()->pluck('name'),

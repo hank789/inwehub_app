@@ -46,6 +46,12 @@
                                             <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                         </div>
                                         <div class="col-xs-2">
+                                            <div class="radio">
+                                                <label><input type="checkbox" name="is_hot" value="1" @if ( $user->gender === 1) checked @endif >热门</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="checkbox" name="is_recommend" value="1" @if ( $user->gender === 2) checked @endif >推荐</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
                                             <select class="form-control" name="status">
                                                 <option value="-1">不选择</option>
                                                 @foreach(trans_question_status('all') as $key => $status)
