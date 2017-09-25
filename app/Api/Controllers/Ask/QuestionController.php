@@ -41,6 +41,8 @@ class QuestionController extends Controller
         'tags' => 'required'
     ];
 
+    protected $draftQuestionCacheKey = 'question:draft:';
+
     /**
      * 问题详情查看
      */
@@ -170,7 +172,7 @@ class QuestionController extends Controller
 
     public function draft(Request $request) {
         $loginUser = $request->user();
-        $key = 'question:draft:'.$loginUser->id;
+        $key = $this->draftQuestionCacheKey.$loginUser->id;
         Cache::put($key,$request->get('description'));
         return self::createJsonData(true);
     }
@@ -195,7 +197,7 @@ class QuestionController extends Controller
         if($coupon && $coupon->expire_at > date('Y-m-d H:i:s')){
             $show_free_ask = true;
         }
-        $draft_content = Cache::get('question:draft:'.$user->id);
+        $draft_content = Cache::get($this->draftQuestionCacheKey.$user->id);
 
         $tags['draft_content'] = $draft_content;
         $tags['pay_items'] = [
@@ -316,6 +318,10 @@ class QuestionController extends Controller
 
             //记录动态
             $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
+
+
+            //情况暂存内容
+            Cache::put($this->draftQuestionCacheKey.$loginUser->id,'');
 
             $waiting_second = rand(1,5);
 
