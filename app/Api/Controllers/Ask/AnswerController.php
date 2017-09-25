@@ -219,8 +219,24 @@ class AnswerController extends Controller
     {
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
+        $type = $request->input('type',0);
 
-        $query = Answer::where('user_id','=',$request->user()->id)->whereIn('status',[0,1,3]);
+        $query = Answer::where('user_id','=',$request->user()->id);
+
+        switch($type){
+            case 1:
+                //未完成
+                $query = $query->where('status',3);
+                break;
+            case 2:
+                //已完成
+                $query = $query->where('status',1);
+                break;
+            default:
+                $query = $query->where('status',3);
+                break;
+        }
+
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
@@ -258,9 +274,7 @@ class AnswerController extends Controller
                 'user_id' => $question->user_id,
                 'user_name' => $question->hide ? '匿名' : $question->user->name,
                 'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
-                'description'  => $question->title,
-                'answer_content' => $answer->status ==1 ? $answer->getContentText():'',
-                'tags' => $question->tags()->pluck('name'),
+                'description'  => $question->getFormatTitle(),
                 'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,

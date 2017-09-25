@@ -325,5 +325,18 @@ class Question extends Model
         return $this->hasMany('App\Models\QuestionInvitation','question_id');
     }
 
+    public function getFormatTitle() {
+        switch ($this->question_type) {
+            case 1:
+                //专业回答
+                return '专业问答 | '.$this->title;
+                break;
+            case 2:
+                return '悬赏问答 | '.$this->title;
+                break;
+        }
+        return $this->title;
+    }
+
 
 }
