@@ -48,6 +48,14 @@ class QuestionController extends AdminController
             $query->where('category_id','=',$filter['category_id']);
         }
 
+        if( isset($filter['is_hot']) && $filter['is_hot']> 0 ){
+            $query->where('is_hot','=',1);
+        }
+
+        if( isset($filter['is_recommend']) && $filter['is_recommend']> 0 ){
+            $query->where('is_recommend','=',1);
+        }
+
         $questions = $query->orderBy('created_at','desc')->paginate(20);
         return view("admin.question.index")->with('questions',$questions)->with('filter',$filter);
     }

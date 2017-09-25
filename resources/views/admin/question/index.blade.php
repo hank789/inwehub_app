@@ -46,9 +46,9 @@
                                             <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                         </div>
                                         <div class="col-xs-2">
-                                            <div class="radio">
-                                                <label><input type="checkbox" name="is_hot" value="1" @if ( $user->gender === 1) checked @endif >热门</label>&nbsp;&nbsp;&nbsp;&nbsp;
-                                                <label><input type="checkbox" name="is_recommend" value="1" @if ( $user->gender === 2) checked @endif >推荐</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <div>
+                                                <label><input type="checkbox" name="is_hot" value="1" @if ( $filter['is_hot']??0) checked @endif >热门</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="checkbox" name="is_recommend" value="1" @if ( $filter['is_recommend']??0) checked @endif >推荐</label>&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                         </div>
                                         <div class="col-xs-2">
@@ -57,12 +57,6 @@
                                                 @foreach(trans_question_status('all') as $key => $status)
                                                 <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
                                                 @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-xs-2">
-                                            <select class="form-control" name="category_id">
-                                                <option value="-1">--分类--</option>
-                                                @include('admin.category.option',['type'=>'questions','select_id'=>$filter['category_id'],'root'=>false])
                                             </select>
                                         </div>
                                         <div class="col-xs-1">
