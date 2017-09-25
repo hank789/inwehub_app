@@ -171,8 +171,8 @@ class QuestionController extends Controller
     public function draft(Request $request) {
         $loginUser = $request->user();
         $key = 'question:draft:'.$loginUser->id;
-        $draft = Cache::put($key,$request->get('draft_content'));
-
+        Cache::put($key,$request->get('description'));
+        return self::createJsonData(true);
     }
 
     /**
@@ -195,7 +195,9 @@ class QuestionController extends Controller
         if($coupon && $coupon->expire_at > date('Y-m-d H:i:s')){
             $show_free_ask = true;
         }
+        $draft_content = Cache::get('question:draft:'.$user->id);
 
+        $tags['draft_content'] = $draft_content;
         $tags['pay_items'] = [
             [
                 'value'=>88,
