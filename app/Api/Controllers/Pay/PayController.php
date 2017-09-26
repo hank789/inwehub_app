@@ -26,7 +26,7 @@ class PayController extends Controller {
             'app_id' => 'required',
             'amount' => 'required|integer',
             'pay_channel' => 'required|in:alipay,wxpay,appleiap,wx_pub',
-            'pay_object_type' => 'required|in:ask,view_answer',
+            'pay_object_type' => 'required|in:ask,view_answer,free_ask',
             'pay_object_id'   => 'required_if:pay_object_type,view_answer'
         ];
         $this->validate($request, $validateRules);
@@ -118,6 +118,12 @@ class PayController extends Controller {
                         'debug'       => 1
                     ]);
                 }
+                break;
+            case 'free_ask':
+                //免费问答
+                $subject = 'Inwehub-免费提问';
+                $body = $subject;
+                $need_pay_actual = false;
                 break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_PAY_TYPE);

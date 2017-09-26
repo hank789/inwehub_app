@@ -61,8 +61,8 @@ class QuestionController extends Controller
             $this->readNotifications($question->id,'question');
         }
 
-        //已经回答的问题其他人都能看,没回答的问题只有邀请者才能看
-        if ($question->status < 6) {
+        //已经回答的问题其他人都能看,没回答的问题只有邀请者才能看(付费专业问答)
+        if ($question->question_type == 1 && $question->status < 6) {
             //问题作者或邀请者才能看
             $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
             if(empty($question_invitation) && !$is_self){
@@ -149,7 +149,7 @@ class QuestionController extends Controller
         ];
 
 
-        $timeline = $is_self ? $question->formatTimeline() : [];
+        $timeline = $is_self && $question->question_type == 1 ? $question->formatTimeline() : [];
 
         //feedback
         $feedback_data = [];
@@ -265,6 +265,7 @@ class QuestionController extends Controller
             'user_id'      => $loginUser->id,
             'category_id'      => $category_id,
             'title'        => trim($request->input('description')),
+            'question_type' => $request->input('question_type',1),
             'price'        => $price,
             'hide'         => intval($request->input('hide')),
             'status'       => 1,
@@ -306,9 +307,13 @@ class QuestionController extends Controller
             if($order){
                 $question->orders()->attach($order->id);
             }
+            $doing_prefix = '';
+            if ($question->question_type == 2) {
+                $doing_prefix = 'free_';
+            }
 
             //记录动态
-            $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
+            $this->doing($question->user_id,$doing_prefix.'question_submit',get_class($question),$question->id,$question->title,'');
 
             $waiting_second = rand(1,5);
 
@@ -325,7 +330,7 @@ class QuestionController extends Controller
                 return self::createJsonData(true,$res_data,ApiException::SUCCESS,'发起提问成功!');
             }
 
-            if(!$to_user_uuid){
+            if($question->question_type == 1 && !$to_user_uuid){
                 $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
                 $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
                 $doing_obj->save();
@@ -371,8 +376,8 @@ class QuestionController extends Controller
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
                 //通知
                 $toUser->notify(new NewQuestionInvitation($toUser->id,$question));
-            }else{
-                //非定向邀请的自动匹配一次
+            }elseif ($question->question_type == 1){
+                //专业问答非定向邀请的自动匹配一次
                 event(new AutoInvitation($question));
             }
 

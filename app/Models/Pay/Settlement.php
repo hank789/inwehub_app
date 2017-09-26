@@ -28,6 +28,8 @@ class Settlement extends Model {
 
     //回答结算
     public static function answerSettlement(Answer $answer){
+        if ($answer->question->price <=0) return;
+
         $settlement_date = Setting()->get('pay_settlement_cycle',5);
 
         $object = self::create([

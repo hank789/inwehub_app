@@ -60,28 +60,34 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
+        $this->validate($request,$this->validateRules);
+
         $question_id = $request->input('question_id');
         $question = Question::find($question_id);
 
         if(empty($question)){
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
-        $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
-        if(empty($question_invitation)){
-            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
-        }
 
-        $this->validate($request,$this->validateRules);
         $lock_key = 'question_answer_action';
-        RateLimiter::instance()->lock_acquire($lock_key,1,20);
-        if($question_invitation->status == QuestionInvitation::STATUS_ANSWERED){
-            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
-        }
-        //检查问题是否已经被其它人回答
-        $exit_answers = Answer::where('question_id',$question_id)->whereIn('status',[1,3])->where('user_id','!=',$loginUser->id)->get()->last();
-        if($exit_answers){
-            RateLimiter::instance()->lock_release($lock_key);
-            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+        $doing_prefix = '';
+
+        if ($question->question_type == 1) {
+            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
+            if(empty($question_invitation)){
+                throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+            }
+
+            RateLimiter::instance()->lock_acquire($lock_key,1,20);
+            if($question_invitation->status == QuestionInvitation::STATUS_ANSWERED){
+                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
+            }
+            //检查问题是否已经被其它人回答
+            $exit_answers = Answer::where('question_id',$question_id)->whereIn('status',[1,3])->where('user_id','!=',$loginUser->id)->get()->last();
+            if($exit_answers){
+                RateLimiter::instance()->lock_release($lock_key);
+                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+            }
         }
 
         $promise_time = $request->input('promise_time');
@@ -101,31 +107,40 @@ class AnswerController extends Controller
             'user_id'      => $loginUser->id,
             'question_id'      => $question_id,
             'content'  => $answerContent,
+            'status'   => Answer::ANSWER_STATUS_FINISH,
             'device'       => intval($request->input('device'))
         ];
 
-        //先检查是否已有回答
-        $answer = Answer::where('question_id',$question_id)->where('user_id',$loginUser->id)->get()->last();
+        if ($question->question_type == 1) {
+            //付费专业问答
+            //先检查是否已有回答
+            $answer = Answer::where('question_id',$question_id)->where('user_id',$loginUser->id)->get()->last();
 
-        if(!$answer){
-            if($promise_time){
-                if(strlen($promise_time) != 4) {
-                    throw new ApiException(ApiException::ASK_ANSWER_PROMISE_TIME_INVALID);
+            if(!$answer){
+                if($promise_time){
+                    if(strlen($promise_time) != 4) {
+                        throw new ApiException(ApiException::ASK_ANSWER_PROMISE_TIME_INVALID);
+                    }
+                    $hours = substr($promise_time,0,2);
+                    $minutes = substr($promise_time,2,2);
+                    $data['promise_time'] = date('Y-m-d H:i:00',strtotime('+ '.$hours.' hours + '.$minutes.' minutes'));
+                    $data['status'] = Answer::ANSWER_STATUS_PROMISE;
+                    $data['content'] = '承诺在:'.$data['promise_time'].'前回答该问题';
+                }else{
+                    $data['adopted_at'] = date('Y-m-d H:i:s');
+                    $data['status'] = Answer::ANSWER_STATUS_FINISH;
                 }
-                $hours = substr($promise_time,0,2);
-                $minutes = substr($promise_time,2,2);
-                $data['promise_time'] = date('Y-m-d H:i:00',strtotime('+ '.$hours.' hours + '.$minutes.' minutes'));
-                $data['status'] = Answer::ANSWER_STATUS_PROMISE;
-                $data['content'] = '承诺在:'.$data['promise_time'].'前回答该问题';
-            }else{
-                $data['adopted_at'] = date('Y-m-d H:i:s');
-                $data['status'] = Answer::ANSWER_STATUS_FINISH;
+                $answer = Answer::create($data);
+            }elseif($promise_time){
+                //重复响应
+                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_SELF_CONFIRMED);
             }
+        } else {
+            $doing_prefix = 'free_';
+            //互助问答
             $answer = Answer::create($data);
-        }elseif($promise_time){
-            //重复响应
-            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_SELF_CONFIRMED);
         }
+
 
         if($answer){
             if(empty($promise_time)){
@@ -138,19 +153,23 @@ class AnswerController extends Controller
                 //问题变为已回答
                 $question->answered();
 
-                $answer->status = Answer::ANSWER_STATUS_FINISH;
-                $answer->content = $answerContent;
-                $answer->adopted_at = date('Y-m-d H:i:s');
-                $answer->save();
+                if ($question->question_type == 1) {
+                    $answer->status = Answer::ANSWER_STATUS_FINISH;
+                    $answer->content = $answerContent;
+                    $answer->adopted_at = date('Y-m-d H:i:s');
+                    $answer->save();
+
+                    $this->task($question->user_id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+                }
+
                 //任务变为已完成
                 $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[]);
 
-                $this->task($question->user_id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
 
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
 
                 /*记录动态*/
-                $this->doing($answer->user_id,'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
+                $this->doing($answer->user_id,$doing_prefix.'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
 
                 /*记录通知*/
                 $question->user->notify(new NewQuestionAnswered($question->user_id,$question,$answer));
@@ -369,6 +388,14 @@ class AnswerController extends Controller
         if ($order->user_id != $loginUser->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        if ($order->status == Order::PAY_STATUS_SUCCESS){
+            return self::createJsonData(true,[
+                'question_id' => $answer->question_id,
+                'answer_id'   => $answer->id
+            ]);
+        }
+
+
         $answer->orders()->attach($order->id);
         $answer->increment('views');
 
