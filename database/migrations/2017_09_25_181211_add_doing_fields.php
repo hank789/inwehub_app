@@ -18,10 +18,8 @@ class AddDoingFields extends Migration
             $table->index('action');
             $table->index('user_id');
         });
-        Schema::table('doings', function (Blueprint $table) {
+        Schema::table('supports', function (Blueprint $table) {
             $table->dropColumn("session_id");
-            $table->index('action');
-            $table->index('user_id');
         });
     }
 
