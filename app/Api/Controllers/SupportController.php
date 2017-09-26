@@ -18,8 +18,14 @@ class SupportController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store($source_type,$source_id,Request $request)
+    public function store($source_type,Request $request)
     {
+        $validateRules = [
+            'id' => 'required|integer'
+        ];
+        $this->validate($request, $validateRules);
+        $source_id = $request->input('id');
+
         if($source_type === 'answer'){
             $source  = Answer::find($source_id);
         }elseif($source_type === 'article'){

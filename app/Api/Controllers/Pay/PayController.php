@@ -32,8 +32,6 @@ class PayController extends Controller {
         if(RateLimiter::instance()->increase('pay:request',$loginUser->id,2,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
-        \Log::info('pay_request',$request->all());
-
 
         $data = $request->all();
         $amount = $data['amount'];
