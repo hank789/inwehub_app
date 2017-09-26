@@ -121,6 +121,8 @@ class QuestionController extends Controller
             }
         }
 
+        $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
+
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
@@ -130,6 +132,7 @@ class QuestionController extends Controller
             'title' => $question->hide ? '保密' : $question->user->title,
             'company' => $question->hide ? '保密' : $question->user->company,
             'is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
+            'is_followed' => $attention_question_user?1:0,
             'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
             'tags' => $question->tags()->pluck('name'),
