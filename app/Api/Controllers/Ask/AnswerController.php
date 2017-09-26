@@ -46,6 +46,11 @@ class AnswerController extends Controller
         return self::createJsonData(true,['draftContent'=>$draftContent]);
     }
 
+    //回答详情
+    public function info(Request $request){
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *

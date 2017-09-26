@@ -582,7 +582,10 @@ class QuestionController extends Controller
         return self::createJsonData(true,$list);
     }
 
+    //问题回答列表
+    public function answerList(Request $request){
 
+    }
 
     protected function checkUserInfoPercent($user){
         //字段完成度为90%才能创建问题

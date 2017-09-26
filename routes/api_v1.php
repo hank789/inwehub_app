@@ -143,6 +143,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('answer/getDraft','AnswerController@getDraft');
     //我的围观
     Route::post('answer/myOnlookList','AnswerController@myOnlookList');
+    //问题回答列表
+    Route::post('question/answerList','QuestionController@answerList');
+    //回答详情
+    Route::post('answer/info','AnswerController@info');
 
 });
 
