@@ -2,7 +2,9 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
+use App\Models\Answer;
 use App\Models\Pay\Order;
+use App\Models\Pay\Ordergable;
 use App\Models\UserOauth;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -24,7 +26,8 @@ class PayController extends Controller {
             'app_id' => 'required',
             'amount' => 'required|integer',
             'pay_channel' => 'required|in:alipay,wxpay,appleiap,wx_pub',
-            'pay_object_type' => 'required|in:ask'
+            'pay_object_type' => 'required|in:ask,view_answer',
+            'pay_object_id'   => 'required_if:pay_object_type,view_answer'
         ];
         $this->validate($request, $validateRules);
         $loginUser = $request->user();
@@ -103,6 +106,18 @@ class PayController extends Controller {
             case 'view_answer':
                 $subject = 'Inwehub-付费围观';
                 $body = $subject;
+                $pay_object_id = $data['pay_object_id'];
+                $answer = Answer::findOrFail($pay_object_id);
+                $order = $answer->orders()->where('user_id',$loginUser->id)->first();
+                if ($order) {
+                    //已经付过款
+                    return self::createJsonData(true,[
+                        'order_info' => [],
+                        'pay_channel' => $pay_channel,
+                        'order_id'    => $order->id,
+                        'debug'       => 1
+                    ]);
+                }
                 break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_PAY_TYPE);

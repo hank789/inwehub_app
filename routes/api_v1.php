@@ -293,4 +293,4 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
 });
 
 //点赞
-Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)']);
+Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
