@@ -129,6 +129,7 @@ class QuestionController extends Controller
             'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
             'title' => $question->hide ? '保密' : $question->user->title,
             'company' => $question->hide ? '保密' : $question->user->company,
+            'is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
             'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
             'tags' => $question->tags()->pluck('name'),
