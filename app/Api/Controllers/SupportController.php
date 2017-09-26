@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Account;
+namespace App\Api\Controllers;
 
 use App\Models\Answer;
 use App\Models\Article;
@@ -8,10 +8,6 @@ use App\Models\Comment;
 use App\Models\Support;
 use App\Models\UserTag;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
 
 class SupportController extends Controller
 {
@@ -35,19 +31,20 @@ class SupportController extends Controller
         if(!$source){
             abort(404);
         }
-        $user_id = $request->user()->id;
+
+        $loginUser = $request->user();
 
 
-
-        /*再次关注相当于是取消关注*/
-        $support = Support::where("user_id",'=',$user_id)->where('supportable_type','=',get_class($source))->where('supportable_id','=',$source_id)->first();
+        /*再次点赞相当于是取消点赞*/
+        $support = Support::where("user_id",'=',$loginUser->id)->where('supportable_type','=',get_class($source))->where('supportable_id','=',$source_id)->first();
         if($support){
-            return response('supported');
+            $support->delete();
+            $source->decrement('supports');
+            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'unsupport']);
         }
 
         $data = [
-            'session_id'     => $request->session()->getId(),
-            'user_id'        => $user_id,
+            'user_id'        => $loginUser->id,
             'supportable_id'   => $source_id,
             'supportable_type' => get_class($source),
         ];
@@ -56,7 +53,6 @@ class SupportController extends Controller
 
         if($support){
             $source->increment('supports');
-            $source->user->userData->increment('supports');
             if($source_type=='answer'){
                 UserTag::multiIncrement($source->user_id,$source->question->tags()->get(),'supports');
             }else if($source_type=='article'){
@@ -64,29 +60,7 @@ class SupportController extends Controller
             }
         }
 
-        return response('success');
-    }
-
-
-    public function check($source_type,$source_id,Request $request)
-    {
-        if($source_type === 'answer'){
-            $source  = Answer::find($source_id);
-        }
-
-        if(!$source){
-            abort(404);
-        }
-
-
-        /*再次关注相当于是取消关注*/
-        $support = Support::where("session_id",'=',$request->session()->getId())->where('supportable_type','=',get_class($source))->where('supportable_id','=',$source_id)->first();
-        if($support){
-            return response('failed');
-        }
-
-        return response('success');
-
+        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'support']);
     }
 
 }

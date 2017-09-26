@@ -2,34 +2,26 @@
 
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Answer\PayForView;
-use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
-use App\Logic\MoneyLogLogic;
 use App\Logic\PayQueryLogic;
 use App\Logic\QuillLogic;
-use App\Logic\WechatNotice;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
-use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Order;
 use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
-use App\Models\Setting;
 use App\Models\Task;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionAnswered;
 use App\Notifications\NewQuestionConfirm;
 use App\Services\RateLimiter;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Requests;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class AnswerController extends Controller
 {
@@ -378,6 +370,8 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $answer->orders()->attach($order->id);
+        $answer->increment('views');
+
         //进入结算中心
         Settlement::payForViewSettlement($order);
         //记录动态
@@ -494,7 +488,7 @@ class AnswerController extends Controller
 
         $comment = Comment::create($data);
         /*问题、回答、文章评论数+1*/
-        $comment->source()->increment('comments');
+        $source->increment('comments');
 
         return self::createJsonData(true,[
             'tips'=>'评论成功',

@@ -13,6 +13,7 @@ use App\Models\Credit;
 use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\Support;
 use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
@@ -96,6 +97,8 @@ class QuestionController extends Controller
             }
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($bestAnswer->user))->where('source_id','=',$bestAnswer->user_id)->first();
 
+            $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->first();
+
             $answers_data[] = [
                 'id' => $bestAnswer->id,
                 'user_id' => $bestAnswer->user_id,
@@ -108,6 +111,7 @@ class QuestionController extends Controller
                 'content' => ($is_self || $is_answer_author || $is_pay_for_view) ? $bestAnswer->content : '',
                 'promise_time' => $bestAnswer->promise_time,
                 'is_followed' => $attention?1:0,
+                'is_supported' => $support?1:0,
                 'support_number' => $bestAnswer->supports,
                 'view_number'    => $bestAnswer->views,
                 'comment_number' => $bestAnswer->comments,
