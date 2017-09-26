@@ -141,7 +141,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('answer/saveDraft','AnswerController@saveDraft');
     //取得回答暂存内容
     Route::post('answer/getDraft','AnswerController@getDraft');
-
+    //我的围观
+    Route::post('answer/myOnlookList','AnswerController@myOnlookList');
 
 });
 

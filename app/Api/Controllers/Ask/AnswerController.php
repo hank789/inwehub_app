@@ -12,6 +12,7 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Comment;
 use App\Models\Credit;
+use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Order;
@@ -387,6 +388,41 @@ class AnswerController extends Controller
             'question_id' => $answer->question_id,
             'answer_id'   => $answer->id
         ]);
+    }
+
+    //我的围观列表
+    public function myOnlookList(Request $request){
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+
+        $query = Doing::where('user_id','=',$request->user()->id)->where('action','pay_for_view_question_answer');
+
+        if($top_id){
+            $query = $query->where('id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('id','<',$bottom_id);
+        }
+
+        $doings = $query->orderBy('id','DESC')->paginate(10);
+
+        $list = [];
+        foreach ($doings as $doing) {
+            $answer = Answer::find($doing->source_id);
+            $question = $answer->question;
+            $list[] = [
+                'id' => $doing->id,
+                'question_id'   => $question->id,
+                'user_id' => $question->user_id,
+                'description'  => $question->title,
+                'answer_user_id' => $answer->user->id,
+                'answer_username' => $answer->user->name,
+                'answer_user_title' => $answer->user->title,
+                'answer_user_company' => $answer->user->company,
+                'answer_user_is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
+                'answer_user_avatar_url' => $answer->user->avatar
+            ];
+        }
+        return self::createJsonData(true,$list);
     }
 
     //问答留言列表
