@@ -66,7 +66,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
      */
     public function toArray($notifiable)
     {
-        $source = $this->comment->source()->first();
+        $source = $this->comment->source;
         switch ($this->comment->source_type) {
             case 'App\Models\Article':
                 return;
@@ -92,7 +92,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
 
     public function toPush($notifiable)
     {
-        $source = $this->comment->source()->first();
+        $source = $this->comment->source;
         switch ($this->comment->source_type) {
             case 'App\Models\Article':
                 return;

@@ -26,7 +26,7 @@ class CommentObserver implements ShouldQueue {
      */
     public function created(Comment $comment)
     {
-        $source = $comment->source()->first();
+        $source = $comment->source;
         switch ($comment->source_type) {
             case 'App\Models\Article':
                 $title = '活动';
@@ -54,7 +54,7 @@ class CommentObserver implements ShouldQueue {
                     'short' => false
                 ];
                 //通知
-                $source->user->notify(new NewComment($source->user_id, $source));
+                $source->user->notify(new NewComment($source->user_id, $comment));
                 break;
             default:
                 return;
