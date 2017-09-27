@@ -12,6 +12,7 @@ use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Pay\Order;
+use App\Models\Pay\Ordergable;
 use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
@@ -138,6 +139,8 @@ class AnswerController extends Controller
             'promise_answer_time' => $answer->promise_time,
             'created_at' => (string)$question->created_at
         ];
+        if ($question->question_type == 2) $answer->increment('views');
+
 
         return self::createJsonData(true,['question'=>$question_data,'answer'=>$answers_data]);
 
@@ -479,13 +482,19 @@ class AnswerController extends Controller
                 throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
             }
         }
+        if ($order->return_param != 'view_answer') {
+            throw new ApiException(ApiException::ASK_PAYMENT_EXCEPTION);
+        }
 
         $answer = Answer::findOrFail($request->input('answer_id'));
         $loginUser = $request->user();
         if ($order->user_id != $loginUser->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        if ($order->status == Order::PAY_STATUS_SUCCESS){
+
+        $payOrderGable = $answer->orders()->where('pay_order.id',$order->id)->first();
+        //如果已经围观过了
+        if ($payOrderGable){
             return self::createJsonData(true,[
                 'question_id' => $answer->question_id,
                 'answer_id'   => $answer->id

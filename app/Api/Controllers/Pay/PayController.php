@@ -108,8 +108,8 @@ class PayController extends Controller {
                 $body = $subject;
                 $pay_object_id = $data['pay_object_id'];
                 $answer = Answer::findOrFail($pay_object_id);
-                $order = $answer->orders()->where('user_id',$loginUser->id)->first();
-                if ($order) {
+                $order = $answer->orders()->where('user_id',$loginUser->id)->where('return_param','view_answer')->first();
+                if ($order && $order->status == Order::PAY_STATUS_SUCCESS) {
                     //已经付过款
                     return self::createJsonData(true,[
                         'order_info' => [],
