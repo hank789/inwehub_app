@@ -15,6 +15,7 @@ use App\Models\Pay\Order;
 use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\Support;
 use App\Models\Task;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionAnswered;
@@ -48,6 +49,97 @@ class AnswerController extends Controller
 
     //回答详情
     public function info(Request $request){
+        $id = $request->input('id');
+        $answer = Answer::find($id);
+
+        if(empty($answer)){
+            throw new ApiException(ApiException::ASK_ANSWER_NOT_EXIST);
+        }
+        $user = $request->user();
+        $question = $answer->question;
+
+        $is_self = $user->id == $question->user_id;
+        $is_answer_author = false;
+        $is_pay_for_view = false;
+
+
+        //已经回答的问题其他人都能看,没回答的问题只有邀请者才能看(付费专业问答)
+        if ($question->question_type == 1 && $question->status < 6) {
+            //问题作者或邀请者才能看
+            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
+            if(empty($question_invitation) && !$is_self){
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+            //已经拒绝了
+            if($question_invitation && $question_invitation->status == QuestionInvitation::STATUS_REJECTED){
+                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_REJECTED);
+            }
+            //虽然邀请他回答了,但是已被其他人回答了
+            if($request->user()->id != $question->user->id){
+                $question_invitation_confirmed = QuestionInvitation::where('question_id','=',$question->id)->whereIn('status',[QuestionInvitation::STATUS_ANSWERED,QuestionInvitation::STATUS_CONFIRMED])->first();
+                if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $request->user()->id) {
+                    throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+                }
+            }
+        }
+
+        //是否回答者
+        if ($answer->user_id == $user->id) {
+            $is_answer_author = true;
+        }
+        //是否已经付过围观费
+        $payOrder = $answer->orders()->where('return_param','view_answer')->first();
+        if ($payOrder) {
+            $is_pay_for_view = true;
+        }
+        $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
+
+        $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
+
+        $answers_data = [
+            'id' => $answer->id,
+            'user_id' => $answer->user_id,
+            'uuid' => $answer->user->uuid,
+            'user_name' => $answer->user->name,
+            'user_avatar_url' => $answer->user->avatar,
+            'title' => $answer->user->title,
+            'company' => $answer->user->company,
+            'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
+            'content' => ($is_self || $is_answer_author || $is_pay_for_view || $question->question_type == 2) ? $answer->content : '',
+            'promise_time' => $answer->promise_time,
+            'is_followed' => $attention?1:0,
+            'is_supported' => $support?1:0,
+            'support_number' => $answer->supports,
+            'view_number'    => $answer->views,
+            'comment_number' => $answer->comments,
+            'created_at' => (string)$answer->created_at
+        ];
+
+
+        $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
+
+        $question_data = [
+            'id' => $question->id,
+            'user_id' => $question->user_id,
+            'question_type' => $question->question_type,
+            'user_name' => $question->hide ? '匿名' : $question->user->name,
+            'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
+            'title' => $question->hide ? '保密' : $question->user->title,
+            'company' => $question->hide ? '保密' : $question->user->company,
+            'is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
+            'is_followed' => $attention_question_user?1:0,
+            'user_description' => $question->hide ? '':$question->user->description,
+            'description'  => $question->title,
+            'tags' => $question->tags()->pluck('name'),
+            'hide' => $question->hide,
+            'price' => $question->price,
+            'status' => $question->status,
+            'status_description' => $question->statusHumanDescription($user->id),
+            'promise_answer_time' => $answer->promise_time,
+            'created_at' => (string)$question->created_at
+        ];
+
+        return self::createJsonData(true,['question'=>$question_data,'answer'=>$answers_data]);
 
     }
 

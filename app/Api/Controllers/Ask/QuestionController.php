@@ -584,7 +584,41 @@ class QuestionController extends Controller
 
     //问题回答列表
     public function answerList(Request $request){
+        $id = $request->input('id');
+        $question = Question::find($id);
 
+        if(empty($question)){
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+        }
+        $user = $request->user();
+        $answers = $question->answers()->whereNull('adopted_at')->orderBy('id','DESC')->simplePaginate(10);
+        $return = $answers->toArray();
+        $return['data'] = [];
+        foreach ($answers as $answer) {
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
+
+            $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
+
+            $return['data'][] = [
+                'id' => $answer->id,
+                'user_id' => $answer->user_id,
+                'uuid' => $answer->user->uuid,
+                'user_name' => $answer->user->name,
+                'user_avatar_url' => $answer->user->avatar,
+                'title' => $answer->user->title,
+                'company' => $answer->user->company,
+                'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
+                'content' => $answer->content,
+                'promise_time' => $answer->promise_time,
+                'is_followed' => $attention?1:0,
+                'is_supported' => $support?1:0,
+                'support_number' => $answer->supports,
+                'view_number'    => $answer->views,
+                'comment_number' => $answer->comments,
+                'created_at' => (string)$answer->created_at
+            ];
+        }
+        return self::createJsonData(true,$return);
     }
 
     protected function checkUserInfoPercent($user){
