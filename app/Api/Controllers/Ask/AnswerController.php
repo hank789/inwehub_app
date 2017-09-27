@@ -585,6 +585,7 @@ class AnswerController extends Controller
                 'user_id' => $comment->user_id,
                 'user_name' => $comment->user->name,
                 'user_avatar_url' => $comment->user->avatar,
+                'is_expert' => $comment->user->userData->authentication_status == 1 ? 1 : 0,
                 'content'   => $comment->content,
                 'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
             ];
