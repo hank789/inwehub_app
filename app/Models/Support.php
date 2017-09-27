@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -25,7 +26,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Support extends Model
 {
+    use BelongsToUserTrait;
+
     protected $table = 'supports';
     protected $fillable = ['user_id','supportable_id','supportable_type'];
+
+    public function source()
+    {
+        return $this->morphTo('supportable');
+    }
 
 }

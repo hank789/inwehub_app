@@ -5,11 +5,11 @@
  * @email: wanghui@yonglibao.com
  */
 
-use App\Models\Comment;
-use App\Notifications\NewComment;
+use App\Models\Support;
+use App\Notifications\NewSupport;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class CommentObserver implements ShouldQueue {
+class SupportObserver implements ShouldQueue {
 
     /**
      * 任务最大尝试次数
@@ -19,28 +19,16 @@ class CommentObserver implements ShouldQueue {
     public $tries = 2;
 
     /**
-     * 监听问题创建的事件。
+     * 监听点赞事件。
      *
-     * @param  Comment  $comment
+     * @param  Support  $support
      * @return void
      */
-    public function created(Comment $comment)
+    public function created(Support $support)
     {
-        $source = $comment->source;
-        switch ($comment->source_type) {
-            case 'App\Models\Article':
-                $title = '活动';
-                $fields[] = [
-                    'title' => '活动标题',
-                    'value' => $source->title,
-                    'short' => false
-                ];
-                $fields[] = [
-                    'title' => '活动地址',
-                    'value' => route('blog.article.detail',['id'=>$source->id]),
-                    'short' => false
-                ];
-                break;
+        $source = $support->source;
+        $fields = [];
+        switch ($support->supportable_type) {
             case 'App\Models\Answer':
                 $title = '回答';
                 $fields[] = [
@@ -54,17 +42,12 @@ class CommentObserver implements ShouldQueue {
                     'short' => false
                 ];
                 //通知
-                $source->user->notify(new NewComment($source->user_id, $comment));
+                $source->user->notify(new NewSupport($source->user_id, $support));
                 break;
             default:
                 return;
         }
 
-        $fields[] = [
-            'title' => '评论内容',
-            'value' => $comment->content,
-            'short' => false
-        ];
         return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
             ->attach(
@@ -72,7 +55,7 @@ class CommentObserver implements ShouldQueue {
                     'color'  => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$comment->user->name.']评论了'.$title);
+            )->send('用户['.$support->user->name.']赞了'.$title);
     }
 
 

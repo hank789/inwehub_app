@@ -10,6 +10,7 @@ use App\Models\Company\Company;
 use App\Models\Pay\Withdraw;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\Support;
 use App\Models\User;
 use App\Models\UserInfo\EduInfo;
 use App\Models\UserInfo\JobInfo;
@@ -22,6 +23,7 @@ use App\Observers\CommentObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\QuestionInvitationObserver;
 use App\Observers\QuestionObserver;
+use App\Observers\SupportObserver;
 use App\Observers\UserEduObserver;
 use App\Observers\UserJobObserver;
 use App\Observers\UserObserver;
@@ -78,6 +80,7 @@ class AppServiceProvider extends ServiceProvider
         Withdraw::observe(WithdrawObserver::class);
         Collection::observe(CollectObserver::class);
         Comment::observe(CommentObserver::class);
+        Support::observe(SupportObserver::class);
     }
 
     /**
