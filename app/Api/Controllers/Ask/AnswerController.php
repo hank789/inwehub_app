@@ -572,7 +572,7 @@ class AnswerController extends Controller
         if (!($is_question_author || $is_answer_author)) {
             $payOrder = $source->orders()->where('return_param','view_answer')->first();
             if (!$payOrder) {
-                return [];
+                return self::createJsonData(true, Comment::where('id',0)->simplePaginate(10)->toArray());
             }
         }
 
