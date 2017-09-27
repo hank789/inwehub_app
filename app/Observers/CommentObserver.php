@@ -6,6 +6,7 @@
  */
 
 use App\Models\Comment;
+use App\Notifications\NewComment;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CommentObserver implements ShouldQueue {
@@ -28,6 +29,7 @@ class CommentObserver implements ShouldQueue {
         $source = $comment->source()->first();
         switch ($comment->source_type) {
             case 'App\Models\Article':
+                $title = '活动';
                 $fields[] = [
                     'title' => '活动标题',
                     'value' => $source->title,
@@ -38,6 +40,21 @@ class CommentObserver implements ShouldQueue {
                     'value' => route('blog.article.detail',['id'=>$source->id]),
                     'short' => false
                 ];
+                break;
+            case 'App\Models\Answer':
+                $title = '回答';
+                $fields[] = [
+                    'title' => '回答内容',
+                    'value' => $source->getContentText(),
+                    'short' => false
+                ];
+                $fields[] = [
+                    'title' => '问题地址',
+                    'value' => route('ask.question.detail',['id'=>$source->question->id]),
+                    'short' => false
+                ];
+                //通知
+                $source->user->notify(new NewComment($source->user_id, $source));
                 break;
             default:
                 return;
@@ -55,7 +72,7 @@ class CommentObserver implements ShouldQueue {
                     'color'  => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$comment->user->name.']评论了活动');
+            )->send('用户['.$comment->user->name.']评论了'.$title);
     }
 
 
