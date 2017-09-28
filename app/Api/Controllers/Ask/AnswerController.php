@@ -497,7 +497,8 @@ class AnswerController extends Controller
         if ($payOrderGable){
             return self::createJsonData(true,[
                 'question_id' => $answer->question_id,
-                'answer_id'   => $answer->id
+                'answer_id'   => $answer->id,
+                'content'     => $answer->content
             ]);
         }
 
