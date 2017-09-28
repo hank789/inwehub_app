@@ -508,7 +508,7 @@ class AnswerController extends Controller
         //进入结算中心
         Settlement::payForViewSettlement($order);
         //记录动态
-        $this->doing($loginUser->user_id,'pay_for_view_question_answer',get_class($answer),$answer->id,$answer->question->title,'');
+        $this->doing($loginUser->id,'pay_for_view_question_answer',get_class($answer),$answer->id,$answer->question->title,'');
 
         event(new PayForView($order));
         return self::createJsonData(true,[
