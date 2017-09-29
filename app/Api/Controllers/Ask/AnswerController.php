@@ -585,6 +585,7 @@ class AnswerController extends Controller
             $return['data'][] = [
                 'id' => $comment->id,
                 'user_id' => $comment->user_id,
+                'uuid'    => $comment->user->uuid,
                 'user_name' => $comment->user->name,
                 'user_avatar_url' => $comment->user->avatar,
                 'is_expert' => $comment->user->userData->authentication_status == 1 ? 1 : 0,
