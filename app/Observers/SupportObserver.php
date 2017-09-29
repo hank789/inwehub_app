@@ -41,8 +41,10 @@ class SupportObserver implements ShouldQueue {
                     'value' => route('ask.question.detail',['id'=>$source->question_id]),
                     'short' => false
                 ];
-                //通知
-                $source->user->notify(new NewSupport($source->user_id, $support));
+                //通知，自己除外
+                if ($source->user_id != $support->user_id) {
+                    $source->user->notify(new NewSupport($source->user_id, $support));
+                }
                 break;
             default:
                 return;

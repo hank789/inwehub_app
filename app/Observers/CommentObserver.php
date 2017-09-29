@@ -53,8 +53,11 @@ class CommentObserver implements ShouldQueue {
                     'value' => route('ask.question.detail',['id'=>$source->question_id]),
                     'short' => false
                 ];
-                //通知
-                $source->user->notify(new NewComment($source->user_id, $comment));
+
+                //通知，自己除外
+                if ($source->user_id != $comment->user_id) {
+                    $source->user->notify(new NewComment($source->user_id, $comment));
+                }
                 break;
             default:
                 return;
