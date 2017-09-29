@@ -193,13 +193,13 @@ class QuestionController extends Controller
 
         $tags['pay_items'] = [
             [
-                'value'=>88,
-                'text'=>'积极参与（ ¥ 88.00 ）',
+                'value'=>60,
+                'text'=>'积极参与（ ¥ 60.00 ）',
                 'default' => true
             ],
             [
-                'value'=>188,
-                'text'=>'鼎力支持（ ¥188.00 ）',
+                'value'=>88,
+                'text'=>'鼎力支持（ ¥88.00 ）',
                 'default' => false
             ],
             [
