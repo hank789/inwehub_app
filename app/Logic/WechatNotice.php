@@ -187,7 +187,7 @@ class WechatNotice {
                 }
                 $user = User::find($object->user_id);
                 $content = $user->name;
-                $target_url = $url.'#/share/resume?id='.$user->uuid;
+                $target_url = $url.'#/share/resume/'.$user->uuid;
                 break;
             default:
                 return;
