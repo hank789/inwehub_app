@@ -130,6 +130,7 @@ class QuestionController extends Controller
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
+            'uuid'    => $question->hide ? '':$question->user->uuid,
             'question_type' => $question->question_type,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
             'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
