@@ -88,6 +88,7 @@ class NotifyController extends Controller
         $amount = 0;
         foreach($ids as $key=>$value){
             if($value == $product) $amount = $key;
+            if ($key == 'qa_see1') $amount = 1;
         }
         $ret_data = [
             'channel' => Order::PAY_CHANNEL_IOS_IAP,
