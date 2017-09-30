@@ -72,7 +72,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                 return;
                 break;
             case 'App\Models\Answer':
-                $url = '/ask/'.$source->question_id;
+                $url = '/askCommunity/major/'.$source->question_id;
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_NOTICE;
                 $title = $this->comment->user->name.'回复了您的回答';
                 $avatar = $this->comment->user->avatar;

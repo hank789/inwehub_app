@@ -73,7 +73,7 @@ class WechatNotice {
                 $keyword2 = date('Y-m-d H:i',strtotime($answer->created_at));
                 $keyword3 = $comment->content;
                 $remark = '请点击查看详情！';
-                $target_url = $url.'#/ask/'.$answer->question_id;
+                $target_url = $url.'#/askCommunity/major/'.$answer->question_id;
                 $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
                 if (config('app.env') != 'production') {
                     $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';

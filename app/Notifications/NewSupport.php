@@ -69,7 +69,7 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
         $source = $this->support->source;
         switch ($this->support->supportable_type) {
             case 'App\Models\Answer':
-                $url = '/ask/'.$source->question_id;
+                $url = '/askCommunity/major/'.$source->question_id;
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_NOTICE;
                 $title = $this->support->user->name.'赞了您的回答';
                 $avatar = $this->support->user->avatar;
