@@ -32,10 +32,12 @@ class WechatController extends Controller
 
         $this->validate($request,$validateRules);
         $user = $request->user();
-        if(RateLimiter::instance()->increase('share:success',$user->id,3,1)){
-            throw new ApiException(ApiException::VISIT_LIMIT);
+        if ($user) {
+            if(RateLimiter::instance()->increase('share:success',$user->id,3,1)){
+                throw new ApiException(ApiException::VISIT_LIMIT);
+            }
+            $this->credit($user->id,Credit::KEY_SHARE_SUCCESS,0,$request->input('target'));
         }
-        $this->credit($user->id,Credit::KEY_SHARE_SUCCESS,0,$request->input('target'));
         return self::createJsonData(true);
     }
 
