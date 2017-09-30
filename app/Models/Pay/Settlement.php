@@ -50,7 +50,10 @@ class Settlement extends Model {
     public static function payForViewSettlement(Order $order){
         //每月月底结算
         $settlement_date = date('Y-m-d',strtotime(date('Y-m-1').' +1 month -1 day'));
-
+        $today = date('Y-m-d');
+        if ($settlement_date == $today) {
+            $settlement_date = date('Y-m-d',strtotime(date('Y-m-1').' +2 month -1 day'));
+        }
         $answer = $order->answer()->first();
         switch ($answer->question->price) {
             case 1:
