@@ -22,6 +22,7 @@ class AddQuestionTypeField extends Migration
 
         Schema::table('answers', function (Blueprint $table) {
             $table->integer('views')->unsigned()->after('comments')->default(0);                 //查看数
+            $table->integer('pay_for_views')->unsigned()->after('comments')->default(0);                 //付费查看数
         });
 
         DB::table('questions')->update(['views'=>0,'comments'=>0]);

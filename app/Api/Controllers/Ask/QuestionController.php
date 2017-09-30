@@ -98,7 +98,8 @@ class QuestionController extends Controller
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($bestAnswer->user))->where('source_id','=',$bestAnswer->user_id)->first();
 
             $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->first();
-
+            //回答查看数增加
+            if ($is_self || $is_answer_author || $is_pay_for_view) $bestAnswer->increment('views');
             $answers_data[] = [
                 'id' => $bestAnswer->id,
                 'user_id' => $bestAnswer->user_id,

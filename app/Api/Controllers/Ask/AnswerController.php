@@ -139,7 +139,7 @@ class AnswerController extends Controller
             'promise_answer_time' => $answer->promise_time,
             'created_at' => (string)$question->created_at
         ];
-        if ($question->question_type == 2) $answer->increment('views');
+        $answer->increment('views');
 
 
         return self::createJsonData(true,['question'=>$question_data,'answer'=>$answers_data]);
@@ -504,7 +504,7 @@ class AnswerController extends Controller
 
 
         $answer->orders()->attach($order->id);
-        $answer->increment('views');
+        $answer->increment('pay_for_views');
 
         //进入结算中心
         Settlement::payForViewSettlement($order);
