@@ -71,6 +71,7 @@ class Settlement extends Command {
                                 $pay_for_view_fee[$answer->id] = bcadd($pay_for_view_fee[$answer->id]??0,$pending->actual_fee,2);
                                 $pending->actual_settlement_date = date('Y-m-d H:i:s');
                                 $pending->status = SettlementModel::SETTLEMENT_STATUS_SUCCESS;
+                                $pending->save();
                                 break;
                         }
                         break;
