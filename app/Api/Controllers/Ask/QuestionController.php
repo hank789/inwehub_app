@@ -332,7 +332,7 @@ class QuestionController extends Controller
             }
 
             if($question->question_type == 1 && !$to_user_uuid){
-                $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
+                $doing_obj = $this->doing(0,$doing_prefix.'question_process',get_class($question),$question->id,$question->title,'');
                 $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
                 $doing_obj->save();
             }
@@ -372,7 +372,7 @@ class QuestionController extends Controller
                 //已邀请
                 $question->invitedAnswer();
                 //记录动态
-                $this->doing($toUser->id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
+                $this->doing($toUser->id,$doing_prefix.'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
                 //记录任务
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
                 //通知

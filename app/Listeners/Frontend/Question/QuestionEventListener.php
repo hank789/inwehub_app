@@ -31,6 +31,10 @@ class QuestionEventListener implements ShouldQueue
         $tagIds = $question->tags()->pluck('tags.id')->toArray();
         $userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',$tagIds)->where('user_tags.skills','>=','1')->pluck('user_tags.user_id')->toArray();
         $userTags = array_unique($userTags);
+        $doing_prefix = '';
+        if ($question->question_type == 2) {
+            $doing_prefix = 'free_';
+        }
         foreach($userTags as $uid){
             if($uid == $question->user_id) continue;
             $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$uid,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
@@ -42,9 +46,9 @@ class QuestionEventListener implements ShouldQueue
 
             //已邀请
             $question->invitedAnswer();
-            $last_doing = Doing::where('user_id',0)->where('source_id',$question->id)->where('source_type','App\Models\Question')->where('action','question_process')->first();
+            $last_doing = Doing::where('user_id',0)->where('source_id',$question->id)->where('source_type','App\Models\Question')->where('action',$doing_prefix.'question_process')->first();
             //记录动态
-            $doing_obj = TaskLogic::doing($uid,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
+            $doing_obj = TaskLogic::doing($uid,$doing_prefix.'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
             if($last_doing->created_at >= $doing_obj->created_at){
                 $doing_obj->created_at = date('Y-m-d H:i:s',strtotime($last_doing->created_at.' + '.rand(1,10).' seconds'));
                 $doing_obj->save();
