@@ -50,6 +50,7 @@ class Credit extends Model
     const KEY_EXPERT_VALID = 'expert_valid';
     const KEY_READHUB_NEW_COMMENT = 'readhub_new_comment';
     const KEY_READHUB_NEW_SUBMISSION = 'readhub_new_submission';
+    const KEY_SHARE_SUCCESS = 'share_success';
 
 
 
@@ -72,6 +73,7 @@ class Credit extends Model
         self::KEY_EXPERT_VALID => ['backend_label'=>'完成专家认证','notice_user'=>'完成专家认证'],
         self::KEY_READHUB_NEW_COMMENT => ['backend_label'=>'阅读回复','notice_user'=>'回复成功'],
         self::KEY_READHUB_NEW_SUBMISSION => ['backend_label'=>'阅读发文','notice_user'=>'发布成功'],
+        self::KEY_SHARE_SUCCESS => ['backend_label'=>'分享成功','notice_user'=>'分享成功'],
 
     ];
 }

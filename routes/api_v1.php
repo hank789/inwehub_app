@@ -29,6 +29,8 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 Route::group(['namespace'=>'Share'], function() {
     //微信分享
     Route::any('share/wechat/jssdk','WechatController@jssdk');
+    Route::post('share/wechat/success','WechatController@shareSuccess');
+
 });
 
 Route::group(['namespace'=>'Account'], function() {
