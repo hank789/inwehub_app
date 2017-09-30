@@ -102,12 +102,31 @@ class QuestionController extends AdminController
 
     }
 
+    /*取消推荐*/
+    public function cancelRecommend(Request $request)
+    {
+        $questionIds = $request->input('id');
+        Question::whereIn('id',$questionIds)->update(['is_recommend'=>0]);
+        return $this->success(route('admin.question.index'),'取消推荐成功');
+
+    }
+
+
     /*设为热门*/
     public function verifyHot(Request $request)
     {
         $questionIds = $request->input('id');
         Question::where('status','>=',6)->whereIn('id',$questionIds)->update(['is_hot'=>1]);
         return $this->success(route('admin.question.index'),'设为热门成功');
+
+    }
+
+    /*取消热门*/
+    public function cancelHot(Request $request)
+    {
+        $questionIds = $request->input('id');
+        Question::whereIn('id',$questionIds)->update(['is_hot'=>0]);
+        return $this->success(route('admin.question.index'),'取消热门成功');
 
     }
 

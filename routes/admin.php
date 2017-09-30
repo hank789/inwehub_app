@@ -100,8 +100,12 @@ Route::post('question/changeCategories',['as'=>'admin.question.changeCategories'
 Route::post('question/verify',['as'=>'admin.question.verify','uses'=>'QuestionController@verify']);
 //设为推荐
 Route::post('question/verifyRecommend',['as'=>'admin.question.verify_recommend','uses'=>'QuestionController@verifyRecommend']);
+//取消推荐
+Route::post('question/cancelRecommend',['as'=>'admin.question.cancel_recommend','uses'=>'QuestionController@cancelRecommend']);
 //设为热门
 Route::post('question/verifyHot',['as'=>'admin.question.verify_hot','uses'=>'QuestionController@verifyHot']);
+//取消热门
+Route::post('question/cancelHot',['as'=>'admin.question.cancel_hot','uses'=>'QuestionController@cancelHot']);
 
 
 /*问题管理*/

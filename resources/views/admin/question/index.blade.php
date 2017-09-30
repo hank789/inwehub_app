@@ -27,8 +27,10 @@
                             <div class="col-xs-2">
                                 <div class="btn-group">
                                     <a href="{{ route('ask.question.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="发起提问"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-heart-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-thumbs-o-up"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消推荐" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_recommend') }}','确认将选中项取消推荐？')"><i class="fa fa-thumbs-o-down"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消热门" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_hot') }}','确认将选中项取消热门？')"><i class="fa fa-fire-extinguisher"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                 </div>
                             </div>
@@ -36,7 +38,7 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.question.index') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <div class="col-xs-2">
+                                        <div class="col-xs-1">
                                             <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
@@ -45,7 +47,7 @@
                                         <div class="col-xs-3">
                                             <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                         </div>
-                                        <div class="col-xs-2">
+                                        <div class="col-xs-3">
                                             <div>
                                                 <label><input type="checkbox" name="is_hot" value="1" @if ( $filter['is_hot']??0) checked @endif >热门</label>&nbsp;&nbsp;&nbsp;&nbsp;
                                                 <label><input type="checkbox" name="is_recommend" value="1" @if ( $filter['is_recommend']??0) checked @endif >推荐</label>&nbsp;&nbsp;&nbsp;&nbsp;
