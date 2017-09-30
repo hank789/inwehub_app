@@ -59,7 +59,7 @@ class Question extends Model
 {
     use BelongsToUserTrait,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToCategoryTrait, MorphManyDoingsTrait, MorphManyOrdersTrait;
     protected $table = 'questions';
-    protected $fillable = ['title', 'user_id','category_id','description','tags','price','hide','status','device'];
+    protected $fillable = ['title', 'user_id','category_id','question_type','description','tags','price','hide','status','device'];
 
 
     public static function boot()
@@ -323,6 +323,19 @@ class Question extends Model
     public function invitations()
     {
         return $this->hasMany('App\Models\QuestionInvitation','question_id');
+    }
+
+    public function getFormatTitle() {
+        switch ($this->question_type) {
+            case 1:
+                //专业回答
+                return '专业问答 | '.$this->title;
+                break;
+            case 2:
+                return '悬赏问答 | '.$this->title;
+                break;
+        }
+        return $this->title;
     }
 
 

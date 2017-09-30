@@ -35,17 +35,14 @@ class SupportController extends Controller
         if(!$source){
             abort(404);
         }
+        $user_id = $request->user()->id;
+
 
 
         /*再次关注相当于是取消关注*/
-        $support = Support::where("session_id",'=',$request->session()->getId())->where('supportable_type','=',get_class($source))->where('supportable_id','=',$source_id)->first();
+        $support = Support::where("user_id",'=',$user_id)->where('supportable_type','=',get_class($source))->where('supportable_id','=',$source_id)->first();
         if($support){
             return response('supported');
-        }
-
-        $user_id = null;
-        if($request->user()){
-            $user_id = $request->user()->id;
         }
 
         $data = [

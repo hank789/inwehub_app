@@ -80,6 +80,9 @@ Route::group(['namespace'=>'Finance'],function(){
     Route::get('finance/setting/index',['as'=>'admin.finance.setting.index','uses'=>'SettingController@index']);
     Route::post('finance/setting/index',['as'=>'admin.finance.setting.index','uses'=>'SettingController@index']);
 
+    Route::get('order/index',['as'=>'admin.finance.order.index','uses'=>'OrderController@index']);
+
+
     //结算管理
     Route::get('settlement/index',['as'=>'admin.finance.settlement.index','uses'=>'SettlementController@index']);
     Route::post('settlement/destroy',['as'=>'admin.finance.settlement.destroy','uses'=>'SettlementController@destroy']);
@@ -95,6 +98,16 @@ Route::post('question/destroy',['as'=>'admin.question.destroy','uses'=>'Question
 Route::post('question/changeCategories',['as'=>'admin.question.changeCategories','uses'=>'QuestionController@changeCategories']);
 /*问题审核*/
 Route::post('question/verify',['as'=>'admin.question.verify','uses'=>'QuestionController@verify']);
+//设为推荐
+Route::post('question/verifyRecommend',['as'=>'admin.question.verify_recommend','uses'=>'QuestionController@verifyRecommend']);
+//取消推荐
+Route::post('question/cancelRecommend',['as'=>'admin.question.cancel_recommend','uses'=>'QuestionController@cancelRecommend']);
+//设为热门
+Route::post('question/verifyHot',['as'=>'admin.question.verify_hot','uses'=>'QuestionController@verifyHot']);
+//取消热门
+Route::post('question/cancelHot',['as'=>'admin.question.cancel_hot','uses'=>'QuestionController@cancelHot']);
+
+
 /*问题管理*/
 Route::resource('question', 'QuestionController',['only' => ['index','edit','update'],'as'=>'admin']);
 

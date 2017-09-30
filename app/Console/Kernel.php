@@ -27,7 +27,8 @@ class Kernel extends ConsoleKernel
 
         //修复数据用
         Commands\FixData\ReadhubNotification::class,
-        Commands\User\NewbieTask::class
+        Commands\User\NewbieTask::class,
+        Commands\FixData\FollowerNotification::class
 
     ];
 

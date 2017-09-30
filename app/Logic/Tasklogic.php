@@ -39,7 +39,7 @@ class TaskLogic {
                 'created_at' => Carbon::now()
             ]);
         }catch (\Exception $e){
-            exit($e->getMessage());
+            app('sentry')->captureException($e);
         }
 
     }

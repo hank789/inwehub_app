@@ -62,13 +62,11 @@
                                         <th>ID</th>
                                         <th>姓名</th>
                                         <th>手机</th>
-                                        <th>结算金额</th>
-                                        <th>预计手续费</th>
                                         <th>结算对象</th>
                                         <th>申请时间</th>
                                         <th>结算时间</th>
-                                        <th>实际结算金额</th>
-                                        <th>实际结算手续费</th>
+                                        <th>结算金额</th>
+                                        <th>结算手续费</th>
                                         <th>实际结算时间</th>
                                         <th>状态</th>
                                     </tr>
@@ -78,8 +76,6 @@
                                             <td>{{ $settlement->id }}</td>
                                             <td>{{ $settlement->user->name }}</td>
                                             <td>{{ $settlement->user->mobile }}</td>
-                                            <td>{{ $settlement->getSettlementMoney() }}</td>
-                                            <td>{{ $settlement->getSettlementFee() }}</td>
                                             <td>{{ $settlement->getSettlementName() }}:{{ $settlement->source_id }}</td>
                                             <td>{{ $settlement->created_at }}</td>
                                             <td>{{ $settlement->settlement_date }}</td>

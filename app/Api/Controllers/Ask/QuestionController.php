@@ -2,32 +2,24 @@
 
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
-use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
 use App\Logic\TaskLogic;
-use App\Logic\WechatNotice;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
-use App\Models\Category;
+use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\Support;
 use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Payment\Client\Query;
-use Payment\Config;
 
 class QuestionController extends Controller
 {
@@ -54,6 +46,10 @@ class QuestionController extends Controller
         }
         $user = $request->user();
 
+        $is_self = $user->id == $question->user_id;
+        $is_answer_author = false;
+        $is_pay_for_view = false;
+
         /*已解决问题*/
         $bestAnswer = [];
         if($question->status >= 6 ){
@@ -64,20 +60,24 @@ class QuestionController extends Controller
         if($request->user()){
             $this->readNotifications($question->id,'question');
         }
-        //问题作者或邀请者才能看
-        $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
-        if(empty($question_invitation) && $request->user()->id != $question->user->id){
-            throw new ApiException(ApiException::BAD_REQUEST);
-        }
-        //已经拒绝了
-        if($question_invitation && $question_invitation->status == QuestionInvitation::STATUS_REJECTED){
-            throw new ApiException(ApiException::ASK_QUESTION_ALREADY_REJECTED);
-        }
-        //虽然邀请他回答了,但是已被其他人回答了
-        if($request->user()->id != $question->user->id){
-            $question_invitation_confirmed = QuestionInvitation::where('question_id','=',$question->id)->whereIn('status',[QuestionInvitation::STATUS_ANSWERED,QuestionInvitation::STATUS_CONFIRMED])->first();
-            if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $request->user()->id) {
-                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+
+        //已经回答的问题其他人都能看,没回答的问题只有邀请者才能看(付费专业问答)
+        if ($question->question_type == 1 && $question->status < 6) {
+            //问题作者或邀请者才能看
+            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
+            if(empty($question_invitation) && !$is_self){
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+            //已经拒绝了
+            if($question_invitation && $question_invitation->status == QuestionInvitation::STATUS_REJECTED){
+                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_REJECTED);
+            }
+            //虽然邀请他回答了,但是已被其他人回答了
+            if($request->user()->id != $question->user->id){
+                $question_invitation_confirmed = QuestionInvitation::where('question_id','=',$question->id)->whereIn('status',[QuestionInvitation::STATUS_ANSWERED,QuestionInvitation::STATUS_CONFIRMED])->first();
+                if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $request->user()->id) {
+                    throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+                }
             }
         }
 
@@ -86,14 +86,36 @@ class QuestionController extends Controller
         $promise_answer_time = '';
 
         if($bestAnswer){
+            //是否回答者
+            if ($bestAnswer->user_id == $user->id) {
+                $is_answer_author = true;
+            }
+            //是否已经付过围观费
+            $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
+            if ($payOrder) {
+                $is_pay_for_view = true;
+            }
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($bestAnswer->user))->where('source_id','=',$bestAnswer->user_id)->first();
+
+            $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->first();
+            //回答查看数增加
+            if ($is_self || $is_answer_author || $is_pay_for_view) $bestAnswer->increment('views');
             $answers_data[] = [
                 'id' => $bestAnswer->id,
                 'user_id' => $bestAnswer->user_id,
                 'uuid' => $bestAnswer->user->uuid,
                 'user_name' => $bestAnswer->user->name,
-                'user_avatar_url' => $bestAnswer->user->getAvatarUrl(),
-                'content' => $bestAnswer->content,
+                'user_avatar_url' => $bestAnswer->user->avatar,
+                'title' => $bestAnswer->user->title,
+                'company' => $bestAnswer->user->company,
+                'is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'content' => ($is_self || $is_answer_author || $is_pay_for_view) ? $bestAnswer->content : '',
                 'promise_time' => $bestAnswer->promise_time,
+                'is_followed' => $attention?1:0,
+                'is_supported' => $support?1:0,
+                'support_number' => $bestAnswer->supports,
+                'view_number'    => $bestAnswer->views,
+                'comment_number' => $bestAnswer->comments,
                 'created_at' => (string)$bestAnswer->created_at
             ];
             $promise_answer_time = $bestAnswer->promise_time;
@@ -104,11 +126,19 @@ class QuestionController extends Controller
             }
         }
 
+        $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
+
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
+            'uuid'    => $question->hide ? '':$question->user->uuid,
+            'question_type' => $question->question_type,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
             'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
+            'title' => $question->hide ? '保密' : $question->user->title,
+            'company' => $question->hide ? '保密' : $question->user->company,
+            'is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
+            'is_followed' => $attention_question_user?1:0,
             'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
             'tags' => $question->tags()->pluck('name'),
@@ -121,11 +151,11 @@ class QuestionController extends Controller
         ];
 
 
-        $timeline = $question->formatTimeline();
+        $timeline = $is_self && $question->question_type == 1 ? $question->formatTimeline() : [];
 
         //feedback
         $feedback_data = [];
-        if($answers_data){
+        if($is_self && $answers_data){
             $feedback = $bestAnswer->feedbacks()->orderBy('id','desc')->first();
             if(!empty($feedback)){
                 $feedback_data = [
@@ -141,7 +171,6 @@ class QuestionController extends Controller
         return self::createJsonData(true,['question'=>$question_data,'answers'=>$answers_data,'timeline'=>$timeline,'feedback'=>$feedback_data]);
 
     }
-
 
     /**
      * 请求创建问题
@@ -166,13 +195,13 @@ class QuestionController extends Controller
 
         $tags['pay_items'] = [
             [
-                'value'=>88,
-                'text'=>'积极参与（ ¥ 88.00 ）',
+                'value'=>60,
+                'text'=>'积极参与（ ¥ 60.00 ）',
                 'default' => true
             ],
             [
-                'value'=>188,
-                'text'=>'鼎力支持（ ¥188.00 ）',
+                'value'=>88,
+                'text'=>'鼎力支持（ ¥88.00 ）',
                 'default' => false
             ],
             [
@@ -238,6 +267,7 @@ class QuestionController extends Controller
             'user_id'      => $loginUser->id,
             'category_id'      => $category_id,
             'title'        => trim($request->input('description')),
+            'question_type' => $request->input('question_type',1),
             'price'        => $price,
             'hide'         => intval($request->input('hide')),
             'status'       => 1,
@@ -279,9 +309,13 @@ class QuestionController extends Controller
             if($order){
                 $question->orders()->attach($order->id);
             }
+            $doing_prefix = '';
+            if ($question->question_type == 2) {
+                $doing_prefix = 'free_';
+            }
 
             //记录动态
-            $this->doing($question->user_id,'question_submit',get_class($question),$question->id,$question->title,'');
+            $this->doing($question->user_id,$doing_prefix.'question_submit',get_class($question),$question->id,$question->title,'');
 
             $waiting_second = rand(1,5);
 
@@ -298,8 +332,8 @@ class QuestionController extends Controller
                 return self::createJsonData(true,$res_data,ApiException::SUCCESS,'发起提问成功!');
             }
 
-            if(!$to_user_uuid){
-                $doing_obj = $this->doing(0,'question_process',get_class($question),$question->id,$question->title,'');
+            if($question->question_type == 1 && !$to_user_uuid){
+                $doing_obj = $this->doing(0,$doing_prefix.'question_process',get_class($question),$question->id,$question->title,'');
                 $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
                 $doing_obj->save();
             }
@@ -339,13 +373,13 @@ class QuestionController extends Controller
                 //已邀请
                 $question->invitedAnswer();
                 //记录动态
-                $this->doing($toUser->id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
+                $this->doing($toUser->id,$doing_prefix.'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
                 //记录任务
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
                 //通知
                 $toUser->notify(new NewQuestionInvitation($toUser->id,$question));
-            }else{
-                //非定向邀请的自动匹配一次
+            }elseif ($question->question_type == 1){
+                //专业问答非定向邀请的自动匹配一次
                 event(new AutoInvitation($question));
             }
 
@@ -439,8 +473,6 @@ class QuestionController extends Controller
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
             $query = $query->where('id','<',$bottom_id);
-        }else{
-            $query = $query->where('id','>',0);
         }
         $questions = $query->orderBy('id','DESC')->paginate(10);
 
@@ -453,11 +485,11 @@ class QuestionController extends Controller
             }
             $list[] = [
                 'id' => $question->id,
+                'question_type' => $question->question_type,
                 'user_id' => $question->user_id,
                 'user_name' => $question->user->name,
                 'user_avatar_url' => $question->user->getAvatarUrl(),
-                'description'  => $question->title,
-                'tags' => $question->tags()->pluck('name'),
+                'description'  => $question->getFormatTitle(),
                 'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,
@@ -465,11 +497,130 @@ class QuestionController extends Controller
                 'created_at' => (string)$question->created_at,
                 'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
-                'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->getAvatarUrl() : '',
+                'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
                 'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
             ];
         }
         return self::createJsonData(true,$list);
+    }
+
+
+    //专业问答-推荐问答列表
+    public function majorList(Request $request) {
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+        $tag_id = $request->input('tag_id',0);
+
+        $query = Question::where('questions.is_recommend',1);
+        if($top_id){
+            $query = $query->where('questions.id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('questions.id','<',$bottom_id);
+        }
+
+        if ($tag_id) {
+            $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
+        }
+
+        $questions = $query->orderBy('questions.id','desc')->paginate(10);
+        $list = [];
+        foreach($questions as $question){
+            /*已解决问题*/
+            $bestAnswer = [];
+            if($question->status >= 6 ){
+                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+            }
+            $list[] = [
+                'id' => $question->id,
+                'question_type' => $question->question_type,
+                'user_id' => $question->user_id,
+                'description'  => $question->title,
+                'tags' => $question->tags()->pluck('name'),
+                'hide' => $question->hide,
+                'price' => $question->price,
+                'status' => $question->status,
+                'created_at' => (string)$question->created_at,
+                'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
+                'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
+                'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
+                'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
+                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
+                'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
+            ];
+        }
+        return self::createJsonData(true,$list);
+    }
+
+    //专业问答-热门问答
+    public function majorHot(Request $request) {
+        $questions = Question::where('is_hot',1)->orderBy('id','desc')->get()->take(2);
+        $list = [];
+        foreach($questions as $question){
+            /*已解决问题*/
+            $bestAnswer = [];
+            if($question->status >= 6 ){
+                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+            }
+            $list[] = [
+                'id' => $question->id,
+                'question_type' => $question->question_type,
+                'user_id' => $question->user_id,
+                'description'  => $question->title,
+                'tags' => $question->tags()->pluck('name'),
+                'hide' => $question->hide,
+                'price' => $question->price,
+                'status' => $question->status,
+                'created_at' => (string)$question->created_at,
+                'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
+                'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
+                'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
+                'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
+                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
+                'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
+            ];
+        }
+        return self::createJsonData(true,$list);
+    }
+
+    //问题回答列表
+    public function answerList(Request $request){
+        $id = $request->input('id');
+        $question = Question::find($id);
+
+        if(empty($question)){
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+        }
+        $user = $request->user();
+        $answers = $question->answers()->whereNull('adopted_at')->orderBy('id','DESC')->simplePaginate(10);
+        $return = $answers->toArray();
+        $return['data'] = [];
+        foreach ($answers as $answer) {
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
+
+            $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
+
+            $return['data'][] = [
+                'id' => $answer->id,
+                'user_id' => $answer->user_id,
+                'uuid' => $answer->user->uuid,
+                'user_name' => $answer->user->name,
+                'user_avatar_url' => $answer->user->avatar,
+                'title' => $answer->user->title,
+                'company' => $answer->user->company,
+                'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
+                'content' => $answer->content,
+                'promise_time' => $answer->promise_time,
+                'is_followed' => $attention?1:0,
+                'is_supported' => $support?1:0,
+                'support_number' => $answer->supports,
+                'view_number'    => $answer->views,
+                'comment_number' => $answer->comments,
+                'created_at' => (string)$answer->created_at
+            ];
+        }
+        return self::createJsonData(true,$return);
     }
 
     protected function checkUserInfoPercent($user){

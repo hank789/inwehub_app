@@ -48,6 +48,14 @@ class QuestionController extends AdminController
             $query->where('category_id','=',$filter['category_id']);
         }
 
+        if( isset($filter['is_hot']) && $filter['is_hot']> 0 ){
+            $query->where('is_hot','=',1);
+        }
+
+        if( isset($filter['is_recommend']) && $filter['is_recommend']> 0 ){
+            $query->where('is_recommend','=',1);
+        }
+
         $questions = $query->orderBy('created_at','desc')->paginate(20);
         return view("admin.question.index")->with('questions',$questions)->with('filter',$filter);
     }
@@ -84,6 +92,44 @@ class QuestionController extends AdminController
         return $this->success(route('admin.question.index').'?status=0','问题审核成功');
 
     }
+
+    /*设为推荐*/
+    public function verifyRecommend(Request $request)
+    {
+        $questionIds = $request->input('id');
+        Question::where('status','>=',6)->whereIn('id',$questionIds)->update(['is_recommend'=>1]);
+        return $this->success(route('admin.question.index'),'设为推荐成功');
+
+    }
+
+    /*取消推荐*/
+    public function cancelRecommend(Request $request)
+    {
+        $questionIds = $request->input('id');
+        Question::whereIn('id',$questionIds)->update(['is_recommend'=>0]);
+        return $this->success(route('admin.question.index'),'取消推荐成功');
+
+    }
+
+
+    /*设为热门*/
+    public function verifyHot(Request $request)
+    {
+        $questionIds = $request->input('id');
+        Question::where('status','>=',6)->whereIn('id',$questionIds)->update(['is_hot'=>1]);
+        return $this->success(route('admin.question.index'),'设为热门成功');
+
+    }
+
+    /*取消热门*/
+    public function cancelHot(Request $request)
+    {
+        $questionIds = $request->input('id');
+        Question::whereIn('id',$questionIds)->update(['is_hot'=>0]);
+        return $this->success(route('admin.question.index'),'取消热门成功');
+
+    }
+
 
     /*修改分类*/
     public function changeCategories(Request $request){

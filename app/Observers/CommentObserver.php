@@ -6,6 +6,7 @@
  */
 
 use App\Models\Comment;
+use App\Notifications\NewComment;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CommentObserver implements ShouldQueue {
@@ -25,17 +26,43 @@ class CommentObserver implements ShouldQueue {
      */
     public function created(Comment $comment)
     {
-        $article = $comment->source()->first();
-        $fields[] = [
-            'title' => '活动标题',
-            'value' => $article->title,
-            'short' => false
-        ];
-        $fields[] = [
-            'title' => '活动地址',
-            'value' => route('blog.article.detail',['id'=>$article->id]),
-            'short' => false
-        ];
+        $source = $comment->source;
+        switch ($comment->source_type) {
+            case 'App\Models\Article':
+                $title = '活动';
+                $fields[] = [
+                    'title' => '活动标题',
+                    'value' => $source->title,
+                    'short' => false
+                ];
+                $fields[] = [
+                    'title' => '活动地址',
+                    'value' => route('blog.article.detail',['id'=>$source->id]),
+                    'short' => false
+                ];
+                break;
+            case 'App\Models\Answer':
+                $title = '回答';
+                $fields[] = [
+                    'title' => '回答内容',
+                    'value' => $source->getContentText(),
+                    'short' => false
+                ];
+                $fields[] = [
+                    'title' => '问题地址',
+                    'value' => route('ask.question.detail',['id'=>$source->question_id]),
+                    'short' => false
+                ];
+
+                //通知，自己除外
+                if ($source->user_id != $comment->user_id) {
+                    $source->user->notify(new NewComment($source->user_id, $comment));
+                }
+                break;
+            default:
+                return;
+        }
+
         $fields[] = [
             'title' => '评论内容',
             'value' => $comment->content,
@@ -48,7 +75,7 @@ class CommentObserver implements ShouldQueue {
                     'color'  => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$comment->user->name.']评论了活动');
+            )->send('用户['.$comment->user->name.']评论了'.$title);
     }
 
 

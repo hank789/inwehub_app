@@ -29,6 +29,8 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 Route::group(['namespace'=>'Share'], function() {
     //微信分享
     Route::any('share/wechat/jssdk','WechatController@jssdk');
+    Route::post('share/wechat/success','WechatController@shareSuccess');
+
 });
 
 Route::group(['namespace'=>'Account'], function() {
@@ -127,6 +129,26 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('answer/feedbackInfo','AnswerController@feedbackInfo');
     //问题详情
     Route::post('question/info','QuestionController@info');
+    //付费围观
+    Route::post('answer/payforview','AnswerController@payForView');
+    //专业问答-推荐问答列表
+    Route::post('question/majorList','QuestionController@majorList');
+    //专业问答-热门问答
+    Route::post('question/majorHot','QuestionController@majorHot');
+    //问答留言列表
+    Route::post('answer/commentList','AnswerController@commentList');
+    //问答留言
+    Route::post('answer/comment','AnswerController@comment');
+    //回答暂存
+    Route::post('answer/saveDraft','AnswerController@saveDraft');
+    //取得回答暂存内容
+    Route::post('answer/getDraft','AnswerController@getDraft');
+    //我的围观
+    Route::post('answer/myOnlookList','AnswerController@myOnlookList');
+    //问题回答列表
+    Route::post('question/answerList','QuestionController@answerList');
+    //回答详情
+    Route::post('answer/info','AnswerController@info');
 
 });
 
@@ -275,3 +297,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
     Route::post('weapp/answer/store','AnswerController@store');
 
 });
+
+//点赞
+Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');

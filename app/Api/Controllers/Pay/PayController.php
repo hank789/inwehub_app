@@ -2,7 +2,9 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
+use App\Models\Answer;
 use App\Models\Pay\Order;
+use App\Models\Pay\Ordergable;
 use App\Models\UserOauth;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -24,7 +26,8 @@ class PayController extends Controller {
             'app_id' => 'required',
             'amount' => 'required|integer',
             'pay_channel' => 'required|in:alipay,wxpay,appleiap,wx_pub',
-            'pay_object_type' => 'required|in:ask'
+            'pay_object_type' => 'required|in:ask,view_answer,free_ask',
+            'pay_object_id'   => 'required_if:pay_object_type,view_answer'
         ];
         $this->validate($request, $validateRules);
         $loginUser = $request->user();
@@ -32,8 +35,6 @@ class PayController extends Controller {
         if(RateLimiter::instance()->increase('pay:request',$loginUser->id,2,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
-        \Log::info('pay_request',$request->all());
-
 
         $data = $request->all();
         $amount = $data['amount'];
@@ -86,7 +87,11 @@ class PayController extends Controller {
                 }
                 $config = config('payment.iap');
                 $ids = $config['ids'];
-                $iap_id = $ids[$amount];
+                if ($data['pay_object_type'] == 'view_answer') {
+                    $iap_id = $ids['qa_see1'];
+                } else {
+                    $iap_id = $ids[$amount];
+                }
                 $channel_type = Order::PAY_CHANNEL_IOS_IAP;
                 break;
             default:
@@ -97,6 +102,28 @@ class PayController extends Controller {
             case 'ask':
                 $subject = 'Inwehub-付费提问';
                 $body = $subject;
+                break;
+            case 'view_answer':
+                $subject = 'Inwehub-付费围观';
+                $body = $subject;
+                $pay_object_id = $data['pay_object_id'];
+                $answer = Answer::findOrFail($pay_object_id);
+                $order = $answer->orders()->where('user_id',$loginUser->id)->where('return_param','view_answer')->first();
+                if ($order && $order->status == Order::PAY_STATUS_SUCCESS) {
+                    //已经付过款
+                    return self::createJsonData(true,[
+                        'order_info' => [],
+                        'pay_channel' => $pay_channel,
+                        'order_id'    => $order->id,
+                        'debug'       => 1
+                    ]);
+                }
+                break;
+            case 'free_ask':
+                //免费问答
+                $subject = 'Inwehub-免费提问';
+                $body = $subject;
+                $need_pay_actual = false;
                 break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_PAY_TYPE);

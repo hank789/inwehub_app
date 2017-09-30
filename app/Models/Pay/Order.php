@@ -53,7 +53,36 @@ class Order extends Model
 
     public function questions()
     {
-        return $this->morphedByMany('App\Models\Question', 'pay_order_gable');
+        return $this->morphedByMany('App\Models\Question', 'pay_order_gable',null,'pay_order_id');
+    }
+
+    public function answer()
+    {
+        return $this->morphedByMany('App\Models\Answer', 'pay_order_gable',null,'pay_order_id');
+    }
+
+    public function getPayChannelName(){
+        switch ($this->pay_channel){
+            case self::PAY_CHANNEL_WX_APP:
+                return '微信APP';
+                break;
+            case self::PAY_CHANNEL_WX_PUB:
+                return '微信公众号';
+                break;
+            case self::PAY_CHANNEL_WX_QR:
+                break;
+            case self::PAY_CHANNEL_WX_BAR:
+                break;
+            case self::PAY_CHANNEL_WX_LITE:
+                break;
+            case self::PAY_CHANNEL_WX_WAP:
+                break;
+            case self::PAY_CHANNEL_ALIPAY_APP:
+                break;
+            case self::PAY_CHANNEL_IOS_IAP:
+                return '苹果';
+                break;
+        }
     }
 
 }

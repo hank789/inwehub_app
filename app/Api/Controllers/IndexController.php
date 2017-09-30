@@ -5,6 +5,7 @@ use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Category;
 use App\Models\Notice;
+use App\Models\Question;
 use App\Models\Readhub\Submission;
 use App\Models\RecommendQa;
 use App\Models\User;
@@ -20,32 +21,38 @@ use Illuminate\Support\Facades\Redis;
 
 class IndexController extends Controller {
     public function home(Request $request){
-        $recommend_qa = RecommendQa::select(['user_name','user_avatar_url','price','type','subject as description'])->where('status',1)->orderBy('sort','asc')->orderBy('updated_at','desc')->get()->toArray();
-        if(empty($recommend_qa)){
-            //推荐问答
-            $recommend_qa = [
-                [
-                    "user_name"=> "隔壁老王",//提问者名字
-                    "type"=> "1",//提问
-                    "user_avatar_url"=> "http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/media/11/user_origin_10.jpg",//头像地址
-                    "description"=> "老郭的花生卖多少钱?成本价多少?毛利率多少?赚钱么?我可以加盟吗?加盟费多少钱?",//问题内容
-                    "price"=> "188"
-                ],
-                [
-                    "user_name"=> "隔壁老王",//提问者名字
-                    "type"=> "2",//回答
-                    "user_avatar_url"=> "http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg",//头像地址
-                    "description"=> "老郭的花生卖多少钱?成本价多少?毛利率多少?赚钱么?我可以加盟吗?加盟费多少钱?",//问题内容
-                    "price"=> "188"
-                ]
+        $recommend_qa = Question::where('is_hot',1)->orderBy('id','desc')->get()->take(2);
+        $host_question = [];
+        foreach($recommend_qa as $question){
+            /*已解决问题*/
+            $bestAnswer = [];
+            if($question->status >= 6 ){
+                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+            }
+            $host_question[] = [
+                'id' => $question->id,
+                'question_type' => $question->question_type,
+                'user_id' => $question->user_id,
+                'description'  => $question->title,
+                'hide' => $question->hide,
+                'price' => $question->price,
+                'status' => $question->status,
+                'created_at' => (string)$question->created_at,
+                'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
+                'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
+                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
+                'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
+                'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
+                'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
             ];
         }
+
         $recommend_expert_is_followed = 0;
         $recommend_expert_uid = Setting()->get('recommend_expert_uid',2);
         $recommend_expert_user = User::find($recommend_expert_uid);
         $user = $request->user();
 
-        $show_ad = false;
         $expire_at = '';
         $is_expert = $user->userData->authentication_status;
 
@@ -155,7 +162,7 @@ class IndexController extends Controller {
             'recommend_expert_uid' => $recommend_expert_uid,//专家id
             'recommend_expert_is_followed' => $recommend_expert_is_followed,
             'recommend_expert_avatar_url' => $recommend_expert_user->getAvatarUrl(),//资深专家头像
-            'recommend_qa' => $recommend_qa,
+            'recommend_qa' => $host_question,
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'notices' => $notices,
             'recommend_experts' => $cache_experts,

@@ -66,6 +66,19 @@ class WechatNotice {
                     $template_id = 'zvZO6wKROVb3fWCE8TGIOtQ3y3k4527wD_Lsk6dyNnM';
                 }
                 break;
+            case 'answer_new_comment':
+                $comment = \App\Models\Comment::find($object_id);
+                $answer = $comment->source;
+                $title = '您好，有人回复了您的专业回答';
+                $keyword2 = date('Y-m-d H:i',strtotime($answer->created_at));
+                $keyword3 = $comment->content;
+                $remark = '请点击查看详情！';
+                $target_url = $url.'#/askCommunity/major/'.$answer->question_id;
+                $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
+                if (config('app.env') != 'production') {
+                    $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
+                }
+                break;
             case 'authentication':
                 $object = Authentication::find($object_id);
                 $title = '您的专家申请已处理';
@@ -174,7 +187,7 @@ class WechatNotice {
                 }
                 $user = User::find($object->user_id);
                 $content = $user->name;
-                $target_url = $url.'#/share/resume?id='.$user->uuid;
+                $target_url = $url.'#/share/resume/'.$user->uuid;
                 break;
             default:
                 return;

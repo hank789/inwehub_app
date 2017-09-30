@@ -28,6 +28,7 @@ class MoneyLog extends Model {
     const MONEY_TYPE_ANSWER = 2;
     const MONEY_TYPE_WITHDRAW = 3;
     const MONEY_TYPE_FEE = 4;
+    const MONEY_TYPE_PAY_FOR_VIEW_ANSWER = 5;
 
     const STATUS_PROCESS = 0;
     const STATUS_SUCCESS = 1;

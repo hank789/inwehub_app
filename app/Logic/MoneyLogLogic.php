@@ -64,7 +64,7 @@ class MoneyLogLogic {
             return true;
         }catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('增加余额失败',['data'=>func_get_args(),'msg'=>$e->getMessage()]);
+            app('sentry')->captureException($e);
             return false;
         }
     }
