@@ -552,6 +552,53 @@ class QuestionController extends Controller
         return self::createJsonData(true,$list);
     }
 
+    //互动问答-问答列表
+    public function commonList(Request $request) {
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+        $tag_id = $request->input('tag_id',0);
+
+        $query = Question::where('questions.is_recommend','>=',0);
+        if($top_id){
+            $query = $query->where('questions.id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('questions.id','<',$bottom_id);
+        }
+
+        if ($tag_id) {
+            $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
+        }
+
+        $questions = $query->orderBy('questions.id','desc')->paginate(10);
+        $list = [];
+        foreach($questions as $question){
+            /*已解决问题*/
+            $bestAnswer = [];
+            if($question->status >= 6 ){
+                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+            }
+            $list[] = [
+                'id' => $question->id,
+                'question_type' => $question->question_type,
+                'user_id' => $question->user_id,
+                'description'  => $question->title,
+                'tags' => $question->tags()->pluck('name'),
+                'hide' => $question->hide,
+                'price' => $question->price,
+                'status' => $question->status,
+                'created_at' => (string)$question->created_at,
+                'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
+                'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
+                'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
+                'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
+                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
+                'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
+            ];
+        }
+        return self::createJsonData(true,$list);
+    }
+
     //专业问答-热门问答
     public function majorHot(Request $request) {
         $questions = Question::where('is_hot',1)->orderBy('id','desc')->get()->take(2);

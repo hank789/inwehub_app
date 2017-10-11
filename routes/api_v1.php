@@ -133,6 +133,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('answer/payforview','AnswerController@payForView');
     //专业问答-推荐问答列表
     Route::post('question/majorList','QuestionController@majorList');
+    //互动问答-问答列表
+    Route::post('question/commonList','QuestionController@commonList');
     //专业问答-热门问答
     Route::post('question/majorHot','QuestionController@majorHot');
     //问答留言列表
