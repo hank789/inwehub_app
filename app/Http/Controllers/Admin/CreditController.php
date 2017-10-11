@@ -12,6 +12,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Credit;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Events\Frontend\System\Credit as CreditEvent;
 
 class CreditController extends AdminController
 {
@@ -64,7 +65,8 @@ class CreditController extends AdminController
             $credits = intval(-$credits);
             $coins   = intval(-$coins);
         }
-        $this->credit($userId,$action,$coins,$credits);
+        event(new CreditEvent($userId,$action,$coins,$credits));
+
         return $this->success(route('admin.credit.index'),'充值成功');
     }
 
