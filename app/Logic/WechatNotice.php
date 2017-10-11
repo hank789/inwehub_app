@@ -126,6 +126,7 @@ class WechatNotice {
                 break;
             case 'notification_money_fee':
             case 'notification_money_settlement':
+            case 'notification_pay_for_view_settlement':
                 $object = MoneyLog::find($object_id);
                 $title = '您的账户资金发生以下变动!';
                 $keyword2 = ($object->io >= 1 ? '+' : '-').$object->change_money.'元';

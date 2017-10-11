@@ -134,6 +134,9 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
             case MoneyLogModel::MONEY_TYPE_FEE:
                 $object_type = 'notification_money_fee';
                 break;
+            case MoneyLogModel::MONEY_TYPE_PAY_FOR_VIEW_ANSWER:
+                $object_type = 'notification_pay_for_view_settlement';
+                break;
         }
         return [
             'content' => $title,
