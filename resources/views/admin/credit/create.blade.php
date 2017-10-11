@@ -3,8 +3,8 @@
 @section('content')
     <section class="content-header">
         <h1>
-            积分金币管理
-            <small>添加积分、金币</small>
+            积分管理
+            <small>添加贡献值、成长值</small>
         </h1>
     </section>
     <section class="content">
@@ -21,7 +21,7 @@
                             </div>
                             <div class="form-group">
                                 <label>操作类型</label>
-                                <span class="text-muted">(根据操作类型确定是加/减 金币数或经验值)</span>
+                                <span class="text-muted">(根据操作类型确定是加/减 贡献值或成长值)</span>
                                 <div class="radio">
                                     <label>
                                         <input type="radio" name="action" value="reward_user" @if( old('action','reward_user') == 'reward_user')checked @endif /> 奖励
@@ -32,15 +32,15 @@
                                 </div>
                             </div>
                             <div class="form-group @if($errors->has('coins')) has-error @endif">
-                                <label>操作金币数</label>
+                                <label>贡献值</label>
                                 <span class="text-muted">(只能是正整数，0为不进行修改)</span>
-                                <input type="text" name="coins" class="form-control " placeholder="要操作的金币数" value="{{ old('coins',0) }}">
+                                <input type="text" name="coins" class="form-control " placeholder="要操作的贡献值" value="{{ old('coins',0) }}">
                                 @if($errors->has('coins')) <p class="help-block">{{ $errors->first('coins') }}</p> @endif
                             </div>
                             <div class="form-group @if($errors->has('credits')) has-error @endif">
-                                <label>操作经验值</label>
+                                <label>成长值</label>
                                 <span class="text-muted">(只能是正整数，0为不进行修改)</span>
-                                <input type="text" name="credits" class="form-control " placeholder="要操作的经验值" value="{{ old('credits',0) }}">
+                                <input type="text" name="credits" class="form-control " placeholder="要操作的成长值" value="{{ old('credits',0) }}">
                                 @if($errors->has('credits')) <p class="help-block">{{ $errors->first('credits') }}</p> @endif
                             </div>
                         </div>
