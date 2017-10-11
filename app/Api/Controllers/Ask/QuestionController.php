@@ -511,7 +511,7 @@ class QuestionController extends Controller
         $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
 
-        $query = Question::where('questions.is_recommend',1);
+        $query = Question::where('questions.is_recommend',1)->where('questions.question_type',1);
         if($top_id){
             $query = $query->where('questions.id','>',$top_id);
         }elseif($bottom_id){
@@ -558,7 +558,7 @@ class QuestionController extends Controller
         $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
 
-        $query = Question::where('questions.is_recommend','>=',0);
+        $query = Question::where('questions.question_type',2);
         if($top_id){
             $query = $query->where('questions.id','>',$top_id);
         }elseif($bottom_id){
