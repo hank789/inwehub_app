@@ -544,7 +544,7 @@ class QuestionController extends Controller
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
                 'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
                 'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
-                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'answer_user_is_expert' => $bestAnswer && $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
                 'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
             ];
@@ -591,7 +591,7 @@ class QuestionController extends Controller
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
                 'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
                 'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
-                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'answer_user_is_expert' => $bestAnswer && $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
                 'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
             ];
