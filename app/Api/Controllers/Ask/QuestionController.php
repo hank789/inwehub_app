@@ -147,7 +147,7 @@ class QuestionController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $promise_answer_time,
-            'answer_num' => $question->answers()->count(),
+            'answer_num' => $question->answers,
             'created_at' => (string)$question->created_at
         ];
 
@@ -408,6 +408,91 @@ class QuestionController extends Controller
 
     }
 
+
+    //邀请回答
+    public function inviteAnswer(Request $request){
+        $validateRules = [
+            'question_id'    => 'required|integer',
+            'user_id' => 'required|integer',
+        ];
+        $this->validate($request,$validateRules);
+
+        $loginUser = $request->user();
+        $to_user_id = $request->input('to_user_id');
+        $question_id = $request->input('question_id');
+
+        if($loginUser->id == $to_user_id){
+            return self::createJsonData(false,[],ApiException::BAD_REQUEST,'不用邀请自己，您可以直接回答 ：）');
+        }
+
+        $question = Question::find($question_id);
+        if(!$question){
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+        }
+
+        if($to_user_id == $question->user_id){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+
+
+        $toUser = User::find(intval($to_user_id));
+        if(!$toUser){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+
+        /*是否已邀请，不能重复邀请*/
+        if($question->isInvited($toUser->id,$loginUser->id)){
+            return self::createJsonData(false,[],ApiException::BAD_REQUEST,'该用户已被邀请，不能重复邀请');
+        }
+
+        $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$loginUser->id,'question_id'=>$question->id],[
+            'from_user_id'=> $loginUser->id,
+            'question_id'=> $question->id,
+            'user_id'=> $toUser->id,
+            'send_to'=> $toUser->email
+        ]);
+
+        //记录动态
+        $this->doing($loginUser->id,'question_invite_answer',get_class($question),$question->id,$question->title,'',0,$question->user_id);
+        //记录任务
+        $this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
+
+        $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id));
+
+        return self::createJsonData(true);
+    }
+
+
+    //邀请回答者列表
+    public function inviterList(Request $request){
+        $validateRules = [
+            'question_id'    => 'required|integer',
+        ];
+        $this->validate($request,$validateRules);
+        $question = Question::find($request->input('question_id'));
+        if(!$question){
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+        }
+
+        $query = $request->user()->attentions()->where('source_type','=','App\Models\User');
+        $attentions = $query->orderBy('attentions.created_at','desc')->get();
+        $data = [];
+        foreach($attentions as $attention){
+            if ($attention->source_id == $question->user_id) continue;
+            $info = User::find($attention->source_id);
+            $item = [];
+            $item['id'] = $info->id;
+            $item['name'] = $info->name;
+            $item['avatar_url'] = $info->getAvatarUrl();
+            $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
+            $item['description'] = $info->description;
+            $item['is_invited'] = $question->isInvited($info->id,$request->user()->id);
+            $data[] = $item;
+        }
+        return self::createJsonData(true,$data);
+
+
+    }
 
     //拒绝回答
     public function rejectAnswer(Request $request){

@@ -172,8 +172,8 @@ class AnswerController extends Controller
         $lock_key = 'question_answer_action';
         $doing_prefix = '';
 
+        $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
         if ($question->question_type == 1) {
-            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
             if(empty($question_invitation)){
                 throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
             }
@@ -264,6 +264,7 @@ class AnswerController extends Controller
 
                 //任务变为已完成
                 $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[]);
+                if ($question_invitation) $this->finishTask(get_class($question_invitation),$question_invitation->id,Task::ACTION_TYPE_INVITE_ANSWER,[]);
 
 
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');

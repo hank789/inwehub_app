@@ -2,7 +2,9 @@
 use App\Api\Controllers\Controller;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\QuestionInvitation;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 /**
@@ -39,6 +41,18 @@ class TaskController extends Controller {
             $user_name = '';
             $user_avatar_url = '';
             switch($task->source_type){
+                case 'App\Models\QuestionInvitation':
+                    $task_type = 1;
+                    $task_type_description = '邀请问答';
+                    $invitation = QuestionInvitation::find($task->source_id);
+                    $from_user = User::find($invitation->from_user_id);
+                    $object_id = $invitation->question_id;
+                    $question = Question::find($object_id);
+                    $description = '用户'.$from_user->name.'邀请您回答问题:'.$question->title;
+                    $status_description = '前往回答问题';
+                    $user_avatar_url = $from_user->avatar;
+                    $user_name = $from_user->name;
+                    break;
                 case 'App\Models\Question':
                     $task_type = 1;
                     $task_type_description = '专业问答';

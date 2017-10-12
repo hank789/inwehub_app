@@ -18,6 +18,7 @@ class Task extends Model
 
     const ACTION_TYPE_ANSWER = 'answer';
     const ACTION_TYPE_ANSWER_FEEDBACK = 'answer_feedback';
+    const ACTION_TYPE_INVITE_ANSWER = 'invite_answer';
 
 
 }

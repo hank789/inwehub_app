@@ -46,14 +46,11 @@ class AnswerObserver implements ShouldQueue {
             case 1:
                 //已回答
                 $question_invitation = QuestionInvitation::where("user_id","=",$answer->user_id)->where("question_id","=",$answer->question_id)->first();
-                $response_time = Carbon::createFromTimestamp(time())->diffInMinutes(Carbon::createFromTimestamp(strtotime($question_invitation->created_at)));
-                $cost_time = Carbon::createFromTimestamp(time())->diffInMinutes(Carbon::createFromTimestamp(strtotime($answer->question->created_at)));
 
                 $fields[] = [
                     'title' => '回答内容',
                     'value' => $answer->getContentText()
                 ];
-
                 if ($answer->promise_time){
                     $fields[] = [
                         'title' => '承诺时间',
@@ -62,17 +59,21 @@ class AnswerObserver implements ShouldQueue {
                     ];
                 }
 
-                $fields[] = [
-                    'title' => '响应时间',
-                    'value' => $response_time.'分钟',
-                    'short' => true
-                ];
+                if ($question_invitation) {
+                    $response_time = Carbon::createFromTimestamp(time())->diffInMinutes(Carbon::createFromTimestamp(strtotime($question_invitation->created_at)));
+                    $fields[] = [
+                        'title' => '响应时间',
+                        'value' => $response_time.'分钟',
+                        'short' => true
+                    ];
+                    $cost_time = Carbon::createFromTimestamp(time())->diffInMinutes(Carbon::createFromTimestamp(strtotime($answer->question->created_at)));
 
-                $fields[] = [
-                    'title' => '总耗时',
-                    'value' => $cost_time.'分钟',
-                    'short' => true
-                ];
+                    $fields[] = [
+                        'title' => '总耗时',
+                        'value' => $cost_time.'分钟',
+                        'short' => true
+                    ];
+                }
 
                 $this->slackMsg($answer->question,$fields)
                     ->send('用户['.$answer->user->name.']回答了该问题');

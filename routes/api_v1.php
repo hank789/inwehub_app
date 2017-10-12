@@ -137,6 +137,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/commonList','QuestionController@commonList');
     //专业问答-热门问答
     Route::post('question/majorHot','QuestionController@majorHot');
+    //邀请回答
+    Route::post('question/inviteAnswer','QuestionController@inviteAnswer');
+    //邀请列表
+    Route::post('question/inviterList','QuestionController@inviterList');
+
+
     //问答留言列表
     Route::post('answer/commentList','AnswerController@commentList');
     //问答留言
