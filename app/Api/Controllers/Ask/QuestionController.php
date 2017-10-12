@@ -147,6 +147,7 @@ class QuestionController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $promise_answer_time,
+            'answer_num' => $question->answers()->count(),
             'created_at' => (string)$question->created_at
         ];
 
@@ -166,9 +167,18 @@ class QuestionController extends Controller
                 ];
             }
         }
+        $is_followed_question = 0;
+        $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+        if ($attention_question) {
+            $is_followed_question = 1;
+        }
 
-
-        return self::createJsonData(true,['question'=>$question_data,'answers'=>$answers_data,'timeline'=>$timeline,'feedback'=>$feedback_data]);
+        return self::createJsonData(true,[
+            'is_followed_question'=>$is_followed_question,
+            'question'=>$question_data,
+            'answers'=>$answers_data,
+            'timeline'=>$timeline,
+            'feedback'=>$feedback_data]);
 
     }
 

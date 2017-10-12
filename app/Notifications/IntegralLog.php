@@ -40,7 +40,7 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast',PushChannel::class];
     }
 
     /**
