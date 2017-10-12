@@ -720,7 +720,7 @@ class QuestionController extends Controller
 
     //问题回答列表
     public function answerList(Request $request){
-        $id = $request->input('id');
+        $id = $request->input('question_id');
         $question = Question::find($id);
 
         if(empty($question)){
