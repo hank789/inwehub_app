@@ -744,7 +744,7 @@ class QuestionController extends Controller
                 'title' => $answer->user->title,
                 'company' => $answer->user->company,
                 'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
-                'content' => $answer->content,
+                'content' => $answer->getContentText(),
                 'promise_time' => $answer->promise_time,
                 'is_followed' => $attention?1:0,
                 'is_supported' => $support?1:0,
