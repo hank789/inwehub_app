@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Attention;
 use App\Models\Notification as NotificationModel;
@@ -41,7 +42,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**
@@ -99,6 +100,15 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
             'object_type'  => 'user_following',
             'object_id' => $this->attention->id,
         ];
+    }
+
+    public function toSlack($notifiable){
+        $user = User::find($this->attention->user_id);
+        $current_user = User::find($this->user_id);
+
+        return \Slack::to(config('slack.ask_activity_channel'))
+            ->disableMarkdown()
+            ->send('用户['.$user->name.']关注了用户['.$current_user->name.']');
     }
 
     public function broadcastOn(){
