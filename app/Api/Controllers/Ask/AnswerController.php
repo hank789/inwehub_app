@@ -137,12 +137,15 @@ class AnswerController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $answer->promise_time,
+            'answer_num' => $question->answers,
             'created_at' => (string)$question->created_at
         ];
         $answer->increment('views');
 
 
-        return self::createJsonData(true,['question'=>$question_data,'answer'=>$answers_data]);
+        return self::createJsonData(true,[
+            'question'=>$question_data,
+            'answer'=>$answers_data]);
 
     }
 
