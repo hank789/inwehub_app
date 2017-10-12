@@ -572,11 +572,6 @@ class QuestionController extends Controller
         $questions = $query->orderBy('questions.id','desc')->paginate(10);
         $list = [];
         foreach($questions as $question){
-            /*已解决问题*/
-            $bestAnswer = [];
-            if($question->status >= 6 ){
-                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
-            }
             $list[] = [
                 'id' => $question->id,
                 'question_type' => $question->question_type,
@@ -587,13 +582,10 @@ class QuestionController extends Controller
                 'price' => $question->price,
                 'status' => $question->status,
                 'created_at' => (string)$question->created_at,
-                'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
-                'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
-                'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
-                'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
-                'answer_user_is_expert' => $bestAnswer && $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
-                'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
-                'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
+                'question_username' => $question->user->name,
+                'question_user_is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
+                'question_user_avatar_url' => $question->user->avatar,
+                'answer_num' => $question->answers()->count()
             ];
         }
         return self::createJsonData(true,$list);
