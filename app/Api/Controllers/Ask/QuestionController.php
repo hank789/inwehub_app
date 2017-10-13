@@ -418,7 +418,7 @@ class QuestionController extends Controller
         $this->validate($request,$validateRules);
 
         $loginUser = $request->user();
-        $to_user_id = $request->input('to_user_id');
+        $to_user_id = $request->input('user_id');
         $question_id = $request->input('question_id');
 
         if($loginUser->id == $to_user_id){
