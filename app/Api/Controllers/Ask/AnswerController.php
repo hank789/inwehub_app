@@ -7,6 +7,7 @@ use App\Logic\PayQueryLogic;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
@@ -97,6 +98,7 @@ class AnswerController extends Controller
 
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
 
+        $collect = Collection::where('user_id',$user->id)->where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->first();
         $answers_data = [
             'id' => $answer->id,
             'user_id' => $answer->user_id,
@@ -110,6 +112,7 @@ class AnswerController extends Controller
             'promise_time' => $answer->promise_time,
             'is_followed' => $attention?1:0,
             'is_supported' => $support?1:0,
+            'is_collected' => $collect?1:0,
             'support_number' => $answer->supports,
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
@@ -122,6 +125,7 @@ class AnswerController extends Controller
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
+            'uuid' => $question->user->uuid,
             'question_type' => $question->question_type,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
             'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
