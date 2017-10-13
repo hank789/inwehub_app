@@ -190,6 +190,38 @@ class QuestionController extends Controller
 
     }
 
+
+    //相关问题
+    public function relatedQuestion(Request $request){
+        $validateRules = [
+            'id'    => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $question_id = $request->input('id');
+        $question = Question::find($question_id);
+        $relatedQuestions = Question::correlations($question->tags()->pluck('tag_id'));
+        if (!$relatedQuestions) {
+            $relatedQuestions = Question::recent();
+        }
+        $list = [];
+        $count = 0;
+        foreach ($relatedQuestions as $relatedQuestion) {
+            if ($count >= 3) break;
+            $bestAnswer = $relatedQuestion->answers()->orderBy('id','desc')->get()->last();
+            if (!$bestAnswer) continue;
+            $list[] = [
+                'id' => $relatedQuestion->id,
+                'user_id' => $bestAnswer->user_id,
+                'user_name' => $bestAnswer->user->name,
+                'user_avatar_url' => $bestAnswer->user->avatar,
+                'is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'title' => $relatedQuestion->title
+            ];
+            $count++;
+        }
+        return self::createJsonData(true,$list);
+    }
+
     /**
      * 请求创建问题
      */
