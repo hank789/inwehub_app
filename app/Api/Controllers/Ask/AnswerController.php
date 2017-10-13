@@ -518,6 +518,13 @@ class AnswerController extends Controller
         Settlement::payForViewSettlement($order);
         //记录动态
         $this->doing($loginUser->id,'pay_for_view_question_answer',get_class($answer),$answer->id,$answer->question->title,'');
+        //自动收藏
+        Collection::create([
+            'user_id'     => $loginUser->id,
+            'source_id'   => $answer->id,
+            'source_type' => get_class($answer),
+            'subject'  => '付费围观',
+        ]);
 
         event(new PayForView($order));
         return self::createJsonData(true,[
