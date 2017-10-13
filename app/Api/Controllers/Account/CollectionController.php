@@ -5,6 +5,7 @@ use App\Models\Answer;
 use App\Models\Collection;
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class CollectionController extends Controller
 {
