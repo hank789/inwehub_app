@@ -92,6 +92,8 @@ class CollectionController extends Controller
             switch($source_type){
                 case 'answers':
                     $item['answer_id'] = $info->id;
+                    $item['question_id'] = $info->question_id;
+                    $item['question_type'] = $info->question->question_type;
                     $item['user_name'] = $info->user->name;
                     $item['user_avatar_url'] = $info->user->avatar;
                     $item['is_expert'] = $info->user->userData->authentication_status == 1 ? 1 : 0;
