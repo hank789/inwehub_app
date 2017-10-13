@@ -96,7 +96,7 @@
                                             <td>{{ $question->id }}</td>
                                             <td><span class="text-gold"><i class="fa fa-database"></i> {{ $question->price }}</span></td>
                                             <td>@if( $question->category ) {{ $question->category->name }} | {{ implode(',',$question->tags->pluck('name')->toArray()) }} @else 无 @endif</td>
-                                            <td>{{ $question->question_type == 1 ? '专业问答':'悬赏问答' }}</td>
+                                            <td>{{ $question->question_type == 1 ? '专业问答':'互动问答' }}</td>
                                             <td style="width: 25%"><a href="{{ route('ask.question.detail',['id'=>$question->id]) }}" target="_blank">{{ $question->title }}</a></td>
                                             <td>{{ $question->user->name }}<span class="text-muted">[UID:{{ $question->user_id }}]</span></td>
                                             <td>{{ $question->hide ? '匿名':'非匿名' }}</td>
