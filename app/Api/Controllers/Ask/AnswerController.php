@@ -116,6 +116,7 @@ class AnswerController extends Controller
             'support_number' => $answer->supports,
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
+            'collect_num' => $answer->collections,
             'created_at' => (string)$answer->created_at
         ];
 
@@ -525,6 +526,8 @@ class AnswerController extends Controller
             'source_type' => get_class($answer),
             'subject'  => '付费围观',
         ]);
+        $answer->increment('collections');
+
 
         event(new PayForView($order));
         return self::createJsonData(true,[
