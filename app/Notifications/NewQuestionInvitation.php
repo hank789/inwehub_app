@@ -97,13 +97,8 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
     }
 
     public function toWechatNotice($notifiable){
-        $title = '您有新的回答邀请';
-        if ($this->from_user_id) {
-            $from_user = User::find($this->from_user_id);
-            $title = $from_user->name.'邀请您回答问题';
-        }
         return [
-            'content' => $title,
+            'content' => $this->question->title,
             'object_type'  => 'question_invite_answer_confirming',
             'object_id' => $this->question->id,
         ];

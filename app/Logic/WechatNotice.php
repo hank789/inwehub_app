@@ -44,12 +44,23 @@ class WechatNotice {
                     $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
                 }
                 break;
-            case 'question_answered':
+            case 'pay_question_answered':
                 $object = Answer::find($object_id);
                 $title = '您好，已有专家回答了您的专业问答任务';
                 $keyword2 = $object->user->name;
                 $remark = '可点击详情查看回答内容';
                 $target_url = $url.'#/ask/'.$object->question->id;
+                $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+                if (config('app.env') != 'production') {
+                    $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+                }
+                break;
+            case 'free_question_answered':
+                $object = Answer::find($object_id);
+                $title = '您好，您的提问有新的回答';
+                $keyword2 = $object->user->name;
+                $remark = '可点击详情查看回答内容';
+                $target_url = $url.'#/askCommunity/interaction/'.$object_id;
                 $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
                 if (config('app.env') != 'production') {
                     $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
@@ -66,7 +77,7 @@ class WechatNotice {
                     $template_id = 'zvZO6wKROVb3fWCE8TGIOtQ3y3k4527wD_Lsk6dyNnM';
                 }
                 break;
-            case 'answer_new_comment':
+            case 'pay_answer_new_comment':
                 $comment = \App\Models\Comment::find($object_id);
                 $answer = $comment->source;
                 $title = '您好，有人回复了您的专业回答';
@@ -74,6 +85,19 @@ class WechatNotice {
                 $keyword3 = $comment->content;
                 $remark = '请点击查看详情！';
                 $target_url = $url.'#/askCommunity/major/'.$answer->question_id;
+                $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
+                if (config('app.env') != 'production') {
+                    $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
+                }
+                break;
+            case 'free_answer_new_comment':
+                $comment = \App\Models\Comment::find($object_id);
+                $answer = $comment->source;
+                $title = '您好，有人回复了您的互动回答';
+                $keyword2 = date('Y-m-d H:i',strtotime($answer->created_at));
+                $keyword3 = $comment->content;
+                $remark = '请点击查看详情！';
+                $target_url = $url.'#/askCommunity/interaction/'.$answer->id;
                 $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
                 if (config('app.env') != 'production') {
                     $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
