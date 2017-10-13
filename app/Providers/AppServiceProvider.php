@@ -59,12 +59,30 @@ class AppServiceProvider extends ServiceProvider
             // Notify team of failing job...
             Log::error('队列任务执行出错',['connection'=>$job->connectionName,'job'=>$job->job,'msg'=>$job->exception->getMessage()]);
         });*/
-        /*Log::listen(function($log)
+        Log::listen(function($log)
         {
             if( get_class($log) === 'Illuminate\Log\Events\MessageLogged' && $log->level === 'error'){
-                event(new LogNotify($log->level,$log->message,$log->context));
+                try{
+                    switch($log->level){
+                        case 'error':
+                            //Notify team of error
+                            \Slack::to(config('slack.exception_channel'))->attach([
+                                'pretext' => '错误详细信息',
+                                'color' => 'danger',
+                                'fields' => [
+                                    [
+                                        'title' => '',
+                                        'value' => json_encode($log->context,JSON_UNESCAPED_UNICODE)
+                                    ]
+                                ]
+                            ])->send($log->message);
+                            break;
+                    }
+                }catch (\Exception $e){
+                    app('sentry')->captureException($e);
+                }
             }
-        });*/
+        });
 
         //事件监听
         Question::observe(QuestionObserver::class);
