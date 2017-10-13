@@ -1,12 +1,9 @@
 <?php namespace App\Http\Controllers\Wechat;
-use App\Events\Frontend\System\ErrorNotify;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Log;
 use Illuminate\Http\Request;
-use App\Services\Registrar;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\JWTAuth;
 use App\Models\UserOauth;
 use Illuminate\Support\Facades\Session;
