@@ -22,12 +22,23 @@ class WechatNotice {
         $url = config('app.mobile_url');
         $keyword3 = '';
         switch($object_type){
-            case 'question_invite_answer_confirming':
+            case 'pay_question_invite_answer_confirming':
                 $object = Question::find($object_id);
                 $title = '您好，您有新的回答邀请';
                 $keyword2 = '专业问答任务邀请';
                 $remark = '请立即前往确认回答';
                 $target_url = $url.'#/answer/'.$object->id;
+                $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
+                if (config('app.env') != 'production') {
+                    $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
+                }
+                break;
+            case 'free_question_invite_answer_confirming':
+                $object = Question::find($object_id);
+                $title = '您好，您有新的回答邀请';
+                $keyword2 = '互动问答邀请';
+                $remark = '请立即前往确认回答';
+                $target_url = $url.'#/askCommunity/interaction/answers/'.$object->id;
                 $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
                 if (config('app.env') != 'production') {
                     $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';

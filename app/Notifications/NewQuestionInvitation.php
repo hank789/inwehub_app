@@ -89,17 +89,34 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
             $from_user = User::find($this->from_user_id);
             $title = $from_user->name.'邀请您回答问题';
         }
+        switch ($this->question->question_type) {
+            case 1:
+                $object_type = 'pay_answer';
+                break;
+            case 2:
+                $object_type = 'free_answer';
+                break;
+        }
+
         return [
             'title' => $title,
             'body'  => $this->question->title,
-            'payload' => ['object_type'=>'answer','object_id'=>$this->question->id],
+            'payload' => ['object_type'=>$object_type,'object_id'=>$this->question->id],
         ];
     }
 
     public function toWechatNotice($notifiable){
+        switch ($this->question->question_type) {
+            case 1:
+                $object_type = 'pay_question_invite_answer_confirming';
+                break;
+            case 2:
+                $object_type = 'free_question_invite_answer_confirming';
+                break;
+        }
         return [
             'content' => $this->question->title,
-            'object_type'  => 'question_invite_answer_confirming',
+            'object_type'  => $object_type,
             'object_id' => $this->question->id,
         ];
     }
