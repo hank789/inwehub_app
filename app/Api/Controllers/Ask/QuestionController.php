@@ -177,7 +177,7 @@ class QuestionController extends Controller
         $my_answer_id = 0;
         if ($question->question_type != 1) {
             $myAnswer = Answer::where('question_id',$id)->where('user_id',$user->id)->first();
-            $my_answer_id = $myAnswer->id;
+            if ($myAnswer) $my_answer_id = $myAnswer->id;
         }
 
         return self::createJsonData(true,[
