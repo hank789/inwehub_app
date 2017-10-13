@@ -65,17 +65,19 @@ class AppServiceProvider extends ServiceProvider
                 try{
                     switch($log->level){
                         case 'error':
-                            //Notify team of error
-                            \Slack::to(config('slack.exception_channel'))->attach([
-                                'pretext' => '错误详细信息',
-                                'color' => 'danger',
-                                'fields' => [
-                                    [
-                                        'title' => '',
-                                        'value' => json_encode($log->context,JSON_UNESCAPED_UNICODE)
+                            if($log->message) {
+                                //Notify team of error
+                                \Slack::to(config('slack.exception_channel'))->attach([
+                                    'pretext' => '错误详细信息',
+                                    'color' => 'danger',
+                                    'fields' => [
+                                        [
+                                            'title' => '',
+                                            'value' => json_encode($log->context,JSON_UNESCAPED_UNICODE)
+                                        ]
                                     ]
-                                ]
-                            ])->send($log->message);
+                                ])->send($log->message);
+                            }
                             break;
                     }
                 }catch (\Exception $e){
