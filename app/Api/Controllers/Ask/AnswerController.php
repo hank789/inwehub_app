@@ -129,7 +129,7 @@ class AnswerController extends Controller
             'uuid' => $question->user->uuid,
             'question_type' => $question->question_type,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
-            'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar(),
+            'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
             'title' => $question->hide ? '保密' : $question->user->title,
             'company' => $question->hide ? '保密' : $question->user->company,
             'is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
