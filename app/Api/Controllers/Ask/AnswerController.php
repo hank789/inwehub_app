@@ -281,7 +281,8 @@ class AnswerController extends Controller
                 $this->doing($answer->user_id,$doing_prefix.'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
 
                 /*记录通知*/
-                $question->user->notify(new NewQuestionAnswered($question->user_id,$question,$answer));
+                if ($question->user_id != $answer->user_id)
+                    $question->user->notify(new NewQuestionAnswered($question->user_id,$question,$answer));
 
                 /*回答后通知关注问题*/
                 if(true){
