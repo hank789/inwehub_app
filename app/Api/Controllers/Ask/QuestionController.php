@@ -692,6 +692,7 @@ class QuestionController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
+        $user = $request->user();
 
         $query = Question::where('questions.question_type',2);
         if($top_id){
@@ -707,6 +708,11 @@ class QuestionController extends Controller
         $questions = $query->orderBy('questions.id','desc')->paginate(10);
         $list = [];
         foreach($questions as $question){
+            $is_followed_question = 0;
+            $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+            if ($attention_question) {
+                $is_followed_question = 1;
+            }
             $list[] = [
                 'id' => $question->id,
                 'question_type' => $question->question_type,
@@ -720,7 +726,9 @@ class QuestionController extends Controller
                 'question_username' => $question->user->name,
                 'question_user_is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
                 'question_user_avatar_url' => $question->user->avatar,
-                'answer_num' => $question->answers()->count()
+                'answer_num' => $question->answers,
+                'follow_num' => $question->followers,
+                'is_followed_question' => $is_followed_question
             ];
         }
         return self::createJsonData(true,$list);
