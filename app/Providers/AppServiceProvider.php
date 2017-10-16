@@ -61,23 +61,21 @@ class AppServiceProvider extends ServiceProvider
         });*/
         Log::listen(function($log)
         {
-            if( get_class($log) === 'Illuminate\Log\Events\MessageLogged' && $log->level === 'error'){
+            if( get_class($log) === 'Illuminate\Log\Events\MessageLogged' && $log->level === 'error' && !($log->message instanceof \Exception)){
                 try{
                     switch($log->level){
                         case 'error':
-                            if($log->message) {
-                                //Notify team of error
-                                \Slack::to(config('slack.exception_channel'))->attach([
-                                    'pretext' => '错误详细信息',
-                                    'color' => 'danger',
-                                    'fields' => [
-                                        [
-                                            'title' => '',
-                                            'value' => json_encode($log->context,JSON_UNESCAPED_UNICODE)
-                                        ]
+                            //Notify team of error
+                            \Slack::to(config('slack.exception_channel'))->attach([
+                                'pretext' => '错误详细信息',
+                                'color' => 'danger',
+                                'fields' => [
+                                    [
+                                        'title' => 'Stack trace',
+                                        'value' => is_array($log->context) ? json_encode($log->context,JSON_UNESCAPED_UNICODE):$log->context
                                     ]
-                                ])->send($log->message);
-                            }
+                                ]
+                            ])->send($log->message);
                             break;
                     }
                 }catch (\Exception $e){
