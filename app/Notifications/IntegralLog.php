@@ -70,6 +70,9 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
         return [
             'url'    => '/my',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_INTEGRAL,
+            'integral_action' => $this->creditLog->action,
+            'add_coins' => $this->creditLog->coins,
+            'add_credits' => $this->creditLog->credits,
             'avatar' => '',
             'name'   => $this->creditLog->user->name,
             'title'  => $title,
