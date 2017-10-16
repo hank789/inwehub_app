@@ -206,7 +206,7 @@ class QuestionController extends Controller
         $list = [];
         $count = 0;
         foreach ($relatedQuestions as $relatedQuestion) {
-            if ($count >= 3) break;
+            if ($count >= 1) break;
             $bestAnswer = $relatedQuestion->answers()->orderBy('id','desc')->get()->last();
             if (!$bestAnswer) continue;
             $list[] = [
