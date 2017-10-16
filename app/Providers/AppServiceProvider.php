@@ -61,7 +61,7 @@ class AppServiceProvider extends ServiceProvider
         });*/
         Log::listen(function($log)
         {
-            if( get_class($log) === 'Illuminate\Log\Events\MessageLogged' && $log->level === 'error'){
+            if( get_class($log) === 'Illuminate\Log\Events\MessageLogged' && $log->level === 'error' && !($log->message instanceof \Exception)){
                 try{
                     switch($log->level){
                         case 'error':
@@ -71,8 +71,8 @@ class AppServiceProvider extends ServiceProvider
                                 'color' => 'danger',
                                 'fields' => [
                                     [
-                                        'title' => '',
-                                        'value' => json_encode($log->context,JSON_UNESCAPED_UNICODE)
+                                        'title' => 'Stack trace',
+                                        'value' => is_array($log->context) ? json_encode($log->context,JSON_UNESCAPED_UNICODE):$log->context
                                     ]
                                 ]
                             ])->send($log->message);
