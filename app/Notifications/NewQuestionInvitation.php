@@ -71,11 +71,22 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         if ($this->from_user_id) {
             $from_user = User::find($this->from_user_id);
             $title = $from_user->name.'邀请您回答问题';
+            $avatar = $from_user->avatar;
+        } else {
+            $avatar = $this->question->user->avatar;
+        }
+        switch ($this->question->question_type) {
+            case 1:
+                $url = '/answer/'.$this->question->id;
+                break;
+            case 2:
+                $url = '/askCommunity/interaction/answers/'.$this->question->id;
+                break;
         }
         return [
-            'url'    => '/answer/'.$this->question->id,
+            'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
-            'avatar' => $this->question->user->avatar,
+            'avatar' => $avatar,
             'title'  => $title,
             'body'   => $this->question->title,
             'extra_body' => ''
