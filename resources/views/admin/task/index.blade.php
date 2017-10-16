@@ -65,7 +65,7 @@
                                             <td>{{ $task['user_name'] }}</td>
                                             <td><img width="100" height="100" src="{{ $task['user_avatar_url'] }}"></td>
                                             <td>{{ timestamp_format($task['created_at']) }}</td>
-                                            <td><span class="label @if($task['status']===0) label-warning  @else label-success @endif">{{ trans_task_status($task['status']) }}</span> </td>
+                                            <td><span class="label @if($task['task_status']==0) label-warning  @else label-success @endif">{{ trans_task_status($task['task_status']) }}</span> </td>
                                         </tr>
                                     @endforeach
                                 </table>

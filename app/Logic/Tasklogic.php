@@ -176,6 +176,7 @@ class TaskLogic {
                 'id'        => $task->id,
                 'task_type' => $task_type,
                 'task_type_description' => $task_type_description,
+                'task_status' => $task->status,
                 'user_name' => $user_name,
                 'user_avatar_url' => $user_avatar_url,
                 'description' => $description,
