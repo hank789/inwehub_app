@@ -332,7 +332,7 @@ class Question extends Model
                 return '专业问答 | '.$this->title;
                 break;
             case 2:
-                return '悬赏问答 | '.$this->title;
+                return '互动问答 | '.$this->title;
                 break;
         }
         return $this->title;
