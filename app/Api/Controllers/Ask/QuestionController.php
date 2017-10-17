@@ -658,7 +658,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(10);
+        $questions = $query->orderBy('questions.id','desc')->paginate(30);
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -706,7 +706,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(10);
+        $questions = $query->orderBy('questions.id','desc')->paginate(30);
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
