@@ -60,8 +60,6 @@ class Credit extends Model
     const KEY_RATE_ANSWER = 'rate_answer';
 
 
-
-
     public static $creditSetting = [
         self::KEY_REGISTER => ['backend_label'=>'注册','notice_user'=>'注册成功'],
         self::KEY_UPLOAD_AVATAR => ['backend_label'=>'上传头像','notice_user'=>'上传头像成功'],
