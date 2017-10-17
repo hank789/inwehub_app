@@ -198,6 +198,14 @@ class AnswerController extends Controller
             }
         }
 
+        if ($question->question_type == 2) {
+            //互动问答只能回答一次
+            $exit_answers = Answer::where('question_id',$question_id)->where('user_id',$loginUser->id)->get()->last();
+            if ($exit_answers){
+                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
+            }
+        }
+
         $promise_time = $request->input('promise_time');
 
         $answerContent = $request->input('description');
