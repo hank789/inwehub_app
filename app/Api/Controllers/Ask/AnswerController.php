@@ -594,10 +594,12 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $user_id = $request->user()->id;
-        //只有问题作者，回答者，付费围观的人才能看到回复
+        //专业只有问题作者，回答者，付费围观的人才能看到回复
         $is_question_author = $user_id == $source->question->user_id;
         $is_answer_author = $user_id == $source->user_id;
-        if (!(($is_question_author || $is_answer_author) && $source->question->question_type == 1)) {
+        if ((($is_question_author || $is_answer_author) && $source->question->question_type == 1) || $source->question->question_type == 2) {
+
+        } else {
             $payOrder = $source->orders()->where('return_param','view_answer')->first();
             if (!$payOrder) {
                 return self::createJsonData(true, Comment::where('id',0)->simplePaginate(10)->toArray());
