@@ -126,6 +126,7 @@ class SystemEventListener implements ShouldQueue
             return true;
         }catch (\Exception $e) {
             DB::rollBack();
+            app('sentry')->captureException($e);
             return false;
         }
     }
