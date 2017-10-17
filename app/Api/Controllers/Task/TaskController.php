@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Logic\TaskLogic;
 use App\Models\Answer;
+use App\Models\Notification;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Task;
@@ -30,7 +31,12 @@ class TaskController extends Controller {
         }
         $tasks = $query->orderBy('id','DESC')->paginate(10);
         $task_count = $tasks->count();
-        $notification_count = $request->user()->unreadNotifications()->count();
+        $notification_count = $request->user()->unreadNotifications()->whereIn('notification_type', [
+            Notification::NOTIFICATION_TYPE_NOTICE,
+            Notification::NOTIFICATION_TYPE_TASK,
+            Notification::NOTIFICATION_TYPE_READ,
+            Notification::NOTIFICATION_TYPE_MONEY
+            ])->count();
         $list = TaskLogic::formatList($tasks);
 
         return self::createJsonData(true,['list'=>$list,'total'=>$task_count + $notification_count]);
