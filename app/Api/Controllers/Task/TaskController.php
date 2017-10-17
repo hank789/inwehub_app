@@ -29,9 +29,11 @@ class TaskController extends Controller {
             $query = $query->where('id','>',0);
         }
         $tasks = $query->orderBy('id','DESC')->paginate(10);
+        $task_count = $tasks->count();
+        $notification_count = $request->user()->unreadNotifications()->count();
         $list = TaskLogic::formatList($tasks);
 
-        return self::createJsonData(true,['list'=>$list,'total'=>$request->user()->tasks->where('status',0)->count()]);
+        return self::createJsonData(true,['list'=>$list,'total'=>$task_count + $notification_count]);
     }
 
 }
