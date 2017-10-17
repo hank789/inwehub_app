@@ -317,11 +317,21 @@ class AnswerController extends Controller
                 //首次回答额外积分
                 if($loginUser->userData->answers == 1)
                 {
-                    $this->credit($request->user()->id,Credit::KEY_FIRST_ANSWER,$answer->id,$answer->getContentText());
+                    if ($question->question_type == 1) {
+                        $credit_key = Credit::KEY_FIRST_ANSWER;
+                    } else {
+                        $credit_key = Credit::KEY_FIRST_COMMUNITY_ANSWER;
+                    }
                 } else {
-                    /*记录积分*/
-                    $this->credit($request->user()->id,Credit::KEY_ANSWER,$answer->id,$answer->getContentText());
+                    if ($question->question_type == 1) {
+                        $credit_key = Credit::KEY_ANSWER;
+                    } else {
+                        $credit_key = Credit::KEY_COMMUNITY_ANSWER;
+                    }
                 }
+
+                $this->credit($request->user()->id,$credit_key,$answer->id,$answer->getContentText());
+
 
                 //进入结算中心
                 Settlement::answerSettlement($answer);

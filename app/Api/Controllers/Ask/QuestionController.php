@@ -394,11 +394,21 @@ class QuestionController extends Controller
             UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'questions');
             //首次提问
             if($loginUser->userData->questions == 1){
-                $this->credit($request->user()->id,Credit::KEY_FIRST_ASK,$question->id,$question->title);
+                if ($question->question_type == 1) {
+                    $credit_key = Credit::KEY_FIRST_ASK;
+                } else {
+                    $credit_key = Credit::KEY_FIRST_COMMUNITY_ASK;
+                }
                 TaskLogic::finishTask('newbie_ask',0,'newbie_ask',[$request->user()->id]);
             } else {
-                $this->credit($request->user()->id,Credit::KEY_ASK,$question->id,$question->title);
+                if ($question->question_type == 1) {
+                    $credit_key = Credit::KEY_ASK;
+                } else {
+                    $credit_key = Credit::KEY_COMMUNITY_ASK;
+                }
             }
+            $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
+
             //1元优惠使用红包
             if($price == 1){
                 $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();

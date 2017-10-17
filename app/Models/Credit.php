@@ -39,9 +39,13 @@ class Credit extends Model
     const KEY_FIRST_USER_SIGN_DAILY = 'user_sign_daily';
     const KEY_LOGIN = 'login';
     const KEY_FIRST_ASK = 'first_ask';
+    const KEY_FIRST_COMMUNITY_ASK = 'first_community_ask';
     const KEY_ASK = 'ask';
+    const KEY_COMMUNITY_ASK = 'community_ask';
     const KEY_FIRST_ANSWER = 'first_answer';
+    const KEY_FIRST_COMMUNITY_ANSWER = 'first_community_answer';
     const KEY_ANSWER = 'answer';
+    const KEY_COMMUNITY_ANSWER = 'community_answer';
     const KEY_ANSWER_OVER_PROMISE_TIME_HOURLY = 'answer_over_promise_time_hourly';
     const KEY_OVER_PROMISE_TIME_MAX = 'answer_over_promise_time_max';
     const KEY_ASK_GOOD = 'ask_good';
@@ -53,6 +57,7 @@ class Credit extends Model
     const KEY_SHARE_SUCCESS = 'share_success';
     const KEY_REWARD_USER = 'reward_user';
     const KEY_PUNISH_USER = 'punish_user';
+    const KEY_RATE_ANSWER = 'rate_answer';
 
 
 
@@ -63,10 +68,14 @@ class Credit extends Model
         self::KEY_USER_INFO_COMPLETE => ['backend_label'=>'简历完成','notice_user'=>'简历完成'],
         self::KEY_FIRST_USER_SIGN_DAILY => ['backend_label'=>'每日签到','notice_user'=>'每日签到'],
         self::KEY_LOGIN => ['backend_label'=>'每日登陆','notice_user'=>'每日登陆'],
-        self::KEY_FIRST_ASK => ['backend_label'=>'完成首次提问','notice_user'=>'完成首次提问'],
-        self::KEY_ASK => ['backend_label'=>'提问','notice_user'=>'提问成功'],
-        self::KEY_FIRST_ANSWER => ['backend_label'=>'完成首次回答','notice_user'=>'完成首次回答'],
-        self::KEY_ANSWER => ['backend_label'=>'回答','notice_user'=>'回答成功'],
+        self::KEY_FIRST_ASK => ['backend_label'=>'完成首次专业提问','notice_user'=>'完成首次提问'],
+        self::KEY_FIRST_COMMUNITY_ASK => ['backend_label'=>'完成首次互助提问','notice_user'=>'完成首次提问'],
+        self::KEY_ASK => ['backend_label'=>'专业提问','notice_user'=>'提问成功'],
+        self::KEY_COMMUNITY_ASK => ['backend_label'=>'互助提问','notice_user'=>'提问成功'],
+        self::KEY_FIRST_ANSWER => ['backend_label'=>'完成首次专业回答','notice_user'=>'完成首次回答'],
+        self::KEY_FIRST_COMMUNITY_ANSWER => ['backend_label'=>'完成首次互助回答','notice_user'=>'完成首次回答'],
+        self::KEY_ANSWER => ['backend_label'=>'专业问答回答','notice_user'=>'回答成功'],
+        self::KEY_COMMUNITY_ANSWER => ['backend_label'=>'互助问答回答','notice_user'=>'回答成功'],
         self::KEY_ANSWER_OVER_PROMISE_TIME_HOURLY => ['backend_label'=>'超出承诺时间未回答每小时(扣分)','notice_user'=>'超时未回答'],
         self::KEY_OVER_PROMISE_TIME_MAX => ['backend_label'=>'超出承诺时间未回答最多扣','notice_user'=>'超出承诺时间未回答最多扣'],
         self::KEY_ASK_GOOD => ['backend_label'=>'优质提问','notice_user'=>'优质提问'],
@@ -78,6 +87,7 @@ class Credit extends Model
         self::KEY_SHARE_SUCCESS => ['backend_label'=>'分享成功','notice_user'=>'分享成功'],
         self::KEY_REWARD_USER => ['backend_label'=>'奖励','notice_user'=>'奖励'],
         self::KEY_PUNISH_USER => ['backend_label'=>'惩罚','notice_user'=>'惩罚'],
+        self::KEY_RATE_ANSWER => ['backend_label'=>'专业回答评价','notice_user'=>'评分成功']
 
     ];
 }
