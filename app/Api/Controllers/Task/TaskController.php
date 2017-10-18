@@ -30,7 +30,7 @@ class TaskController extends Controller {
             $query = $query->where('id','>',0);
         }
         $tasks = $query->orderBy('id','DESC')->paginate(10);
-        $task_count = $tasks->count();
+        $task_count = $request->user()->tasks()->where('status',0)->count();
         $notification_count = $request->user()->unreadNotifications()->whereIn('notification_type', [
             Notification::NOTIFICATION_TYPE_NOTICE,
             Notification::NOTIFICATION_TYPE_TASK,
