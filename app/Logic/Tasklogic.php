@@ -115,6 +115,14 @@ class TaskLogic {
                     $task_type = 1;
                     $task_type_description = '专业问答';
                     $question = Question::find($task->source_id);
+                    switch ($question->question_type){
+                        case 1:
+                            $task_type_description = '专业问答';
+                            break;
+                        case 2:
+                            $task_type_description = '互动问答';
+                            break;
+                    }
                     $object_id = $question->id;
                     $status = $question->status;
                     switch($task->action){
