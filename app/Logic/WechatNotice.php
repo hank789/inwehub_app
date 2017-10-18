@@ -38,7 +38,7 @@ class WechatNotice {
                 $title = $content;
                 $content = $object->title;
                 $keyword2 = '互动问答邀请';
-                $remark = '请立即前往确认回答';
+                $remark = '请点击前往参与回答';
                 $target_url = $url.'#/askCommunity/interaction/answers/'.$object->id;
                 $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
                 if (config('app.env') != 'production') {
