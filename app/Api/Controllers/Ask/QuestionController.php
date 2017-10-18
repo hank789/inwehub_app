@@ -99,7 +99,8 @@ class QuestionController extends Controller
 
             $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->first();
             //回答查看数增加
-            if ($is_self || $is_answer_author || $is_pay_for_view) $bestAnswer->increment('views');
+            //if ($is_self || $is_answer_author || $is_pay_for_view) $bestAnswer->increment('views');
+            $bestAnswer->increment('views');
             $answers_data[] = [
                 'id' => $bestAnswer->id,
                 'user_id' => $bestAnswer->user_id,
@@ -147,6 +148,8 @@ class QuestionController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $promise_answer_time,
+            'answer_num' => $question->answers,
+            'follow_num' => $question->followers,
             'created_at' => (string)$question->created_at
         ];
 
@@ -166,10 +169,58 @@ class QuestionController extends Controller
                 ];
             }
         }
+        $is_followed_question = 0;
+        $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+        if ($attention_question) {
+            $is_followed_question = 1;
+        }
+
+        $my_answer_id = 0;
+        if ($question->question_type != 1) {
+            $myAnswer = Answer::where('question_id',$id)->where('user_id',$user->id)->first();
+            if ($myAnswer) $my_answer_id = $myAnswer->id;
+        }
+
+        return self::createJsonData(true,[
+            'is_followed_question'=>$is_followed_question,
+            'my_answer_id' => $my_answer_id,
+            'question'=>$question_data,
+            'answers'=>$answers_data,
+            'timeline'=>$timeline,
+            'feedback'=>$feedback_data]);
+
+    }
 
 
-        return self::createJsonData(true,['question'=>$question_data,'answers'=>$answers_data,'timeline'=>$timeline,'feedback'=>$feedback_data]);
-
+    //相关问题
+    public function relatedQuestion(Request $request){
+        $validateRules = [
+            'id'    => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $question_id = $request->input('id');
+        $question = Question::find($question_id);
+        $relatedQuestions = Question::correlations($question->tags()->pluck('tag_id'));
+        if (!$relatedQuestions) {
+            $relatedQuestions = Question::recent();
+        }
+        $list = [];
+        $count = 0;
+        foreach ($relatedQuestions as $relatedQuestion) {
+            if ($count >= 1) break;
+            $bestAnswer = $relatedQuestion->answers()->orderBy('id','desc')->get()->last();
+            if (!$bestAnswer) continue;
+            $list[] = [
+                'id' => $relatedQuestion->id,
+                'user_id' => $bestAnswer->user_id,
+                'user_name' => $bestAnswer->user->name,
+                'user_avatar_url' => $bestAnswer->user->avatar,
+                'is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'title' => $relatedQuestion->title
+            ];
+            $count++;
+        }
+        return self::createJsonData(true,$list);
     }
 
     /**
@@ -343,11 +394,21 @@ class QuestionController extends Controller
             UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'questions');
             //首次提问
             if($loginUser->userData->questions == 1){
-                $this->credit($request->user()->id,Credit::KEY_FIRST_ASK,$question->id,$question->title);
+                if ($question->question_type == 1) {
+                    $credit_key = Credit::KEY_FIRST_ASK;
+                } else {
+                    $credit_key = Credit::KEY_FIRST_COMMUNITY_ASK;
+                }
                 TaskLogic::finishTask('newbie_ask',0,'newbie_ask',[$request->user()->id]);
             } else {
-                $this->credit($request->user()->id,Credit::KEY_ASK,$question->id,$question->title);
+                if ($question->question_type == 1) {
+                    $credit_key = Credit::KEY_ASK;
+                } else {
+                    $credit_key = Credit::KEY_COMMUNITY_ASK;
+                }
             }
+            $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
+
             //1元优惠使用红包
             if($price == 1){
                 $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
@@ -398,6 +459,91 @@ class QuestionController extends Controller
 
     }
 
+
+    //邀请回答
+    public function inviteAnswer(Request $request){
+        $validateRules = [
+            'question_id'    => 'required|integer',
+            'user_id' => 'required|integer',
+        ];
+        $this->validate($request,$validateRules);
+
+        $loginUser = $request->user();
+        $to_user_id = $request->input('user_id');
+        $question_id = $request->input('question_id');
+
+        if($loginUser->id == $to_user_id){
+            return self::createJsonData(false,[],ApiException::BAD_REQUEST,'不用邀请自己，您可以直接回答 ：）');
+        }
+
+        $question = Question::find($question_id);
+        if(!$question){
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+        }
+
+        if($to_user_id == $question->user_id){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+
+
+        $toUser = User::find(intval($to_user_id));
+        if(!$toUser){
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+
+        /*是否已邀请，不能重复邀请*/
+        if($question->isInvited($toUser->id,$loginUser->id)){
+            return self::createJsonData(false,[],ApiException::BAD_REQUEST,'该用户已被邀请，不能重复邀请');
+        }
+
+        $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$loginUser->id,'question_id'=>$question->id],[
+            'from_user_id'=> $loginUser->id,
+            'question_id'=> $question->id,
+            'user_id'=> $toUser->id,
+            'send_to'=> $toUser->email
+        ]);
+
+        //记录动态
+        $this->doing($loginUser->id,'question_invite_answer',get_class($question),$question->id,$question->title,'',0,$question->user_id);
+        //记录任务
+        //$this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
+
+        $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id));
+
+        return self::createJsonData(true);
+    }
+
+
+    //邀请回答者列表
+    public function inviterList(Request $request){
+        $validateRules = [
+            'question_id'    => 'required|integer',
+        ];
+        $this->validate($request,$validateRules);
+        $question = Question::find($request->input('question_id'));
+        if(!$question){
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+        }
+
+        $query = $request->user()->attentions()->where('source_type','=','App\Models\User');
+        $attentions = $query->orderBy('attentions.created_at','desc')->get();
+        $data = [];
+        foreach($attentions as $attention){
+            if ($attention->source_id == $question->user_id) continue;
+            $info = User::find($attention->source_id);
+            $item = [];
+            $item['id'] = $info->id;
+            $item['name'] = $info->name;
+            $item['avatar_url'] = $info->getAvatarUrl();
+            $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
+            $item['description'] = $info->description;
+            $item['is_invited'] = $question->isInvited($info->id,$request->user()->id);
+            $data[] = $item;
+        }
+        return self::createJsonData(true,$data);
+
+
+    }
 
     //拒绝回答
     public function rejectAnswer(Request $request){
@@ -511,7 +657,7 @@ class QuestionController extends Controller
         $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
 
-        $query = Question::where('questions.is_recommend',1);
+        $query = Question::where('questions.is_recommend',1)->where('questions.question_type',1);
         if($top_id){
             $query = $query->where('questions.id','>',$top_id);
         }elseif($bottom_id){
@@ -522,7 +668,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(10);
+        $questions = $query->orderBy('questions.id','desc')->paginate(30);
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -544,9 +690,56 @@ class QuestionController extends Controller
                 'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
                 'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
                 'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
-                'answer_user_is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                'answer_user_is_expert' => $bestAnswer && $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
                 'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
+            ];
+        }
+        return self::createJsonData(true,$list);
+    }
+
+    //互动问答-问答列表
+    public function commonList(Request $request) {
+        $top_id = $request->input('top_id',0);
+        $bottom_id = $request->input('bottom_id',0);
+        $tag_id = $request->input('tag_id',0);
+        $user = $request->user();
+
+        $query = Question::where('questions.question_type',2);
+        if($top_id){
+            $query = $query->where('questions.id','>',$top_id);
+        }elseif($bottom_id){
+            $query = $query->where('questions.id','<',$bottom_id);
+        }
+
+        if ($tag_id) {
+            $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
+        }
+
+        $questions = $query->orderBy('questions.id','desc')->paginate(30);
+        $list = [];
+        foreach($questions as $question){
+            $is_followed_question = 0;
+            $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+            if ($attention_question) {
+                $is_followed_question = 1;
+            }
+            $list[] = [
+                'id' => $question->id,
+                'question_type' => $question->question_type,
+                'user_id' => $question->user_id,
+                'description'  => $question->title,
+                'tags' => $question->tags()->pluck('name'),
+                'hide' => $question->hide,
+                'price' => $question->price,
+                'status' => $question->status,
+                'created_at' => (string)$question->created_at,
+                'question_username' => $question->user->name,
+                'question_user_is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
+                'question_user_avatar_url' => $question->user->avatar,
+                'answer_num' => $question->answers,
+                'follow_num' => $question->followers,
+                'is_followed_question' => $is_followed_question
             ];
         }
         return self::createJsonData(true,$list);
@@ -586,7 +779,7 @@ class QuestionController extends Controller
 
     //问题回答列表
     public function answerList(Request $request){
-        $id = $request->input('id');
+        $id = $request->input('question_id');
         $question = Question::find($id);
 
         if(empty($question)){
@@ -610,7 +803,7 @@ class QuestionController extends Controller
                 'title' => $answer->user->title,
                 'company' => $answer->user->company,
                 'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
-                'content' => $answer->content,
+                'content' => $answer->getContentText(),
                 'promise_time' => $answer->promise_time,
                 'is_followed' => $attention?1:0,
                 'is_supported' => $support?1:0,

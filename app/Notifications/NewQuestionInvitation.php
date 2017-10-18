@@ -6,6 +6,7 @@ use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -19,16 +20,18 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
 
     protected $question;
     protected $user_id;
+    protected $from_user_id;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, Question $question)
+    public function __construct($user_id, Question $question, $from_user_id = '')
     {
         $this->user_id = $user_id;
         $this->question = $question;
+        $this->from_user_id = $from_user_id;
     }
 
     /**
@@ -64,11 +67,27 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
      */
     public function toArray($notifiable)
     {
+        $title = '专业问答任务邀请';
+        if ($this->from_user_id) {
+            $from_user = User::find($this->from_user_id);
+            $title = $from_user->name.'邀请您回答问题';
+            $avatar = $from_user->avatar;
+        } else {
+            $avatar = $this->question->user->avatar;
+        }
+        switch ($this->question->question_type) {
+            case 1:
+                $url = '/answer/'.$this->question->id;
+                break;
+            case 2:
+                $url = '/askCommunity/interaction/answers/'.$this->question->id;
+                break;
+        }
         return [
-            'url'    => '/answer/'.$this->question->id,
+            'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
-            'avatar' => $this->question->user->avatar,
-            'title'  => '专业问答任务邀请',
+            'avatar' => $avatar,
+            'title'  => $title,
             'body'   => $this->question->title,
             'extra_body' => ''
         ];
@@ -76,17 +95,42 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
 
     public function toPush($notifiable)
     {
+        $title = '您有新的回答邀请';
+        if ($this->from_user_id) {
+            $from_user = User::find($this->from_user_id);
+            $title = $from_user->name.'邀请您回答问题';
+        }
+        switch ($this->question->question_type) {
+            case 1:
+                $object_type = 'pay_answer';
+                break;
+            case 2:
+                $object_type = 'free_answer';
+                break;
+        }
+
         return [
-            'title' => '您有新的回答邀请',
+            'title' => $title,
             'body'  => $this->question->title,
-            'payload' => ['object_type'=>'answer','object_id'=>$this->question->id],
+            'payload' => ['object_type'=>$object_type,'object_id'=>$this->question->id],
         ];
     }
 
     public function toWechatNotice($notifiable){
+        switch ($this->question->question_type) {
+            case 1:
+                $object_type = 'pay_question_invite_answer_confirming';
+                $content = $this->question->title;
+                break;
+            case 2:
+                $object_type = 'free_question_invite_answer_confirming';
+                $from_user = User::find($this->from_user_id);
+                $content = $from_user->name.'邀请您回答问题';
+                break;
+        }
         return [
-            'content' => '您有新的回答邀请',
-            'object_type'  => 'question_invite_answer_confirming',
+            'content' => $content,
+            'object_type'  => $object_type,
             'object_id' => $this->question->id,
         ];
     }

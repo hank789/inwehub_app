@@ -24,7 +24,7 @@
                 <div class="box">
                     <div class="box-header">
                         <div class="row">
-                            <div class="col-xs-2">
+                            <div class="col-xs-3">
                                 <div class="btn-group">
                                     <a href="{{ route('ask.question.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="发起提问"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-thumbs-o-up"></i></button>
@@ -34,7 +34,7 @@
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                 </div>
                             </div>
-                            <div class="col-xs-10">
+                            <div class="col-xs-9">
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.question.index') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -96,13 +96,17 @@
                                             <td>{{ $question->id }}</td>
                                             <td><span class="text-gold"><i class="fa fa-database"></i> {{ $question->price }}</span></td>
                                             <td>@if( $question->category ) {{ $question->category->name }} | {{ implode(',',$question->tags->pluck('name')->toArray()) }} @else 无 @endif</td>
-                                            <td>{{ $question->question_type == 1 ? '专业问答':'悬赏问答' }}</td>
+                                            <td>{{ $question->question_type == 1 ? '专业问答':'互动问答' }}</td>
                                             <td style="width: 25%"><a href="{{ route('ask.question.detail',['id'=>$question->id]) }}" target="_blank">{{ $question->title }}</a></td>
                                             <td>{{ $question->user->name }}<span class="text-muted">[UID:{{ $question->user_id }}]</span></td>
                                             <td>{{ $question->hide ? '匿名':'非匿名' }}</td>
                                             <td>{{ $question->invitations()->where('status',2)->count() }} / {{ $question->invitations()->count() }}</td>
                                             <td>{{ $question->answers }}</td>
-                                            <td>{{ $question->status >=6 ?$question->answers()->where('adopted_at','>',0)->first()->promise_time:'' }}</td>
+                                            <td>
+                                                @if ($answer = $question->answers()->where('adopted_at','>',0)->first())
+                                                    {{ $answer->promise_time }}
+                                                @endif
+                                            </td>
                                             <td>{{ timestamp_format($question->created_at) }}</td>
                                             <td><span class="label @if($question->status===0) label-danger @elseif($question->status===1) label-warning @else label-success @endif">{{ trans_question_status($question->status).($question->is_recommend?' | 已推荐':'').($question->is_hot?' | 热门':'') }}</span> </td>
                                             <td>
@@ -122,15 +126,17 @@
                     </div>
                     <div class="box-footer clearfix">
                         <div class="row">
-                            <div class="col-sm-3">
+                            <div class="col-sm-4">
                                 <div class="btn-group">
                                     <a href="{{ route('ask.question.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="发起提问"><i class="fa fa-plus"></i></a>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-heart-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-thumbs-o-up"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消推荐" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_recommend') }}','确认将选中项取消推荐？')"><i class="fa fa-thumbs-o-down"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消热门" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_hot') }}','确认将选中项取消热门？')"><i class="fa fa-fire-extinguisher"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                 </div>
                             </div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-8">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $questions->total() }} 条数据</span>
                                     {!! str_replace('/?', '?', $questions->render()) !!}

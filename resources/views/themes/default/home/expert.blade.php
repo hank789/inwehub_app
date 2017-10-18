@@ -33,16 +33,6 @@
                                     @endforeach
                                 </div>
                             </div>
-                            <div class="expert-search-opt-item mt-10"><span class="expert-search-opt-label">城市：</span>
-                                <div class="expert-search-opt-detail">
-                                    <a  href="{{ route('website.experts',['categorySlug'=>$categorySlug,'provinceId'=>'all']) }}">不限</a>
-                                    @foreach( $hotProvinces as $hotProvince)
-                                        @if($hotProvince->province > 0)
-                                            - <a href="{{ route('website.experts',['categorySlug'=>$categorySlug,'provinceId'=>$hotProvince->province]) }}" @if($hotProvince->province == $provinceId) class="active" @endif>{{ Area()->getName($hotProvince->province) }}</a>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

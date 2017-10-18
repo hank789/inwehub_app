@@ -602,6 +602,31 @@ if (! function_exists('trans_answer_status')) {
 }
 
 
+/*任务状态文字定义*/
+if (! function_exists('trans_task_status')) {
+
+    function trans_task_status($status){
+        $map = [
+            0 => '处理中',
+            1 => '处理成功',
+            2 => '已关闭'
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+
+}
+
 /*问题状态文本描述定义*/
 if (! function_exists('trans_question_status')) {
 

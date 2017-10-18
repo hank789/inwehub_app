@@ -72,7 +72,15 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                 return;
                 break;
             case 'App\Models\Answer':
-                $url = '/askCommunity/major/'.$source->question_id;
+                $question = Question::find($source->question_id);
+                switch ($question->question_type){
+                    case 1:
+                        $url = '/askCommunity/major/'.$source->question_id;
+                        break;
+                    case 2:
+                        $url = '/askCommunity/interaction/'.$source->id;
+                        break;
+                }
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_NOTICE;
                 $title = $this->comment->user->name.'回复了您的回答';
                 $avatar = $this->comment->user->avatar;
@@ -98,9 +106,19 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                 return;
                 break;
             case 'App\Models\Answer':
-                $object_type = 'answer_new_comment';
-                $title = $this->comment->user->name.'回复了您的回答';
+                $question = Question::find($source->question_id);
+                $object_type = 'pay_answer_new_comment';
                 $object_id = $source->question_id;
+                switch ($question->question_type){
+                    case 1:
+                        $object_type = 'pay_answer_new_comment';
+                        break;
+                    case 2:
+                        $object_type = 'free_answer_new_comment';
+                        $object_id = $source->id;
+                        break;
+                }
+                $title = $this->comment->user->name.'回复了您的回答';
                 break;
             default:
                 return;
@@ -113,12 +131,22 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
     }
 
     public function toWechatNotice($notifiable){
+        $source = $this->comment->source;
         switch ($this->comment->source_type) {
             case 'App\Models\Article':
                 return;
                 break;
             case 'App\Models\Answer':
-                $object_type = 'answer_new_comment';
+                $object_type = 'pay_answer_new_comment';
+                $question = Question::find($source->question_id);
+                switch ($question->question_type){
+                    case 1:
+                        $object_type = 'pay_answer_new_comment';
+                        break;
+                    case 2:
+                        $object_type = 'free_answer_new_comment';
+                        break;
+                }
                 break;
             default:
                 return;

@@ -22,12 +22,24 @@ class WechatNotice {
         $url = config('app.mobile_url');
         $keyword3 = '';
         switch($object_type){
-            case 'question_invite_answer_confirming':
+            case 'pay_question_invite_answer_confirming':
                 $object = Question::find($object_id);
                 $title = '您好，您有新的回答邀请';
                 $keyword2 = '专业问答任务邀请';
                 $remark = '请立即前往确认回答';
                 $target_url = $url.'#/answer/'.$object->id;
+                $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
+                if (config('app.env') != 'production') {
+                    $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
+                }
+                break;
+            case 'free_question_invite_answer_confirming':
+                $object = Question::find($object_id);
+                $title = $content;
+                $content = $object->title;
+                $keyword2 = '互动问答邀请';
+                $remark = '请点击前往参与回答';
+                $target_url = $url.'#/askCommunity/interaction/answers/'.$object->id;
                 $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
                 if (config('app.env') != 'production') {
                     $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
@@ -44,12 +56,23 @@ class WechatNotice {
                     $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
                 }
                 break;
-            case 'question_answered':
+            case 'pay_question_answered':
                 $object = Answer::find($object_id);
                 $title = '您好，已有专家回答了您的专业问答任务';
                 $keyword2 = $object->user->name;
                 $remark = '可点击详情查看回答内容';
                 $target_url = $url.'#/ask/'.$object->question->id;
+                $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+                if (config('app.env') != 'production') {
+                    $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+                }
+                break;
+            case 'free_question_answered':
+                $object = Answer::find($object_id);
+                $title = '您好，您的提问有新的回答';
+                $keyword2 = $object->user->name;
+                $remark = '可点击详情查看回答内容';
+                $target_url = $url.'#/askCommunity/interaction/'.$object_id;
                 $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
                 if (config('app.env') != 'production') {
                     $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
@@ -66,7 +89,7 @@ class WechatNotice {
                     $template_id = 'zvZO6wKROVb3fWCE8TGIOtQ3y3k4527wD_Lsk6dyNnM';
                 }
                 break;
-            case 'answer_new_comment':
+            case 'pay_answer_new_comment':
                 $comment = \App\Models\Comment::find($object_id);
                 $answer = $comment->source;
                 $title = '您好，有人回复了您的专业回答';
@@ -74,6 +97,19 @@ class WechatNotice {
                 $keyword3 = $comment->content;
                 $remark = '请点击查看详情！';
                 $target_url = $url.'#/askCommunity/major/'.$answer->question_id;
+                $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
+                if (config('app.env') != 'production') {
+                    $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
+                }
+                break;
+            case 'free_answer_new_comment':
+                $comment = \App\Models\Comment::find($object_id);
+                $answer = $comment->source;
+                $title = '您好，有人回复了您的互动回答';
+                $keyword2 = date('Y-m-d H:i',strtotime($answer->created_at));
+                $keyword3 = $comment->content;
+                $remark = '请点击查看详情！';
+                $target_url = $url.'#/askCommunity/interaction/'.$answer->id;
                 $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
                 if (config('app.env') != 'production') {
                     $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
@@ -126,6 +162,7 @@ class WechatNotice {
                 break;
             case 'notification_money_fee':
             case 'notification_money_settlement':
+            case 'notification_pay_for_view_settlement':
                 $object = MoneyLog::find($object_id);
                 $title = '您的账户资金发生以下变动!';
                 $keyword2 = ($object->io >= 1 ? '+' : '-').$object->change_money.'元';

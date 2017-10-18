@@ -233,6 +233,13 @@ Route::group(['prefix' => 'push'], function() {
     Route::delete('destroy',['as'=>'admin.operate.pushNotice.destroy','uses'=>'PushNoticeController@destroy']);
 });
 
+
+//任务管理
+Route::group(['prefix' => 'task'], function() {
+    Route::get('index',['as'=>'admin.task.index','uses'=>'TaskController@index']);
+    Route::post('close',['as'=>'admin.task.close','uses'=>'TaskController@close']);
+});
+
 //日志查看
 Route::get('loginLog',['as'=>'admin.logger.login','uses'=>'LoggerController@loginLog']);
 Route::get('sysLogs', ['as'=>'admin.logger.system','uses'=>'\Rap2hpoutre\LaravelLogViewer\LogViewerController@index']);

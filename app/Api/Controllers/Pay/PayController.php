@@ -90,7 +90,7 @@ class PayController extends Controller {
                 if ($data['pay_object_type'] == 'view_answer') {
                     $iap_id = $ids['qa_see1'];
                 } else {
-                    $iap_id = $ids[$amount];
+                    $iap_id = $ids[$amount]??0;
                 }
                 $channel_type = Order::PAY_CHANNEL_IOS_IAP;
                 break;

@@ -182,10 +182,7 @@ class IndexController extends Controller
 
     public function experts(Request $request,$categorySlug='all',$provinceId='all'){
         $categories = load_categories('experts');
-
-        $hotProvinces = Cache::remember('hot_expert_cities',Setting()->get('website_cache_time',1),function() {
-            return  Authentication::select('province', DB::raw('COUNT(user_id) as total'))->groupBy('province')->orderBy('total','desc')->get();
-        });
+        
         $query = Authentication::leftJoin('user_data', 'user_data.user_id', '=', 'authentications.user_id')->where('user_data.authentication_status','=',1);
         $categoryId = 0;
         if( $categorySlug != 'all' ){
@@ -209,7 +206,7 @@ class IndexController extends Controller
             ->orderBy('authentications.updated_at','DESC')
             ->select('authentications.user_id','authentications.real_name','authentications.description','authentications.title','user_data.coins','user_data.credits','user_data.followers','user_data.supports','user_data.answers','user_data.articles','user_data.authentication_status')
             ->paginate(16);
-        return view('theme::home.expert')->with(compact('experts','categories','hotProvinces','categorySlug','categoryId','provinceId','word'));
+        return view('theme::home.expert')->with(compact('experts','categories','categorySlug','categoryId','provinceId','word'));
     }
 
 

@@ -61,6 +61,16 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-clock-o"></i> <span>任务</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_task">
+            <li><a href="{{ route('admin.task.index') }}"><i class="fa fa-circle-o"></i> 任务管理</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-cutlery"></i> <span>运营</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>

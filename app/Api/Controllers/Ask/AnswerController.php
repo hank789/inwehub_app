@@ -7,6 +7,7 @@ use App\Logic\PayQueryLogic;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
@@ -97,6 +98,7 @@ class AnswerController extends Controller
 
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
 
+        $collect = Collection::where('user_id',$user->id)->where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->first();
         $answers_data = [
             'id' => $answer->id,
             'user_id' => $answer->user_id,
@@ -110,9 +112,11 @@ class AnswerController extends Controller
             'promise_time' => $answer->promise_time,
             'is_followed' => $attention?1:0,
             'is_supported' => $support?1:0,
+            'is_collected' => $collect?1:0,
             'support_number' => $answer->supports,
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
+            'collect_num' => $answer->collections,
             'created_at' => (string)$answer->created_at
         ];
 
@@ -122,9 +126,10 @@ class AnswerController extends Controller
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
+            'uuid' => $question->user->uuid,
             'question_type' => $question->question_type,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
-            'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
+            'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
             'title' => $question->hide ? '保密' : $question->user->title,
             'company' => $question->hide ? '保密' : $question->user->company,
             'is_expert' => $question->user->userData->authentication_status == 1 ? 1 : 0,
@@ -137,12 +142,16 @@ class AnswerController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $answer->promise_time,
+            'answer_num' => $question->answers,
+            'follow_num' => $question->followers,
             'created_at' => (string)$question->created_at
         ];
         $answer->increment('views');
 
 
-        return self::createJsonData(true,['question'=>$question_data,'answer'=>$answers_data]);
+        return self::createJsonData(true,[
+            'question'=>$question_data,
+            'answer'=>$answers_data]);
 
     }
 
@@ -172,8 +181,8 @@ class AnswerController extends Controller
         $lock_key = 'question_answer_action';
         $doing_prefix = '';
 
+        $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
         if ($question->question_type == 1) {
-            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
             if(empty($question_invitation)){
                 throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
             }
@@ -187,6 +196,14 @@ class AnswerController extends Controller
             if($exit_answers){
                 RateLimiter::instance()->lock_release($lock_key);
                 throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
+            }
+        }
+
+        if ($question->question_type == 2) {
+            //互动问答只能回答一次
+            $exit_answers = Answer::where('question_id',$question_id)->where('user_id',$loginUser->id)->get()->last();
+            if ($exit_answers){
+                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
             }
         }
 
@@ -264,6 +281,7 @@ class AnswerController extends Controller
 
                 //任务变为已完成
                 $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[]);
+                if ($question_invitation) $this->finishTask(get_class($question_invitation),$question_invitation->id,Task::ACTION_TYPE_INVITE_ANSWER,[]);
 
 
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
@@ -272,7 +290,8 @@ class AnswerController extends Controller
                 $this->doing($answer->user_id,$doing_prefix.'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
 
                 /*记录通知*/
-                $question->user->notify(new NewQuestionAnswered($question->user_id,$question,$answer));
+                if ($question->user_id != $answer->user_id)
+                    $question->user->notify(new NewQuestionAnswered($question->user_id,$question,$answer));
 
                 /*回答后通知关注问题*/
                 if(true){
@@ -299,11 +318,21 @@ class AnswerController extends Controller
                 //首次回答额外积分
                 if($loginUser->userData->answers == 1)
                 {
-                    $this->credit($request->user()->id,Credit::KEY_FIRST_ANSWER,$answer->id,$answer->getContentText());
+                    if ($question->question_type == 1) {
+                        $credit_key = Credit::KEY_FIRST_ANSWER;
+                    } else {
+                        $credit_key = Credit::KEY_FIRST_COMMUNITY_ANSWER;
+                    }
                 } else {
-                    /*记录积分*/
-                    $this->credit($request->user()->id,Credit::KEY_ANSWER,$answer->id,$answer->getContentText());
+                    if ($question->question_type == 1) {
+                        $credit_key = Credit::KEY_ANSWER;
+                    } else {
+                        $credit_key = Credit::KEY_COMMUNITY_ANSWER;
+                    }
                 }
+
+                $this->credit($request->user()->id,$credit_key,$answer->id,$answer->getContentText());
+
 
                 //进入结算中心
                 Settlement::answerSettlement($answer);
@@ -433,6 +462,8 @@ class AnswerController extends Controller
 
         $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
 
+        $this->credit($request->user()->id,Credit::KEY_RATE_ANSWER,$answer->id,'回答评价');
+
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,$request->all());
     }
@@ -510,6 +541,15 @@ class AnswerController extends Controller
         Settlement::payForViewSettlement($order);
         //记录动态
         $this->doing($loginUser->id,'pay_for_view_question_answer',get_class($answer),$answer->id,$answer->question->title,'');
+        //自动收藏
+        Collection::create([
+            'user_id'     => $loginUser->id,
+            'source_id'   => $answer->id,
+            'source_type' => get_class($answer),
+            'subject'  => '付费围观',
+        ]);
+        $answer->increment('collections');
+
 
         event(new PayForView($order));
         return self::createJsonData(true,[
@@ -567,10 +607,12 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $user_id = $request->user()->id;
-        //只有问题作者，回答者，付费围观的人才能看到回复
+        //专业只有问题作者，回答者，付费围观的人才能看到回复
         $is_question_author = $user_id == $source->question->user_id;
         $is_answer_author = $user_id == $source->user_id;
-        if (!($is_question_author || $is_answer_author)) {
+        if ((($is_question_author || $is_answer_author) && $source->question->question_type == 1) || $source->question->question_type == 2) {
+
+        } else {
             $payOrder = $source->orders()->where('return_param','view_answer')->first();
             if (!$payOrder) {
                 return self::createJsonData(true, Comment::where('id',0)->simplePaginate(10)->toArray());

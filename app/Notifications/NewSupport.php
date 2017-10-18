@@ -3,8 +3,6 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
-use App\Channels\WechatNoticeChannel;
-use App\Models\Answer;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
 use App\Models\Support;
@@ -69,7 +67,15 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
         $source = $this->support->source;
         switch ($this->support->supportable_type) {
             case 'App\Models\Answer':
-                $url = '/askCommunity/major/'.$source->question_id;
+                $question = Question::find($source->question_id);
+                switch ($question->question_type){
+                    case 1:
+                        $url = '/askCommunity/major/'.$source->question_id;
+                        break;
+                    case 2:
+                        $url = '/askCommunity/interaction/'.$source->id;
+                        break;
+                }
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_NOTICE;
                 $title = $this->support->user->name.'赞了您的回答';
                 $avatar = $this->support->user->avatar;
@@ -92,9 +98,19 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
         $source = $this->support->source;
         switch ($this->support->supportable_type) {
             case 'App\Models\Answer':
-                $object_type = 'answer_new_support';
-                $title = $this->support->user->name.'赞了您的回答';
+                $question = Question::find($source->question_id);
+                $object_type = 'pay_answer_new_support';
                 $object_id = $source->question_id;
+                switch ($question->question_type){
+                    case 1:
+                        $object_type = 'pay_answer_new_support';
+                        break;
+                    case 2:
+                        $object_type = 'free_answer_new_support';
+                        $object_id = $source->id;
+                        break;
+                }
+                $title = $this->support->user->name.'赞了您的回答';
                 break;
             default:
                 return;

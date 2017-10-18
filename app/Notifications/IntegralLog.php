@@ -40,7 +40,7 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast',PushChannel::class];
     }
 
     /**
@@ -70,6 +70,10 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
         return [
             'url'    => '/my',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_INTEGRAL,
+            'integral_action' => $this->creditLog->action,
+            'source_id' => $this->creditLog->source_id,
+            'add_coins' => $this->creditLog->coins,
+            'add_credits' => $this->creditLog->credits,
             'avatar' => '',
             'name'   => $this->creditLog->user->name,
             'title'  => $title,

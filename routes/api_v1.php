@@ -29,7 +29,7 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 Route::group(['namespace'=>'Share'], function() {
     //微信分享
     Route::any('share/wechat/jssdk','WechatController@jssdk');
-    Route::post('share/wechat/success','WechatController@shareSuccess');
+    Route::post('share/wechat/success','WechatController@shareSuccess')->middleware('jwt.auth');
 
 });
 
@@ -104,6 +104,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     /*我的关注*/
     Route::post('followed/{source_type}',['uses'=>'FollowController@attentions'])->where(['source_type'=>'(questions|tags|users)']);
 
+    //收藏
+    Route::post('collect/{source_type}',['uses'=>'CollectionController@store'])->where(['source_type'=>'(question|answer)']);
+    //收藏列表
+    Route::post('collected/{source_type}',['uses'=>'CollectionController@collectList'])->where(['source_type'=>'(questions|answers)']);
+
     //关注我的
     Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
 });
@@ -133,8 +138,18 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('answer/payforview','AnswerController@payForView');
     //专业问答-推荐问答列表
     Route::post('question/majorList','QuestionController@majorList');
+    //互动问答-问答列表
+    Route::post('question/commonList','QuestionController@commonList');
     //专业问答-热门问答
     Route::post('question/majorHot','QuestionController@majorHot');
+    //邀请回答
+    Route::post('question/inviteAnswer','QuestionController@inviteAnswer');
+    //邀请列表
+    Route::post('question/inviterList','QuestionController@inviterList');
+    //相关问题
+    Route::post('question/relatedQuestion','QuestionController@relatedQuestion');
+
+
     //问答留言列表
     Route::post('answer/commentList','AnswerController@commentList');
     //问答留言

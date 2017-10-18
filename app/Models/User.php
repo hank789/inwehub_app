@@ -612,7 +612,7 @@ class User extends Model implements AuthenticatableContract,
 
         $level = 1;
         switch(true){
-            case $credits <= 1000 :
+            case $credits <= 500 :
                 $level = 1;
                 break;
             case $credits <= 5000:
@@ -621,7 +621,7 @@ class User extends Model implements AuthenticatableContract,
             case $credits <= 50000:
                 $level = 3;
                 break;
-            case $credits <= 100000:
+            case $credits <= 500000:
                 $level = 4;
                 break;
             default:
