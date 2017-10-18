@@ -120,13 +120,16 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         switch ($this->question->question_type) {
             case 1:
                 $object_type = 'pay_question_invite_answer_confirming';
+                $content = $this->question->title;
                 break;
             case 2:
                 $object_type = 'free_question_invite_answer_confirming';
+                $from_user = User::find($this->from_user_id);
+                $content = $from_user->name.'邀请您回答问题';
                 break;
         }
         return [
-            'content' => $this->question->title,
+            'content' => $content,
             'object_type'  => $object_type,
             'object_id' => $this->question->id,
         ];

@@ -35,7 +35,8 @@ class WechatNotice {
                 break;
             case 'free_question_invite_answer_confirming':
                 $object = Question::find($object_id);
-                $title = '您好，您有新的回答邀请';
+                $title = $content;
+                $content = $object->title;
                 $keyword2 = '互动问答邀请';
                 $remark = '请立即前往确认回答';
                 $target_url = $url.'#/askCommunity/interaction/answers/'.$object->id;
