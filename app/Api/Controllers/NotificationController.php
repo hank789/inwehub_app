@@ -57,19 +57,19 @@ class NotificationController extends Controller
             'todo_tasks' => $todo_task + $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count,
             'notice_message' => [
                 'unread_count' => $notice_unread_count,
-                'last_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first()
+                'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first()
             ],
             'task_message'   => [
                 'unread_count' => $task_notice_unread_count,
-                'last_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->first()
+                'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->first()
             ],
             'readhub_message' => [
                 'unread_count' => $readhub_unread_count,
-                'last_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->first(),
+                'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->first(),
             ],
             'money_message'   => [
                 'unread_count' => $money_unread_count,
-                'last_message' => $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->first(),
+                'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->first(),
             ]
         ];
 
