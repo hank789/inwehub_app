@@ -4,6 +4,7 @@
  * @date: 2017/4/7 下午1:32
  * @email: wanghui@yonglibao.com
  */
+use App\Events\Frontend\System\SystemNotify;
 use App\Logic\TaskLogic;
 use App\Models\Credit;
 use App\Models\Doing;
@@ -48,6 +49,8 @@ trait BaseController {
         }
         if ($count == 1){
             $this->credit($uid,Credit::KEY_USER_INFO_COMPLETE);
+            $user = User::find($uid);
+            event(new SystemNotify('用户['.$user->name.']简历完成了'.$percent));
         }
         if ($count >= 1) {
             TaskLogic::finishTask('newbie_complete_userinfo',0,'newbie_complete_userinfo',[$uid]);

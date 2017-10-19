@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Frontend;
 use App\Events\Frontend\System\FuncZan;
+use App\Events\Frontend\System\SystemNotify;
 use App\Models\Credit as CreditModel;
 use App\Events\Frontend\System\Credit;
 use App\Events\Frontend\System\Feedback;
@@ -50,6 +51,20 @@ class SystemEventListener implements ShouldQueue
         Cache::forever($key,$count);
 
         \Slack::to(config('slack.ask_activity_channel'))->send('用户['.$event->user->name.']['.$event->user->mobile.']对平台功能点了赞:'.$event->content);
+    }
+
+    /**
+     * @param systemNotify $event
+     */
+    public function systemNotify($event){
+
+        \Slack::to(config('slack.ask_activity_channel'))
+            ->attach(
+                [
+                    'fields' => $event->fields
+                ]
+            )
+            ->send($event->message);
     }
 
     /**
@@ -157,6 +172,11 @@ class SystemEventListener implements ShouldQueue
         $events->listen(
             FuncZan::class,
             'App\Listeners\Frontend\SystemEventListener@funcZan'
+        );
+
+        $events->listen(
+            SystemNotify::class,
+            'App\Listeners\Frontend\SystemEventListener@systemNotify'
         );
     }
 }
