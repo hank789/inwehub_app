@@ -307,7 +307,9 @@ class AuthController extends Controller
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
             ->where('openid',$openid)->first();
         if (!$oauthData){
-            throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
+            $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)
+                ->where('openid',$openid)->first();
+            if (!$oauthData) throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
         }
         $user = User::where('mobile',$mobile)->first();
 
@@ -376,7 +378,9 @@ class AuthController extends Controller
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
             ->where('openid',$openid)->first();
         if (!$oauthData){
-            throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
+            $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)
+                ->where('openid',$openid)->first();
+            if (!$oauthData) throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
         }
         //已经绑定用户了,不可能到这一步
         if ($oauthData->user_id){

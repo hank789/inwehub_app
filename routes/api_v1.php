@@ -37,6 +37,10 @@ Route::group(['namespace'=>'Account'], function() {
     //用户个人名片
     Route::any('profile/resumeInfo','ProfileController@resumeInfo');
 });
+
+//用户oauth
+Route::post('oauth/{type}/callback',['uses'=>'OauthController@callback','namespace'=>'Account'])->where(['type'=>'(weixinapp|weixin_gzh)']);
+
 //用户信息
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
@@ -55,10 +59,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/privacy/info','ProfileController@privacyInfo');
     //隐私设置
     Route::post('profile/privacy/update','ProfileController@privacyUpdate');
-
-
-    //用户oauth
-    Route::post('oauth/{type}/callback',['uses'=>'OauthController@callback'])->where(['type'=>'(weixinapp|weixin_gzh)']);
 
     //资金明细
     Route::post('account/money_log','ProfileController@moneyLog');
