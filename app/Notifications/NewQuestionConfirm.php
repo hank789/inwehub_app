@@ -87,10 +87,18 @@ class NewQuestionConfirm extends Notification implements ShouldBroadcast,ShouldQ
     }
 
     public function toWechatNotice($notifiable){
+        $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+        if (config('app.env') != 'production') {
+            $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+        }
         return [
+            'first'    => '您好，已有专家响应了您的专业问答任务',
             'keyword1' => $this->question->title,
-            'object_type'  => 'question_answer_confirmed',
-            'object_id' => $this->answer->id,
+            'keyword2' => $this->answer->user->name,
+            'keyword3' => '',
+            'remark'   => '可点击详情查看处理进度',
+            'template_id' => $template_id,
+            'target_url' => config('app.mobile_url').'#/ask/'.$this->question->id
         ];
     }
 

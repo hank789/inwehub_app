@@ -70,18 +70,16 @@ class FollwedUserAnswered extends Notification implements ShouldBroadcast,Should
         switch ($this->question->question_type) {
             case 1:
                 $url = '/ask/'.$this->question->id;
-                $title = '专家';
                 break;
             case 2:
                 $url = '/askCommunity/interaction/'.$this->answer->id;
-                $title = '用户';
                 break;
         }
         return [
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
             'avatar' => $this->answer->user->avatar,
-            'title'  => '您好，'.$title.$this->answer->user->name.'回答了您关注的问题',
+            'title'  => '您关注的用户'.$this->answer->user->name.'有了新的回答',
             'body'   => $this->question->title,
             'extra_body' => ''
         ];
@@ -100,7 +98,7 @@ class FollwedUserAnswered extends Notification implements ShouldBroadcast,Should
                 break;
         }
         return [
-            'title' => '用户'.$this->answer->user->name.'回答了您关注的问题',
+            'title' => '您关注的用户'.$this->answer->user->name.'有了新的回答',
             'body'  => $this->question->title,
             'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
         ];
@@ -109,16 +107,16 @@ class FollwedUserAnswered extends Notification implements ShouldBroadcast,Should
     public function toWechatNotice($notifiable){
         switch ($this->question->question_type) {
             case 1:
-                $object_type = 'followed_pay_question_answered';
+                $url = config('app.mobile_url').'#/ask/'.$this->question->id;
                 break;
             case 2:
-                $object_type = 'followed_free_question_answered';
+                $url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
                 break;
         }
         return [
+            'first'    => '您关注的用户'.$this->answer->user->name.'有了新的回答',
             'keyword1' => $this->question->title,
-            'object_type'  => $object_type,
-            'object_id' => $this->answer->id,
+            'target_url' => $url
         ];
     }
 

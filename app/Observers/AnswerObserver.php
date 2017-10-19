@@ -78,9 +78,12 @@ class AnswerObserver implements ShouldQueue {
                 }
 
                 //关注问题的用户接收通知
-                $attentions = Attention::where('source_type','=',get_class($answer->question))->where('source_id','=',$answer->question->id)->get();
-                foreach ($attentions as $attention) {
-                    $attention->user->notify(new FollwedQuestionAnswered($attention->user_id,$answer->question,$answer));
+                if (!$update) {
+                    $attentions = Attention::where('source_type','=',get_class($answer->question))->where('source_id','=',$answer->question->id)->get();
+                    foreach ($attentions as $attention) {
+                        if ($attention->user_id == $answer->question->user_id || $attention->user_id == $answer->user_id) continue;
+                        $attention->user->notify(new FollwedQuestionAnswered($attention->user_id,$answer->question,$answer));
+                    }
                 }
 
                 $this->slackMsg($answer->question,$fields)

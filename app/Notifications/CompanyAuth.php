@@ -109,11 +109,32 @@ class CompanyAuth extends Notification implements ShouldQueue,ShouldBroadcast
     }
 
     public function toWechatNotice($notifiable){
+        $first = '您的企业申请已处理';
+        $keyword2 = date('Y-m-d H:i',strtotime($this->company->created_at));
+        $remark = '请点击查看详情！';
+        switch ($this->company->apply_status){
+            case Company::APPLY_STATUS_SUCCESS:
+                $keyword3 = '恭喜你成为平台认证企业！';
+                break;
+            case Company::APPLY_STATUS_REJECT:
+                $keyword3 = '很抱歉，您的企业认证未通过审核';
+                $remark = '点击前往重新申请！';
+                break;
+        }
 
+        $target_url = config('app.mobile_url').'#/company/my';
+        $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
+        if (config('app.env') != 'production') {
+            $template_id = 'IOdf5wfUUoF1ojLAF2_rDAzfxtghfkQ0sJMgFpht_gY';
+        }
         return [
+            'first'    => $first,
             'keyword1' => '企业账户申请认证',
-            'object_type'  => 'company_auth',
-            'object_id' => $this->company->user_id,
+            'keyword2' => $keyword2,
+            'keyword3' => $keyword3,
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $target_url
         ];
     }
 

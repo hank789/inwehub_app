@@ -89,10 +89,22 @@ class AnswerPromiseOvertime extends Notification implements ShouldBroadcast,Shou
     }
 
     public function toWechatNotice($notifiable){
+        $first = '您好，您有专业问答任务即将延期,请及时处理!';
+        $keyword2 = date('Y-m-d H:i',strtotime($this->answer->promise_time));
+        $remark = '可点击详情立即前往回答';
+        $target_url = config('app.mobile_url').'#/answer/'.$this->question->id;
+        $template_id = 'aOeQPpVu_aHC1xuJgMlZqkkI4j9mmqjLXn3SvX2b3hg';
+        if (config('app.env') != 'production') {
+            $template_id = 'zvZO6wKROVb3fWCE8TGIOtQ3y3k4527wD_Lsk6dyNnM';
+        }
         return [
+            'first'    => $first,
             'keyword1' => $this->question->title,
-            'object_type'  => 'question_answer_promise_overtime',
-            'object_id' => $this->answer->id,
+            'keyword2' => $keyword2,
+            'keyword3' => '',
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $target_url
         ];
     }
 

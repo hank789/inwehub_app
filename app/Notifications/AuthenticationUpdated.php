@@ -111,11 +111,35 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
     }
 
     public function toWechatNotice($notifiable){
+        $first = '您的专家申请已处理';
+        $keyword2 = date('Y-m-d H:i',strtotime($this->authentication->created_at));
+        $target_url = config('app.mobile_url').'#/my';
+        $remark = '请点击查看详情！';
+        switch ($this->authentication->status){
+            case 1:
+                $keyword3 = '恭喜你成为平台认证专家！';
+                $target_url = config('app.mobile_url').'#/my';
+                break;
+            case 4:
+                $keyword3 = '很抱歉，您的专家认证未通过审核：'.$this->authentication->failed_reason;
+                $target_url = config('app.mobile_url').'#/my/pilot';
+                $remark = '点击前往重新申请！';
+                break;
+        }
 
+
+        $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
+        if (config('app.env') != 'production') {
+            $template_id = 'IOdf5wfUUoF1ojLAF2_rDAzfxtghfkQ0sJMgFpht_gY';
+        }
         return [
+            'first'    => $first,
             'keyword1' => '平台专家身份认证',
-            'object_type'  => 'authentication',
-            'object_id' => $this->authentication->user_id,
+            'keyword2' => $keyword2,
+            'keyword3' => $keyword3,
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $target_url
         ];
     }
 

@@ -4,9 +4,8 @@
  * @date: 2017/8/16 下午3:28
  * @email: wanghui@yonglibao.com
  */
-use App\Logic\WechatNotice;
-use App\Models\User;
 use Illuminate\Notifications\Notification;
+use App\Events\Frontend\Wechat\Notice;
 
 class WechatNoticeChannel {
 
@@ -23,8 +22,7 @@ class WechatNoticeChannel {
         $message = $notification->toWechatNotice($notifiable);
         // 将通知发送给 $notifiable 实例
         // 微信通知
-        WechatNotice::newTaskNotice($notifiable->id,$message['keyword1'],$message['object_type'],$message['object_id'],$message['target_url']??'');
-
+        event(new Notice($notifiable->id,$message['first'],$message['keyword1'],$message['keyword2'],$message['keyword3'],$message['remark'],$message['template_id'],$message['target_url']));
     }
 
 }

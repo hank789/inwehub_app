@@ -81,7 +81,7 @@ class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,Sh
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
             'avatar' => $this->answer->user->avatar,
-            'title'  => '您好，'.$title.$this->answer->user->name.'回答了您关注的问题',
+            'title'  => $title.$this->answer->user->name.'回答了您关注的问题',
             'body'   => $this->question->title,
             'extra_body' => ''
         ];
@@ -109,16 +109,28 @@ class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,Sh
     public function toWechatNotice($notifiable){
         switch ($this->question->question_type) {
             case 1:
-                $object_type = 'followed_pay_question_answered';
+                return null;
                 break;
             case 2:
-                $object_type = 'followed_free_question_answered';
+                $first = '您好，已有用户回答了您关注的问题';
+                $keyword2 = $this->answer->user->name;
+                $remark = '可点击查看回答内容并评论';
+                $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
                 break;
         }
+
+        $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+        if (config('app.env') != 'production') {
+            $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+        }
         return [
+            'first'    => $first,
             'keyword1' => $this->question->title,
-            'object_type'  => $object_type,
-            'object_id' => $this->answer->id,
+            'keyword2' => $keyword2,
+            'keyword3' => '',
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url'  => $target_url
         ];
     }
 

@@ -95,10 +95,24 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
     }
 
     public function toWechatNotice($notifiable){
+        $first = '又有新用户关注了你';
+        $keyword2 = date('Y-m-d H:i:s',strtotime($this->attention->created_at));
+        $remark = '点击查看Ta的顾问名片';
+        $template_id = '24x-vyoHM0SncChmtbRv_uoPCBnI8JXFrmTsWfqccQs';
+        if (config('app.env') != 'production') {
+            $template_id = 'mCMHMPCPc1ceoQy66mWPee-krVmAxAB9g7kCQex6bUs';
+        }
+        $user = User::find($this->attention->user_id);
+        $keyword1 = $user->name;
+        $target_url = config('app.mobile_url').'#/share/resume/'.$user->uuid;
         return [
-            'keyword1' => '',
-            'object_type'  => 'user_following',
-            'object_id' => $this->attention->id,
+            'first'    => $first,
+            'keyword1' => $keyword1,
+            'keyword2' => $keyword2,
+            'keyword3' => '',
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $target_url,
         ];
     }
 
