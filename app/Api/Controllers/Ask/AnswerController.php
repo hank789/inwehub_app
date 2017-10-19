@@ -355,6 +355,38 @@ class AnswerController extends Controller
         throw new ApiException(ApiException::ERROR);
     }
 
+
+    public function update(Request $request){
+        $loginUser = $request->user();
+
+        if(RateLimiter::instance()->increase('question:answer:update',$loginUser->id,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
+        $validateRules = [
+            'answer_id'   => 'required|integer',
+            'description' => 'required|min:10',
+        ];
+        $this->validate($request,$validateRules);
+        $answer = Answer::where('id',$request->input('answer_id'))->where('user_id',$loginUser->id)->first();
+        if (!$answer) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $answerContent = $request->input('description');
+
+        if(strlen(trim($answerContent)) <= 4){
+            throw new ApiException(ApiException::ASK_ANSWER_CONTENT_TOO_SHORT);
+        }
+
+        $answerContent = QuillLogic::parseImages($answerContent);
+        if ($answerContent === false){
+            $answerContent = $request->input('description');
+        }
+        $answer->content = $answerContent;
+        $answer->save();
+        return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id]);
+    }
+
     //我的回答列表
     public function myList(Request $request)
     {

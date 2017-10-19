@@ -128,6 +128,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/request','QuestionController@request');
     //新建回答
     Route::post('answer/store','AnswerController@store');
+    //修改回答
+    Route::post('answer/update','AnswerController@update');
     //新建提问
     Route::post('question/store','QuestionController@store');
     //查看点评
