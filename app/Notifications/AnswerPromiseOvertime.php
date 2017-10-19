@@ -90,7 +90,7 @@ class AnswerPromiseOvertime extends Notification implements ShouldBroadcast,Shou
 
     public function toWechatNotice($notifiable){
         return [
-            'content' => $this->question->title,
+            'keyword1' => $this->question->title,
             'object_type'  => 'question_answer_promise_overtime',
             'object_id' => $this->answer->id,
         ];

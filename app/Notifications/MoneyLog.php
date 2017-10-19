@@ -139,7 +139,7 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
                 break;
         }
         return [
-            'content' => $title,
+            'keyword1' => $title,
             'object_type'  => $object_type,
             'object_id' => $this->moneyLog->id,
         ];

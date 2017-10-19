@@ -56,15 +56,10 @@ class QuestionController extends Controller
             $bestAnswer = $question->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
         }
 
-        /*设置通知为已读*/
-        if($request->user()){
-            $this->readNotifications($question->id,'question');
-        }
-
         //已经回答的问题其他人都能看,没回答的问题只有邀请者才能看(付费专业问答)
         if ($question->question_type == 1 && $question->status < 6) {
             //问题作者或邀请者才能看
-            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
+            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$user->id)->first();
             if(empty($question_invitation) && !$is_self){
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
@@ -73,9 +68,9 @@ class QuestionController extends Controller
                 throw new ApiException(ApiException::ASK_QUESTION_ALREADY_REJECTED);
             }
             //虽然邀请他回答了,但是已被其他人回答了
-            if($request->user()->id != $question->user->id){
+            if($user->id != $question->user->id){
                 $question_invitation_confirmed = QuestionInvitation::where('question_id','=',$question->id)->whereIn('status',[QuestionInvitation::STATUS_ANSWERED,QuestionInvitation::STATUS_CONFIRMED])->first();
-                if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $request->user()->id) {
+                if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $user->id) {
                     throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
                 }
             }

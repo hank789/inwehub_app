@@ -92,7 +92,7 @@ class SubmissionReplied extends Notification implements ShouldBroadcast,ShouldQu
     public function toWechatNotice($notifiable){
 
         return [
-            'content' => $this->message['name'],
+            'keyword1' => $this->message['name'],
             'object_type'  => 'readhub_submission_replied',
             'object_id' => $this->message['comment_id'],
             'target_url' => $this->message['url']

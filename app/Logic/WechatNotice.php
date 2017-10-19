@@ -18,7 +18,7 @@ use App\Models\User;
 class WechatNotice {
 
     //新任务处理通知
-    public static function newTaskNotice($toUserId,$content,$object_type,$object_id, $target_url =''){
+    public static function newTaskNotice($toUserId,$keyword1,$object_type,$object_id, $target_url =''){
         $url = config('app.mobile_url');
         $keyword3 = '';
         switch($object_type){
@@ -35,8 +35,8 @@ class WechatNotice {
                 break;
             case 'free_question_invite_answer_confirming':
                 $object = Question::find($object_id);
-                $title = $content;
-                $content = $object->title;
+                $title = $keyword1;
+                $keyword1 = $object->title;
                 $keyword2 = '互动问答邀请';
                 $remark = '请点击前往参与回答';
                 $target_url = $url.'#/askCommunity/interaction/answers/'.$object->id;
@@ -72,6 +72,17 @@ class WechatNotice {
                 $title = '您好，您的提问有新的回答';
                 $keyword2 = $object->user->name;
                 $remark = '可点击详情查看回答内容';
+                $target_url = $url.'#/askCommunity/interaction/'.$object_id;
+                $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+                if (config('app.env') != 'production') {
+                    $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+                }
+                break;
+            case 'followed_free_question_answered':
+                $object = Answer::find($object_id);
+                $title = '您好，已有用户回答了您关注的问题';
+                $keyword2 = $object->user->name;
+                $remark = '可点击查看回答内容并评论';
                 $target_url = $url.'#/askCommunity/interaction/'.$object_id;
                 $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
                 if (config('app.env') != 'production') {
@@ -201,7 +212,7 @@ class WechatNotice {
                 $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$target_url;
                 break;
             case 'readhub_username_mentioned':
-                $title = '您好，'.$content.'在回复中提到了你';
+                $title = '您好，'.$keyword1.'在回复中提到了你';
                 $object = Comment::find($object_id);
                 $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
                 $keyword3 = $object->body;
@@ -223,14 +234,14 @@ class WechatNotice {
                     $template_id = 'mCMHMPCPc1ceoQy66mWPee-krVmAxAB9g7kCQex6bUs';
                 }
                 $user = User::find($object->user_id);
-                $content = $user->name;
+                $keyword1 = $user->name;
                 $target_url = $url.'#/share/resume/'.$user->uuid;
                 break;
             default:
                 return;
                 break;
         }
-        event(new Notice($toUserId,$title,$content,$keyword2,$keyword3,$remark,$template_id,$target_url));
+        event(new Notice($toUserId,$title,$keyword1,$keyword2,$keyword3,$remark,$template_id,$target_url));
     }
 
 }

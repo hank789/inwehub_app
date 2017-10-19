@@ -152,7 +152,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                 return;
         }
         return [
-            'content' => $this->comment->user->name,
+            'keyword1' => $this->comment->user->name,
             'object_type'  => $object_type,
             'object_id' => $this->comment->id,
         ];

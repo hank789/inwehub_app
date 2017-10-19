@@ -9,8 +9,10 @@ use App\Jobs\Question\PromiseOvertime;
 use App\Logic\QuestionLogic;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
+use App\Models\Attention;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Notifications\FollwedQuestionAnswered;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -24,7 +26,7 @@ class AnswerObserver implements ShouldQueue {
     public $tries = 2;
 
 
-    public function created(Answer $answer)
+    public function created(Answer $answer, $update = false)
     {
         switch($answer->status){
             case 3:
@@ -75,6 +77,12 @@ class AnswerObserver implements ShouldQueue {
                     ];
                 }
 
+                //关注问题的用户接收通知
+                $attentions = Attention::where('source_type','=',get_class($answer->question))->where('source_id','=',$answer->question->id)->get();
+                foreach ($attentions as $attention) {
+                    $attention->user->notify(new FollwedQuestionAnswered($attention->user_id,$answer->question,$answer));
+                }
+
                 $this->slackMsg($answer->question,$fields)
                     ->send('用户['.$answer->user->name.']回答了该问题');
                     break;
@@ -97,7 +105,7 @@ class AnswerObserver implements ShouldQueue {
     }
 
     public function updated(Answer $answer){
-        $this->created($answer);
+        $this->created($answer, true);
     }
 
 

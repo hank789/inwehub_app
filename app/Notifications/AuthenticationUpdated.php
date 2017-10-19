@@ -113,7 +113,7 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
     public function toWechatNotice($notifiable){
 
         return [
-            'content' => '平台专家身份认证',
+            'keyword1' => '平台专家身份认证',
             'object_type'  => 'authentication',
             'object_id' => $this->authentication->user_id,
         ];

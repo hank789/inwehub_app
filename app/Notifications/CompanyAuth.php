@@ -111,7 +111,7 @@ class CompanyAuth extends Notification implements ShouldQueue,ShouldBroadcast
     public function toWechatNotice($notifiable){
 
         return [
-            'content' => '企业账户申请认证',
+            'keyword1' => '企业账户申请认证',
             'object_type'  => 'company_auth',
             'object_id' => $this->company->user_id,
         ];

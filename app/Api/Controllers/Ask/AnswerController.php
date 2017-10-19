@@ -469,11 +469,10 @@ class AnswerController extends Controller
         ];
         $this->validate($request,$validateRules);
         $answer = Answer::findOrFail($request->input('answer_id'));
+        $question = $answer->question;
 
         $loginUser = $request->user();
-        if($answer->question->user->id != $loginUser->id){
-            throw new ApiException(ApiException::BAD_REQUEST);
-        }
+
         if(RateLimiter::instance()->increase('question:answer:feedback',$loginUser->id,10,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
@@ -488,7 +487,7 @@ class AnswerController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
-        $answer->question()->update(['status'=>7]);
+        if ($question->question_type == 1) $answer->question()->update(['status'=>7]);
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
 

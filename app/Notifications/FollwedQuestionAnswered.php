@@ -14,7 +14,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NewQuestionAnswered extends Notification implements ShouldBroadcast,ShouldQueue
+class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 
@@ -81,7 +81,7 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
             'avatar' => $this->answer->user->avatar,
-            'title'  => $title.$this->answer->user->name.'回复了你的问题',
+            'title'  => '您好，'.$title.$this->answer->user->name.'回答了您关注的问题',
             'body'   => $this->question->title,
             'extra_body' => ''
         ];
@@ -93,16 +93,14 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
             case 1:
                 $object_id = $this->question->id;
                 $object_type = 'pay_question_answered';
-                $title = '您的提问专家已回答,请前往点评';
                 break;
             case 2:
                 $object_id = $this->answer->id;
                 $object_type = 'free_question_answered';
-                $title = '您的提问有新的回答,请前往查看';
                 break;
         }
         return [
-            'title' => $title,
+            'title' => '用户'.$this->answer->user->name.'回答了您关注的问题',
             'body'  => $this->question->title,
             'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
         ];
@@ -111,10 +109,10 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
     public function toWechatNotice($notifiable){
         switch ($this->question->question_type) {
             case 1:
-                $object_type = 'pay_question_answered';
+                $object_type = 'followed_pay_question_answered';
                 break;
             case 2:
-                $object_type = 'free_question_answered';
+                $object_type = 'followed_free_question_answered';
                 break;
         }
         return [

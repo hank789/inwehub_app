@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Attention extends Model
 {
+    use BelongsToUserTrait;
     protected $table = 'attentions';
     protected $fillable = ['user_id','source_id','source_type'];
 

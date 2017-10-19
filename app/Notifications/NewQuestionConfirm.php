@@ -88,7 +88,7 @@ class NewQuestionConfirm extends Notification implements ShouldBroadcast,ShouldQ
 
     public function toWechatNotice($notifiable){
         return [
-            'content' => $this->question->title,
+            'keyword1' => $this->question->title,
             'object_type'  => 'question_answer_confirmed',
             'object_id' => $this->answer->id,
         ];

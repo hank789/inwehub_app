@@ -96,7 +96,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
 
     public function toWechatNotice($notifiable){
         return [
-            'content' => '',
+            'keyword1' => '',
             'object_type'  => 'user_following',
             'object_id' => $this->attention->id,
         ];

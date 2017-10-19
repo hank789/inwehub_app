@@ -23,7 +23,7 @@ class WechatNoticeChannel {
         $message = $notification->toWechatNotice($notifiable);
         // 将通知发送给 $notifiable 实例
         // 微信通知
-        WechatNotice::newTaskNotice($notifiable->id,$message['content'],$message['object_type'],$message['object_id'],$message['target_url']??'');
+        WechatNotice::newTaskNotice($notifiable->id,$message['keyword1'],$message['object_type'],$message['object_id'],$message['target_url']??'');
 
     }
 

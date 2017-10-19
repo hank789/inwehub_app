@@ -129,7 +129,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
                 break;
         }
         return [
-            'content' => $content,
+            'keyword1' => $content,
             'object_type'  => $object_type,
             'object_id' => $this->question->id,
         ];
