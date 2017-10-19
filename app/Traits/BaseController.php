@@ -12,6 +12,7 @@ use App\Models\Notification;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserData;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -47,13 +48,23 @@ trait BaseController {
         if ($percent >= $valid_percent) {
             $count = Cache::increment('account_info_complete_credit:'.$uid);
         }
+        $user = User::find($uid);
+        $sendNotice = false;
+        if ($percent >= 30 && $percent <= 60) {
+            $sendNotice = true;
+        }
+
         if ($count == 1){
             $this->credit($uid,Credit::KEY_USER_INFO_COMPLETE);
-            $user = User::find($uid);
-            event(new SystemNotify('用户['.$user->name.']简历完成了'.$percent));
+            $sendNotice = true;
         }
         if ($count >= 1) {
             TaskLogic::finishTask('newbie_complete_userinfo',0,'newbie_complete_userinfo',[$uid]);
+        }
+        if ($sendNotice) {
+            if(!RateLimiter::instance()->increase('send:system:notice',$uid,30,1)){
+                event(new SystemNotify('用户['.$user->name.']简历完成了'.$percent));
+            }
         }
     }
 
