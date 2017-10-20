@@ -112,7 +112,6 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
                 return null;
                 break;
             case 2:
-                $from_user = User::find($this->from_user_id);
                 $keyword2 = '互动问答';
                 $remark = '请点击前往参与回答';
                 $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
@@ -125,7 +124,7 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
             $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
         }
         return [
-            'first'    => '您关注的用户'.$this->answer->user->name.'有了新的提问',
+            'first'    => '您关注的用户'.$this->question->user->name.'有了新的提问',
             'keyword1' => $this->question->title,
             'keyword2' => $keyword2,
             'keyword3' => '',
