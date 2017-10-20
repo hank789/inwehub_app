@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\IM\Message;
 use App\Models\Relations\HasRoleAndPermission;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\NotificationSettings;
@@ -412,6 +413,19 @@ class User extends Model implements AuthenticatableContract,
     //资金明细
     public function moneyLogs(){
         return $this->hasMany('App\Models\Pay\MoneyLog','user_id');
+    }
+
+    //IM会话
+    public function conversations()
+    {
+        return $this->belongsToMany(Message::class, 'im_conversations')
+            ->withTimestamps()
+            ->orderBy('im_conversations.created_at', 'desc');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
     }
 
     public function hotTags(){

@@ -59,6 +59,7 @@ return [
 
     'readhub_url' => env('READHUB_URL', 'http://localhost'),
 
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
