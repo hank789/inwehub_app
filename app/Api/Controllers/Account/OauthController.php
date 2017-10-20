@@ -27,7 +27,7 @@ class OauthController extends Controller
         $data = $request->all();
         $user = null;
         $token = null;
-        $user_id = null;
+        $user_id = 0;
         try {
             $user = JWTAuth::parseToken()->authenticate();
             $token = JWTAuth::getToken();
