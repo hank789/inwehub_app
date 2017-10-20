@@ -39,7 +39,7 @@ Route::group(['namespace'=>'Account'], function() {
 });
 
 //用户oauth
-Route::post('oauth/{type}/callback',['uses'=>'OauthController@callback','namespace'=>'Account'])->where(['type'=>'(weixinapp|weixin_gzh)']);
+Route::post('oauth/{type}/callback',['uses'=>'Account\OauthController@callback'])->where(['type'=>'(weixinapp|weixin_gzh)']);
 
 //用户信息
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {

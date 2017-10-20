@@ -94,7 +94,6 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
                 $object_type = 'free_answer';
                 break;
         }
-        \Log::info('push test',[$notifiable->id,$object_type]);
         return [
             'title' => '您关注的用户'.$this->question->user->name.'有了新的提问',
             'body'  => $this->question->title,
