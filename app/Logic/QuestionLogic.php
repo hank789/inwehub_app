@@ -15,6 +15,10 @@ class QuestionLogic {
             'title' => '标签',
             'value' => implode(',',$question->tags()->pluck('name')->toArray())
         ];
+        $fields[] = [
+            'title' => '类型',
+            'value' => $question->question_type == 1 ? '专业问答':'互动问答'
+        ];
         if($other_fields){
             $fields = array_merge($fields,$other_fields);
         }
