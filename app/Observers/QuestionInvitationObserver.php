@@ -9,6 +9,7 @@ use App\Jobs\Question\ConfirmOvertime;
 use App\Logic\QuestionLogic;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -29,8 +30,14 @@ class QuestionInvitationObserver implements ShouldQueue {
      */
     public function created(QuestionInvitation $invitation)
     {
+        if ($invitation->send_to == 'auto') {
+            $inviter = '系统';
+        }else {
+            $from_user = User::find($invitation->from_user_id);
+            $inviter = $from_user->name;
+        }
         QuestionLogic::slackMsg($invitation->question)
-            ->send('问题'.($invitation->send_to == 'auto'?'自动':'').'分配给了用户['.$invitation->user->name.']');
+            ->send('问题由'.$inviter.'分配给了用户['.$invitation->user->name.']');
         //延时处理是否需要告警专家
         dispatch((new ConfirmOvertime($invitation->question_id,$invitation->id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',10))));
     }
