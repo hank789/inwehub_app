@@ -14,12 +14,11 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,ShouldQueue
+class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 
     protected $question;
-    protected $answer;
     protected $user_id;
 
     /**
@@ -27,11 +26,10 @@ class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,Sh
      *
      * @return void
      */
-    public function __construct($user_id, Question $question, Answer $answer)
+    public function __construct($user_id, Question $question)
     {
         $this->user_id = $user_id;
         $this->question = $question;
-        $this->answer = $answer;
     }
 
     /**
@@ -69,19 +67,17 @@ class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,Sh
     {
         switch ($this->question->question_type) {
             case 1:
-                $url = '/ask/'.$this->question->id;
-                $title = '专家';
+                $url = '/answer/'.$this->question->id;
                 break;
             case 2:
-                $url = '/askCommunity/interaction/'.$this->answer->id;
-                $title = '用户';
+                $url = '/askCommunity/interaction/answers/'.$this->question->id;
                 break;
         }
         return [
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
-            'avatar' => $this->answer->user->avatar,
-            'title'  => $title.$this->answer->user->name.'回答了您关注的问题',
+            'avatar' => $this->question->user->avatar,
+            'title'  => '您关注的用户'.$this->question->user->name.'有了新的提问',
             'body'   => $this->question->title,
             'extra_body' => ''
         ];
@@ -91,48 +87,51 @@ class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,Sh
     {
         switch ($this->question->question_type) {
             case 1:
-                $object_id = $this->question->id;
-                $object_type = 'pay_question_answered';
+                $object_type = 'pay_answer';
+                return null;
                 break;
             case 2:
-                $object_id = $this->answer->id;
-                $object_type = 'free_question_answered';
+                $object_type = 'free_answer';
                 break;
         }
         return [
-            'title' => '用户'.$this->answer->user->name.'回答了您关注的问题',
+            'title' => '您关注的用户'.$this->question->user->name.'有了新的提问',
             'body'  => $this->question->title,
-            'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
+            'payload' => ['object_type'=>$object_type,'object_id'=>$this->question->id],
         ];
     }
 
     public function toWechatNotice($notifiable){
-        $first = '';
         switch ($this->question->question_type) {
             case 1:
+                $keyword1 = $this->question->title;
+                $keyword2 = '专业问答任务邀请';
+                $remark = '请立即前往确认回答';
+                $first = '您好，您有新的回答邀请';
+                $url = config('app.mobile_url').'#/answer/'.$this->question->id;
                 return null;
                 break;
             case 2:
-                $first = '您好，已有用户回答了您关注的问题';
-                $keyword2 = $this->answer->user->name;
-                $remark = '可点击查看回答内容并评论';
-                $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
+                $from_user = User::find($this->from_user_id);
+                $keyword2 = '互动问答';
+                $remark = '请点击前往参与回答';
+                $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
                 break;
+            default:
+                return null;
         }
-        if (empty($first)) return null;
-
-        $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+        $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
         if (config('app.env') != 'production') {
-            $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+            $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
         }
         return [
-            'first'    => $first,
+            'first'    => '您关注的用户'.$this->answer->user->name.'有了新的提问',
             'keyword1' => $this->question->title,
             'keyword2' => $keyword2,
             'keyword3' => '',
             'remark'   => $remark,
             'template_id' => $template_id,
-            'target_url'  => $target_url
+            'target_url' => $url
         ];
     }
 

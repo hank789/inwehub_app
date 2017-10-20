@@ -13,8 +13,8 @@ use App\Models\Attention;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\User;
-use App\Notifications\FollwedQuestionAnswered;
-use App\Notifications\FollwedUserAnswered;
+use App\Notifications\FollowedQuestionAnswered;
+use App\Notifications\FollowedUserAnswered;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -89,11 +89,11 @@ class AnswerObserver implements ShouldQueue {
                         //去除重复通知
                         unset($attention_users[$attention_question->user_id]);
                         if ($attention_question->user_id == $answer->question->user_id || $attention_question->user_id == $answer->user_id) continue;
-                        $attention_question->user->notify(new FollwedQuestionAnswered($attention_question->user_id,$answer->question,$answer));
+                        $attention_question->user->notify(new FollowedQuestionAnswered($attention_question->user_id,$answer->question,$answer));
                     }
                     foreach ($attention_users as $attention_uid) {
                         $attention_user = User::find($attention_uid);
-                        $attention_user->notify(new FollwedUserAnswered($attention_uid,$answer->question,$answer));
+                        $attention_user->notify(new FollowedUserAnswered($attention_uid,$answer->question,$answer));
                     }
 
                 }
