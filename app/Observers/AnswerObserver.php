@@ -12,7 +12,9 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\User;
 use App\Notifications\FollwedQuestionAnswered;
+use App\Notifications\FollwedUserAnswered;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -77,13 +79,23 @@ class AnswerObserver implements ShouldQueue {
                     ];
                 }
 
-                //关注问题的用户接收通知
                 if (!$update) {
-                    $attentions = Attention::where('source_type','=',get_class($answer->question))->where('source_id','=',$answer->question->id)->get();
-                    foreach ($attentions as $attention) {
-                        if ($attention->user_id == $answer->question->user_id || $attention->user_id == $answer->user_id) continue;
-                        $attention->user->notify(new FollwedQuestionAnswered($attention->user_id,$answer->question,$answer));
+                    //关注问题的用户接收通知
+                    $attention_questions = Attention::where('source_type','=',get_class($answer->question))->where('source_id','=',$answer->question->id)->get();
+                    //关注回答者的用户接收通知
+                    $attention_users = Attention::where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user->id)->pluck('user_id')->toArray();
+
+                    foreach ($attention_questions as $attention_question) {
+                        //去除重复通知
+                        unset($attention_users[$attention_question->user_id]);
+                        if ($attention_question->user_id == $answer->question->user_id || $attention_question->user_id == $answer->user_id) continue;
+                        $attention_question->user->notify(new FollwedQuestionAnswered($attention_question->user_id,$answer->question,$answer));
                     }
+                    foreach ($attention_users as $attention_uid) {
+                        $attention_user = User::find($attention_uid);
+                        $attention_user->notify(new FollwedUserAnswered($attention_uid,$answer->question,$answer));
+                    }
+
                 }
 
                 $this->slackMsg($answer->question,$fields)
