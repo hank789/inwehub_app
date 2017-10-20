@@ -109,11 +109,13 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                         $object_type = 'free_answer_new_support';
                         $object_id = $source->id;
                         break;
+                    default:
+                        return null;
                 }
                 $title = $this->support->user->name.'赞了您的回答';
                 break;
             default:
-                return;
+                return null;
         }
         return [
             'title' => $title,

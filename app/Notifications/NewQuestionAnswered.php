@@ -122,6 +122,8 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
                 $remark = '可点击详情查看回答内容';
                 $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
                 break;
+            default:
+                return null;
         }
 
         $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';

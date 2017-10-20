@@ -133,6 +133,8 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
                 $remark = '请点击前往参与回答';
                 $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
                 break;
+            default:
+                return null;
         }
         $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
         if (config('app.env') != 'production') {

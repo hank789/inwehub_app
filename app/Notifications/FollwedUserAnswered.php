@@ -96,6 +96,8 @@ class FollwedUserAnswered extends Notification implements ShouldBroadcast,Should
                 $object_id = $this->answer->id;
                 $object_type = 'free_question_answered';
                 break;
+            default:
+                return null;
         }
         return [
             'title' => '您关注的用户'.$this->answer->user->name.'有了新的回答',
@@ -112,10 +114,24 @@ class FollwedUserAnswered extends Notification implements ShouldBroadcast,Should
             case 2:
                 $url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
                 break;
+            default:
+                return null;
+        }
+        if (empty($first)) return null;
+        $keyword2 = $this->answer->user->name;
+        $remark = '可点击查看回答内容并评论';
+
+        $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+        if (config('app.env') != 'production') {
+            $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
         }
         return [
             'first'    => '您关注的用户'.$this->answer->user->name.'有了新的回答',
             'keyword1' => $this->question->title,
+            'keyword2' => $keyword2,
+            'keyword3' => '',
+            'remark'   => $remark,
+            'template_id' => $template_id,
             'target_url' => $url
         ];
     }

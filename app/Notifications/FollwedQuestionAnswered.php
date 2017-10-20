@@ -107,6 +107,7 @@ class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,Sh
     }
 
     public function toWechatNotice($notifiable){
+        $first = '';
         switch ($this->question->question_type) {
             case 1:
                 return null;
@@ -118,6 +119,7 @@ class FollwedQuestionAnswered extends Notification implements ShouldBroadcast,Sh
                 $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
                 break;
         }
+        if (empty($first)) return null;
 
         $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
         if (config('app.env') != 'production') {

@@ -115,6 +115,7 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
         $keyword2 = date('Y-m-d H:i',strtotime($this->authentication->created_at));
         $target_url = config('app.mobile_url').'#/my';
         $remark = '请点击查看详情！';
+        $keyword3 = '';
         switch ($this->authentication->status){
             case 1:
                 $keyword3 = '恭喜你成为平台认证专家！';
@@ -126,6 +127,7 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
                 $remark = '点击前往重新申请！';
                 break;
         }
+        if (empty($keyword3)) return null;
 
 
         $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';

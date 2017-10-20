@@ -134,7 +134,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
         $source = $this->comment->source;
         switch ($this->comment->source_type) {
             case 'App\Models\Article':
-                return;
+                return null;
                 break;
             case 'App\Models\Answer':
                 $question = Question::find($source->question_id);
@@ -149,10 +149,13 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                         $remark = '请点击查看详情！';
                         $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$source->id;
                         break;
+                    default:
+                        return null;
+                        break;
                 }
                 break;
             default:
-                return;
+                return null;
         }
         $keyword2 = date('Y-m-d H:i',strtotime($source->created_at));
         $keyword3 = $this->comment->content;

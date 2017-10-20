@@ -112,6 +112,7 @@ class CompanyAuth extends Notification implements ShouldQueue,ShouldBroadcast
         $first = '您的企业申请已处理';
         $keyword2 = date('Y-m-d H:i',strtotime($this->company->created_at));
         $remark = '请点击查看详情！';
+        $keyword3 = '';
         switch ($this->company->apply_status){
             case Company::APPLY_STATUS_SUCCESS:
                 $keyword3 = '恭喜你成为平台认证企业！';
@@ -121,6 +122,7 @@ class CompanyAuth extends Notification implements ShouldQueue,ShouldBroadcast
                 $remark = '点击前往重新申请！';
                 break;
         }
+        if (empty($keyword3)) return null;
 
         $target_url = config('app.mobile_url').'#/company/my';
         $template_id = '0trIXYvvZAsQdlGb9PyBIlmX1cfTVx4FRqf0oNPI9d4';
