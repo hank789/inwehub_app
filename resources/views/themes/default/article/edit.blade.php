@@ -63,7 +63,7 @@
                     <input type="text" name="deadline" class="form-control datepicker" placeholder="截止日期,留空永久有效" value="{{ $article->deadline }}" />
                 </div>
                 <div class="col-xs-3">
-                    <label for="editor">首页排序，留空则不推荐到首页：</label>
+                    <label for="editor">首页排序，留空或置为-1则不推荐到首页：</label>
                     <input type="text" name="recommend_home_sort" class="form-control datepicker" placeholder="推荐到首页的排序(值越小，越靠前)，如不推荐到首页，留空" value="{{ $recommend_home_sort }}" />
                 </div>
                 <div class="col-xs-3">

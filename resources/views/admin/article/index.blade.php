@@ -67,6 +67,7 @@
                                         <th>分类</th>
                                         <th>报名人数</th>
                                         <th>截止时间</th>
+                                        <th>推荐到首页排序(-1则不显示)</th>
                                         <th>发布时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
@@ -78,6 +79,7 @@
                                             <td>@if($article->category) {{ $article->category->name }} @else 无 @endif</td>
                                             <td>{{ $article->collections }}</td>
                                             <td>{{ ($article->deadline ??'永久') }}</td>
+                                            <td>{{ array_search($article->id,$recommend_home_ac)??'' }}</td>
                                             <td>{{ timestamp_format($article->created_at) }}</td>
                                             <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}<br>{{ ($sort = array_search($article->id,$recommend_home_ac))?'首页排序：'.$sort:'' }}</span> </td>
                                             <td>
