@@ -72,9 +72,8 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             'url'    => '',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_IM,
             'avatar' => $this->message->owner->avatar,
-            'title'  => '',
             'body'   => $this->message->data,
-            'extra_body' => ''
+            'created_at' => (string) $this->message->created_at
         ];
     }
 
