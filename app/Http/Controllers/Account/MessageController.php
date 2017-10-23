@@ -94,7 +94,6 @@ class MessageController extends Controller
         ]);
 
         // broadcast the message to the other person
-        $message->owner = $fromUser;
         $toUser->notify(new NewMessage($toUser->id,$message));
 
         if($message){
