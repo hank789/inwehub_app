@@ -6,14 +6,15 @@
     <div class="row">
         <div class="col-xs-12 col-md-9 main">
             <div class="mt-30 text-muted">
-                <span>发私信给 <a  href="{{ route('auth.space.index',['id'=>$toUser->id]) }}">{{ $toUser->name }}</a> ： </span>
+                <span><a  href="{{ route('auth.space.index',['id'=>$fromUser->id]) }}">{{ $fromUser->name }}</a> 发私信给 <a href="{{ route('auth.space.index',['id'=>$toUser->id]) }}">{{ $toUser->name }}</a> ： </span>
             </div>
             <div class="mt-15 clearfix">
                 <form id="messageForm" method="POST" role="form" action="{{ route('auth.message.store') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="to_user_id" value="{{ $toUser->id }}" />
+                    <input type="hidden" name="from_user_id" value="{{ $fromUser->id }}" />
                     <div class="form-group">
-                        <textarea name="content" id="message_content" placeholder="请输入私信内容" class="form-control" style="height:100px;"></textarea>
+                        <textarea name="text" id="message_content" placeholder="请输入私信内容" class="form-control" style="height:100px;"></textarea>
                     </div>
 
                     <div class="form-group">
@@ -36,7 +37,7 @@
                                 <div class="full-text fmt">{{ $message->data['text'] }}</div>
                                 <div class="meta mt-10">
                                     <span class="text-muted">{{ timestamp_format($message->created_at) }} </span>
-                                <span class="pull-right">
+                                <span class="pull-right" style="display: none;">
                                     <a href="javascript:void(0)" class="text-muted" onclick="delete_message({{ $message->id }})">删除</a>
                                 </span>
                                 </div>

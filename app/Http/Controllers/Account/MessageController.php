@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Account;
 
 use App\Exceptions\ApiException;
-use App\Models\Message;
 use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
+use App\Notifications\NewMessage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -20,8 +20,9 @@ class MessageController extends Controller
 
     /*问题创建校验*/
     protected $validateRules = [
-        'content' => 'required|max:65535',
+        'text' => 'required|max:65535',
         'to_user_id' => 'required|integer',
+        'from_user_id' => 'required|integer'
     ];
 
 
@@ -31,6 +32,7 @@ class MessageController extends Controller
      */
     public function index()
     {
+        abort(404);
         $loginUser = Auth()->user();
 
         /*子查询进行分组*/
@@ -69,20 +71,31 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        $loginUser = $request->user();
         $toUser = User::find($request->input('to_user_id'));
         if(!$toUser){
             abort(404);
         }
+        $fromUser = User::find($request->input('from_user_id'));
+        if(!$fromUser){
+            abort(404);
+        }
 
         $this->validate($request,$this->validateRules);
-        $data = [
-            'from_user_id'      => $loginUser->id,
-            'to_user_id'      => $toUser->id,
-            'content'  => $request->input('content')
-        ];
+        $message = $fromUser->messages()->create([
+            'data' => array_only($request->all(), ['text']),
+        ]);
 
-        $message = Message::create($data);
+        $fromUser->conversations()->attach($message, [
+            'contact_id' => $toUser->id
+        ]);
+
+        $toUser->conversations()->attach($message, [
+            'contact_id' => $fromUser->id,
+        ]);
+
+        // broadcast the message to the other person
+        $message->owner = $fromUser;
+        $toUser->notify(new NewMessage($toUser->id,$message));
 
         if($message){
             return $this->success(route('auth.message.show',['user_id'=>$toUser->id]),'消息发送成功');
@@ -115,7 +128,7 @@ class MessageController extends Controller
         $messages = $user->conversations()
             ->where('contact_id', $contact_id)->paginate(20);
 
-        $user->conversations()->where('contact_id', $customer_id)->get()->map(function ($m) {
+        $user->conversations()->where('contact_id', $contact_id)->get()->map(function ($m) {
             $m->update(['read_at' => Carbon::now()]);
         });
 
