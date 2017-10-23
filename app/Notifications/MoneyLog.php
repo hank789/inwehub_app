@@ -93,9 +93,9 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
     {
         $title = $this->getTitle();
         if ($this->moneyLog->io >=1){
-            $current_balance = $this->moneyLog->before_money + $this->moneyLog->change_money;
+            $current_balance = bcadd($this->moneyLog->before_money , $this->moneyLog->change_money,2);
         } else {
-            $current_balance = $this->moneyLog->before_money - $this->moneyLog->change_money;
+            $current_balance = bcsub($this->moneyLog->before_money , $this->moneyLog->change_money,2);
         }
         return [
             'url'    => '/my/finance',
@@ -105,7 +105,7 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
             'title'  => $title,
             'change_money'  => bcadd($this->moneyLog->change_money,0,2),
             'before_money'  => bcadd($this->moneyLog->before_money,0,2),
-            'current_balance'  => bcadd($current_balance,0,2),
+            'current_balance'  => $current_balance,
             'io'     => $this->moneyLog->io,
             'body'   => '交易成功',
             'extra_body' => '感谢您对InweHub的信任!',
