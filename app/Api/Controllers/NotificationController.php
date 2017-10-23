@@ -76,6 +76,20 @@ class NotificationController extends Controller
                 ]
             ];
         }
+        if (empty($im_list)) {
+            //把客服小哈加进去
+            $im_list[] = [
+                'unread_count' => $im_count,
+                'avatar'       => $contact->avatar,
+                'name'         => $contact->name,
+                'last_message' => [
+                    'id' => $im_message->last_message->id,
+                    'text' => $im_message->last_message->data['text'],
+                    'read_at' => $im_message->last_message->read_at,
+                    'created_at' => (string)$im_message->last_message->created_at
+                ]
+            ];
+        }
 
         $data = [
             'todo_tasks' => $total_unread,
