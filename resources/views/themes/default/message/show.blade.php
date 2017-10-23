@@ -7,7 +7,6 @@
         <div class="col-xs-12 col-md-9 main">
             <div class="mt-30 text-muted">
                 <span>发私信给 <a  href="{{ route('auth.space.index',['id'=>$toUser->id]) }}">{{ $toUser->name }}</a> ： </span>
-                <span class="pull-right"><a href="{{ route('auth.message.index') }}" class="text-muted"><i class="fa fa-reply"></i> 返回</a></span>
             </div>
             <div class="mt-15 clearfix">
                 <form id="messageForm" method="POST" role="form" action="{{ route('auth.message.store') }}">
@@ -26,34 +25,15 @@
             <div class="widget-streams messages mt-15">
                     @foreach($messages as $message)
                     <section class="hover-show streams-item" id="message_{{ $message->id }}">
-                    @if($message->from_user_id == Auth()->user()->id)
                         <div class="stream-wrap media">
                             <div class="pull-left">
-                                <a href="{{ route('auth.space.index',['id'=>$message->from_user_id]) }}" target="_blank">
-                                    <img class="media-object avatar-40" src="{{ get_user_avatar($message->from_user_id) }}" alt="我">
+                                <a href="{{ route('auth.space.index',['id'=>$message->user_id]) }}" target="_blank">
+                                    <img class="media-object avatar-40" src="{{ $message->user->avatar }}" alt="{{ $message->user->name }}">
                                 </a>
                             </div>
                             <div class="media-body">
-                                我 :
-                                <div class="full-text fmt">{{ $message->content }}</div>
-                                <div class="meta mt-10">
-                                    <span class="text-muted">{{ timestamp_format($message->created_at) }} </span>
-                                    <span class="pull-right">
-                                        <a href="javascript:void(0)" class="text-muted" onclick="delete_message({{ $message->id }})">删除</a>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                       @else
-                        <div class="stream-wrap media">
-                            <div class="pull-left">
-                                <a href="{{ route('auth.space.index',['id'=>$message->from_user_id]) }}" target="_blank">
-                                    <img class="media-object avatar-40" src="{{ get_user_avatar($message->from_user_id) }}" alt="{{ $toUser->name }}">
-                                </a>
-                            </div>
-                            <div class="media-body">
-                                <a target="_blank" href="{{ route('auth.space.index',['id'=>$message->from_user_id]) }}"> {{ $toUser->name }}</a> :
-                                <div class="full-text fmt">{{ $message->content }}</div>
+                                <a target="_blank" href="{{ route('auth.space.index',['id'=>$message->user_id]) }}"> {{ $message->user->name }}</a> :
+                                <div class="full-text fmt">{{ $message->data['text'] }}</div>
                                 <div class="meta mt-10">
                                     <span class="text-muted">{{ timestamp_format($message->created_at) }} </span>
                                 <span class="pull-right">
@@ -62,7 +42,6 @@
                                 </div>
                             </div>
                         </div>
-                       @endif
                     </section>
                 @endforeach
             </div>

@@ -119,7 +119,7 @@ class MessageController extends Controller
             $m->update(['read_at' => Carbon::now()]);
         });
 
-        return view('theme::message.show')->with('toUser',$toUser)->with('messages',$messages);
+        return view('theme::message.show')->with('toUser',$toUser)->with('fromUser',$user)->with('messages',$messages);
     }
 
     /**
