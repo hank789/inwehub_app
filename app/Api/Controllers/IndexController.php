@@ -131,10 +131,11 @@ class IndexController extends Controller {
         }
 
         $recommend_home_ac = Redis::connection()->hgetall('recommend_home_ac');
+        $recommend_ac_list = [];
         if ($recommend_home_ac) {
             $recommend_home_ac_img = Redis::connection()->hgetall('recommend_home_ac_img');
-            $recommend_ac_list = [];
             foreach ($recommend_home_ac as $ac_sort=>$ac_id) {
+                if ($ac_sort == -1) continue;
                 $recommend_ac_list[$ac_sort] = Article::find($ac_id)->toArray();
                 if (isset($recommend_home_ac_img[$ac_sort])) {
                     $recommend_ac_list[$ac_sort]['logo'] = $recommend_home_ac_img[$ac_sort];
