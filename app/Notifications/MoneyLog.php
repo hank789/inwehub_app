@@ -127,7 +127,7 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
     public function toWechatNotice($notifiable){
         $title = $this->getTitle();
         $first = '您的账户资金发生以下变动!';
-        $keyword2 = ($this->moneyLog->io >= 1 ? '+' : '-').$this->moneyLog->change_money.'元';
+        $keyword2 = ($this->moneyLog->io >= 1 ? '+' : '-').bcadd($this->moneyLog->change_money,0,2).'元';
         $keyword3 = date('Y-m-d H:i:s',strtotime($this->moneyLog->updated_at));
         $target_url = config('app.mobile_url').'#/my/finance';
         $template_id = '5djK0UUvpHq9TjWFEYujXwqzf7qUR-O8_C_Wzl7W6lg';
