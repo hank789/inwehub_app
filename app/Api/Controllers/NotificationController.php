@@ -2,8 +2,11 @@
 
 namespace App\Api\Controllers;
 
+use App\Exceptions\ApiException;
 use App\Models\IM\Conversation;
 use App\Models\Notification;
+use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -60,7 +63,18 @@ class NotificationController extends Controller
         $im_messages = Conversation::where('user_id',$user->id)->groupBy('contact_id')->get();
 
         $im_list = [];
+        $is_kefu_in = false;
+        //客服
+        $role = Role::customerService()->first();
+        $role_user = RoleUser::where('role_id',$role->id)->first();
+        if (!$role_user) {
+            throw new ApiException(ApiException::ERROR);
+        }
+        $customer_id = $role_user->user_id;
+        $customer_user = User::find($customer_id);
+
         foreach ($im_messages as $im_message) {
+            if ($im_message->contact_id == $customer_id) $is_kefu_in = true;
             $contact = User::find($im_message->contact_id);
             $im_count = $user->conversations()->where('contact_id', $im_message->contact_id)->where('im_messages.user_id',$im_message->contact_id)->whereNull('read_at')->count();
             $total_unread += $im_count;
@@ -76,17 +90,17 @@ class NotificationController extends Controller
                 ]
             ];
         }
-        if (empty($im_list)) {
+        if ($is_kefu_in == false) {
             //把客服小哈加进去
             $im_list[] = [
-                'unread_count' => $im_count,
-                'avatar'       => $contact->avatar,
-                'name'         => $contact->name,
+                'unread_count' => 0,
+                'avatar'       => $customer_user->avatar,
+                'name'         => $customer_user->name,
                 'last_message' => [
-                    'id' => $im_message->last_message->id,
-                    'text' => $im_message->last_message->data['text'],
-                    'read_at' => $im_message->last_message->read_at,
-                    'created_at' => (string)$im_message->last_message->created_at
+                    'id' => 0,
+                    'text' => '',
+                    'read_at' => '',
+                    'created_at' => ''
                 ]
             ];
         }
