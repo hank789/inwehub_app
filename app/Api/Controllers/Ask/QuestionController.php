@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class QuestionController extends Controller
 {
@@ -615,7 +616,7 @@ class QuestionController extends Controller
         }elseif($bottom_id){
             $query = $query->where('id','<',$bottom_id);
         }
-        $questions = $query->orderBy('id','DESC')->paginate(10);
+        $questions = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
 
         $list = [];
         foreach($questions as $question){

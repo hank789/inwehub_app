@@ -25,6 +25,7 @@ use App\Notifications\NewQuestionConfirm;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 class AnswerController extends Controller
 {
@@ -416,7 +417,7 @@ class AnswerController extends Controller
             $query = $query->where('id','<',$bottom_id);
         }
 
-        $answers = $query->orderBy('id','DESC')->paginate(10);
+        $answers = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($answers as $answer){
             $question = Question::find($answer->question_id);
@@ -603,7 +604,7 @@ class AnswerController extends Controller
             $query = $query->where('id','<',$bottom_id);
         }
 
-        $doings = $query->orderBy('id','DESC')->paginate(10);
+        $doings = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
 
         $list = [];
         foreach ($doings as $doing) {

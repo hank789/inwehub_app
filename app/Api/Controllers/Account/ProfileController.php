@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Tymon\JWTAuth\JWTAuth;
+use Illuminate\Support\Facades\Config;
 
 class ProfileController extends Controller
 {
@@ -468,7 +469,7 @@ class ProfileController extends Controller
         }else{
             $query = $query->where('id','>',0);
         }
-        $logs = $query->orderBy('id','DESC')->paginate(10);
+        $logs = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($logs as $log){
             $title = '';

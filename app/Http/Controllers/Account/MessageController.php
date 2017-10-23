@@ -44,7 +44,7 @@ class MessageController extends Controller
             ->select("*")
             ->groupBy("from_user_id")
             ->orderBy("created_at","desc")
-            ->paginate(10);
+            ->paginate(Config::get('api_data_page_size'));
 
         $messages->map(function($message) {
             $message->fromUser = User::find($message->from_user_id);

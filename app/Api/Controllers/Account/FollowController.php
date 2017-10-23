@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 use App\Http\Requests;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 
 
 class FollowController extends Controller
@@ -117,7 +118,7 @@ class FollowController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $attentions = $query->orderBy('attentions.created_at','desc')->paginate(10);
+        $attentions = $query->orderBy('attentions.created_at','desc')->paginate(Config::get('api_data_page_size'));
 
         $data = [];
         foreach($attentions as $attention){
@@ -165,7 +166,7 @@ class FollowController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $attentions = $query->orderBy('created_at','desc')->paginate(10);
+        $attentions = $query->orderBy('created_at','desc')->paginate(Config::get('api_data_page_size'));
 
         $data = [];
         foreach($attentions as $attention){

@@ -8,6 +8,7 @@ use App\Models\QuestionInvitation;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @author: wanghui
@@ -29,7 +30,7 @@ class TaskController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $tasks = $query->orderBy('id','DESC')->paginate(10);
+        $tasks = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
         $task_count = $request->user()->tasks()->where('status',0)->count();
         $notification_count = $request->user()->unreadNotifications()->whereIn('notification_type', [
             Notification::NOTIFICATION_TYPE_NOTICE,

@@ -10,6 +10,7 @@ use App\Services\City\CityData;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @author: wanghui
@@ -90,7 +91,7 @@ class ProjectController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $items = $query->where('status','!=',Project::STATUS_DRAFT)->orderBy('id','DESC')->paginate(10);
+        $items = $query->where('status','!=',Project::STATUS_DRAFT)->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($items as $item){
             $info = $item->toArray();
