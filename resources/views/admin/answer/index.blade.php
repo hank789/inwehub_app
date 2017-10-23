@@ -16,6 +16,7 @@
                             <div class="col-xs-2">
                                 <div class="btn-group">
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.answer.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.answer.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-10">
@@ -89,6 +90,7 @@
                             <div class="col-sm-3">
                                 <div class="btn-group">
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.answer.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.answer.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-sm-9">
