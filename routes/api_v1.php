@@ -112,8 +112,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //关注我的
     Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
     //IM
-    Route::post('im/message-store','MessageController@getMessages');
-    Route::post('im/messages','MessageController@store');
+    Route::post('im/message-store','MessageController@store');
+    Route::post('im/messages','MessageController@getMessages');
 
 
 });

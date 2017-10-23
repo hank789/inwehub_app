@@ -69,11 +69,11 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     {
         
         return [
-            'url'    => $url,
-            'notification_type' => $notification_type,
-            'avatar' => $avatar,
-            'title'  => $title,
-            'body'   => $this->comment->content,
+            'url'    => '',
+            'notification_type' => NotificationModel::NOTIFICATION_TYPE_IM,
+            'avatar' => $this->message->owner->avatar,
+            'title'  => '',
+            'body'   => $this->message->data,
             'extra_body' => ''
         ];
     }
@@ -82,22 +82,25 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     {
 
         return [
-            'title' => $title,
-            'body'  => $this->comment->content,
-            'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
+            'title' => $this->message->owner->name.'回复了你',
+            'body'  => $this->message->data['text'],
+            'payload' => ['object_type'=>'im_message','object_id'=>$this->message->owner->id],
         ];
     }
 
     public function toWechatNotice($notifiable){
-
+        $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
+        if (config('app.env') != 'production') {
+            $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
+        }
         return [
-            'first'    => $first,
-            'keyword1' => $this->comment->user->name,
-            'keyword2' => $keyword2,
-            'keyword3' => $keyword3,
-            'remark'   => $remark,
+            'first'    => '您好，'.$this->message->owner->name.'回复了您',
+            'keyword1' => $this->message->owner->name,
+            'keyword2' => $this->message->created_at,
+            'keyword3' => $this->message->data['text'],
+            'remark'   => '请点击查看详情！',
             'template_id' => $template_id,
-            'target_url' => $target_url
+            'target_url' => ''
         ];
     }
 
