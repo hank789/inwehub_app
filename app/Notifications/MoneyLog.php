@@ -103,9 +103,9 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
             'avatar' => '',
             'name'   => $this->moneyLog->user->name,
             'title'  => $title,
-            'change_money'  => $this->moneyLog->change_money,
-            'before_money'  => $this->moneyLog->before_money,
-            'current_balance'  => $current_balance,
+            'change_money'  => bcadd($this->moneyLog->change_money,0,2),
+            'before_money'  => bcadd($this->moneyLog->before_money,0,2),
+            'current_balance'  => bcadd($current_balance,0,2),
             'io'     => $this->moneyLog->io,
             'body'   => '交易成功',
             'extra_body' => '感谢您对InweHub的信任!',
@@ -116,7 +116,7 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
     public function toPush($notifiable)
     {
         $title = $this->getTitle();
-        $body = '金额：'.$this->moneyLog->change_money.'元';
+        $body = '金额：'.bcadd($this->moneyLog->change_money,0,2).'元';
         return [
             'title' => $title,
             'body'  => $body,
