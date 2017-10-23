@@ -10,6 +10,7 @@ use App\Models\IM\Message;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -60,6 +61,17 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     }
 
     /**
+     * Get the broadcastable representation of the notification.
+     *
+     * @param mixed $notifiable
+     *
+     * @return BroadcastMessage
+     */
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage($this->toArray($notifiable));
+    }
+    /**
      * Get the array representation of the notification.
      *
      * @param  mixed  $notifiable
@@ -67,7 +79,6 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
      */
     public function toArray($notifiable)
     {
-        
         return [
             'url'    => '',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_IM,
