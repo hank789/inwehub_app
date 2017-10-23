@@ -93,6 +93,8 @@ class AnswerController extends AdminController
      */
     public function destroy(Request $request)
     {
+        $answer = Answer::find($request->input('id'));
+        if ($answer->question->question_type == 1) return $this->error(route('admin.answer.index'),'专业问答不能删除');
         Answer::destroy($request->input('id'));
         return $this->success(route('admin.answer.index'),'回答删除成功');
     }
