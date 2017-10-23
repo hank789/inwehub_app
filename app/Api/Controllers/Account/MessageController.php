@@ -95,7 +95,7 @@ class MessageController extends Controller
     protected function markAllAsRead($contact_id)
     {
         Auth::user()->conversations()->where('contact_id', $contact_id)->get()->map(function ($m) {
-            $m->update(['read_at' => Carbon::now()]);
+            if (Auth::user()->id != $m->user_id) $m->update(['read_at' => Carbon::now()]);
         });
     }
 }

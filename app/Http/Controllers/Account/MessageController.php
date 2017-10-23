@@ -128,8 +128,8 @@ class MessageController extends Controller
         $messages = $user->conversations()
             ->where('contact_id', $contact_id)->paginate(20);
 
-        $user->conversations()->where('contact_id', $contact_id)->get()->map(function ($m) {
-            $m->update(['read_at' => Carbon::now()]);
+        $user->conversations()->where('contact_id', $contact_id)->get()->map(function ($m) use ($user) {
+            if ($user->id != $m->user_id) $m->update(['read_at' => Carbon::now()]);
         });
 
         return view('theme::message.show')->with('toUser',$toUser)->with('fromUser',$user)->with('messages',$messages);
