@@ -163,10 +163,6 @@ Route::resource('recommendation', 'RecommendationController',['except' => ['show
 Route::match(['get','post'],'tool/clearCache',['as'=>'admin.tool.clearCache','uses'=>'ToolController@clearCache']);
 Route::post('tool/sendTestEmail',['as'=>'admin.tool.sendTestEmail','uses'=>'ToolController@sendTestEmail']);
 
-/*XunSearch索引管理*/
-Route::get("xunSearch/clear",['as'=>'admin.xunSearch.clear','uses'=>'XunSearchController@clear']);
-Route::get("xunSearch/rebuild",['as'=>'admin.xunSearch.rebuild','uses'=>'XunSearchController@rebuild']);
-
 /*首页问答推荐*/
 Route::resource('recommendQa', 'RecommendQaController',['except' => ['show'],'as'=>'admin.operate']);
 
@@ -238,6 +234,12 @@ Route::group(['prefix' => 'push'], function() {
 Route::group(['prefix' => 'task'], function() {
     Route::get('index',['as'=>'admin.task.index','uses'=>'TaskController@index']);
     Route::post('close',['as'=>'admin.task.close','uses'=>'TaskController@close']);
+});
+
+//客服聊天
+Route::group(['prefix' => 'im','namespace'=>'IM'], function() {
+    Route::get('customer/index',['as'=>'admin.im.customer.index','uses'=>'CustomerController@index']);
+
 });
 
 //日志查看

@@ -107,6 +107,7 @@
                                             <td><span class="label @if($user->status===0) label-danger @elseif($user->status===-1) label-default @elseif($user->status===1) label-success @endif">{{ trans_common_status($user->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
+                                                    <a class="btn btn-default" href="{{ route('auth.message.show',['id'=>$user->id]) }}" data-toggle="tooltip" title="客服聊天"><i class="fa fa-comment-o"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.user.edit',['id'=>$user->id]) }}" data-toggle="tooltip" title="基本信息"><i class="fa fa-edit"></i></a>
                                                     <a class="btn btn-default" href="{{ config('app.mobile_url').'#/share/resume?id='.$user->uuid }}" target="_blank" data-toggle="tooltip" title="查看个人名片"><i class="fa fa-book"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.user.item.info',['item_id'=>0,'user_id'=>$user->id,'type'=>'jobs']) }}" data-toggle="tooltip" title="工作经历"><i class="fa fa-user-md"></i></a>

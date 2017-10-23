@@ -86,6 +86,16 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-coffee"></i> <span>即时通讯</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="im">
+            <li><a href="{{ route('admin.im.customer.index') }}"><i class="fa fa-circle-o"></i> 客服小哈</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-gift"></i> <span>活动</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>

@@ -50,8 +50,7 @@ class Conversation extends Model
 
     public function contact()
     {
-        return $this->belongsTo(User::class, 'contact_id')
-            ->select('id', 'username', 'name', 'avatar');
+        return $this->belongsTo(User::class, 'contact_id');
     }
 
 }

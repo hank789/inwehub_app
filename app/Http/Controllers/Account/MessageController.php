@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Account;
 
+use App\Exceptions\ApiException;
 use App\Models\Message;
+use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -95,26 +99,25 @@ class MessageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($user_id)
+    public function show($contact_id)
     {
-        $toUser = User::find($user_id);
-        if(!$toUser){
-            abort(404);
+
+        $toUser = User::find($contact_id);
+        //客服
+        $role = Role::customerService()->first();
+        $role_user = RoleUser::where('role_id',$role->id)->first();
+        if (!$role_user) {
+            throw new ApiException(ApiException::ERROR);
         }
+        $customer_id = $role_user->user_id;
+        $user = User::find($customer_id);
 
-        /*设置该对话全部未读为已读*/
-        Message::where('to_user_id','=',Auth()->user()->id)->where('is_read','=',0)->update(['is_read'=>1]);
+        $messages = $user->conversations()
+            ->where('contact_id', $contact_id)->paginate(20);
 
-        $messages = Message::where(function($query) use ($toUser) {
-                                $query->where('to_user_id','=',Auth()->user()->id)
-                                      ->where('from_user_id','=',$toUser->id)
-                                      ->where('to_deleted','=',0);
-                    })->orWhere(function($query) use ($toUser) {
-                                $query->where('to_user_id','=',$toUser->id)
-                                      ->where('from_user_id','=',Auth()->user()->id)
-                                      ->where('from_deleted','=',0);
-                   })->orderBy('created_at','desc')->paginate(10);
-
+        $user->conversations()->where('contact_id', $customer_id)->get()->map(function ($m) {
+            $m->update(['read_at' => Carbon::now()]);
+        });
 
         return view('theme::message.show')->with('toUser',$toUser)->with('messages',$messages);
     }
