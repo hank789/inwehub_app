@@ -82,9 +82,9 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     {
 
         return [
-            'title' => $this->message->owner->name.'回复了你',
+            'title' => $this->message->user->name.'回复了你',
             'body'  => $this->message->data['text'],
-            'payload' => ['object_type'=>'im_message','object_id'=>$this->message->owner->id],
+            'payload' => ['object_type'=>'im_message','object_id'=>$this->message->user->id],
         ];
     }
 
@@ -94,8 +94,8 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
         }
         return [
-            'first'    => '您好，'.$this->message->owner->name.'回复了您',
-            'keyword1' => $this->message->owner->name,
+            'first'    => '您好，'.$this->message->user->name.'回复了您',
+            'keyword1' => $this->message->user->name,
             'keyword2' => $this->message->created_at,
             'keyword3' => $this->message->data['text'],
             'remark'   => '请点击查看详情！',

@@ -77,7 +77,6 @@ class MessageController extends Controller
 
         // broadcast the message to the other person
         $contact = User::find($contact_id);
-        $message->owner = Auth::user();
         $contact->notify(new NewMessage($contact_id,$message));
 
 
