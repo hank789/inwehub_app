@@ -419,8 +419,7 @@ class User extends Model implements AuthenticatableContract,
     public function conversations()
     {
         return $this->belongsToMany(Message::class, 'im_conversations')
-            ->withTimestamps()
-            ->orderBy('im_conversations.id', 'asc');
+            ->withTimestamps();
     }
 
     public function messages()

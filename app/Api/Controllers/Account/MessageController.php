@@ -34,6 +34,7 @@ class MessageController extends Controller
 
         $messages = $user->conversations()
             ->where('contact_id', $contact_id)
+            ->orderBy('im_conversations.id', 'asc')
             ->simplePaginate(40)->toArray();
 
 

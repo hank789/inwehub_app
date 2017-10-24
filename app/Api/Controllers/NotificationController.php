@@ -78,15 +78,16 @@ class NotificationController extends Controller
             $contact = User::find($im_message->contact_id);
             $im_count = $user->conversations()->where('contact_id', $im_message->contact_id)->where('im_messages.user_id',$im_message->contact_id)->whereNull('read_at')->count();
             $total_unread += $im_count;
+            $last_message = $user->conversations()->where('contact_id', $im_message->contact_id)->orderBy('im_conversations.id','DESC')->first();
             $im_list[] = [
                 'unread_count' => $im_count,
                 'avatar'       => $contact->avatar,
                 'name'         => $contact->name,
                 'last_message' => [
-                    'id' => $im_message->last_message->id,
-                    'text' => $im_message->last_message->data['text'],
-                    'read_at' => $im_message->last_message->read_at,
-                    'created_at' => (string)$im_message->last_message->created_at
+                    'id' => $last_message->id,
+                    'text' => $last_message->data['text'],
+                    'read_at' => $last_message->read_at,
+                    'created_at' => (string)$last_message->created_at
                 ]
             ];
         }

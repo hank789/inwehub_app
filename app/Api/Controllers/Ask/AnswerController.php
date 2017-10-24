@@ -478,6 +478,15 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
+        //防止重复评价
+        $exist = Feedback::where('user_id',$loginUser->id)
+            ->where('source_id',$request->input('answer_id'))
+            ->where('source_type',get_class($answer))
+            ->first();
+        if ($exist) {
+            throw new ApiException(ApiException::ASL_ANSWER_FEEDBACK_EXIST);
+        }
+
         $feedback = Feedback::create([
             'user_id' => $loginUser->id,
             'source_id' => $request->input('answer_id'),

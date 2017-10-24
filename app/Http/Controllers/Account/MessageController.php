@@ -125,6 +125,7 @@ class MessageController extends Controller
         $user = User::find($customer_id);
 
         $messages = $user->conversations()
+            ->orderBy('im_conversations.id', 'desc')
             ->where('contact_id', $contact_id)->paginate(20);
 
         $user->conversations()->where('contact_id', $contact_id)->get()->map(function ($m) use ($user) {
