@@ -155,8 +155,8 @@ class QuestionController extends Controller
 
         //feedback
         $feedback_data = [];
-        if($is_self && $answers_data){
-            $feedback = $bestAnswer->feedbacks()->orderBy('id','desc')->first();
+        if($answers_data){
+            $feedback = $bestAnswer->feedbacks()->where('user_id',$user->id)->orderBy('id','desc')->first();
             if(!empty($feedback)){
                 $feedback_data = [
                     'answer_id' => $feedback->source_id,
