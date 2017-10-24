@@ -113,6 +113,7 @@ class QuestionController extends Controller
                 'support_number' => $bestAnswer->supports,
                 'view_number'    => $bestAnswer->views,
                 'comment_number' => $bestAnswer->comments,
+                'average_rate'   => $bestAnswer->getFeedbackRate(),
                 'created_at' => (string)$bestAnswer->created_at
             ];
             $promise_answer_time = $bestAnswer->promise_time;

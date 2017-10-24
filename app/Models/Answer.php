@@ -98,4 +98,14 @@ class Answer extends Model
         return QuillLogic::parseHtml($this->content);
     }
 
+    //回答好评率
+    public function getFeedbackRate(){
+        $count = $this->feedbacks()->count();
+        $rate = $this->feedbacks()->sum('star');
+        if ($count) {
+            return bcdiv($rate,$count * 5,2);
+        }
+        return 0;
+    }
+
 }

@@ -118,6 +118,7 @@ class AnswerController extends Controller
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
             'collect_num' => $answer->collections,
+            'average_rate'   => $answer->getFeedbackRate(),
             'created_at' => (string)$answer->created_at
         ];
 
