@@ -99,7 +99,7 @@ class AnswerObserver implements ShouldQueue {
                 }
 
                 $this->slackMsg($answer->question,$fields)
-                    ->send('用户['.$answer->user->name.']回答了该问题');
+                    ->send('用户'.$answer->user->id.'['.$answer->user->name.']回答了该问题');
                     break;
             case 2:
                 //拒绝回答
@@ -114,7 +114,7 @@ class AnswerObserver implements ShouldQueue {
                     'short' => true
                 ];
                 $this->slackMsg($answer->question,$fields,'warning')
-                    ->send('用户['.$answer->user->name.']拒绝回答该问题');
+                    ->send('用户'.$answer->user->id.'['.$answer->user->name.']拒绝回答该问题');
                 break;
         }
     }

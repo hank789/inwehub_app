@@ -75,7 +75,7 @@ class CommentObserver implements ShouldQueue {
                     'color'  => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$comment->user->name.']评论了'.$title);
+            )->send('用户'.$comment->user->id.'['.$comment->user->name.']评论了'.$title);
     }
 
 

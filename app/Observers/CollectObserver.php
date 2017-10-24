@@ -51,7 +51,7 @@ class CollectObserver implements ShouldQueue {
                     'color'     => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$collect->user->name.']报名了活动');
+            )->send('用户'.$collect->user->id.'['.$collect->user->name.']报名了活动');
     }
 
 

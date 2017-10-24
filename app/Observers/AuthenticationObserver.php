@@ -23,7 +23,7 @@ class AuthenticationObserver implements ShouldQueue {
     public function creating(Authentication $authentication)
     {
         $this->slackMsg($authentication)
-            ->send('用户['.$authentication->user->name.']申请专家认证');
+            ->send('用户'.$authentication->user->id.'['.$authentication->user->name.']申请专家认证');
     }
 
     public function deleting(Authentication $authentication){

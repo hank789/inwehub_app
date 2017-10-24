@@ -57,7 +57,7 @@ class SupportObserver implements ShouldQueue {
                     'color'  => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$support->user->name.']赞了'.$title);
+            )->send('用户'.$support->user->id.'['.$support->user->name.']赞了'.$title);
     }
 
 
