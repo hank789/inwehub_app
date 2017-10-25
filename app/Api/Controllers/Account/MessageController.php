@@ -38,10 +38,11 @@ class MessageController extends Controller
             ->orderBy('im_conversations.id', 'desc')
             ->simplePaginate(Config::get('api_data_page_size'))->toArray();
 
-
         $this->markAllAsRead($contact_id);
 
-        return self::createJsonData(true,array_reverse($messages));
+        $messages['data'] = array_reverse($messages['data']);
+
+        return self::createJsonData(true,$messages);
     }
 
 
