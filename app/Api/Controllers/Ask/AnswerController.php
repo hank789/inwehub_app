@@ -657,11 +657,11 @@ class AnswerController extends Controller
         } else {
             $payOrder = $source->orders()->where('return_param','view_answer')->first();
             if (!$payOrder) {
-                return self::createJsonData(true, Comment::where('id',0)->simplePaginate(10)->toArray());
+                return self::createJsonData(true, Comment::where('id',0)->simplePaginate(Config::get('api_data_page_size'))->toArray());
             }
         }
 
-        $comments = $source->comments()->orderBy('created_at','desc')->simplePaginate(10);
+        $comments = $source->comments()->orderBy('created_at','desc')->simplePaginate(Config::get('api_data_page_size'));
         $return = $comments->toArray();
         $return['data'] = [];
 

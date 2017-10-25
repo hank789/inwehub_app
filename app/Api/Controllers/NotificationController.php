@@ -10,31 +10,32 @@ use App\Models\RoleUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class NotificationController extends Controller
 {
 
     public function readhubList(Request $request){
         $user = $request->user();
-        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->simplePaginate(10)->toArray();
+        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->simplePaginate(Config::get('api_data_page_size'))->toArray();
         return self::createJsonData(true, $data);
     }
 
     public function taskList(Request $request){
         $user = $request->user();
-        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->simplePaginate(10)->toArray();
+        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->simplePaginate(Config::get('api_data_page_size'))->toArray();
         return self::createJsonData(true, $data);
     }
 
     public function noticeList(Request $request){
         $user = $request->user();
-        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->simplePaginate(10)->toArray();
+        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->simplePaginate(Config::get('api_data_page_size'))->toArray();
         return self::createJsonData(true, $data);
     }
 
     public function moneyList(Request $request){
         $user = $request->user();
-        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->simplePaginate(10)->toArray();
+        $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->simplePaginate(Config::get('api_data_page_size'))->toArray();
         return self::createJsonData(true, $data);
     }
 
