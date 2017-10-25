@@ -665,7 +665,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(30);
+        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -713,7 +713,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(30);
+        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
@@ -783,7 +783,7 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
         $user = $request->user();
-        $answers = $question->answers()->whereNull('adopted_at')->orderBy('id','DESC')->simplePaginate(10);
+        $answers = $question->answers()->whereNull('adopted_at')->orderBy('id','DESC')->simplePaginate(Config::get('api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
         foreach ($answers as $answer) {

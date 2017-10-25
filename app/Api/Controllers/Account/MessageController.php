@@ -10,6 +10,7 @@ use App\Notifications\NewMessage;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 
 class MessageController extends Controller
 {
@@ -34,8 +35,8 @@ class MessageController extends Controller
 
         $messages = $user->conversations()
             ->where('contact_id', $contact_id)
-            ->orderBy('im_conversations.id', 'asc')
-            ->simplePaginate(40)->toArray();
+            ->orderBy('im_conversations.id', 'desc')
+            ->simplePaginate(Config::get('api_data_page_size'))->toArray();
 
 
         $this->markAllAsRead($contact_id);
