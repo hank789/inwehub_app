@@ -41,7 +41,7 @@ class MessageController extends Controller
 
         $this->markAllAsRead($contact_id);
 
-        return self::createJsonData(true,$messages);
+        return self::createJsonData(true,array_reverse($messages));
     }
 
 
