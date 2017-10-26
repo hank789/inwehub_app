@@ -48,6 +48,9 @@ class IndexController extends Controller {
             ];
         }
 
+        $recommend_expert_is_followed = 0;
+        $recommend_expert_uid = Setting()->get('recommend_expert_uid',2);
+        $recommend_expert_user = User::find($recommend_expert_uid);
         $user = $request->user();
 
         $expire_at = '';
@@ -154,6 +157,12 @@ class IndexController extends Controller {
         }
 
         $data = [
+            'recommend_expert_name' => Setting()->get('recommend_expert_name','郭小红'),//专家姓名
+            'recommend_expert_description' => Setting()->get('recommend_expert_description','SAP咨询行业15年从业经历，熟悉离散制造行业，专注pp等模块，是一位非常自身的超级顾问'),//专家介绍
+            'recommend_expert_uuid' => $recommend_expert_user->uuid,//专家uuid
+            'recommend_expert_uid' => $recommend_expert_uid,//专家id
+            'recommend_expert_is_followed' => $recommend_expert_is_followed,
+            'recommend_expert_avatar_url' => $recommend_expert_user->getAvatarUrl(),//资深专家头像
             'recommend_qa' => $host_question,
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'notices' => $notices,
