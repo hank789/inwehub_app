@@ -3,12 +3,14 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\IM\Message;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
@@ -43,7 +45,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**
@@ -113,6 +115,21 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             'template_id' => $template_id,
             'target_url' => ''
         ];
+    }
+
+    public function toSlack($notifiable){
+        $current_user = User::find($this->user_id);
+        $fields = [
+            'title' => '回复内容',
+            'value' => $this->message->data['text']
+        ];
+        return \Slack::to(config('slack.ask_activity_channel'))
+            ->attach(
+                [
+                    'fields' => $fields
+                ]
+            )
+            ->send('用户'.$this->message->user_id.'['.$this->message->user->name.']回复了用户'.$this->user_id.'['.$current_user->name.']');
     }
 
     public function broadcastOn(){

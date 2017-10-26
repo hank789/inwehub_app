@@ -110,6 +110,7 @@ class FeedLogger
 
         if ($this->performedOn) {
             $activity->source()->associate($this->performedOn);
+            $activity->created_at = (string)$this->performedOn->created_at;
         }
 
         if ($this->causedBy) {

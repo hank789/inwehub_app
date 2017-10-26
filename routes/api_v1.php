@@ -320,5 +320,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
 
 });
 
+//feed
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'feed'], function() {
+    //首页feed列表
+    Route::post('list','FeedController@index');
+});
+
 //点赞
 Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
