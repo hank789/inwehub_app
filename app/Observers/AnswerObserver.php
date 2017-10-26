@@ -10,6 +10,7 @@ use App\Logic\QuestionLogic;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\User;
@@ -95,6 +96,19 @@ class AnswerObserver implements ShouldQueue {
                         $attention_user = User::find($attention_uid);
                         $attention_user->notify(new FollowedUserAnswered($attention_uid,$answer->question,$answer));
                     }
+                    //产生一条feed流
+                    if ($answer->question->question_type == 1) {
+                        $feed_question_title = '专业问答';
+                        $feed_type = Feed::FEED_TYPE_ANSWER_PAY_QUESTION;
+                    } else {
+                        $feed_question_title = '互动问答';
+                        $feed_type = Feed::FEED_TYPE_ANSWER_FREE_QUESTION;
+                    }
+                    feed()
+                        ->causedBy($answer->user)
+                        ->performedOn($answer)
+                        ->withProperties(['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'question_title'=>$answer->question->title,'answer_content'=>$answer->getContentText(),'created_at'=>$answer->created_at])
+                        ->log($answer->user->name.'回答了'.$feed_question_title, $feed_type);
 
                 }
 

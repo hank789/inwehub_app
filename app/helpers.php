@@ -995,3 +995,19 @@ if (!function_exists('judge_user_activity_level')){
         return false;
     }
 }
+
+if (!function_exists('feed')){
+    function feed(){
+        return new \App\Services\FeedLogger();
+    }
+}
+
+/**
+ * @param string $string
+ *
+ * @return \App\Services\String\Str
+ */
+function string($string = '')
+{
+    return new \App\Services\String\Str($string);
+}
