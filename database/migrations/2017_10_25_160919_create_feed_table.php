@@ -39,11 +39,11 @@ class CreateFeedTable extends Migration
     public function down()
     {
         Schema::table('attentions', function (Blueprint $table) {
-            $table->dropIndex('user_id');
+            $table->dropIndex('attentions_user_id_index');
         });
 
         Schema::table('collections', function (Blueprint $table) {
-            $table->dropIndex('user_id');
+            $table->dropIndex('collections_user_id_index');
         });
 
         Schema::drop('feeds');
