@@ -26,7 +26,7 @@ class CreateFeedTable extends Migration
             $table->morphs('source');
             $table->text('data');
             $table->tinyInteger('audit_status')->nullable()->default(1)->index()->comment('审核状态 0-未审核 1-已审核 2-未通过');
-            $table->timestamp('created_at');
+            $table->timestamps();
             $table->softDeletes();
         });
     }
@@ -38,6 +38,14 @@ class CreateFeedTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('attentions', function (Blueprint $table) {
+            $table->dropIndex('user_id');
+        });
+
+        Schema::table('collections', function (Blueprint $table) {
+            $table->dropIndex('user_id');
+        });
+
+        Schema::drop('feeds');
     }
 }

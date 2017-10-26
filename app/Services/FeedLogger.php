@@ -117,7 +117,7 @@ class FeedLogger
         }
 
         $this->withProperty('feed_content', $this->replacePlaceholders($description));
-        
+
         $activity->data = $this->properties;
 
         $activity->feed_type = $feedType;
