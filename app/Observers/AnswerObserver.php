@@ -107,7 +107,7 @@ class AnswerObserver implements ShouldQueue {
                     feed()
                         ->causedBy($answer->user)
                         ->performedOn($answer)
-                        ->withProperties(['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'question_title'=>$answer->question->title,'answer_content'=>$answer->getContentText(),'created_at'=>$answer->created_at])
+                        ->withProperties(['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'question_title'=>$answer->question->title,'answer_content'=>$answer->getContentText(),'created_at'=>(string)$answer->created_at])
                         ->log($answer->user->name.'回答了'.$feed_question_title, $feed_type);
 
                 }
