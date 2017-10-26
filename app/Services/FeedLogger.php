@@ -24,7 +24,7 @@ class FeedLogger
 {
     use Macroable;
 
-    protected $logName = '';
+    protected $anonymous = 0;
 
     /** @var \Illuminate\Database\Eloquent\Model */
     protected $performedOn;
@@ -52,6 +52,11 @@ class FeedLogger
     public function on(Model $model)
     {
         return $this->performedOn($model);
+    }
+
+    public function anonymous($is_anonymous = 0){
+        $this->anonymous = $is_anonymous;
+        return $this;
     }
 
     /**
@@ -122,6 +127,8 @@ class FeedLogger
         $activity->data = $this->properties;
 
         $activity->feed_type = $feedType;
+
+        $activity->is_anonymous = $this->anonymous;
 
         $activity->save();
 

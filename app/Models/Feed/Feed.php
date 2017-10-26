@@ -35,7 +35,7 @@ class Feed extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'user_id', 'feed_type','source_id','source_type','data','audit_status'
+        'user_id', 'user_id', 'feed_type','source_id','source_type','data','audit_status', 'is_anonymous'
     ];
 
     protected $casts = [
@@ -91,9 +91,17 @@ class Feed extends Model
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
                 //发布互动问题
+                $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
+                $data = [
+                    'title' => $this->data['question_title']
+                ];
                 break;
             case self::FEED_TYPE_CREATE_PAY_QUESTION:
                 //发布专业问题
+                $url = '/answer/'.$this->data['question_id'];
+                $data = [
+                    'title' => $this->data['question_title']
+                ];
                 break;
             case self::FEED_TYPE_SUBMIT_ARTICLE:
                 //发布文章

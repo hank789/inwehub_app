@@ -8,6 +8,7 @@
 use App\Jobs\Question\InvitationOvertimeAlertSystem;
 use App\Logic\QuestionLogic;
 use App\Models\Attention;
+use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\User;
 use App\Notifications\FollowedUserAsked;
@@ -47,6 +48,20 @@ class QuestionObserver implements ShouldQueue {
                 $attention_user->notify(new FollowedUserAsked($attention_uid,$question));
             }
         }
+        //产生一条feed流
+        if ($question->question_type == 1) {
+            $feed_question_title = '专业问答';
+            $feed_type = Feed::FEED_TYPE_CREATE_PAY_QUESTION;
+        } else {
+            $feed_question_title = '互动问答';
+            $feed_type = Feed::FEED_TYPE_CREATE_FREE_QUESTION;
+        }
+        feed()
+            ->causedBy($question->user)
+            ->performedOn($question)
+            ->anonymous($question->hide)
+            ->withProperties(['question_id'=>$question->id,'question_title'=>$question->title])
+            ->log(($question->hide ? '匿名':$question->user->name).'发布了'.$feed_question_title, $feed_type);
     }
 
 }

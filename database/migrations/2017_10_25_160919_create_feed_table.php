@@ -23,6 +23,7 @@ class CreateFeedTable extends Migration
             $table->increments('id')->unsigned();
             $table->integer('user_id')->unsigned()->index();
             $table->tinyInteger('feed_type')->default(0)->index()->comment('分类');
+            $table->tinyInteger('is_anonymous')->default(0)->comment('是否匿名');
             $table->morphs('source');
             $table->text('data');
             $table->tinyInteger('audit_status')->nullable()->default(1)->index()->comment('审核状态 0-未审核 1-已审核 2-未通过');

@@ -16,5 +16,5 @@ return array(
     */
 
     'driver' => 'gd',
-    'user_default_avatar' => 'http://inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com/system/user_default_avatar.png',
+    'user_default_avatar' => 'https://cdn.inwehub.com/system/user_default_avatar.png',
 );
