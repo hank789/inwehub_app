@@ -24,6 +24,9 @@ Route::get('/experts/{categorySlug?}/{provinceId?}',['as'=>'website.experts','us
 /*积分商城*/
 Route::get('/shop',['as'=>'website.shop','uses'=>'IndexController@shop'])->middleware(['auth','auth.admin']);
 
+//feed前台显示
+Route::get('feed/destroy/{id}',['as'=>'auth.feed.destroy','uses'=>'FeedController@destroy'])->where(['id'=>'[0-9]+'])->middleware(['auth','auth.admin']);
+Route::get('feeds',['as'=>'auth.feed.index','uses'=>'FeedController@index']);
 
 
 /*用户账号管理，包含用户登录注册等操作*/
