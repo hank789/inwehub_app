@@ -90,7 +90,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
         switch ($this->question->question_type) {
             case 1:
                 $object_id = $this->question->id;
-                $object_type = 'pay_question_answered';
+                $object_type = 'pay_question_answered_askCommunity';
                 break;
             case 2:
                 $object_id = $this->answer->id;
