@@ -16,12 +16,12 @@
                                 <a target="_blank" href="{{ route('auth.space.index',['id'=>$message->user_id]) }}"> {{ $message->user->name }}</a> {{ $message->data['feed_content'] }}:
                                 <div class="full-text fmt">
                                     @foreach($message->getSourceFeedData()['feed'] as $field=>$value)
-                                        {{ $field }} : {{ $value }}
+                                        {{ $field }} : {{ $value }}<br>
                                     @endforeach
                                 </div>
                                 <div class="meta mt-10">
                                     <span class="text-muted">{{ timestamp_format($message->created_at) }} </span>
-                                <span class="pull-right" style="display: none;">
+                                <span class="pull-right">
                                     <a href="javascript:void(0)" class="text-muted" onclick="delete_message({{ $message->id }})">删除</a>
                                 </span>
                                 </div>
