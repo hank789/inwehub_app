@@ -298,6 +298,10 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany('App\Models\UserTag');
     }
 
+    public function userSkillTag(){
+        return $this->userTag()->where('skills','>',0);
+    }
+
     public function userOauth(){
         return $this->hasMany('App\Models\UserOauth');
     }
