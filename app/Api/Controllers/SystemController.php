@@ -33,7 +33,12 @@ class SystemController extends Controller {
         ];
         $this->validate($request, $validateRules);
         $user = $request->user();
-        event(new SystemNotify('用户'.$user->id.'['.$user->name.']申请添加擅长标签',['title'=>'标签','value'=>$request->input('tag_name')]));
+        $fields = [];
+        $fields[] = [
+            'title'=>'标签',
+            'value'=>$request->input('tag_name')
+        ];
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']申请添加擅长标签',$fields));
         return self::createJsonData(true);
     }
 

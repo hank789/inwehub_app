@@ -41,12 +41,12 @@ class QuestionObserver implements ShouldQueue {
         }
         if ($question->question_type == 2 && $question->hide == 0) {
             //关注提问者的用户通知
-            $attention_users = Attention::where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->pluck('user_id')->toArray();
+            /*$attention_users = Attention::where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->pluck('user_id')->toArray();
             unset($attention_users[$question->user_id]);
             foreach ($attention_users as $attention_uid) {
                 $attention_user = User::find($attention_uid);
                 $attention_user->notify(new FollowedUserAsked($attention_uid,$question));
-            }
+            }*/
         }
         //只有互动问答才产生一条feed流
         if ($question->question_type == 2) {

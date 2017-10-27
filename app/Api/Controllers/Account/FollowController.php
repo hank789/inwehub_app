@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Account;
 
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Models\Attention;
 use App\Models\Feed\Feed;
@@ -76,6 +77,16 @@ class FollowController extends Controller
             switch($source_type){
                 case 'question' :
                     $source->increment('followers');
+                    $fields = [];
+                    $fields[] = [
+                        'title' => '标题',
+                        'value' => $source->title
+                    ];
+                    $fields[] = [
+                        'title' => '地址',
+                        'value' => route('ask.question.detail',['id'=>$source->id])
+                    ];
+                    event(new SystemNotify($loginUser->name.'关注了问题',$fields));
                     //产生一条feed流
                     if ($source->question_type == 2) {
                         feed()

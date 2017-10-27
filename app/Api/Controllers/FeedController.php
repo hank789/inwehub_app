@@ -34,6 +34,7 @@ class FeedController extends Controller
                 'title' => $feed->data['feed_content'],
                 'user'  => [
                     'id'    => $feed->is_anonymous ? 0 : $feed->user->id ,
+                    'uuid'  => $feed->is_anonymous ? '' : $feed->user->uuid,
                     'name'  => $feed->is_anonymous ? '匿名': $feed->user->name,
                     'is_expert' => $feed->is_anonymous ? 0 : $feed->user->userData->authentication_status == 1 ? 1 : 0,
                     'avatar'=> $feed->is_anonymous ? config('image.user_default_avatar'):$feed->user->avatar
