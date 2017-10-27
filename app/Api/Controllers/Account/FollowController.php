@@ -95,7 +95,7 @@ class FollowController extends Controller
                         ->withProperties([
                             'follow_user_id' => $source->id
                         ])
-                        ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
+                        ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
                     break;
                 case 'tag':
                     $source->increment('followers');
