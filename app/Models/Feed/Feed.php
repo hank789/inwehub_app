@@ -151,6 +151,7 @@ class Feed extends Model
                     'follow_user_id'    =>    $follower_user->id,
                     'follow_user_name'  =>    $follower_user->name,
                     'follow_user_uuid'  =>    $follower_user->uuid,
+                    'follow_user_avatar'  =>    $follower_user->avatar,
                     'follow_user_is_expert' => $follower_user->userData->authentication_status == 1 ? 1 : 0
                 ];
                 break;
