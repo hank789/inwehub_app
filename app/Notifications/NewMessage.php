@@ -119,7 +119,8 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
 
     public function toSlack($notifiable){
         $current_user = User::find($this->user_id);
-        $fields = [
+        $fields = [];
+        $fields[] = [
             'title' => '回复内容',
             'value' => $this->message->data['text']
         ];
