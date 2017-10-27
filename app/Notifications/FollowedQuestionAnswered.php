@@ -69,7 +69,7 @@ class FollowedQuestionAnswered extends Notification implements ShouldBroadcast,S
     {
         switch ($this->question->question_type) {
             case 1:
-                $url = '/ask/'.$this->question->id;
+                $url = '/askCommunity/major/'.$this->question->id;
                 $title = '专家';
                 break;
             case 2:
