@@ -406,6 +406,19 @@ class ProfileController extends Controller
         return self::createJsonData(true);
     }
 
+    //删除用户擅长标签
+    public function delSkillTag(Request $request) {
+        $validateRules = [
+            'tags' => 'required'
+        ];
+        $user = $request->user();
+        $this->validate($request,$validateRules);
+        $tagids = $request->input('tags');
+        $tags = Tag::whereIn('id',$tagids)->get();
+        UserTag::multiDetachByField($user->id,$tags,'skills');
+        return self::createJsonData(true);
+    }
+
     /**
      * 修改用户头像
      * @param Request $request

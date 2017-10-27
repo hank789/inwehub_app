@@ -60,6 +60,22 @@ class UserTag extends Model
         }
     }
 
+    public static function multiDetachByField($user_id,$tags,$field){
+        if(!$tags){
+            return false;
+        }
+        foreach( $tags as $tag ){
+            $userTag = self::first([
+                'user_id'=> $user_id,
+                'tag_id' => $tag->id
+            ]);
+
+            if($userTag){
+                $userTag->update([$field=>0]);
+            }
+        }
+    }
+
     public static function detachByField($user_id,$field){
         self::where('user_id',$user_id)->where($field,'>',0)->update([$field=>0]);
     }

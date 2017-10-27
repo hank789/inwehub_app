@@ -53,6 +53,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/update','ProfileController@update');
     //添加用户擅长标签
     Route::post('profile/addSkillTag','ProfileController@addSkillTag');
+    //删除用户擅长标签
+    Route::post('profile/delSkillTag','ProfileController@delSkillTag');
 
     //上传简历
     Route::post('profile/uploadResume','ProfileController@uploadResume');
