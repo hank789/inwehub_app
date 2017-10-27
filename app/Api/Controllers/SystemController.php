@@ -7,6 +7,7 @@
 
 use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\FuncZan;
+use App\Events\Frontend\System\SystemNotify;
 use App\Models\AppVersion;
 use App\Models\UserDevice;
 use App\Services\RateLimiter;
@@ -22,6 +23,17 @@ class SystemController extends Controller {
         ];
         $this->validate($request, $validateRules);
         event(new Feedback($request->user(),$request->input('content')));
+        return self::createJsonData(true);
+    }
+
+    public function applySkillTag(Request $request)
+    {
+        $validateRules = [
+            'tag_name' => 'required'
+        ];
+        $this->validate($request, $validateRules);
+        $user = $request->user();
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']申请添加擅长标签',['title'=>'标签','value'=>$request->input('tag_name')]));
         return self::createJsonData(true);
     }
 
