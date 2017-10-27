@@ -6,6 +6,7 @@
  */
 
 use App\Models\Comment;
+use App\Models\Feed\Feed;
 use App\Notifications\NewComment;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -58,6 +59,30 @@ class CommentObserver implements ShouldQueue {
                 if ($source->user_id != $comment->user_id) {
                     $source->user->notify(new NewComment($source->user_id, $comment));
                 }
+                //产生一条feed
+                $question = $source->question;
+                if ($question->question_type == 1) {
+                    $feed_question_title = '专业回答';
+                    $feed_type = Feed::FEED_TYPE_COMMENT_PAY_QUESTION;
+                    $feed_url = '/askCommunity/major/'.$source->question_id;
+                    $feed_answer_content = '';
+                } else {
+                    $feed_question_title = '互动回答';
+                    $feed_type = Feed::FEED_TYPE_COMMENT_FREE_QUESTION;
+                    $feed_url = '/askCommunity/interaction/'.$source->id;
+                    $feed_answer_content = $source->getContentText();
+                }
+                feed()
+                    ->causedBy($comment->user)
+                    ->performedOn($comment)
+                    ->withProperties([
+                        'comment_content' => $comment->content,
+                        'answer_user_name' => $source->user->name,
+                        'question_title'   => $question->title,
+                        'answer_content'   => $feed_answer_content,
+                        'feed_url'         => $feed_url
+                    ])
+                    ->log($comment->user->name.'评论了'.$feed_question_title, $feed_type);
                 break;
             default:
                 return;

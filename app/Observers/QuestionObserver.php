@@ -48,20 +48,17 @@ class QuestionObserver implements ShouldQueue {
                 $attention_user->notify(new FollowedUserAsked($attention_uid,$question));
             }
         }
-        //产生一条feed流
-        if ($question->question_type == 1) {
-            $feed_question_title = '专业问答';
-            $feed_type = Feed::FEED_TYPE_CREATE_PAY_QUESTION;
-        } else {
+        //只有互动问答才产生一条feed流
+        if ($question->question_type == 2) {
             $feed_question_title = '互动问答';
             $feed_type = Feed::FEED_TYPE_CREATE_FREE_QUESTION;
+            feed()
+                ->causedBy($question->user)
+                ->performedOn($question)
+                ->anonymous($question->hide)
+                ->withProperties(['question_id'=>$question->id,'question_title'=>$question->title])
+                ->log(($question->hide ? '匿名':$question->user->name).'发布了'.$feed_question_title, $feed_type);
         }
-        feed()
-            ->causedBy($question->user)
-            ->performedOn($question)
-            ->anonymous($question->hide)
-            ->withProperties(['question_id'=>$question->id,'question_title'=>$question->title])
-            ->log(($question->hide ? '匿名':$question->user->name).'发布了'.$feed_question_title, $feed_type);
     }
 
 }

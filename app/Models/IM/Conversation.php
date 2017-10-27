@@ -22,6 +22,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Attention whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Attention whereUserId($value)
  * @mixin \Eloquent
+ * @property int $contact_id
+ * @property int $message_id
+ * @property-read \App\Models\User $contact
+ * @property-read \App\Models\IM\Message $last_message
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Conversation whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Conversation whereMessageId($value)
  */
 class Conversation extends Model
 {

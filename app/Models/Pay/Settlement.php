@@ -5,7 +5,32 @@ use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * App\Models\Pay\Settlement
+ *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $user_id
+ * @property int $source_id
+ * @property string $source_type
+ * @property int $status 结算状态:0待结算,1结算中,2已结算,3结算失败
+ * @property string|null $settlement_date 结算日期:Y-m-d
+ * @property string|null $actual_amount 实际结算金额
+ * @property string|null $actual_fee 实际结算手续费
+ * @property string|null $actual_settlement_date 实际结算日期:Y-m-d H:i:s
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereActualAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereActualFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereActualSettlementDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereSettlementDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereSourceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Settlement whereUserId($value)
  */
 class Settlement extends Model {
     use BelongsToUserTrait;

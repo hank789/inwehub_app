@@ -3,11 +3,30 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 /**
- * @author: wanghui
- * @date: 2017/5/22 下午3:50
- * @email: wanghui@yonglibao.com
+ * App\Models\UserRegistrationCode
  *
+ * @author : wanghui
+ * @date : 2017/5/22 下午3:50
+ * @email : wanghui@yonglibao.com
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $recommend_uid 邀请人uid
+ * @property int $register_uid 注册者uid
+ * @property string|null $keyword 邀请对象关键词
+ * @property string $code
+ * @property int $status 状态:0未生效,1已生效,2已使用
+ * @property string|null $expired_at 过期时间
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereExpiredAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereKeyword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereRecommendUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereRegisterUid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserRegistrationCode whereUpdatedAt($value)
  */
 
 class UserRegistrationCode extends Model {

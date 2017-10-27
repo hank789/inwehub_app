@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Attention whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Attention whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\User $user
  */
 class Attention extends Model
 {

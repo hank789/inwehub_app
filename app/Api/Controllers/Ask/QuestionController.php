@@ -501,7 +501,6 @@ class QuestionController extends Controller
         ]);
 
         //记录动态
-        $this->doing($loginUser->id,'question_invite_answer',get_class($question),$question->id,$question->title,'',0,$question->user_id);
         //记录任务
         //$this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
 

@@ -61,7 +61,6 @@ class AttentionController extends Controller
             switch($source_type){
                 case 'question' :
                     $this->notify($request->user()->id,$source->user_id,'follow_question',$subject,$source->id);
-                    $this->doing($request->user()->id,'follow_question',get_class($source),$source_id,$subject);
                     $source->increment('followers');
                     break;
                 case 'user':

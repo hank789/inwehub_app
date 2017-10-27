@@ -33,6 +33,8 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereSubject($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Doing whereUserId($value)
  * @mixin \Eloquent
+ * @property int $is_hide
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Doing whereIsHide($value)
  */
 class Doing extends Model
 {

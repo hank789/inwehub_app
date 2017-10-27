@@ -9,7 +9,16 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Relations\BelongsToUserTrait;
 
 /**
+ * App\Models\Pay\UserMoney
+ *
  * @mixin \Eloquent
+ * @property int $user_id
+ * @property float $total_money 总金额
+ * @property float $settlement_money 结算中的金额
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\UserMoney whereSettlementMoney($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\UserMoney whereTotalMoney($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\UserMoney whereUserId($value)
  */
 class UserMoney extends Model {
     use BelongsToUserTrait;

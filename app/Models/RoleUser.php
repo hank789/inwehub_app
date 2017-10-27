@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Role whereSlug($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Role whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RoleUser whereRoleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RoleUser whereUserId($value)
  */
 class RoleUser extends Model
 {

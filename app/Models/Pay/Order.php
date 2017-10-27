@@ -9,7 +9,44 @@ use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * App\Models\Pay\Order
+ *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $user_id
+ * @property string $order_no
+ * @property string|null $transaction_id
+ * @property string $subject
+ * @property string|null $body 支付详情
+ * @property string $amount 支付金额
+ * @property string $actual_amount
+ * @property string|null $return_param 请求自定义参数
+ * @property string $client_ip
+ * @property string|null $response_msg 第三方响应信息
+ * @property string|null $finish_time 支付完成时间,Y-m-d H:i:s
+ * @property mixed|null $response_data 第三方返回完整信息
+ * @property int $pay_channel 支付方式:1微信app支付,2微信公众号支付,3微信扫码支付,4微信刷卡支付,5微信小程序支付,6微信wap支付,7支付宝app支付
+ * @property int $status 订单状态:0待支付,1支付处理中,2支付成功,3支付失败
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereActualAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereClientIp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereFinishTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereOrderNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order wherePayChannel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereResponseData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereResponseMsg($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereReturnParam($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereSubject($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\Order whereUserId($value)
  */
 class Order extends Model
 {

@@ -2,6 +2,7 @@
 
 use App\Exceptions\ApiException;
 use App\Models\Attention;
+use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\Tag;
 use App\Models\User;
@@ -74,12 +75,27 @@ class FollowController extends Controller
         if($attention){
             switch($source_type){
                 case 'question' :
-                    $this->doing($loginUser->id,'follow_question',get_class($source),$source_id,$subject);
                     $source->increment('followers');
+                    //产生一条feed流
+                    if ($source->question_type == 2) {
+                        feed()
+                            ->causedBy($loginUser)
+                            ->performedOn($source)
+                            ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
+                            ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
+                    }
                     break;
                 case 'user':
                     $source->userData->increment('followers');
                     $source->notify(new NewUserFollowing($source->id,$attention));
+                    //产生一条feed流
+                    feed()
+                        ->causedBy($loginUser)
+                        ->performedOn($source)
+                        ->withProperties([
+                            'follow_user_id' => $source->id
+                        ])
+                        ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                     break;
                 case 'tag':
                     $source->increment('followers');

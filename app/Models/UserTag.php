@@ -31,6 +31,10 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereUserId($value)
  * @mixin \Eloquent
+ * @property int $skills
+ * @property int $industries
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserTag whereIndustries($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserTag whereSkills($value)
  */
 class UserTag extends Model
 {

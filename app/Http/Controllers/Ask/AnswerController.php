@@ -78,7 +78,6 @@ class AnswerController extends Controller
             UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
 
             /*记录动态*/
-            $this->doing($answer->user_id,'answer',get_class($question),$question->id,$question->title,$answer->content);
 
             /*记录通知*/
             $this->notify($answer->user_id,$question->user_id,'answer',$question->title,$question->id,$answer->content);

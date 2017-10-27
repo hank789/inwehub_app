@@ -5,6 +5,7 @@ namespace App\Models\Feed;
 use App\Models\Answer;
 use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -23,6 +24,23 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Attention whereSourceType($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Attention whereUserId($value)
  * @mixin \Eloquent
+ * @property int $feed_type 分类
+ * @property array $data
+ * @property int|null $audit_status 审核状态 0-未审核 1-已审核 2-未通过
+ * @property \Carbon\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
+ * @property-read \App\Models\User $user
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Feed\Feed onlyTrashed()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereAuditStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereFeedType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Feed\Feed withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Feed\Feed withoutTrashed()
  */
 class Feed extends Model
 {
@@ -50,15 +68,15 @@ class Feed extends Model
     const FEED_TYPE_ANSWER_FREE_QUESTION = 2;//回答互动问题
     const FEED_TYPE_CREATE_FREE_QUESTION = 3;//发布互动问题
     const FEED_TYPE_CREATE_PAY_QUESTION = 4;//发布专业问题
-    const FEED_TYPE_SUBMIT_ARTICLE = 5;//发布文章
+    const FEED_TYPE_SUBMIT_READHUB_ARTICLE = 5;//发布阅读文章
     const FEED_TYPE_FOLLOW_FREE_QUESTION = 6;//关注了互动问答
     const FEED_TYPE_FOLLOW_USER = 7;//关注了用户
     const FEED_TYPE_COMMENT_PAY_QUESTION = 8;//评论了专业问答
     const FEED_TYPE_COMMENT_FREE_QUESTION = 9;//评论了互动问答
-    const FEED_TYPE_COMMENT_ARTICLE = 10;//评论了文章
+    const FEED_TYPE_COMMENT_READHUB_ARTICLE = 10;//评论了阅读文章
     const FEED_TYPE_UPVOTE_PAY_QUESTION = 11;//赞了专业问答
     const FEED_TYPE_UPVOTE_FREE_QUESTION = 12;//赞了互动问答
-    const FEED_TYPE_UPVOTE_ARTICLE = 13;//赞了文章
+    const FEED_TYPE_UPVOTE_READHUB_ARTICLE = 13;//赞了阅读文章
 
 
 
@@ -92,8 +110,11 @@ class Feed extends Model
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
                 //发布互动问题
                 $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
+                $question = Question::find($this->data['question_id']);
                 $data = [
-                    'title' => $this->data['question_title']
+                    'title' => $this->data['question_title'],
+                    'answer_num' => $question->answers,
+                    'follow_num' => $question->followers,
                 ];
                 break;
             case self::FEED_TYPE_CREATE_PAY_QUESTION:
@@ -103,32 +124,76 @@ class Feed extends Model
                     'title' => $this->data['question_title']
                 ];
                 break;
-            case self::FEED_TYPE_SUBMIT_ARTICLE:
+            case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
                 //发布文章
+                $url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
+                $data = [
+                    'title'     => $this->data['submission_title'],
+                    'img'       => $this->data['img'],
+                    'domain'    => $this->data['domain']
+                ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答
+                $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
+                $question = Question::find($this->data['question_id']);
+                $data = [
+                    'title' => $this->data['question_title'],
+                    'answer_num' => $question->answers,
+                    'follow_num' => $question->followers,
+                ];
                 break;
             case self::FEED_TYPE_FOLLOW_USER:
                 //关注了用户
+                $follower_user = User::find($this->data['follow_user_id']);
+                $url = '/share/resume/'.$follower_user->uuid;
+                $data = [
+                    'follow_user_id'    =>    $follower_user->id,
+                    'follow_user_name'  =>    $follower_user->name,
+                    'follow_user_uuid'  =>    $follower_user->uuid,
+                    'follow_user_is_expert' => $follower_user->userData->authentication_status == 1 ? 1 : 0
+                ];
                 break;
             case self::FEED_TYPE_COMMENT_PAY_QUESTION:
                 //评论了专业问答
+                $url = $this->data['feed_url'];
+                $data = $this->data;
                 break;
             case self::FEED_TYPE_COMMENT_FREE_QUESTION:
                 //评论了互动问答
+                $url = $this->data['feed_url'];
+                $data = $this->data;
                 break;
-            case self::FEED_TYPE_COMMENT_ARTICLE:
+            case self::FEED_TYPE_COMMENT_READHUB_ARTICLE:
                 //评论了文章
+                $url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'].'?comment='.$this->data['comment_id'];
+                $data = [
+                    'title'     => $this->data['submission_title'],
+                    'img'       => $this->data['img'],
+                    'domain'    => $this->data['domain'],
+                    'comment_content' => $this->data['comment_content'],
+                    'submission_username' => $this->data['submission_username']
+                ];
                 break;
             case self::FEED_TYPE_UPVOTE_PAY_QUESTION:
                 //赞了专业问答
+                $url = $this->data['feed_url'];
+                $data = $this->data;
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
                 //赞了互动问答
+                $url = $this->data['feed_url'];
+                $data = $this->data;
                 break;
-            case self::FEED_TYPE_UPVOTE_ARTICLE:
+            case self::FEED_TYPE_UPVOTE_READHUB_ARTICLE:
                 //赞了文章
+                $url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
+                $data = [
+                    'submission_username' => $this->data['submission_username'],
+                    'title'     => $this->data['submission_title'],
+                    'img'       => $this->data['img'],
+                    'domain'    => $this->data['domain']
+                ];
                 break;
         }
         return ['url'=>$url,'feed'=>$data];

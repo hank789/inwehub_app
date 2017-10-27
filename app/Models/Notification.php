@@ -35,6 +35,17 @@ use Illuminate\Notifications\DatabaseNotification;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Notification whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Notification whereUserId($value)
  * @mixin \Eloquent
+ * @property int $notification_type 通知分类
+ * @property int $notifiable_id
+ * @property string $notifiable_type
+ * @property array $data
+ * @property \Carbon\Carbon $read_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $notifiable
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereNotifiableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereNotifiableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereNotificationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereReadAt($value)
  */
 class Notification extends DatabaseNotification
 {

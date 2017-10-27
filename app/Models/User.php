@@ -76,6 +76,38 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereTitle($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $uuid
+ * @property string|null $avatar
+ * @property string|null $hometown_province
+ * @property string|null $hometown_city
+ * @property string $address_detail
+ * @property string $company
+ * @property int $source 注册来源
+ * @property string|null $last_login_token 上次登录token
+ * @property string $current_app_version
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Company\Project[] $companyProjects
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\IM\Message[] $conversations
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserInfo\EduInfo[] $edus
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserInfo\JobInfo[] $jobs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\LoginRecord[] $loginRecords
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\MediaLibrary\Media[] $media
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\IM\Message[] $messages
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Pay\MoneyLog[] $moneyLogs
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserInfo\ProjectInfo[] $projects
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserInfo\TrainInfo[] $trains
+ * @property-read \App\Models\Company\Company $userCompany
+ * @property-read \App\Models\Pay\UserMoney $userMoney
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereAddressDetail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCompany($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCurrentAppVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereHometownCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereHometownProvince($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereLastLoginToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUuid($value)
  */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,

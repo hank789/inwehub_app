@@ -43,6 +43,16 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\UserData whereViews($value)
  * @mixin \Eloquent
+ * @property int $user_level
+ * @property int $is_company
+ * @property int $edu_public
+ * @property int $project_public
+ * @property int $job_public
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereEduPublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereIsCompany($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereJobPublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereProjectPublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereUserLevel($value)
  */
 class UserData extends Model
 {

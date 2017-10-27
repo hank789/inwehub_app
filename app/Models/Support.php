@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Support whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Support whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
+ * @property-read \App\Models\User|null $user
  */
 class Support extends Model
 {

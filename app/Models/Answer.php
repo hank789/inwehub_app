@@ -42,6 +42,17 @@ use App\Models\Relations\MorphManyTagsTrait;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Answer whereUserId($value)
  * @mixin \Eloquent
+ * @property int $pay_for_views
+ * @property int $views
+ * @property int $collections
+ * @property string|null $promise_time 承诺响应时间
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Feedback[] $feedbacks
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Pay\Order[] $orders
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Answer whereCollections($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Answer wherePayForViews($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Answer wherePromiseTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Answer whereViews($value)
  */
 class Answer extends Model
 {
