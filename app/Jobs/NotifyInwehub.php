@@ -63,6 +63,7 @@ class NotifyInwehub implements ShouldQueue
                 //产生一条feed流
                 $comment = Comment::find($this->message['commnet_id']);
                 $submission = Submission::find($comment->submission_id);
+                $submission_user = User::find($submission->user_id);
                 feed()
                     ->causedBy($user)
                     ->performedOn($comment)
@@ -73,7 +74,7 @@ class NotifyInwehub implements ShouldQueue
                         'submission_title'=>$submission->title,
                         'domain'=>$submission->data['domain'],
                         'img'=>$submission->data['img'],
-                        'submission_username' => $user->name,
+                        'submission_username' => $submission_user->name,
                         'comment_content' => $comment->body
                     ])
                     ->log($user->name.'评论了文章', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
@@ -94,10 +95,11 @@ class NotifyInwehub implements ShouldQueue
                 //文章点赞
                 //产生一条feed流
                 $submission = Submission::find($this->message['submission_id']);
+                $submission_user = User::find($submission->user_id);
                 feed()
                     ->causedBy($user)
                     ->performedOn($submission)
-                    ->withProperties(['view_url'=>$submission->data['url'],'submission_username' => $user->name,'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
+                    ->withProperties(['view_url'=>$submission->data['url'],'submission_username' => $submission_user->name,'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
                     ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
                 return;
                 break;
