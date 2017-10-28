@@ -160,8 +160,6 @@
         </a>
         <ul class="treeview-menu" id="logger">
             <li><a href="{{ route('admin.logger.login') }}"><i class="fa fa-circle-o"></i> 登陆日志</a></li>
-            <li><a target="_blank" href="{{ route('admin.logger.system') }}"><i class="fa fa-circle-o"></i> 系统日志</a></li>
-
         </ul>
     </li>
 
