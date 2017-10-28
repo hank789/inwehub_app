@@ -126,14 +126,14 @@ class Feed extends Model
                 break;
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
                 //发布文章
-                $url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
+                $comment_url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
+                $url = $this->data['view_url']??$comment_url;
                 $data = [
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
                     'submission_id' => $this->source_id,
-                    'comment_url' => '/c/'.$this->data['category_id'].'/'.$this->data['slug'],
-                    'view_url'    => $this->data['view_url']
+                    'comment_url' => $comment_url,
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
@@ -191,15 +191,15 @@ class Feed extends Model
                 break;
             case self::FEED_TYPE_UPVOTE_READHUB_ARTICLE:
                 //赞了文章
-                $url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
+                $comment_url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
+                $url = $this->data['view_url']??$comment_url;
                 $data = [
                     'submission_username' => $this->data['submission_username'],
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
                     'submission_id' => $this->source_id,
-                    'comment_url' => '/c/'.$this->data['category_id'].'/'.$this->data['slug'],
-                    'view_url'    => $this->data['view_url']
+                    'comment_url' => $comment_url
                 ];
                 break;
         }
