@@ -109,11 +109,11 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
         return [
             'first'    => '您好，'.$this->message->user->name.'回复了您',
             'keyword1' => $this->message->user->name,
-            'keyword2' => $this->message->created_at,
+            'keyword2' => (string) $this->message->created_at,
             'keyword3' => $this->message->data['text'],
             'remark'   => '请点击查看详情！',
             'template_id' => $template_id,
-            'target_url' => ''
+            'target_url' => config('app.mobile_url').'#/chat'
         ];
     }
 
