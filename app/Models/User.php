@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\IM\Message;
 use App\Models\Relations\HasRoleAndPermission;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\NotificationSettings;
@@ -75,6 +76,38 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereTitle($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $uuid
+ * @property string|null $avatar
+ * @property string|null $hometown_province
+ * @property string|null $hometown_city
+ * @property string $address_detail
+ * @property string $company
+ * @property int $source 注册来源
+ * @property string|null $last_login_token 上次登录token
+ * @property string $current_app_version
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Company\Project[] $companyProjects
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\IM\Message[] $conversations
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserInfo\EduInfo[] $edus
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserInfo\JobInfo[] $jobs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\LoginRecord[] $loginRecords
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\MediaLibrary\Media[] $media
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\IM\Message[] $messages
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Pay\MoneyLog[] $moneyLogs
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserInfo\ProjectInfo[] $projects
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Task[] $tasks
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\UserInfo\TrainInfo[] $trains
+ * @property-read \App\Models\Company\Company $userCompany
+ * @property-read \App\Models\Pay\UserMoney $userMoney
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereAddressDetail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCompany($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCurrentAppVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereHometownCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereHometownProvince($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereLastLoginToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUuid($value)
  */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,
@@ -96,7 +129,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name','uuid','mobile' ,'avatar','email', 'password','status','site_notifications','last_login_token','source'];
+    protected $fillable = ['name','uuid','mobile' ,'avatar','email','title','company', 'password','status','site_notifications','last_login_token','source'];
 
     protected $casts = [
         'site_notifications' => 'json',
@@ -265,6 +298,10 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany('App\Models\UserTag');
     }
 
+    public function userSkillTag(){
+        return $this->userTag()->where('skills','>',0);
+    }
+
     public function userOauth(){
         return $this->hasMany('App\Models\UserOauth');
     }
@@ -412,6 +449,18 @@ class User extends Model implements AuthenticatableContract,
     //资金明细
     public function moneyLogs(){
         return $this->hasMany('App\Models\Pay\MoneyLog','user_id');
+    }
+
+    //IM会话
+    public function conversations()
+    {
+        return $this->belongsToMany(Message::class, 'im_conversations')
+            ->withTimestamps();
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
     }
 
     public function hotTags(){

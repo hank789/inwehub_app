@@ -21,6 +21,7 @@ use App\Http\Requests;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Config;
 
 class QuestionController extends Controller
 {
@@ -57,9 +58,9 @@ class QuestionController extends Controller
         }
 
         if($request->input('sort','default') === 'created_at'){
-            $answers = $question->answers()->whereNull('adopted_at')->orderBy('created_at','DESC')->paginate(10);
+            $answers = $question->answers()->whereNull('adopted_at')->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));
         }else{
-            $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('created_at','ASC')->paginate(10);
+            $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('created_at','ASC')->paginate(Config::get('api_data_page_size'));
         }
 
 

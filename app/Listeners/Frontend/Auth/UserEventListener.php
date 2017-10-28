@@ -23,7 +23,7 @@ class UserEventListener implements ShouldQueue
      */
     public function onLoggedIn($event)
     {
-        \Slack::send('User Logged In: '.$event->user->name);
+        \Slack::send('用户登录: '.$event->user->name);
     }
 
     /**
@@ -31,7 +31,7 @@ class UserEventListener implements ShouldQueue
      */
     public function onLoggedOut($event)
     {
-        \Slack::send('User Logged Out: '.$event->user->name);
+        \Slack::send('用户登出: '.$event->user->name);
 
     }
 
@@ -47,8 +47,17 @@ class UserEventListener implements ShouldQueue
         TaskLogic::task($event->user->id,'newbie_readhub_comment',0,'newbie_readhub_comment');
         // 发起提问
         TaskLogic::task($event->user->id,'newbie_ask',0,'newbie_ask');
-
-        \Slack::send('User Registered: '.$event->user->name);
+        $title = '';
+        if ($event->user->company) {
+            $title .= ';公司：'.$event->user->company;
+        }
+        if ($event->user->title) {
+            $title .= ';职位：'.$event->user->title;
+        }
+        if ($event->user->email) {
+            $title .= ';邮箱：'.$event->user->email;
+        }
+        \Slack::send('新用户注册: '.$event->user->name.$title);
     }
 
     /**

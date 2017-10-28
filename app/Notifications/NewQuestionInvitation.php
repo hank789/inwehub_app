@@ -119,19 +119,35 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
     public function toWechatNotice($notifiable){
         switch ($this->question->question_type) {
             case 1:
-                $object_type = 'pay_question_invite_answer_confirming';
-                $content = $this->question->title;
+                $keyword1 = $this->question->title;
+                $keyword2 = '专业问答任务邀请';
+                $remark = '请立即前往确认回答';
+                $first = '您好，您有新的回答邀请';
+                $url = config('app.mobile_url').'#/answer/'.$this->question->id;
                 break;
             case 2:
-                $object_type = 'free_question_invite_answer_confirming';
                 $from_user = User::find($this->from_user_id);
-                $content = $from_user->name.'邀请您回答问题';
+                $first = $from_user->name.'邀请您回答问题';
+                $keyword1 = $this->question->title;
+                $keyword2 = '互动问答邀请';
+                $remark = '请点击前往参与回答';
+                $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
                 break;
+            default:
+                return null;
+        }
+        $template_id = 'bVUSORjeArW08YvwDIgYgEAnjo49GmBuLPN9CPzIYrc';
+        if (config('app.env') != 'production') {
+            $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
         }
         return [
-            'content' => $content,
-            'object_type'  => $object_type,
-            'object_id' => $this->question->id,
+            'first'    => $first,
+            'keyword1' => $keyword1,
+            'keyword2' => $keyword2,
+            'keyword3' => '',
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $url
         ];
     }
 

@@ -17,12 +17,16 @@ class Feedback
      */
     public $user;
 
+    public $title;
+
     public $content;
 
 
-    public function __construct($user,$content)
+    public function __construct($user,$title,$content)
     {
         $this->user = $user;
+
+        $this->title = $title;
 
         $this->content = $content;
     }

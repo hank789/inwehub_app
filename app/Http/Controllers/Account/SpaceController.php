@@ -39,7 +39,7 @@ class SpaceController extends Controller
     public function index(Request $request)
     {
         $this->init($request);
-        $doings = $this->user->doings()->orderBy('created_at','DESC')->paginate(10);
+        $doings = $this->user->doings()->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));
         $doings->map(function($doing){
             $doing->action_text = Config::get('inwehub.user_actions.'.$doing->action);
         });
@@ -55,7 +55,7 @@ class SpaceController extends Controller
     {
         $this->init($request);
 
-        $questions = $this->user->questions()->orderBy('created_at','DESC')->paginate(10);
+        $questions = $this->user->questions()->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));
         return view('theme::space.questions')->with('questions',$questions);
     }
 
@@ -67,7 +67,7 @@ class SpaceController extends Controller
     {
         $this->init($request);
 
-        $answers = $this->user->answers()->with('question')->orderBy('created_at','DESC')->paginate(10);
+        $answers = $this->user->answers()->with('question')->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));
         return view('theme::space.answers')->with('answers',$answers);
     }
 
@@ -75,7 +75,7 @@ class SpaceController extends Controller
     {
         $this->init($request);
 
-        $articles = $this->user->articles()->orderBy('created_at','DESC')->paginate(10);
+        $articles = $this->user->articles()->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));
         return view('theme::space.articles')->with('articles',$articles);
     }
 
@@ -85,7 +85,7 @@ class SpaceController extends Controller
     {
         $this->init($request);
 
-        $coins = Credit::where('user_id','=',$this->user->id)->where('coins','<>',0)->orderBy('created_at','DESC')->paginate(10);
+        $coins = Credit::where('user_id','=',$this->user->id)->where('coins','<>',0)->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));
         $coins->map(function($coin){
             $coin->actionText = Config::get('inwehub.user_actions.'.$coin->action);
         });
@@ -98,7 +98,7 @@ class SpaceController extends Controller
     {
         $this->init($request);
 
-        $credits = Credit::where('user_id','=',$this->user->id)->where('credits','<>',0)->orderBy('created_at','DESC')->paginate(10);
+        $credits = Credit::where('user_id','=',$this->user->id)->where('credits','<>',0)->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));
         $credits->map(function($credit){
             $credit->actionText = Config::get('inwehub.user_actions.'.$credit->action);
         });
@@ -111,7 +111,7 @@ class SpaceController extends Controller
     {
         $this->init($request);
 
-        $followers = $this->user->followers()->orderBy('attentions.created_at','asc')->paginate(10);
+        $followers = $this->user->followers()->orderBy('attentions.created_at','asc')->paginate(Config::get('api_data_page_size'));
         return view('theme::space.followers')->with('followers',$followers);
     }
 
@@ -134,7 +134,7 @@ class SpaceController extends Controller
 
         $model = App::make($sourceClassMap[$source_type]);
 
-        $attentions = $this->user->attentions()->where('source_type','=',$sourceClassMap[$source_type])->orderBy('attentions.created_at','desc')->paginate(10);
+        $attentions = $this->user->attentions()->where('source_type','=',$sourceClassMap[$source_type])->orderBy('attentions.created_at','desc')->paginate(Config::get('api_data_page_size'));
         $attentions->map(function($attention) use ($model) {
             $attention['info'] = $model::find($attention->source_id);
         });
@@ -159,7 +159,7 @@ class SpaceController extends Controller
 
         $model = App::make($sourceClassMap[$source_type]);
 
-        $collections = $this->user->collections()->where('source_type','=',$sourceClassMap[$source_type])->orderBy('collections.created_at','desc')->paginate(10);
+        $collections = $this->user->collections()->where('source_type','=',$sourceClassMap[$source_type])->orderBy('collections.created_at','desc')->paginate(Config::get('api_data_page_size'));
         $collections->map(function($collection) use ($model) {
             $collection['info'] = $model::find($collection->source_id);
         });

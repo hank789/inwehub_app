@@ -2,13 +2,15 @@
 
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Models\User;
 use App\Models\UserOauth;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\JWTAuth;
 
 class OauthController extends Controller
 {
 
-    public function callback($type,Request $request){
+    public function callback($type,Request $request,JWTAuth $JWTAuth){
 
         $validateRules = [
             'openid' => 'required',
@@ -23,19 +25,36 @@ class OauthController extends Controller
         $this->validate($request,$validateRules);
 
         $data = $request->all();
-        $user = $request->user();
+        $user = null;
+        $token = null;
+        $user_id = 0;
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            $token = JWTAuth::getToken();
+            $user_id = $user->id;
+        } catch (\Exception $e) {
+
+        }
+
         $object = UserOauth::where('auth_type',$type)->where('openid',$data['openid'])->first();
-        if($object && $object->user_id != $user->id){
+        //微信登陆
+        if ($object && $object->user_id && !$user) {
+            $user = User::find($object->user_id);
+            $token = $JWTAuth->fromUser($user);
+            $user_id = $user->id;
+        }
+
+        if($object && $user && $object->user_id != $user->id){
             throw new ApiException(ApiException::USER_OAUTH_BIND_OTHERS);
         }
 
         $oauthData = UserOauth::updateOrCreate([
             'auth_type'=>$type,
-            'user_id'=> $user->id,
+            'user_id'=> $user_id,
             'openid'   => $data['openid']
         ],[
             'auth_type'=>$type,
-            'user_id'=> $user->id,
+            'user_id'=> $user_id,
             'openid'   => $data['openid'],
             'nickname'=>$data['nickname'],
             'avatar'=>$data['avatar'],
@@ -45,7 +64,7 @@ class OauthController extends Controller
             'full_info'=>isset($data['full_info']) ? json_encode($data['full_info']):'',
             'scope'=>$data['scope']
         ]);
-        return self::createJsonData(true);
+        return self::createJsonData(true,['token'=>$token]);
     }
 
 

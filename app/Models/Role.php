@@ -28,6 +28,8 @@ use Bican\Roles\Models\Role as BicanRole;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Role whereSlug($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Role whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bican\Roles\Models\Permission[] $permissions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  */
 class Role extends BicanRole
 {

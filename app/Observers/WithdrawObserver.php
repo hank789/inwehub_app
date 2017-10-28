@@ -46,7 +46,7 @@ class WithdrawObserver implements ShouldQueue {
         ];
 
         $status= '待审核';
-        $title = '用户['.$withdraw->user->name.']提交了提现申请';
+        $title = '用户'.$withdraw->user->id.'['.$withdraw->user->name.']提交了提现申请';
         $color = 'good';
         switch($withdraw->status){
             case Withdraw::WITHDRAW_STATUS_PENDING:

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -20,9 +21,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Attention whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Attention whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\User $user
  */
 class Attention extends Model
 {
+    use BelongsToUserTrait;
     protected $table = 'attentions';
     protected $fillable = ['user_id','source_id','source_type'];
 

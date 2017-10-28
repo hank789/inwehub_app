@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class QuestionController extends Controller
 {
@@ -56,15 +57,10 @@ class QuestionController extends Controller
             $bestAnswer = $question->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
         }
 
-        /*设置通知为已读*/
-        if($request->user()){
-            $this->readNotifications($question->id,'question');
-        }
-
         //已经回答的问题其他人都能看,没回答的问题只有邀请者才能看(付费专业问答)
         if ($question->question_type == 1 && $question->status < 6) {
             //问题作者或邀请者才能看
-            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->first();
+            $question_invitation = QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$user->id)->first();
             if(empty($question_invitation) && !$is_self){
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
@@ -73,9 +69,9 @@ class QuestionController extends Controller
                 throw new ApiException(ApiException::ASK_QUESTION_ALREADY_REJECTED);
             }
             //虽然邀请他回答了,但是已被其他人回答了
-            if($request->user()->id != $question->user->id){
+            if($user->id != $question->user->id){
                 $question_invitation_confirmed = QuestionInvitation::where('question_id','=',$question->id)->whereIn('status',[QuestionInvitation::STATUS_ANSWERED,QuestionInvitation::STATUS_CONFIRMED])->first();
-                if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $request->user()->id) {
+                if($question_invitation_confirmed && $question_invitation_confirmed->user_id != $user->id) {
                     throw new ApiException(ApiException::ASK_QUESTION_ALREADY_CONFIRMED);
                 }
             }
@@ -117,6 +113,7 @@ class QuestionController extends Controller
                 'support_number' => $bestAnswer->supports,
                 'view_number'    => $bestAnswer->views,
                 'comment_number' => $bestAnswer->comments,
+                'average_rate'   => $bestAnswer->getFeedbackRate(),
                 'created_at' => (string)$bestAnswer->created_at
             ];
             $promise_answer_time = $bestAnswer->promise_time;
@@ -158,8 +155,8 @@ class QuestionController extends Controller
 
         //feedback
         $feedback_data = [];
-        if($is_self && $answers_data){
-            $feedback = $bestAnswer->feedbacks()->orderBy('id','desc')->first();
+        if($answers_data){
+            $feedback = $bestAnswer->feedbacks()->where('user_id',$user->id)->orderBy('id','desc')->first();
             if(!empty($feedback)){
                 $feedback_data = [
                     'answer_id' => $feedback->source_id,
@@ -504,7 +501,6 @@ class QuestionController extends Controller
         ]);
 
         //记录动态
-        $this->doing($loginUser->id,'question_invite_answer',get_class($question),$question->id,$question->title,'',0,$question->user_id);
         //记录任务
         //$this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
 
@@ -620,7 +616,7 @@ class QuestionController extends Controller
         }elseif($bottom_id){
             $query = $query->where('id','<',$bottom_id);
         }
-        $questions = $query->orderBy('id','DESC')->paginate(10);
+        $questions = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
 
         $list = [];
         foreach($questions as $question){
@@ -668,7 +664,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(30);
+        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -716,7 +712,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(30);
+        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
@@ -786,7 +782,7 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
         $user = $request->user();
-        $answers = $question->answers()->whereNull('adopted_at')->orderBy('id','DESC')->simplePaginate(10);
+        $answers = $question->answers()->whereNull('adopted_at')->orderBy('id','DESC')->simplePaginate(Config::get('api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
         foreach ($answers as $answer) {

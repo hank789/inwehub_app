@@ -9,7 +9,76 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Feedback
+ *
  * @mixin \Eloquent
+ * @property int $project_id
+ * @property int $user_id
+ * @property int $worker_num 顾问数量
+ * @property int $worker_level 顾问级别
+ * @property string $project_amount 项目预算,单位万
+ * @property int $billing_mode 计费模式
+ * @property string $project_begin_time 项目开始时间
+ * @property int $project_cycle 项目周期
+ * @property int $work_intensity 工作密度
+ * @property int $remote_work 是否接受远程工作
+ * @property int $travel_expense 差旅费用模式
+ * @property string $work_address 工作地点
+ * @property string $company_name 企业名称
+ * @property string $company_description 企业简介
+ * @property int $company_represent_person_is_self 对接人是否本人
+ * @property string $company_represent_person_name 对接人姓名
+ * @property string $company_represent_person_title 对接人职位
+ * @property string $company_represent_person_phone 对接人手机
+ * @property string $company_represent_person_email 对接人邮箱
+ * @property string $company_billing_title 发票抬头信息
+ * @property string $company_billing_bank 开户银行
+ * @property string $company_billing_account 开户账户
+ * @property string $company_billing_taxes 纳税识别号
+ * @property string $qualification_requirements 认证资质
+ * @property string $other_requirements 其它资质
+ * @property int $is_view_resume 是否需要查看顾问简历
+ * @property int $is_apply_request 是否需要顾问投递申请
+ * @property \Carbon\Carbon|null $deleted_at
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\Company\Project $project
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read \App\Models\User $user
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\ProjectDetail onlyTrashed()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereBillingMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyBillingAccount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyBillingBank($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyBillingTaxes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyBillingTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyRepresentPersonEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyRepresentPersonIsSelf($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyRepresentPersonName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyRepresentPersonPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCompanyRepresentPersonTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereIsApplyRequest($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereIsViewResume($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereOtherRequirements($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereProjectAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereProjectBeginTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereProjectCycle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereProjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereQualificationRequirements($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereRemoteWork($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereTravelExpense($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereWorkAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereWorkIntensity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereWorkerLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\ProjectDetail whereWorkerNum($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\ProjectDetail withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\ProjectDetail withoutTrashed()
  */
 class ProjectDetail extends Model
 {

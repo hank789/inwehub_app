@@ -46,6 +46,8 @@ use Illuminate\Support\Facades\App;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Article whereViews($value)
  * @mixin \Eloquent
+ * @property string|null $deadline
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Article whereDeadline($value)
  */
 class Article extends Model
 {

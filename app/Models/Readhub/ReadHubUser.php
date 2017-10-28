@@ -10,8 +10,55 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class ReadHubUser
+ *
  * @package App\Models\Readhub
  * @mixin \Eloquent
+ * @property int $id
+ * @property string|null $uuid
+ * @property int $user_level
+ * @property string $username
+ * @property string|null $name
+ * @property string|null $website
+ * @property string|null $location
+ * @property string $avatar
+ * @property string $color
+ * @property string|null $bio
+ * @property int $active
+ * @property int $confirmed
+ * @property string|null $email
+ * @property array $settings
+ * @property array $info
+ * @property int $verified
+ * @property int $submission_karma
+ * @property int $comment_karma
+ * @property string $password
+ * @property string|null $deleted_at
+ * @property string|null $remember_token
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereBio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereCommentKarma($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereConfirmed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereInfo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereSettings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereSubmissionKarma($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereUserLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereUsername($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereVerified($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereWebsite($value)
  */
 class ReadHubUser extends Model {
 

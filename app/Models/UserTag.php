@@ -31,6 +31,10 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\UserTag whereUserId($value)
  * @mixin \Eloquent
+ * @property int $skills
+ * @property int $industries
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserTag whereIndustries($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserTag whereSkills($value)
  */
 class UserTag extends Model
 {
@@ -52,6 +56,20 @@ class UserTag extends Model
 
             if($field){
                 $userTag->increment($field);
+            }
+        }
+    }
+
+    public static function multiDetachByField($user_id,$tags,$field){
+        if(!$tags){
+            return false;
+        }
+        foreach( $tags as $tag ){
+            $userTag = self::where('user_id',$user_id)->where('tag_id',$tag->id)->first();
+
+            if($userTag){
+                $userTag->$field = 0;
+                $userTag->save();
             }
         }
     }

@@ -31,6 +31,16 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\UserOauth whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\UserOauth whereUserId($value)
  * @mixin \Eloquent
+ * @property string $openid
+ * @property string|null $unionid
+ * @property string|null $scope
+ * @property string|null $full_info
+ * @property int $status 状态:0未生效,1已生效
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserOauth whereFullInfo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserOauth whereOpenid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserOauth whereScope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserOauth whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserOauth whereUnionid($value)
  */
 class UserOauth extends Model
 {

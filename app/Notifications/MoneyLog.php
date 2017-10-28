@@ -93,9 +93,9 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
     {
         $title = $this->getTitle();
         if ($this->moneyLog->io >=1){
-            $current_balance = $this->moneyLog->before_money + $this->moneyLog->change_money;
+            $current_balance = bcadd($this->moneyLog->before_money , $this->moneyLog->change_money,2);
         } else {
-            $current_balance = $this->moneyLog->before_money - $this->moneyLog->change_money;
+            $current_balance = bcsub($this->moneyLog->before_money , $this->moneyLog->change_money,2);
         }
         return [
             'url'    => '/my/finance',
@@ -105,7 +105,7 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
             'title'  => $title,
             'change_money'  => bcadd($this->moneyLog->change_money,0,2),
             'before_money'  => bcadd($this->moneyLog->before_money,0,2),
-            'current_balance'  => bcadd($current_balance,0,2),
+            'current_balance'  => $current_balance,
             'io'     => $this->moneyLog->io,
             'body'   => '交易成功',
             'extra_body' => '感谢您对InweHub的信任!',
@@ -126,22 +126,23 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
 
     public function toWechatNotice($notifiable){
         $title = $this->getTitle();
-        $object_type = '';
-        switch($this->moneyLog->money_type){
-            case MoneyLogModel::MONEY_TYPE_ANSWER:
-                $object_type = 'notification_money_settlement';
-                break;
-            case MoneyLogModel::MONEY_TYPE_FEE:
-                $object_type = 'notification_money_fee';
-                break;
-            case MoneyLogModel::MONEY_TYPE_PAY_FOR_VIEW_ANSWER:
-                $object_type = 'notification_pay_for_view_settlement';
-                break;
+        $first = '您的账户资金发生以下变动!';
+        $keyword2 = ($this->moneyLog->io >= 1 ? '+' : '-').bcadd($this->moneyLog->change_money,0,2).'元';
+        $keyword3 = date('Y-m-d H:i:s',strtotime($this->moneyLog->updated_at));
+        $target_url = config('app.mobile_url').'#/my/finance';
+        $template_id = '5djK0UUvpHq9TjWFEYujXwqzf7qUR-O8_C_Wzl7W6lg';
+        if (config('app.env') != 'production') {
+            $template_id = 'WOt-iIVBMYJUjazUVOZ3lbGFjyO_VbpBH1sEohbnBtA';
         }
+        $remark = '请点击查看详情！';
         return [
-            'content' => $title,
-            'object_type'  => $object_type,
-            'object_id' => $this->moneyLog->id,
+            'first'    => $first,
+            'keyword1' => $title,
+            'keyword2' => $keyword2,
+            'keyword3' => $keyword3,
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $target_url
         ];
     }
 

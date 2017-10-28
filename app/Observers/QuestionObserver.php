@@ -7,7 +7,11 @@
 
 use App\Jobs\Question\InvitationOvertimeAlertSystem;
 use App\Logic\QuestionLogic;
+use App\Models\Attention;
+use App\Models\Feed\Feed;
 use App\Models\Question;
+use App\Models\User;
+use App\Notifications\FollowedUserAsked;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -28,11 +32,33 @@ class QuestionObserver implements ShouldQueue {
      */
     public function created(Question $question)
     {
+
         QuestionLogic::slackMsg($question,null,'')
-            ->send('用户['.$question->user->name.']新建了问题','#C0C0C0');
+            ->send('用户'.$question->user->id.'['.$question->user->name.']新建了问题','#C0C0C0');
         $overtime = Setting()->get('alert_minute_operator_question_uninvite',10);
-        if ($question->question_type == 1)
+        if ($question->question_type == 1) {
             dispatch((new InvitationOvertimeAlertSystem($question->id,$overtime))->delay(Carbon::now()->addMinutes($overtime)));
+        }
+        if ($question->question_type == 2 && $question->hide == 0) {
+            //关注提问者的用户通知
+            /*$attention_users = Attention::where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->pluck('user_id')->toArray();
+            unset($attention_users[$question->user_id]);
+            foreach ($attention_users as $attention_uid) {
+                $attention_user = User::find($attention_uid);
+                $attention_user->notify(new FollowedUserAsked($attention_uid,$question));
+            }*/
+        }
+        //只有互动问答才产生一条feed流
+        if ($question->question_type == 2) {
+            $feed_question_title = '互动问答';
+            $feed_type = Feed::FEED_TYPE_CREATE_FREE_QUESTION;
+            feed()
+                ->causedBy($question->user)
+                ->performedOn($question)
+                ->anonymous($question->hide)
+                ->withProperties(['question_id'=>$question->id,'question_title'=>$question->title])
+                ->log(($question->hide ? '匿名':$question->user->name).'发布了'.$feed_question_title, $feed_type);
+        }
     }
 
 }

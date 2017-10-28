@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Tymon\JWTAuth\JWTAuth;
+use Illuminate\Support\Facades\Config;
 
 class ProfileController extends Controller
 {
@@ -69,7 +70,7 @@ class ProfileController extends Controller
         $info['address_detail'] = $user->address_detail;
         $info['industry_tags'] = TagsLogic::formatTags($user->industryTags());
         if(empty($info['industry_tags'])) $info['industry_tags'] = '';
-        $info['tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->get());
+        $info['skill_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get());
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
         $info['is_company'] = $user->userData->is_company;
@@ -391,6 +392,33 @@ class ProfileController extends Controller
         return self::createJsonData(true,['account_info_complete_percent'=>$percent]);
     }
 
+
+    //添加用户擅长标签
+    public function addSkillTag(Request $request) {
+        $validateRules = [
+            'tags' => 'required'
+        ];
+        $user = $request->user();
+        $this->validate($request,$validateRules);
+        $tagids = $request->input('tags');
+        $tags = Tag::whereIn('id',$tagids)->get();
+        UserTag::multiIncrement($user->id,$tags,'skills');
+        return self::createJsonData(true);
+    }
+
+    //删除用户擅长标签
+    public function delSkillTag(Request $request) {
+        $validateRules = [
+            'tags' => 'required'
+        ];
+        $user = $request->user();
+        $this->validate($request,$validateRules);
+        $tagids = $request->input('tags');
+        $tags = Tag::whereIn('id',$tagids)->get();
+        UserTag::multiDetachByField($user->id,$tags,'skills');
+        return self::createJsonData(true);
+    }
+
     /**
      * 修改用户头像
      * @param Request $request
@@ -468,7 +496,7 @@ class ProfileController extends Controller
         }else{
             $query = $query->where('id','>',0);
         }
-        $logs = $query->orderBy('id','DESC')->paginate(10);
+        $logs = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($logs as $log){
             $title = '';

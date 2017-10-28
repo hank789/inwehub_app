@@ -25,6 +25,7 @@ use App\Notifications\NewQuestionConfirm;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 class AnswerController extends Controller
 {
@@ -117,6 +118,7 @@ class AnswerController extends Controller
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
             'collect_num' => $answer->collections,
+            'average_rate'   => $answer->getFeedbackRate(),
             'created_at' => (string)$answer->created_at
         ];
 
@@ -355,6 +357,38 @@ class AnswerController extends Controller
         throw new ApiException(ApiException::ERROR);
     }
 
+
+    public function update(Request $request){
+        $loginUser = $request->user();
+
+        if(RateLimiter::instance()->increase('question:answer:update',$loginUser->id,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
+        $validateRules = [
+            'answer_id'   => 'required|integer',
+            'description' => 'required|min:10',
+        ];
+        $this->validate($request,$validateRules);
+        $answer = Answer::where('id',$request->input('answer_id'))->where('user_id',$loginUser->id)->first();
+        if (!$answer) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $answerContent = $request->input('description');
+
+        if(strlen(trim($answerContent)) <= 4){
+            throw new ApiException(ApiException::ASK_ANSWER_CONTENT_TOO_SHORT);
+        }
+
+        $answerContent = QuillLogic::parseImages($answerContent);
+        if ($answerContent === false){
+            $answerContent = $request->input('description');
+        }
+        $answer->content = $answerContent;
+        $answer->save();
+        return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id], ApiException::SUCCESS,'修改成功');
+    }
+
     //我的回答列表
     public function myList(Request $request)
     {
@@ -384,7 +418,7 @@ class AnswerController extends Controller
             $query = $query->where('id','<',$bottom_id);
         }
 
-        $answers = $query->orderBy('id','DESC')->paginate(10);
+        $answers = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($answers as $answer){
             $question = Question::find($answer->question_id);
@@ -437,13 +471,21 @@ class AnswerController extends Controller
         ];
         $this->validate($request,$validateRules);
         $answer = Answer::findOrFail($request->input('answer_id'));
+        $question = $answer->question;
 
         $loginUser = $request->user();
-        if($answer->question->user->id != $loginUser->id){
-            throw new ApiException(ApiException::BAD_REQUEST);
-        }
+
         if(RateLimiter::instance()->increase('question:answer:feedback',$loginUser->id,10,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
+        //防止重复评价
+        $exist = Feedback::where('user_id',$loginUser->id)
+            ->where('source_id',$request->input('answer_id'))
+            ->where('source_type',get_class($answer))
+            ->first();
+        if ($exist) {
+            throw new ApiException(ApiException::ASL_ANSWER_FEEDBACK_EXIST);
         }
 
         $feedback = Feedback::create([
@@ -456,7 +498,7 @@ class AnswerController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
-        $answer->question()->update(['status'=>7]);
+        if ($question->question_type == 1) $answer->question()->update(['status'=>7]);
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
 
@@ -540,7 +582,6 @@ class AnswerController extends Controller
         //进入结算中心
         Settlement::payForViewSettlement($order);
         //记录动态
-        $this->doing($loginUser->id,'pay_for_view_question_answer',get_class($answer),$answer->id,$answer->question->title,'');
         //自动收藏
         Collection::create([
             'user_id'     => $loginUser->id,
@@ -572,7 +613,7 @@ class AnswerController extends Controller
             $query = $query->where('id','<',$bottom_id);
         }
 
-        $doings = $query->orderBy('id','DESC')->paginate(10);
+        $doings = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
 
         $list = [];
         foreach ($doings as $doing) {
@@ -615,11 +656,11 @@ class AnswerController extends Controller
         } else {
             $payOrder = $source->orders()->where('return_param','view_answer')->first();
             if (!$payOrder) {
-                return self::createJsonData(true, Comment::where('id',0)->simplePaginate(10)->toArray());
+                return self::createJsonData(true, Comment::where('id',0)->simplePaginate(Config::get('api_data_page_size'))->toArray());
             }
         }
 
-        $comments = $source->comments()->orderBy('created_at','desc')->simplePaginate(10);
+        $comments = $source->comments()->orderBy('created_at','desc')->simplePaginate(Config::get('api_data_page_size'));
         $return = $comments->toArray();
         $return['data'] = [];
 

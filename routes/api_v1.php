@@ -37,6 +37,10 @@ Route::group(['namespace'=>'Account'], function() {
     //用户个人名片
     Route::any('profile/resumeInfo','ProfileController@resumeInfo');
 });
+
+//用户oauth
+Route::post('oauth/{type}/callback',['uses'=>'Account\OauthController@callback'])->where(['type'=>'(weixinapp|weixin_gzh)']);
+
 //用户信息
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
@@ -47,6 +51,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/password','ProfileController@updatePassword');
     //用户修改基本信息
     Route::post('profile/update','ProfileController@update');
+    //添加用户擅长标签
+    Route::post('profile/addSkillTag','ProfileController@addSkillTag');
+    //删除用户擅长标签
+    Route::post('profile/delSkillTag','ProfileController@delSkillTag');
 
     //上传简历
     Route::post('profile/uploadResume','ProfileController@uploadResume');
@@ -55,10 +63,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/privacy/info','ProfileController@privacyInfo');
     //隐私设置
     Route::post('profile/privacy/update','ProfileController@privacyUpdate');
-
-
-    //用户oauth
-    Route::post('oauth/{type}/callback',['uses'=>'OauthController@callback'])->where(['type'=>'(weixinapp|weixin_gzh)']);
 
     //资金明细
     Route::post('account/money_log','ProfileController@moneyLog');
@@ -111,6 +115,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
 
     //关注我的
     Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
+    //IM
+    Route::post('im/message-store','MessageController@store');
+    Route::post('im/messages','MessageController@getMessages');
+
+
 });
 
 
@@ -128,6 +137,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/request','QuestionController@request');
     //新建回答
     Route::post('answer/store','AnswerController@store');
+    //修改回答
+    Route::post('answer/update','AnswerController@update');
     //新建提问
     Route::post('question/store','QuestionController@store');
     //查看点评
@@ -204,6 +215,10 @@ Route::post('system/func_zan','SystemController@funcZan')->middleware('jwt.auth'
 
 //保存用户设备信息
 Route::post('system/device','SystemController@device')->middleware('jwt.auth');
+
+//申请添加用户擅长标签
+Route::post('system/applySkillTag','SystemController@applySkillTag')->middleware('jwt.auth');
+
 
 //检测app版本
 Route::post('system/version','SystemController@appVersion');
@@ -311,6 +326,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
     //回答
     Route::post('weapp/answer/store','AnswerController@store');
 
+});
+
+//feed
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'feed'], function() {
+    //首页feed列表
+    Route::post('list','FeedController@index');
 });
 
 //点赞

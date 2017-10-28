@@ -111,16 +111,33 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
     public function toWechatNotice($notifiable){
         switch ($this->question->question_type) {
             case 1:
-                $object_type = 'pay_question_answered';
+                $first = '您好，已有专家回答了您的专业问答任务';
+                $keyword2 = $this->answer->user->name;
+                $remark = '可点击详情查看回答内容';
+                $target_url = config('app.mobile_url').'#/ask/'.$this->question->id;
                 break;
             case 2:
-                $object_type = 'free_question_answered';
+                $first = '您好，您的提问有新的回答';
+                $keyword2 = $this->answer->user->name;
+                $remark = '可点击详情查看回答内容';
+                $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
                 break;
+            default:
+                return null;
+        }
+
+        $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+        if (config('app.env') != 'production') {
+            $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
         }
         return [
-            'content' => $this->question->title,
-            'object_type'  => $object_type,
-            'object_id' => $this->answer->id,
+            'first'    => $first,
+            'keyword1' => $this->question->title,
+            'keyword2' => $keyword2,
+            'keyword3' => '',
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $target_url
         ];
     }
 

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Account;
 
-use App\Models\Message;
+use App\Exceptions\ApiException;
+use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\User;
+use App\Notifications\NewMessage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -16,8 +20,9 @@ class MessageController extends Controller
 
     /*问题创建校验*/
     protected $validateRules = [
-        'content' => 'required|max:65535',
+        'text' => 'required|max:65535',
         'to_user_id' => 'required|integer',
+        'from_user_id' => 'required|integer'
     ];
 
 
@@ -27,6 +32,7 @@ class MessageController extends Controller
      */
     public function index()
     {
+        abort(404);
         $loginUser = Auth()->user();
 
         /*子查询进行分组*/
@@ -38,7 +44,7 @@ class MessageController extends Controller
             ->select("*")
             ->groupBy("from_user_id")
             ->orderBy("created_at","desc")
-            ->paginate(10);
+            ->paginate(Config::get('api_data_page_size'));
 
         $messages->map(function($message) {
             $message->fromUser = User::find($message->from_user_id);
@@ -65,20 +71,30 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        $loginUser = $request->user();
         $toUser = User::find($request->input('to_user_id'));
         if(!$toUser){
             abort(404);
         }
+        $fromUser = User::find($request->input('from_user_id'));
+        if(!$fromUser){
+            abort(404);
+        }
 
         $this->validate($request,$this->validateRules);
-        $data = [
-            'from_user_id'      => $loginUser->id,
-            'to_user_id'      => $toUser->id,
-            'content'  => $request->input('content')
-        ];
+        $message = $fromUser->messages()->create([
+            'data' => array_only($request->all(), ['text']),
+        ]);
 
-        $message = Message::create($data);
+        $fromUser->conversations()->attach($message, [
+            'contact_id' => $toUser->id
+        ]);
+
+        $toUser->conversations()->attach($message, [
+            'contact_id' => $fromUser->id,
+        ]);
+
+        // broadcast the message to the other person
+        $toUser->notify(new NewMessage($toUser->id,$message));
 
         if($message){
             return $this->success(route('auth.message.show',['user_id'=>$toUser->id]),'消息发送成功');
@@ -95,28 +111,28 @@ class MessageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($user_id)
+    public function show($contact_id)
     {
-        $toUser = User::find($user_id);
-        if(!$toUser){
-            abort(404);
+
+        $toUser = User::find($contact_id);
+        //客服
+        $role = Role::customerService()->first();
+        $role_user = RoleUser::where('role_id',$role->id)->first();
+        if (!$role_user) {
+            throw new ApiException(ApiException::ERROR);
         }
+        $customer_id = $role_user->user_id;
+        $user = User::find($customer_id);
 
-        /*设置该对话全部未读为已读*/
-        Message::where('to_user_id','=',Auth()->user()->id)->where('is_read','=',0)->update(['is_read'=>1]);
+        $messages = $user->conversations()
+            ->orderBy('im_conversations.id', 'desc')
+            ->where('contact_id', $contact_id)->paginate(20);
 
-        $messages = Message::where(function($query) use ($toUser) {
-                                $query->where('to_user_id','=',Auth()->user()->id)
-                                      ->where('from_user_id','=',$toUser->id)
-                                      ->where('to_deleted','=',0);
-                    })->orWhere(function($query) use ($toUser) {
-                                $query->where('to_user_id','=',$toUser->id)
-                                      ->where('from_user_id','=',Auth()->user()->id)
-                                      ->where('from_deleted','=',0);
-                   })->orderBy('created_at','desc')->paginate(10);
+        $user->conversations()->where('contact_id', $contact_id)->get()->map(function ($m) use ($user) {
+            if ($user->id != $m->user_id) $m->update(['read_at' => Carbon::now()]);
+        });
 
-
-        return view('theme::message.show')->with('toUser',$toUser)->with('messages',$messages);
+        return view('theme::message.show')->with('toUser',$toUser)->with('fromUser',$user)->with('messages',$messages);
     }
 
     /**

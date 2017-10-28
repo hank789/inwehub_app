@@ -59,6 +59,7 @@ return [
 
     'readhub_url' => env('READHUB_URL', 'http://localhost'),
 
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
@@ -198,7 +199,6 @@ return [
         App\Third\Push\Getui\GetuiServiceProvider::class,
         App\Third\Weapp\WxxcxServiceProvider::class,
         App\Third\Wechat\ServiceProvider::class,
-        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
     ],
 
     /*

@@ -134,27 +134,43 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
         $source = $this->comment->source;
         switch ($this->comment->source_type) {
             case 'App\Models\Article':
-                return;
+                return null;
                 break;
             case 'App\Models\Answer':
-                $object_type = 'pay_answer_new_comment';
                 $question = Question::find($source->question_id);
                 switch ($question->question_type){
                     case 1:
-                        $object_type = 'pay_answer_new_comment';
+                        $first = '您好，有人回复了您的专业回答';
+                        $remark = '请点击查看详情！';
+                        $target_url = config('app.mobile_url').'#/askCommunity/major/'.$source->question_id;
                         break;
                     case 2:
-                        $object_type = 'free_answer_new_comment';
+                        $first = '您好，有人回复了您的互动回答';
+                        $remark = '请点击查看详情！';
+                        $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$source->id;
+                        break;
+                    default:
+                        return null;
                         break;
                 }
                 break;
             default:
-                return;
+                return null;
+        }
+        $keyword2 = date('Y-m-d H:i',strtotime($source->created_at));
+        $keyword3 = $this->comment->content;
+        $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
+        if (config('app.env') != 'production') {
+            $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
         }
         return [
-            'content' => $this->comment->user->name,
-            'object_type'  => $object_type,
-            'object_id' => $this->comment->id,
+            'first'    => $first,
+            'keyword1' => $this->comment->user->name,
+            'keyword2' => $keyword2,
+            'keyword3' => $keyword3,
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $target_url
         ];
     }
 

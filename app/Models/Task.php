@@ -8,7 +8,27 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Feedback
+ *
  * @mixin \Eloquent
+ * @property int $id
+ * @property string $action
+ * @property int $user_id
+ * @property int $source_id
+ * @property string $source_type
+ * @property int $status
+ * @property string|null $deleted_at
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereAction($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereSourceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereUserId($value)
  */
 class Task extends Model
 {

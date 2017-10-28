@@ -4,6 +4,8 @@ namespace App\Notifications\Readhub;
 
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
+use App\Models\Readhub\Comment;
+use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -90,12 +92,25 @@ class SubmissionReplied extends Notification implements ShouldBroadcast,ShouldQu
     }
 
     public function toWechatNotice($notifiable){
-
+        $first = '您好，您的文章收到一条评论';
+        $object = Comment::find($this->message['comment_id']);
+        $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
+        $keyword3 = $object->body;
+        $remark = '请点击查看详情！';
+        $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
+        if (config('app.env') != 'production') {
+            $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+        }
+        $user = User::find($notifiable->id);
+        $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$this->message['url'];
         return [
-            'content' => $this->message['name'],
-            'object_type'  => 'readhub_submission_replied',
-            'object_id' => $this->message['comment_id'],
-            'target_url' => $this->message['url']
+            'first'    => $first,
+            'keyword1' => $this->message['name'],
+            'keyword2' => $keyword2,
+            'keyword3' => $keyword3,
+            'remark'   => $remark,
+            'template_id' => $template_id,
+            'target_url' => $target_url,
         ];
     }
 

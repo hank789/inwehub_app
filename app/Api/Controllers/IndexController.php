@@ -110,8 +110,16 @@ class IndexController extends Controller {
                 $cache_experts[$key]['uuid'] = $expert_user->uuid;
                 $cache_experts[$key]['work_years'] = $expert_user->getWorkYears();
                 $cache_experts[$key]['avatar_url'] = $expert_user->avatar;
+                $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($expert_user))->where('source_id','=',$expert_user->id)->first();
+                $cache_experts[$key]['is_followed'] = $attention?1:0;
+
             }
             Cache::put('home_experts',$cache_experts,60*24);
+        } else {
+            foreach ($cache_experts as $key=>$cache_expert) {
+                $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$cache_experts[$key]['id'])->first();
+                $cache_experts[$key]['is_followed'] = $attention?1:0;
+            }
         }
 
         //推荐阅读

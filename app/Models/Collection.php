@@ -23,6 +23,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Collection whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Collection whereUserId($value)
  * @mixin \Eloquent
+ * @property int $status
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Collection whereStatus($value)
  */
 class Collection extends Model
 {

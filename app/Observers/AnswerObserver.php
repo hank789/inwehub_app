@@ -9,8 +9,13 @@ use App\Jobs\Question\PromiseOvertime;
 use App\Logic\QuestionLogic;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
+use App\Models\Attention;
+use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\User;
+use App\Notifications\FollowedQuestionAnswered;
+use App\Notifications\FollowedUserAnswered;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -24,7 +29,7 @@ class AnswerObserver implements ShouldQueue {
     public $tries = 2;
 
 
-    public function created(Answer $answer)
+    public function created(Answer $answer, $update = false)
     {
         switch($answer->status){
             case 3:
@@ -75,8 +80,43 @@ class AnswerObserver implements ShouldQueue {
                     ];
                 }
 
+                if ($answer->status == Answer::ANSWER_STATUS_FINISH) {
+                    if (($update && $answer->question->question_type == 2) || ($update == false && $answer->question->question_type == 1 )) {
+                        //互动问答修改和专业问答承诺回答时不通知
+                    } else {
+                        //关注问题的用户接收通知
+                        $attention_questions = Attention::where('source_type','=',get_class($answer->question))->where('source_id','=',$answer->question->id)->get();
+                        //关注回答者的用户接收通知
+                        $attention_users = Attention::where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user->id)->pluck('user_id')->toArray();
+
+                        foreach ($attention_questions as $attention_question) {
+                            //去除重复通知
+                            unset($attention_users[$attention_question->user_id]);
+                            if ($attention_question->user_id == $answer->question->user_id || $attention_question->user_id == $answer->user_id) continue;
+                            $attention_question->user->notify(new FollowedQuestionAnswered($attention_question->user_id,$answer->question,$answer));
+                        }
+                        foreach ($attention_users as $attention_uid) {
+                            $attention_user = User::find($attention_uid);
+                            $attention_user->notify(new FollowedUserAnswered($attention_uid,$answer->question,$answer));
+                        }
+                        //产生一条feed流
+                        if ($answer->question->question_type == 1) {
+                            $feed_question_title = '专业问答';
+                            $feed_type = Feed::FEED_TYPE_ANSWER_PAY_QUESTION;
+                        } else {
+                            $feed_question_title = '互动问答';
+                            $feed_type = Feed::FEED_TYPE_ANSWER_FREE_QUESTION;
+                        }
+                        feed()
+                            ->causedBy($answer->user)
+                            ->performedOn($answer)
+                            ->withProperties(['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'question_title'=>$answer->question->title,'answer_content'=>$answer->getContentText()])
+                            ->log($answer->user->name.'回答了'.$feed_question_title, $feed_type);
+                    }
+                }
+
                 $this->slackMsg($answer->question,$fields)
-                    ->send('用户['.$answer->user->name.']回答了该问题');
+                    ->send('用户'.$answer->user->id.'['.$answer->user->name.']回答了该问题');
                     break;
             case 2:
                 //拒绝回答
@@ -91,13 +131,13 @@ class AnswerObserver implements ShouldQueue {
                     'short' => true
                 ];
                 $this->slackMsg($answer->question,$fields,'warning')
-                    ->send('用户['.$answer->user->name.']拒绝回答该问题');
+                    ->send('用户'.$answer->user->id.'['.$answer->user->name.']拒绝回答该问题');
                 break;
         }
     }
 
     public function updated(Answer $answer){
-        $this->created($answer);
+        $this->created($answer, true);
     }
 
 

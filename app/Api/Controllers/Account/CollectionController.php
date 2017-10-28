@@ -6,6 +6,7 @@ use App\Models\Collection;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Config;
 
 class CollectionController extends Controller
 {
@@ -82,7 +83,7 @@ class CollectionController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $attentions = $query->orderBy('collections.created_at','desc')->paginate(10);
+        $attentions = $query->orderBy('collections.created_at','desc')->paginate(Config::get('api_data_page_size'));
 
         $data = [];
         foreach($attentions as $attention){

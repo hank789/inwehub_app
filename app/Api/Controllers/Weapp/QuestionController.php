@@ -4,6 +4,7 @@ use App\Exceptions\ApiException;
 use App\Models\Comment;
 use App\Models\WeappQuestion\WeappQuestion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @author: wanghui
@@ -80,7 +81,7 @@ class QuestionController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $questions = $query->orderBy('id','DESC')->paginate(10);
+        $questions = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
 
         $list = [];
         foreach($questions as $question){
@@ -163,7 +164,7 @@ class QuestionController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $comments = $query->orderBy('id','DESC')->paginate(10);
+        $comments = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
 
         $list = [];
         foreach($comments as $comment){

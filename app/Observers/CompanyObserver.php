@@ -59,7 +59,7 @@ class CompanyObserver implements ShouldQueue {
                     'color'     => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户['.$company->user->name.']提交了企业认证');
+            )->send('用户'.$company->user->id.'['.$company->user->name.']提交了企业认证');
     }
 
     public function updated(Company $company){

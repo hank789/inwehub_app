@@ -25,6 +25,11 @@ use App\Models\Relations\BelongsToUserTrait;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Credit whereSourceSubject($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Credit whereUserId($value)
  * @mixin \Eloquent
+ * @property int $current_credits
+ * @property int $current_coins
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Credit whereCurrentCoins($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Credit whereCurrentCredits($value)
  */
 class Credit extends Model
 {

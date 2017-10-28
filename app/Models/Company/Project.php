@@ -10,7 +10,36 @@ use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 
 /**
  * App\Models\Feedback
+ *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $user_id
+ * @property string $project_name 项目名称
+ * @property int $project_type 项目类型
+ * @property int $project_stage 项目阶段
+ * @property string $project_description 项目简介
+ * @property int $status 状态:0,待发布,1已发布,2被拒绝
+ * @property \Carbon\Carbon|null $deleted_at
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\Company\ProjectDetail $detailInfo
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\MediaLibrary\Media[] $media
+ * @property-read \App\Models\User $user
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\Project onlyTrashed()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereProjectDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereProjectName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereProjectStage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereProjectType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Project whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\Project withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\Project withoutTrashed()
  */
 class Project extends Model implements HasMedia
 {

@@ -7,6 +7,7 @@ use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @author: wanghui
@@ -49,10 +50,10 @@ class ActivityController extends Controller {
                 ->where('collections.source_type','App\Models\Article')
                 ->select('articles.*','collections.status as c_status')
                 ->orderBy('articles.id','DESC')
-                ->paginate(10);
+                ->paginate(Config::get('api_data_page_size'));
             $return = $articles->toArray();
         } else {
-            $articles = Article::where('category_id',$category->id)->where('status','>',0)->orderBy('articles.id','DESC')->paginate(10);
+            $articles = Article::where('category_id',$category->id)->where('status','>',0)->orderBy('articles.id','DESC')->paginate(Config::get('api_data_page_size'));
             $return = $articles->toArray();
         }
 
@@ -218,7 +219,7 @@ class ActivityController extends Controller {
         $user_id = $request->user()->id;
         $comments = $source->comments()->where(function ($query) use ($user_id) {
             $query->where('user_id',$user_id)->orWhere('to_user_id',$user_id);
-        })->orderBy('created_at','desc')->simplePaginate(10);
+        })->orderBy('created_at','desc')->simplePaginate(Config::get('api_data_page_size'));
         $return = $comments->toArray();
         $return['data'] = [];
 

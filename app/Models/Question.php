@@ -54,6 +54,14 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Question whereViews($value)
  * @mixin \Eloquent
+ * @property int $question_type
+ * @property int $is_recommend
+ * @property int $is_hot
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Doing[] $doings
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Pay\Order[] $orders
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereIsHot($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereIsRecommend($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereQuestionType($value)
  */
 class Question extends Model
 {

@@ -9,7 +9,40 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Feedback
+ *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $user_id
+ * @property int $coupon_type 红包类型:1首次提问
+ * @property string $coupon_value 红包金额
+ * @property int $coupon_status 红包状态:1未使用 2已使用 3已过期 默认为1
+ * @property string|null $expire_at 过期时间
+ * @property int|null $days 有效期
+ * @property string $used_at 使用日期
+ * @property int|null $used_object_id 使用对象id
+ * @property string|null $used_object_type 使用对象类型
+ * @property string|null $deleted_at
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Activity\Coupon onlyTrashed()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereCouponStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereCouponType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereCouponValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereExpireAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereUsedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereUsedObjectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereUsedObjectType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Activity\Coupon whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Activity\Coupon withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Activity\Coupon withoutTrashed()
  */
 class Coupon extends Model
 {

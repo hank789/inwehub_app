@@ -35,6 +35,17 @@ use Illuminate\Notifications\DatabaseNotification;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Notification whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Notification whereUserId($value)
  * @mixin \Eloquent
+ * @property int $notification_type 通知分类
+ * @property int $notifiable_id
+ * @property string $notifiable_type
+ * @property array $data
+ * @property \Carbon\Carbon $read_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $notifiable
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereNotifiableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereNotifiableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereNotificationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Notification whereReadAt($value)
  */
 class Notification extends DatabaseNotification
 {
@@ -43,4 +54,5 @@ class Notification extends DatabaseNotification
     const NOTIFICATION_TYPE_TASK = 3;//任务类型的通知
     const NOTIFICATION_TYPE_READ = 4;//发现类型的通知
     const NOTIFICATION_TYPE_INTEGRAL = 5;//积分类型的通知
+    const NOTIFICATION_TYPE_IM = 6;//聊天信息
 }

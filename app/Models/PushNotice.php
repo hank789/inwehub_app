@@ -20,6 +20,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Notice whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Notice whereUrl($value)
  * @mixin \Eloquent
+ * @property int $notification_type 通知分类
+ * @property string|null $setting
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PushNotice whereNotificationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PushNotice whereSetting($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PushNotice whereTitle($value)
  */
 class PushNotice extends Model
 {

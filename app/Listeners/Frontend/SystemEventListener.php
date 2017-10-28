@@ -2,6 +2,7 @@
 
 namespace App\Listeners\Frontend;
 use App\Events\Frontend\System\FuncZan;
+use App\Events\Frontend\System\SystemNotify;
 use App\Models\Credit as CreditModel;
 use App\Events\Frontend\System\Credit;
 use App\Events\Frontend\System\Feedback;
@@ -36,7 +37,7 @@ class SystemEventListener implements ShouldQueue
      */
     public function feedback($event)
     {
-        \Slack::to(config('slack.ask_activity_channel'))->send('用户['.$event->user->name.']['.$event->user->mobile.']对平台的意见反馈:'.$event->content);
+        \Slack::to(config('slack.ask_activity_channel'))->send('用户['.$event->user->name.']['.$event->user->mobile.']['.$event->title.']:'.$event->content);
     }
 
     /**
@@ -53,16 +54,32 @@ class SystemEventListener implements ShouldQueue
     }
 
     /**
+     * @param systemNotify $event
+     */
+    public function systemNotify($event){
+
+        \Slack::to(config('slack.ask_activity_channel'))
+            ->attach(
+                [
+                    'fields' => $event->fields
+                ]
+            )
+            ->send($event->message);
+    }
+
+    /**
      * 推送事件
      * @param Push $event
      */
     public function push($event){
         $devices = UserDevice::where('user_id',$event->user_id)->where('status',1)->get();
 
+        //最长2048个字符
+        $body = str_limit($event->body);
         $data = [
             'title' => $event->title,
-            'body'  => $event->body,
-            'text'  => $event->body,
+            'body'  => $body,
+            'text'  => $body,
             'content' => json_encode($event->content),
             'payload' => $event->payload
         ];
@@ -157,6 +174,11 @@ class SystemEventListener implements ShouldQueue
         $events->listen(
             FuncZan::class,
             'App\Listeners\Frontend\SystemEventListener@funcZan'
+        );
+
+        $events->listen(
+            SystemNotify::class,
+            'App\Listeners\Frontend\SystemEventListener@systemNotify'
         );
     }
 }

@@ -38,7 +38,7 @@ class AnswerEventListener implements ShouldQueue
             'short' => true
         ];
 
-        QuestionLogic::slackMsg($answer->question,$fields)->send('用户['.$feedback->user->name.']评价了回答');
+        QuestionLogic::slackMsg($answer->question,$fields)->send('用户'.$feedback->user->id.'['.$feedback->user->name.']评价了回答');
     }
 
     /**
@@ -47,7 +47,7 @@ class AnswerEventListener implements ShouldQueue
     public function payForView($event) {
         $order = $event->order;
         $answer = $order->answer()->first();
-        QuestionLogic::slackMsg($answer->question,[])->send('用户['.$order->user->name.']付费围观了回答');
+        QuestionLogic::slackMsg($answer->question,[])->send('用户'.$order->user->id.'['.$order->user->name.']付费围观了回答');
     }
 
     /**

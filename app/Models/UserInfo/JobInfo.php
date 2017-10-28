@@ -9,7 +9,35 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Feedback
+ *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $user_id
+ * @property string|null $company 公司
+ * @property string|null $title 职位
+ * @property string|null $begin_time 开始时间,格式:Y-m
+ * @property string $end_time 结束时间,格式:Y-m
+ * @property string|null $description 经历描述
+ * @property \Carbon\Carbon|null $deleted_at
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read \App\Models\User $user
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserInfo\JobInfo onlyTrashed()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereBeginTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereCompany($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereEndTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserInfo\JobInfo whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserInfo\JobInfo withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\UserInfo\JobInfo withoutTrashed()
  */
 class JobInfo extends Model
 {

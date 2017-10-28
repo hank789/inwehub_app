@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Feeds
+ *
  * @package App\Models\Inwehub
  * @mixin \Eloquent
  */
