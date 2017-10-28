@@ -23,7 +23,7 @@ class SystemController extends Controller {
             'content' => 'required'
         ];
         $this->validate($request, $validateRules);
-        event(new Feedback($request->user(),$request->input('content')));
+        event(new Feedback($request->user(),$request->input('title'),$request->input('content')));
         return self::createJsonData(true);
     }
 
