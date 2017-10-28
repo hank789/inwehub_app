@@ -19,6 +19,7 @@ class SystemController extends Controller {
     public function feedback(Request $request)
     {
         $validateRules = [
+            'title'   => 'required',
             'content' => 'required'
         ];
         $this->validate($request, $validateRules);
