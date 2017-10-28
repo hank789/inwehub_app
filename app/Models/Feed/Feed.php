@@ -131,6 +131,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
+                    'submission_id' => $this->source_id,
                     'comment_url' => '/c/'.$this->data['category_id'].'/'.$this->data['slug'],
                     'view_url'    => $this->data['view_url']
                 ];
@@ -196,6 +197,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
+                    'submission_id' => $this->source_id,
                     'comment_url' => '/c/'.$this->data['category_id'].'/'.$this->data['slug'],
                     'view_url'    => $this->data['view_url']
                 ];
