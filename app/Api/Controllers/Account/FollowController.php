@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\Tag;
 use App\Models\User;
 use App\Notifications\NewUserFollowing;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 use App\Http\Requests;
@@ -89,24 +90,36 @@ class FollowController extends Controller
                     event(new SystemNotify($loginUser->name.'关注了问题',$fields));
                     //产生一条feed流
                     if ($source->question_type == 2) {
-                        feed()
-                            ->causedBy($loginUser)
-                            ->performedOn($source)
-                            ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
-                            ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
+                        $feed_event = 'question_followed';
+                        $feed_target = $source->id.'_'.$loginUser->id;
+                        $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
+                        if (!$is_feeded) {
+                            feed()
+                                ->causedBy($loginUser)
+                                ->performedOn($source)
+                                ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
+                                ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
+                            RateLimiter::instance()->increase($feed_event,$feed_target,3600);
+                        }
                     }
                     break;
                 case 'user':
                     $source->userData->increment('followers');
                     $source->notify(new NewUserFollowing($source->id,$attention));
                     //产生一条feed流
-                    feed()
-                        ->causedBy($loginUser)
-                        ->performedOn($source)
-                        ->withProperties([
-                            'follow_user_id' => $source->id
-                        ])
-                        ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
+                    $feed_event = 'user_followed';
+                    $feed_target = $source->id.'_'.$loginUser->id;
+                    $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
+                    if (!$is_feeded) {
+                        feed()
+                            ->causedBy($loginUser)
+                            ->performedOn($source)
+                            ->withProperties([
+                                'follow_user_id' => $source->id
+                            ])
+                            ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
+                        RateLimiter::instance()->increase($feed_event,$feed_target,3600);
+                    }
                     break;
                 case 'tag':
                     $source->increment('followers');

@@ -8,6 +8,7 @@ use App\Models\Feed\Feed;
 use App\Models\Readhub\Comment;
 use App\Models\Readhub\Submission;
 use App\Models\User;
+use App\Services\RateLimiter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -96,11 +97,17 @@ class NotifyInwehub implements ShouldQueue
                 //产生一条feed流
                 $submission = Submission::find($this->message['submission_id']);
                 $submission_user = User::find($submission->user_id);
-                feed()
-                    ->causedBy($user)
-                    ->performedOn($submission)
-                    ->withProperties(['view_url'=>$submission->data['url'],'submission_username' => $submission_user->name,'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
-                    ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
+                $feed_event = 'NewSubmissionUpVote';
+                $feed_target = $submission->id.'_'.$user->id;
+                $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
+                if (!$is_feeded) {
+                    feed()
+                        ->causedBy($user)
+                        ->performedOn($submission)
+                        ->withProperties(['view_url'=>$submission->data['url'],'submission_username' => $submission_user->name,'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
+                        ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
+                    RateLimiter::instance()->increase($feed_event,$feed_target,3600);
+                }
                 return;
                 break;
         }
