@@ -94,7 +94,7 @@ class Feed extends Model
         switch ($this->feed_type) {
             case self::FEED_TYPE_ANSWER_PAY_QUESTION:
                 //回答专业问题
-                $url = '/ask/'.$this->data['question_id'];
+                $url = '/askCommunity/major/'.$this->data['question_id'];
                 $data = [
                     'title' => $this->data['question_title']
                 ];
