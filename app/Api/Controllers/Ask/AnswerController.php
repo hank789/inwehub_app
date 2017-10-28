@@ -386,7 +386,7 @@ class AnswerController extends Controller
         }
         $answer->content = $answerContent;
         $answer->save();
-        return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id]);
+        return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id], ApiException::SUCCESS,'修改成功');
     }
 
     //我的回答列表
