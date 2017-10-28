@@ -130,7 +130,9 @@ class Feed extends Model
                 $data = [
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
-                    'domain'    => $this->data['domain']
+                    'domain'    => $this->data['domain'],
+                    'comment_url' => '/c/'.$this->data['category_id'].'/'.$this->data['slug'],
+                    'view_url'    => $this->data['view_url']
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
@@ -193,7 +195,9 @@ class Feed extends Model
                     'submission_username' => $this->data['submission_username'],
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
-                    'domain'    => $this->data['domain']
+                    'domain'    => $this->data['domain'],
+                    'comment_url' => '/c/'.$this->data['category_id'].'/'.$this->data['slug'],
+                    'view_url'    => $this->data['view_url']
                 ];
                 break;
         }

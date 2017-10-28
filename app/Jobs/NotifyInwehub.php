@@ -86,7 +86,7 @@ class NotifyInwehub implements ShouldQueue
                 feed()
                     ->causedBy($user)
                     ->performedOn($submission)
-                    ->withProperties(['category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
+                    ->withProperties(['view_url'=>$submission->data['url'],'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
                     ->log($user->name.'发布了文章', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
                 return;
                 break;
@@ -97,7 +97,7 @@ class NotifyInwehub implements ShouldQueue
                 feed()
                     ->causedBy($user)
                     ->performedOn($submission)
-                    ->withProperties(['submission_username' => $user->name,'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
+                    ->withProperties(['view_url'=>$submission->data['url'],'submission_username' => $user->name,'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
                     ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
                 return;
                 break;
