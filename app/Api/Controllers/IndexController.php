@@ -115,6 +115,11 @@ class IndexController extends Controller {
 
             }
             Cache::put('home_experts',$cache_experts,60*24);
+        } else {
+            foreach ($cache_experts as $key=>$cache_expert) {
+                $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$cache_experts[$key]['id'])->first();
+                $cache_experts[$key]['is_followed'] = $attention?1:0;
+            }
         }
 
         //推荐阅读

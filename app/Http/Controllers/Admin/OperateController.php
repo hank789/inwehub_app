@@ -4,6 +4,7 @@
  * @date: 2017/5/15 上午10:56
  * @email: wanghui@yonglibao.com
  */
+use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\User;
 use App\Models\UserData;
@@ -52,11 +53,13 @@ class OperateController extends AdminController {
         $expert_uids = array_slice($experts,0,7);
         foreach ($expert_uids as $key=>$expert_uid) {
             $expert_user = User::find($expert_uid);
+            $cache_experts[$key]['id'] = $expert_uid;
             $cache_experts[$key]['name'] = $expert_user->name;
             $cache_experts[$key]['title'] = $expert_user->title;
             $cache_experts[$key]['uuid'] = $expert_user->uuid;
             $cache_experts[$key]['work_years'] = $expert_user->getWorkYears();
             $cache_experts[$key]['avatar_url'] = $expert_user->avatar;
+            $cache_experts[$key]['is_followed'] = 0;
         }
         Cache::put('home_experts',$cache_experts,60*24);
         return $this->success(route('admin.operate.recommendRead.index'),'首页专家更新成功');
