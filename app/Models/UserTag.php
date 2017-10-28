@@ -65,10 +65,7 @@ class UserTag extends Model
             return false;
         }
         foreach( $tags as $tag ){
-            $userTag = self::first([
-                'user_id'=> $user_id,
-                'tag_id' => $tag->id
-            ]);
+            $userTag = self::where('user_id',$user_id)->where('tag_id',$tag->id)->first();
 
             if($userTag){
                 $userTag->update([$field=>0]);
