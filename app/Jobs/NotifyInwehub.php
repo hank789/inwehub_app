@@ -73,8 +73,8 @@ class NotifyInwehub implements ShouldQueue
                         'category_id'=>$submission->category_id,
                         'slug'=>$submission->slug,
                         'submission_title'=>$submission->title,
-                        'domain'=>$submission->data['domain'],
-                        'img'=>$submission->data['img'],
+                        'domain'=>$submission->data['domain']??'',
+                        'img'=>$submission->data['img']??'',
                         'submission_username' => $submission_user->name,
                         'comment_content' => $comment->body
                     ])
@@ -88,7 +88,13 @@ class NotifyInwehub implements ShouldQueue
                 feed()
                     ->causedBy($user)
                     ->performedOn($submission)
-                    ->withProperties(['view_url'=>$submission->data['url'],'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
+                    ->withProperties([
+                        'view_url'=>$submission->data['url']??'',
+                        'category_id'=>$submission->category_id,
+                        'slug'=>$submission->slug,
+                        'submission_title'=>$submission->title,
+                        'domain'=>$submission->data['domain']??'',
+                        'img'=>$submission->data['img']??''])
                     ->log($user->name.'发布了文章', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
                 return;
                 break;
@@ -104,7 +110,14 @@ class NotifyInwehub implements ShouldQueue
                     feed()
                         ->causedBy($user)
                         ->performedOn($submission)
-                        ->withProperties(['view_url'=>$submission->data['url'],'submission_username' => $submission_user->name,'category_id'=>$submission->category_id,'slug'=>$submission->slug,'submission_title'=>$submission->title,'domain'=>$submission->data['domain'],'img'=>$submission->data['img']])
+                        ->withProperties([
+                            'view_url'=>$submission->data['url']??'',
+                            'submission_username' => $submission_user->name,
+                            'category_id'=>$submission->category_id,
+                            'slug'=>$submission->slug,
+                            'submission_title'=>$submission->title,
+                            'domain'=>$submission->data['domain']??'',
+                            'img'=>$submission->data['img']??''])
                         ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
                     RateLimiter::instance()->increase($feed_event,$feed_target,3600);
                 }
