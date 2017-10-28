@@ -68,7 +68,8 @@ class UserTag extends Model
             $userTag = self::where('user_id',$user_id)->where('tag_id',$tag->id)->first();
 
             if($userTag){
-                $userTag->update([$field=>0]);
+                $userTag->$field = 0;
+                $userTag->save();
             }
         }
     }
