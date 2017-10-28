@@ -74,10 +74,12 @@ class SystemEventListener implements ShouldQueue
     public function push($event){
         $devices = UserDevice::where('user_id',$event->user_id)->where('status',1)->get();
 
+        //最长2048个字符
+        $body = str_limit($event->body);
         $data = [
             'title' => $event->title,
-            'body'  => $event->body,
-            'text'  => $event->body,
+            'body'  => $body,
+            'text'  => $body,
             'content' => json_encode($event->content),
             'payload' => $event->payload
         ];
