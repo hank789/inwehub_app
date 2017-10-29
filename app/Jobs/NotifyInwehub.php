@@ -120,6 +120,22 @@ class NotifyInwehub implements ShouldQueue
                             'img'=>$submission->data['img']??''])
                         ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
                     RateLimiter::instance()->increase($feed_event,$feed_target,3600);
+                    $fields = [];
+                    $fields[] = [
+                        'title' => '文章标题',
+                        'value' => $submission->title
+                    ];
+                    $fields[] = [
+                        'title' => '文章地址',
+                        'value' => config('app.readhub_url').'/c/'.$submission->category_id.'/'.$submission->slug
+                    ];
+                    \Slack::to(config('slack.ask_activity_channel'))
+                        ->attach(
+                            [
+                                'fields' => $fields
+                            ]
+                        )
+                        ->send('用户'.$user->id.'['.$user->name.']赞了文章');
                 }
                 return;
                 break;
