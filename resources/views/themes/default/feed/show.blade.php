@@ -21,8 +21,8 @@
                                 </div>
                                 <div class="meta mt-10">
                                     <span class="text-muted">{{ timestamp_format($message->created_at) }} </span>
-                                <span class="pull-right">
-                                    <a href="javascript:void(0)" class="text-muted" onclick="delete_message({{ $message->id }})">删除</a>
+                                <span class="text-muted">
+                                    <a href="javascript:void(0)" onclick="delete_message({{ $message->id }})">删除</a>
                                 </span>
                                 </div>
                             </div>
