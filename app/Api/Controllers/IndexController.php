@@ -105,6 +105,7 @@ class IndexController extends Controller {
             $expert_uids = array_slice($experts,0,7);
             foreach ($expert_uids as $key=>$expert_uid) {
                 $expert_user = User::find($expert_uid);
+                $cache_experts[$key]['id'] = $expert_uid;
                 $cache_experts[$key]['name'] = $expert_user->name;
                 $cache_experts[$key]['title'] = $expert_user->title;
                 $cache_experts[$key]['uuid'] = $expert_user->uuid;
