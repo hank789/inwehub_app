@@ -76,6 +76,9 @@ class ProfileController extends Controller
         $info['is_company'] = $user->userData->is_company;
         $info['company_status'] = $user->userCompany->apply_status??0;
         $info['show_my_wallet'] = $user->moneyLogs()->count() ? true:false;
+        if ($user->id == 79) {
+            $info['show_my_wallet'] = false;
+        }
         $info['show_ios_resume'] = true;
         if(config('app.env') == 'production'){
             //ios正在审核,暂时不显示个人名片
