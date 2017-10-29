@@ -36,7 +36,7 @@ class ImageController extends Controller
             $img_name = $request->input('img_name');
             $urls = parse_url($img_name);
             if (isset($urls['scheme'])) {
-                $file_name = 'attachments/'.date('Y').'/'.date('m').'/'.md5($img_name).'.jpeg';
+                $file_name = 'attachments/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
                 Storage::disk('oss')->put($file_name,file_get_contents($img_name));
                 return self::createJsonData(true,['url'=>Storage::url($file_name)]);
             }
