@@ -15,7 +15,7 @@ class ImageController extends Controller
     public function upload(Request $request)
     {
         $validateRules = [
-            'img_name' => 'required|image|max:'.config('inwehub.upload.image.max_size'),
+            'img_name' => 'required|max:'.config('inwehub.upload.image.max_size'),
         ];
         $this->validate($request,$validateRules);
         $user_id = $request->user()->id;
@@ -31,6 +31,14 @@ class ImageController extends Controller
                 return self::createJsonData(true,['url'=>$head_img_url_0]);
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'格式错误');
+            }
+        } else {
+            $img_name = $request->input('img_name');
+            $urls = parse_url($img_name);
+            if (isset($urls['scheme'])) {
+                $file_name = 'attachments/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+                Storage::disk('oss')->put($file_name,file_get_contents($img_name));
+                return self::createJsonData(true,['url'=>Storage::url($file_name)]);
             }
         }
         return self::createJsonData(false,[],ApiException::BAD_REQUEST,'格式错误');
