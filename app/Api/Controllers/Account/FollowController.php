@@ -158,7 +158,7 @@ class FollowController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $attentions = $query->orderBy('attentions.created_at','desc')->paginate(Config::get('api_data_page_size'));
+        $attentions = $query->orderBy('attentions.created_at','desc')->paginate(30);
 
         $data = [];
         foreach($attentions as $attention){
