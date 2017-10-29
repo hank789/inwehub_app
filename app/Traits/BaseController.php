@@ -50,7 +50,7 @@ trait BaseController {
         }
         $user = User::find($uid);
         $sendNotice = false;
-        if ($percent >= 30 && $percent <= 60) {
+        if ($percent >= 30 && $percent <= 80) {
             $sendNotice = true;
         }
 
@@ -62,7 +62,7 @@ trait BaseController {
             TaskLogic::finishTask('newbie_complete_userinfo',0,'newbie_complete_userinfo',[$uid]);
         }
         if ($sendNotice) {
-            if(!RateLimiter::instance()->increase('send:system:notice',$uid,30,1)){
+            if(!RateLimiter::instance()->increase('send:system:notice',$uid,50,1)){
                 event(new SystemNotify('用户['.$user->name.']简历完成了'.$percent));
             }
         }
