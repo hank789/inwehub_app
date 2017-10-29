@@ -45,7 +45,7 @@
             return false;
         }
 
-        $.get('/feed/destroy/'+message_id,function(msg){
+        $.get('/manager/feed/destroy/'+message_id,function(msg){
             if(msg === 'ok'){
                 $("#message_"+message_id).remove();
             }else{
