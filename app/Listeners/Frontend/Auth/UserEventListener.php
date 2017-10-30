@@ -2,8 +2,8 @@
 
 namespace App\Listeners\Frontend\Auth;
 use App\Logic\TaskLogic;
-use App\Models\Readhub\ReadHubUser;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Redis;
 
 /**
  * Class UserEventListener.
@@ -50,6 +50,7 @@ class UserEventListener implements ShouldQueue
         $title = '';
         if ($event->user->company) {
             $title .= ';公司：'.$event->user->company;
+            Redis::connection()->hset('user_company_level',$event->user->id,$event->user->company);
         }
         if ($event->user->title) {
             $title .= ';职位：'.$event->user->title;
