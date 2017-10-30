@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Config;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 /**
  * App\Models\User
@@ -129,7 +130,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name','uuid','mobile' ,'avatar','email','title','company', 'password','status','site_notifications','last_login_token','source'];
+    protected $fillable = ['name','uuid','rc_code','rc_uid','mobile' ,'avatar','email','title','company', 'password','status','site_notifications','last_login_token','source'];
 
     protected $casts = [
         'site_notifications' => 'json',
@@ -678,6 +679,14 @@ class User extends Model implements AuthenticatableContract,
                 break;
         }
         return $level;
+    }
+
+    public static function genRcCode(){
+        $code = strtolower(Str::random(6));
+        while(self::where('rc_code',$code)->first()){
+            $code = strtolower(Str::random(6));
+        }
+        return $code;
     }
 
 }

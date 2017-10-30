@@ -30,7 +30,8 @@ class Kernel extends ConsoleKernel
         Commands\User\NewbieTask::class,
         Commands\FixData\FollowerNotification::class,
         Commands\FixData\FixCollect::class,
-        Commands\FixData\MoneyLogNotification::class
+        Commands\FixData\MoneyLogNotification::class,
+        Commands\User\GenRcCode::class
 
 
     ];

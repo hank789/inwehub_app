@@ -50,6 +50,7 @@ class ProfileController extends Controller
         $info['name'] = $user->name;
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
+        $info['rc_code'] = $user->rc_code;
         $info['avatar_url'] = $user->avatar;
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;

@@ -37,6 +37,7 @@ class Registrar {
             'name' => $data['name'],
             'email' => strtolower($data['email']),
             'mobile' => $data['mobile'],
+            'rc_uid' => $data['rc_uid']??0,
             'title'  => $data['title']??'',
             'company' => $data['company']??'',
             'gender' => 0,
