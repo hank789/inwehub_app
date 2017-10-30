@@ -36,6 +36,16 @@ class OauthController extends Controller
 
         }
 
+        //微信公众号和微信app的openid不同，但是unionid相同
+        $unionid = isset($data['full_info']['unionid'])?$data['full_info']['unionid']:'';
+        $oauthGzhData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
+            ->where('unionid',$unionid)->first();
+        if ($oauthGzhData) {
+            $user_id = $oauthGzhData->user_id;
+            $user = User::find($user_id);
+            $token = $JWTAuth->fromUser($user);
+        }
+
         $object = UserOauth::where('auth_type',$type)->where('openid',$data['openid'])->first();
         //微信登陆
         if ($object && $object->user_id && !$user) {
@@ -56,6 +66,7 @@ class OauthController extends Controller
             'auth_type'=>$type,
             'user_id'=> $user_id,
             'openid'   => $data['openid'],
+            'unionid'  => $unionid,
             'nickname'=>$data['nickname'],
             'avatar'=>$data['avatar'],
             'access_token'=>$data['access_token'],

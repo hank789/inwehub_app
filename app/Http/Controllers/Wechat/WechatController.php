@@ -106,30 +106,57 @@ class WechatController extends Controller
         // 获取 OAuth 授权结果用户信息
         $user = $oauth->user();
         $userInfo = $user->toArray();
-
+        //微信公众号和微信app的openid不同，但是unionid相同
+        $unionid = isset($userInfo['original']['unionid'])?$userInfo['original']['unionid']:'';
+        $oauthDataUpdate = true;
         //判断用户是否已注册完成,如未完成,走注册流程
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
             ->where('openid',$userInfo['id'])->first();
+        if (!$oauthData && $unionid) {
+            $oauthAppData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)
+                ->where('unionid',$unionid)->first();
+            if ($oauthAppData) {
+                //如果已经用app微信登陆过了
+                $oauthData = UserOauth::create(
+                    [
+                        'auth_type'=>UserOauth::AUTH_TYPE_WEIXIN_GZH,
+                        'user_id'=> $oauthAppData->user_id,
+                        'openid'   => $userInfo['id'],
+                        'nickname'=>$userInfo['nickname'],
+                        'avatar'=>$userInfo['avatar'],
+                        'access_token'=>$userInfo['token'],
+                        'refresh_token'=>'',
+                        'expires_in'=>3600,
+                        'full_info'=>json_encode($userInfo['original']),
+                        'unionid' => $unionid,
+                        'scope'=>'snsapi_userinfo'
+                    ]
+                );
+                $oauthDataUpdate = false;
+            }
+        }
 
         $token = '';
         $userInfo['app_token'] = $token;
         $redirect = session('wechat_user_redirect');
         if ($oauthData) {
             $user = User::find($oauthData->user_id);
-            $oauthData->update(
-                [
-                    'openid'   => $userInfo['id'],
-                    'nickname'=>$userInfo['nickname'],
-                    'avatar'=>$userInfo['avatar'],
-                    'access_token'=>$userInfo['token'],
-                    'refresh_token'=>'',
-                    'unionid' => isset($userInfo['original']['unionid'])?$userInfo['original']['unionid']:'',
-                    'expires_in'=>3600,
-                    'status' => 1,
-                    'full_info'=>json_encode($userInfo['original']),
-                    'scope'=>'snsapi_userinfo'
-                ]
-            );
+            if ($oauthDataUpdate) {
+                $oauthData->update(
+                    [
+                        'openid'   => $userInfo['id'],
+                        'nickname'=>$userInfo['nickname'],
+                        'avatar'=>$userInfo['avatar'],
+                        'access_token'=>$userInfo['token'],
+                        'refresh_token'=>'',
+                        'unionid' => $unionid,
+                        'expires_in'=>3600,
+                        'status' => 1,
+                        'full_info'=>json_encode($userInfo['original']),
+                        'scope'=>'snsapi_userinfo'
+                    ]
+                );
+            }
             if ($user){
                 $token = $JWTAuth->fromUser($user);
                 $userInfo['app_token'] = $token;
@@ -147,7 +174,7 @@ class WechatController extends Controller
                     'refresh_token'=>'',
                     'expires_in'=>3600,
                     'full_info'=>json_encode($userInfo['original']),
-                    'unionid' => isset($userInfo['original']['unionid'])?$userInfo['original']['unionid']:'',
+                    'unionid' => $unionid,
                     'scope'=>'snsapi_userinfo'
                 ]
             );
