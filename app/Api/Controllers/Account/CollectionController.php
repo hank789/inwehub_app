@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Models\Answer;
 use App\Models\Collection;
 use App\Models\Question;
+use App\Models\Readhub\Bookmark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
@@ -64,6 +65,7 @@ class CollectionController extends Controller
         $sourceClassMap = [
             'questions' => 'App\Models\Question',
             'answers' => 'App\Models\Answer',
+            'readhubSubmission' => 'App\Models\Readhub\Bookmark'
         ];
 
         if(!isset($sourceClassMap[$source_type])){
@@ -73,8 +75,13 @@ class CollectionController extends Controller
         $model = App::make($sourceClassMap[$source_type]);
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
+        $user = $request->user();
 
-        $query = $request->user()->collections()->where('source_type','=',$sourceClassMap[$source_type]);
+        if ($source_type == 'readhubSubmission') {
+            $query = Bookmark::where('user_id',$user->id)->where('bookmarkable_type','App\Submission');
+        } else {
+            $query = $user->collections()->where('source_type','=',$sourceClassMap[$source_type]);
+        }
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
@@ -83,15 +90,15 @@ class CollectionController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $attentions = $query->orderBy('collections.created_at','desc')->paginate(Config::get('api_data_page_size'));
+        $attentions = $query->orderBy('id','desc')->paginate(Config::get('api_data_page_size'));
 
         $data = [];
         foreach($attentions as $attention){
-            $info = $model::find($attention->source_id);
             $item = [];
             $item['id'] = $attention->id;
             switch($source_type){
                 case 'answers':
+                    $info = $model::find($attention->source_id);
                     $item['answer_id'] = $info->id;
                     $item['question_id'] = $info->question_id;
                     $item['question_type'] = $info->question->question_type;
@@ -102,6 +109,22 @@ class CollectionController extends Controller
                     $item['description'] = $info->getContentText();
                     break;
                 case 'questions':
+                    break;
+                case 'readhubSubmission':
+                    $submission = $model::find($attention->bookmarkable_id);
+                    $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+
+                    $item = [
+                        'id' => $attention->id,
+                        'type' => $submission->type,
+                        'title' => $submission->title,
+                        'img'   => $submission->data['img']??'',
+                        'submission_url' => $submission->data['url']??$comment_url,
+                        'comment_url'    => $comment_url,
+                        'domain'         => $submission->data['domain']??'',
+                        'category_name'  => $submission->category_name,
+                        'created_at'     => (string) $submission->created_at
+                    ];
                     break;
             }
             $data[] = $item;
