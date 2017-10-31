@@ -7,6 +7,7 @@
 
 //app首页
 Route::post('home','IndexController@home')->middleware('jwt.auth');
+Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.auth');
 
 //登陆注册认证类
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
@@ -332,6 +333,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'feed'], function() {
     //首页feed列表
     Route::post('list','FeedController@index');
+});
+
+//readhub
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'readhub'], function() {
+    //我的文章列表
+    Route::post('mySubmission','ReadhubController@mySubmission');
 });
 
 //点赞

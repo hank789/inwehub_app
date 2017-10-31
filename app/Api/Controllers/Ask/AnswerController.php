@@ -435,7 +435,7 @@ class AnswerController extends Controller
                     break;
                 case 6:
                     //已回答待点评
-                    $status_description = '已回答';
+                    $status_description = '待点评';
                     break;
                 case 7:
                     //已点评

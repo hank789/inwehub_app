@@ -31,7 +31,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FollowerNotification::class,
         Commands\FixData\FixCollect::class,
         Commands\FixData\MoneyLogNotification::class,
-        Commands\User\GenRcCode::class
+        Commands\User\GenRcCode::class,
+        Commands\Readhub\SyncComment::class
 
 
     ];

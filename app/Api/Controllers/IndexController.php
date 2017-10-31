@@ -6,12 +6,14 @@ use App\Models\Authentication;
 use App\Models\Category;
 use App\Models\Notice;
 use App\Models\Question;
+use App\Models\Readhub\Comment as ReadhubComment;
 use App\Models\Readhub\Submission;
 use App\Models\RecommendQa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @author: wanghui
@@ -185,4 +187,52 @@ class IndexController extends Controller {
 
         return self::createJsonData(true,$data);
     }
+
+
+    public function myCommentList(Request $request){
+        $user = $request->user();
+        $comments = $user->comments()->orderBy('id','desc')->simplePaginate(Config::get('api_data_page_size'));
+        $return = [];
+
+        $origin_title = '';
+        $comment_url = '';
+        $type = 1;
+        foreach ($comments as $comment) {
+            switch ($comment->sourc_type) {
+                case 'App\Models\Article':
+                    $source = $comment->source;
+                    $origin_title = '活动:'.$source->title;
+                    $comment_url = '/EnrollmentStatus/'.$source->id;
+                    break;
+                case 'App\Models\Answer':
+                    $source = $comment->source;
+                    $question = $source->question;
+                    if ($question->question_type == 1) {
+                        $origin_title = '专业问答:'.$question->title;
+                        $comment_url = '/askCommunity/major/'.$source->question_id;
+                    } else {
+                        $origin_title = '互动问答:'.$question->title;
+                        $comment_url = '/askCommunity/interaction/'.$source->id;
+                    }
+                    break;
+                case 'App\Models\Readhub\Comment':
+                    $type = 2;
+                    $readhub_comment = ReadhubComment::find($comment->source_id);
+                    $submission = Submission::find($readhub_comment->submission_id);
+                    $origin_title = '文章:'.$submission->title;
+                    $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+                    break;
+            }
+            $return[] = [
+                'id' => $comment->id,
+                'type'    => $type,
+                'content' => $comment->content,
+                'origin_title' => $origin_title,
+                'comment_url'  => $comment_url,
+                'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
+            ];
+        }
+        return self::createJsonData(true,  $return);
+    }
+
 }
