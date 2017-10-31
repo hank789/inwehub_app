@@ -54,8 +54,7 @@ class ConfirmOvertimeAlertSystem implements ShouldQueue
                 'title' => 'tags',
                 'value' => implode(',',$question->tags()->pluck('name')->toArray())
             ];
-            QuestionLogic::slackMsg($question,null,'warning')
-                ->send('问题超过'.$this->overtime.'分钟没有专家响应');
+            QuestionLogic::slackMsg('问题超过'.$this->overtime.'分钟没有专家响应',$question,null,'warning');
         }
     }
 }

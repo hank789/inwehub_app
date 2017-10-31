@@ -36,8 +36,7 @@ class QuestionInvitationObserver implements ShouldQueue {
             $from_user = User::find($invitation->from_user_id);
             $inviter = $from_user->id.'['.$from_user->name.']';
         }
-        QuestionLogic::slackMsg($invitation->question)
-            ->send('用户'.$inviter.'邀请用户'.$invitation->user->id.'['.$invitation->user->name.']回答问题');
+        QuestionLogic::slackMsg('用户'.$inviter.'邀请用户'.$invitation->user->id.'['.$invitation->user->name.']回答问题',$invitation->question);
         //延时处理是否需要告警专家
         dispatch((new ConfirmOvertime($invitation->question_id,$invitation->id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',10))));
     }

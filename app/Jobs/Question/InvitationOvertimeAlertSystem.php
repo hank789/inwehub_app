@@ -54,8 +54,7 @@ class InvitationOvertimeAlertSystem implements ShouldQueue
                 'title' => 'tags',
                 'value' => implode(',',$question->tags()->pluck('name')->toArray())
             ];
-            QuestionLogic::slackMsg($question,null,'danger')
-                ->send('问题超过'.$this->overtime.'分钟没有分配专家');
+            QuestionLogic::slackMsg('问题超过'.$this->overtime.'分钟没有分配专家',$question,null,'danger');
         }
     }
 }

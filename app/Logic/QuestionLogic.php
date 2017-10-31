@@ -10,32 +10,38 @@ use App\Models\Question;
 
 class QuestionLogic {
 
-    public static function slackMsg(Question $question, array $other_fields = null, $color = 'good'){
-        $fields[] = [
-            'title' => '标签',
-            'value' => implode(',',$question->tags()->pluck('name')->toArray())
-        ];
-        $fields[] = [
-            'title' => '类型',
-            'value' => $question->question_type == 1 ? '专业问答':'互动问答'
-        ];
-        if($other_fields){
-            $fields = array_merge($fields,$other_fields);
+    public static function slackMsg($title, Question $question, array $other_fields = null, $color = 'good'){
+        try{
+            $fields[] = [
+                'title' => '标签',
+                'value' => implode(',',$question->tags()->pluck('name')->toArray())
+            ];
+            $fields[] = [
+                'title' => '类型',
+                'value' => $question->question_type == 1 ? '专业问答':'互动问答'
+            ];
+            if($other_fields){
+                $fields = array_merge($fields,$other_fields);
+            }
+            $url = route('ask.question.detail',['id'=>$question->id]);
+            return \Slack::to(config('slack.ask_activity_channel'))
+                ->disableMarkdown()
+                ->attach(
+                    [
+                        'text' => $question->title,
+                        'pretext' => '[问题链接]('.$url.')',
+                        'author_name' => $question->user->name,
+                        'author_link' => $url,
+                        'mrkdwn_in' => ['pretext'],
+                        'color'     => $color,
+                        'fields' => $fields
+                    ]
+                )->send($title);
+        } catch (\Exception $e) {
+            app('sentry')->captureException($e);
         }
-        $url = route('ask.question.detail',['id'=>$question->id]);
-        return \Slack::to(config('slack.ask_activity_channel'))
-            ->disableMarkdown()
-            ->attach(
-                [
-                    'text' => $question->title,
-                    'pretext' => '[问题链接]('.$url.')',
-                    'author_name' => $question->user->name,
-                    'author_link' => $url,
-                    'mrkdwn_in' => ['pretext'],
-                    'color'     => $color,
-                    'fields' => $fields
-                ]
-            );
+        return true;
+
     }
 
 
