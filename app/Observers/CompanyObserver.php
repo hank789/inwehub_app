@@ -23,7 +23,7 @@ class CompanyObserver implements ShouldQueue {
      *
      * @var int
      */
-    public $tries = 2;
+    public $tries = 1;
 
 
     public function creating(Company $company)

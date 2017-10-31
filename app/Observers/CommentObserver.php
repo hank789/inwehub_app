@@ -17,7 +17,7 @@ class CommentObserver implements ShouldQueue {
      *
      * @var int
      */
-    public $tries = 2;
+    public $tries = 1;
 
     /**
      * 监听问题创建的事件。
