@@ -408,7 +408,7 @@ class AnswerController extends Controller
                 $query = $query->where('status',1);
                 break;
             default:
-                $query = $query->where('status',3);
+                $query = $query->whereIn('status',[1,3]);
                 break;
         }
 
@@ -422,26 +422,8 @@ class AnswerController extends Controller
         $list = [];
         foreach($answers as $answer){
             $question = Question::find($answer->question_id);
-            $status_description = '';
             $answer_promise_time = '';
-            switch($question->status){
-                case 2:
-                    //已分配待确认
-                    $status_description = '待回答';
-                    break;
-                case 4:
-                    //已确认待回答
-                    $status_description = '待回答';
-                    break;
-                case 6:
-                    //已回答待点评
-                    $status_description = '待点评';
-                    break;
-                case 7:
-                    //已点评
-                    $status_description = '已回答';
-                    break;
-            }
+
             $list[] = [
                 'id' => $answer->id,
                 'question_type' => $question->question_type,
@@ -453,7 +435,7 @@ class AnswerController extends Controller
                 'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,
-                'status_description' => $status_description,
+                'status_description' => $question->statusHumanDescription($question->user_id),
                 'created_at' => (string)$question->created_at,
                 'answer_promise_time' =>  $answer_promise_time
             ];
