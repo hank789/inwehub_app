@@ -15,7 +15,7 @@ class WithdrawObserver implements ShouldQueue {
      *
      * @var int
      */
-    public $tries = 2;
+    public $tries = 1;
 
 
     public function creating(Withdraw $withdraw)
