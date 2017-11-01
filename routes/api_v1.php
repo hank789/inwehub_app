@@ -109,6 +109,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     /*我的关注*/
     Route::post('followed/{source_type}',['uses'=>'FollowController@attentions'])->where(['source_type'=>'(questions|tags|users)']);
 
+    Route::post('followed/searchUsers',['uses'=>'FollowController@searchFollowedUser']);
+
     //收藏
     Route::post('collect/{source_type}',['uses'=>'CollectionController@store'])->where(['source_type'=>'(question|answer)']);
     //收藏列表
