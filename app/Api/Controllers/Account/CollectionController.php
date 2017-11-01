@@ -65,7 +65,7 @@ class CollectionController extends Controller
         $sourceClassMap = [
             'questions' => 'App\Models\Question',
             'answers' => 'App\Models\Answer',
-            'readhubSubmission' => 'App\Models\Readhub\Bookmark'
+            'readhubSubmission' => 'App\Models\Readhub\Submission'
         ];
 
         if(!isset($sourceClassMap[$source_type])){
