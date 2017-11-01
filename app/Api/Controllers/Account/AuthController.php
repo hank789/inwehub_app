@@ -426,6 +426,13 @@ class AuthController extends Controller
         $formData['visit_ip'] = $request->getClientIp();
         $formData['source'] = User::USER_SOURCE_WEIXIN_GZH;
 
+        if (isset($formData['rc_code']) && $formData['rc_code']) {
+            $rcUser = User::where('rc_code',$formData['rc_code'])->first();
+            if ($rcUser) {
+                $formData['rc_uid'] = $rcUser->id;
+            }
+        }
+
         $user = $registrar->create($formData);
         $user->attachRole(2); //默认注册为普通用户角色
         $user->userData->email_status = 1;
