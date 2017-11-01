@@ -293,7 +293,17 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','na
     Route::post('commentCreate', 'ActivityController@commentStore');
     //活动详情
     Route::post('detail', 'ActivityController@detail');
+
+    //邀请注册活动页
+    Route::post('inviteRegister/introduce', 'InviteController@registerIntroduce');
+    //我邀请的好友
+    Route::post('inviteRegister/myList', 'InviteController@myRegisterList');
+
 });
+
+//获取邀请注册者消息
+Route::post('inviteRegister/getInviterInfo', 'InviteController@getInviterInfo');
+
 
 //企业
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','namespace'=>'Company'], function() {

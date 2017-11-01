@@ -17,6 +17,9 @@ class AddUserInviteCodeField extends Migration
             $table->integer("rc_uid")->after('uuid')->nullable();
             $table->string("rc_code",8)->after('uuid')->unique()->nullable();
         });
+        Schema::table('user_money', function (Blueprint $table) {
+            $table->decimal("reward_money")->after('settlement_money')->default(0);;
+        });
     }
 
     /**
@@ -26,6 +29,13 @@ class AddUserInviteCodeField extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['rc_uid']);
+            $table->dropColumn(['rc_code']);
+        });
+
+        Schema::table('user_money', function (Blueprint $table) {
+            $table->dropColumn(['reward_money']);
+        });
     }
 }
