@@ -198,7 +198,7 @@ class IndexController extends Controller {
         $comment_url = '';
         $type = 1;
         foreach ($comments as $comment) {
-            switch ($comment->sourc_type) {
+            switch ($comment->source_type) {
                 case 'App\Models\Article':
                     $source = $comment->source;
                     $origin_title = '活动:'.$source->title;
