@@ -176,7 +176,7 @@ class FollowController extends Controller
                     $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
                     $item['description'] = $info->description;
                     break;
-                case 'question':
+                case 'questions':
                     $item['question_id'] = $info->id;
                     $item['user_name'] = $info->hide ? '匿名' : $info->user->name;
                     $item['user_avatar_url'] = $info->hide ? config('image.user_default_avatar') : $info->user->getAvatarUrl();
