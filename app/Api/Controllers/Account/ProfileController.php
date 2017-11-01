@@ -244,6 +244,7 @@ class ProfileController extends Controller
         $info['address_detail'] = $user->address_detail;
         $info['industry_tags'] = TagsLogic::formatTags($user->industryTags());
         if(empty($info['industry_tags'])) $info['industry_tags'] = '';
+        $info['skill_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get());
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
         $info['expert_apply_status'] = 0;
@@ -263,6 +264,7 @@ class ProfileController extends Controller
 
         $info['questions'] = $user->userData->questions;
         $info['answers'] = $user->userData->answers;
+        $info['supports'] = $user->userTag->sum('supports');
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['projects'] = $user->companyProjects->count();
