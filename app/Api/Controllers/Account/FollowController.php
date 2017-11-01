@@ -178,6 +178,7 @@ class FollowController extends Controller
                     break;
                 case 'questions':
                     $item['question_id'] = $info->id;
+                    $item['question_type'] = $info->question_type;
                     $item['user_name'] = $info->hide ? '匿名' : $info->user->name;
                     $item['user_avatar_url'] = $info->hide ? config('image.user_default_avatar') : $info->user->getAvatarUrl();
                     $item['description'] = $info->title;
