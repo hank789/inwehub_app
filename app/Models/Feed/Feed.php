@@ -130,7 +130,7 @@ class Feed extends Model
                 $url = $this->data['view_url']?:$comment_url;
                 $data = [
                     'title'     => $this->data['submission_title'],
-                    'img'       => $this->data['img']?$this->data['img'].'?x-oss-process=image/resize,m_lfit,h_123,w_345':'',
+                    'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
                     'submission_id' => $this->source_id,
                     'comment_url' => $comment_url,
