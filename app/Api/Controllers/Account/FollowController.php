@@ -175,6 +175,7 @@ class FollowController extends Controller
                     $item['user_avatar_url'] = $info->avatar;
                     $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
                     $item['description'] = $info->description;
+                    $item['is_followed'] = 1;
                     break;
                 case 'questions':
                     $item['question_id'] = $info->id;
@@ -184,6 +185,7 @@ class FollowController extends Controller
                     $item['description'] = $info->title;
                     $item['answer_num'] = $info->answers;
                     $item['follow_num'] = $info->followers;
+                    $item['is_followed'] = 1;
                     break;
             }
             $data[] = $item;
@@ -256,6 +258,7 @@ class FollowController extends Controller
             $item['user_avatar_url'] = $user->avatar;
             $item['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
             $item['description'] = $user->description;
+            $item['is_followed'] = 1;
             $data[] = $item;
         }
 

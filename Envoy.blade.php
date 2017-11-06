@@ -26,6 +26,11 @@ cd /home/web/www
 bash update_web_dev.sh
 @endtask
 
+@task('pro-web',['on' => ['web-pro']])
+cd /home/web/www
+bash update_web.sh
+@endtask
+
 @task('test-dev',['on' => ['web-test1']])
 cd /home/web/www/intervapp
 git pull origin dev
