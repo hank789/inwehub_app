@@ -232,7 +232,9 @@ class IndexController extends Controller {
                 'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
             ];
         }
-        return self::createJsonData(true,  $return);
+        $list = $comments->toArray();
+        $list['data'] = $return;
+        return self::createJsonData(true,  $list);
     }
 
 }
