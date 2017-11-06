@@ -245,7 +245,7 @@ class FollowController extends Controller
         if ($name) {
             $query = $query->where('users.name','like',$name.'%');
         }
-        $users = $query->select('users.*, app_attentions.id as attention_id')->get();
+        $users = $query->select('users.*','attentions.id as attention_id')->get();
         $data = [];
         foreach ($users as $user) {
             $item = [];
