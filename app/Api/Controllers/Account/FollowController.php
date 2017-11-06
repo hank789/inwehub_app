@@ -172,15 +172,18 @@ class FollowController extends Controller
                     $item['user_name'] = $info->name;
                     $item['company'] = $info->company;
                     $item['title'] = $info->title;
-                    $item['user_avatar_url'] = $info->getAvatarUrl();
+                    $item['user_avatar_url'] = $info->avatar;
                     $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
                     $item['description'] = $info->description;
                     break;
-                case 'question':
+                case 'questions':
                     $item['question_id'] = $info->id;
+                    $item['question_type'] = $info->question_type;
                     $item['user_name'] = $info->hide ? '匿名' : $info->user->name;
                     $item['user_avatar_url'] = $info->hide ? config('image.user_default_avatar') : $info->user->getAvatarUrl();
                     $item['description'] = $info->title;
+                    $item['answer_num'] = $info->answers;
+                    $item['follow_num'] = $info->followers;
                     break;
             }
             $data[] = $item;
@@ -232,6 +235,32 @@ class FollowController extends Controller
     }
 
 
+    //搜索我关注的用户
+    public function searchFollowedUser(Request $request) {
+        $name = $request->input('name');
+        $query = $request->user()->attentions()->where('source_type','=','App\Models\User')
+            ->leftJoin('users','attentions.source_id','=','users.id');
+        if ($name) {
+            $query = $query->where('users.name','like',$name.'%');
+        }
+        $users = $query->select('users.*,attentions.id as attention_id')->get();
+        $data = [];
+        foreach ($users as $user) {
+            $item = [];
+            $item['id'] = $user->attention_id;
+            $item['user_id'] = $user->id;
+            $item['uuid'] = $user->uuid;
+            $item['user_name'] = $user->name;
+            $item['company'] = $user->company;
+            $item['title'] = $user->title;
+            $item['user_avatar_url'] = $user->avatar;
+            $item['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+            $item['description'] = $user->description;
+            $data[] = $item;
+        }
 
+        return self::createJsonData(true,$data);
+
+    }
 
 }

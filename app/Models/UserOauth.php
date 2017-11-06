@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * App\Models\UserOauth

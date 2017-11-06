@@ -7,6 +7,7 @@
 
 //app首页
 Route::post('home','IndexController@home')->middleware('jwt.auth');
+Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.auth');
 
 //登陆注册认证类
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
@@ -108,10 +109,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     /*我的关注*/
     Route::post('followed/{source_type}',['uses'=>'FollowController@attentions'])->where(['source_type'=>'(questions|tags|users)']);
 
+    Route::post('followed/searchUsers',['uses'=>'FollowController@searchFollowedUser']);
+
     //收藏
     Route::post('collect/{source_type}',['uses'=>'CollectionController@store'])->where(['source_type'=>'(question|answer)']);
     //收藏列表
-    Route::post('collected/{source_type}',['uses'=>'CollectionController@collectList'])->where(['source_type'=>'(questions|answers)']);
+    Route::post('collected/{source_type}',['uses'=>'CollectionController@collectList'])->where(['source_type'=>'(questions|answers|readhubSubmission)']);
 
     //关注我的
     Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
@@ -290,7 +293,17 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','na
     Route::post('commentCreate', 'ActivityController@commentStore');
     //活动详情
     Route::post('detail', 'ActivityController@detail');
+
+    //邀请注册活动页
+    Route::post('inviteRegister/introduce', 'InviteController@registerIntroduce');
+    //我邀请的好友
+    Route::post('inviteRegister/myList', 'InviteController@myRegisterList');
+
 });
+
+//获取邀请注册者消息
+Route::post('inviteRegister/getInviterInfo', 'InviteController@getInviterInfo');
+
 
 //企业
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','namespace'=>'Company'], function() {
@@ -332,6 +345,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], fu
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'feed'], function() {
     //首页feed列表
     Route::post('list','FeedController@index');
+});
+
+//readhub
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'readhub'], function() {
+    //我的文章列表
+    Route::post('mySubmission','ReadhubController@mySubmission');
 });
 
 //点赞

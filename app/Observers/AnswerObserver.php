@@ -40,8 +40,7 @@ class AnswerObserver implements ShouldQueue {
                     'title' => '承诺时间',
                     'value' => $answer->promise_time
                 ];
-                $this->slackMsg($answer->question,$fields)
-                    ->send('用户['.$answer->user->name.']承诺在'.$response_time.'分钟内回答该问题');
+                $this->slackMsg('用户['.$answer->user->name.']承诺在'.$response_time.'分钟内回答该问题',$answer->question,$fields);
                 //承诺告警
                 $overtime = Setting()->get('alert_minute_expert_over_question_promise_time',10);
                 $promise_datetime = Carbon::createFromTimestamp(strtotime($answer->promise_time))->subMinutes($overtime);
@@ -115,8 +114,7 @@ class AnswerObserver implements ShouldQueue {
                     }
                 }
 
-                $this->slackMsg($answer->question,$fields)
-                    ->send('用户'.$answer->user->id.'['.$answer->user->name.']回答了该问题');
+                $this->slackMsg('用户'.$answer->user->id.'['.$answer->user->name.']回答了该问题',$answer->question,$fields);
                     break;
             case 2:
                 //拒绝回答
@@ -130,8 +128,7 @@ class AnswerObserver implements ShouldQueue {
                     'value' => implode(',',$answer->tags()->pluck('name')->toArray()),
                     'short' => true
                 ];
-                $this->slackMsg($answer->question,$fields,'warning')
-                    ->send('用户'.$answer->user->id.'['.$answer->user->name.']拒绝回答该问题');
+                $this->slackMsg('用户'.$answer->user->id.'['.$answer->user->name.']拒绝回答该问题',$answer->question,$fields,'warning');
                 break;
         }
     }
@@ -141,8 +138,8 @@ class AnswerObserver implements ShouldQueue {
     }
 
 
-    protected function slackMsg(Question $question,array $other_fields = null){
-        return QuestionLogic::slackMsg($question,$other_fields);
+    protected function slackMsg($title,Question $question,array $other_fields = null,$color='good'){
+        return QuestionLogic::slackMsg($title,$question,$other_fields,$color);
     }
 
 }

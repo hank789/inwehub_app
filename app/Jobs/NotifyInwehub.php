@@ -63,6 +63,18 @@ class NotifyInwehub implements ShouldQueue
                 }
                 //产生一条feed流
                 $comment = Comment::find($this->message['commnet_id']);
+                //同步评论
+                \App\Models\Comment::create(
+                    [
+                        'user_id'     => $comment->user_id,
+                        'content'     => $comment->body,
+                        'source_id'   => $comment->id,
+                        'source_type' => get_class($comment),
+                        'to_user_id'  => 0,
+                        'status'      => 1,
+                        'supports'    => 0
+                    ]);
+
                 $submission = Submission::find($comment->submission_id);
                 $submission_user = User::find($submission->user_id);
                 feed()

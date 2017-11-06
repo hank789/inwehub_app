@@ -124,6 +124,7 @@ class PayController extends Controller {
                 $subject = 'Inwehub-免费提问';
                 $body = $subject;
                 $need_pay_actual = false;
+                $amount = 0;
                 break;
             default:
                 throw new ApiException(ApiException::PAYMENT_UNKNOWN_PAY_TYPE);

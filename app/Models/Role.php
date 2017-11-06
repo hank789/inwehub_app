@@ -9,7 +9,10 @@
 namespace App\Models;
 
 
+use App\Exceptions\ApiException;
 use Bican\Roles\Models\Role as BicanRole;
+use Illuminate\Support\Facades\Cache;
+
 /**
  * App\Models\Role
  *
@@ -39,6 +42,21 @@ class Role extends BicanRole
 
     public static function customerService(){
         return self::where('slug','customerservice');
+    }
+
+    public static function getCustomerUserId(){
+        $uid = Cache::get('role_customer_uid');
+        if (!$uid) {
+            //客服
+            $role = Role::customerService()->first();
+            $role_user = RoleUser::where('role_id',$role->id)->first();
+            if (!$role_user) {
+                throw new ApiException(ApiException::ERROR);
+            }
+            $uid = $role_user->user_id;
+            Cache::put('role_customer_uid',$uid);
+        }
+        return $uid;
     }
 
 }
