@@ -219,6 +219,7 @@ class IndexController extends Controller {
                     $type = 2;
                     $readhub_comment = ReadhubComment::find($comment->source_id);
                     $submission = Submission::find($readhub_comment->submission_id);
+                    if (!$submission) continue;
                     $origin_title = '文章:'.$submission->title;
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                     break;
