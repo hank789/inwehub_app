@@ -32,7 +32,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixCollect::class,
         Commands\FixData\MoneyLogNotification::class,
         Commands\User\GenRcCode::class,
-        Commands\Readhub\SyncComment::class
+        Commands\Readhub\SyncComment::class,
+        Commands\User\CdnUserAvatar::class,
 
 
     ];

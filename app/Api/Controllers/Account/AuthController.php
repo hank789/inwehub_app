@@ -437,7 +437,7 @@ class AuthController extends Controller
         $user->attachRole(2); //默认注册为普通用户角色
         $user->userData->email_status = 1;
         $user->userData->save();
-        $user->avatar = $oauthData->avatar;
+        $user->avatar = saveImgToCdn($oauthData->avatar);
         $user->save();
         if(isset($rcode)){
             $rcode->status = UserRegistrationCode::CODE_STATUS_USED;
@@ -502,6 +502,5 @@ class AuthController extends Controller
         UserDevice::where('user_id',$auth->user()->id)->where('client_id',$data['client_id'])->where('device_type',$data['device_type'])->update(['status'=>0]);
         return self::createJsonData(true);
     }
-
 
 }
