@@ -6,8 +6,10 @@
  */
 
 use App\Models\Feed\Feed;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Traits\Macroable;
 
 /**
@@ -111,6 +113,11 @@ class FeedLogger
     public function log(string $description, $feedType)
     {
 
+        if ($this->causedBy) {
+            //异常客服产生的feed
+            $contact_id = Role::getCustomerUserId();
+            if ($contact_id == $this->causedBy->id) return false;
+        }
         $activity = new Feed();
 
         if ($this->performedOn) {

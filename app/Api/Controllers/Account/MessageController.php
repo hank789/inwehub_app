@@ -2,9 +2,7 @@
 
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
-use App\Models\IM\Message;
 use App\Models\Role;
-use App\Models\RoleUser;
 use App\Models\User;
 use App\Notifications\NewMessage;
 use Illuminate\Http\Request;
@@ -25,12 +23,7 @@ class MessageController extends Controller
         $contact_id = $request->input('contact_id');
         if (!$contact_id) {
             //客服
-            $role = Role::customerService()->first();
-            $role_user = RoleUser::where('role_id',$role->id)->first();
-            if (!$role_user) {
-                throw new ApiException(ApiException::ERROR);
-            }
-            $contact_id = $role_user->user_id;
+            $contact_id = Role::getCustomerUserId();
         }
 
         $messages = $user->conversations()
@@ -59,12 +52,7 @@ class MessageController extends Controller
         $contact_id = $request->input('contact_id');
         if (!$contact_id) {
             //客服
-            $role = Role::customerService()->first();
-            $role_user = RoleUser::where('role_id',$role->id)->first();
-            if (!$role_user) {
-                throw new ApiException(ApiException::ERROR);
-            }
-            $contact_id = $role_user->user_id;
+            $contact_id = Role::getCustomerUserId();
         }
         $message = Auth::user()->messages()->create([
             'data' => array_only($request->all(), ['text']),
