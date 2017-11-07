@@ -13,6 +13,7 @@ use App\Models\Attention;
 use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\Role;
 use App\Models\User;
 use App\Notifications\FollowedQuestionAnswered;
 use App\Notifications\FollowedUserAnswered;
@@ -80,8 +81,8 @@ class AnswerObserver implements ShouldQueue {
                 }
 
                 if ($answer->status == Answer::ANSWER_STATUS_FINISH) {
-                    if (($update && $answer->question->question_type == 2) || ($update == false && $answer->question->question_type == 1 )) {
-                        //互动问答修改和专业问答承诺回答时不通知
+                    if (($update && $answer->question->question_type == 2) || ($update == false && $answer->question->question_type == 1 ) || ($answer->user_id == Role::getCustomerUserId())) {
+                        //互动问答修改和专业问答承诺回答时不通知,客服小哈的也不通知
                     } else {
                         //关注问题的用户接收通知
                         $attention_questions = Attention::where('source_type','=',get_class($answer->question))->where('source_id','=',$answer->question->id)->get();
