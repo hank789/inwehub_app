@@ -112,12 +112,6 @@ class FeedLogger
      */
     public function log(string $description, $feedType)
     {
-
-        if ($this->causedBy) {
-            //异常客服产生的feed
-            $contact_id = Role::getCustomerUserId();
-            if ($contact_id == $this->causedBy->id) return false;
-        }
         $activity = new Feed();
 
         if ($this->performedOn) {
