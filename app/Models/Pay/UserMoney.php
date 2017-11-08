@@ -31,7 +31,7 @@ class UserMoney extends Model {
      *
      * @var array
      */
-    protected $fillable = ['user_id','total_money'];
+    protected $fillable = ['user_id','total_money','reward_money','settlement_money'];
 
 
 

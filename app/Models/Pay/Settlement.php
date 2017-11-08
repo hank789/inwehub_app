@@ -1,7 +1,9 @@
 <?php namespace App\Models\Pay;
 use App\Logic\MoneyLogLogic;
 use App\Models\Answer;
+use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -50,6 +52,13 @@ class Settlement extends Model {
     const SETTLEMENT_STATUS_FAIL = 3;
     const SETTLEMENT_STATUS_SUSPEND = 4;
 
+    const SOURCE_TYPE_ANSWER = 'App\Models\Answer';
+    const SOURCE_TYPE_ORDER  = 'App\Models\Pay\Order';
+    const SOURCE_TYPE_REWARD_QUESTION = 'question_reward';
+    const SOURCE_TYPE_REWARD_ANSWER = 'answer_reward';
+    const SOURCE_TYPE_REWARD_PAY_FOR_VIEW_ANSWER = 'pay_for_view_answer_reward';
+
+
 
     //回答结算
     public static function answerSettlement(Answer $answer){
@@ -67,7 +76,42 @@ class Settlement extends Model {
             'status' => self::SETTLEMENT_STATUS_PENDING
         ]);
         if ($object){
-            $answer->user->userMoney()->increment('settlement_money',$answer->question->price);
+            $user_money = $answer->user->userMoney;
+            $user_money->settlement_money = bcadd($user_money->settlement_money,$answer->question->price,2);
+            $user_money->save();
+        }
+    }
+
+
+    //问题结算
+    public static function questionSettlement(Question $question) {
+        //邀请人分红结算，邀请人拿到问题金额5%的分红
+        $question_user = $question->user;
+        if (empty($question_user->rc_uid) || $question_user->rc_uid <= 0 || $question->price <= 0) {
+            return;
+        }
+        $reward_user = User::find($question_user->rc_uid);
+        //每月月底结算
+        $settlement_date = date('Y-m-d',strtotime(date('Y-m-1').' +1 month -1 day'));
+        $today = date('Y-m-d');
+        if ($settlement_date == $today) {
+            $settlement_date = date('Y-m-d',strtotime(date('Y-m-1').' +2 month -1 day'));
+        }
+        //邀请人拿到问题金额5%的分红
+        $settlement_money = $question->price * self::getInviteRewardRate();
+        $object = self::create([
+            'user_id' => $reward_user->id,
+            'source_id' => $question->id,
+            'source_type' => self::SOURCE_TYPE_REWARD_QUESTION,
+            'actual_amount' => $settlement_money,
+            'actual_fee' => 0,
+            'settlement_date' => $settlement_date,
+            'status' => self::SETTLEMENT_STATUS_PENDING
+        ]);
+        if ($object){
+            $reward_user_money = $reward_user->userMoney;
+            $reward_user_money->settlement_money = bcadd($reward_user_money->settlement_money,$settlement_money,2);
+            $reward_user_money->save();
         }
     }
 
@@ -106,12 +150,16 @@ class Settlement extends Model {
                 $question_user_per = 0.7;
                 $answer_user_per = 0.3;
                 break;
+            default:
+                return;
         }
         $answer_user_money = bcmul($order->actual_amount, $answer_user_per,2);
         $question_user_money = bcmul($order->actual_amount, $question_user_per,2);
 
         if ($answer_user_money > 0) {
-            $answer->user->userMoney()->increment('settlement_money',$answer_user_money);
+            $answer_user_money = $answer->user->userMoney;
+            $answer_user_money->settlement_money = bcadd($answer_user_money->settlement_money,$answer_user_money,2);
+            $answer_user_money->save();
             self::create([
                 'user_id' => $answer->user->id,
                 'source_id' => $order->id,
@@ -123,7 +171,9 @@ class Settlement extends Model {
             ]);
         }
         if ($question_user_money > 0) {
-            $answer->question->user->userMoney()->increment('settlement_money',$question_user_money);
+            $question_user_money = $answer->question->user->userMoney;
+            $question_user_money->settlement_money = bcadd($question_user_money->settlement_money,$question_user_money,2);
+            $question_user_money->save();
             self::create([
                 'user_id' => $answer->question->user_id,
                 'source_id' => $order->id,
@@ -139,7 +189,8 @@ class Settlement extends Model {
 
 
     public static function getPayForViewFee(Order $order, $amount){
-        $fee_rate = 0;
+        //目前都是20%的手续费
+        $fee_rate = Setting()->get('pay_answer_normal_fee_rate',0.2);
         switch($order->pay_channel){
             case Order::PAY_CHANNEL_IOS_IAP:
                 $iap_fee_rate = Setting()->get('pay_answer_iap_fee_rate',0.32);
@@ -148,6 +199,11 @@ class Settlement extends Model {
         }
         return bcmul($fee_rate ,$amount,2);
 
+    }
+
+
+    public static function getInviteRewardRate(){
+        return 0.05;
     }
 
     public function getSettlementMoney(){
