@@ -302,7 +302,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','na
 });
 
 //获取邀请注册者消息
-Route::post('inviteRegister/getInviterInfo', 'InviteController@getInviterInfo');
+Route::post('activity/inviteRegister/getInviterInfo', 'InviteController@getInviterInfo');
 
 
 //企业
