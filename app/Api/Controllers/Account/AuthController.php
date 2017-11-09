@@ -343,6 +343,8 @@ class AuthController extends Controller
             $oauthData->user_id = $user->id;
             $oauthData->save();
             $token = $JWTAuth->fromUser($user);
+            //登陆事件通知
+            event(new UserLoggedIn($user));
             return static::createJsonData(true,['token'=>$token]);
         }
 
@@ -354,6 +356,8 @@ class AuthController extends Controller
         //如果此微信号已绑定用户
         if($oauthData->user_id && $user){
             $token = $JWTAuth->fromUser($user);
+            //登陆事件通知
+            event(new UserLoggedIn($user));
             return static::createJsonData(true,['token'=>$token]);
         }
         throw new ApiException(ApiException::BAD_REQUEST);
