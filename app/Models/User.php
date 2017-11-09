@@ -262,6 +262,17 @@ class User extends Model implements AuthenticatableContract,
         return 'APP';
     }
 
+    public function getInviter(){
+        if ($this->rc_uid) {
+            return User::find($this->rc_uid);
+        }
+        return null;
+    }
+
+    public function getInvitedUserCount(){
+        return self::where('rc_uid',$this->id)->count();
+    }
+
     /**
      * 用户登录记录关系.
      *

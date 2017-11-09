@@ -82,6 +82,8 @@
                                         <th>贡献值</th>
                                         <th>注册时间</th>
                                         <th>注册来源</th>
+                                        <th>邀请者</th>
+                                        <th>邀请人数</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -104,6 +106,8 @@
                                             <td>{{ $user->userData->coins }}</td>
                                             <td>{{ $user->created_at }}</td>
                                             <td>{{ $user->getRegisterSource() }}</td>
+                                            <td>{{ ($inviter=$user->getInviter())?$inviter->name:'' }}</td>
+                                            <td>{{ $user->getInvitedUserCount() }}</td>
                                             <td><span class="label @if($user->status===0) label-danger @elseif($user->status===-1) label-default @elseif($user->status===1) label-success @endif">{{ trans_common_status($user->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
