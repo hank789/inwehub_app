@@ -75,9 +75,14 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         } else {
             $avatar = $this->question->user->avatar;
         }
+
         switch ($this->question->question_type) {
             case 1:
                 $url = '/answer/'.$this->question->id;
+                $title = '专业问答任务邀请';
+                if ($this->question->hide) {
+                    $avatar = config('image.user_default_avatar');
+                }
                 break;
             case 2:
                 $url = '/askCommunity/interaction/answers/'.$this->question->id;
