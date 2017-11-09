@@ -331,10 +331,10 @@ class SettingController extends AdminController
             }
             Setting()->clearAll();
 
-            return $this->success(route('admin.setting.inviteRules'),'设置成功');
+            return $this->success(route('admin.setting.inviterules'),'设置成功');
         }
 
-        return view('admin.setting.inviterules');
+        return view('admin.setting.inviteRules');
     }
 
     public function appHelp(Request $request){
