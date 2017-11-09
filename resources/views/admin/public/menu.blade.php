@@ -139,6 +139,7 @@
         </a>
         <ul class="treeview-menu" id="global">
             <li><a href="{{ route('admin.setting.register') }}"><i class="fa fa-circle-o"></i> 注册设置</a></li>
+            <li><a href="{{ route('admin.setting.inviterules') }}"><i class="fa fa-circle-o"></i> 邀请注册设置</a></li>
             <li><a href="{{ route('admin.setting.answer') }}"><i class="fa fa-circle-o"></i> 问答设置</a></li>
             <li><a href="{{ route('admin.setting.aboutus') }}"><i class="fa fa-circle-o"></i> 关于我们</a></li>
             <li><a href="{{ route('admin.setting.help') }}"><i class="fa fa-circle-o"></i> 常见问题</a></li>

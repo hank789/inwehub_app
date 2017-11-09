@@ -75,4 +75,13 @@ class InviteController extends Controller {
 
     }
 
+
+    //邀请规则
+    public function inviteRules(){
+        $data = [
+            'html' => Setting()->get('setting_invite_rules','')
+        ];
+
+        return self::createJsonData(true,$data);
+    }
 }

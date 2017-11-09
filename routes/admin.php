@@ -62,6 +62,9 @@ Route::any('setting/answer',['as'=>'admin.setting.answer','uses'=>'SettingContro
 /*关于我们设置*/
 Route::any('setting/aboutus',['as'=>'admin.setting.aboutus','uses'=>'SettingController@aboutus']);
 
+/*邀请注册设置*/
+Route::any('setting/inviterules',['as'=>'admin.setting.inviterules','uses'=>'SettingController@inviteRules']);
+
 /*常见问题设置*/
 Route::any('setting/help',['as'=>'admin.setting.help','uses'=>'SettingController@appHelp']);
 
