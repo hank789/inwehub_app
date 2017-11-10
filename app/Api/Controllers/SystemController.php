@@ -151,6 +151,7 @@ class SystemController extends Controller {
             $snappy->generate($data['html'],'/tmp/'.$filename);
             $html = base64_encode(file_get_contents('/tmp/'.$filename));
         } else {
+            $snappy->generateFromHtml($data['html'], '/tmp/'.time().str_random(7).'.jpeg');
             $html = base64_encode($snappy->getOutputFromHtml($data['html']));
         }
         return self::createJsonData(true,['image'=>$html]);
