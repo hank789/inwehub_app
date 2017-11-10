@@ -151,7 +151,7 @@ class SystemController extends Controller {
             $html = $data['html'];
         }
         //$snappy->generateFromHtml($data['html'], '/tmp/'.time().str_random(7).'.jpeg');
-        return self::createJsonData(true,['image'=>$snappy->getOutputFromHtml($html)]);
+        return self::createJsonData(true,['image'=>base64_encode($snappy->getOutputFromHtml($html))]);
     }
 
     //服务条款
