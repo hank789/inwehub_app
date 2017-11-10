@@ -281,9 +281,6 @@ class AuthController extends Controller
         $message = '注册成功!';
         $this->credit($user->id,Credit::KEY_REGISTER);
 
-        // read站点同步注册用户
-        ReadHubUser::initUser($user);
-
         //注册事件通知
         event(new UserRegistered($user));
 
@@ -453,11 +450,8 @@ class AuthController extends Controller
         $message = '注册成功!';
         $this->credit($user->id,Credit::KEY_REGISTER);
 
-        // read站点同步注册用户
-        ReadHubUser::initUser(User::find($user->id));
-
         //注册事件通知
-        event(new UserRegistered($user));
+        event(new UserRegistered($user,$oauthData->id));
 
         $token = $JWTAuth->fromUser($user);
         return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);
