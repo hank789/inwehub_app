@@ -146,12 +146,14 @@ class SystemController extends Controller {
         $data = $request->all();
         $snappy = App::make('snappy.image');
         if (filter_var($data['html'], FILTER_VALIDATE_URL)) {
-            $html = file_get_contents($data['html']);
+            $filename = time().str_random(7).'.jpeg';
+            $snappy->generate($data['html'],'/tmp/'.$filename);
+            $html = base64_encode(file_get_contents('/tmp/'.$filename));
         } else {
-            $html = $data['html'];
+            $html = base64_encode($snappy->getOutputFromHtml($data['html']));
         }
         //$snappy->generateFromHtml($data['html'], '/tmp/'.time().str_random(7).'.jpeg');
-        return self::createJsonData(true,['image'=>base64_encode($snappy->getOutputFromHtml($html))]);
+        return self::createJsonData(true,['image'=>$html]);
     }
 
     //服务条款
