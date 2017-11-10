@@ -50,11 +50,13 @@ class InviteController extends Controller {
             $reward_money = MoneyLog::where('user_id',$user->id)
                 ->where('source_type','App\Models\Answer')
                 ->where('io',1)
+                ->where('status',1)
                 ->sum('change_money');
 
             $reward_money_fee = MoneyLog::where('user_id',$user->id)
                 ->where('source_type','App\Models\Answer')
                 ->where('io',-1)
+                ->where('status',1)
                 ->sum('change_money');
             $list[] = [
                 'id' => $user->id,
@@ -64,7 +66,7 @@ class InviteController extends Controller {
                 'user_avatar_url' => $user->avatar,
                 'register_at' => (string) $user->created_at,
                 'paid_money'  => number_format($paid_money,2),
-                'reward_money' => $reward_money - $reward_money_fee
+                'reward_money' => number_format($reward_money - $reward_money_fee,2)
             ];
         }
 
