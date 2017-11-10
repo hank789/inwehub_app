@@ -45,6 +45,7 @@ class InviteController extends Controller {
 
         $list = [];
         foreach ($users as $user) {
+            $paid_money = Order::where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->sum('amount');
             $list[] = [
                 'id' => $user->id,
                 'uuid' => $user->uuid,
@@ -52,7 +53,7 @@ class InviteController extends Controller {
                 'is_expert' => ($user->authentication && $user->authentication->status === 1) ? 1 : 0,
                 'user_avatar_url' => $user->avatar,
                 'register_at' => (string) $user->created_at,
-                'paid_money'  => Order::where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->sum('amount'),
+                'paid_money'  => number_format($paid_money,2),
                 'reward_money' => $user->userMoney->reward_money
             ];
         }

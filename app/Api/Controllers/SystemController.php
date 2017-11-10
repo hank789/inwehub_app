@@ -13,7 +13,7 @@ use App\Models\UserDevice;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-
+use Spatie\Browsershot\Browsershot;
 
 class SystemController extends Controller {
 
@@ -144,17 +144,13 @@ class SystemController extends Controller {
         ];
         $this->validate($request, $validateRules);
         $data = $request->all();
-        $snappy = App::make('snappy.image');
-        $snappy->setOption('encoding', 'utf-8');
+        $filename = time().str_random(7).'.jpeg';
         if (filter_var($data['html'], FILTER_VALIDATE_URL)) {
-            $filename = time().str_random(7).'.jpeg';
-            $snappy->generate($data['html'],'/tmp/'.$filename);
-            $html = base64_encode(file_get_contents('/tmp/'.$filename));
+            Browsershot::url($data['html'])->save($filename);
         } else {
-            $snappy->generateFromHtml($data['html'], '/tmp/'.time().str_random(7).'.jpeg');
-            $html = base64_encode($snappy->getOutputFromHtml($data['html']));
+            Browsershot::html($data['html'])->save($filename);
         }
-        return self::createJsonData(true,['image'=>$html]);
+        return self::createJsonData(true,['image'=>base64_encode(file_get_contents($filename))]);
     }
 
     //服务条款

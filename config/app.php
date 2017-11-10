@@ -199,7 +199,6 @@ return [
         App\Third\Push\Getui\GetuiServiceProvider::class,
         App\Third\Weapp\WxxcxServiceProvider::class,
         App\Third\Wechat\ServiceProvider::class,
-        Barryvdh\Snappy\ServiceProvider::class,
     ],
 
     /*
@@ -259,7 +258,6 @@ return [
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'Getui' => App\Third\Push\Getui\Facades\Getui::class,
         'EasyWeChat' => App\Third\Wechat\Facade::class,
-        'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
     ],
 
 ];
