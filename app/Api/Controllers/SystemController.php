@@ -152,7 +152,7 @@ class SystemController extends Controller {
             $snappy->generate($data['html'],'/tmp/'.$filename);
             $html = base64_encode(file_get_contents('/tmp/'.$filename));
         } else {
-            $snappy->save('/tmp/'.time().str_random(7).'.pdf');
+            $snappy->generateFromHtml($data['html'],'/tmp/'.time().str_random(7).'.pdf');
             $html = base64_encode($snappy->getOutputFromHtml($data['html']));
         }
         //$snappy->generateFromHtml($data['html'], '/tmp/'.time().str_random(7).'.jpeg');
