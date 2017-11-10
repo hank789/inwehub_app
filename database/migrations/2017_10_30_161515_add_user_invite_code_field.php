@@ -18,7 +18,7 @@ class AddUserInviteCodeField extends Migration
             $table->string("rc_code",8)->after('uuid')->unique()->nullable();
         });
         Schema::table('user_money', function (Blueprint $table) {
-            $table->decimal("reward_money")->after('settlement_money')->default(0);;
+            $table->decimal("reward_money")->after('settlement_money')->default(0)->comment('分红收入');
         });
     }
 
