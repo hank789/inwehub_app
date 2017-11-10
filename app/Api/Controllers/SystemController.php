@@ -147,6 +147,7 @@ class SystemController extends Controller {
         $snappy = App::make('snappy.image');
         if (filter_var($data['html'], FILTER_VALIDATE_URL)) {
             $filename = time().str_random(7).'.jpeg';
+            \Log::info('test',$data);
             $snappy->generate($data['html'],'/tmp/'.$filename);
             $html = base64_encode(file_get_contents('/tmp/'.$filename));
         } else {
