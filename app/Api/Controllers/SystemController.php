@@ -148,7 +148,7 @@ class SystemController extends Controller {
         if (filter_var($data['html'], FILTER_VALIDATE_URL)) {
             $filename = time().str_random(7).'.jpeg';
             \Log::info('test',$data);
-            $snappy->generate($data['html'],'/tmp/'.$filename);
+            $snappy->setOption('disable-javascript', true)->generate($data['html'],'/tmp/'.$filename);
             $html = base64_encode(file_get_contents('/tmp/'.$filename));
         } else {
             $html = base64_encode($snappy->getOutputFromHtml($data['html']));
