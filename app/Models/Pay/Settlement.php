@@ -157,9 +157,9 @@ class Settlement extends Model {
         $question_user_money = bcmul($order->actual_amount, $question_user_per,2);
 
         if ($answer_user_money > 0) {
-            $answer_user_money = $answer->user->userMoney;
-            $answer_user_money->settlement_money = bcadd($answer_user_money->settlement_money,$answer_user_money,2);
-            $answer_user_money->save();
+            $answer_user_money_model = $answer->user->userMoney;
+            $answer_user_money_model->settlement_money = bcadd($answer_user_money_model->settlement_money,$answer_user_money,2);
+            $answer_user_money_model->save();
             self::create([
                 'user_id' => $answer->user->id,
                 'source_id' => $order->id,
@@ -171,9 +171,9 @@ class Settlement extends Model {
             ]);
         }
         if ($question_user_money > 0) {
-            $question_user_money = $answer->question->user->userMoney;
-            $question_user_money->settlement_money = bcadd($question_user_money->settlement_money,$question_user_money,2);
-            $question_user_money->save();
+            $question_user_money_model = $answer->question->user->userMoney;
+            $question_user_money_model->settlement_money = bcadd($question_user_money_model->settlement_money,$question_user_money,2);
+            $question_user_money_model->save();
             self::create([
                 'user_id' => $answer->question->user_id,
                 'source_id' => $order->id,
