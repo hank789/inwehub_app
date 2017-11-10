@@ -222,6 +222,9 @@ Route::post('system/device','SystemController@device')->middleware('jwt.auth');
 //申请添加用户擅长标签
 Route::post('system/applySkillTag','SystemController@applySkillTag')->middleware('jwt.auth');
 
+//htmlToImage
+Route::post('system/htmlToImage','SystemController@htmlToImage')->middleware('jwt.auth');
+
 
 //检测app版本
 Route::post('system/version','SystemController@appVersion');

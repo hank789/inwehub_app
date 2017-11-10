@@ -12,6 +12,7 @@ use App\Models\AppVersion;
 use App\Models\UserDevice;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 
 class SystemController extends Controller {
@@ -135,6 +136,22 @@ class SystemController extends Controller {
 
     public function getPayConfig(){
         return self::createJsonData(true,get_pay_config());
+    }
+
+    public function htmlToImage(Request $request){
+        $validateRules = [
+            'html' => 'required'
+        ];
+        $this->validate($request, $validateRules);
+        $data = $request->all();
+        $snappy = App::make('snappy.image');
+        if (filter_var($data['html'], FILTER_VALIDATE_URL)) {
+            $html = file_get_contents($data['html']);
+        } else {
+            $html = $data['html'];
+        }
+        //$snappy->generateFromHtml($data['html'], '/tmp/'.time().str_random(7).'.jpeg');
+        return self::createJsonData(true,['image'=>$snappy->getOutputFromHtml($html)]);
     }
 
     //服务条款
