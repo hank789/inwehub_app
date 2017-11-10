@@ -144,10 +144,10 @@ class SystemController extends Controller {
         ];
         $this->validate($request, $validateRules);
         $data = $request->all();
-        $snappy = App::make('snappy.image');
+        $snappy = App::make('snappy.pdf');
         $snappy->setOption('encoding', 'utf8');
         if (filter_var($data['html'], FILTER_VALIDATE_URL)) {
-            $filename = time().str_random(7).'.jpeg';
+            $filename = time().str_random(7).'.pdf';
             \Log::info('test',$data);
             $snappy->generate($data['html'],'/tmp/'.$filename);
             $html = base64_encode(file_get_contents('/tmp/'.$filename));
