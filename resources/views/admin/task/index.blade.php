@@ -62,8 +62,8 @@
                                             <td>{{ $task['id'] }}</td>
                                             <td>{{ $task['task_type_description'].'|'.$task['status_description'] }}</td>
                                             <td>{{ $task['description'] }}</td>
-                                            <td>{{ $task['user_name'] }}</td>
-                                            <td><img width="100" height="100" src="{{ $task['user_avatar_url'] }}"></td>
+                                            <td>{{ $task['task_owner_name'] }}</td>
+                                            <td><img width="100" height="100" src="{{ $task['task_owner_avatar'] }}"></td>
                                             <td>{{ timestamp_format($task['created_at']) }}</td>
                                             <td><span class="label @if($task['task_status']==0) label-warning  @else label-success @endif">{{ trans_task_status($task['task_status']) }}</span> </td>
                                         </tr>
