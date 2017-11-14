@@ -6,7 +6,6 @@
  */
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class ReadHubUser
@@ -14,27 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @package App\Models\Readhub
  * @mixin \Eloquent
  * @property int $id
- * @property int $recommend_status
- * @property int $recommend_sort
- * @property string $slug
- * @property string $title
- * @property string $type
- * @property array $data
- * @property string $category_name
- * @property float $rate
- * @property int|null $resubmit_id
  * @property int $user_id
- * @property int $nsfw
- * @property int $category_id
- * @property int $upvotes
- * @property int $downvotes
- * @property int $comments_number
- * @property string|null $approved_at
- * @property string|null $deleted_at
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @property string|null $url
- * @property string|null $domain
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereApprovedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereCategoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereCategoryName($value)
@@ -58,11 +39,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereUserId($value)
  */
-class Submission extends Model {
+class SubmissionUpvotes extends Model {
 
-    use SoftDeletes,Bookmarkable;
-
-    protected $table = 'submissions';
+    protected $table = 'submission_upvotes';
 
     /**
      * 此模型的连接名称。
@@ -71,54 +50,5 @@ class Submission extends Model {
      */
     protected $connection = 'inwehub_read';
 
-    protected $casts = [
-        'data' => 'json'
-    ];
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'data', 'title', 'slug', 'type', 'category_id', 'category_name', 'rate',
-        'upvotes', 'downvotes', 'user_id','recommend_status','recommend_sort', 'data', 'nsfw', 'approved_at',
-        'deleted_at', 'comments_number','url', 'domain'
-    ];
-
-    const RECOMMEND_STATUS_NOTHING = 0;
-    const RECOMMEND_STATUS_PENDING = 1;
-    const RECOMMEND_STATUS_PUBLISH = 2;
-
-
-    /**
-     * A Submission belongs to a Category.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\belongsTo
-     */
-    public function category()
-    {
-        return $this->belongsTo(Category::class, 'category_id');
-    }
-
-    /**
-     * A submission can have many comments.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    /**
-     * A helper to generate a valid URL to the submission.
-     *
-     * @return string
-     */
-    public function url()
-    {
-        return '/c/'.$this->category_name.'/'.$this->slug;
-    }
 
 }

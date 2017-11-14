@@ -89,6 +89,11 @@ class ApiException extends Exception
     const ACTIVITY_TIME_OVER = 6000;
     const ACTIVITY_PERMISSION_LIMIT = 6001;
 
+    //文章模块
+    const ARTICLE_URL_ALREADY_EXIST = 6101;
+    const ARTICLE_GET_URL_TITLE_ERROR = 6102;
+    const ARTICLE_CATEGORY_NOT_EXIST = 6103;
+
 
     public static $errorMessages = [
         //全局响应吗
@@ -160,8 +165,12 @@ class ApiException extends Exception
 
         //活动模块
         self::ACTIVITY_TIME_OVER => '活动已结束',
-        self::ACTIVITY_PERMISSION_LIMIT => '权限不够'
+        self::ACTIVITY_PERMISSION_LIMIT => '权限不够',
 
+        //文章feed
+        self::ARTICLE_URL_ALREADY_EXIST => '您提交的网址已经存在',
+        self::ARTICLE_GET_URL_TITLE_ERROR => '获取文章标题失败，请手动输入',
+        self::ARTICLE_CATEGORY_NOT_EXIST => '频道不存在'
     ];
 
 

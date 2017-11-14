@@ -357,5 +357,39 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'readhub'], fu
     Route::post('mySubmission','ReadhubController@mySubmission');
 });
 
+//文章
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','prefix' => 'article'], function() {
+    //文章列表
+    Route::post('list','HomeController@feed');
+    //存储文章
+    Route::post('store','SubmissionController@store');
+    //文章详情
+    Route::post('detail-by-slug','SubmissionController@getBySlug');
+
+    //获取url标题
+    Route::post('fetch-url-title','SubmissionController@getTitleAPI');
+    //获取频道
+    Route::post('get-categories','CategoryController@getCategories');
+    //文章回复列表
+    Route::post('comments','CommentController@index');
+    //文章回复
+    Route::post('comment-store','CommentController@comment-store');
+
+    //文章收藏
+    Route::post('bookmark-submission','BookmarksController@bookmarkSubmission');
+
+
+    //赞文章
+    Route::post('upvote-submission','SubmissionVotesController@upVote');
+    //踩文章
+    Route::post('downvote-submission','SubmissionVotesController@downVote');
+
+    //赞回复
+    Route::post('upvote-comment','CommentVotesController@upVote');
+    //踩回复
+    Route::post('downvote-comment','CommentVotesController@downVote');
+
+});
+
 //点赞
 Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');

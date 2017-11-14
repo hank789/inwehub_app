@@ -1027,3 +1027,120 @@ if (!function_exists('saveImgToCdn')){
         return $imgUrl;
     }
 }
+
+if (!function_exists('getUrlImg')) {
+    function getUrlImg($url) {
+        $f = file_get_contents($url);
+        if (str_contains($url,'mp.weixin.qq.com')) {
+            //微信的文章
+            $pattern = '/var msg_cdn_url = "(.*?)";/s';
+            preg_match_all($pattern,$f,$matches);
+            if(array_key_exists(1, $matches) && !empty($matches[1][0])) {
+                $temp = $matches[1][0];
+            } else {
+                $temp='';
+            }
+        } else {
+            $pattern="/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.png]))[\'|\"].*?[\/]?>/";
+            preg_match_all($pattern,$f,$matchContent);
+            if(isset($matchContent[1][0])){
+                $temp=$matchContent[1][0];
+            }else{
+                $temp='';
+            }
+            $temp='';
+        }
+        return $temp;
+    }
+}
+
+if (!function_exists('domain')) {
+    /**
+     * Squeezes the domain address from a valid URL.
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    function domain($url)
+    {
+        return str_ireplace('www.', '', parse_url($url, PHP_URL_HOST));
+    }
+}
+
+if (!function_exists('firstRate')) {
+    /**
+     * Calculates the rate for votable model (currently used for submissions and comments).
+     *
+     * @return float
+     */
+    function firstRate()
+    {
+        $startTime = 1473696439;
+        $created = time();
+        $timeDiff = $created - $startTime;
+
+        return $timeDiff / 45000;
+    }
+}
+
+if (!function_exists('getRequestIpAddress')) {
+    /**
+     * Returns the real IP address of the request even if the website is using Cloudflare.
+     *
+     * @return string
+     */
+    function getRequestIpAddress()
+    {
+        return $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    }
+}
+
+if (!function_exists('getUrlTitle')) {
+    function getUrlTitle($url) {
+        $f = file_get_contents($url);
+        preg_match('/<title>(?<title>.*?)<\/title>/si', $f, $title);
+        $encode = mb_detect_encoding($title['title'], array('GB2312','GBK','UTF-8', 'CP936')); //得到字符串编码
+        $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
+        if ( $encode != 'CP936' && $encode != $file_charset) {
+            return iconv($encode, $file_charset, $title['title']);
+        }
+        return $title['title'];
+    }
+}
+
+if (!function_exists('rateSubmission')) {
+    /**
+     * Calculates the rate for sorting by hot.
+     *
+     * @param int       $upvotes
+     * @param int       $downvotes
+     * @param timestamp $created
+     *
+     * @return float
+     */
+    function rateSubmission($upvotes, $downvotes, $created)
+    {
+        $startTime = 1473696439; // strtotime('2016-09-12 16:07:19')
+        $created = strtotime($created);
+        $timeDiff = $created - $startTime;
+
+        $x = $upvotes - $downvotes;
+
+        if ($x > 0) {
+            $y = 1;
+        } elseif ($x == 0) {
+            $y = 0;
+        } else {
+            $y = -1;
+        }
+
+        if (abs($x) >= 1) {
+            $z = abs($x);
+        } else {
+            $z = 1;
+        }
+
+        return (log10($z) * $y) + ($timeDiff / 45000);
+    }
+}
