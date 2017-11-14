@@ -113,15 +113,6 @@ class SubmissionController extends Controller {
             }
         }
 
-        if ($request->type == 'img') {
-            $this->validate($request, [
-                'title'  => 'required|between:7,150',
-                'photos' => 'required',
-            ]);
-
-            $data = $this->imgSubmission($request);
-        }
-
         if ($request->type == 'text') {
             $this->validate($request, [
                 'title' => 'required|between:7,150',
