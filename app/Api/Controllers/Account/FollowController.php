@@ -173,7 +173,7 @@ class FollowController extends Controller
                     $item['company'] = $info->company;
                     $item['title'] = $info->title;
                     $item['user_avatar_url'] = $info->avatar;
-                    $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
+                    $item['is_expert'] = ($info->authentication && $info->authentication->status == 1) ? 1 : 0;
                     $item['description'] = $info->description;
                     $item['is_followed'] = 1;
                     break;
