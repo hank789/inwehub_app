@@ -3,6 +3,7 @@
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Models\Attention;
+use App\Models\Authentication;
 use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\Tag;
@@ -248,6 +249,7 @@ class FollowController extends Controller
         $users = $query->select('users.*','attentions.id as attention_id')->get();
         $data = [];
         foreach ($users as $user) {
+            $authentication = Authentication::find($user->id);
             $item = [];
             $item['id'] = $user->attention_id;
             $item['user_id'] = $user->id;
@@ -256,7 +258,7 @@ class FollowController extends Controller
             $item['company'] = $user->company;
             $item['title'] = $user->title;
             $item['user_avatar_url'] = $user->avatar;
-            $item['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+            $item['is_expert'] = ($authentication && $authentication->status === 1) ? 1 : 0;
             $item['description'] = $user->description;
             $item['is_followed'] = 1;
             $data[] = $item;
