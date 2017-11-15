@@ -42,7 +42,7 @@ class TagsLogic {
 
         $level = 2;
         $question_c = Category::whereIn('slug',$category_name)->get()->pluck('id')->toArray();
-        $question_c_arr = Category::whereIn('parent_id',$question_c)->where('status',1)->get();
+        $question_c_arr = Category::whereIn('parent_id',$question_c)->where('status',1)->orderBy('sort','asc')->get();
         $tags = [];
         foreach($question_c_arr as $category){
             $query = $category->tags();

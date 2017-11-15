@@ -18,17 +18,11 @@
                                 <div class="form-group">
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" name='cacheItems[]' value="data" checked="checked"/>
-                                            更新数据缓存
+                                            <input type="checkbox" name='cacheItems[]' value="tags_question" checked="checked"/>
+                                            更新擅长标签缓存
                                         </label>
                                     </div>
 
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="cacheItems[]" value="view" checked="checked"/>
-                                            更新模板缓存
-                                        </label>
-                                    </div>
                                 </div>
                             </div>
                         </div>

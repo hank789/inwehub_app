@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class ToolController extends AdminController
@@ -20,14 +21,10 @@ class ToolController extends AdminController
     {
         if($request->isMethod('post')){
             $cacheItems = $request->input('cacheItems',[]);
-            if(in_array('data',$cacheItems)){
-                Artisan::call('cache:clear');
-                Artisan::call('config:clear');
+            if(in_array('tags_question',$cacheItems)){
+                Cache::forget('tags:1:');
             }
 
-            if(in_array('view',$cacheItems)){
-                Artisan::call('view:clear');
-            }
             return $this->success(route('admin.tool.clearCache'),'缓存更新成功');
         }
         return view('admin.tool.clearCache');
