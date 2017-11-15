@@ -374,10 +374,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('comments','CommentController@index');
     //文章回复
     Route::post('comment-store','CommentController@comment-store');
-
+    //删除回复
+    Route::post('destroy-comment','CommentController@destroy');
     //文章收藏
     Route::post('bookmark-submission','BookmarksController@bookmarkSubmission');
-
+    //删除文章
+    Route::post('destroy-submission','SubmissionController@destroy');
 
     //赞文章
     Route::post('upvote-submission','SubmissionVotesController@upVote');
@@ -388,6 +390,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('upvote-comment','CommentVotesController@upVote');
     //踩回复
     Route::post('downvote-comment','CommentVotesController@downVote');
+
 
 });
 

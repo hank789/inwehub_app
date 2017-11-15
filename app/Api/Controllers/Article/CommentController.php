@@ -146,7 +146,6 @@ class CommentController extends Controller {
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return response
      */
     public function destroy(Request $request)
     {
@@ -154,15 +153,17 @@ class CommentController extends Controller {
             'id' => 'required|integer',
         ]);
 
-        $comment = $this->getCommentById($request->id);
-        $submission = $this->getSubmissionById($comment->submission_id);
-        abort_unless($this->mustBeOwner($comment), 403);
+        $comment = Comment::find($request->id);
+        $submission = Submission::find($comment->submission_id);
+        $user = $request->user();
+        if ($comment->user_id != $user->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
 
-        event(new CommentWasDeleted($comment, $submission, true));
+        $comment->delete();
+        $submission->decrement('comments_number');
 
-        $comment->forceDelete();
-
-        return response('删除成功', 200);
+        return self::createJsonData(true);
 
     }
 

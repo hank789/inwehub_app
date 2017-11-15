@@ -22,24 +22,6 @@ class SubmissionController extends Controller {
     use SubmitSubmission;
 
     /**
-     * shows the submission page to guests.
-     *
-     * @param string $category
-     * @param string $slug
-     *
-     * @return view
-     */
-    public function show($category, $slug)
-    {
-        $submission = $this->getSubmissionBySlug($slug);
-        $category = $this->getCategoryByName($submission->category_name);
-        $category->stats = $this->categoryStats($category->id);
-        $submission->category = $category;
-
-        return view('submission.show', compact('submission'));
-    }
-
-    /**
      * Stores the submitted submission into database. There are 3 types of submissions:
      * 1.text, 2.link and 3.img. 4.gif Different actions are required for different
      * types. After storing the submission, redirects to the submission page.
@@ -175,29 +157,6 @@ class SubmissionController extends Controller {
     }
 
     /**
-     * hides the submission so the user won't see it (=== block).
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return response
-     */
-    public function hide(Request $request)
-    {
-        $this->validate($request, [
-            'submission_id' => 'required|integer',
-        ]);
-
-        $user = Auth::user();
-
-        $user->hides()->attach($request->submission_id);
-
-        // update the cach record for hiddenSubmissions:
-        $this->updateHiddenSubmissions($user->id, $request->submission_id);
-
-        return response('文章已经进入到了您的隐藏列表', 200);
-    }
-
-    /**
      * Returns the submission.
      *
      * @param \Illuminate\Http\Request $request
@@ -222,7 +181,6 @@ class SubmissionController extends Controller {
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return response
      */
     public function destroy(Request $request)
     {
@@ -231,16 +189,17 @@ class SubmissionController extends Controller {
         ]);
 
         $submission = Submission::findOrFail($request->id);
+        $user = $request->user();
+        if ($submission->user_id != $user->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
 
-        abort_unless($this->mustBeOwner($submission), 403);
-
-        event(new SubmissionWasDeleted($submission,true));
         if ($submission->type == 'link') {
             Redis::connection()->hdel('voten:submission:url',$submission->data['url']);
         }
-        $submission->forceDelete();
+        $submission->delete();
 
-        return response('Submission was successfully deleted', 200);
+        return self::createJsonData(true);
     }
 
     /**
