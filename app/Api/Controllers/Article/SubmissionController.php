@@ -110,6 +110,10 @@ class SubmissionController extends Controller {
         }
 
         try {
+            $data['current_address_name'] = $request->input('current_address_name');
+            $data['current_address_longitude'] = $request->input('current_address_longitude');
+            $data['current_address_latitude'] = $request->input('current_address_latitude');
+
             $submission = Submission::create([
                 'title'         => $request->title,
                 'slug'          => $this->slug($request->title),
