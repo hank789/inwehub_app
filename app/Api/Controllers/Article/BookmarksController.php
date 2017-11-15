@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Models\Readhub\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
@@ -23,7 +24,10 @@ class BookmarksController extends Controller {
             'id' => 'required|integer',
         ]);
 
-        $submission = Submission::findOrFail($request->id);
+        $submission = Submission::find($request->id);
+        if (!$submission) {
+            throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
+        }
         $user = $request->user();
         $type = $submission->bookmark($user->id);
 

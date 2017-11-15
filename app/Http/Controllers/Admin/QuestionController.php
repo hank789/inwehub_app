@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Question;
+use App\Models\RecommendRead;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -90,6 +91,28 @@ class QuestionController extends AdminController
         $questionIds = $request->input('id');
         Question::whereIn('id',$questionIds)->update(['status'=>1]);
         return $this->success(route('admin.question.index').'?status=0','问题审核成功');
+
+    }
+
+    /*设为精选推荐*/
+    public function verifyRecommendHeart(Request $request)
+    {
+        $questionIds = $request->input('id');
+        foreach ($questionIds as $questionId) {
+            $question = Question::find($questionId);
+            RecommendRead::create([
+                'source_id' => $questionId,
+                'source_type' => get_class($question),
+                'sort' => 0,
+                'audit_status' => 0,
+                'read_type' => RecommendRead::READ_TYPE_QUESTION,
+                'data' => [
+                    'title' => $question->title,
+                    'img'   => ''
+                ]
+            ]);
+        }
+        return $this->success(route('admin.question.index'),'设为精选成功');
 
     }
 

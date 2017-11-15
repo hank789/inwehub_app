@@ -27,6 +27,7 @@
                             <div class="col-xs-3">
                                 <div class="btn-group">
                                     <a href="{{ route('ask.question.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="发起提问"><i class="fa fa-plus"></i></a>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.question.verify_heart') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-thumbs-o-up"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消推荐" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_recommend') }}','确认将选中项取消推荐？')"><i class="fa fa-thumbs-o-down"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
@@ -43,9 +44,6 @@
                                         </div>
                                         <div class="col-xs-2">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
-                                        </div>
-                                        <div class="col-xs-3">
-                                            <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                         </div>
                                         <div class="col-xs-3">
                                             <div>

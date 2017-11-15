@@ -93,6 +93,7 @@ class ApiException extends Exception
     const ARTICLE_URL_ALREADY_EXIST = 6101;
     const ARTICLE_GET_URL_TITLE_ERROR = 6102;
     const ARTICLE_CATEGORY_NOT_EXIST = 6103;
+    const ARTICLE_NOT_EXIST = 6104;
 
 
     public static $errorMessages = [
@@ -170,7 +171,8 @@ class ApiException extends Exception
         //文章feed
         self::ARTICLE_URL_ALREADY_EXIST => '您提交的网址已经存在',
         self::ARTICLE_GET_URL_TITLE_ERROR => '获取文章标题失败，请手动输入',
-        self::ARTICLE_CATEGORY_NOT_EXIST => '频道不存在'
+        self::ARTICLE_CATEGORY_NOT_EXIST => '频道不存在',
+        self::ARTICLE_NOT_EXIST => '文章不存在'
     ];
 
 

@@ -101,6 +101,9 @@ Route::post('question/destroy',['as'=>'admin.question.destroy','uses'=>'Question
 Route::post('question/changeCategories',['as'=>'admin.question.changeCategories','uses'=>'QuestionController@changeCategories']);
 /*问题审核*/
 Route::post('question/verify',['as'=>'admin.question.verify','uses'=>'QuestionController@verify']);
+//设为精选推荐
+Route::post('question/verifyRecommendHeart',['as'=>'admin.question.verify_heart','uses'=>'QuestionController@verifyRecommendHeart']);
+
 //设为推荐
 Route::post('question/verifyRecommend',['as'=>'admin.question.verify_recommend','uses'=>'QuestionController@verifyRecommend']);
 //取消推荐
@@ -171,6 +174,9 @@ Route::resource('recommendQa', 'RecommendQaController',['except' => ['show'],'as
 
 /*首页阅读推荐*/
 Route::resource('recommendRead', 'RecommendReadController',['except' => ['show'],'as'=>'admin.operate']);
+Route::post('recommendRead/verify',['as'=>'admin.operate.recommendRead.verify','uses'=>'RecommendReadController@verify']);
+Route::post('recommendRead/cancel_verify',['as'=>'admin.operate.recommendRead.cancel_verify','uses'=>'RecommendReadController@cancelVerify']);
+
 
 /*刷新首页专家推荐*/
 Route::get('recommendExpert/refresh',['as'=>'admin.operate.recommendExpert.refresh','uses'=>'OperateController@refreshExpert']);
@@ -184,7 +190,6 @@ Route::post('version/update',['as'=>'admin.appVersion.update','uses'=>'VersionCo
 Route::post('version/destroy',['as'=>'admin.appVersion.destroy','uses'=>'VersionController@destroy']);
 Route::post('version/verify',['as'=>'admin.appVersion.verify','uses'=>'VersionController@verify']);
 
-
 /*邀请码管理*/
 Route::get('rgcode/index',['as'=>'admin.operate.rgcode.index','uses'=>'RegistrationCodeController@index']);
 Route::get('rgcode/create',['as'=>'admin.operate.rgcode.create','uses'=>'RegistrationCodeController@create']);
@@ -193,6 +198,13 @@ Route::get('rgcode/edit/{id}',['as'=>'admin.operate.rgcode.edit','uses'=>'Regist
 Route::post('rgcode/update',['as'=>'admin.operate.rgcode.update','uses'=>'RegistrationCodeController@update']);
 Route::post('rgcode/destroy',['as'=>'admin.operate.rgcode.destroy','uses'=>'RegistrationCodeController@destroy']);
 Route::post('rgcode/verify',['as'=>'admin.operate.rgcode.verify','uses'=>'RegistrationCodeController@verify']);
+
+
+//发文管理
+Route::get('submission/index',['as'=>'admin.operate.article.index','uses'=>'SubmissionController@index']);
+Route::post('submission/verify_recommend',['as'=>'admin.operate.article.verify_recommend','uses'=>'SubmissionController@verifyRecommend']);
+Route::post('submission/destroy',['as'=>'admin.operate.article.destroy','uses'=>'SubmissionController@destroy']);
+
 
 //企业管理
 Route::group(['prefix' => 'company','namespace'=>'Company'], function() {
