@@ -122,13 +122,15 @@ class SubmissionVotesController extends Controller {
                 $previous_vote = 'upvote';
                 $type = 'cancel_upvote';
                 $new_upvotes = ($submission->upvotes - 1);
-                $upvote->delete();
+                SubmissionUpvotes::where('user_id',$user->id)
+                    ->where('submission_id',$submission->id)->delete();
             } elseif ($downvote) {
                 //之前是踩，再请求一次是赞
                 $previous_vote = 'downvote';
                 $new_upvotes = ($submission->upvotes + 1);
                 $new_downvotes = ($submission->downvotes - 1);
-                $downvote->delete();
+                SubmissionDownvotes::where('user_id',$user->id)
+                    ->where('submission_id',$submission->id)->delete();
                 SubmissionUpvotes::create([
                     'user_id' => $user->id,
                     'ip_address' => getRequestIpAddress(),
@@ -193,7 +195,8 @@ class SubmissionVotesController extends Controller {
             if ($downvote) {
                 //之前是踩，再请求一次就是取消踩
                 $new_downvotes = ($submission->downvotes - 1);
-                $downvote->delete();
+                SubmissionDownvotes::where('user_id',$user->id)
+                    ->where('submission_id',$submission->id)->delete();
                 $previous_vote = 'downvote';
                 $type = 'cancel_downvote';
             } elseif ($upvote) {
@@ -201,7 +204,8 @@ class SubmissionVotesController extends Controller {
                 $previous_vote = 'upvote';
                 $new_downvotes = ($submission->downvotes + 1);
                 $new_upvotes = ($submission->upvotes - 1);
-                $upvote->delete();
+                SubmissionUpvotes::where('user_id',$user->id)
+                    ->where('submission_id',$submission->id)->delete();
                 SubmissionDownvotes::create([
                     'user_id' => $user->id,
                     'ip_address' => getRequestIpAddress(),

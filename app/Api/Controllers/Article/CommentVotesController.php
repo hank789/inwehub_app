@@ -123,13 +123,15 @@ class CommentVotesController extends Controller {
                 //如果之前是赞，再请求一次是取消赞
                 $previous_vote = 'upvote';
                 $new_upvotes = ($comment->upvotes - 1);
-                $upvote->delete();
+                CommentUpvotes::where('user_id',$user->id)
+                    ->where('comment_id',$comment->id)->delete();
             } elseif ($downvote) {
                 //之前是踩，再请求一次是赞
                 $previous_vote = 'downvote';
                 $new_upvotes = ($comment->upvotes + 1);
                 $new_downvotes = ($comment->downvotes - 1);
-                $downvote->delete();
+                CommentDownvotes::where('user_id',$user->id)
+                    ->where('comment_id',$comment->id)->delete();
                 CommentUpvotes::create([
                     'user_id' => $user->id,
                     'ip_address' => getRequestIpAddress(),
@@ -188,13 +190,15 @@ class CommentVotesController extends Controller {
                 //之前是踩，再请求一次就是取消踩
                 $previous_vote = 'downvote';
                 $new_downvotes = ($comment->downvotes - 1);
-                $downvote->delete();
+                CommentDownvotes::where('user_id',$user->id)
+                    ->where('comment_id',$comment->id)->delete();
             } elseif ($upvote) {
                 //之前是赞，再请求一次是踩
                 $previous_vote = 'upvote';
                 $new_downvotes = ($comment->downvotes + 1);
                 $new_upvotes = ($comment->upvotes - 1);
-                $upvote->delete();
+                CommentUpvotes::where('user_id',$user->id)
+                    ->where('comment_id',$comment->id)->delete();
                 CommentDownvotes::create([
                     'user_id' => $user->id,
                     'ip_address' => getRequestIpAddress(),
