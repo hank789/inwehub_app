@@ -30,7 +30,8 @@
         "symfony/filesystem": "^3.3",
         "tlapi/slack-laravel": "dev-master",
         "tymon/jwt-auth": "^0.5.10",
-        "zhuzhichao/ip-location-zh": "^2.2"
+        "zhuzhichao/ip-location-zh": "^2.2",
+        "overtrue/laravel-pinyin": "~3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
