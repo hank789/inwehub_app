@@ -34,7 +34,7 @@ class SubmissionController extends Controller {
     {
         $user = $request->user();
 
-        if (RateLimiter::instance()->increase('submission:store',$user->id)) {
+        if (RateLimiter::instance()->increase('submission:store',$user->id,30)) {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -62,9 +62,14 @@ class SubmissionController extends Controller {
             try {
                 //$data = $this->linkSubmission($request);
                 $img = getUrlImg($request->url);
-                //保存图片
-                $img_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-                Storage::put($img_name, file_get_contents($img));
+                $img_url = '';
+                if ($img) {
+                    //保存图片
+                    $img_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+                    Storage::put($img_name, file_get_contents($img));
+                    $img_url = Storage::url($img_name);
+                }
+
 
                 $data = [
                     'url'           => $request->url,
@@ -72,7 +77,7 @@ class SubmissionController extends Controller {
                     'description'   => null,
                     'type'          => 'link',
                     'embed'         => null,
-                    'img'           => Storage::url($img_name),
+                    'img'           => $img_url,
                     'thumbnail'     => null,
                     'providerName'  => null,
                     'publishedTime' => null,
@@ -98,7 +103,7 @@ class SubmissionController extends Controller {
         if ($request->type == 'text') {
             $this->validate($request, [
                 'title' => 'required|between:7,150',
-                'type'  => 'required|in:link,img,text',
+                'type'  => 'required|in:link,text',
             ]);
 
             $data = $this->textSubmission($request);
@@ -230,15 +235,12 @@ class SubmissionController extends Controller {
             'submission_id' => 'required|integer',
         ]);
         $submission = Submission::findOrFail($request->submission_id);
-        abort_unless($this->mustBeVotenAdministrator(), 403);
-        $msg = '推荐成功';
         if ($submission->recommend_status == 0){
             $submission->recommend_status = 1;
-            $msg = '推荐成功';
             $submission->save();
         }
 
-        return response($msg, 200);
+        return self::createJsonData(true);
     }
 
 }

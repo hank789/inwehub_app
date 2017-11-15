@@ -183,6 +183,8 @@ trait SubmitSubmission
                         Storage::disk('oss')->put($file_name,file_get_contents($base64));
                         $img_url = Storage::disk('oss')->url($file_name);
                         $list[] = $img_url;
+                    } elseif(isset($parse_url['host'])) {
+                        $list[] = $base64;
                     }
                     continue;
                 }
@@ -193,7 +195,7 @@ trait SubmitSubmission
                 $list[] = $img_url;
             }
         }
-        return ['photos'=>$list];
+        return ['img'=>$list];
     }
 
     /**

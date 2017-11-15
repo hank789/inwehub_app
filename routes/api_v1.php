@@ -365,6 +365,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('store','SubmissionController@store');
     //文章详情
     Route::post('detail-by-slug','SubmissionController@getBySlug');
+    //推荐文章到app
+    Route::post('recommend-app-submission','SubmissionController@recommendSubmission');
 
     //获取url标题
     Route::post('fetch-url-title','SubmissionController@getTitleAPI');
