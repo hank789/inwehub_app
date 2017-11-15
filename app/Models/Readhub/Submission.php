@@ -100,7 +100,7 @@ class Submission extends Model {
     public function owner()
     {
         return $this->belongsTo(ReadHubUser::class, 'user_id')
-            ->select(['id', 'username', 'avatar']);
+            ->select(['id', 'username', 'avatar', 'is_expert']);
     }
 
     /**

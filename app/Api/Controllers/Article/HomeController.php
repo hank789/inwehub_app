@@ -47,8 +47,8 @@ class HomeController extends Controller {
             $submissions->orderBy('rate', 'desc');
         }
 
-        $return = $submissions->simplePaginate(Config::get('api_data_page_size'));
-        return self::createJsonData(true, $return->toArray());
+        $return = $submissions->simplePaginate(Config::get('api_data_page_size'))->toArray();
+        return self::createJsonData(true, $return);
     }
 
 }

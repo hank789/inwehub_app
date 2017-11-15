@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Events\Frontend\System\Credit;
 use App\Models\Area;
 use App\Models\Authentication;
+use App\Models\Readhub\ReadHubUser;
 use App\Models\Tag;
+use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\AuthenticationUpdated;
 use App\Services\City\CityData;
@@ -59,6 +61,8 @@ class AuthenticationController extends AdminController
             $action = 'expert_valid';
             $object->user->notify(new AuthenticationUpdated($object));
             event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$data['user_id'],'专家认证'));
+            // 更新readhub用户资料
+            ReadHubUser::syncUser($object->user);
         }
         return $this->success(route('admin.authentication.index'),'行家认证信息添加成功');
     }
@@ -117,6 +121,8 @@ class AuthenticationController extends AdminController
             $user = $authentication->user;
             $user->notify(new AuthenticationUpdated($authentication));
         }
+        // 更新readhub用户资料
+        ReadHubUser::syncUser($authentication->user);
 
         return $this->success(route('admin.authentication.index'),'行家认证信息修改成功');
 
@@ -144,6 +150,10 @@ class AuthenticationController extends AdminController
     {
         $ids = $request->input('id');
         Authentication::destroy($ids);
+        foreach ($ids as $id) {
+            // 更新readhub用户资料
+            ReadHubUser::syncUser(User::find($id));
+        }
         return $this->success(route('admin.authentication.index'),'行家认证信息删除成功');
     }
 }
