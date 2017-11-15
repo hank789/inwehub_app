@@ -109,7 +109,7 @@ class SubmissionController extends Controller {
                 'title'         => $request->title,
                 'slug'          => $this->slug($request->title),
                 'type'          => $request->type,
-                'category_name' => $request->name,
+                'category_name' => $category->name,
                 'category_id'   => $category->id,
                 'nsfw'          => $category->nsfw,
                 'rate'          => firstRate(),
