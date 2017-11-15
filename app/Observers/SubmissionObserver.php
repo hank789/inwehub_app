@@ -32,7 +32,7 @@ class SubmissionObserver implements ShouldQueue {
             if ($value){
                 $slackFields[] = [
                     'title' => $field,
-                    'value' => $value
+                    'value' => is_array($value)?implode(',',$value):$value
                 ];
             }
         }
