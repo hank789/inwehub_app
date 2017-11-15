@@ -75,6 +75,8 @@ class Submission extends Model {
         'data' => 'json'
     ];
 
+    protected $with = ['owner'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -90,6 +92,16 @@ class Submission extends Model {
     const RECOMMEND_STATUS_PENDING = 1;
     const RECOMMEND_STATUS_PUBLISH = 2;
 
+    /**
+     * A submission is owned by a user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function owner()
+    {
+        return $this->belongsTo(ReadHubUser::class, 'user_id')
+            ->select(['id', 'username', 'avatar']);
+    }
 
     /**
      * A Submission belongs to a Category.

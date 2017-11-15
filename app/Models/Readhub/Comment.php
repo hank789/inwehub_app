@@ -55,4 +55,12 @@ class Comment extends Model {
     protected $connection = 'inwehub_read';
 
 
+    /**
+     * Fillable fields for the table.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'body', 'upvotes', 'rate', 'downvotes', 'submission_id', 'level', 'parent_id', 'category_id', 'user_id', 'edited_at',
+    ];
 }

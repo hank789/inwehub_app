@@ -50,5 +50,6 @@ class CommentUpvotes extends Model {
      */
     protected $connection = 'inwehub_read';
 
+    protected $fillable = ['user_id','ip_address','comment_id'];
 
 }

@@ -124,11 +124,6 @@ class SubmissionController extends Controller {
             throw new ApiException(ApiException::ERROR);
         }
 
-        // Update the submission_id field in photos (We just found access to the submission_id)
-        if ($request->type == 'img') {
-            DB::table('photos')->whereIn('id', $request->input('photos'))->update(['submission_id' => $submission->id]);
-        }
-
         try {
             $this->firstVote($user, $submission->id);
             dispatch((new NotifyInwehub($user->id,'NewSubmission',['submission_id'=>$submission->id]))->onQueue('inwehub:default'));

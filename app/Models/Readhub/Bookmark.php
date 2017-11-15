@@ -54,5 +54,7 @@ class Bookmark extends Model {
      */
     protected $connection = 'inwehub_read';
 
+    protected $fillable = ['user_id', 'bookmarkable_id', 'bookmarkable_type'];
+
 
 }

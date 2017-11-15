@@ -50,5 +50,6 @@ class SubmissionUpvotes extends Model {
      */
     protected $connection = 'inwehub_read';
 
+    protected $fillable = ['user_id','ip_address','submission_id'];
 
 }

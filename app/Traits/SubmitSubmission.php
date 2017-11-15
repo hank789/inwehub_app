@@ -48,7 +48,7 @@ trait SubmitSubmission
     /**
      * Up-votes on submission.
      *
-     * @param collection $user
+     * @param $user
      * @param int        $submission_id
      *
      * @return void
