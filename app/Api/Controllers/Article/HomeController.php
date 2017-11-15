@@ -1,6 +1,8 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
+use App\Models\Readhub\Bookmark;
 use App\Models\Readhub\Submission;
+use App\Models\Readhub\SubmissionUpvotes;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -27,6 +29,7 @@ class HomeController extends Controller {
             'page' => 'required|integer',
         ]);
 
+        $user = $request->user();
         $submissions = (new Submission())->newQuery();
 
         // spicify the filter:
@@ -48,6 +51,16 @@ class HomeController extends Controller {
         }
 
         $return = $submissions->simplePaginate(Config::get('api_data_page_size'))->toArray();
+        foreach ($return['data'] as &$item) {
+            $upvote = SubmissionUpvotes::where('user_id',$user->id)
+                ->where('submission_id',$item['id'])->exists();
+            $bookmark = Bookmark::where('user_id',$user->id)
+                ->where('bookmarkable_id',$item['id'])
+                ->where('bookmarkable_type','App\Models\Readhub\Submission')
+                ->exists();
+            $item['is_upvoted'] = $upvote ? 1 : 0;
+            $item['is_bookmark'] = $bookmark ? 1: 0;
+        }
         return self::createJsonData(true, $return);
     }
 

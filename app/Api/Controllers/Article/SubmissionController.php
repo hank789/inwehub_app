@@ -2,8 +2,10 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\NotifyInwehub;
+use App\Models\Readhub\Bookmark;
 use App\Models\Readhub\Category;
 use App\Models\Readhub\Submission;
+use App\Models\Readhub\SubmissionUpvotes;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
@@ -173,9 +175,19 @@ class SubmissionController extends Controller {
             'slug' => 'required',
         ]);
 
+        $user = $request->user();
         $submission = Submission::where('slug',$request->slug)->first();
+        $return = $submission->toArray();
+        $upvote = SubmissionUpvotes::where('user_id',$user->id)
+            ->where('submission_id',$submission->id)->exists();
+        $bookmark = Bookmark::where('user_id',$user->id)
+            ->where('bookmarkable_id',$submission->id)
+            ->where('bookmarkable_type','App\Models\Readhub\Submission')
+            ->exists();
+        $return['is_upvoted'] = $upvote ? 1 : 0;
+        $return['is_bookmark'] = $bookmark ? 1: 0;
 
-        return self::createJsonData(true,$submission->toArray());
+        return self::createJsonData(true,$return);
     }
 
 
