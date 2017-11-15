@@ -23,7 +23,7 @@ class BookmarksController extends Controller {
             'id' => 'required|integer',
         ]);
 
-        $submission = Submission::find($request->id);
+        $submission = Submission::findOrFail($request->id);
         $user = $request->user();
         $type = $submission->bookmark($user->id);
 
