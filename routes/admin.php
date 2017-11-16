@@ -129,6 +129,9 @@ Route::resource('answer', 'AnswerController',['only' => ['index','edit','update'
 Route::post('article/destroy',['as'=>'admin.article.destroy','uses'=>'ArticleController@destroy']);
 /*文章审核*/
 Route::post('article/verify',['as'=>'admin.article.verify','uses'=>'ArticleController@verify']);
+//文章设为精选
+Route::post('article/verifyRecommend',['as'=>'admin.article.verify_recommend','uses'=>'ArticleController@verifyRecommend']);
+
 /*修改分类核*/
 Route::post('article/changeCategories',['as'=>'admin.article.changeCategories','uses'=>'ArticleController@changeCategories']);
 /*文章管理*/
