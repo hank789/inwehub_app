@@ -103,7 +103,7 @@ class AnswerController extends Controller
         $collect = Collection::where('user_id',$user->id)->where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->first();
 
         $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
-        $supporters = '';
+        $supporters = [];
         if ($support_uids) {
             $supporters = User::whereIn('id',$support_uids)->get()->pluck('name');
         }
@@ -128,7 +128,7 @@ class AnswerController extends Controller
             'collect_num' => $answer->collections,
             'average_rate'   => $answer->getFeedbackRate(),
             'created_at' => (string)$answer->created_at,
-            'supporter_list' => $supporters ? implode(',',$supporters) :''
+            'supporter_list' => $supporters
         ];
 
 

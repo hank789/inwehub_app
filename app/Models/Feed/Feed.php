@@ -4,6 +4,9 @@ namespace App\Models\Feed;
 
 use App\Models\Answer;
 use App\Models\Question;
+use App\Models\Readhub\Comment;
+use App\Models\Readhub\Submission;
+use App\Models\Readhub\SubmissionUpvotes;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -128,6 +131,12 @@ class Feed extends Model
                 //发布文章
                 $comment_url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
                 $url = $this->data['view_url']?:$comment_url;
+                $submission = Submission::find($this->source_id);
+                $support_uids = SubmissionUpvotes::where('submission_id',$this->source_id)->take(20)->pluck('user_id');
+                $supporters = [];
+                if ($support_uids) {
+                    $supporters = User::whereIn('id',$support_uids)->get()->pluck('name');
+                }
                 $data = [
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
@@ -137,6 +146,10 @@ class Feed extends Model
                     'current_address_longitude' => $this->data['current_address_longitude']??'',
                     'current_address_latitude'  => $this->data['current_address_latitude']??'',
                     'comment_url' => $comment_url,
+                    'comment_number' => Comment::where('submission_id',$this->source_id)->count(),
+                    'support_number' => $submission->upvotes,
+                    'supporter_list' => $supporters,
+                    'comments' => $submission->comments()->orderBy('id','desc')->take(8)
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
