@@ -106,6 +106,9 @@ class NotifyInwehub implements ShouldQueue
                         'slug'=>$submission->slug,
                         'submission_title'=>$submission->title,
                         'domain'=>$submission->data['domain']??'',
+                        'current_address_name' => $submission->data['current_address_name'],
+                        'current_address_longitude' => $submission->data['current_address_longitude'],
+                        'current_address_latitude'  => $submission->data['current_address_latitude'],
                         'img'=>$submission->data['img']??''])
                     ->log($user->name.'发布了文章', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
                 return;
