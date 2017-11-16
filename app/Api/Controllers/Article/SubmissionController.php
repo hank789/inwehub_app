@@ -186,7 +186,7 @@ class SubmissionController extends Controller {
             ->where('bookmarkable_type','App\Models\Readhub\Submission')
             ->exists();
         $attention_user = Attention::where("user_id",'=',$submission->user_id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
-        $return['is_followed'] = $attention_user ?1 :0;
+        $return['is_followed_author'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
         $return['is_commented'] = $submission->comments()->count();
