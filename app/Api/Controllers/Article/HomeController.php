@@ -60,6 +60,9 @@ class HomeController extends Controller {
                 ->exists();
             $item['is_upvoted'] = $upvote ? 1 : 0;
             $item['is_bookmark'] = $bookmark ? 1: 0;
+            $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
+            $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
+            $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
         }
         return self::createJsonData(true, $return);
     }

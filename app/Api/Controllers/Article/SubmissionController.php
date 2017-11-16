@@ -186,6 +186,9 @@ class SubmissionController extends Controller {
             ->exists();
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
+        $return['data']['current_address_name'] = $return['data']['current_address_name']??'';
+        $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
+        $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
 
         return self::createJsonData(true,$return);
     }
