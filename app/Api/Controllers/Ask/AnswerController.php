@@ -19,6 +19,7 @@ use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Support;
 use App\Models\Task;
+use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionAnswered;
 use App\Notifications\NewQuestionConfirm;
@@ -396,8 +397,15 @@ class AnswerController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $type = $request->input('type',0);
-
-        $query = Answer::where('user_id','=',$request->user()->id);
+        $uuid = $request->input('uuid');
+        $user = $request->user();
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        }
+        $query = Answer::where('user_id','=',$user->id);
 
         switch($type){
             case 1:

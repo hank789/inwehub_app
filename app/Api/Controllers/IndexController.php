@@ -1,4 +1,5 @@
 <?php namespace App\Api\Controllers;
+use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
 use App\Models\Article;
 use App\Models\Attention;
@@ -197,7 +198,15 @@ class IndexController extends Controller {
     }
 
     public function myCommentList(Request $request){
-        $user = $request->user();
+        $uuid = $request->input('uuid');
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        } else {
+            $user = $request->user();
+        }
         $comments = $user->comments()->orderBy('id','desc')->simplePaginate(Config::get('api_data_page_size'));
         $return = [];
 

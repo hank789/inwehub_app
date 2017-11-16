@@ -598,8 +598,16 @@ class QuestionController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $type = $request->input('type',0);
-
-        $query = $request->user()->questions();
+        $uuid = $request->input('uuid');
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+            $query = $user->questions()->where('hide',0);
+        } else {
+            $query = $request->user()->questions();
+        }
         switch($type){
             case 1:
                 //未完成
