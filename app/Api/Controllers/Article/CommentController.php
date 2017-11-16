@@ -76,7 +76,7 @@ class CommentController extends Controller {
             'sort'            => 'required',
         ]);
 
-        $submission = Submission::where('slug',$request->submission_slug);
+        $submission = Submission::where('slug',$request->submission_slug)->first();
 
         if ($request->sort == 'new') {
             $comments = $submission->comments()
