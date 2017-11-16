@@ -183,7 +183,7 @@ class SubmissionController extends Controller {
             ->where('submission_id',$submission->id)->exists();
         $bookmark = Bookmark::where('user_id',$user->id)
             ->where('bookmarkable_id',$submission->id)
-            ->where('bookmarkable_type','App\Models\Readhub\Submission')
+            ->where('bookmarkable_type',get_class($submission))
             ->exists();
         $attention_user = Attention::where("user_id",'=',$submission->user_id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
         $return['is_followed_author'] = $attention_user ?1 :0;

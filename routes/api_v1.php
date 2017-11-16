@@ -322,7 +322,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','nam
 
     //企业服务列表
     Route::post('services','CompanyController@serviceList');
-
+    //用户申请企业服务
+    Route::post('applyService','CompanyController@applyService');
 
 });
 

@@ -78,7 +78,7 @@ class CollectionController extends Controller
         $user = $request->user();
 
         if ($source_type == 'readhubSubmission') {
-            $query = Bookmark::where('user_id',$user->id)->where('bookmarkable_type','App\Submission');
+            $query = Bookmark::where('user_id',$user->id)->where('bookmarkable_type',$sourceClassMap[$source_type]);
         } else {
             $query = $user->collections()->where('source_type','=',$sourceClassMap[$source_type]);
         }

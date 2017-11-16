@@ -34,6 +34,7 @@ class Kernel extends ConsoleKernel
         Commands\User\GenRcCode::class,
         Commands\Readhub\SyncComment::class,
         Commands\User\CdnUserAvatar::class,
+        Commands\Readhub\SyncBookmark::class,
 
 
     ];

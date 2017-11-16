@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Company;
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Company\Company;
@@ -93,8 +94,23 @@ class CompanyController extends Controller {
     }
 
 
-    public function serviceList(Request $request) {
+    public function serviceList() {
         $services = CompanyService::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('api_data_page_size'));
         return self::createJsonData(true, $services->toArray());
     }
+
+    public function applyService(Request $request) {
+        $this->validate($request, [
+            'service_title'          => 'required|min:2'
+        ]);
+        $user = $request->user();
+        $fields = [];
+        $fields[] = [
+            'title'=>'服务名称',
+            'value'=>$request->input('service_title')
+        ];
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.'申请了企业服务'));
+        return self::createJsonData(true);
+    }
+
 }
