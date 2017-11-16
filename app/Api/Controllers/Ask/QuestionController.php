@@ -97,6 +97,11 @@ class QuestionController extends Controller
             //回答查看数增加
             //if ($is_self || $is_answer_author || $is_pay_for_view) $bestAnswer->increment('views');
             $bestAnswer->increment('views');
+            $support_uids = Support::where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->take(20)->pluck('user_id');
+            $supporters = '';
+            if ($support_uids) {
+                $supporters = User::whereIn('id',$support_uids)->get()->pluck('name');
+            }
             $answers_data[] = [
                 'id' => $bestAnswer->id,
                 'user_id' => $bestAnswer->user_id,
@@ -114,7 +119,8 @@ class QuestionController extends Controller
                 'view_number'    => $bestAnswer->views,
                 'comment_number' => $bestAnswer->comments,
                 'average_rate'   => $bestAnswer->getFeedbackRate(),
-                'created_at' => (string)$bestAnswer->created_at
+                'created_at' => (string)$bestAnswer->created_at,
+                'supporter_list' => $supporters ? implode(',',$supporters) :''
             ];
             $promise_answer_time = $bestAnswer->promise_time;
         }else {
