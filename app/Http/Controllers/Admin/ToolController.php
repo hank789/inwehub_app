@@ -24,8 +24,8 @@ class ToolController extends AdminController
             $cacheItems = $request->input('cacheItems',[]);
             if(in_array('tags_question',$cacheItems)){
                 $prefix = config('cache.prefix');
-                $keys = Redis::connection()->keys($prefix.':tags:1:*');
-                Redis::connection()->del($keys);
+                $keys = Redis::connection()->keys($prefix.':tags:*');
+                if ($keys) Redis::connection()->del($keys);
             }
 
             return $this->success(route('admin.tool.clearCache'),'缓存更新成功');
