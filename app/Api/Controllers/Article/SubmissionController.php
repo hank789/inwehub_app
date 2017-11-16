@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\NotifyInwehub;
+use App\Models\Attention;
 use App\Models\Readhub\Bookmark;
 use App\Models\Readhub\Category;
 use App\Models\Readhub\Submission;
@@ -184,8 +185,13 @@ class SubmissionController extends Controller {
             ->where('bookmarkable_id',$submission->id)
             ->where('bookmarkable_type','App\Models\Readhub\Submission')
             ->exists();
+        $attention_user = Attention::where("user_id",'=',$submission->user_id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
+        $return['is_followed'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
+        $return['is_commented'] = $submission->comments()->count();
+        $return['bookmarks'] = Bookmark::where('bookmarkable_id',$submission->id)
+            ->where('bookmarkable_type','App\Models\Readhub\Submission')->count();
         $return['data']['current_address_name'] = $return['data']['current_address_name']??'';
         $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
         $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
