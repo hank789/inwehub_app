@@ -19,6 +19,8 @@ use App\Models\Relations\BelongsToUserTrait;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\UserMoney whereSettlementMoney($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\UserMoney whereTotalMoney($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\UserMoney whereUserId($value)
+ * @property float $reward_money
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Pay\UserMoney whereRewardMoney($value)
  */
 class UserMoney extends Model {
     use BelongsToUserTrait;

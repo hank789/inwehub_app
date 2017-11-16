@@ -42,6 +42,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereUpvotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Bookmark whereBookmarkableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Bookmark whereBookmarkableType($value)
  */
 class Bookmark extends Model {
 

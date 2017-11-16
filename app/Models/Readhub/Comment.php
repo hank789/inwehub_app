@@ -42,6 +42,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Comment whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Comment whereUpvotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Comment whereUserId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Readhub\Comment[] $children
+ * @property-read \App\Models\Readhub\ReadHubUser $owner
+ * @property-read \App\Models\Readhub\Comment $parent
  */
 class Comment extends Model {
 

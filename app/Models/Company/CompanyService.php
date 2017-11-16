@@ -28,6 +28,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendQa whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendQa whereUserAvatarUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendQa whereUserName($value)
+ * @property string $title
+ * @property string $img_url
+ * @property int|null $audit_status 审核状态 0-未审核 1-已审核 2-未通过
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyService whereAuditStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyService whereImgUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyService whereTitle($value)
  */
 class CompanyService extends Model
 {

@@ -38,6 +38,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereUpvotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission whereUserId($value)
+ * @property string|null $ip_address
+ * @property int $submission_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\SubmissionUpvotes whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\SubmissionUpvotes whereSubmissionId($value)
  */
 class SubmissionUpvotes extends Model {
 

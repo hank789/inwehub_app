@@ -109,6 +109,10 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereLastLoginToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSource($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUuid($value)
+ * @property string|null $rc_code
+ * @property int|null $rc_uid
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRcCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRcUid($value)
  */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,

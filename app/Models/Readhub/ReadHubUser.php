@@ -59,6 +59,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereUuid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereVerified($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereWebsite($value)
+ * @property int $is_expert
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereIsExpert($value)
  */
 class ReadHubUser extends Model {
 

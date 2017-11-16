@@ -28,6 +28,16 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendQa whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendQa whereUserAvatarUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendQa whereUserName($value)
+ * @property int $read_type 分类
+ * @property int $source_id
+ * @property string $source_type
+ * @property array $data
+ * @property int|null $audit_status 审核状态 0-未审核 1-已审核 2-未通过
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendRead whereAuditStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendRead whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendRead whereReadType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendRead whereSourceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendRead whereSourceType($value)
  */
 class RecommendRead extends Model
 {
