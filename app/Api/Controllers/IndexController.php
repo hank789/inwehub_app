@@ -4,11 +4,13 @@ use App\Models\Article;
 use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Category;
+use App\Models\Company\CompanyService;
 use App\Models\Notice;
 use App\Models\Question;
 use App\Models\Readhub\Comment as ReadhubComment;
 use App\Models\Readhub\Submission;
 use App\Models\RecommendQa;
+use App\Models\RecommendRead;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -188,6 +190,11 @@ class IndexController extends Controller {
         return self::createJsonData(true,$data);
     }
 
+    //精选推荐
+    public function recommendRead(Request $request) {
+        $reads = RecommendRead::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('api_data_page_size'));
+        return self::createJsonData(true, $reads->toArray());
+    }
 
     public function myCommentList(Request $request){
         $user = $request->user();

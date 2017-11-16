@@ -3,11 +3,11 @@ use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Company\Company;
+use App\Models\Company\CompanyService;
 use App\Models\Tag;
-use App\Services\City\CityData;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
-use App\Models\User;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @author: wanghui
@@ -92,4 +92,9 @@ class CompanyController extends Controller {
         return self::createJsonData(true,$return);
     }
 
+
+    public function serviceList(Request $request) {
+        $services = CompanyService::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('api_data_page_size'));
+        return self::createJsonData(true, $services->toArray());
+    }
 }

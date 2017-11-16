@@ -9,6 +9,10 @@
 Route::post('home','IndexController@home')->middleware('jwt.auth');
 Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.auth');
 
+//精选推荐列表
+Route::post('recommendRead','IndexController@recommendRead')->middleware('jwt.auth');
+
+
 //登陆注册认证类
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('register', 'AuthController@register');
@@ -315,6 +319,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','nam
     Route::post('apply','CompanyController@apply');
     //认证信息
     Route::post('applyInfo','CompanyController@applyInfo');
+
+    //企业服务列表
+    Route::post('services','CompanyController@serviceList');
+
 
 });
 
