@@ -133,6 +133,9 @@ class Feed extends Model
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
                     'submission_id' => $this->source_id,
+                    'current_address_name' => $this->data['current_address_name']??'',
+                    'current_address_longitude' => $this->data['current_address_longitude']??'',
+                    'current_address_latitude'  => $this->data['current_address_latitude']??'',
                     'comment_url' => $comment_url,
                 ];
                 break;
