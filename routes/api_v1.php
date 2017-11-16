@@ -383,7 +383,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     //文章回复列表
     Route::post('comments','CommentController@index');
     //文章回复
-    Route::post('comment-store','CommentController@comment-store');
+    Route::post('comment-store','CommentController@store');
     //删除回复
     Route::post('destroy-comment','CommentController@destroy');
     //文章收藏
