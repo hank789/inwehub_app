@@ -107,7 +107,10 @@ class ArticleController extends AdminController
             $article = Article::find($articleId);
             $category = Category::find($article->category_id);
 
-            RecommendRead::create([
+            RecommendRead::firstOrCreate([
+                'source_id' => $articleId,
+                'source_type' => get_class($article)
+            ],[
                 'source_id' => $articleId,
                 'source_type' => get_class($article),
                 'sort' => 0,

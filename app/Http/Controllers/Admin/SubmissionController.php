@@ -41,7 +41,10 @@ class SubmissionController extends AdminController
         $articleIds = $request->input('ids');
         foreach ($articleIds as $articleId) {
             $article = Submission::find($articleId);
-            RecommendRead::create([
+            RecommendRead::firstOrCreate([
+                'source_id' => $articleId,
+                'source_type' => get_class($article)
+            ],[
                 'source_id' => $articleId,
                 'source_type' => get_class($article),
                 'sort' => 0,

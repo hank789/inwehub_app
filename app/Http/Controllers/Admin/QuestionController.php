@@ -100,7 +100,10 @@ class QuestionController extends AdminController
         $questionIds = $request->input('id');
         foreach ($questionIds as $questionId) {
             $question = Question::find($questionId);
-            RecommendRead::create([
+            RecommendRead::firstOrCreate([
+                'source_id' => $questionId,
+                'source_type' => get_class($question),
+            ],[
                 'source_id' => $questionId,
                 'source_type' => get_class($question),
                 'sort' => 0,
