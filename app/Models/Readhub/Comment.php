@@ -63,4 +63,29 @@ class Comment extends Model {
     protected $fillable = [
         'body', 'upvotes', 'rate', 'downvotes', 'submission_id', 'level', 'parent_id', 'category_id', 'user_id', 'edited_at',
     ];
+
+    protected $with = [
+        'owner', 'children',
+    ];
+
+    public function owner()
+    {
+        return $this->belongsTo(ReadHubUser::class, 'user_id')
+            ->select(['id', 'username', 'avatar','uuid','is_expert']);
+    }
+
+    /**
+     * A comment has many children.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
 }
