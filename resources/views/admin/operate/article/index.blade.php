@@ -1,10 +1,10 @@
 @extends('admin/public/layout')
 
-@section('title')阅读管理@endsection
+@section('title')发现分享@endsection
 
 @section('content')
     <section class="content-header">
-        <h1>阅读管理</h1>
+        <h1>发现分享</h1>
     </section>
     <section class="content">
         <div class="row">

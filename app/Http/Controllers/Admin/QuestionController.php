@@ -105,7 +105,7 @@ class QuestionController extends AdminController
                 'source_type' => get_class($question),
                 'sort' => 0,
                 'audit_status' => 0,
-                'read_type' => RecommendRead::READ_TYPE_QUESTION,
+                'read_type' => $question->question_type == 1 ? RecommendRead::READ_TYPE_PAY_QUESTION : RecommendRead::READ_TYPE_FREE_QUESTION,
                 'data' => [
                     'title' => $question->title,
                     'img'   => ''

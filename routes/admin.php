@@ -213,6 +213,18 @@ Route::group(['prefix' => 'company','namespace'=>'Company'], function() {
     Route::post('destroy',['as'=>'admin.company.destroy','uses'=>'CompanyController@destroy']);
     Route::post('verify',['as'=>'admin.company.verify','uses'=>'CompanyController@verify']);
 
+    //企业服务
+    Route::get('service/index',['as'=>'admin.company.service.index','uses'=>'ServiceController@index']);
+    Route::get('service/create',['as'=>'admin.company.service.create','uses'=>'ServiceController@create']);
+    Route::post('service/store',['as'=>'admin.company.service.store','uses'=>'ServiceController@store']);
+    Route::get('service/edit/{id}',['as'=>'admin.company.service.edit','uses'=>'ServiceController@edit'])->where(['id'=>'[0-9]+']);
+    Route::put('service/update',['as'=>'admin.company.service.update','uses'=>'ServiceController@update']);
+    Route::post('service/verify',['as'=>'admin.company.service.verify','uses'=>'ServiceController@verify']);
+    Route::post('service/unverify',['as'=>'admin.company.service.unverify','uses'=>'ServiceController@unverify']);
+    Route::get('service/destroy',['as'=>'admin.company.service.destroy','uses'=>'ServiceController@destroy']);
+
+
+
 });
 
 //项目需求管理

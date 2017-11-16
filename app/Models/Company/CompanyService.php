@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Company;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,42 +29,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendQa whereUserAvatarUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendQa whereUserName($value)
  */
-class RecommendRead extends Model
+class CompanyService extends Model
 {
-    protected $table = 'recommend_read';
-    protected $fillable = ['read_type','audit_status','data','source_type','source_id','sort'];
-
-    protected $casts = [
-        'data' => 'json'
-    ];
-
-    const READ_TYPE_SUBMISSION = 1;
-    const READ_TYPE_PAY_QUESTION = 2;
-    const READ_TYPE_FREE_QUESTION = 3;
-
-
-
-    public function getReadTypeName() {
-        switch ($this->read_type) {
-            case self::READ_TYPE_SUBMISSION:
-                return '发现分享';
-            case self::READ_TYPE_PAY_QUESTION:
-                return '专业问答';
-            case self::READ_TYPE_FREE_QUESTION:
-                return '互动问答';
-        }
-        return '';
-    }
-
-    public function getWebUrl() {
-        switch ($this->read_type) {
-            case self::READ_TYPE_SUBMISSION:
-                return '发现分享';
-            case self::READ_TYPE_PAY_QUESTION:
-            case self::READ_TYPE_FREE_QUESTION:
-                return route('ask.question.detail',['id'=>$this->source_id]);
-        }
-        return '';
-    }
+    protected $table = 'company_service';
+    protected $fillable = ['title','audit_status','img_url','sort'];
 
 }

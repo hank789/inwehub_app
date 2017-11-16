@@ -20,6 +20,7 @@
         </a>
         <ul class="treeview-menu" id="manage_company">
             <li><a href="{{ route('admin.company.index') }}"><i class="fa fa-circle-o"></i> 认证管理</a></li>
+            <li><a href="{{ route('admin.company.service.index') }}"><i class="fa fa-circle-o"></i> 企业服务</a></li>
         </ul>
     </li>
 
@@ -76,7 +77,7 @@
         </a>
         <ul class="treeview-menu" id="operations">
             <li><a href="{{ route('admin.operate.recommendRead.index') }}"><i class="fa fa-circle-o"></i> 精选推荐</a></li>
-            <li><a href="{{ route('admin.operate.article.index') }}"><i class="fa fa-circle-o"></i> 文章管理</a></li>
+            <li><a href="{{ route('admin.operate.article.index') }}"><i class="fa fa-circle-o"></i> 发现分享</a></li>
             <li><a href="{{ route('admin.operate.pushNotice.index') }}"><i class="fa fa-circle-o"></i> 推送管理</a></li>
             <li><a href="{{ route('admin.operate.recommendExpert.refresh') }}"><i class="fa fa-circle-o"></i> 更新首页专家</a></li>
             <li><a href="{{ route('admin.operate.rgcode.index') }}"><i class="fa fa-circle-o"></i> 邀请码管理</a></li>
