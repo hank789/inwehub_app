@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redis;
 
 class ToolController extends AdminController
 {
@@ -22,7 +23,9 @@ class ToolController extends AdminController
         if($request->isMethod('post')){
             $cacheItems = $request->input('cacheItems',[]);
             if(in_array('tags_question',$cacheItems)){
-                Cache::forget('tags:1:');
+                $prefix = config('cache.prefix');
+                $keys = Redis::connection()->keys($prefix.':tags:1:*');
+                Redis::connection()->del($keys);
             }
 
             return $this->success(route('admin.tool.clearCache'),'缓存更新成功');
