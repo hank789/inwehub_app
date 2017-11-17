@@ -136,7 +136,7 @@ class Feed extends Model
                 $support_uids = SubmissionUpvotes::where('submission_id',$this->source_id)->take(20)->pluck('user_id');
                 $supporters = [];
                 if ($support_uids) {
-                    $supporters = User::whereIn('id',$support_uids)->get()->pluck('name');
+                    $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid');
                 }
                 $data = [
                     'title'     => $this->data['submission_title'],

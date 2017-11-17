@@ -105,7 +105,7 @@ class AnswerController extends Controller
         $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
         $supporters = [];
         if ($support_uids) {
-            $supporters = User::whereIn('id',$support_uids)->get()->pluck('name');
+            $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid');
         }
 
         $answers_data = [
