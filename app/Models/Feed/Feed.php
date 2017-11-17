@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Attention
@@ -138,6 +139,8 @@ class Feed extends Model
                 if ($support_uids) {
                     $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid');
                 }
+                $upvote = SubmissionUpvotes::where('user_id',Auth::user()->id)
+                    ->where('submission_id',$submission->id)->exists();
                 $data = [
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
@@ -150,6 +153,7 @@ class Feed extends Model
                     'comment_number' => Comment::where('submission_id',$this->source_id)->count(),
                     'support_number' => $submission->upvotes,
                     'supporter_list' => $supporters,
+                    'is_upvoted'     => $upvote ? 1 : 0,
                     'comments' => $submission->comments()->orderBy('id','desc')->take(8)->get()
                 ];
                 break;
