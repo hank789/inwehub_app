@@ -176,9 +176,12 @@ Route::post('tool/sendTestEmail',['as'=>'admin.tool.sendTestEmail','uses'=>'Tool
 Route::resource('recommendQa', 'RecommendQaController',['except' => ['show'],'as'=>'admin.operate']);
 
 /*首页阅读推荐*/
-Route::resource('recommendRead', 'RecommendReadController',['except' => ['show'],'as'=>'admin.operate']);
 Route::post('recommendRead/verify',['as'=>'admin.operate.recommendRead.verify','uses'=>'RecommendReadController@verify']);
 Route::post('recommendRead/cancel_verify',['as'=>'admin.operate.recommendRead.cancel_verify','uses'=>'RecommendReadController@cancelVerify']);
+Route::post('recommendRead/destroy',['as'=>'admin.operate.recommendRead.destroy','uses'=>'RecommendReadController@destroy']);
+Route::get('recommendRead/index',['as'=>'admin.operate.recommendRead.index','uses'=>'RecommendReadController@index']);
+Route::get('recommendRead/edit/{id}',['as'=>'admin.operate.recommendRead.edit','uses'=>'RecommendReadController@edit'])->where(['id'=>'[0-9]+']);
+Route::put('recommendRead/update',['as'=>'admin.operate.recommendRead.update','uses'=>'RecommendReadController@update']);
 
 
 /*刷新首页专家推荐*/
