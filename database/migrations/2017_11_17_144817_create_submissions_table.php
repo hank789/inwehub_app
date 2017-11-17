@@ -46,6 +46,8 @@ class CreateSubmissionsTable extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->integer('is_expert')->unsigned()->default(0)->after('uuid');
+            $table->integer('submission_karma')->default(0)->after('uuid'); // used for backup (in case redis get's flushed)
+            $table->integer('comment_karma')->default(0)->after('uuid'); // used for backup (in case redis get's flushed)
         });
     }
 
