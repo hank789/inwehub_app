@@ -181,7 +181,7 @@ Route::post('recommendRead/cancel_verify',['as'=>'admin.operate.recommendRead.ca
 Route::post('recommendRead/destroy',['as'=>'admin.operate.recommendRead.destroy','uses'=>'RecommendReadController@destroy']);
 Route::get('recommendRead/index',['as'=>'admin.operate.recommendRead.index','uses'=>'RecommendReadController@index']);
 Route::get('recommendRead/edit/{id}',['as'=>'admin.operate.recommendRead.edit','uses'=>'RecommendReadController@edit'])->where(['id'=>'[0-9]+']);
-Route::put('recommendRead/update',['as'=>'admin.operate.recommendRead.update','uses'=>'RecommendReadController@update']);
+Route::put('recommendRead/update/{id}',['as'=>'admin.operate.recommendRead.update','uses'=>'RecommendReadController@update'])->where(['id'=>'[0-9]+']);
 
 
 /*刷新首页专家推荐*/
