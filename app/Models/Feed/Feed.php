@@ -132,6 +132,7 @@ class Feed extends Model
                 $comment_url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
                 $url = $this->data['view_url']?:$comment_url;
                 $submission = Submission::find($this->source_id);
+                if (!$submission) return null;
                 $support_uids = SubmissionUpvotes::where('submission_id',$this->source_id)->take(20)->pluck('user_id');
                 $supporters = [];
                 if ($support_uids) {
