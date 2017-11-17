@@ -181,7 +181,7 @@ class SubmissionController extends Controller {
         $return['is_followed_author'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
-        $return['is_commented'] = $submission->comments()->count();
+        $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;
         $return['bookmarks'] = Collection::where('source_id',$submission->id)
             ->where('source_type',Submission::class)->count();
         $return['data']['current_address_name'] = $return['data']['current_address_name']??'';

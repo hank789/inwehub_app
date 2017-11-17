@@ -103,7 +103,7 @@ class Submission extends Model {
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id')
-            ->select(['id', 'name', 'avatar', 'uuid']);
+            ->select(['id', 'name', 'avatar', 'uuid','is_expert']);
     }
 
 }
