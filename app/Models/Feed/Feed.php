@@ -150,7 +150,7 @@ class Feed extends Model
                     'comment_number' => Comment::where('submission_id',$this->source_id)->count(),
                     'support_number' => $submission->upvotes,
                     'supporter_list' => $supporters,
-                    'comments' => $submission->comments()->orderBy('id','desc')->take(8)
+                    'comments' => $submission->comments()->orderBy('id','desc')->take(8)->get()
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:

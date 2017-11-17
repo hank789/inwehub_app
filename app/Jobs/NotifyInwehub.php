@@ -90,7 +90,7 @@ class NotifyInwehub implements ShouldQueue
                         'submission_username' => $submission_user->name,
                         'comment_content' => $comment->body
                     ])
-                    ->log($user->name.'评论了文章', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
+                    ->log($user->name.'评论了动态', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
                 return;
                 break;
             case 'NewSubmission':
@@ -110,7 +110,7 @@ class NotifyInwehub implements ShouldQueue
                         'current_address_longitude' => $submission->data['current_address_longitude'],
                         'current_address_latitude'  => $submission->data['current_address_latitude'],
                         'img'=>$submission->data['img']??''])
-                    ->log($user->name.'发布了文章', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+                    ->log($user->name.'发布了动态', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
                 return;
                 break;
             case 'NewSubmissionUpVote':
@@ -133,7 +133,7 @@ class NotifyInwehub implements ShouldQueue
                             'submission_title'=>$submission->title,
                             'domain'=>$submission->data['domain']??'',
                             'img'=>$submission->data['img']??''])
-                        ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
+                        ->log($user->name.'赞了动态', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
                     RateLimiter::instance()->increase($feed_event,$feed_target,3600);
                     $fields = [];
                     $fields[] = [
