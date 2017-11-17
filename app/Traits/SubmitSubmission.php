@@ -1,10 +1,8 @@
 <?php namespace App\Traits;
 use App\Exceptions\ApiException;
-use App\Models\Readhub\Submission;
-use App\Models\Readhub\SubmissionUpvotes;
+use App\Models\Submission;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -46,23 +44,6 @@ trait SubmitSubmission
     }
 
     /**
-     * Up-votes on submission.
-     *
-     * @param $user
-     * @param int        $submission_id
-     *
-     * @return void
-     */
-    protected function firstVote($user, $submission_id)
-    {
-        SubmissionUpvotes::create([
-            'user_id' => $user->id,
-            'ip_address' => getRequestIpAddress(),
-            'submission_id' => $submission_id
-        ]);
-    }
-
-    /**
      * @param  Request instance
      *
      * @return json data
@@ -84,82 +65,6 @@ trait SubmitSubmission
             'providerName'  => $info->providerName,
             'publishedTime' => $info->publishedTime,
             'domain'        => $info->domain,
-        ];
-    }
-
-    /**
-     * @param Illuminate\Http\Request $request
-     *
-     * @return array
-     */
-    protected function imgSubmission(Request $request)
-    {
-        $photo = Photo::where('id', $request->input('photos')[0])->firstOrFail();
-
-        return [
-            'path'           => $photo->path,
-            'thumbnail_path' => $photo->thumbnail_path,
-            'album'          => (count($request->input('photos')) > 1),
-        ];
-    }
-
-    /**
-     * Animated gif submissions: The uploaded .gif file should get converted
-     * to .mp4 format to save bandwitch for both server and user. This way
-     * we get to use a pretty HTML5 player for playing .gif files.
-     *
-     * @param Illuminate\Http\Request $request
-     *
-     * @return array
-     */
-    protected function gifSubmission(Request $request)
-    {
-        $this->validate($request, [
-            'gif' => 'required|mimes:gif|max:51200',
-        ]);
-
-        $file = $request->file('gif');
-
-        $filename = time().str_random(7);
-
-        $file->storeAs('submissions/gif', $filename.'.gif', 'local');
-
-        FFMpeg::fromDisk('local')
-            ->open('submissions/gif/'.$filename.'.gif')
-            // mp4
-            ->export()
-            ->toDisk('local')
-            ->inFormat((new \FFMpeg\Format\Video\X264())->setAdditionalParameters([
-                '-movflags', 'faststart',
-                '-pix_fmt', 'yuv420p',
-                '-preset', 'veryslow',
-                '-b:v', '500k',
-            ]))
-            ->save('submissions/gif/'.$filename.'.mp4')
-            // thumbnail
-            ->getFrameFromSeconds(1)
-            ->export()
-            ->toDisk('local')
-            ->save('submissions/gif/'.$filename.'.jpg');
-
-        // get the uploaded mp4 and move it to the ftp
-        $mp4 = Storage::disk('local')->get('submissions/gif/'.$filename.'.mp4');
-        Storage::disk('oss')->put('submissions/gif/'.$filename.'.mp4', $mp4);
-
-        // get the uploaded jpg and move it to the ftp
-        $jpg = Storage::disk('local')->get('submissions/gif/'.$filename.'.jpg');
-        Storage::disk('oss')->put('submissions/gif/'.$filename.'.jpg', $jpg);
-
-        // delete temp files from local storage
-        Storage::disk('local')->delete([
-            'submissions/gif/'.$filename.'.jpg',
-            'submissions/gif/'.$filename.'.gif',
-            'submissions/gif/'.$filename.'.mp4',
-        ]);
-
-        return [
-            'mp4_path'       => Storage::url('submissions/gif/'.$filename.'.mp4'),
-            'thumbnail_path' => Storage::url('submissions/gif/'.$filename.'.jpg'),
         ];
     }
 
@@ -229,13 +134,4 @@ trait SubmitSubmission
         return Submission::withTrashed()->where('title', $title)->where('category_name', $category)->exists();
     }
 
-    /**
-     * has user upvoted for this submission before?
-     *
-     * @return bool
-     */
-    protected function hasUserUpvotedSubmission($user_id, $submission_id)
-    {
-        return DB::table('submission_upvotes')->where('user_id', $user_id)->where('submission_id', $submission_id)->exists();
-    }
 }

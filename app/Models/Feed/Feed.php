@@ -3,11 +3,11 @@
 namespace App\Models\Feed;
 
 use App\Models\Answer;
+use App\Models\Collection;
 use App\Models\Question;
-use App\Models\Readhub\Comment;
-use App\Models\Readhub\Submission;
-use App\Models\Readhub\SubmissionUpvotes;
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\Submission;
+use App\Models\Support;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -134,13 +134,16 @@ class Feed extends Model
                 $url = $this->data['view_url']?:$comment_url;
                 $submission = Submission::find($this->source_id);
                 if (!$submission) return null;
-                $support_uids = SubmissionUpvotes::where('submission_id',$this->source_id)->take(20)->pluck('user_id');
+                $support_uids = Support::where('supportable_id',$submission->id)
+                    ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
                 $supporters = [];
                 if ($support_uids) {
                     $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid');
                 }
-                $upvote = SubmissionUpvotes::where('user_id',Auth::user()->id)
-                    ->where('submission_id',$submission->id)->exists();
+                $upvote = Collection::where('user_id',Auth::user()->id)
+                    ->where('source_id',$submission->id)
+                    ->where('source_type',Submission::class)
+                    ->exists();
                 $data = [
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
@@ -150,7 +153,7 @@ class Feed extends Model
                     'current_address_longitude' => $this->data['current_address_longitude']??'',
                     'current_address_latitude'  => $this->data['current_address_latitude']??'',
                     'comment_url' => $comment_url,
-                    'comment_number' => Comment::where('submission_id',$this->source_id)->count(),
+                    'comment_number' => $submission->comments_number,
                     'support_number' => $submission->upvotes,
                     'supporter_list' => $supporters,
                     'is_upvoted'     => $upvote ? 1 : 0,

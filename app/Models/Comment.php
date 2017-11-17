@@ -39,8 +39,14 @@ class Comment extends Model
 {
     use BelongsToUserTrait;
     protected $table = 'comments';
-    protected $fillable = ['user_id', 'content','source_id','source_type','to_user_id','supports','status'];
+    protected $fillable = ['user_id','level','parent_id', 'content','source_id','source_type','to_user_id','supports','status'];
 
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id')
+            ->select(['id', 'name', 'avatar', 'uuid', 'is_expert']);
+    }
 
     public static function boot()
     {
@@ -71,5 +77,19 @@ class Comment extends Model
         return $this->belongsTo('App\Models\User','to_user_id');
     }
 
+    /**
+     * A comment has many children.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
 
 }

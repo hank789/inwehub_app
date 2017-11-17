@@ -140,7 +140,6 @@ class SystemEventListener implements ShouldQueue
             if ($next_level != $user->userData->user_level) {
                 $user->userData->user_level = $next_level;
                 $user->userData->save();
-                ReadHubUser::syncUser($user);
             }
             $user_data->user->notify(new IntegralLog($user_id,$credit));
             return true;

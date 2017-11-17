@@ -1,9 +1,9 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
-use App\Models\Readhub\Submission;
+use App\Models\Collection;
+use App\Models\Submission;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 
 /**
  * @author: wanghui
@@ -29,9 +29,28 @@ class BookmarksController extends Controller {
             throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
         }
         $user = $request->user();
-        $type = $submission->bookmark($user->id);
+        /*不能多次收藏*/
+        $userCollect = $user->isCollected(get_class($submission),$submission->id);
+        if($userCollect){
+            $userCollect->delete();
+            $submission->decrement('collections');
+            return self::createJsonData(true,['tip'=>'取消收藏成功','type'=>'unbookmarked']);
+        }
 
-        return self::createJsonData(true,['type'=>$type]);
+        $data = [
+            'user_id'     => $user->id,
+            'source_id'   => $submission->id,
+            'source_type' => get_class($submission),
+            'subject'  => '',
+        ];
+
+        $collect = Collection::create($data);
+
+        if($collect){
+            $submission->increment('collections');
+        }
+
+        return self::createJsonData(true,['tip'=>'收藏成功', 'type'=>'bookmarked']);
     }
 
 }

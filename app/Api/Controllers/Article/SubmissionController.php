@@ -1,16 +1,14 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
-use App\Jobs\NotifyInwehub;
 use App\Models\Attention;
-use App\Models\Readhub\Bookmark;
-use App\Models\Readhub\Category;
-use App\Models\Readhub\Submission;
-use App\Models\Readhub\SubmissionUpvotes;
+use App\Models\Category;
+use App\Models\Collection;
+use App\Models\Submission;
+use App\Models\Support;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 
@@ -59,7 +57,7 @@ class SubmissionController extends Controller {
                 if (!$exist_submission) {
                     throw new ApiException(ApiException::ARTICLE_URL_ALREADY_EXIST);
                 }
-                $exist_submission_url = '/c/'.$exist_submission->category_name.'/'.$exist_submission->slug;
+                $exist_submission_url = '/c/'.$exist_submission->category_id.'/'.$exist_submission->slug;
                 return self::createJsonData(false,[],500,"您提交的网址已经存在，<a href='$exist_submission_url'>点击查看</a>");
             }
             try {
@@ -123,7 +121,6 @@ class SubmissionController extends Controller {
                 'type'          => $request->type,
                 'category_name' => $category->name,
                 'category_id'   => $category->id,
-                'nsfw'          => $category->nsfw,
                 'rate'          => firstRate(),
                 'user_id'       => $user->id,
                 'data'          => $data,
@@ -134,13 +131,6 @@ class SubmissionController extends Controller {
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);
             throw new ApiException(ApiException::ERROR);
-        }
-
-        try {
-            $this->firstVote($user, $submission->id);
-            dispatch((new NotifyInwehub($user->id,'NewSubmission',['submission_id'=>$submission->id]))->onQueue('inwehub:default'));
-        } catch (\Exception $exception) {
-            app('sentry')->captureException($exception);
         }
 
         return self::createJsonData(true,$submission->toArray());
@@ -179,19 +169,21 @@ class SubmissionController extends Controller {
         $user = $request->user();
         $submission = Submission::where('slug',$request->slug)->first();
         $return = $submission->toArray();
-        $upvote = SubmissionUpvotes::where('user_id',$user->id)
-            ->where('submission_id',$submission->id)->exists();
-        $bookmark = Bookmark::where('user_id',$user->id)
-            ->where('bookmarkable_id',$submission->id)
-            ->where('bookmarkable_type',get_class($submission))
+        $upvote = Support::where('user_id',$user->id)
+            ->where('supportable_id',$submission->id)
+            ->where('supportable_type',Submission::class)
+            ->exists();
+        $bookmark = Collection::where('user_id',$user->id)
+            ->where('source_id',$submission->id)
+            ->where('source_type',Submission::class)
             ->exists();
         $attention_user = Attention::where("user_id",'=',$submission->user_id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
         $return['is_followed_author'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
         $return['is_commented'] = $submission->comments()->count();
-        $return['bookmarks'] = Bookmark::where('bookmarkable_id',$submission->id)
-            ->where('bookmarkable_type','App\Models\Readhub\Submission')->count();
+        $return['bookmarks'] = Collection::where('source_id',$submission->id)
+            ->where('source_type',Submission::class)->count();
         $return['data']['current_address_name'] = $return['data']['current_address_name']??'';
         $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
         $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
@@ -225,33 +217,6 @@ class SubmissionController extends Controller {
         $submission->delete();
 
         return self::createJsonData(true);
-    }
-
-    /**
-     * Patches the Text Submission.
-     *
-     * @return reponse
-     */
-    public function patchTextSubmission(Request $request)
-    {
-        $this->validate($request, [
-            'id' => 'required|integer',
-        ]);
-
-        $submission = Submission::findOrFail($request->id);
-
-        abort_unless($this->mustBeOwner($submission), 403);
-        // make sure submission's type is "text" (at the moment submission editing is only available for text submissions)
-        abort_unless($submission->type == 'text', 403);
-
-        $submission->update([
-            'data' => array_only($request->all(), ['text']),
-        ]);
-
-        // so next time it'll fetch the updated copy
-        $this->removeSubmissionFromCache($submission);
-
-        return response('Text Submission has been updated. ', 200);
     }
 
     //推荐文章

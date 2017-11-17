@@ -56,8 +56,6 @@ class UserEventListener implements ShouldQueue
             $event->user->avatar = saveImgToCdn($oauthData->avatar);
             $event->user->save();
         }
-        // read站点同步注册用户
-        ReadHubUser::initUser($event->user);
         $title = '';
         if ($event->user->company) {
             $title .= ';公司：'.$event->user->company;

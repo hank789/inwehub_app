@@ -52,7 +52,9 @@ class SubmissionController extends AdminController
                 'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
                 'data' => [
                     'title' => $article->title,
-                    'img'   => $article->data['img']
+                    'img'   => $article->data['img'],
+                    'category_id' => $article->category_id,
+                    'category_name' => $article->category_name
                 ]
             ]);
         }

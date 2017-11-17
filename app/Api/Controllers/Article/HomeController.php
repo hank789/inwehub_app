@@ -1,8 +1,8 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
-use App\Models\Readhub\Bookmark;
-use App\Models\Readhub\Submission;
-use App\Models\Readhub\SubmissionUpvotes;
+use App\Models\Collection;
+use App\Models\Submission;
+use App\Models\Support;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -52,11 +52,13 @@ class HomeController extends Controller {
 
         $return = $submissions->simplePaginate(Config::get('api_data_page_size'))->toArray();
         foreach ($return['data'] as &$item) {
-            $upvote = SubmissionUpvotes::where('user_id',$user->id)
-                ->where('submission_id',$item['id'])->exists();
-            $bookmark = Bookmark::where('user_id',$user->id)
-                ->where('bookmarkable_id',$item['id'])
-                ->where('bookmarkable_type','App\Models\Readhub\Submission')
+            $upvote = Support::where('user_id',$user->id)
+                ->where('supportable_id',$item['id'])
+                ->where('supportable_type',Submission::class)
+                ->exists();
+            $bookmark = Collection::where('user_id',$user->id)
+                ->where('source_id',$item['id'])
+                ->where('source_type',Submission::class)
                 ->exists();
             $item['is_upvoted'] = $upvote ? 1 : 0;
             $item['is_bookmark'] = $bookmark ? 1: 0;

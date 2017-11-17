@@ -1,10 +1,9 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
 use App\Jobs\NotifyInwehub;
-use App\Models\Readhub\ReadHubUser;
-use App\Models\Readhub\Submission;
-use App\Models\Readhub\SubmissionDownvotes;
-use App\Models\Readhub\SubmissionUpvotes;
+use App\Models\Submission;
+use App\Models\Support;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
@@ -84,7 +83,7 @@ class SubmissionVotesController extends Controller {
     protected function updateSubmissionKarma($id, $number)
     {
 
-        $user = ReadHubUser::find($id);
+        $user = User::find($id);
         $newKarma = Redis::hincrby('user.'.$id.'.data', 'submissionKarma', $number);
 
         // for newbie users we update on each new vote, but for major ones, we do this once a 50 times
@@ -108,54 +107,34 @@ class SubmissionVotesController extends Controller {
 
         $user = $request->user();
         $submission = Submission::find($request->submission_id);
-        $downvote = SubmissionDownvotes::where('user_id',$user->id)
-            ->where('submission_id',$submission->id)->first();
-
-        $upvote = SubmissionUpvotes::where('user_id',$user->id)
-            ->where('submission_id',$submission->id)->first();
 
         $previous_vote = null;
-        $type = 'upvote';
-        try {
-            if ($upvote) {
-                //之前是赞，再请求一次是取消赞
-                $previous_vote = 'upvote';
-                $type = 'cancel_upvote';
-                $new_upvotes = ($submission->upvotes - 1);
-                SubmissionUpvotes::where('user_id',$user->id)
-                    ->where('submission_id',$submission->id)->delete();
-            } elseif ($downvote) {
-                //之前是踩，再请求一次是赞
-                $previous_vote = 'downvote';
-                $new_upvotes = ($submission->upvotes + 1);
-                $new_downvotes = ($submission->downvotes - 1);
-                SubmissionDownvotes::where('user_id',$user->id)
-                    ->where('submission_id',$submission->id)->delete();
-                SubmissionUpvotes::create([
-                    'user_id' => $user->id,
-                    'ip_address' => getRequestIpAddress(),
-                    'submission_id' => $submission->id
-                ]);
-            } else {
-                $new_upvotes = ($submission->upvotes + 1);
-                SubmissionUpvotes::create([
-                    'user_id' => $user->id,
-                    'ip_address' => getRequestIpAddress(),
-                    'submission_id' => $submission->id
-                ]);
-            }
-
-            $this->updateUserUpVotesRecords(
-                $user->id, $submission->user_id, $previous_vote, $request->submission_id
-            );
-        } catch (\Exception $e) {
-            app('sentry')->captureException($e);
-            return self::createJsonData(false,[],500,$e->getMessage());
+        /*再次点赞相当于是取消点赞*/
+        $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($submission))->where('supportable_id','=',$submission->id)->first();
+        if($support){
+            $previous_vote = 'upvote';
+            $support->delete();
+            $submission->decrement('upvotes');
+            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'cancel_upvote']);
         }
 
-        $submission->upvotes = $new_upvotes ?? $submission->upvotes;
-        $submission->downvotes = $new_downvotes ?? $submission->downvotes;
-        $submission->rate = rateSubmission($new_upvotes ?? $submission->upvotes, $new_downvotes ?? $submission->downvotes, $submission->created_at);
+        $data = [
+            'user_id'        => $user->id,
+            'supportable_id'   => $submission->id,
+            'supportable_type' => get_class($submission),
+        ];
+
+        $support = Support::create($data);
+
+        if($support){
+            $submission->increment('upvotes');
+        }
+
+        $this->updateUserUpVotesRecords(
+            $user->id, $submission->user_id, $previous_vote, $request->submission_id
+        );
+
+        $submission->rate = rateSubmission( $submission->upvotes, $submission->downvotes, $submission->created_at);
 
         $submission->save();
 
@@ -166,73 +145,7 @@ class SubmissionVotesController extends Controller {
             Redis::connection()->hset('voten:submission:upvote',$submission->id.'_'.$user->id,1);
         }
 
-
-        return self::createJsonData(true,['type'=>$type]);
-    }
-
-    /**
-     * Adds the downvote record for the auth user and (if the user is not trying to cheat) updates the vote points and rate
-     * for the submission model.
-     *
-     */
-    public function downVote(Request $request)
-    {
-        $this->validate($request, [
-            'submission_id' => 'required|integer',
-        ]);
-
-        $user = $request->user();
-        $submission = Submission::find($request->submission_id);
-        $downvote = SubmissionDownvotes::where('user_id',$user->id)
-            ->where('submission_id',$submission->id)->first();
-
-        $upvote = SubmissionUpvotes::where('user_id',$user->id)
-            ->where('submission_id',$submission->id)->first();
-
-        $previous_vote = '';
-        $type = 'downvote';
-        try {
-            if ($downvote) {
-                //之前是踩，再请求一次就是取消踩
-                $new_downvotes = ($submission->downvotes - 1);
-                SubmissionDownvotes::where('user_id',$user->id)
-                    ->where('submission_id',$submission->id)->delete();
-                $previous_vote = 'downvote';
-                $type = 'cancel_downvote';
-            } elseif ($upvote) {
-                //之前是赞，再请求一次是踩
-                $previous_vote = 'upvote';
-                $new_downvotes = ($submission->downvotes + 1);
-                $new_upvotes = ($submission->upvotes - 1);
-                SubmissionUpvotes::where('user_id',$user->id)
-                    ->where('submission_id',$submission->id)->delete();
-                SubmissionDownvotes::create([
-                    'user_id' => $user->id,
-                    'ip_address' => getRequestIpAddress(),
-                    'submission_id' => $submission->id
-                ]);
-            } else {
-                $new_downvotes = ($submission->downvotes + 1);
-                SubmissionDownvotes::create([
-                    'user_id' => $user->id,
-                    'ip_address' => getRequestIpAddress(),
-                    'submission_id' => $submission->id
-                ]);
-            }
-
-            $this->updateUserDownVotesRecords($user->id, $submission->user_id, $previous_vote, $request->submission_id);
-        } catch (\Exception $e) {
-            app('sentry')->captureException($e);
-            return self::createJsonData(false,[],500,$e->getMessage());
-        }
-
-        $submission->upvotes = $new_upvotes ?? $submission->upvotes;
-        $submission->downvotes = $new_downvotes ?? $submission->downvotes;
-        $submission->rate = rateSubmission($new_upvotes ?? $submission->upvotes, $new_downvotes ?? $submission->downvotes, $submission->created_at);
-
-        $submission->save();
-
-        return self::createJsonData(true,['type'=>$type]);
+        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote']);
     }
 
 }

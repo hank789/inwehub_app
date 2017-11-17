@@ -1,6 +1,6 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
-use App\Models\Readhub\Category;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 /**
@@ -21,13 +21,12 @@ class CategoryController extends Controller {
     public function getCategories(Request $request)
     {
         $name = $request->input('name');
-        $query = Category::query();
+        $query = Category::query()->where('slug','like','channel_%');
         if ($name) {
             $query = $query->where('name', 'like', '%'.$request->name.'%');
         }
 
-        $data = $query->orderBy('subscribers', 'desc')
-            ->select('name','id')->take(100)->get()->pluck('name','id');
+        $data = $query->select('name','id')->take(100)->get()->pluck('name','id');
         $list = [];
         foreach ($data as $cid=>$cname){
             $list[] = [

@@ -60,13 +60,16 @@ class Authentication extends Model
 
         static::creating(function($authentication){
             $authentication->userData->update(['authentication_status'=>$authentication->status]);
+            $authentication->user->update(['is_expert'=>$authentication->status == 1 ? 1 : 0]);
         });
 
         static::updating(function($authentication){
             $authentication->userData->update(['authentication_status'=>$authentication->status]);
+            $authentication->user->update(['is_expert'=>$authentication->status == 1 ? 1 : 0]);
         });
         static::deleting(function($authentication){
             $authentication->userData->update(['authentication_status'=>0]);
+            $authentication->user->update(['is_expert'=>0]);
         });
 
     }

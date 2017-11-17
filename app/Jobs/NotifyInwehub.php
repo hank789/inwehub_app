@@ -57,6 +57,7 @@ class NotifyInwehub implements ShouldQueue
         $class = $this->type;
         switch ($class){
             case 'NewComment':
+                return;
                 event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_COMMENT),$this->message['commnet_id'],''));
                 if (Redis::connection()->hget('user.'.$this->user_id.'.data', 'commentsCount') <= 2) {
                     TaskLogic::finishTask('newbie_readhub_comment',0,'newbie_readhub_comment',[$this->user_id]);
@@ -94,6 +95,7 @@ class NotifyInwehub implements ShouldQueue
                 return;
                 break;
             case 'NewSubmission':
+                return;
                 event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$this->message['submission_id'],''));
                 //产生一条feed流
                 $submission = Submission::find($this->message['submission_id']);

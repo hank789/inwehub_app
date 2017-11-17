@@ -397,13 +397,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
 
     //赞文章
     Route::post('upvote-submission','SubmissionVotesController@upVote');
-    //踩文章
-    Route::post('downvote-submission','SubmissionVotesController@downVote');
-
-    //赞回复
-    Route::post('upvote-comment','CommentVotesController@upVote');
-    //踩回复
-    Route::post('downvote-comment','CommentVotesController@downVote');
 
 
 });
