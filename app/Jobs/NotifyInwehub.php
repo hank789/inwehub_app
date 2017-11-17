@@ -144,13 +144,17 @@ class NotifyInwehub implements ShouldQueue
                         'title' => '文章地址',
                         'value' => config('app.readhub_url').'/c/'.$submission->category_id.'/'.$submission->slug
                     ];
-                    \Slack::to(config('slack.ask_activity_channel'))
-                        ->attach(
-                            [
-                                'fields' => $fields
-                            ]
-                        )
-                        ->send('用户'.$user->id.'['.$user->name.']赞了文章');
+                    try {
+                        \Slack::to(config('slack.ask_activity_channel'))
+                            ->attach(
+                                [
+                                    'fields' => $fields
+                                ]
+                            )
+                            ->send('用户'.$user->id.'['.$user->name.']赞了文章');
+                    } catch (\Exception $e) {
+                        app('sentry')->captureException($e);
+                    }
                 }
                 return;
                 break;
