@@ -39,30 +39,31 @@ class AuthController extends Controller
         switch ($permission_type) {
             case '7':
             case '1':
+            case '2':
                 // 问答社区L1
                 if ($user_level >= 1) {
                     $is_valid = true;
                 }
                 break;
-            case '2':
+            case '3':
                 // 活动报名，需要L2
                 if ($user_level >= 2) {
                     $is_valid = true;
                 }
                 break;
-            case '3':
+            case '4':
                 // 项目机遇，需要L3
                 if ($user_level >= 3) {
                     $is_valid = true;
                 }
                 break;
-            case '4':
+            case '5':
                 // 附近企业，需要L4
                 if ($user_level >= 4) {
                     $is_valid = true;
                 }
                 break;
-            case '5':
+            case '6':
                 // 更多专家，需要L4
                 if ($user_level >= 4) {
                     $is_valid = true;

@@ -54,7 +54,8 @@ class SubmissionController extends AdminController
                     'title' => $article->title,
                     'img'   => $article->data['img'],
                     'category_id' => $article->category_id,
-                    'category_name' => $article->category_name
+                    'category_name' => $article->category_name,
+                    'slug' => $article->slug
                 ]
             ]);
         }
