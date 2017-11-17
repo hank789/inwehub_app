@@ -24,6 +24,9 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 
     Route::post('logout', 'AuthController@logout')->middleware('jwt.auth');
 
+    //等级权限判断
+    Route::post('checkUserLevel','AuthController@checkUserLevel')->middleware('jwt.auth');
+
     //微信公众号注册验证
     Route::post('wxgzh/check_rg', 'AuthController@checkWeiXinGzh');
     //微信公众号注册
@@ -60,6 +63,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/addSkillTag','ProfileController@addSkillTag');
     //删除用户擅长标签
     Route::post('profile/delSkillTag','ProfileController@delSkillTag');
+
 
     //上传简历
     Route::post('profile/uploadResume','ProfileController@uploadResume');
@@ -125,7 +129,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //IM
     Route::post('im/message-store','MessageController@store');
     Route::post('im/messages','MessageController@getMessages');
-
 
 });
 

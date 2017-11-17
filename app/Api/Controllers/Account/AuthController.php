@@ -31,6 +31,49 @@ use Tymon\JWTAuth\JWTAuth;
 class AuthController extends Controller
 {
 
+    public function checkUserLevel(Request $request){
+        $user = $request->user();
+        $user_level = $user->userData->user_level;
+        $permission_type = $request->permission_type;
+        $is_valid = false;
+        switch ($permission_type) {
+            case '7':
+            case '1':
+                // 问答社区L1
+                if ($user_level >= 1) {
+                    $is_valid = true;
+                }
+                break;
+            case '2':
+                // 活动报名，需要L2
+                if ($user_level >= 2) {
+                    $is_valid = true;
+                }
+                break;
+            case '3':
+                // 项目机遇，需要L3
+                if ($user_level >= 3) {
+                    $is_valid = true;
+                }
+                break;
+            case '4':
+                // 附近企业，需要L4
+                if ($user_level >= 4) {
+                    $is_valid = true;
+                }
+                break;
+            case '5':
+                // 更多专家，需要L4
+                if ($user_level >= 4) {
+                    $is_valid = true;
+                }
+                break;
+            default:
+                break;
+        }
+        return self::createJsonData(true,['is_valid'=>$is_valid,'current_level'=>$user_level]);
+    }
+
     //发送手机验证码
     public function sendPhoneCode(Request $request)
     {
