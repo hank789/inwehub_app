@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Readhub\Submission;
 use App\Models\RecommendRead;
-use Carbon\Carbon;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 
 class SubmissionController extends AdminController
@@ -50,13 +49,14 @@ class SubmissionController extends AdminController
                 'sort' => 0,
                 'audit_status' => 0,
                 'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
-                'data' => [
+                'data' => array_merge([
                     'title' => $article->title,
                     'img'   => $article->data['img'],
                     'category_id' => $article->category_id,
                     'category_name' => $article->category_name,
+                    'type' => $article->type,
                     'slug' => $article->slug
-                ]
+                ],$article->data)
             ]);
         }
         return $this->success(route('admin.operate.article.index'),'设为精选成功');
