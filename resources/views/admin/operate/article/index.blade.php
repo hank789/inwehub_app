@@ -55,7 +55,7 @@
                                             <td>{{ $submission->id }}</td>
                                             <td>{{ $submission->title }}</td>
                                             <td>{{ $submission->category_name }}</td>
-                                            <td>{{ $submission->owner->username }}</td>
+                                            <td>{{ $submission->owner->name }}</td>
                                             <td>{{ $submission->updated_at }}</td>
                                         </tr>
                                     @endforeach
