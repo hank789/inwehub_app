@@ -200,7 +200,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
-                    'submission_type' => $this->data['type'],
+                    'submission_type' => $this->data['type']??'link',
                     'comment_content' => $this->data['comment_content'],
                     'submission_username' => $this->data['submission_username']
                 ];
@@ -224,7 +224,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
-                    'submission_type' => $this->data['type'],
+                    'submission_type' => $this->data['type']??'link',
                     'submission_id' => $this->source_id,
                     'comment_url' => $comment_url
                 ];

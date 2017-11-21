@@ -5,11 +5,12 @@ use App\Models\Article;
 use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Company\CompanyService;
 use App\Models\Notice;
 use App\Models\Question;
 use App\Models\Readhub\Comment as ReadhubComment;
-use App\Models\Readhub\Submission;
+use App\Models\Submission;
 use App\Models\RecommendQa;
 use App\Models\RecommendRead;
 use App\Models\User;
@@ -232,11 +233,19 @@ class IndexController extends Controller {
                     }
                     break;
                 case 'App\Models\Readhub\Comment':
+                    continue;
                     $type = 2;
-                    $readhub_comment = ReadhubComment::find($comment->source_id);
+                    $readhub_comment = Comment::find($comment->source_id);
                     $submission = Submission::find($readhub_comment->submission_id);
                     if (!$submission) continue;
                     $origin_title = '文章:'.$submission->title;
+                    $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+                    break;
+                case 'App\Models\Submission':
+                    $type = 2;
+                    $submission = Submission::find($comment->source_id);
+                    if (!$submission) continue;
+                    $origin_title = ($submission->type == 'link'?'文章:':'动态:').$submission->title;
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                     break;
             }

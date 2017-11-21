@@ -7,6 +7,7 @@
 
 use App\Models\Category;
 use App\Models\Collection;
+use App\Models\Comment;
 use App\Models\Readhub\Bookmark;
 use App\Models\Readhub\Category as ReadhubCategory;
 use App\Models\Readhub\Submission as ReadhubSubmission;
@@ -92,6 +93,13 @@ class MigrateData extends Command
                 'supportable_id' => $readhub_submission_upvote->submission_id,
                 'supportable_type' => 'App\Models\Submission'
             ]);
+        }
+        $readhub_comments = Comment::where('source_type','App\Models\Readhub\Comment')->get();
+        foreach ($readhub_comments as $readhub_comment) {
+            $readhub_comment->source_type = 'App\Models\Submission';
+            $comment = \App\Models\Readhub\Comment::find($readhub_comment->source_id);
+            $readhub_comment->source_id = $comment->submission_id;
+            $readhub_comment->save();
         }
     }
 
