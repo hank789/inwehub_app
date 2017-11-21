@@ -204,6 +204,9 @@ class FollowController extends Controller
         $uuid = $request->input('uuid',0);
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
         } else {
             $user = $request->user();
         }

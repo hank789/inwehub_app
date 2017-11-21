@@ -10,7 +10,7 @@ use App\Models\Company\Company;
 use App\Models\Pay\Withdraw;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
-use App\Models\Readhub\Submission;
+use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
 use App\Models\UserInfo\EduInfo;
