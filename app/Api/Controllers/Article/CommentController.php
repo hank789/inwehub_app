@@ -48,7 +48,7 @@ class CommentController extends Controller {
             'supports'    => 0
         ]);
 
-        return self::createJsonData(true,$comment->toArray());
+        return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }
 
     /**
