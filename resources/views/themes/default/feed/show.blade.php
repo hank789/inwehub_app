@@ -16,7 +16,13 @@
                                 <a target="_blank" href="{{ route('auth.space.index',['id'=>$message->user_id]) }}"> {{ $message->user->name }}</a> {{ $message->data['feed_content'] }}:
                                 <div class="full-text fmt">
                                     @foreach($message->getSourceFeedData()['feed'] as $field=>$value)
-                                        {{ $field }} : {{ $value }}<br>
+                                        @if (is_array($value))
+                                            @foreach($value as $f2=>$v2)
+                                                {{ $f2 }} : {{ $v2 }}<br>
+                                            @endforeach
+                                        @else
+                                            {{ $field }} : {{ $value }}<br>
+                                        @endif
                                     @endforeach
                                 </div>
                                 <div class="meta mt-10">
