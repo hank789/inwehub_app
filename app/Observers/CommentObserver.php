@@ -139,7 +139,7 @@ class CommentObserver implements ShouldQueue {
                             'title'  => $user->name.'回复了你的评论',
                             'submission_title' => $submission->title,
                             'comment_id' => $comment->id,
-                            'body'   => $comment->body,
+                            'body'   => $comment->content,
                             'extra_body' => '原回复：'.$parent_comment->body
                         ]));
                 } elseif ($submission->user_id != $comment->user_id) {
@@ -149,9 +149,9 @@ class CommentObserver implements ShouldQueue {
                             'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
-                            'title'  => $user->name.'回复了文章',
+                            'title'  => $user->name.'回复了动态',
                             'comment_id' => $comment->id,
-                            'body'   => $comment->body,
+                            'body'   => $comment->content,
                             'extra_body' => '原文：'.$submission->title
                         ]));
                 }
