@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Jobs\NotifyInwehub;
 use App\Models\Submission;
 use App\Models\Support;
@@ -115,7 +116,7 @@ class SubmissionVotesController extends Controller {
             $previous_vote = 'upvote';
             $support->delete();
             $submission->decrement('upvotes');
-            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'cancel_upvote']);
+            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'cancel_upvote'],ApiException::SUCCESS,'取消点赞成功');
         }
 
         $data = [
@@ -145,7 +146,7 @@ class SubmissionVotesController extends Controller {
             Redis::connection()->hset('voten:submission:upvote',$submission->id.'_'.$user->id,1);
         }
 
-        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote']);
+        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote'],ApiException::SUCCESS,'点赞成功');
     }
 
 }
