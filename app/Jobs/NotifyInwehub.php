@@ -136,7 +136,7 @@ class NotifyInwehub implements ShouldQueue
                             'domain'=>$submission->data['domain']??'',
                             'type'  => $submission->type,
                             'img'=>$submission->data['img']??''])
-                        ->log($user->name.'赞了动态', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
+                        ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
                     RateLimiter::instance()->increase($feed_event,$feed_target,3600);
                     $fields = [];
                     $fields[] = [

@@ -56,7 +56,7 @@ class SubmissionObserver implements ShouldQueue {
                 'current_address_longitude' => $submission->data['current_address_longitude'],
                 'current_address_latitude'  => $submission->data['current_address_latitude'],
                 'img'=>$submission->data['img']??''])
-            ->log($user->name.'发布了动态', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+            ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'动态'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
 
         $url = config('app.readhub_url').'/c/'.$submission->category_id.'/'.$submission->slug;
         return \Slack::to(config('slack.ask_activity_channel'))

@@ -119,7 +119,7 @@ class CommentObserver implements ShouldQueue {
                             'submission_username' => $submission_user->name,
                             'comment_content' => $comment->content
                         ])
-                        ->log($comment->user->name.'评论了动态', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
+                        ->log($comment->user->name.'评论了文章', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
                 }
 
                 foreach ($submission->data as $field=>$value){
@@ -152,7 +152,7 @@ class CommentObserver implements ShouldQueue {
                             'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
-                            'title'  => $user->name.'回复了动态',
+                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
                             'comment_id' => $comment->id,
                             'body'   => $comment->content,
                             'extra_body' => '原文：'.$submission->title
