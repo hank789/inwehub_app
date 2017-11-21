@@ -158,7 +158,7 @@ class Feed extends Model
                     'supporter_list' => $supporters,
                     'is_upvoted'     => $upvote ? 1 : 0,
                     'submission_type' => $submission->type,
-                    'comments' => $submission->comments()->orderBy('id','desc')->take(8)->get()
+                    'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get()
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
