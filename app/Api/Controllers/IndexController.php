@@ -6,12 +6,11 @@ use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Category;
 use App\Models\Comment;
-use App\Models\Company\CompanyService;
 use App\Models\Notice;
 use App\Models\Question;
 use App\Models\Readhub\Comment as ReadhubComment;
+use App\Models\Readhub\Submission as ReadhubSubmission;
 use App\Models\Submission;
-use App\Models\RecommendQa;
 use App\Models\RecommendRead;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -130,7 +129,7 @@ class IndexController extends Controller {
         }
 
         //推荐阅读
-        $recommend_list = Submission::where('recommend_status',Submission::RECOMMEND_STATUS_PUBLISH)->orderBy('recommend_sort','desc')->get()->take(5)->toArray();
+        $recommend_list = ReadhubSubmission::where('recommend_status',ReadhubSubmission::RECOMMEND_STATUS_PUBLISH)->orderBy('recommend_sort','desc')->get()->take(5)->toArray();
 
         $recommend_read = [];
         foreach ($recommend_list as $read){

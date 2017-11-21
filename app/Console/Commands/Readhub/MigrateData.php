@@ -98,6 +98,7 @@ class MigrateData extends Command
         foreach ($readhub_comments as $readhub_comment) {
             $readhub_comment->source_type = 'App\Models\Submission';
             $comment = \App\Models\Readhub\Comment::find($readhub_comment->source_id);
+            if (!$comment) continue;
             $readhub_comment->source_id = $comment->submission_id;
             $readhub_comment->save();
         }
