@@ -75,7 +75,7 @@ class RecommendRead extends Model
     public function getWebUrl() {
         switch ($this->read_type) {
             case self::READ_TYPE_SUBMISSION:
-                return '发现分享';
+                return config('app.mobile_url').'#/c/'.$this->data['category_id'].'/'.$this->data['slug'];
             case self::READ_TYPE_PAY_QUESTION:
             case self::READ_TYPE_FREE_QUESTION:
                 return route('ask.question.detail',['id'=>$this->source_id]);
