@@ -118,6 +118,7 @@ class NotifyInwehub implements ShouldQueue
                 //文章点赞
                 //产生一条feed流
                 $submission = Submission::find($this->message['submission_id']);
+                if ($submission->type != 'link') return;
                 $submission_user = User::find($submission->user_id);
                 $feed_event = 'NewSubmissionUpVote';
                 $feed_target = $submission->id.'_'.$user->id;
@@ -133,6 +134,7 @@ class NotifyInwehub implements ShouldQueue
                             'slug'=>$submission->slug,
                             'submission_title'=>$submission->title,
                             'domain'=>$submission->data['domain']??'',
+                            'type'  => $submission->type,
                             'img'=>$submission->data['img']??''])
                         ->log($user->name.'赞了动态', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
                     RateLimiter::instance()->increase($feed_event,$feed_target,3600);

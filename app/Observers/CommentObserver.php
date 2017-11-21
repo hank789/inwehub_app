@@ -104,20 +104,23 @@ class CommentObserver implements ShouldQueue {
                 $submission = Submission::find($comment->source_id);
                 $submission->increment('comments_number');
                 $submission_user = User::find($submission->user_id);
-                feed()
-                    ->causedBy($comment->user)
-                    ->performedOn($comment)
-                    ->withProperties([
-                        'comment_id'=>$comment->id,
-                        'category_id'=>$submission->category_id,
-                        'slug'=>$submission->slug,
-                        'submission_title'=>$submission->title,
-                        'domain'=>$submission->data['domain']??'',
-                        'img'=>$submission->data['img']??'',
-                        'submission_username' => $submission_user->name,
-                        'comment_content' => $comment->content
-                    ])
-                    ->log($comment->user->name.'评论了动态', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
+                if ($submission->type == 'link') {
+                    feed()
+                        ->causedBy($comment->user)
+                        ->performedOn($comment)
+                        ->withProperties([
+                            'comment_id'=>$comment->id,
+                            'category_id'=>$submission->category_id,
+                            'slug'=>$submission->slug,
+                            'submission_title'=>$submission->title,
+                            'type' => $submission->type,
+                            'domain'=>$submission->data['domain']??'',
+                            'img'=>$submission->data['img']??'',
+                            'submission_username' => $submission_user->name,
+                            'comment_content' => $comment->content
+                        ])
+                        ->log($comment->user->name.'评论了动态', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
+                }
 
                 foreach ($submission->data as $field=>$value){
                     if ($value){

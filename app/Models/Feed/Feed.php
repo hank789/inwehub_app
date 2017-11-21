@@ -157,6 +157,7 @@ class Feed extends Model
                     'support_number' => $submission->upvotes,
                     'supporter_list' => $supporters,
                     'is_upvoted'     => $upvote ? 1 : 0,
+                    'submission_type' => $submission->type,
                     'comments' => $submission->comments()->orderBy('id','desc')->take(8)->get()
                 ];
                 break;
@@ -199,6 +200,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
+                    'submission_type' => $this->data['type'],
                     'comment_content' => $this->data['comment_content'],
                     'submission_username' => $this->data['submission_username']
                 ];
@@ -222,6 +224,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
+                    'submission_type' => $this->data['type'],
                     'submission_id' => $this->source_id,
                     'comment_url' => $comment_url
                 ];
