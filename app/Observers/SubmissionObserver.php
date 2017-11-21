@@ -33,10 +33,19 @@ class SubmissionObserver implements ShouldQueue {
         $slackFields = [];
         foreach ($submission->data as $field=>$value){
             if ($value){
-                $slackFields[] = [
-                    'title' => $field,
-                    'value' => is_array($value)?implode(',',$value):$value
-                ];
+                if (is_array($value)) {
+                    foreach ($value as $key => $item) {
+                        $slackFields[] = [
+                            'title' => $field.$key,
+                            'value' => $item
+                        ];
+                    }
+                } else {
+                    $slackFields[] = [
+                        'title' => $field,
+                        'value' => $value
+                    ];
+                }
             }
         }
         $user = User::find($submission->user_id);
