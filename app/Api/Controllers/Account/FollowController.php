@@ -201,8 +201,12 @@ class FollowController extends Controller
 
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
-
-        $user = $request->user();
+        $uuid = $request->input('uuid',0);
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+        } else {
+            $user = $request->user();
+        }
         $query = Attention::where('source_type','=','App\Models\User')->where('source_id',$user->id);
         if($top_id){
             $query = $query->where('id','>',$top_id);
