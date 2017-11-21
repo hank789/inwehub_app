@@ -53,7 +53,7 @@
                                         <tr>
                                             <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
                                             <td>{{ $submission->id }}</td>
-                                            <td>{{ $submission->title }}</td>
+                                            <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->data['category_id'].'/'.$submission->data['slug'] }}" target="_blank">{{ $submission->title }}</a></td>
                                             <td>{{ $submission->category_name }}</td>
                                             <td>{{ $submission->owner->name }}</td>
                                             <td>{{ $submission->updated_at }}</td>
