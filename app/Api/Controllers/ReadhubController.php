@@ -3,7 +3,7 @@
 namespace App\Api\Controllers;
 
 use App\Exceptions\ApiException;
-use App\Models\Readhub\Submission;
+use App\Models\Submission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
