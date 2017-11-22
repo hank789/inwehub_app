@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Models\Feed\Feed;
 use App\Models\Relations\MorphManyCommentsTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -94,6 +95,20 @@ class Submission extends Model {
     const RECOMMEND_STATUS_NOTHING = 0;
     const RECOMMEND_STATUS_PENDING = 1;
     const RECOMMEND_STATUS_PUBLISH = 2;
+
+
+    public static function boot()
+    {
+        parent::boot();
+        static::deleted(function($submission){
+            Feed::where('source_id',$submission->id)
+                ->where('source_type','App\Models\Submission')
+                ->delete();
+            Collection::where('source_id',$submission->id)
+                ->where('source_type','App\Models\Submission')
+                ->delete();
+        });
+    }
 
     /**
      * A submission is owned by a user.

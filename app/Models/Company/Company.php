@@ -76,7 +76,6 @@ class Company extends Model
 
 
         static::updating(function($company){
-
             $company->userData->update(['is_company'=>$company->apply_status == self::APPLY_STATUS_SUCCESS ? 1:0 ]);
         });
 
