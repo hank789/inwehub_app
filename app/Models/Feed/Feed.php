@@ -141,8 +141,8 @@ class Feed extends Model
                     $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
                 }
                 $upvote = Support::where('user_id',Auth::user()->id)
-                    ->where('source_id',$submission->id)
-                    ->where('source_type',Submission::class)
+                    ->where('supportable_id',$submission->id)
+                    ->where('supportable_type',Submission::class)
                     ->exists();
                 $data = [
                     'title'     => $this->data['submission_title'],
