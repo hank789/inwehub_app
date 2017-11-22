@@ -29,7 +29,7 @@ class CommentController extends Controller {
             'submission_id' => 'required|integer',
         ]);
         $user = $request->user();
-        if (RateLimiter::instance()->increase('submission:comment:store',$user->id)) {
+        if (RateLimiter::instance()->increase('submission:comment:store',$user->id,5)) {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
