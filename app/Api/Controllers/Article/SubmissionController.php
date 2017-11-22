@@ -180,7 +180,7 @@ class SubmissionController extends Controller {
             ->where('source_id',$submission->id)
             ->where('source_type',Submission::class)
             ->exists();
-        $attention_user = Attention::where("user_id",'=',$submission->user_id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
+        $attention_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
         $return['is_followed_author'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
