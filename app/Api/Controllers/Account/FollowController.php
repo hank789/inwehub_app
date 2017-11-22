@@ -231,7 +231,7 @@ class FollowController extends Controller
             $item['title'] = $info->title;
             $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
             $item['user_name'] = $info->name;
-            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($info))->where('source_id','=',$info->id)->first();
+            $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($info))->where('source_id','=',$info->id)->first();
             $item['is_following'] = 0;
             if ($attention){
                 $item['is_following'] = 1;
