@@ -109,7 +109,7 @@ class CollectionController extends Controller
                 case 'questions':
                     break;
                 case 'readhubSubmission':
-                    $submission = $model::find($attention->bookmarkable_id);
+                    $submission = $model::find($attention->source_id);
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
 
                     $item = [
