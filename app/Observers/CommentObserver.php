@@ -9,6 +9,7 @@ use App\Logic\TaskLogic;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Feed\Feed;
+use App\Models\Notification;
 use App\Models\Submission;
 use App\Models\User;
 use App\Notifications\NewComment;
@@ -160,6 +161,7 @@ class CommentObserver implements ShouldQueue {
                             'submission_title' => $submission->title,
                             'comment_id' => $comment->id,
                             'body'   => $comment->content,
+                            'notification_type' => Notification::NOTIFICATION_TYPE_READ,
                             'extra_body' => '原回复：'.$parent_comment->body
                         ]));
                 } elseif ($submission->user_id != $comment->user_id) {
@@ -172,6 +174,7 @@ class CommentObserver implements ShouldQueue {
                             'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
                             'comment_id' => $comment->id,
                             'body'   => $comment->content,
+                            'notification_type' => Notification::NOTIFICATION_TYPE_READ,
                             'extra_body' => '原文：'.$submission->title
                         ]));
                 }
