@@ -2,6 +2,7 @@
 
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyTagsTrait;
+use App\Models\UserData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -76,7 +77,9 @@ class Company extends Model
 
 
         static::updating(function($company){
-            $company->userData->update(['is_company'=>$company->apply_status == self::APPLY_STATUS_SUCCESS ? 1:0 ]);
+            UserData::where('user_id',$company->user_id)->update(
+                ['is_company'=>($company->apply_status == self::APPLY_STATUS_SUCCESS ? 1:0) ]
+            );
         });
 
     }
