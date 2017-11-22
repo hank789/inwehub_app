@@ -35,7 +35,7 @@ class SubmissionController extends Controller {
     {
         $user = $request->user();
 
-        if (RateLimiter::instance()->increase('submission:store',$user->id,30)) {
+        if (RateLimiter::instance()->increase('submission:store',$user->id,5)) {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
