@@ -53,6 +53,7 @@ class RecommendRead extends Model
     const READ_TYPE_FREE_QUESTION = 3;
     const READ_TYPE_ACTIVITY = 4;//活动
     const READ_TYPE_PROJECT_OPPORTUNITY = 5;//项目机遇
+    const READ_TYPE_FREE_QUESTION_ANSWER = 6;//互动问答回复
 
 
 
@@ -68,6 +69,8 @@ class RecommendRead extends Model
                 return '活动';
             case self::READ_TYPE_PROJECT_OPPORTUNITY:
                 return '项目机遇';
+            case self::READ_TYPE_FREE_QUESTION_ANSWER:
+                return '互动问答回复';
         }
         return '';
     }
@@ -78,6 +81,7 @@ class RecommendRead extends Model
                 return config('app.mobile_url').'#/c/'.$this->data['category_id'].'/'.$this->data['slug'];
             case self::READ_TYPE_PAY_QUESTION:
             case self::READ_TYPE_FREE_QUESTION:
+            case self::READ_TYPE_FREE_QUESTION_ANSWER:
                 return route('ask.question.detail',['id'=>$this->source_id]);
             case self::READ_TYPE_ACTIVITY:
             case self::READ_TYPE_PROJECT_OPPORTUNITY:

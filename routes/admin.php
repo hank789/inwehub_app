@@ -124,6 +124,8 @@ Route::post('answer/destroy',['as'=>'admin.answer.destroy','uses'=>'AnswerContro
 Route::post('answer/verify',['as'=>'admin.answer.verify','uses'=>'AnswerController@verify']);
 /*回答管理*/
 Route::resource('answer', 'AnswerController',['only' => ['index','edit','update'],'as'=>'admin']);
+//设为精选推荐
+Route::post('answer/verifyRecommendHeart',['as'=>'admin.answer.verify_heart','uses'=>'AnswerController@verifyRecommendHeart']);
 
 /*文章删除*/
 Route::post('article/destroy',['as'=>'admin.article.destroy','uses'=>'ArticleController@destroy']);
