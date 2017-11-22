@@ -138,7 +138,7 @@ class Feed extends Model
                     ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
                 $supporters = [];
                 if ($support_uids) {
-                    $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid');
+                    $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid')->toArray();
                 }
                 $upvote = Collection::where('user_id',Auth::user()->id)
                     ->where('source_id',$submission->id)
