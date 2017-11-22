@@ -47,7 +47,7 @@ class SubmissionController extends Controller {
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
-                'title' => 'required|between:7,150',
+                'title' => 'required|between:1,150',
             ]);
 
             //检查url是否重复
@@ -168,6 +168,9 @@ class SubmissionController extends Controller {
 
         $user = $request->user();
         $submission = Submission::where('slug',$request->slug)->first();
+        if (!$submission) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
         $return = $submission->toArray();
         $upvote = Support::where('user_id',$user->id)
             ->where('supportable_id',$submission->id)
