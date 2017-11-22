@@ -122,12 +122,29 @@ class CommentObserver implements ShouldQueue {
                         ->log($comment->user->name.'评论了文章', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
                 }
 
+                $fields[] = [
+                    'title' => '标题',
+                    'value' => $submission->title
+                ];
+                $fields[] = [
+                    'title' => '地址',
+                    'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+                ];
                 foreach ($submission->data as $field=>$value){
                     if ($value){
-                        $fields[] = [
-                            'title' => $field,
-                            'value' => $value
-                        ];
+                        if (is_array($value)) {
+                            foreach ($value as $key => $item) {
+                                $fields[] = [
+                                    'title' => $field.$key,
+                                    'value' => $item
+                                ];
+                            }
+                        } else {
+                            $fields[] = [
+                                'title' => $field,
+                                'value' => $value
+                            ];
+                        }
                     }
                 }
                 $user = $comment->user;

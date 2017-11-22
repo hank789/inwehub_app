@@ -80,6 +80,14 @@ class SupportObserver implements ShouldQueue {
                 break;
             case 'App\Models\Submission':
                 $title = '动态';
+                $fields[] = [
+                    'title' => '标题',
+                    'value' => $source->title
+                ];
+                $fields[] = [
+                    'title' => '地址',
+                    'value' => config('app.mobile_url').'#/c/'.$source->category_id.'/'.$source->slug
+                ];
                 foreach ($source->data as $field=>$value){
                     if ($value){
                         if (is_array($value)) {

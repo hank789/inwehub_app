@@ -67,7 +67,7 @@ class SubmissionObserver implements ShouldQueue {
                 'img'=>$submission->data['img']??''])
             ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'动态'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
 
-        $url = config('app.readhub_url').'/c/'.$submission->category_id.'/'.$submission->slug;
+        $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
             ->attach(

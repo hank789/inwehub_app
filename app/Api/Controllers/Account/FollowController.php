@@ -12,7 +12,6 @@ use App\Notifications\NewUserFollowing;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
-use App\Http\Requests;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 
