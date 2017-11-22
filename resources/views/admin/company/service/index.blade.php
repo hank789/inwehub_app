@@ -44,7 +44,8 @@
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>ID</th>
                                         <th>标题</th>
-                                        <th>封面图片</th>
+                                        <th>幻灯片图片</th>
+                                        <th>列表图片</th>
                                         <th>排序</th>
                                         <th>审核状态</th>
                                         <th>更新时间</th>
@@ -56,7 +57,10 @@
                                             <td>{{ $item->id }}</td>
                                             <td>{{ $item->title }}</td>
                                             <td>
-                                                <img width="100" height="100" src="{{ $item->img_url }}">
+                                                <img width="100" height="100" src="{{ $item->img_url_slide }}">
+                                            </td>
+                                            <td>
+                                                <img width="100" height="100" src="{{ $item->img_url_list }}">
                                             </td>
                                             <td>{{ $item->sort }}</td>
                                             <td><span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>

@@ -29,8 +29,12 @@
                             </div>
 
                             <div class="form-group">
-                                <label>图片地址</label>
-                                <input type="text" name="img_url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url','') }}">
+                                <label>幻灯片图片地址</label>
+                                <input type="text" name="img_url_slide" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url_slide','') }}">
+                            </div>
+                            <div class="form-group">
+                                <label>列表图片地址</label>
+                                <input type="text" name="img_url_list" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url_list','') }}">
                             </div>
                             <div class="form-group">
                                 <label>公告排序(越大越靠前)</label>

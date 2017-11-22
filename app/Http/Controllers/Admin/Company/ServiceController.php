@@ -11,7 +11,8 @@ class ServiceController extends AdminController
 
     protected $validateRules = [
         'title' => 'required|max:255',
-        'img_url' => 'required|max:255',
+        'img_url_slide' => 'required|max:255',
+        'img_url_list' => 'required|max:255',
         'sort' => 'required'
     ];
 
@@ -92,7 +93,8 @@ class ServiceController extends AdminController
 
         $service->sort = $request->input('sort');
         $service->audit_status = $request->input('audit_status');
-        $service->img_url = $request->input('img_url');
+        $service->img_url_slide = $request->input('img_url_slide');
+        $service->img_url_list = $request->input('img_url_list');
         $service->title = $request->input('title');
         $service->save();
 

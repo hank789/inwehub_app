@@ -29,8 +29,12 @@
                                 <input type="text" name="title" class="form-control "  placeholder="服务标题" value="{{ old('subject',$service->title) }}">
                             </div>
                             <div class="form-group">
-                                <label>图片地址</label>
-                                <input type="text" name="img_url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url',$service->img_url) }}">
+                                <label>幻灯片图片地址</label>
+                                <input type="text" name="img_url_slide" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url_slide',$service->img_url_slide) }}">
+                            </div>
+                            <div class="form-group">
+                                <label>列表图片地址</label>
+                                <input type="text" name="img_url_list" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url_list',$service->img_url_list) }}">
                             </div>
                             <div class="form-group">
                                 <label>排序</label>

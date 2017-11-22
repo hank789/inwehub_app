@@ -16,7 +16,8 @@ class CreateCompanyServiceTable extends Migration
         Schema::create('company_service', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->string('title');
-            $table->string('img_url');                       // 图片链接地址
+            $table->string('img_url_slide');                       // 幻灯片图片链接地址
+            $table->string('img_url_list');                       // 列表页面图片链接地址
             $table->tinyInteger('sort');                 //排序字段 ASC
             $table->tinyInteger('audit_status')->nullable()->default(1)->index()->comment('审核状态 0-未审核 1-已审核 2-未通过');
             $table->timestamps();
