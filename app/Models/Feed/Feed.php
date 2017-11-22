@@ -140,7 +140,7 @@ class Feed extends Model
                 if ($support_uids) {
                     $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
                 }
-                $upvote = Collection::where('user_id',Auth::user()->id)
+                $upvote = Support::where('user_id',Auth::user()->id)
                     ->where('source_id',$submission->id)
                     ->where('source_type',Submission::class)
                     ->exists();
