@@ -110,7 +110,7 @@ class CompanyController extends Controller {
             'value'=>$request->input('service_title')
         ];
         event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.'申请了企业服务'));
-        return self::createJsonData(true);
+        return self::createJsonData(true,['tips'=>'申请成功，请耐心等待']);
     }
 
 }
