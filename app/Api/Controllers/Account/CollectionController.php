@@ -65,7 +65,7 @@ class CollectionController extends Controller
         $sourceClassMap = [
             'questions' => 'App\Models\Question',
             'answers' => 'App\Models\Answer',
-            'readhubSubmission' => 'App\Models\Readhub\Submission'
+            'readhubSubmission' => 'App\Models\Submission'
         ];
 
         if(!isset($sourceClassMap[$source_type])){
@@ -77,11 +77,9 @@ class CollectionController extends Controller
         $bottom_id = $request->input('bottom_id',0);
         $user = $request->user();
 
-        if ($source_type == 'readhubSubmission') {
-            $query = Bookmark::where('user_id',$user->id)->where('bookmarkable_type',$sourceClassMap[$source_type]);
-        } else {
-            $query = $user->collections()->where('source_type','=',$sourceClassMap[$source_type]);
-        }
+
+        $query = $user->collections()->where('source_type','=',$sourceClassMap[$source_type]);
+
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
