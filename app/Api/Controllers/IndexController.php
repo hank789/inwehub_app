@@ -1,14 +1,17 @@
 <?php namespace App\Api\Controllers;
+use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
 use App\Models\Article;
 use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Notice;
 use App\Models\Question;
 use App\Models\Readhub\Comment as ReadhubComment;
-use App\Models\Readhub\Submission;
-use App\Models\RecommendQa;
+use App\Models\Readhub\Submission as ReadhubSubmission;
+use App\Models\Submission;
+use App\Models\RecommendRead;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -126,7 +129,7 @@ class IndexController extends Controller {
         }
 
         //推荐阅读
-        $recommend_list = Submission::where('recommend_status',Submission::RECOMMEND_STATUS_PUBLISH)->orderBy('recommend_sort','desc')->get()->take(5)->toArray();
+        $recommend_list = ReadhubSubmission::where('recommend_status',ReadhubSubmission::RECOMMEND_STATUS_PUBLISH)->orderBy('recommend_sort','desc')->get()->take(5)->toArray();
 
         $recommend_read = [];
         foreach ($recommend_list as $read){
@@ -188,9 +191,22 @@ class IndexController extends Controller {
         return self::createJsonData(true,$data);
     }
 
+    //精选推荐
+    public function recommendRead(Request $request) {
+        $reads = RecommendRead::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('api_data_page_size'));
+        return self::createJsonData(true, $reads->toArray());
+    }
 
     public function myCommentList(Request $request){
-        $user = $request->user();
+        $uuid = $request->input('uuid');
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        } else {
+            $user = $request->user();
+        }
         $comments = $user->comments()->orderBy('id','desc')->simplePaginate(Config::get('api_data_page_size'));
         $return = [];
 
@@ -216,11 +232,19 @@ class IndexController extends Controller {
                     }
                     break;
                 case 'App\Models\Readhub\Comment':
+                    continue;
                     $type = 2;
-                    $readhub_comment = ReadhubComment::find($comment->source_id);
+                    $readhub_comment = Comment::find($comment->source_id);
                     $submission = Submission::find($readhub_comment->submission_id);
                     if (!$submission) continue;
                     $origin_title = '文章:'.$submission->title;
+                    $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+                    break;
+                case 'App\Models\Submission':
+                    $type = 2;
+                    $submission = Submission::find($comment->source_id);
+                    if (!$submission) continue;
+                    $origin_title = ($submission->type == 'link'?'文章:':'动态:').$submission->title;
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                     break;
             }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Jobs\CloseActivity;
 use App\Models\Article;
+use App\Models\Category;
+use App\Models\RecommendRead;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -95,6 +97,32 @@ class ArticleController extends AdminController
             }
         }
         return $this->success(route('admin.article.index').'?status=0','活动审核成功');
+    }
+
+    /*推荐精选审核*/
+    public function verifyRecommend(Request $request)
+    {
+        $articleIds = $request->input('id');
+        foreach ($articleIds as $articleId) {
+            $article = Article::find($articleId);
+            $category = Category::find($article->category_id);
+
+            RecommendRead::firstOrCreate([
+                'source_id' => $articleId,
+                'source_type' => get_class($article)
+            ],[
+                'source_id' => $articleId,
+                'source_type' => get_class($article),
+                'sort' => 0,
+                'audit_status' => 0,
+                'read_type' => $category->slug == 'activity_enroll' ? RecommendRead::READ_TYPE_ACTIVITY : RecommendRead::READ_TYPE_PROJECT_OPPORTUNITY,
+                'data' => [
+                    'title' => $article->title,
+                    'img'   => $article->logo
+                ]
+            ]);
+        }
+        return $this->success(route('admin.article.index'),'设为精选成功');
 
     }
 

@@ -5,10 +5,20 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Logic\TaskLogic;
 use App\Models\Comment;
+use App\Models\Credit;
 use App\Models\Feed\Feed;
+use App\Models\Notification;
+use App\Models\Submission;
+use App\Models\User;
 use App\Notifications\NewComment;
+use App\Notifications\Readhub\CommentReplied;
+use App\Notifications\Readhub\SubmissionReplied;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Events\Frontend\System\Credit as CreditEvent;
+use Illuminate\Support\Facades\Redis;
+
 
 class CommentObserver implements ShouldQueue {
 
@@ -84,6 +94,93 @@ class CommentObserver implements ShouldQueue {
                     ])
                     ->log($comment->user->name.'评论了'.$feed_question_title, $feed_type);
                 break;
+            case 'App\Models\Submission':
+                //动态
+                $title = '动态';
+                event(new CreditEvent($comment->user_id,Credit::KEY_READHUB_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_COMMENT),$comment->id,''));
+                if (Redis::connection()->hget('user.'.$comment->user_id.'.data', 'commentsCount') <= 2) {
+                    TaskLogic::finishTask('newbie_readhub_comment',0,'newbie_readhub_comment',[$comment->user_id]);
+                }
+                //产生一条feed流
+                $submission = Submission::find($comment->source_id);
+                $submission->increment('comments_number');
+                $submission_user = User::find($submission->user_id);
+                if ($submission->type == 'link') {
+                    feed()
+                        ->causedBy($comment->user)
+                        ->performedOn($comment)
+                        ->withProperties([
+                            'comment_id'=>$comment->id,
+                            'category_id'=>$submission->category_id,
+                            'slug'=>$submission->slug,
+                            'submission_title'=>$submission->title,
+                            'type' => $submission->type,
+                            'domain'=>$submission->data['domain']??'',
+                            'img'=>$submission->data['img']??'',
+                            'submission_username' => $submission_user->name,
+                            'comment_content' => $comment->content
+                        ])
+                        ->log($comment->user->name.'评论了文章', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
+                }
+
+                $fields[] = [
+                    'title' => '标题',
+                    'value' => $submission->title
+                ];
+                $fields[] = [
+                    'title' => '地址',
+                    'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+                ];
+                foreach ($submission->data as $field=>$value){
+                    if ($value){
+                        if (is_array($value)) {
+                            foreach ($value as $key => $item) {
+                                $fields[] = [
+                                    'title' => $field.$key,
+                                    'value' => $item
+                                ];
+                            }
+                        } else {
+                            $fields[] = [
+                                'title' => $field,
+                                'value' => $value
+                            ];
+                        }
+                    }
+                }
+                $user = $comment->user;
+                if ($comment->parent_id > 0 && $comment->parent_id != $comment->user_id) {
+                    $parent_comment = Comment::find($comment->parent_id);
+                    $notifyUser = User::find($parent_comment->user_id);
+                    $notifyUser->notify(new CommentReplied($parent_comment->user_id,
+                        [
+                            'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
+                            'name'   => $user->name,
+                            'avatar' => $user->avatar,
+                            'title'  => $user->name.'回复了你的评论',
+                            'submission_title' => $submission->title,
+                            'comment_id' => $comment->id,
+                            'body'   => $comment->content,
+                            'notification_type' => Notification::NOTIFICATION_TYPE_READ,
+                            'extra_body' => '原回复：'.$parent_comment->body
+                        ]));
+                } elseif ($submission->user_id != $comment->user_id) {
+                    $notifyUser = User::find($submission->user_id);
+                    $notifyUser->notify(new SubmissionReplied($submission->user_id,
+                        [
+                            'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
+                            'name'   => $user->name,
+                            'avatar' => $user->avatar,
+                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
+                            'comment_id' => $comment->id,
+                            'body'   => $comment->content,
+                            'notification_type' => Notification::NOTIFICATION_TYPE_READ,
+                            'extra_body' => '原文：'.$submission->title
+                        ]));
+                }
+
+                $this->handleMentions($comment, $submission);
+                break;
             default:
                 return;
         }
@@ -101,6 +198,24 @@ class CommentObserver implements ShouldQueue {
                     'fields' => $fields
                 ]
             )->send('用户'.$comment->user->id.'['.$comment->user->name.']评论了'.$title);
+    }
+
+    protected function handleMentions($comment, $submission)
+    {
+        if (!preg_match_all('/@([\S]+)/', $comment->body, $mentionedUsernames)) {
+            return;
+        }
+
+        foreach ($mentionedUsernames[1] as $key => $username) {
+            // set a limit so they can't just mention the whole website! lol
+            if ($key === 5) {
+                return;
+            }
+
+            if ($user = User::where('name',$username)->first()) {
+                //$user->notify(new UsernameMentioned($submission,$comment));
+            }
+        }
     }
 
 

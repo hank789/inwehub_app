@@ -1,4 +1,5 @@
 <?php namespace App\Http\Controllers\Wechat;
+use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Log;
@@ -80,7 +81,10 @@ class WechatController extends Controller
         if($userInfo && isset($userInfo['app_token'])){
             $token = $userInfo['app_token'];
             try {
-                if (false === $JWTAuth->authenticate($token)){
+                if ($user = $JWTAuth->authenticate($token)){
+                    //登陆事件通知
+                    event(new UserLoggedIn($user));
+                } else {
                     return $wechat->oauth->scopes(['snsapi_userinfo'])
                         ->setRequest($request)
                         ->redirect();
@@ -160,6 +164,8 @@ class WechatController extends Controller
             if ($user){
                 $token = $JWTAuth->fromUser($user);
                 $userInfo['app_token'] = $token;
+                //登陆事件通知
+                event(new UserLoggedIn($user));
                 Session::put("wechat_userinfo",$userInfo);
             }
         } elseif($userInfo['id']) {

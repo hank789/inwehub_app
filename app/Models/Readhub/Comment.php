@@ -42,6 +42,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Comment whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Comment whereUpvotes($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Comment whereUserId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Readhub\Comment[] $children
+ * @property-read \App\Models\Readhub\ReadHubUser $owner
+ * @property-read \App\Models\Readhub\Comment $parent
  */
 class Comment extends Model {
 
@@ -55,4 +58,37 @@ class Comment extends Model {
     protected $connection = 'inwehub_read';
 
 
+    /**
+     * Fillable fields for the table.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'body', 'upvotes', 'rate', 'downvotes', 'submission_id', 'level', 'parent_id', 'category_id', 'user_id', 'edited_at',
+    ];
+
+    protected $with = [
+        'owner', 'children',
+    ];
+
+    public function owner()
+    {
+        return $this->belongsTo(ReadHubUser::class, 'user_id')
+            ->select(['id', 'username', 'avatar','uuid','is_expert']);
+    }
+
+    /**
+     * A comment has many children.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
 }

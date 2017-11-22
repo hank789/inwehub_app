@@ -5,8 +5,7 @@ namespace App\Jobs;
 use App\Logic\TaskLogic;
 use App\Models\Credit;
 use App\Models\Feed\Feed;
-use App\Models\Readhub\Comment;
-use App\Models\Readhub\Submission;
+use App\Models\Submission;
 use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Bus\Queueable;
@@ -57,6 +56,7 @@ class NotifyInwehub implements ShouldQueue
         $class = $this->type;
         switch ($class){
             case 'NewComment':
+                return;
                 event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_COMMENT),$this->message['commnet_id'],''));
                 if (Redis::connection()->hget('user.'.$this->user_id.'.data', 'commentsCount') <= 2) {
                     TaskLogic::finishTask('newbie_readhub_comment',0,'newbie_readhub_comment',[$this->user_id]);
@@ -90,10 +90,11 @@ class NotifyInwehub implements ShouldQueue
                         'submission_username' => $submission_user->name,
                         'comment_content' => $comment->body
                     ])
-                    ->log($user->name.'评论了文章', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
+                    ->log($user->name.'评论了动态', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
                 return;
                 break;
             case 'NewSubmission':
+                return;
                 event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$this->message['submission_id'],''));
                 //产生一条feed流
                 $submission = Submission::find($this->message['submission_id']);
@@ -106,14 +107,18 @@ class NotifyInwehub implements ShouldQueue
                         'slug'=>$submission->slug,
                         'submission_title'=>$submission->title,
                         'domain'=>$submission->data['domain']??'',
+                        'current_address_name' => $submission->data['current_address_name'],
+                        'current_address_longitude' => $submission->data['current_address_longitude'],
+                        'current_address_latitude'  => $submission->data['current_address_latitude'],
                         'img'=>$submission->data['img']??''])
-                    ->log($user->name.'发布了文章', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+                    ->log($user->name.'发布了动态', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
                 return;
                 break;
             case 'NewSubmissionUpVote':
                 //文章点赞
                 //产生一条feed流
                 $submission = Submission::find($this->message['submission_id']);
+                if ($submission->type != 'link') return;
                 $submission_user = User::find($submission->user_id);
                 $feed_event = 'NewSubmissionUpVote';
                 $feed_target = $submission->id.'_'.$user->id;
@@ -129,6 +134,7 @@ class NotifyInwehub implements ShouldQueue
                             'slug'=>$submission->slug,
                             'submission_title'=>$submission->title,
                             'domain'=>$submission->data['domain']??'',
+                            'type'  => $submission->type,
                             'img'=>$submission->data['img']??''])
                         ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
                     RateLimiter::instance()->increase($feed_event,$feed_target,3600);
@@ -141,13 +147,17 @@ class NotifyInwehub implements ShouldQueue
                         'title' => '文章地址',
                         'value' => config('app.readhub_url').'/c/'.$submission->category_id.'/'.$submission->slug
                     ];
-                    \Slack::to(config('slack.ask_activity_channel'))
-                        ->attach(
-                            [
-                                'fields' => $fields
-                            ]
-                        )
-                        ->send('用户'.$user->id.'['.$user->name.']赞了文章');
+                    try {
+                        \Slack::to(config('slack.ask_activity_channel'))
+                            ->attach(
+                                [
+                                    'fields' => $fields
+                                ]
+                            )
+                            ->send('用户'.$user->id.'['.$user->name.']赞了文章');
+                    } catch (\Exception $e) {
+                        app('sentry')->captureException($e);
+                    }
                 }
                 return;
                 break;

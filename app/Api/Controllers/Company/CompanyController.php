@@ -1,13 +1,14 @@
 <?php namespace App\Api\Controllers\Company;
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Company\Company;
+use App\Models\Company\CompanyService;
 use App\Models\Tag;
-use App\Services\City\CityData;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
-use App\Models\User;
+use Illuminate\Support\Facades\Config;
 
 /**
  * @author: wanghui
@@ -90,6 +91,26 @@ class CompanyController extends Controller {
         $return['company_workers'] = ['value'=>$return['company_workers']??0,'text'=>trans_company_workers($return['company_workers']??0)];
 
         return self::createJsonData(true,$return);
+    }
+
+
+    public function serviceList() {
+        $services = CompanyService::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('api_data_page_size'));
+        return self::createJsonData(true, $services->toArray());
+    }
+
+    public function applyService(Request $request) {
+        $this->validate($request, [
+            'service_title'          => 'required|min:2'
+        ]);
+        $user = $request->user();
+        $fields = [];
+        $fields[] = [
+            'title'=>'服务名称',
+            'value'=>$request->input('service_title')
+        ];
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.'申请了企业服务'));
+        return self::createJsonData(true);
     }
 
 }

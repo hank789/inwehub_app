@@ -109,6 +109,10 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereLastLoginToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSource($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereUuid($value)
+ * @property string|null $rc_code
+ * @property int|null $rc_uid
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRcCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRcUid($value)
  */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,
@@ -260,6 +264,17 @@ class User extends Model implements AuthenticatableContract,
                 return '微信小程序';
         }
         return 'APP';
+    }
+
+    public function getInviter(){
+        if ($this->rc_uid) {
+            return User::find($this->rc_uid);
+        }
+        return null;
+    }
+
+    public function getInvitedUserCount(){
+        return self::where('rc_uid',$this->id)->count();
     }
 
     /**

@@ -3,6 +3,7 @@
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Models\Attention;
+use App\Models\Authentication;
 use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\Tag;
@@ -11,7 +12,6 @@ use App\Notifications\NewUserFollowing;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
-use App\Http\Requests;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 
@@ -173,7 +173,7 @@ class FollowController extends Controller
                     $item['company'] = $info->company;
                     $item['title'] = $info->title;
                     $item['user_avatar_url'] = $info->avatar;
-                    $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
+                    $item['is_expert'] = ($info->authentication && $info->authentication->status == 1) ? 1 : 0;
                     $item['description'] = $info->description;
                     $item['is_followed'] = 1;
                     break;
@@ -200,8 +200,15 @@ class FollowController extends Controller
 
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
-
-        $user = $request->user();
+        $uuid = $request->input('uuid',0);
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        } else {
+            $user = $request->user();
+        }
         $query = Attention::where('source_type','=','App\Models\User')->where('source_id',$user->id);
         if($top_id){
             $query = $query->where('id','>',$top_id);
@@ -224,7 +231,7 @@ class FollowController extends Controller
             $item['title'] = $info->title;
             $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
             $item['user_name'] = $info->name;
-            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($info))->where('source_id','=',$info->id)->first();
+            $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($info))->where('source_id','=',$info->id)->first();
             $item['is_following'] = 0;
             if ($attention){
                 $item['is_following'] = 1;
@@ -248,6 +255,7 @@ class FollowController extends Controller
         $users = $query->select('users.*','attentions.id as attention_id')->get();
         $data = [];
         foreach ($users as $user) {
+            $authentication = Authentication::find($user->id);
             $item = [];
             $item['id'] = $user->attention_id;
             $item['user_id'] = $user->id;
@@ -256,7 +264,7 @@ class FollowController extends Controller
             $item['company'] = $user->company;
             $item['title'] = $user->title;
             $item['user_avatar_url'] = $user->avatar;
-            $item['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+            $item['is_expert'] = ($authentication && $authentication->status === 1) ? 1 : 0;
             $item['description'] = $user->description;
             $item['is_followed'] = 1;
             $data[] = $item;

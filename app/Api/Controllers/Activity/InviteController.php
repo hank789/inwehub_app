@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
+use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Order;
 use App\Models\Pay\UserMoney;
 use App\Models\User;
@@ -45,6 +46,18 @@ class InviteController extends Controller {
 
         $list = [];
         foreach ($users as $user) {
+            $paid_money = Order::where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->sum('amount');
+            $reward_money = MoneyLog::where('user_id',$user->id)
+                ->where('source_type','App\Models\Answer')
+                ->where('io',1)
+                ->where('status',1)
+                ->sum('change_money');
+
+            $reward_money_fee = MoneyLog::where('user_id',$user->id)
+                ->where('source_type','App\Models\Answer')
+                ->where('io',-1)
+                ->where('status',1)
+                ->sum('change_money');
             $list[] = [
                 'id' => $user->id,
                 'uuid' => $user->uuid,
@@ -52,8 +65,8 @@ class InviteController extends Controller {
                 'is_expert' => ($user->authentication && $user->authentication->status === 1) ? 1 : 0,
                 'user_avatar_url' => $user->avatar,
                 'register_at' => (string) $user->created_at,
-                'paid_money'  => Order::where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->sum('amount'),
-                'reward_money' => $user->userMoney->reward_money
+                'paid_money'  => number_format($paid_money,2),
+                'reward_money' => number_format($reward_money - $reward_money_fee,2)
             ];
         }
 
@@ -75,4 +88,13 @@ class InviteController extends Controller {
 
     }
 
+
+    //邀请规则
+    public function inviteRules(){
+        $data = [
+            'html' => Setting()->get('setting_invite_rules','')
+        ];
+
+        return self::createJsonData(true,$data);
+    }
 }

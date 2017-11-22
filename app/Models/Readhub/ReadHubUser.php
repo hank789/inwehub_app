@@ -59,6 +59,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereUuid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereVerified($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereWebsite($value)
+ * @property int $is_expert
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\ReadHubUser whereIsExpert($value)
  */
 class ReadHubUser extends Model {
 
@@ -74,7 +76,7 @@ class ReadHubUser extends Model {
     protected $fillable = [
         'id','username', 'name','uuid', 'email', 'password', 'location', 'bio',
         'website', 'settings', 'color', 'avatar', 'confirmed',
-        'active', 'info', 'comment_karma', 'submission_karma',
+        'active', 'info', 'comment_karma', 'submission_karma','is_expert'
     ];
 
     protected $casts = [
@@ -111,6 +113,7 @@ class ReadHubUser extends Model {
             }
             $exist->avatar = $user->avatar;
             $exist->user_level = $user->userData->user_level;
+            $exist->is_expert = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
             $exist->save();
         } else {
             ReadHubUser::create([
@@ -122,7 +125,8 @@ class ReadHubUser extends Model {
                 'confirmed' => 1,
                 'verfied'   => 1,
                 'password' => $user->password,
-                'avatar'   => $user->getAvatarUrl(),
+                'avatar'   => $user->avatar,
+                'is_expert' => ($user->authentication && $user->authentication->status === 1) ? 1 : 0,
                 'info' => [
                     'website' => null,
                     'twitter' => null,

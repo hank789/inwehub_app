@@ -77,9 +77,7 @@ class AjaxController extends Controller
             return response()->json($tags);
         }
         $tag_type = $request->input('type','all');
-        if(!$word){
-            $tags = Taggable::hottest($tag_type,10);
-        }
+
         $category_ids = '';
         $category_name = '';
         switch($tag_type){

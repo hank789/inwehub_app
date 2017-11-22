@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Exceptions\ApiException;
 use App\Models\User;
 use App\Models\UserOauth;
@@ -75,6 +76,10 @@ class OauthController extends Controller
             'full_info'=>isset($data['full_info']) ? json_encode($data['full_info']):'',
             'scope'=>$data['scope']
         ]);
+        if ($token && $user) {
+            //登陆事件通知
+            event(new UserLoggedIn($user));
+        }
         return self::createJsonData(true,['token'=>$token]);
     }
 

@@ -7,6 +7,7 @@
     "require": {
         "php": ">=5.5.9",
         "barryvdh/laravel-cors": "^0.9.2",
+        "barryvdh/laravel-snappy": "^0.4.0",
         "bizly/roles": "^2.1",
         "doctrine/dbal": "~2.3",
         "fabpot/goutte": "^3.2",
@@ -23,12 +24,14 @@
         "ramsey/uuid": "^3.6",
         "riverslei/payment": "~3.1",
         "sentry/sentry-laravel": "^0.6.1",
+        "spatie/browsershot": "^3.8",
         "spatie/laravel-backup": "^4.13",
         "spatie/laravel-medialibrary": "5.*",
         "symfony/filesystem": "^3.3",
         "tlapi/slack-laravel": "dev-master",
         "tymon/jwt-auth": "^0.5.10",
-        "zhuzhichao/ip-location-zh": "^2.2"
+        "zhuzhichao/ip-location-zh": "^2.2",
+        "overtrue/laravel-pinyin": "~3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

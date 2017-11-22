@@ -3,12 +3,16 @@
 namespace App\Models\Feed;
 
 use App\Models\Answer;
+use App\Models\Collection;
 use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\Submission;
+use App\Models\Support;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Attention
@@ -128,12 +132,33 @@ class Feed extends Model
                 //发布文章
                 $comment_url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
                 $url = $this->data['view_url']?:$comment_url;
+                $submission = Submission::find($this->source_id);
+                if (!$submission) return null;
+                $support_uids = Support::where('supportable_id',$submission->id)
+                    ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
+                $supporters = [];
+                if ($support_uids) {
+                    $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+                }
+                $upvote = Support::where('user_id',Auth::user()->id)
+                    ->where('supportable_id',$submission->id)
+                    ->where('supportable_type',Submission::class)
+                    ->exists();
                 $data = [
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
                     'submission_id' => $this->source_id,
+                    'current_address_name' => $this->data['current_address_name']??'',
+                    'current_address_longitude' => $this->data['current_address_longitude']??'',
+                    'current_address_latitude'  => $this->data['current_address_latitude']??'',
                     'comment_url' => $comment_url,
+                    'comment_number' => $submission->comments_number,
+                    'support_number' => $submission->upvotes,
+                    'supporter_list' => $supporters,
+                    'is_upvoted'     => $upvote ? 1 : 0,
+                    'submission_type' => $submission->type,
+                    'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get()
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
@@ -175,6 +200,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
+                    'submission_type' => $this->data['type']??'link',
                     'comment_content' => $this->data['comment_content'],
                     'submission_username' => $this->data['submission_username']
                 ];
@@ -198,6 +224,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
+                    'submission_type' => $this->data['type']??'link',
                     'submission_id' => $this->source_id,
                     'comment_url' => $comment_url
                 ];

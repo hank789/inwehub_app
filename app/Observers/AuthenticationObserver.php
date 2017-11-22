@@ -7,6 +7,7 @@
 
 use App\Models\Attention;
 use App\Models\Authentication;
+use App\Models\Readhub\ReadHubUser;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 

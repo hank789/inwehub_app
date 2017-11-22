@@ -6,6 +6,7 @@
  */
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Order;
+use App\Models\Pay\Settlement;
 use App\Models\Pay\UserMoney;
 use App\Models\User;
 use App\Services\RateLimiter;
@@ -21,11 +22,16 @@ class MoneyLogLogic {
                 throw new \Exception('手续费大于总金额');
             }
             $userMoney = UserMoney::find($user_id);
+            $before_money = $userMoney->total_money;
 
-            UserMoney::find($user_id)->increment('total_money',$money);
+            $userMoney->total_money = bcadd($userMoney->total_money, $money,2);
             //执行结算
             if($is_settlement){
-                UserMoney::find($user_id)->decrement('settlement_money',$money);
+                $userMoney->settlement_money = bcsub($userMoney->settlement_money,$money,2);
+            }
+            if ($money_type == MoneyLog::MONEY_TYPE_REWARD) {
+                //分红收入
+                $userMoney->reward_money = bcadd($userMoney->reward_money, $money,2);
             }
 
             //资金记录
@@ -36,11 +42,11 @@ class MoneyLogLogic {
                 'source_type'  => get_class($object_class),
                 'io'           => 1,
                 'money_type'   => $money_type,
-                'before_money' => $userMoney->total_money
+                'before_money' => $before_money
             ]);
             if($fee>0){
-                $userMoney = UserMoney::find($user_id);
-                UserMoney::find($user_id)->decrement('total_money',$fee);
+                $before_money2 = $userMoney->total_money;
+                $userMoney->total_money = bcsub($userMoney->total_money, $fee,2);
                 $moneyLog2 = MoneyLog::create([
                     'user_id' => $user_id,
                     'change_money' => $fee,
@@ -48,8 +54,47 @@ class MoneyLogLogic {
                     'source_type'  => get_class($object_class),
                     'io'           => -1,
                     'money_type'   => MoneyLog::MONEY_TYPE_FEE,
-                    'before_money' => $userMoney->total_money
+                    'before_money' => $before_money2
                 ]);
+            }
+            $userMoney->save();
+            $reward_source_type = '';
+            switch ($money_type) {
+                case MoneyLog::MONEY_TYPE_ANSWER:
+                    //回答收入分红,回答者的实际收入*分红利率，从平台扣这笔钱，回答者不影响
+                    $reward_source_type = Settlement::SOURCE_TYPE_REWARD_ANSWER;
+                    break;
+                case MoneyLog::MONEY_TYPE_PAY_FOR_VIEW_ANSWER:
+                    //付费围观收入分红,实际收入*分红利率，从平台扣这笔钱，不影响收入者
+                    $reward_source_type = Settlement::SOURCE_TYPE_REWARD_PAY_FOR_VIEW_ANSWER;
+                    break;
+            }
+            //分红处理
+            $user = User::find($user_id);
+            if ($reward_source_type && $user->rc_uid) {
+                $reward_user = User::find($user->rc_uid);
+                $reward_settlement_money = bcmul(bcsub($money, $fee,2),Settlement::getInviteRewardRate(),2);
+                //每月月底结算
+                $settlement_date = date('Y-m-d',strtotime(date('Y-m-1').' +1 month -1 day'));
+                $today = date('Y-m-d');
+                //如果今天是月底，则延后一天结算
+                if ($settlement_date == $today) {
+                    $settlement_date = date('Y-m-d',strtotime(' +1 day'));
+                }
+                $object = Settlement::create([
+                    'user_id' => $reward_user->id,
+                    'source_id' => $object_class->id,
+                    'source_type' => $reward_source_type,
+                    'actual_amount' => $reward_settlement_money,
+                    'actual_fee' => 0,
+                    'settlement_date' => $settlement_date,
+                    'status' => Settlement::SETTLEMENT_STATUS_PENDING
+                ]);
+                if ($object){
+                    $reward_user_money = $reward_user->userMoney;
+                    $reward_user_money->settlement_money = bcadd($reward_user_money->settlement_money,$reward_settlement_money,2);
+                    $reward_user_money->save();
+                }
             }
             DB::commit();
             if ($is_settlement) {

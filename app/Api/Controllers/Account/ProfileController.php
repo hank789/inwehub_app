@@ -522,6 +522,9 @@ class ProfileController extends Controller
                 case MoneyLog::MONEY_TYPE_PAY_FOR_VIEW_ANSWER:
                     $title = '付费围观';
                     break;
+                case MoneyLog::MONEY_TYPE_REWARD:
+                    $title = '分红';
+                    break;
             }
             $list[] = [
                 "id"=> $log->id,

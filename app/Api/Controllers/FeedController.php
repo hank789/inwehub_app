@@ -29,6 +29,7 @@ class FeedController extends Controller
         $return = [];
         foreach ($feeds as $feed) {
             $sourceData = $feed->getSourceFeedData();
+            if (empty($sourceData)) continue;
             $return[] = [
                 'id' => $feed->id,
                 'title' => $feed->data['feed_content'],

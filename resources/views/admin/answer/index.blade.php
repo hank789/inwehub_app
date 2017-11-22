@@ -15,6 +15,7 @@
                         <div class="row">
                             <div class="col-xs-2">
                                 <div class="btn-group">
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.answer.verify_heart') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.answer.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.answer.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
@@ -89,6 +90,7 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="btn-group">
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.answer.verify_heart') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.answer.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.answer.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>

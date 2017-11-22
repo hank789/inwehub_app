@@ -47,7 +47,7 @@ class TagsLogic {
         foreach($question_c_arr as $category){
             $query = $category->tags();
             if(trim($word)){
-                $query = $query->where('name','like',$word.'%');
+                $query = $query->where('name','like','%'.$word.'%');
             }
             $item = [];
             $children = [];
@@ -70,7 +70,7 @@ class TagsLogic {
                 $c_model = Category::find($cid);
                 $query_c = $c_model->tags();
                 if(trim($word)){
-                    $query_c = $query_c->where('name','like',$word.'%');
+                    $query_c = $query_c->where('name','like','%'.$word.'%');
                 }
                 foreach($query_c->get() as $val){
                     $tags[] = [

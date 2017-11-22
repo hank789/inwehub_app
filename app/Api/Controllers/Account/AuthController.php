@@ -31,6 +31,50 @@ use Tymon\JWTAuth\JWTAuth;
 class AuthController extends Controller
 {
 
+    public function checkUserLevel(Request $request){
+        $user = $request->user();
+        $user_level = $user->userData->user_level;
+        $permission_type = $request->permission_type;
+        $is_valid = false;
+        switch ($permission_type) {
+            case '7':
+            case '1':
+            case '2':
+                // 问答社区L1
+                if ($user_level >= 1) {
+                    $is_valid = true;
+                }
+                break;
+            case '3':
+                // 活动报名，需要L2
+                if ($user_level >= 2) {
+                    $is_valid = true;
+                }
+                break;
+            case '4':
+                // 项目机遇，需要L3
+                if ($user_level >= 3) {
+                    $is_valid = true;
+                }
+                break;
+            case '5':
+                // 附近企业，需要L4
+                if ($user_level >= 4) {
+                    $is_valid = true;
+                }
+                break;
+            case '6':
+                // 更多专家，需要L4
+                if ($user_level >= 4) {
+                    $is_valid = true;
+                }
+                break;
+            default:
+                break;
+        }
+        return self::createJsonData(true,['is_valid'=>$is_valid,'current_level'=>$user_level]);
+    }
+
     //发送手机验证码
     public function sendPhoneCode(Request $request)
     {
@@ -281,9 +325,6 @@ class AuthController extends Controller
         $message = '注册成功!';
         $this->credit($user->id,Credit::KEY_REGISTER);
 
-        // read站点同步注册用户
-        ReadHubUser::initUser($user);
-
         //注册事件通知
         event(new UserRegistered($user));
 
@@ -343,6 +384,8 @@ class AuthController extends Controller
             $oauthData->user_id = $user->id;
             $oauthData->save();
             $token = $JWTAuth->fromUser($user);
+            //登陆事件通知
+            event(new UserLoggedIn($user));
             return static::createJsonData(true,['token'=>$token]);
         }
 
@@ -354,6 +397,8 @@ class AuthController extends Controller
         //如果此微信号已绑定用户
         if($oauthData->user_id && $user){
             $token = $JWTAuth->fromUser($user);
+            //登陆事件通知
+            event(new UserLoggedIn($user));
             return static::createJsonData(true,['token'=>$token]);
         }
         throw new ApiException(ApiException::BAD_REQUEST);
@@ -437,7 +482,7 @@ class AuthController extends Controller
         $user->attachRole(2); //默认注册为普通用户角色
         $user->userData->email_status = 1;
         $user->userData->save();
-        $user->avatar = saveImgToCdn($oauthData->avatar);
+        $user->avatar = $oauthData->avatar;
         $user->save();
         if(isset($rcode)){
             $rcode->status = UserRegistrationCode::CODE_STATUS_USED;
@@ -449,11 +494,8 @@ class AuthController extends Controller
         $message = '注册成功!';
         $this->credit($user->id,Credit::KEY_REGISTER);
 
-        // read站点同步注册用户
-        ReadHubUser::initUser(User::find($user->id));
-
         //注册事件通知
-        event(new UserRegistered($user));
+        event(new UserRegistered($user,$oauthData->id));
 
         $token = $JWTAuth->fromUser($user);
         return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);

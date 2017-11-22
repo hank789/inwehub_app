@@ -182,6 +182,8 @@ class TaskLogic {
             }
             $list[] = [
                 'id'        => $task->id,
+                'task_owner_name' => $task->user->name,
+                'task_owner_avatar' => $task->user->avatar,
                 'task_type' => $task_type,
                 'task_type_description' => $task_type_description,
                 'task_status' => $task->status,

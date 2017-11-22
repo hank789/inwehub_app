@@ -1,11 +1,11 @@
 @extends('admin/public/layout')
-@section('title')首页阅读推荐管理@endsection
+@section('title')精选推荐管理@endsection
 
 @section('content')
     <section class="content-header">
         <h1>
-            首页阅读推荐管理
-            <small>编辑阅读推荐</small>
+            精选推荐管理
+            <small>编辑精选推荐</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -27,48 +27,43 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>标题</label>
-                                <input type="text" name="title" class="form-control "  placeholder="标题" value="{{ old('title',$recommendation->title) }}">
+                                <input type="text" name="title" class="form-control "  placeholder="标题" value="{{ old('title',$recommendation->data['title']) }}">
                             </div>
 
                             <div class="form-group">
-                                <label>频道</label>
-                                <span>{{ $recommendation->category_name }}</span>
+                                <label>类型</label>
+                                <span>{{ $recommendation->getReadTypeName() }}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>地址</label>
+                                <span><a href="{{ $recommendation->getWebUrl() }}" target="_blank">{{ $recommendation->getWebUrl() }}</a></span>
                             </div>
 
                             <div class="form-group">
                                 <label>封面图片地址</label>
-                                <input type="text" name="img_url" class="form-control "  placeholder="http://inwehub-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg" value="{{ old('img_url',$recommendation->data['img']) }}">
+                                <input type="text" name="img_url" class="form-control "  placeholder="http://inwehub-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg" value="{{ old('img_url',is_array($recommendation->data['img'])?$recommendation->data['img'][0]:$recommendation->data['img']) }}">
                             </div>
                             <div class="form-group">
                                 <label>排序</label>
-                                <input type="text" name="recommend_sort" class="form-control "  placeholder="请输入整数，大的排前面" value="{{ old('recommend_sort',$recommendation->recommend_sort ) }}">
+                                <input type="text" name="recommend_sort" class="form-control "  placeholder="请输入整数，大的排前面" value="{{ old('recommend_sort',$recommendation->sort ? : $recommendation->id ) }}">
                             </div>
 
                             <div class="form-group">
-                                <label>推荐到app首页</label>
+                                <label>审核状态</label>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="recommend_status" value="1" @if($recommendation->recommend_status===1) checked @endif /> 推荐未审核
+                                        <input type="radio" name="recommend_status" value="0" @if($recommendation->audit_status===0) checked @endif /> 推荐未审核
                                     </label>&nbsp;&nbsp;
                                     <label>
-                                        <input type="radio" name="recommend_status" value="2" @if($recommendation->recommend_status===2) checked @endif /> 推荐已审核
+                                        <input type="radio" name="recommend_status" value="1" @if($recommendation->audit_status===1) checked @endif /> 推荐已审核
                                     </label>
                                     <label>
-                                        <input type="radio" name="recommend_status" value="0" @if($recommendation->recommend_status===3) checked @endif /> 推荐已拒绝
+                                        <input type="radio" name="recommend_status" value="2" @if($recommendation->audit_status===2) checked @endif /> 推荐已拒绝
                                     </label>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>推荐到阅读发现（顾问周刊，只能有一篇）</label>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="recommend_readhub" value="0" @if($recommendation->id != $recommend_readhub_id) checked @endif /> 不推荐
-                                    </label>&nbsp;&nbsp;
-                                    <label>
-                                        <input type="radio" name="recommend_readhub" value="1" @if($recommendation->id == $recommend_readhub_id) checked @endif /> 推荐
-                                    </label>
-                                </div>
-                            </div>
+
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary">保存</button>

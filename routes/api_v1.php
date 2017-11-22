@@ -9,6 +9,10 @@
 Route::post('home','IndexController@home')->middleware('jwt.auth');
 Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.auth');
 
+//精选推荐列表
+Route::post('recommendRead','IndexController@recommendRead')->middleware('jwt.auth');
+
+
 //登陆注册认证类
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('register', 'AuthController@register');
@@ -19,6 +23,9 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('sendPhoneCode', 'AuthController@sendPhoneCode');
 
     Route::post('logout', 'AuthController@logout')->middleware('jwt.auth');
+
+    //等级权限判断
+    Route::post('checkUserLevel','AuthController@checkUserLevel')->middleware('jwt.auth');
 
     //微信公众号注册验证
     Route::post('wxgzh/check_rg', 'AuthController@checkWeiXinGzh');
@@ -56,6 +63,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/addSkillTag','ProfileController@addSkillTag');
     //删除用户擅长标签
     Route::post('profile/delSkillTag','ProfileController@delSkillTag');
+
 
     //上传简历
     Route::post('profile/uploadResume','ProfileController@uploadResume');
@@ -121,7 +129,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //IM
     Route::post('im/message-store','MessageController@store');
     Route::post('im/messages','MessageController@getMessages');
-
 
 });
 
@@ -222,6 +229,9 @@ Route::post('system/device','SystemController@device')->middleware('jwt.auth');
 //申请添加用户擅长标签
 Route::post('system/applySkillTag','SystemController@applySkillTag')->middleware('jwt.auth');
 
+//htmlToImage
+Route::post('system/htmlToImage','SystemController@htmlToImage')->middleware('jwt.auth');
+
 
 //检测app版本
 Route::post('system/version','SystemController@appVersion');
@@ -302,7 +312,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','na
 });
 
 //获取邀请注册者消息
-Route::post('inviteRegister/getInviterInfo', 'InviteController@getInviterInfo');
+Route::post('activity/inviteRegister/getInviterInfo', 'Activity\InviteController@getInviterInfo');
+Route::post('activity/inviteRegister/rules', 'Activity\InviteController@inviteRules');
 
 
 //企业
@@ -311,6 +322,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','nam
     Route::post('apply','CompanyController@apply');
     //认证信息
     Route::post('applyInfo','CompanyController@applyInfo');
+
+    //企业服务列表
+    Route::post('services','CompanyController@serviceList');
+    //用户申请企业服务
+    Route::post('applyService','CompanyController@applyService');
 
 });
 
@@ -351,6 +367,38 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'feed'], funct
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'readhub'], function() {
     //我的文章列表
     Route::post('mySubmission','ReadhubController@mySubmission');
+});
+
+//文章
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','prefix' => 'article'], function() {
+    //文章列表
+    Route::post('list','HomeController@feed');
+    //存储文章
+    Route::post('store','SubmissionController@store');
+    //文章详情
+    Route::post('detail-by-slug','SubmissionController@getBySlug');
+    //推荐文章到app
+    Route::post('recommend-app-submission','SubmissionController@recommendSubmission');
+
+    //获取url标题
+    Route::post('fetch-url-title','SubmissionController@getTitleAPI');
+    //获取频道
+    Route::post('get-categories','CategoryController@getCategories');
+    //文章回复列表
+    Route::post('comments','CommentController@index');
+    //文章回复
+    Route::post('comment-store','CommentController@store');
+    //删除回复
+    Route::post('destroy-comment','CommentController@destroy');
+    //文章收藏
+    Route::post('bookmark-submission','BookmarksController@bookmarkSubmission');
+    //删除文章
+    Route::post('destroy-submission','SubmissionController@destroy');
+
+    //赞文章
+    Route::post('upvote-submission','SubmissionVotesController@upVote');
+
+
 });
 
 //点赞

@@ -318,6 +318,25 @@ class SettingController extends AdminController
         return view('admin.setting.aboutus');
     }
 
+    public function inviteRules(Request $request){
+        $validateRules = [
+            'setting_invite_rules' => 'required'
+        ];
+        if($request->isMethod('post')){
+            $this->validate($request,$validateRules);
+            $data = $request->except('_token');
+            unset($data['_token']);
+            foreach($data as $name=>$value){
+                Setting()->set($name,$value);
+            }
+            Setting()->clearAll();
+
+            return $this->success(route('admin.setting.inviterules'),'设置成功');
+        }
+
+        return view('admin.setting.inviteRules');
+    }
+
     public function appHelp(Request $request){
         $validateRules = [
             'app_help' => 'required'

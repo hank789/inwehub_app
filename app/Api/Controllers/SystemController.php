@@ -12,7 +12,8 @@ use App\Models\AppVersion;
 use App\Models\UserDevice;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\App;
+use Spatie\Browsershot\Browsershot;
 
 class SystemController extends Controller {
 
@@ -135,6 +136,21 @@ class SystemController extends Controller {
 
     public function getPayConfig(){
         return self::createJsonData(true,get_pay_config());
+    }
+
+    public function htmlToImage(Request $request){
+        $validateRules = [
+            'html' => 'required'
+        ];
+        $this->validate($request, $validateRules);
+        $data = $request->all();
+        $filename = time().str_random(7).'.jpeg';
+        if (filter_var($data['html'], FILTER_VALIDATE_URL)) {
+            Browsershot::url($data['html'])->save($filename);
+        } else {
+            Browsershot::html($data['html'])->save($filename);
+        }
+        return self::createJsonData(true,['image'=>base64_encode(file_get_contents($filename))]);
     }
 
     //服务条款

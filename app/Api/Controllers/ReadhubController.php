@@ -2,7 +2,9 @@
 
 namespace App\Api\Controllers;
 
-use App\Models\Readhub\Submission;
+use App\Exceptions\ApiException;
+use App\Models\Submission;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 
@@ -12,8 +14,16 @@ class ReadhubController extends Controller
     public function mySubmission(Request $request){
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
+        $uuid = $request->input('uuid');
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        } else {
+            $user = $request->user();
+        }
 
-        $user = $request->user();
         $query = Submission::where('user_id',$user->id);
 
         if($top_id){

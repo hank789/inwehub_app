@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Answer;
+use App\Models\RecommendRead;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -83,6 +84,31 @@ class AnswerController extends AdminController
         $answerIds = $request->input('id');
         Answer::whereIn('id',$answerIds)->update(['status'=>1]);
         return $this->success(route('admin.answer.index').'?status=0','回答审核成功');
+    }
+
+    /*设为精选推荐*/
+    public function verifyRecommendHeart(Request $request)
+    {
+        $ids = $request->input('id');
+        foreach ($ids as $id) {
+            $answer = Answer::find($id);
+            if ($answer->question->question_type == 1) continue;
+            RecommendRead::firstOrCreate([
+                'source_id' => $id,
+                'source_type' => get_class($answer),
+            ],[
+                'source_id' => $id,
+                'source_type' => get_class($answer),
+                'sort' => 0,
+                'audit_status' => 0,
+                'read_type' => RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER,
+                'data' => [
+                    'title' => $answer->question->title,
+                    'img'   => ''
+                ]
+            ]);
+        }
+        return $this->success(route('admin.answer.index'),'设为精选成功');
 
     }
 

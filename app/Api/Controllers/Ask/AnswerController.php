@@ -19,6 +19,7 @@ use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Support;
 use App\Models\Task;
+use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionAnswered;
 use App\Notifications\NewQuestionConfirm;
@@ -100,6 +101,13 @@ class AnswerController extends Controller
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
 
         $collect = Collection::where('user_id',$user->id)->where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->first();
+
+        $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
+        $supporters = [];
+        if ($support_uids) {
+            $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid');
+        }
+
         $answers_data = [
             'id' => $answer->id,
             'user_id' => $answer->user_id,
@@ -119,7 +127,8 @@ class AnswerController extends Controller
             'comment_number' => $answer->comments,
             'collect_num' => $answer->collections,
             'average_rate'   => $answer->getFeedbackRate(),
-            'created_at' => (string)$answer->created_at
+            'created_at' => (string)$answer->created_at,
+            'supporter_list' => $supporters
         ];
 
 
@@ -338,6 +347,7 @@ class AnswerController extends Controller
 
                 //进入结算中心
                 Settlement::answerSettlement($answer);
+                Settlement::questionSettlement($question);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],ApiException::SUCCESS,$message);
 
             }else{
@@ -395,8 +405,15 @@ class AnswerController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $type = $request->input('type',0);
-
-        $query = Answer::where('user_id','=',$request->user()->id);
+        $uuid = $request->input('uuid');
+        $user = $request->user();
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        }
+        $query = Answer::where('user_id','=',$user->id);
 
         switch($type){
             case 1:

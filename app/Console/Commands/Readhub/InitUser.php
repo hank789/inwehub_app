@@ -35,8 +35,6 @@ class InitUser extends Command
         $users = User::get();
         foreach($users as $user){
             $level = $user->getUserLevel();
-            $user->avatar = $user->getAvatarUrl();
-            $user->save();
             $user->userData->user_level = $level;
             $user->userData->save();
             ReadHubUser::initUser($user);

@@ -45,8 +45,10 @@ class CompanyController extends AdminController
     public function destroy(Request $request)
     {
         $ids = $request->input('id');
-        Company::whereIn('user_id',$ids)->update(['apply_status'=>Company::APPLY_STATUS_REJECT]);
         foreach ($ids as $id) {
+            $company = Company::find($id);
+            $company->apply_status = Company::APPLY_STATUS_REJECT;
+            $company->save();
             $user = User::find($id);
             $user->notify(new CompanyAuth(Company::find($id)));
         }
@@ -57,8 +59,10 @@ class CompanyController extends AdminController
     public function verify(Request $request)
     {
         $ids = $request->input('id');
-        Company::whereIn('user_id',$ids)->update(['apply_status'=>Company::APPLY_STATUS_SUCCESS]);
         foreach ($ids as $id) {
+            $company = Company::find($id);
+            $company->apply_status = Company::APPLY_STATUS_SUCCESS;
+            $company->save();
             $user = User::find($id);
             $user->notify(new CompanyAuth(Company::find($id)));
         }
