@@ -28,7 +28,7 @@ class CreateSubmissionsTable extends Migration
             $table->integer('user_id')->unsigned()->index();
             $table->integer('category_id')->unsigned();
 
-            $table->integer('upvotes')->default(1);
+            $table->integer('upvotes')->default(0);
             $table->integer('downvotes')->default(0);
             $table->integer('comments_number')->default(0);
             $table->integer('collections')->unsigned()->default(0);              //支持数

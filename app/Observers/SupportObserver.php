@@ -6,6 +6,7 @@
  */
 
 use App\Models\Feed\Feed;
+use App\Models\Submission;
 use App\Models\Support;
 use App\Notifications\NewSupport;
 use App\Services\RateLimiter;
@@ -75,6 +76,26 @@ class SupportObserver implements ShouldQueue {
                         ])
                         ->log($support->user->name.'赞了'.$feed_question_title, $feed_type);
                     RateLimiter::instance()->increase($feed_event,$feed_target,3600);
+                }
+                break;
+            case 'App\Models\Submission':
+                $title = '动态';
+                foreach ($source->data as $field=>$value){
+                    if ($value){
+                        if (is_array($value)) {
+                            foreach ($value as $key => $item) {
+                                $fields[] = [
+                                    'title' => $field.$key,
+                                    'value' => $item
+                                ];
+                            }
+                        } else {
+                            $fields[] = [
+                                'title' => $field,
+                                'value' => $value
+                            ];
+                        }
+                    }
                 }
                 break;
             default:
