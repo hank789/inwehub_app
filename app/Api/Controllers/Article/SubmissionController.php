@@ -103,7 +103,7 @@ class SubmissionController extends Controller {
 
         if ($request->type == 'text') {
             $this->validate($request, [
-                'title' => 'required|between:7,150',
+                'title' => 'required|between:1,150',
                 'type'  => 'required|in:link,text',
             ]);
 
