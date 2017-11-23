@@ -19,7 +19,7 @@
                                         @foreach($feedData['feed'] as $field=>$value)
                                             @if (is_array($value))
                                                 @foreach($value as $f2=>$v2)
-                                                    {{ $f2 }} : {{ $v2 }}<br>
+                                                    {{ $f2 }} : {{ implode(",",$v2) }}<br>
                                                 @endforeach
                                             @else
                                                 {{ $field }} : {{ $value }}<br>
