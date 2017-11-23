@@ -61,9 +61,9 @@ class UserController extends AdminController
         if( isset($filter['status']) && $filter['status'] > -2 ){
             $query->where('status','=',$filter['status']);
         }
-        //是否专家过滤
-        if( isset($filter['is_expert']) && $filter['is_expert'] >= 0 ){
-            $query->leftJoin('user_data','users.id','=','user_data.user_id')->where('user_data.authentication_status',$filter['is_expert']);
+        //邀请码
+        if( isset($filter['rc_code']) && $filter['rc_code'] ){
+            $query->where('rc_code','=',$filter['rc_code']);
         }
 
         $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));

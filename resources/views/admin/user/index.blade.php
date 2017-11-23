@@ -34,13 +34,8 @@
                                         <div class="col-xs-3 hidden-xs">
                                             <input type="text" class="form-control" name="word" placeholder="用户名|手机" value="{{ $filter['word'] or '' }}"/>
                                         </div>
-                                        <div class="col-xs-2">
-                                            <select class="form-control" name="is_expert">
-                                                <option value="-9">是否专家</option>
-                                                <option value="0" @if( isset($filter['is_expert']) && $filter['is_expert']==0) selected @endif >否</option>
-                                                <option value="1" @if( isset($filter['is_expert']) && $filter['is_expert']==1) selected @endif >是</option>
-
-                                            </select>
+                                        <div class="col-xs-2 hidden-xs">
+                                            <input type="text" class="form-control" name="rc_code" placeholder="邀请码" value="{{ $filter['rc_code'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
                                             <select class="form-control" name="status">
