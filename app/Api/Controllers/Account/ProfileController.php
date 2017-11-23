@@ -105,9 +105,8 @@ class ProfileController extends Controller
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
         $info['total_score'] = '综合评分暂无';
 
-        $readhubUser = ReadHubUser::find($user->id);
-        $info['submission_karma'] = $readhubUser->submission_karma;
-        $info['comment_karma'] = $readhubUser->comment_karma;
+        $info['submission_karma'] = $user->submission_karma;
+        $info['comment_karma'] = $user->comment_karma;
 
 
         $info_percent = $user->getInfoCompletePercent(true);
