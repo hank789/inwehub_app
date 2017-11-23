@@ -1,9 +1,11 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Collection;
 use App\Models\Question;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
@@ -34,9 +36,14 @@ class CollectionController extends Controller
             $source  = Answer::findOrFail($source_id);
             $subject = '';
         }
+        $user = $request->user();
+
+        if (RateLimiter::instance()->increase('collect:'.$source_type,$source->id.'_'.$user->id,5)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
 
         /*不能多次收藏*/
-        $userCollect = $request->user()->isCollected(get_class($source),$source_id);
+        $userCollect = $user->isCollected(get_class($source),$source_id);
         if($userCollect){
             $userCollect->delete();
             $source->decrement('collections');

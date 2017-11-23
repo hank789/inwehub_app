@@ -5,6 +5,7 @@ use App\Jobs\NotifyInwehub;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
@@ -109,6 +110,9 @@ class SubmissionVotesController extends Controller {
         $user = $request->user();
         $submission = Submission::find($request->submission_id);
 
+        if (RateLimiter::instance()->increase('support:submission',$submission->id.'_'.$user->id,5)) {
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
         $previous_vote = null;
         /*再次点赞相当于是取消点赞*/
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($submission))->where('supportable_id','=',$submission->id)->first();
