@@ -26,6 +26,9 @@ trait SubmitSubmission
         if(empty($slug)) {
             $slug = app('pinyin')->abbr($title);
         }
+        if (strlen($slug) > 50) {
+            $slug = substr($slug,0,50);
+        }
         $submissions = Submission::withTrashed()->where('slug', 'like', $slug.'%')->get();
 
         if (!$submissions->contains('slug', $slug)) {
