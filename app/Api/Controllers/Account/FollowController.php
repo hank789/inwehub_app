@@ -54,6 +54,10 @@ class FollowController extends Controller
             $subject = $source->name;
         }
 
+        if (RateLimiter::instance()->increase('follow:'.$source_type,$source->id.'_'.$loginUser->id,5)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
         /*再次关注相当于是取消关注*/
         $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($source))->where('source_id','=',$source_id)->first();
         if($attention){

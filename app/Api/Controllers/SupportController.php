@@ -2,11 +2,13 @@
 
 namespace App\Api\Controllers;
 
+use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Article;
 use App\Models\Comment;
 use App\Models\Support;
 use App\Models\UserTag;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
 class SupportController extends Controller
@@ -39,6 +41,10 @@ class SupportController extends Controller
         }
 
         $loginUser = $request->user();
+
+        if (RateLimiter::instance()->increase('support:'.$source_type,$source->id.'_'.$loginUser->id,5)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
 
 
         /*再次点赞相当于是取消点赞*/
