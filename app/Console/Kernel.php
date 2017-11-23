@@ -35,6 +35,7 @@ class Kernel extends ConsoleKernel
         Commands\Readhub\SyncComment::class,
         Commands\User\CdnUserAvatar::class,
         Commands\Readhub\MigrateData::class,
+        Commands\FixData\FixSubmissionSuport::class
 
 
     ];
