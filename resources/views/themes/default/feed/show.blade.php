@@ -15,7 +15,11 @@
                             <div class="media-body">
                                 <a target="_blank" href="{{ route('auth.space.index',['id'=>$message->user_id]) }}"> {{ $message->user->name }}</a> {{ $message->data['feed_content'] }}:
                                 <div class="full-text fmt">
-                                    @if ($feedData = $message->getSourceFeedData())
+                                    feed_id : {{ $message->id }}<br>
+                                    source_id : {{ $message->source_id }}<br>
+                                    source_type : {{ $message->source_type }}<br>
+                                    feed_type : {{ $message->feed_type }}<br>
+                                @if ($feedData = $message->getSourceFeedData())
                                         @foreach($feedData['feed'] as $field=>$value)
                                             @if (is_array($value))
                                                 @foreach($value as $f2=>$v2)
