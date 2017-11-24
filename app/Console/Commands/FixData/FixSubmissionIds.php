@@ -6,7 +6,10 @@
  */
 
 
+use App\Models\Collection;
+use App\Models\Comment;
 use App\Models\Submission;
+use App\Models\Support;
 use Illuminate\Console\Command;
 use App\Models\Readhub\Submission as ReadhubSubmission;
 
@@ -36,8 +39,9 @@ class FixSubmissionIds extends Command
         $submissions = ReadhubSubmission::get();
         foreach ($submissions as $submission) {
             $new_submission = Submission::where('slug',$submission->slug)->first();
-            $new_submission->id = $submission->id;
-            $new_submission->save();
+            Collection::where('source_id',$submission->id)->where('source_type','App\Models\Submission')->update(['source_id'=>$new_submission->id]);
+            Support::where('supportable_id',$submission->id)->where('supportable_type','App\Models\Submission')->update(['supportable_id'=>$new_submission->id]);
+            Comment::where('source_id',$submission->id)->where('source_type','App\Models\Submission')->update(['source_id'=>$new_submission->id]);
         }
     }
 
