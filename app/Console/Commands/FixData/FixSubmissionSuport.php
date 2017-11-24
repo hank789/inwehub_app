@@ -6,6 +6,7 @@
  */
 
 
+use App\Models\Comment;
 use App\Models\Submission;
 use App\Models\Support;
 use Illuminate\Console\Command;
@@ -37,8 +38,11 @@ class FixSubmissionSuport extends Command
         foreach ($submissions as $submission) {
             $support_count = Support::where('supportable_id',$submission->id)
                 ->where('supportable_type',Submission::class)->count();
-            if ($submission->upvotes != $support_count) {
+            $comment_count = Comment::where('source_id',$submission->id)
+                ->where('source_type','App\Models\Submission')->count();
+            if ($submission->upvotes != $support_count || $submission->comments_number != $comment_count) {
                 $submission->upvotes = $support_count;
+                $submission->comments_number = $comment_count;
                 $submission->save();
             }
 
