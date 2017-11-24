@@ -29,7 +29,7 @@ class SubmissionController extends AdminController
             $query->where('title','like', '%'.$filter['word'].'%');
         }
 
-        $submissions = $query->orderBy('created_at','desc')->paginate(20);
+        $submissions = $query->orderBy('id','desc')->paginate(20);
         return view("admin.operate.article.index")->with('submissions',$submissions)->with('filter',$filter);
     }
 
