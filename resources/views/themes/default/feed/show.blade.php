@@ -33,7 +33,7 @@
 
                                 </div>
                                 <div class="meta mt-10">
-                                    <span class="text-muted">{{ timestamp_format($message->created_at) }} </span>
+                                    <span class="text-muted">{{ $message->created_at }} </span>
                                 <span class="text-muted">
                                     <a href="javascript:void(0)" onclick="delete_message({{ $message->id }})">删除</a>
                                 </span>
