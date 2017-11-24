@@ -39,6 +39,7 @@ class FixSubmissionIds extends Command
         $submissions = ReadhubSubmission::get();
         foreach ($submissions as $submission) {
             $new_submission = Submission::where('slug',$submission->slug)->first();
+            if (!$new_submission) continue;
             Collection::where('source_id',$submission->id)->where('source_type','App\Models\Submission')->update(['source_id'=>$new_submission->id]);
             Support::where('supportable_id',$submission->id)->where('supportable_type','App\Models\Submission')->update(['supportable_id'=>$new_submission->id]);
             Comment::where('source_id',$submission->id)->where('source_type','App\Models\Submission')->update(['source_id'=>$new_submission->id]);
