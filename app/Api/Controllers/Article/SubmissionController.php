@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Submission;
 use App\Models\Support;
+use App\Models\Tag;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
@@ -41,8 +42,14 @@ class SubmissionController extends Controller {
 
         $category = Category::find($request->input('category_id',0));
         if (!$category) {
-            throw new ApiException(ApiException::ARTICLE_CATEGORY_NOT_EXIST);
+            if ($request->type == 'link') {
+                $category = Category::where('slug','channel_xwdt')->first();
+            } else {
+                $category = Category::where('slug','channel_gddj')->first();
+            }
         }
+
+        $tagString = trim($request->input('tags'));
 
         if ($request->type == 'link') {
             $this->validate($request, [
@@ -128,6 +135,9 @@ class SubmissionController extends Controller {
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
             }
+            /*添加标签*/
+            Tag::multiSaveByIds($tagString,$submission);
+
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);
             throw new ApiException(ApiException::ERROR);

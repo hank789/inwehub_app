@@ -99,7 +99,7 @@ class AjaxController extends Controller
                 break;
         }
 
-        $query = Tag::where('name','like',$word.'%');
+        $query = Tag::where('name','like','%'.$word.'%');
 
         if($category_name){
             $category_ids = Category::where('slug','like',$category_name.'%')->pluck('id')->toArray();

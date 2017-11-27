@@ -7,6 +7,7 @@
 
 use App\Models\Feed\Feed;
 use App\Models\Relations\MorphManyCommentsTrait;
+use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -71,7 +72,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Submission extends Model {
 
-    use SoftDeletes,MorphManyCommentsTrait;
+    use SoftDeletes,MorphManyCommentsTrait,MorphManyTagsTrait;
 
     protected $table = 'submissions';
 

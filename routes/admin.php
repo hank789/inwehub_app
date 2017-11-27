@@ -231,8 +231,25 @@ Route::group(['prefix' => 'company','namespace'=>'Company'], function() {
     Route::post('service/unverify',['as'=>'admin.company.service.unverify','uses'=>'ServiceController@unverify']);
     Route::get('service/destroy',['as'=>'admin.company.service.destroy','uses'=>'ServiceController@destroy']);
 
+    //企业信息
+    Route::get('data/index',['as'=>'admin.company.data.index','uses'=>'DataController@index']);
+    Route::get('data/create',['as'=>'admin.company.data.create','uses'=>'DataController@create']);
+    Route::post('data/store',['as'=>'admin.company.data.store','uses'=>'DataController@store']);
+    Route::get('data/edit/{id}',['as'=>'admin.company.data.edit','uses'=>'DataController@edit'])->where(['id'=>'[0-9]+']);
+    Route::put('data/update',['as'=>'admin.company.data.update','uses'=>'DataController@update']);
+    Route::post('data/verify',['as'=>'admin.company.data.verify','uses'=>'DataController@verify']);
+    Route::post('data/unverify',['as'=>'admin.company.data.unverify','uses'=>'DataController@unverify']);
+    Route::post('data/destroy',['as'=>'admin.company.data.destroy','uses'=>'DataController@destroy']);
 
-
+    //企业相关人员
+    Route::get('data/people',['as'=>'admin.company.data.people','uses'=>'DataController@people']);
+    Route::get('data/createPeople',['as'=>'admin.company.data.createPeople','uses'=>'DataController@createPeople']);
+    Route::post('data/storePeople',['as'=>'admin.company.data.storePeople','uses'=>'DataController@storePeople']);
+    Route::get('data/editPeople/{id}',['as'=>'admin.company.data.editPeople','uses'=>'DataController@editPeople'])->where(['id'=>'[0-9]+']);
+    Route::put('data/updatePeople',['as'=>'admin.company.data.updatePeople','uses'=>'DataController@updatePeople']);
+    Route::post('data/destroyPeople',['as'=>'admin.company.data.destroyPeople','uses'=>'DataController@destroyPeople']);
+    Route::post('data/verifyPeople',['as'=>'admin.company.data.verifyPeople','uses'=>'DataController@verifyPeople']);
+    Route::post('data/unverifyPeople',['as'=>'admin.company.data.unverifyPeople','uses'=>'DataController@unverifyPeople']);
 });
 
 //项目需求管理

@@ -36,7 +36,8 @@ class Kernel extends ConsoleKernel
         Commands\User\CdnUserAvatar::class,
         Commands\Readhub\MigrateData::class,
         Commands\FixData\FixSubmissionSuport::class,
-        Commands\FixData\FixSubmissionIds::class
+        Commands\FixData\FixSubmissionIds::class,
+        Commands\FixData\CompanyData::class
 
 
     ];
