@@ -56,7 +56,7 @@ class CompanyData extends Model
     use MorphManyTagsTrait;
     protected $table = 'company_data';
 
-    protected $fillable = ['name', 'logo','address_province','address_detail','longitude','latitude','audit_status'];
+    protected $fillable = ['name', 'logo','address_province','address_detail','longitude','latitude','geohash','audit_status'];
 
 
 

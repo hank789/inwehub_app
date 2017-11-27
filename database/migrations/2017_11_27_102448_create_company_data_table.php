@@ -21,6 +21,7 @@ class CreateCompanyDataTable extends Migration
             $table->string('address_detail')->comment('公司详细地址');
             $table->string('longitude')->comment('经度');
             $table->string('latitude')->comment('纬度');
+            $table->string('geohash')->index();
             $table->unique('name');
             $table->tinyInteger('audit_status')->nullable()->default(1)->index()->comment('审核状态 0-未审核 1-已审核 2-未通过');
             $table->timestamps();

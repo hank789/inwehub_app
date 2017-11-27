@@ -9,6 +9,7 @@ use App\Models\Company\CompanyData;
 use App\Models\Company\CompanyDataUser;
 use App\Models\Company\CompanyService;
 use App\Models\Tag;
+use App\Services\GeoHash;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -122,11 +123,35 @@ class CompanyController extends Controller {
         $name = $request->input('name');
         $longitude = $request->input('longitude');
         $latitude = $request->input('latitude');
+
+        if ($longitude) {
+            $geohash = new GeoHash();
+
+            $hash = $geohash->encode($latitude, $longitude);
+
+            // 决定查询范围，值越大，获取的范围越小
+            // 当geohash base32编码长度为8时，精度在19米左右，而当编码长度为9时，精度在2米左右，编码长度需要根据数据情况进行选择。
+            $pre_hash = substr($hash, 0, 5);
+
+            //取出相邻八个区域
+            $neighbors = $geohash->neighbors($pre_hash);
+            array_push($neighbors, $pre_hash);
+
+            $values = '';
+            foreach ($neighbors as $key=>$val) {
+                $values .= '\'' . $val . '\'' .',';
+            }
+            $values = substr($values, 0, -1);
+        }
+
         $query = CompanyData::query();
         if ($name) {
             $query = $query->where('name','like','%'.$name.'%');
         }
-        $companies = $query->orderBy('id','desc')->simplePaginate(30);
+        if ($longitude) {
+            $query = $query->whereRaw('LEFT(`geohash`,5) IN ('.$values.')');
+        }
+        $companies = $query->orderBy('geohash','desc')->simplePaginate(30);
         $return = $companies->toArray();
         $return['data'] = [];
         foreach ($companies as $company) {
@@ -137,7 +162,7 @@ class CompanyController extends Controller {
                 'logo' => $company->logo,
                 'address_province' => $company->address_province,
                 'tags' => $tags,
-                'distance' => '200m'
+                'distance' => getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude).'m'
             ];
         }
 

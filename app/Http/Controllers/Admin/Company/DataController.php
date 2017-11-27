@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Models\Company\CompanyData;
 use App\Models\Company\CompanyDataUser;
 use App\Models\Tag;
+use App\Services\Geohash;
 use Illuminate\Http\Request;
 
 class DataController extends AdminController
@@ -67,7 +68,11 @@ class DataController extends AdminController
     {
         $request->flash();
         $this->validate($request,$this->validateRules);
-        $company = CompanyData::create($request->all());
+        $geohash = new GeoHash();
+        $hash = $geohash->encode($request->input('latitude'), $request->input('longitude'));
+        $data = $request->all();
+        $data['geohash'] = $hash;
+        $company = CompanyData::create($data);
         /*添加标签*/
         $tagString = $request->input('tags_id');
         if ($tagString) {
@@ -95,6 +100,9 @@ class DataController extends AdminController
 
         $this->validate($request,$this->validateRules);
 
+        $geohash = new GeoHash();
+        $hash = $geohash->encode($request->input('latitude'), $request->input('longitude'));
+
         $company->name = $request->input('name');
         $company->audit_status = $request->input('audit_status');
         $company->logo = $request->input('logo');
@@ -102,6 +110,7 @@ class DataController extends AdminController
         $company->address_detail = $request->input('address_detail');
         $company->longitude = $request->input('longitude');
         $company->latitude = $request->input('latitude');
+        $company->geohash = $hash;
         $company->save();
         /*添加标签*/
         $tagString = $request->input('tags_id');
