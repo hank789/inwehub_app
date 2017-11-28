@@ -169,8 +169,8 @@ class CompanyController extends Controller {
         }
 
         usort($data,function ($a,$b) {
-            if ($a['distance'] == $b['distance']) return 0;
-            return ($a['distance'] < $b['distance'])? -1 : 1;
+            if (trim($a['distance'],'米') == trim($b['distance'],'米')) return 0;
+            return (trim($a['distance'],'米') < trim($b['distance'],'米'))? -1 : 1;
         });
         $return['data'] = $data;
         return self::createJsonData(true,$return);
