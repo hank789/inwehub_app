@@ -128,7 +128,7 @@ class BaiduMap
             $url = urlencode($this->url . $uri);
             $data = $this->_curl($url,$params);
         }
-        return $data;
+        return json_decode($data,true);
     }
     /**
      * 生成发送HTTP请求
