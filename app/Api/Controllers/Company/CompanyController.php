@@ -156,13 +156,14 @@ class CompanyController extends Controller {
         $return['data'] = [];
         foreach ($companies as $company) {
             $tags = $company->tags()->pluck('name')->toArray();
+            $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
             $return['data'][] = [
                 'id' => $company->id,
                 'name' => $company->name,
                 'logo' => $company->logo,
                 'address_province' => $company->address_province,
                 'tags' => $tags,
-                'distance' => getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude).'m'
+                'distance' => number_format($distance).'米'
             ];
         }
 
