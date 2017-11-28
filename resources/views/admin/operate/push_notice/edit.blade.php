@@ -34,7 +34,7 @@
                                 <label>文章类型</label>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="notification_type" value="1" @if($notice->notification_type===1) checked @endif /> 阅读发现(首页阅读推荐id)
+                                        <input type="radio" name="notification_type" value="1" @if($notice->notification_type===1) checked @endif /> 发现分享(url地址为发现分享id)
                                     </label>&nbsp;&nbsp;
                                     <label>
                                         <input type="radio" name="notification_type" value="2" @if($notice->notification_type===2) checked @endif /> 公告文章(外部url)
