@@ -3,10 +3,9 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
-use App\Models\Readhub\Submission;
+use App\Models\Submission;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
