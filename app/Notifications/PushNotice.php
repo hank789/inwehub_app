@@ -49,7 +49,7 @@ class PushNotice extends Notification implements ShouldQueue,ShouldBroadcast
         switch ($this->pushNotice->notification_type){
             case PushNoticeModel::PUSH_NOTIFICATION_TYPE_READHUB:
                 $object_type = 'push_notice_readhub';
-                $recommendation = Submission::where('id',$url)->where('recommend_status','>=',Submission::RECOMMEND_STATUS_PENDING)->first()->toArray();
+                $recommendation = Submission::where('id',$url)->first()->toArray();
                 $item['title'] = $recommendation['title'];
                 $item['img_url'] = $recommendation['data']['img']??'';
                 $item['publish_at'] = date('Y/m/d H:i',strtotime($recommendation['created_at']));
