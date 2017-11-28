@@ -57,7 +57,7 @@
                                 <div class="row">
                                     <div class="col-sm-10">
                                         <select id="tags" name="tags" class="form-control" multiple="multiple" >
-                                            @foreach( $company->tags() as $tag)
+                                            @foreach( $company->tags()->get() as $tag)
                                                 <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
                                             @endforeach
                                         </select>

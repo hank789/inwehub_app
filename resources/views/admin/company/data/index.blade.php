@@ -46,6 +46,7 @@
                                         <th>公司名</th>
                                         <th>LOGO</th>
                                         <th>地址</th>
+                                        <th>geohash</th>
                                         <th>标签</th>
                                         <th>审核状态</th>
                                         <th>更新时间</th>
@@ -60,6 +61,7 @@
                                                 <img width="100" height="100" src="{{ $item->logo }}">
                                             </td>
                                             <td>{{ $item->address_province }}</td>
+                                            <td>{{ $item->geohash }}</td>
                                             <td>{{ implode(',',$item->tags()->pluck('name')->toArray()) }}</td>
                                             <td><span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
                                             <td>{{ $item->updated_at }}</td>
