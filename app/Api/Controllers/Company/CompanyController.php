@@ -144,7 +144,7 @@ class CompanyController extends Controller {
             $values = substr($values, 0, -1);
         }
 
-        $query = CompanyData::query();
+        $query = CompanyData::where('audit_status',1);
         if ($name) {
             $query = $query->where('name','like','%'.$name.'%');
         }
@@ -197,7 +197,7 @@ class CompanyController extends Controller {
     //企业相关人员
     public function dataPeople(Request $request){
         $loginUser = $request->user();
-        $companyUsers = CompanyDataUser::where('company_data_id',$request->input('id'))->simplePaginate(30);
+        $companyUsers = CompanyDataUser::where('audit_status',1)->where('company_data_id',$request->input('id'))->simplePaginate(30);
         $return = $companyUsers->toArray();
         $return['data'] = [];
         foreach ($companyUsers as $user) {

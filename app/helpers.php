@@ -62,6 +62,7 @@ if (! function_exists('trans_authentication_status')) {
         $map = [
             0 => '待审核',
             1 => '审核通过',
+            2 => '未通过',
             4 => '审核失败',
         ];
 

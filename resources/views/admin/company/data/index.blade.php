@@ -27,6 +27,14 @@
                                         <div class="col-xs-4">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                         </div>
+                                        <div class="col-xs-3">
+                                            <select class="form-control" name="status">
+                                                <option value="-1">--状态--</option>
+                                                @foreach(trans_authentication_status('all') as $key => $status)
+                                                    <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                         <div class="col-xs-1">
                                             <button type="submit" class="btn btn-primary">搜索</button>
                                         </div>
@@ -63,7 +71,7 @@
                                             <td>{{ $item->address_province }}</td>
                                             <td>{{ $item->geohash }}</td>
                                             <td>{{ implode(',',$item->tags()->pluck('name')->toArray()) }}</td>
-                                            <td><span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
+                                            <td><span class="label @if($item->audit_status===0) label-warning @elseif($item->audit_status===1) label-success  @else label-danger @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
                                             <td>{{ $item->updated_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >

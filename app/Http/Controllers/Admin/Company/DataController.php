@@ -37,6 +37,11 @@ class DataController extends AdminController
             $query->where('name','like', '%'.$filter['word'].'%');
         }
 
+        if( isset($filter['status'])){
+            $query->where('audit_status', $filter['status']);
+        }
+
+
         $companies = $query->orderBy('id','desc')->orderBy('updated_at','desc')->paginate(20);
         return view("admin.company.data.index")->with('companies',$companies)->with('filter',$filter);
     }
@@ -159,6 +164,10 @@ class DataController extends AdminController
 
         if( isset($filter['user_id']) && $filter['user_id'] ){
             $query->where('user_id',$filter['user_id']);
+        }
+
+        if( isset($filter['status'])){
+            $query->where('audit_status', $filter['status']);
         }
 
         $companies = $query->orderBy('id','desc')->paginate(20);

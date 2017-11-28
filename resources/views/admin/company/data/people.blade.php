@@ -30,6 +30,14 @@
                                         <div class="col-xs-2">
                                             <input type="text" class="form-control" name="user_id" placeholder="用户id" value="{{ $filter['user_id'] or '' }}"/>
                                         </div>
+                                        <div class="col-xs-3">
+                                            <select class="form-control" name="status">
+                                                <option value="-1">--状态--</option>
+                                                @foreach(trans_authentication_status('all') as $key => $status)
+                                                    <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                         <div class="col-xs-1">
                                             <button type="submit" class="btn btn-primary">搜索</button>
                                         </div>
@@ -63,7 +71,7 @@
                                             </td>
                                             <td>{{ $item->user->name.'['.$item->user_id.']' }}</td>
                                             <td>{{ $item->statusInfo() }}</td>
-                                            <td><span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
+                                            <td><span class="label @if($item->audit_status===0) label-warning @elseif($item->audit_status===1) label-success  @else label-danger @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.company.data.editPeople',['id'=>$item->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
