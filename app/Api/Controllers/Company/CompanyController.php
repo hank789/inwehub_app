@@ -164,7 +164,7 @@ class CompanyController extends Controller {
                 'logo' => $company->logo,
                 'address_province' => $company->address_province,
                 'tags' => $tags,
-                'distance' => number_format($distance).'米'
+                'distance' => number_format($distance)
             ];
         }
 
