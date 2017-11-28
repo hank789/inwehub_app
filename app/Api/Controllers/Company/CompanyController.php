@@ -151,13 +151,14 @@ class CompanyController extends Controller {
         if ($longitude) {
             $query = $query->whereRaw('LEFT(`geohash`,5) IN ('.$values.')');
         }
-        $companies = $query->orderBy('geohash','desc')->simplePaginate(30);
+        $companies = $query->orderBy('geohash','asc')->simplePaginate(30);
         $return = $companies->toArray();
         $return['data'] = [];
+        $data = [];
         foreach ($companies as $company) {
             $tags = $company->tags()->pluck('name')->toArray();
             $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
-            $return['data'][] = [
+            $data[] = [
                 'id' => $company->id,
                 'name' => $company->name,
                 'logo' => $company->logo,
@@ -167,6 +168,11 @@ class CompanyController extends Controller {
             ];
         }
 
+        usort($data,function ($a,$b) {
+            if ($a['distance'] == $b['distance']) return 0;
+            return ($a['distance'] < $b['distance'])? -1 : 1;
+        });
+        $return['data'] = $data;
         return self::createJsonData(true,$return);
     }
 
