@@ -230,6 +230,15 @@ class CompanyController extends Controller {
             'title'=>'公司id',
             'value'=>$company->id
         ];
+        $exist = CompanyDataUser::where('company_data_id',$company->id)->where('user_id',$user->id)->first();
+        if (!$exist) {
+            CompanyDataUser::create([
+                'company_data_id' => $company->id,
+                'user_id'         => $user->id,
+                'audit_status'    => 0,
+                'status'          => 1
+            ]);
+        }
         event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.'申请了企业成员',$fields));
         return self::createJsonData(true,['tips'=>'申请成功，请耐心等待']);
     }

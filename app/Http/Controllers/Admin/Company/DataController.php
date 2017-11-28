@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Models\Company\CompanyData;
 use App\Models\Company\CompanyDataUser;
 use App\Models\Tag;
-use App\Services\Geohash;
+use App\Services\GeoHash;
 use Illuminate\Http\Request;
 
 class DataController extends AdminController
