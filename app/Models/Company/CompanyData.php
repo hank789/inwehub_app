@@ -1,6 +1,7 @@
 <?php namespace App\Models\Company;
 
 use App\Models\Relations\MorphManyTagsTrait;
+use App\Services\BaiduMap;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -56,13 +57,68 @@ class CompanyData extends Model
     use MorphManyTagsTrait;
     protected $table = 'company_data';
 
-    protected $fillable = ['name', 'logo','address_province','address_detail','longitude','latitude','geohash','audit_status'];
+    protected $fillable = ['name', 'logo','is_show','address_province','address_detail','longitude','latitude','geohash','audit_status'];
 
 
 
     public static function boot()
     {
         parent::boot();
+    }
+
+    public static function initCompanyData($companyName,$user_id,$userCompanyStatus,$isShow = 1){
+        $exist = self::where('name',$companyName)->first();
+        if (!$exist) {
+            $location = BaiduMap::instance()->place($companyName);
+            $city = BaiduMap::instance()->placeSuggestion($companyName);
+            $address_province = '';
+            $address_detail = '';
+            $longitude = '';
+            $latitude = '';
+            if (count($city->result) >= 1) {
+                $object1 = $city->result[0];
+                $address_province = $object1->city.$object1->district;
+                $longitude = $object1->location->lng;
+                $latitude = $object1->location->lat;
+            }
+            if ($location->total >= 1) {
+                $object2 = $location->results[0];
+                $address_detail = $object2->address;
+                $longitude = $object2->detail_info->navi_location->lng;
+                $latitude = $object2->detail_info->navi_location->lat;
+            }
+            $data = self::create([
+                'name' => $companyName,
+                'logo' => '',
+                'address_province' => $address_province,
+                'address_detail'   => $address_detail,
+                'longitude'        => $longitude,
+                'latitude'         => $latitude,
+                'audit_status'     => 0
+            ]);
+            CompanyDataUser::create([
+                'company_data_id' => $data->id,
+                'user_id'         => $user_id,
+                'audit_status'    => 0,
+                'is_show'         => $isShow,
+                'status'          => $userCompanyStatus
+            ]);
+        } else {
+            $existUser = CompanyDataUser::where('company_data_id',$exist->id)->where('user_id',$user_id)->first();
+            if (!$existUser) {
+                CompanyDataUser::create([
+                    'company_data_id' => $exist->id,
+                    'user_id'         => $user_id,
+                    'audit_status'    => 0,
+                    'is_show'         => $isShow,
+                    'status'          => $userCompanyStatus
+                ]);
+            } else {
+                $existUser->status = $userCompanyStatus;
+                $exist->is_show = $isShow;
+                $existUser->save();
+            }
+        }
     }
 
 }

@@ -6,6 +6,7 @@
  */
 
 use App\Cache\UserCache;
+use App\Models\Company\CompanyData;
 use App\Models\Readhub\ReadHubUser;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,6 +22,8 @@ class UserObserver implements ShouldQueue {
 
     public function updated(User $user){
         UserCache::delUserInfoCache($user->id);
+        //同步公司信息
+        CompanyData::initCompanyData($user->company,$user->id,1);
     }
 
 }

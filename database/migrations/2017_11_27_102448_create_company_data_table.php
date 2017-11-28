@@ -31,6 +31,7 @@ class CreateCompanyDataTable extends Migration
             $table->integer('company_data_id')->comment('公司id');
             $table->integer('user_id')->comment('用户id');
             $table->tinyInteger('status')->nullable()->default(1)->comment('状态 1-在职 2-项目 3-离职');
+            $table->tinyInteger('is_show')->nullable()->default(1)->index()->comment('是否显示 0-不显示 1-显示');
             $table->tinyInteger('audit_status')->nullable()->default(1)->index()->comment('审核状态 0-未审核 1-已审核 2-未通过');
         });
     }
