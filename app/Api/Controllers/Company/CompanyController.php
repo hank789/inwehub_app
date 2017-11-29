@@ -123,7 +123,7 @@ class CompanyController extends Controller {
         $name = $request->input('name');
         $longitude = $request->input('longitude');
         $latitude = $request->input('latitude');
-
+        \Log::info('test',$request->all());
         if ($longitude) {
             $geohash = new GeoHash();
 
@@ -157,14 +157,18 @@ class CompanyController extends Controller {
         $data = [];
         foreach ($companies as $company) {
             $tags = $company->tags()->pluck('name')->toArray();
-            $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
+            if (empty($longitude)) {
+                $distance = '未知';
+            } else {
+                $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude).'米';
+            }
             $data[] = [
                 'id' => $company->id,
                 'name' => $company->name,
                 'logo' => $company->logo,
                 'address_province' => $company->address_province,
                 'tags' => $tags,
-                'distance' => bcadd($distance,0,0).'米'
+                'distance' => bcadd($distance,0,0)
             ];
         }
 

@@ -93,9 +93,11 @@ class Tag extends Model
     }
 
     //通过tag id添加标签
-    public static function multiSaveByIds($tagIds,$taggable)
+    public static function multiSaveByIds($tags,$taggable)
     {
-        $tags = array_unique(explode(",",$tagIds));
+        if (!is_array($tags)) {
+            $tags = array_unique(explode(",",$tags));
+        }
 
         /*删除所有标签关联*/
         if($tags){
