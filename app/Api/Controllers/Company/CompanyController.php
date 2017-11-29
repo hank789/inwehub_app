@@ -160,7 +160,7 @@ class CompanyController extends Controller {
                 $distance = '未知';
             } else {
                 $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
-                $distance = bcadd($distance,0,0).'米';
+                $distance = bcadd($distance,0,0);
             }
             $data[] = [
                 'id' => $company->id,
@@ -173,8 +173,8 @@ class CompanyController extends Controller {
         }
 
         usort($data,function ($a,$b) {
-            if (trim($a['distance'],'米') == trim($b['distance'],'米')) return 0;
-            return (trim($a['distance'],'米') < trim($b['distance'],'米'))? -1 : 1;
+            if ($a['distance'] == $b['distance']) return 0;
+            return ($a['distance'] < $b['distance'])? -1 : 1;
         });
         $return['data'] = $data;
         return self::createJsonData(true,$return);
@@ -185,6 +185,10 @@ class CompanyController extends Controller {
         $company = CompanyData::findOrFail($request->input('id'));
         $longitude = $request->input('longitude');
         $latitude = $request->input('latitude');
+        $distance = '未知';
+        if ($longitude) {
+            $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
+        }
         $tags = $company->tags()->pluck('name')->toArray();
         $return = [
             'id' => $company->id,
@@ -193,7 +197,7 @@ class CompanyController extends Controller {
             'address_province' => $company->address_province,
             'address_detail' => $company->address_detail,
             'tags' => $tags,
-            'distance' => '200m'
+            'distance' => $distance
         ];
         return self::createJsonData(true,$return);
     }
