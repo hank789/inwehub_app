@@ -1162,7 +1162,7 @@ if (!function_exists('getDistanceByLatLng')) {
 
 if (!function_exists('distanceFormat')) {
     function distanceFormat($distance) {
-        if ($distance !== floatval($distance)) {
+        if (floatval($distance) <= 0) {
             return $distance;
         }
         if ($distance < 1000) {

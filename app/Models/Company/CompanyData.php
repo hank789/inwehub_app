@@ -102,12 +102,12 @@ class CompanyData extends Model
                 'longitude'        => $longitude,
                 'latitude'         => $latitude,
                 'geohash'          => $hash,
-                'audit_status'     => 0
+                'audit_status'     => 1
             ]);
             CompanyDataUser::create([
                 'company_data_id' => $data->id,
                 'user_id'         => $user_id,
-                'audit_status'    => 0,
+                'audit_status'    => 1,
                 'is_show'         => $isShow,
                 'status'          => $userCompanyStatus
             ]);
@@ -117,7 +117,7 @@ class CompanyData extends Model
                 CompanyDataUser::create([
                     'company_data_id' => $exist->id,
                     'user_id'         => $user_id,
-                    'audit_status'    => 0,
+                    'audit_status'    => 1,
                     'is_show'         => $isShow,
                     'status'          => $userCompanyStatus
                 ]);
