@@ -2,6 +2,7 @@
 
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\BaiduMap;
+use App\Services\GeoHash;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -75,8 +76,7 @@ class CompanyData extends Model
             $address_detail = '';
             $longitude = '';
             $latitude = '';
-            var_dump($city);
-            var_dump($location);
+            $hash = '';
             if (count($city['result']) >= 1) {
                 $object1 = $city['result'][0];
                 $address_province = $object1['city'].$object1['district'];
@@ -91,6 +91,9 @@ class CompanyData extends Model
                     $latitude = $object2['detail_info']['navi_location']['lat'];
                 }
             }
+            if ($longitude) {
+                $hash = GeoHash::instance()->encode($latitude,$longitude);
+            }
             $data = self::create([
                 'name' => $companyName,
                 'logo' => '',
@@ -98,6 +101,7 @@ class CompanyData extends Model
                 'address_detail'   => $address_detail,
                 'longitude'        => $longitude,
                 'latitude'         => $latitude,
+                'geohash'          => $hash,
                 'audit_status'     => 0
             ]);
             CompanyDataUser::create([

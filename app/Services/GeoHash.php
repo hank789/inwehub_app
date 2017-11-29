@@ -18,7 +18,9 @@ class GeoHash
     
     private $coding = "0123456789bcdefghjkmnpqrstuvwxyz";
     private $codingMap = [];
-    
+
+    protected static $instance = null;
+
     public function __construct()
     {
     
@@ -48,7 +50,14 @@ class GeoHash
         }
     
     }
-    
+
+    public static function instance(){
+        if(!self::$instance){
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     /**
      * Decode a geohash and return an array with decimal lat,long in it
      */
