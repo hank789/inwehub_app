@@ -168,7 +168,8 @@ class CompanyController extends Controller {
                 'logo' => $company->logo,
                 'address_province' => $company->address_province,
                 'tags' => $tags,
-                'distance' => $distance
+                'distance' => $distance,
+                'distance_format' => distanceFormat($distance)
             ];
         }
 
@@ -197,7 +198,8 @@ class CompanyController extends Controller {
             'address_province' => $company->address_province,
             'address_detail' => $company->address_detail,
             'tags' => $tags,
-            'distance' => $distance
+            'distance' => $distance,
+            'distance_format' => distanceFormat($distance)
         ];
         return self::createJsonData(true,$return);
     }
