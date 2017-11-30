@@ -308,15 +308,9 @@ class QuestionController extends Controller
         $this->checkUserInfoPercent($loginUser);
 
         $price = abs($request->input('price'));
-        $tagString = trim($request->input('tags'));
+        $tagString = $request->input('tags');
 
-        $category_id = 0;
-        if($tagString){
-            //目前只能添加一个标签
-            $tags = array_unique(explode(",",$tagString));
-            $tag = Tag::find($tags[0])->first();
-            $category_id = $tag->category_id;
-        }
+        $category_id = 20;
         $data = [
             'user_id'      => $loginUser->id,
             'category_id'      => $category_id,
