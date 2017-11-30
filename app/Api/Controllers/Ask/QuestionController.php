@@ -100,7 +100,7 @@ class QuestionController extends Controller
             $support_uids = Support::where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->take(20)->pluck('user_id');
             $supporters = [];
             if ($support_uids) {
-                $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid');
+                $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
             }
             $answers_data[] = [
                 'id' => $bestAnswer->id,
