@@ -41,6 +41,9 @@ class Comment extends Model
     protected $table = 'comments';
     protected $fillable = ['user_id','level','parent_id', 'content','source_id','source_type','to_user_id','supports','status'];
 
+    protected $with = [
+        'owner', 'children',
+    ];
 
     public function owner()
     {
@@ -80,7 +83,6 @@ class Comment extends Model
     /**
      * A comment has many children.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function children()
     {
