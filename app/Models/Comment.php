@@ -39,6 +39,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\User $owner
  * @property-read \App\Models\Comment $parent
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereParentId($value)
+ * @property int $level
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereLevel($value)
  */
 class Comment extends Model
 {
