@@ -50,7 +50,7 @@ class SubmissionController extends Controller {
             }
         }
 
-        $tagString = trim($request->input('tags'));
+        $tagString = $request->input('tags');
 
         if ($request->type == 'link') {
             $this->validate($request, [
