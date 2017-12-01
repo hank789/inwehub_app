@@ -114,7 +114,7 @@ class Answer extends Model
         $count = $this->feedbacks()->count();
         $rate = $this->feedbacks()->sum('star');
         if ($count) {
-            return bcdiv($rate,$count * 5,2);
+            return (bcdiv($rate,$count * 5,2) * 100).'%';
         }
         return 0;
     }
