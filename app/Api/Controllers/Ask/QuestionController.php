@@ -720,7 +720,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('api_data_page_size'));
+        $questions = $query->orderBy('questions.updated_at','desc')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
@@ -751,7 +751,7 @@ class QuestionController extends Controller
 
     //专业问答-热门问答
     public function majorHot(Request $request) {
-        $questions = Question::where('is_hot',1)->orderBy('id','desc')->get()->take(2);
+        $questions = Question::where('is_hot',1)->orderBy('views','desc')->get()->take(2);
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -790,7 +790,7 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
         $user = $request->user();
-        $answers = $question->answers()->whereNull('adopted_at')->orderBy('id','DESC')->simplePaginate(Config::get('api_data_page_size'));
+        $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
         foreach ($answers as $answer) {
