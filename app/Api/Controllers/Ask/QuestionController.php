@@ -728,6 +728,10 @@ class QuestionController extends Controller
             if ($attention_question) {
                 $is_followed_question = 1;
             }
+            $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->take(5)->pluck('user_id')->toArray();
+            if ($answer_uids) {
+                $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
+            }
             $list[] = [
                 'id' => $question->id,
                 'question_type' => $question->question_type,
@@ -742,6 +746,7 @@ class QuestionController extends Controller
                 'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0),
                 'question_user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
                 'answer_num' => $question->answers,
+                'answer_user_list' => $answer_users,
                 'follow_num' => $question->followers,
                 'is_followed_question' => $is_followed_question
             ];
