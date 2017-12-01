@@ -77,6 +77,11 @@ class DataController extends AdminController
         $hash = $geohash->encode($request->input('latitude'), $request->input('longitude'));
         $data = $request->all();
         $data['geohash'] = $hash;
+        $logo = formatCdnUrl($request->input('logo'));
+        if (!$logo) {
+            return $this->error(route('admin.company.data.create'),'logo地址必须为cdn地址');
+        }
+        $data['logo'] = $logo;
         $company = CompanyData::create($data);
         /*添加标签*/
         $tagString = $request->input('tags_id');
@@ -104,13 +109,17 @@ class DataController extends AdminController
         }
 
         $this->validate($request,$this->validateRules);
-
+        $logo = formatCdnUrl($request->input('logo'));
+        if (!$logo) {
+            return $this->error(route('admin.company.data.edit',['id'=>$id]),'logo地址必须为cdn地址');
+        }
+        $data['logo'] = $logo;
         $geohash = new GeoHash();
         $hash = $geohash->encode($request->input('latitude'), $request->input('longitude'));
 
         $company->name = $request->input('name');
         $company->audit_status = $request->input('audit_status');
-        $company->logo = $request->input('logo');
+        $company->logo = $logo;
         $company->address_province = $request->input('address_province');
         $company->address_detail = $request->input('address_detail');
         $company->longitude = $request->input('longitude');

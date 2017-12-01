@@ -68,7 +68,16 @@ class ServiceController extends AdminController
     {
         $request->flash();
         $this->validate($request,$this->validateRules);
-        CompanyService::create($request->all());
+        $img_url_slide = formatCdnUrl($request->input('img_url_slide'));
+        $img_url_list = formatCdnUrl($request->input('img_url_list'));
+        if (!$img_url_list || !$img_url_slide) {
+            return $this->error(route('admin.company.service.create'),'url地址必须为cdn地址');
+        }
+        $data = $request->all();
+        $data['img_url_slide'] = $img_url_slide;
+        $data['img_url_list'] = $img_url_list;
+
+        CompanyService::create($data);
         return $this->success(route('admin.company.service.index'),'服务添加成功');
 
     }
@@ -91,10 +100,17 @@ class ServiceController extends AdminController
 
         $this->validate($request,$this->validateRules);
 
+        $img_url_slide = formatCdnUrl($request->input('img_url_slide'));
+        $img_url_list = formatCdnUrl($request->input('img_url_list'));
+        if (!$img_url_list || !$img_url_slide) {
+            return $this->error(route('admin.company.service.create'),'url地址必须为cdn地址');
+        }
+
+
         $service->sort = $request->input('sort');
         $service->audit_status = $request->input('audit_status');
-        $service->img_url_slide = $request->input('img_url_slide');
-        $service->img_url_list = $request->input('img_url_list');
+        $service->img_url_slide = $img_url_slide;
+        $service->img_url_list = $img_url_list;
         $service->title = $request->input('title');
         $service->save();
 

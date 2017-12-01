@@ -1172,3 +1172,14 @@ if (!function_exists('distanceFormat')) {
         }
     }
 }
+
+if (!function_exists('formatCdnUrl')) {
+    function formatCdnUrl($url) {
+        $cdn_url = str_replace('http://inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','https://cdn.inwehub.com',$url);
+        $format_url = parse_url($cdn_url);
+        if (isset($format_url['host']) && !in_array($format_url['host'],['cdn.inwehub.com'])) {
+            return false;
+        }
+        return $cdn_url;
+    }
+}
