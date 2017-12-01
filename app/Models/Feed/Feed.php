@@ -148,6 +148,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
+                    'tags'      => $submission->tags()->get()->toArray(),
                     'submission_id' => $this->source_id,
                     'current_address_name' => $this->data['current_address_name']??'',
                     'current_address_longitude' => $this->data['current_address_longitude']??'',

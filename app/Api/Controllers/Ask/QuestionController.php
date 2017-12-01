@@ -145,7 +145,7 @@ class QuestionController extends Controller
             'is_followed' => $question->hide ? 0 : ($attention_question_user?1:0),
             'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
-            'tags' => $question->tags()->pluck('name'),
+            'tags' => $question->tags()->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,

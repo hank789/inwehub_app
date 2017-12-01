@@ -97,6 +97,8 @@ class Tag extends Model
     {
         if (!is_array($tags)) {
             $tags = array_unique(explode(",",$tags));
+        } else {
+            $tags = array_unique($tags);
         }
 
         /*删除所有标签关联*/
