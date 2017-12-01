@@ -34,6 +34,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereUserId($value)
  * @mixin \Eloquent
+ * @property int $parent_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $children
+ * @property-read \App\Models\User $owner
+ * @property-read \App\Models\Comment $parent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereParentId($value)
  */
 class Comment extends Model
 {

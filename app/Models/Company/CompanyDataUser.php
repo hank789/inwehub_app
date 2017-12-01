@@ -49,6 +49,17 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Company whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\Company withTrashed()
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\Company withoutTrashed()
+ * @property int $id
+ * @property int $company_data_id 公司id
+ * @property int|null $status 状态 1-在职 2-项目 3-离职
+ * @property int|null $is_show 是否显示 0-不显示 1-显示
+ * @property int|null $audit_status 审核状态 0-未审核 1-已审核 2-未通过
+ * @property-read \App\Models\Company\CompanyData $companyData
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyDataUser whereAuditStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyDataUser whereCompanyDataId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyDataUser whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyDataUser whereIsShow($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyDataUser whereStatus($value)
  */
 class CompanyDataUser extends Model
 {

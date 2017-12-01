@@ -52,6 +52,24 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\Company whereUserId($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\Company withTrashed()
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Company\Company withoutTrashed()
+ * @property int $id
+ * @property string $name 公司名字
+ * @property string $logo logo图片
+ * @property string $address_province 公司省市地址
+ * @property string $address_detail 公司详细地址
+ * @property string $longitude 经度
+ * @property string $latitude 纬度
+ * @property string $geohash
+ * @property int|null $audit_status 审核状态 0-未审核 1-已审核 2-未通过
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereAddressDetail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereAddressProvince($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereAuditStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereGeohash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereLatitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereLogo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereLongitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyData whereName($value)
  */
 class CompanyData extends Model
 {
