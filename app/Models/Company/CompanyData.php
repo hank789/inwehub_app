@@ -101,7 +101,7 @@ class CompanyData extends Model
             $longitude = '';
             $latitude = '';
             $hash = '';
-            if (count($city['result']) >= 1) {
+            if (isset($city['result']) && count($city['result']) >= 1) {
                 $object1 = $city['result'][0];
                 $address_province = $object1['city'].$object1['district'];
                 if (isset($object1['location'])) {
@@ -109,7 +109,7 @@ class CompanyData extends Model
                     $latitude = $object1['location']['lat'];
                 }
             }
-            if ($location['total'] >= 1) {
+            if (isset($location['total']) && $location['total'] >= 1) {
                 $object2 = $location['results'][0];
                 if (isset($object2['address'])) {
                     $address_detail = $object2['address'];
