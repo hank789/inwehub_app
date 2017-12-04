@@ -104,15 +104,19 @@ class CompanyData extends Model
             if (count($city['result']) >= 1) {
                 $object1 = $city['result'][0];
                 $address_province = $object1['city'].$object1['district'];
-                $longitude = $object1['location']['lng'];
-                $latitude = $object1['location']['lat'];
+                if (isset($object1['location'])) {
+                    $longitude = $object1['location']['lng'];
+                    $latitude = $object1['location']['lat'];
+                }
             }
             if ($location['total'] >= 1) {
                 $object2 = $location['results'][0];
                 if (isset($object2['address'])) {
                     $address_detail = $object2['address'];
-                    $longitude = $object2['detail_info']['navi_location']['lng'];
-                    $latitude = $object2['detail_info']['navi_location']['lat'];
+                    if (isset($object2['detail_info']['navi_location'])) {
+                        $longitude = $object2['detail_info']['navi_location']['lng'];
+                        $latitude = $object2['detail_info']['navi_location']['lat'];
+                    }
                 }
             }
             if ($longitude) {
