@@ -83,6 +83,10 @@ class CompanyData extends Model
     public static function boot()
     {
         parent::boot();
+
+        static::deleting(function($companyData){
+            CompanyDataUser::where('company_data_id',$companyData->id)->delete();
+        });
     }
 
     public static function initCompanyData($companyName,$user_id,$userCompanyStatus,$isShow = 1){
