@@ -94,6 +94,8 @@ class CompanyData extends Model
         if (!$exist) {
             $location = BaiduMap::instance()->place($companyName);
             $city = BaiduMap::instance()->placeSuggestion($companyName);
+            \Log::info('initCompanyData_location',[$location]);
+            \Log::info('initCompanyData_city',[$city]);
             $address_province = '';
             $address_detail = '';
             $longitude = '';
