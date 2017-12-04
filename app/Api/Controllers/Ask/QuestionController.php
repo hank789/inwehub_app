@@ -729,6 +729,7 @@ class QuestionController extends Controller
                 $is_followed_question = 1;
             }
             $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->distinct()->take(5)->pluck('user_id')->toArray();
+            $answer_users = [];
             if ($answer_uids) {
                 $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
             }
