@@ -37,7 +37,7 @@ class DataController extends AdminController
             $query->where('name','like', '%'.$filter['word'].'%');
         }
 
-        if( isset($filter['status'])){
+        if( isset($filter['status']) && $filter['status'] >=0){
             $query->where('audit_status', $filter['status']);
         }
 
@@ -175,7 +175,7 @@ class DataController extends AdminController
             $query->where('user_id',$filter['user_id']);
         }
 
-        if( isset($filter['status'])){
+        if( isset($filter['status']) && $filter['status']>=0){
             $query->where('audit_status', $filter['status']);
         }
 
