@@ -130,7 +130,7 @@ class CompanyController extends Controller {
 
             // 决定查询范围，值越大，获取的范围越小
             // 当geohash base32编码长度为8时，精度在19米左右，而当编码长度为9时，精度在2米左右，编码长度需要根据数据情况进行选择。
-            $pre_hash = substr($hash, 0, 4);
+            $pre_hash = substr($hash, 0, 3);
 
             //取出相邻八个区域
             $neighbors = $geohash->neighbors($pre_hash);
