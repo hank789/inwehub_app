@@ -190,6 +190,7 @@ class CompanyController extends Controller {
         $distance = '未知';
         if ($longitude) {
             $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
+            $distance = bcadd($distance,0,0);
         }
         $tags = $company->tags()->pluck('name')->toArray();
         $return = [
