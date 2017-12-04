@@ -6,7 +6,7 @@
  */
 
 use App\Cache\UserCache;
-use App\Models\UserInfo\JobInfo;
+use App\Models\Company\CompanyData;
 use App\Models\UserInfo\ProjectInfo;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -23,10 +23,13 @@ class UserProjectObserver implements ShouldQueue {
     public function created(ProjectInfo $projectInfo)
     {
         UserCache::delUserInfoCache($projectInfo->user_id);
+        CompanyData::initCompanyData($projectInfo->customer_name,$projectInfo->user_id,2);
+
     }
 
     public function updated(ProjectInfo $projectInfo){
         UserCache::delUserInfoCache($projectInfo->user_id);
+        CompanyData::initCompanyData($projectInfo->customer_name,$projectInfo->user_id,2);
     }
 
     public function deleted(ProjectInfo $projectInfo){

@@ -34,6 +34,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyService whereAuditStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyService whereImgUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyService whereTitle($value)
+ * @property string $img_url_slide
+ * @property string $img_url_list
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyService whereImgUrlList($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Company\CompanyService whereImgUrlSlide($value)
  */
 class CompanyService extends Model
 {

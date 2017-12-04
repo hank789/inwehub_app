@@ -4,7 +4,7 @@ namespace App\Notifications\Readhub;
 
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
-use App\Models\Readhub\Comment;
+use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;

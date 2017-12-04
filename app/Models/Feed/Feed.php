@@ -45,6 +45,8 @@ use Illuminate\Support\Facades\Auth;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Feed\Feed withTrashed()
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Feed\Feed withoutTrashed()
+ * @property int $is_anonymous 是否匿名
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereIsAnonymous($value)
  */
 class Feed extends Model
 {
@@ -148,6 +150,7 @@ class Feed extends Model
                     'title'     => $this->data['submission_title'],
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
+                    'tags'      => $submission->tags()->get()->toArray(),
                     'submission_id' => $this->source_id,
                     'current_address_name' => $this->data['current_address_name']??'',
                     'current_address_longitude' => $this->data['current_address_longitude']??'',

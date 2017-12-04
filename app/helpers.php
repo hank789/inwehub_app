@@ -62,6 +62,7 @@ if (! function_exists('trans_authentication_status')) {
         $map = [
             0 => '待审核',
             1 => '审核通过',
+            2 => '未通过',
             4 => '审核失败',
         ];
 
@@ -1142,5 +1143,43 @@ if (!function_exists('rateSubmission')) {
         }
 
         return (log10($z) * $y) + ($timeDiff / 45000);
+    }
+}
+
+if (!function_exists('getDistanceByLatLng')) {
+    function getDistanceByLatLng($lng1,$lat1,$lng2,$lat2){//根据经纬度计算距离 单位为米
+        //将角度转为狐度
+        $radLat1=deg2rad($lat1);
+        $radLat2=deg2rad($lat2);
+        $radLng1=deg2rad($lng1);
+        $radLng2=deg2rad($lng2);
+        $a=$radLat1-$radLat2;//两纬度之差,纬度<90
+        $b=$radLng1-$radLng2;//两经度之差纬度<180
+        $s=2*asin(sqrt(pow(sin($a/2),2)+cos($radLat1)*cos($radLat2)*pow(sin($b/2),2)))*6378.137*1000;
+        return $s;
+    }
+}
+
+if (!function_exists('distanceFormat')) {
+    function distanceFormat($distance) {
+        if (floatval($distance) <= 0) {
+            return $distance;
+        }
+        if ($distance < 1000) {
+            return $distance.'m';
+        } else {
+            return ($distance/1000).'km';
+        }
+    }
+}
+
+if (!function_exists('formatCdnUrl')) {
+    function formatCdnUrl($url) {
+        $cdn_url = str_replace('http://inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','https://cdn.inwehub.com',$url);
+        $format_url = parse_url($cdn_url);
+        if (isset($format_url['host']) && !in_array($format_url['host'],['cdn.inwehub.com'])) {
+            return false;
+        }
+        return $cdn_url;
     }
 }

@@ -100,7 +100,7 @@ class QuestionController extends Controller
             $support_uids = Support::where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->take(20)->pluck('user_id');
             $supporters = [];
             if ($support_uids) {
-                $supporters = User::whereIn('id',$support_uids)->get()->pluck('name','uuid');
+                $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
             }
             $answers_data[] = [
                 'id' => $bestAnswer->id,
@@ -145,7 +145,7 @@ class QuestionController extends Controller
             'is_followed' => $question->hide ? 0 : ($attention_question_user?1:0),
             'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
-            'tags' => $question->tags()->pluck('name'),
+            'tags' => $question->tags()->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,
@@ -308,15 +308,9 @@ class QuestionController extends Controller
         $this->checkUserInfoPercent($loginUser);
 
         $price = abs($request->input('price'));
-        $tagString = trim($request->input('tags'));
+        $tagString = $request->input('tags');
 
-        $category_id = 0;
-        if($tagString){
-            //目前只能添加一个标签
-            $tags = array_unique(explode(",",$tagString));
-            $tag = Tag::find($tags[0])->first();
-            $category_id = $tag->category_id;
-        }
+        $category_id = 20;
         $data = [
             'user_id'      => $loginUser->id,
             'category_id'      => $category_id,
@@ -726,13 +720,17 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('api_data_page_size'));
+        $questions = $query->orderBy('questions.updated_at','desc')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
             $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
             if ($attention_question) {
                 $is_followed_question = 1;
+            }
+            $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->distinct()->take(5)->pluck('user_id')->toArray();
+            if ($answer_uids) {
+                $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
             }
             $list[] = [
                 'id' => $question->id,
@@ -748,6 +746,7 @@ class QuestionController extends Controller
                 'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0),
                 'question_user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
                 'answer_num' => $question->answers,
+                'answer_user_list' => $answer_users,
                 'follow_num' => $question->followers,
                 'is_followed_question' => $is_followed_question
             ];
@@ -757,7 +756,7 @@ class QuestionController extends Controller
 
     //专业问答-热门问答
     public function majorHot(Request $request) {
-        $questions = Question::where('is_hot',1)->orderBy('id','desc')->get()->take(2);
+        $questions = Question::where('is_hot',1)->orderBy('views','desc')->get()->take(2);
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -796,7 +795,7 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
         $user = $request->user();
-        $answers = $question->answers()->whereNull('adopted_at')->orderBy('id','DESC')->simplePaginate(Config::get('api_data_page_size'));
+        $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
         foreach ($answers as $answer) {

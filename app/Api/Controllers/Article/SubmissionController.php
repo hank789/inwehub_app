@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Submission;
 use App\Models\Support;
+use App\Models\Tag;
+use App\Models\User;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
@@ -41,8 +43,14 @@ class SubmissionController extends Controller {
 
         $category = Category::find($request->input('category_id',0));
         if (!$category) {
-            throw new ApiException(ApiException::ARTICLE_CATEGORY_NOT_EXIST);
+            if ($request->type == 'link') {
+                $category = Category::where('slug','channel_xwdt')->first();
+            } else {
+                $category = Category::where('slug','channel_gddj')->first();
+            }
         }
+
+        $tagString = $request->input('tags');
 
         if ($request->type == 'link') {
             $this->validate($request, [
@@ -128,6 +136,9 @@ class SubmissionController extends Controller {
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
             }
+            /*添加标签*/
+            Tag::multiSaveByIds($tagString,$submission);
+
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);
             throw new ApiException(ApiException::ERROR);
@@ -180,10 +191,18 @@ class SubmissionController extends Controller {
             ->where('source_id',$submission->id)
             ->where('source_type',Submission::class)
             ->exists();
+        $support_uids = Support::where('supportable_id',$submission->id)
+            ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
+        $supporters = [];
+        if ($support_uids) {
+            $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+        }
         $attention_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
         $return['is_followed_author'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
+        $return['supporter_list'] = $supporters;
+        $return['tags'] = $submission->tags()->get()->toArray();
         $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;
         $return['bookmarks'] = Collection::where('source_id',$submission->id)
             ->where('source_type',Submission::class)->count();

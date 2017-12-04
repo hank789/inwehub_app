@@ -21,6 +21,8 @@
         <ul class="treeview-menu" id="manage_company">
             <li><a href="{{ route('admin.company.index') }}"><i class="fa fa-circle-o"></i> 认证管理</a></li>
             <li><a href="{{ route('admin.company.service.index') }}"><i class="fa fa-circle-o"></i> 企业服务</a></li>
+            <li><a href="{{ route('admin.company.data.index') }}"><i class="fa fa-circle-o"></i> 企业信息</a></li>
+            <li><a href="{{ route('admin.company.data.people') }}"><i class="fa fa-circle-o"></i> 企业相关人员</a></li>
         </ul>
     </li>
 

@@ -24,7 +24,14 @@ class SystemController extends Controller {
             'content' => 'required'
         ];
         $this->validate($request, $validateRules);
-        event(new Feedback($request->user(),$request->input('title'),$request->input('content')));
+        $user = $request->user();
+
+        $fields = [];
+        $fields[] = [
+            'title'=>'内容',
+            'value'=>$request->input('content')
+        ];
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$request->input('title'),$fields));
         return self::createJsonData(true);
     }
 

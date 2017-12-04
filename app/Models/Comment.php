@@ -34,6 +34,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Comment whereUserId($value)
  * @mixin \Eloquent
+ * @property int $parent_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $children
+ * @property-read \App\Models\User $owner
+ * @property-read \App\Models\Comment $parent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereParentId($value)
+ * @property int $level
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereLevel($value)
  */
 class Comment extends Model
 {
@@ -41,6 +48,9 @@ class Comment extends Model
     protected $table = 'comments';
     protected $fillable = ['user_id','level','parent_id', 'content','source_id','source_type','to_user_id','supports','status'];
 
+    protected $with = [
+        'owner', 'children',
+    ];
 
     public function owner()
     {
@@ -80,7 +90,6 @@ class Comment extends Model
     /**
      * A comment has many children.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function children()
     {

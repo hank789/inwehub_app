@@ -328,6 +328,16 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','nam
     //用户申请企业服务
     Route::post('applyService','CompanyController@applyService');
 
+    //附近企业搜索
+    Route::post('nearbySearch','CompanyController@nearbySearch');
+    //企业信息
+    Route::post('dataInfo','CompanyController@dataInfo');
+    //企业相关人员
+    Route::post('dataPeople','CompanyController@dataPeople');
+    //申请企业相关人员
+    Route::post('applyDataPeople','CompanyController@applyDataPeople');
+    //申请添加企业
+    Route::post('applyAddData','CompanyController@applyAddData');
 });
 
 

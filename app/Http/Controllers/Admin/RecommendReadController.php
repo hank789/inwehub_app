@@ -78,11 +78,15 @@ class RecommendReadController extends AdminController
             'recommend_sort'   => 'required|integer',
         ];
         $this->validate($request,$validateRules);
+        $img_url = formatCdnUrl($request->input('img_url'));
+        if (!$img_url) {
+            return $this->error(route('admin.operate.recommendRead.edit',['id'=>$id]),'url地址必须为cdn地址');
+        }
 
         $recommendation->sort = $request->input('recommend_sort');
         $recommendation->audit_status = $request->input('recommend_status');
         $object_data = $recommendation->data;
-        $object_data['img'] = $request->input('img_url');
+        $object_data['img'] = $img_url;
         $object_data['title'] = $request->input('title');
         $recommendation->data = $object_data;
         $recommendation->save();

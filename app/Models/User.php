@@ -113,6 +113,12 @@ use Illuminate\Support\Str;
  * @property int|null $rc_uid
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRcCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereRcUid($value)
+ * @property int $submission_karma
+ * @property int $comment_karma
+ * @property int $is_expert
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCommentKarma($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereIsExpert($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSubmissionKarma($value)
  */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,

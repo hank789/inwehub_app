@@ -67,7 +67,7 @@ class CommentController extends Controller {
 
         $submission = Submission::where('slug',$request->submission_slug)->first();
 
-        $comments = $submission->comments()->with('owner','children')
+        $comments = $submission->comments()
             ->where('parent_id', 0)
             ->orderBy('created_at', 'desc')
             ->simplePaginate(20);

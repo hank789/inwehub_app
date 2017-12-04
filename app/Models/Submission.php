@@ -7,10 +7,12 @@
 
 use App\Models\Feed\Feed;
 use App\Models\Relations\MorphManyCommentsTrait;
+use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * App\Models\Submission
  *
  * @package App\Models
  * @mixin \Eloquent
@@ -68,10 +70,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static bool|null restore()
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Readhub\Submission withTrashed()
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Readhub\Submission withoutTrashed()
+ * @property int $collections
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereCollections($value)
  */
 class Submission extends Model {
 
-    use SoftDeletes,MorphManyCommentsTrait;
+    use SoftDeletes,MorphManyCommentsTrait,MorphManyTagsTrait;
 
     protected $table = 'submissions';
 

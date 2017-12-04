@@ -147,7 +147,7 @@ class AnswerController extends Controller
             'is_followed' => $question->hide ? 0 : ($attention_question_user?1:0),
             'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
-            'tags' => $question->tags()->pluck('name'),
+            'tags' => $question->tags()->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,
@@ -664,24 +664,12 @@ class AnswerController extends Controller
             }
         }
 
-        $comments = $source->comments()->orderBy('created_at','desc')->simplePaginate(Config::get('api_data_page_size'));
-        $return = $comments->toArray();
-        $return['data'] = [];
+        $comments = $source->comments()
+            ->where('parent_id', 0)
+            ->orderBy('created_at','desc')
+            ->simplePaginate(Config::get('api_data_page_size'));
 
-        foreach ($comments as $comment) {
-            $return['data'][] = [
-                'id' => $comment->id,
-                'user_id' => $comment->user_id,
-                'uuid'    => $comment->user->uuid,
-                'user_name' => $comment->user->name,
-                'user_avatar_url' => $comment->user->avatar,
-                'is_expert' => $comment->user->userData->authentication_status == 1 ? 1 : 0,
-                'content'   => $comment->content,
-                'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
-            ];
-        }
-
-        return self::createJsonData(true,  $return);
+        return self::createJsonData(true,  $comments->toArray());
     }
 
     //问答留言
@@ -702,6 +690,7 @@ class AnswerController extends Controller
         $data = [
             'user_id'     => $request->user()->id,
             'content'     => $data['content'],
+            'parent_id'   => $request->input('parent_id',0),
             'source_id'   => $data['answer_id'],
             'source_type' => get_class($source),
             'to_user_id'  => 0,
