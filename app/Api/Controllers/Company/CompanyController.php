@@ -123,6 +123,7 @@ class CompanyController extends Controller {
         $name = $request->input('name');
         $longitude = $request->input('longitude');
         $latitude = $request->input('latitude');
+        \Log::info('test',$request->all());
         if ($longitude) {
             $geohash = new GeoHash();
 
@@ -148,7 +149,7 @@ class CompanyController extends Controller {
             $query = $query->where('name','like','%'.$name.'%');
         }
         if ($longitude) {
-            $query = $query->whereRaw('LEFT(`geohash`,5) IN ('.$values.')');
+            $query = $query->whereRaw('LEFT(`geohash`,3) IN ('.$values.')');
         }
         $companies = $query->orderBy('geohash','asc')->simplePaginate(30);
         $return = $companies->toArray();
