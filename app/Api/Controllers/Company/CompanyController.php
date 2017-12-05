@@ -148,8 +148,7 @@ class CompanyController extends Controller {
         $query = CompanyData::where('audit_status',1);
         if ($name) {
             $query = $query->where('name','like','%'.$name.'%');
-        }
-        if ($longitude) {
+        }elseif ($longitude) {
             $query = $query->whereRaw('LEFT(`geohash`,3) IN ('.$values.')');
         }
         $companies = $query->orderBy('geohash','asc')->get();
