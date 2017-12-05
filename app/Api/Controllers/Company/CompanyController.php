@@ -148,17 +148,22 @@ class CompanyController extends Controller {
         $query = CompanyData::where('audit_status',1);
         if ($name) {
             $query = $query->where('name','like','%'.$name.'%');
-        }
-        if ($longitude) {
+        }elseif ($longitude) {
             $query = $query->whereRaw('LEFT(`geohash`,3) IN ('.$values.')');
         }
         $companies = $query->orderBy('geohash','asc')->get();
-        $return = $companies->toArray();
-        $return['data'] = [];
+        $per_page = 30;
+        $return = [
+            'current_page' => $page,
+            'per_page'     => $per_page,
+            'from'         => ($page-1) * $per_page + 1,
+            'to'           => $page * $per_page,
+            'data'         => []
+        ];
         $data = [];
         foreach ($companies as $company) {
             $tags = $company->tags()->pluck('name')->toArray();
-            if (empty($longitude)) {
+            if (empty($longitude) || !is_numeric($company->longitude) || !is_numeric($company->latitude)) {
                 $distance = '未知';
             } else {
                 $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
@@ -176,10 +181,11 @@ class CompanyController extends Controller {
         }
 
         usort($data,function ($a,$b) {
+            if ($a['distance'] == '未知') return -1;
             if ($a['distance'] == $b['distance']) return 0;
             return ($a['distance'] < $b['distance'])? -1 : 1;
         });
-        $pageData = array_chunk($data,30);
+        $pageData = array_chunk($data,$per_page);
         $return['data'] = $pageData[$page-1]??[];
         return self::createJsonData(true,$return);
     }
