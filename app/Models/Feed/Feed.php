@@ -3,6 +3,7 @@
 namespace App\Models\Feed;
 
 use App\Models\Answer;
+use App\Models\Attention;
 use App\Models\Collection;
 use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
@@ -101,26 +102,65 @@ class Feed extends Model
             case self::FEED_TYPE_ANSWER_PAY_QUESTION:
                 //回答专业问题
                 $url = '/askCommunity/major/'.$this->data['question_id'];
+                $answer = Answer::find($this->data['answer_id']);
+                $supporters = [];
+                $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
+                if ($support_uids) {
+                    $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+                }
+                $is_pay_for_view = false;
+                $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
+                if ($payOrder) {
+                    $is_pay_for_view = true;
+                }
                 $data = [
-                    'title' => $this->data['question_title']
+                    'title' => $this->data['question_title'],
+                    'comment_number' => $answer->comments,
+                    'average_rate'   => $answer->getFeedbackRate(),
+                    'support_number' => $answer->supports,
+                    'supporter_list' => $supporters,
+                    'is_pay_for_view' => $is_pay_for_view
                 ];
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
                 //回答互动问题
                 $url = '/askCommunity/interaction/'.$this->source_id;
+                $answer = Answer::find($this->source_id);
+                $question = Question::find($answer->question_id);
+                $is_followed_question = 0;
+                $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+                if ($attention_question) {
+                    $is_followed_question = 1;
+                }
                 $data = [
                     'title'     => $this->data['question_title'],
-                    'content'   => $this->data['answer_content']
+                    'content'   => $this->data['answer_content'],
+                    'comment_num' => $answer->comments,
+                    'support_number' => $answer->supports,
+                    'follow_question_num'  => $question->followers,
+                    'is_followed_question' => $is_followed_question
                 ];
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
                 //发布互动问题
                 $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
                 $question = Question::find($this->data['question_id']);
+                $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->distinct()->take(5)->pluck('user_id')->toArray();
+                $answer_users = [];
+                if ($answer_uids) {
+                    $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
+                }
+                $is_followed_question = 0;
+                $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+                if ($attention_question) {
+                    $is_followed_question = 1;
+                }
                 $data = [
                     'title' => $this->data['question_title'],
                     'answer_num' => $question->answers,
                     'follow_num' => $question->followers,
+                    'answer_user_list' => $answer_users,
+                    'is_followed_question' => $is_followed_question
                 ];
                 break;
             case self::FEED_TYPE_CREATE_PAY_QUESTION:
@@ -168,10 +208,17 @@ class Feed extends Model
                 //关注了互动问答
                 $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
                 $question = Question::find($this->data['question_id']);
+                $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->distinct()->take(5)->pluck('user_id')->toArray();
+                $answer_users = [];
+                if ($answer_uids) {
+                    $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
+                }
                 $data = [
                     'title' => $this->data['question_title'],
                     'answer_num' => $question->answers,
                     'follow_num' => $question->followers,
+                    'answer_user_list' => $answer_users,
+                    'is_followed_question' => 1
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_USER:
@@ -212,11 +259,38 @@ class Feed extends Model
                 //赞了专业问答
                 $url = $this->data['feed_url'];
                 $data = $this->data;
+                $answer = Answer::find($this->source_id);
+                $supporters = [];
+                $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
+                if ($support_uids) {
+                    $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+                }
+                $is_pay_for_view = false;
+                $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
+                if ($payOrder) {
+                    $is_pay_for_view = true;
+                }
+                $data['comment_number'] = $answer->comments;
+                $data['average_rate']   = $answer->getFeedbackRate();
+                $data['support_number'] = $answer->supports;
+                $data['supporter_list'] = $supporters;
+                $data['is_pay_for_view'] = $is_pay_for_view;
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
                 //赞了互动问答
                 $url = $this->data['feed_url'];
                 $data = $this->data;
+                $answer = Answer::find($this->source_id);
+                $question = Question::find($answer->question_id);
+                $is_followed_question = 0;
+                $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+                if ($attention_question) {
+                    $is_followed_question = 1;
+                }
+                $data['comment_num'] = $answer->comments;
+                $data['support_number'] = $answer->supports;
+                $data['follow_question_num'] = $question->followers;
+                $data['is_followed_question'] = $is_followed_question;
                 break;
             case self::FEED_TYPE_UPVOTE_READHUB_ARTICLE:
                 //赞了文章

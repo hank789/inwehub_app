@@ -92,7 +92,7 @@ class AnswerController extends Controller
             $is_answer_author = true;
         }
         //是否已经付过围观费
-        $payOrder = $answer->orders()->where('return_param','view_answer')->first();
+        $payOrder = $answer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
         if ($payOrder) {
             $is_pay_for_view = true;
         }
