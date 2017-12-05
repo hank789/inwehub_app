@@ -121,7 +121,8 @@ class Feed extends Model
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
                     'supporter_list' => $supporters,
-                    'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view)
+                    'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view),
+                    'answer_id' => $answer->id
                 ];
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
@@ -140,7 +141,8 @@ class Feed extends Model
                     'comment_num' => $answer->comments,
                     'support_number' => $answer->supports,
                     'follow_question_num'  => $question->followers,
-                    'is_followed_question' => $is_followed_question
+                    'is_followed_question' => $is_followed_question,
+                    'answer_id' => $answer->id
                 ];
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
