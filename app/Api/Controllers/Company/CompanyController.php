@@ -181,6 +181,7 @@ class CompanyController extends Controller {
         }
 
         usort($data,function ($a,$b) {
+            if ($a['distance'] == '未知') return -1;
             if ($a['distance'] == $b['distance']) return 0;
             return ($a['distance'] < $b['distance'])? -1 : 1;
         });
