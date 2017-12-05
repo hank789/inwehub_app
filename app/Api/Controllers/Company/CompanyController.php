@@ -163,7 +163,7 @@ class CompanyController extends Controller {
         $data = [];
         foreach ($companies as $company) {
             $tags = $company->tags()->pluck('name')->toArray();
-            if (empty($longitude)) {
+            if (empty($longitude) || !is_numeric($company->longitude) || !is_numeric($company->latitude)) {
                 $distance = '未知';
             } else {
                 $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
