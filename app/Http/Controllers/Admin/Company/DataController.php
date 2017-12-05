@@ -14,11 +14,11 @@ class DataController extends AdminController
 
     protected $validateRules = [
         'name' => 'required|max:255',
-        'logo' => 'required|max:255',
+        /*'logo' => 'required|max:255',
         'address_province' => 'required|max:255',
         'address_detail' => 'required',
         'longitude' => 'required',
-        'latitude' => 'required',
+        'latitude' => 'required',*/
     ];
 
     /**

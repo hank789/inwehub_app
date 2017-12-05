@@ -55,6 +55,7 @@
                                         <th>LOGO</th>
                                         <th>地址</th>
                                         <th>geohash</th>
+                                        <th>人员数</th>
                                         <th>标签</th>
                                         <th>审核状态</th>
                                         <th>更新时间</th>
@@ -70,6 +71,7 @@
                                             </td>
                                             <td>{{ $item->address_province }}</td>
                                             <td>{{ $item->geohash }}</td>
+                                            <td>{{ $item->getPeopleNumber() }}</td>
                                             <td>{{ implode(',',$item->tags()->pluck('name')->toArray()) }}</td>
                                             <td><span class="label @if($item->audit_status===0) label-warning @elseif($item->audit_status===1) label-success  @else label-danger @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
                                             <td>{{ $item->updated_at }}</td>

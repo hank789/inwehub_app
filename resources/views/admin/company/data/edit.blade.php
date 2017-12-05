@@ -38,11 +38,11 @@
                             </div>
                             <div class="form-group">
                                 <label>所在省市</label>
-                                <input type="text" name="address_province" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('address_province',$company->address_province) }}">
+                                <input type="text" name="address_province" class="form-control "  placeholder="上海黄浦" value="{{ old('address_province',$company->address_province) }}">
                             </div>
                             <div class="form-group">
                                 <label>详细地址</label>
-                                <input type="text" name="address_detail" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('sort',$company->address_detail) }}">
+                                <input type="text" name="address_detail" class="form-control "  placeholder="上海浦东新区张江高科晨晖路88号" value="{{ old('sort',$company->address_detail) }}">
                             </div>
                             <div class="form-group">
                                 <label>经度</label>
