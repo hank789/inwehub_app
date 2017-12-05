@@ -109,6 +109,8 @@ class Feed extends Model
                     $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
                 }
                 $is_pay_for_view = false;
+                $is_self = Auth::user()->id == $answer->question->user_id;
+                $is_answer_author = Auth::user()->id == $answer->user_id;
                 $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
                 if ($payOrder) {
                     $is_pay_for_view = true;
@@ -119,7 +121,7 @@ class Feed extends Model
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
                     'supporter_list' => $supporters,
-                    'is_pay_for_view' => $is_pay_for_view
+                    'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view)
                 ];
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
@@ -266,6 +268,8 @@ class Feed extends Model
                     $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
                 }
                 $is_pay_for_view = false;
+                $is_self = Auth::user()->id == $answer->question->user_id;
+                $is_answer_author = Auth::user()->id == $answer->user_id;
                 $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
                 if ($payOrder) {
                     $is_pay_for_view = true;
@@ -274,7 +278,7 @@ class Feed extends Model
                 $data['average_rate']   = $answer->getFeedbackRate();
                 $data['support_number'] = $answer->supports;
                 $data['supporter_list'] = $supporters;
-                $data['is_pay_for_view'] = $is_pay_for_view;
+                $data['is_pay_for_view'] = ($is_self || $is_answer_author || $is_pay_for_view);
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
                 //赞了互动问答
