@@ -152,8 +152,14 @@ class CompanyController extends Controller {
             $query = $query->whereRaw('LEFT(`geohash`,3) IN ('.$values.')');
         }
         $companies = $query->orderBy('geohash','asc')->get();
-        $return = $companies->toArray();
-        $return['data'] = [];
+        $per_page = 30;
+        $return = [
+            'current_page' => $page,
+            'per_page'     => $per_page,
+            'from'         => ($page-1) * $per_page + 1,
+            'to'           => $page * $per_page,
+            'data'         => []
+        ];
         $data = [];
         foreach ($companies as $company) {
             $tags = $company->tags()->pluck('name')->toArray();
@@ -178,7 +184,7 @@ class CompanyController extends Controller {
             if ($a['distance'] == $b['distance']) return 0;
             return ($a['distance'] < $b['distance'])? -1 : 1;
         });
-        $pageData = array_chunk($data,30);
+        $pageData = array_chunk($data,$per_page);
         $return['data'] = $pageData[$page-1]??[];
         return self::createJsonData(true,$return);
     }
