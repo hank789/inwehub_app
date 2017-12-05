@@ -89,6 +89,10 @@ class CompanyData extends Model
         });
     }
 
+    public function getPeopleNumber(){
+        return CompanyDataUser::where('company_data_id',$this->id)->count();
+    }
+
     public static function initCompanyData($companyName,$user_id,$userCompanyStatus,$isShow = 1){
         $exist = self::where('name',$companyName)->first();
         if (!$exist) {
