@@ -116,15 +116,14 @@ class NotifyInwehub implements ShouldQueue
                 break;
             case 'NewSubmissionUpVote':
                 //文章点赞
-                //产生一条feed流
                 $submission = Submission::find($this->message['submission_id']);
-                if ($submission->type != 'link') return;
                 $submission_user = User::find($submission->user_id);
                 $feed_event = 'NewSubmissionUpVote';
                 $feed_target = $submission->id.'_'.$user->id;
                 $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
                 if (!$is_feeded) {
-                    feed()
+                    //feed流聚合展示
+                    /*feed()
                         ->causedBy($user)
                         ->performedOn($submission)
                         ->withProperties([
@@ -136,7 +135,7 @@ class NotifyInwehub implements ShouldQueue
                             'domain'=>$submission->data['domain']??'',
                             'type'  => $submission->type,
                             'img'=>$submission->data['img']??''])
-                        ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);
+                        ->log($user->name.'赞了文章', Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE);*/
                     RateLimiter::instance()->increase($feed_event,$feed_target,3600);
                     $fields = [];
                     $fields[] = [

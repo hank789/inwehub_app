@@ -105,7 +105,8 @@ class CommentObserver implements ShouldQueue {
                 $submission = Submission::find($comment->source_id);
                 $submission->increment('comments_number');
                 $submission_user = User::find($submission->user_id);
-                if ($submission->type == 'link') {
+                if ($submission->type == 'link' && false) {
+                    //评论的feed不产生，全部在发布文章上聚合显示
                     feed()
                         ->causedBy($comment->user)
                         ->performedOn($comment)
