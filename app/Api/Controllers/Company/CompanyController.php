@@ -123,6 +123,7 @@ class CompanyController extends Controller {
         $name = $request->input('name');
         $longitude = $request->input('longitude');
         $latitude = $request->input('latitude');
+        $page = $request->input('page',1);
         \Log::info('test',$request->all());
         if ($longitude) {
             $geohash = new GeoHash();
@@ -151,7 +152,7 @@ class CompanyController extends Controller {
         if ($longitude) {
             $query = $query->whereRaw('LEFT(`geohash`,3) IN ('.$values.')');
         }
-        $companies = $query->orderBy('geohash','asc')->simplePaginate(30);
+        $companies = $query->orderBy('geohash','asc')->get();
         $return = $companies->toArray();
         $return['data'] = [];
         $data = [];
@@ -178,7 +179,8 @@ class CompanyController extends Controller {
             if ($a['distance'] == $b['distance']) return 0;
             return ($a['distance'] < $b['distance'])? -1 : 1;
         });
-        $return['data'] = $data;
+        $pageData = array_chunk($data,30);
+        $return['data'] = $pageData[$page-1]??[];
         return self::createJsonData(true,$return);
     }
 
