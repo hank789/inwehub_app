@@ -180,7 +180,7 @@ class CompanyController extends Controller {
             return ($a['distance'] < $b['distance'])? -1 : 1;
         });
         $pageData = array_chunk($data,30);
-        $return['data'] = $pageData[$page-1];
+        $return['data'] = $pageData[$page-1]??[];
         return self::createJsonData(true,$return);
     }
 
