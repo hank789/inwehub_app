@@ -278,6 +278,7 @@ class Feed extends Model
                 $data['average_rate']   = $answer->getFeedbackRate();
                 $data['support_number'] = $answer->supports;
                 $data['supporter_list'] = $supporters;
+                $data['answer_id'] = $answer->id;
                 $data['is_pay_for_view'] = ($is_self || $is_answer_author || $is_pay_for_view);
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
@@ -294,6 +295,7 @@ class Feed extends Model
                 $data['comment_num'] = $answer->comments;
                 $data['support_number'] = $answer->supports;
                 $data['follow_question_num'] = $question->followers;
+                $data['answer_id'] = $answer->id;
                 $data['is_followed_question'] = $is_followed_question;
                 break;
             case self::FEED_TYPE_UPVOTE_READHUB_ARTICLE:
