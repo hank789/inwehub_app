@@ -22,14 +22,14 @@ class UploadFile implements ShouldQueue
     public $tries = 1;
 
     public $fileName;
-    public $contents;
+    public $base64Contents;
 
 
 
-    public function __construct($fileName,$contents)
+    public function __construct($fileName,$base64Contents)
     {
         $this->fileName = $fileName;
-        $this->contents = $contents;
+        $this->base64Contents = $base64Contents;
     }
 
     /**
@@ -39,6 +39,6 @@ class UploadFile implements ShouldQueue
      */
     public function handle()
     {
-        Storage::disk('oss')->put($this->fileName,$this->contents);
+        Storage::disk('oss')->put($this->fileName,base64_decode($this->base64Contents));
     }
 }
