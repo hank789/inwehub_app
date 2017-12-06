@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Jobs\UploadFile;
 use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
@@ -75,7 +76,8 @@ class SubmissionController extends Controller {
                 if ($img) {
                     //保存图片
                     $img_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-                    Storage::put($img_name, file_get_contents($img));
+                    dispatch((new UploadFile($img_name,base64_encode(file_get_contents($img)))));
+                    //Storage::put($img_name, file_get_contents($img));
                     $img_url = Storage::url($img_name);
                 }
 
