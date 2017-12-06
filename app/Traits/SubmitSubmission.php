@@ -1,7 +1,7 @@
 <?php namespace App\Traits;
 use App\Exceptions\ApiException;
+use App\Jobs\UploadFile;
 use App\Models\Submission;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -88,7 +88,8 @@ trait SubmitSubmission
                     //非本地地址，存储到本地
                     if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
                         $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-                        Storage::disk('oss')->put($file_name,file_get_contents($base64));
+                        dispatch((new UploadFile($file_name,file_get_contents($base64))));
+                        //Storage::disk('oss')->put($file_name,file_get_contents($base64));
                         $img_url = Storage::disk('oss')->url($file_name);
                         $list[] = $img_url;
                     } elseif(isset($parse_url['host'])) {
@@ -98,7 +99,8 @@ trait SubmitSubmission
                 }
                 $url_type = explode('/',$url[0]);
                 $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
-                Storage::disk('oss')->put($file_name,base64_decode(substr($url[1],6)));
+                dispatch((new UploadFile($file_name,base64_decode(substr($url[1],6)))));
+                //Storage::disk('oss')->put($file_name,base64_decode(substr($url[1],6)));
                 $img_url = Storage::disk('oss')->url($file_name);
                 $list[] = $img_url;
             }
