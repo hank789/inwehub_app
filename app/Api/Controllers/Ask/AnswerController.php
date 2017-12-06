@@ -703,12 +703,7 @@ class AnswerController extends Controller
         /*问题、回答、文章评论数+1*/
         $source->increment('comments');
 
-        return self::createJsonData(true,[
-            'tips'=>'评论成功',
-            'comment_id' => $comment->id,
-            'created_at' => date('Y/m/d H:i',strtotime($comment->created_at)),
-            'user_name'  => $request->user()->name
-        ]);
+        return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }
 
 }
