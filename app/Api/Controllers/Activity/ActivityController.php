@@ -266,7 +266,12 @@ class ActivityController extends Controller {
         /*问题、回答、文章评论数+1*/
         $comment->source()->increment('comments');
 
-        return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
+        return self::createJsonData(true,[
+            'tips'=>'评论成功',
+            'content' => $data['content'],
+            'created_at' => date('Y/m/d H:i',strtotime($comment->created_at)),
+            'user_name'  => $request->user()->name
+        ],ApiException::SUCCESS,'评论成功');
     }
 
 }
