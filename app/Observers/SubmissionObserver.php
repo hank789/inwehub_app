@@ -77,7 +77,7 @@ class SubmissionObserver implements ShouldQueue {
             $attention_user = User::find($attention_uid);
             $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
         }
-        //提到了人
+        //提到了人，还未去重
         $this->handleSubmissionMentions($submission);
 
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
