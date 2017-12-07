@@ -5,7 +5,6 @@ namespace App\Notifications\Readhub;
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Comment;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -99,8 +98,7 @@ class CommentReplied extends Notification implements ShouldBroadcast,ShouldQueue
         if (config('app.env') != 'production') {
             $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
         }
-        $user = User::find($notifiable->id);
-        $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$this->message['url'];
+        $target_url = config('app.mobile_url').'#'.$this->message['url'];
         return [
             'first'    => $first,
             'keyword1' => $this->message['name'],

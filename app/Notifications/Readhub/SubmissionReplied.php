@@ -101,7 +101,6 @@ class SubmissionReplied extends Notification implements ShouldBroadcast,ShouldQu
         if (config('app.env') != 'production') {
             $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
         }
-        $user = User::find($notifiable->id);
         $target_url = config('app.mobile_url').'#'.$this->message['url'];
         return [
             'first'    => $first,
