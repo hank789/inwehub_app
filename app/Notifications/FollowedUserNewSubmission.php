@@ -39,7 +39,7 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database', 'broadcast', PushChannel::class];
     }
 
     /**
