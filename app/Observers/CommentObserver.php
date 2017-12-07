@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Notifications\NewComment;
 use App\Notifications\Readhub\CommentReplied;
 use App\Notifications\Readhub\SubmissionReplied;
+use App\Notifications\Readhub\UsernameMentioned;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\Frontend\System\Credit as CreditEvent;
 use Illuminate\Support\Facades\Redis;
@@ -214,7 +215,7 @@ class CommentObserver implements ShouldQueue {
             }
 
             if ($user = User::where('name',$username)->first()) {
-                //$user->notify(new UsernameMentioned($submission,$comment));
+                $user->notify(new UsernameMentioned($submission,$comment));
             }
         }
     }
