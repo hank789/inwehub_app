@@ -15,7 +15,6 @@ use App\Models\User;
 use App\Notifications\NewComment;
 use App\Notifications\Readhub\CommentReplied;
 use App\Notifications\Readhub\SubmissionReplied;
-use App\Notifications\Readhub\UsernameMentioned;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\Frontend\System\Credit as CreditEvent;
 use Illuminate\Support\Facades\Redis;
@@ -180,8 +179,8 @@ class CommentObserver implements ShouldQueue {
                             'extra_body' => '原文：'.$submission->title
                         ]));
                 }
-
-                $this->handleMentions($comment, $submission);
+                //@了某些人
+                //$this->handleCommentMentions($comment);
                 break;
             default:
                 return;
@@ -200,24 +199,6 @@ class CommentObserver implements ShouldQueue {
                     'fields' => $fields
                 ]
             )->send('用户'.$comment->user->id.'['.$comment->user->name.']评论了'.$title);
-    }
-
-    protected function handleMentions($comment, $submission)
-    {
-        if (!preg_match_all('/@([\S]+)/', $comment->body, $mentionedUsernames)) {
-            return;
-        }
-
-        foreach ($mentionedUsernames[1] as $key => $username) {
-            // set a limit so they can't just mention the whole website! lol
-            if ($key === 5) {
-                return;
-            }
-
-            if ($user = User::where('name',$username)->first()) {
-                $user->notify(new UsernameMentioned($submission,$comment));
-            }
-        }
     }
 
 

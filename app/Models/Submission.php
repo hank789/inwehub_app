@@ -63,7 +63,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Readhub\Bookmark[] $bookmarks
  * @property-read \App\Models\Readhub\Category $category
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Readhub\Comment[] $comments
- * @property-read \App\Models\Readhub\ReadHubUser $owner
+ * @property-read \App\Models\User $owner
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Readhub\Submission bookmarkedBy($user_id)
  * @method static bool|null forceDelete()
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Readhub\Submission onlyTrashed()

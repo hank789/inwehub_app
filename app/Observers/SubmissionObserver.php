@@ -11,11 +11,13 @@ use App\Models\Feed\Feed;
 use App\Models\Submission;
 use App\Models\User;
 use App\Notifications\FollowedUserNewSubmission;
+use App\Traits\UsernameMentions;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\Frontend\System\Credit as CreditEvent;
 
 class SubmissionObserver implements ShouldQueue {
 
+    use UsernameMentions;
     /**
      * 任务最大尝试次数
      *
@@ -75,6 +77,8 @@ class SubmissionObserver implements ShouldQueue {
             $attention_user = User::find($attention_uid);
             $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
         }
+        //提到了人
+        $this->handleSubmissionMentions($submission);
 
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         return \Slack::to(config('slack.ask_activity_channel'))

@@ -5,18 +5,18 @@ namespace App\Notifications\Readhub;
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Comment;
+use App\Models\Submission;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UsernameMentioned extends Notification implements ShouldBroadcast,ShouldQueue
+class UsernameSubmissionMentioned extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable;
 
-    protected $message;
+    protected $submission;
     protected $user_id;
 
     /**
@@ -24,10 +24,10 @@ class UsernameMentioned extends Notification implements ShouldBroadcast,ShouldQu
      *
      * @return void
      */
-    public function __construct($user_id, array $message)
+    public function __construct($user_id, Submission $submission)
     {
         $this->user_id = $user_id;
-        $this->message = $message;
+        $this->submission = $submission;
     }
 
     /**
@@ -73,35 +73,42 @@ class UsernameMentioned extends Notification implements ShouldBroadcast,ShouldQu
      */
     public function toArray($notifiable)
     {
-        return $this->message;
+        return [
+            'url'    => '/c/'.$this->submission->category_id.'/'.$this->submission->slug,
+            'name'   => $this->submission->owner->name,
+            'avatar' => $this->submission->owner->avatar,
+            'title'  => $this->submission->owner->name.'提到了你',
+            'body'   => $this->submission->title,
+            'submission_id' => $this->submission->id,
+            'extra_body' => ''
+        ];
     }
 
     public function toPush($notifiable)
     {
-        $title = $this->message['title'];
-        $body = $this->message['body'];
         return [
-            'title' => $title,
-            'body'  => $body,
-            'payload' => ['object_type'=>'readhub_username_mentioned','object_id'=>$this->message['url']],
+            'title' => $this->submission->owner->username.'提到了你',
+            'body'  => $this->submission->title,
+            'payload' => [
+                'object_type'=>'readhub_username_mentioned',
+                'object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug
+            ],
         ];
     }
 
     public function toWechatNotice($notifiable){
-        $first = '您好，'.$this->message['name'].'在回复中提到了你';
-        $object = Comment::find($this->message['comment_id']);
-        $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
-        $keyword3 = $object->body;
+        $first = '您好，'.$this->submission->owner->name.'在回复中提到了你';
+        $keyword2 = date('Y-m-d H:i:s',strtotime($this->submission->created_at));
+        $keyword3 = $this->submission->title;
         $remark = '请点击查看详情！';
         $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
         if (config('app.env') != 'production') {
             $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
         }
-        $user = User::find($notifiable->id);
-        $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$this->message['url'];
+        $target_url = config('app.mobile_url').'#/c/'.$this->submission->category_id.'/'.$this->submission->slug;
         return [
             'first'    => $first,
-            'keyword1' => $this->message['name'],
+            'keyword1' => $this->submission->owner->name,
             'keyword2' => $keyword2,
             'keyword3' => $keyword3,
             'remark'   => $remark,
