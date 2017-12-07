@@ -58,8 +58,8 @@ class AuthController extends Controller
                 }
                 break;
             case '5':
-                // 附近企业，需要L4
-                if ($user_level >= 4) {
+                // 附近企业，需要L3
+                if ($user_level >= 3) {
                     $is_valid = true;
                 }
                 break;

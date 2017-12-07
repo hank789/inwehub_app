@@ -27,6 +27,8 @@
                     <form role="form" name="userForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.user.update',['id'=>$user->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" id="industry_tags" name="industry_tags" value="" />
+                        <input type="hidden" id="skill_tags" name="skill_tags" value="" />
+
 
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
@@ -143,6 +145,22 @@
                                 @if ($errors->has('title')) <p class="help-block">{{ $errors->first('title') }}</p> @endif
                             </div>
 
+                            <div class="form-group @if ($errors->first('skill_tags')) has-error @endif">
+                                <label for="select_skill_tags" class="control-label">擅长标签</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select id="select_skill_tags" name="select_skill_tags" class="form-control" multiple="multiple" >
+                                            @foreach( $user->skillTags() as $tag)
+                                                <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if ($errors->first('skill_tags'))
+                                            <span class="help-block">{{ $errors->first('skill_tags') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group @if ($errors->first('industry_tags')) has-error @endif">
                                 <label for="select_industry_tags" class="control-label">所在行业</label>
                                 <div class="row">
@@ -248,6 +266,35 @@
 
             $("#select_industry_tags").change(function(){
                 $("#industry_tags").val($("#select_industry_tags").val());
+            });
+
+
+            $("#select_skill_tags").select2({
+                theme:'bootstrap',
+                placeholder: "擅长标签",
+                ajax: {
+                    url: '/manager/ajax/loadTags',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            word: params.term,
+                            type: 5
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength:2,
+                tags:false
+            });
+
+            $("#select_skill_tags").change(function(){
+                $("#skill_tags").val($("#select_skill_tags").val());
             });
 
             set_active_menu('manage_user',"{{ route('admin.user.index') }}");
