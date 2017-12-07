@@ -56,7 +56,7 @@ class UserController extends Controller
             if ($this->auth->attempt($credentials, $request->has('remember')))
             {
                 //登陆事件通知
-                event(new UserLoggedIn($request->user()));
+                event(new UserLoggedIn($request->user(),'网页'));
                 $message = '登陆成功! ';
                 return $this->success(route('website.index'),$message);
 

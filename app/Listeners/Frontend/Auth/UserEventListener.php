@@ -27,7 +27,7 @@ class UserEventListener implements ShouldQueue
      */
     public function onLoggedIn($event)
     {
-        \Slack::send('用户登录: '.$event->user->name);
+        \Slack::send('用户登录: '.formatSlackUser($event->user).';设备:'.$event->loginFrom);
     }
 
     /**
@@ -35,7 +35,7 @@ class UserEventListener implements ShouldQueue
      */
     public function onLoggedOut($event)
     {
-        \Slack::send('用户登出: '.$event->user->name);
+        \Slack::send('用户登出: '.formatSlackUser($event->user));
 
     }
 
@@ -71,7 +71,7 @@ class UserEventListener implements ShouldQueue
             $rc_user = User::find($event->user->rc_uid);
             $title .= ';邀请者：'.$rc_user->name;
         }
-        \Slack::send('新用户注册: '.$event->user->name.$title);
+        \Slack::send('新用户注册: '.formatSlackUser($event->user).';设备：'.$event->from.$title);
     }
 
     /**

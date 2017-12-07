@@ -83,7 +83,7 @@ class WechatController extends Controller
             try {
                 if ($user = $JWTAuth->authenticate($token)){
                     //登陆事件通知
-                    event(new UserLoggedIn($user));
+                    event(new UserLoggedIn($user,'微信'));
                 } else {
                     return $wechat->oauth->scopes(['snsapi_userinfo'])
                         ->setRequest($request)
@@ -165,7 +165,7 @@ class WechatController extends Controller
                 $token = $JWTAuth->fromUser($user);
                 $userInfo['app_token'] = $token;
                 //登陆事件通知
-                event(new UserLoggedIn($user));
+                event(new UserLoggedIn($user,'微信'));
                 Session::put("wechat_userinfo",$userInfo);
             }
         } elseif($userInfo['id']) {

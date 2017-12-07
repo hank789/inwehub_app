@@ -1183,3 +1183,9 @@ if (!function_exists('formatCdnUrl')) {
         return $cdn_url;
     }
 }
+
+if (!function_exists('formatSlackUser')) {
+    function formatSlackUser($user){
+        return $user->id.'['.$user->name.']';
+    }
+}
