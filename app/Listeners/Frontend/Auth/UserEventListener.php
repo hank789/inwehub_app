@@ -35,7 +35,7 @@ class UserEventListener implements ShouldQueue
      */
     public function onLoggedOut($event)
     {
-        \Slack::send('用户登出: '.formatSlackUser($event->user));
+        \Slack::send('用户登出: '.formatSlackUser($event->user).';设备:'.$event->from);
 
     }
 
