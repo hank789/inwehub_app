@@ -43,7 +43,7 @@ class Push
         $payload['title'] = $title;
         $this->content['payload'] = $payload;
         $this->title = $title;
-        $this->body = $body;
+        $this->body = $body?:'点击查看';
         $this->payload = $payload;
         $this->template_id = $template_id;
     }
