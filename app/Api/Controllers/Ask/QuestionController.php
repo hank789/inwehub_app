@@ -30,7 +30,6 @@ class QuestionController extends Controller
         'order_id'    => 'required|integer',
         'description' => 'required|max:500',
         'price'=> 'required|between:1,388',
-        'tags' => 'required'
     ];
 
     /**
