@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
-use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;

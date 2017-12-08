@@ -131,8 +131,11 @@ class SystemEventListener implements ShouldQueue
             ]);
 
             /*修改用户账户信息*/
-            UserData::find($user_id)->increment('coins',$coins);
-            UserData::find($user_id)->increment('credits',$credits);
+            $user_data->coins += $coins;
+            $user_data->credits += $credits;
+            if ($user_data->coins < 0) $user_data->coins = 0;
+            if ($user_data->credits < 0) $user_data->credits = 0;
+            $user_data->save();
             DB::commit();
             $user = User::find($user_id);
             //更新用户等级
