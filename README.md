@@ -31,8 +31,25 @@ user=web
 numprocs=1
 redirect_stderr=true
 stdout_logfile=/tmp/queue_worker.log
-`
 
+[program:echo-server-worker]
+directory=/home/web/www/inwehub
+process_name=%(program_name)s_%(process_num)02d
+command=/home/web/www/inwehub/node_modules/laravel-echo-server/bin/server.js start
+autostart=true
+autorestart=true
+user=web
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/tmp/echo_server_worker.log
+
+`
+## 启动socket.id
+```
+node_modules/laravel-echo-server/bin/server.js init
+node_modules/laravel-echo-server/bin/server.js client:add APP_ID
+node_modules/laravel-echo-server/bin/server.js start
+```
 
 ## 部署
 使用https://laravel.com/docs/5.4/envoy 进行部署
