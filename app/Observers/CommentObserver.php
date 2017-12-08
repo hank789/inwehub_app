@@ -112,18 +112,18 @@ class CommentObserver implements ShouldQueue {
                     $feed_type = Feed::FEED_TYPE_COMMENT_FREE_QUESTION;
                     $feed_url = '/askCommunity/interaction/'.$source->id;
                     $feed_answer_content = $source->getContentText();
+                    feed()
+                        ->causedBy($comment->user)
+                        ->performedOn($comment)
+                        ->withProperties([
+                            'comment_content' => $comment->content,
+                            'answer_user_name' => $source->user->name,
+                            'question_title'   => $question->title,
+                            'answer_content'   => $feed_answer_content,
+                            'feed_url'         => $feed_url
+                        ])
+                        ->log($comment->user->name.'评论了'.$feed_question_title, $feed_type);
                 }
-                feed()
-                    ->causedBy($comment->user)
-                    ->performedOn($comment)
-                    ->withProperties([
-                        'comment_content' => $comment->content,
-                        'answer_user_name' => $source->user->name,
-                        'question_title'   => $question->title,
-                        'answer_content'   => $feed_answer_content,
-                        'feed_url'         => $feed_url
-                    ])
-                    ->log($comment->user->name.'评论了'.$feed_question_title, $feed_type);
                 break;
             case 'App\Models\Submission':
                 //动态
