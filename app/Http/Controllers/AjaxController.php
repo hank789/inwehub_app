@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Logic\TagsLogic;
 use App\Models\Area;
 use App\Models\Category;
 use App\Models\Message;
@@ -78,37 +79,11 @@ class AjaxController extends Controller
         }
         $tag_type = $request->input('type','all');
 
-        $category_ids = '';
-        $category_name = '';
-        switch($tag_type){
-            case 1:
-                //问题分类
-                $category_name = 'question';
-                break;
-            case 2:
-                //拒绝分类
-                $category_name = 'answer_reject';
-                break;
-            case 3:
-                //行业领域
-                $category_name = 'industry';
-                break;
-            case 4:
-                //产品类型
-                $category_name = 'product_type';
-                break;
-        }
 
-        $query = Tag::where('name','like','%'.$word.'%');
+        $data = TagsLogic::loadTags($tag_type,$word,'id');
+        $tags = $data['tags'];
 
-        if($category_name){
-            $category_ids = Category::where('slug','like',$category_name.'%')->pluck('id')->toArray();
-            $query->whereIn('category_id',$category_ids);
-        }
-
-        $tags = $query->select('id',DB::raw('name as text'))->take(20)->get();
-
-        return response()->json($tags->toArray());
+        return response()->json($tags);
     }
 
 

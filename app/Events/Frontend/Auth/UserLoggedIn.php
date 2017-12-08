@@ -16,11 +16,15 @@ class UserLoggedIn
      */
     public $user;
 
+    public $loginFrom;
+
     /**
      * @param $user
+     * @param $loginFrom
      */
-    public function __construct($user)
+    public function __construct($user,$loginFrom='App')
     {
         $this->user = $user;
+        $this->loginFrom = $loginFrom;
     }
 }

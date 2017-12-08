@@ -92,7 +92,7 @@ class AnswerController extends Controller
             $is_answer_author = true;
         }
         //是否已经付过围观费
-        $payOrder = $answer->orders()->where('return_param','view_answer')->first();
+        $payOrder = $answer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
         if ($payOrder) {
             $is_pay_for_view = true;
         }
@@ -703,12 +703,7 @@ class AnswerController extends Controller
         /*问题、回答、文章评论数+1*/
         $source->increment('comments');
 
-        return self::createJsonData(true,[
-            'tips'=>'评论成功',
-            'comment_id' => $comment->id,
-            'created_at' => date('Y/m/d H:i',strtotime($comment->created_at)),
-            'user_name'  => $request->user()->name
-        ]);
+        return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }
 
 }

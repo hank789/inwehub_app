@@ -30,7 +30,6 @@ class QuestionController extends Controller
         'order_id'    => 'required|integer',
         'description' => 'required|max:500',
         'price'=> 'required|between:1,388',
-        'tags' => 'required'
     ];
 
     /**
@@ -660,6 +659,7 @@ class QuestionController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
+        $user = $request->user();
 
         $query = Question::where('questions.is_recommend',1)->where('questions.question_type',1);
         if($top_id){
@@ -672,7 +672,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('api_data_page_size'));
+        $questions = $query->orderBy('questions.views','desc')->paginate(Config::get('api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -680,12 +680,31 @@ class QuestionController extends Controller
             if($question->status >= 6 ){
                 $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
             }
+            $supporters = [];
+            $is_pay_for_view = false;
+            $is_self = $user->id == $question->user_id;
+            $is_answer_author = false;
+
+            if ($bestAnswer) {
+                //是否回答者
+                if ($bestAnswer->user_id == $user->id) {
+                    $is_answer_author = true;
+                }
+                $support_uids = Support::where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->take(20)->pluck('user_id');
+                if ($support_uids) {
+                    $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+                }
+                $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
+                if ($payOrder) {
+                    $is_pay_for_view = true;
+                }
+            }
+
             $list[] = [
                 'id' => $question->id,
                 'question_type' => $question->question_type,
                 'user_id' => $question->user_id,
                 'description'  => $question->title,
-                'tags' => $question->tags()->pluck('name'),
                 'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,
@@ -696,7 +715,12 @@ class QuestionController extends Controller
                 'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
                 'answer_user_is_expert' => $bestAnswer && $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
-                'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
+                'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : '',
+                'comment_number' => $bestAnswer ? $bestAnswer->comments : 0,
+                'average_rate'   => $bestAnswer ? $bestAnswer->getFeedbackRate() : 0,
+                'support_number' => $bestAnswer ? $bestAnswer->supports : 0,
+                'supporter_list' => $supporters,
+                'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view)
             ];
         }
         return self::createJsonData(true,$list);

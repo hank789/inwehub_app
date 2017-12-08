@@ -10,6 +10,7 @@ use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Feed\Feed;
 use App\Models\Notification;
+use App\Models\Question;
 use App\Models\Submission;
 use App\Models\User;
 use App\Notifications\NewComment;
@@ -65,10 +66,40 @@ class CommentObserver implements ShouldQueue {
                     'short' => false
                 ];
 
+                $notifyUids = [];
+                //回复了回复的回复
+                if ($comment->parent_id > 0 && $comment->parent->user_id != $comment->user_id) {
+                    $parent_comment = $comment->parent;
+                    $notifyUids[$parent_comment->user_id] = $parent_comment->user_id;
+                    $notifyUser = User::find($parent_comment->user_id);
+                    $question = Question::find($source->question_id);
+                    switch ($question->question_type){
+                        case 1:
+                            $url = '/askCommunity/major/'.$source->question_id;
+                            break;
+                        case 2:
+                            $url = '/askCommunity/interaction/'.$source->id;
+                            break;
+                    }
+                    $notifyUser->notify(new CommentReplied($parent_comment->user_id,
+                        [
+                            'url'    => $url,
+                            'name'   => $comment->user->name,
+                            'avatar' => $comment->user->avatar,
+                            'title'  => $comment->user->name.'回复了你的评论',
+                            'submission_title' => $question->title,
+                            'comment_id' => $comment->id,
+                            'body'   => $comment->content,
+                            'notification_type' => Notification::NOTIFICATION_TYPE_TASK,
+                            'extra_body' => '原回复：'.$parent_comment->content
+                        ]));
+                }
                 //通知，自己除外
-                if ($source->user_id != $comment->user_id) {
+                if ($source->user_id != $comment->user_id && !isset($notifyUids[$source->user_id])) {
+                    $notifyUids[$source->user_id] = $source->user_id;
                     $source->user->notify(new NewComment($source->user_id, $comment));
                 }
+
                 //产生一条feed
                 $question = $source->question;
                 if ($question->question_type == 1) {
@@ -81,18 +112,18 @@ class CommentObserver implements ShouldQueue {
                     $feed_type = Feed::FEED_TYPE_COMMENT_FREE_QUESTION;
                     $feed_url = '/askCommunity/interaction/'.$source->id;
                     $feed_answer_content = $source->getContentText();
+                    feed()
+                        ->causedBy($comment->user)
+                        ->performedOn($comment)
+                        ->withProperties([
+                            'comment_content' => $comment->content,
+                            'answer_user_name' => $source->user->name,
+                            'question_title'   => $question->title,
+                            'answer_content'   => $feed_answer_content,
+                            'feed_url'         => $feed_url
+                        ])
+                        ->log($comment->user->name.'评论了'.$feed_question_title, $feed_type);
                 }
-                feed()
-                    ->causedBy($comment->user)
-                    ->performedOn($comment)
-                    ->withProperties([
-                        'comment_content' => $comment->content,
-                        'answer_user_name' => $source->user->name,
-                        'question_title'   => $question->title,
-                        'answer_content'   => $feed_answer_content,
-                        'feed_url'         => $feed_url
-                    ])
-                    ->log($comment->user->name.'评论了'.$feed_question_title, $feed_type);
                 break;
             case 'App\Models\Submission':
                 //动态
@@ -105,7 +136,8 @@ class CommentObserver implements ShouldQueue {
                 $submission = Submission::find($comment->source_id);
                 $submission->increment('comments_number');
                 $submission_user = User::find($submission->user_id);
-                if ($submission->type == 'link') {
+                if ($submission->type == 'link' && false) {
+                    //评论的feed不产生，全部在发布文章上聚合显示
                     feed()
                         ->causedBy($comment->user)
                         ->performedOn($comment)
@@ -149,8 +181,10 @@ class CommentObserver implements ShouldQueue {
                     }
                 }
                 $user = $comment->user;
-                if ($comment->parent_id > 0 && $comment->parent_id != $comment->user_id) {
-                    $parent_comment = Comment::find($comment->parent_id);
+                $notifyUids = [];
+                if ($comment->parent_id > 0 && $comment->parent->user_id != $comment->user_id) {
+                    $parent_comment = $comment->parent;
+                    $notifyUids[$parent_comment->user_id] = $parent_comment->user_id;
                     $notifyUser = User::find($parent_comment->user_id);
                     $notifyUser->notify(new CommentReplied($parent_comment->user_id,
                         [
@@ -164,7 +198,9 @@ class CommentObserver implements ShouldQueue {
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
                             'extra_body' => '原回复：'.$parent_comment->body
                         ]));
-                } elseif ($submission->user_id != $comment->user_id) {
+                }
+                if ($submission->user_id != $comment->user_id && !isset($notifyUids[$submission->user_id])) {
+                    $notifyUids[$submission->user_id] = $submission->user_id;
                     $notifyUser = User::find($submission->user_id);
                     $notifyUser->notify(new SubmissionReplied($submission->user_id,
                         [
@@ -178,8 +214,8 @@ class CommentObserver implements ShouldQueue {
                             'extra_body' => '原文：'.$submission->title
                         ]));
                 }
-
-                $this->handleMentions($comment, $submission);
+                //@了某些人
+                //$this->handleCommentMentions($comment);
                 break;
             default:
                 return;
@@ -198,24 +234,6 @@ class CommentObserver implements ShouldQueue {
                     'fields' => $fields
                 ]
             )->send('用户'.$comment->user->id.'['.$comment->user->name.']评论了'.$title);
-    }
-
-    protected function handleMentions($comment, $submission)
-    {
-        if (!preg_match_all('/@([\S]+)/', $comment->body, $mentionedUsernames)) {
-            return;
-        }
-
-        foreach ($mentionedUsernames[1] as $key => $username) {
-            // set a limit so they can't just mention the whole website! lol
-            if ($key === 5) {
-                return;
-            }
-
-            if ($user = User::where('name',$username)->first()) {
-                //$user->notify(new UsernameMentioned($submission,$comment));
-            }
-        }
     }
 
 

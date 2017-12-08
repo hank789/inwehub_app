@@ -16,11 +16,15 @@ class UserLoggedOut
      */
     public $user;
 
+    public $from;
+
     /**
      * @param $user
+     * @param $from
      */
-    public function __construct($user)
+    public function __construct($user, $from='App')
     {
         $this->user = $user;
+        $this->from = $from;
     }
 }

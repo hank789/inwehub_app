@@ -78,7 +78,7 @@ class OauthController extends Controller
         ]);
         if ($token && $user) {
             //登陆事件通知
-            event(new UserLoggedIn($user));
+            event(new UserLoggedIn($user,'App内微信'));
         }
         return self::createJsonData(true,['token'=>$token]);
     }

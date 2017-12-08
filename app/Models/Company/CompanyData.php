@@ -154,7 +154,9 @@ class CompanyData extends Model
                     'status'          => $userCompanyStatus
                 ]);
             } else {
-                $existUser->status = $userCompanyStatus;
+                if ($existUser->status != 1) {
+                    $existUser->status = $userCompanyStatus;
+                }
                 $exist->is_show = $isShow;
                 $existUser->save();
             }

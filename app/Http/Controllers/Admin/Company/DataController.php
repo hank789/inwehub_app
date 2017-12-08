@@ -229,6 +229,11 @@ class DataController extends AdminController
             'audit_status' => 'required'
         ];
         $this->validate($request,$validateRules);
+        $existUser = CompanyDataUser::where('company_data_id',$request->input('company_data_id'))->where('user_id',$request->input('user_id'))->where('id','!=',$company->id)->first();
+        if ($existUser) {
+            return $this->error(route('admin.company.data.people'),'该用户和企业信息已存在，请核实');
+        }
+
 
         $company->company_data_id = $request->input('company_data_id');
         $company->user_id = $request->input('user_id');

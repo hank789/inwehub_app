@@ -8,15 +8,14 @@ use App\Models\Comment;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UsernameMentioned extends Notification implements ShouldBroadcast,ShouldQueue
+class UsernameCommentMentioned extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable;
 
-    protected $message;
+    protected $comment;
     protected $user_id;
 
     /**
@@ -24,10 +23,10 @@ class UsernameMentioned extends Notification implements ShouldBroadcast,ShouldQu
      *
      * @return void
      */
-    public function __construct($user_id, array $message)
+    public function __construct($user_id, Comment $comment)
     {
         $this->user_id = $user_id;
-        $this->message = $message;
+        $this->comment = $comment;
     }
 
     /**
@@ -73,7 +72,22 @@ class UsernameMentioned extends Notification implements ShouldBroadcast,ShouldQu
      */
     public function toArray($notifiable)
     {
-        return $this->message;
+        $source_type = $this->comment->source_type;
+        $source = $this->comment->source;
+        switch ($source_type) {
+            case 'App\Models\Submission':
+                $url = '/c/'.$source->category_id.'/'.$source->slug;
+                break;
+        }
+        return [
+            'url'    => $url,
+            'name'   => $this->comment->user->username,
+            'avatar' => $this->comment->user->avatar,
+            'title'  => $this->comment->user->username.'提到了你',
+            'body'   => $this->comment->body,
+            'comment_id' => $this->comment->id,
+            'extra_body' => '原文：'.$source->title
+        ];
     }
 
     public function toPush($notifiable)
@@ -97,8 +111,7 @@ class UsernameMentioned extends Notification implements ShouldBroadcast,ShouldQu
         if (config('app.env') != 'production') {
             $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
         }
-        $user = User::find($notifiable->id);
-        $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$this->message['url'];
+        $target_url = config('app.mobile_url').'#'.$this->message['url'];
         return [
             'first'    => $first,
             'keyword1' => $this->message['name'],

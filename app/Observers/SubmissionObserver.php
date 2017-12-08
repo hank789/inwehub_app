@@ -5,15 +5,19 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Feed\Feed;
 use App\Models\Submission;
 use App\Models\User;
+use App\Notifications\FollowedUserNewSubmission;
+use App\Traits\UsernameMentions;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\Frontend\System\Credit as CreditEvent;
 
 class SubmissionObserver implements ShouldQueue {
 
+    use UsernameMentions;
     /**
      * 任务最大尝试次数
      *
@@ -66,6 +70,15 @@ class SubmissionObserver implements ShouldQueue {
                 'current_address_latitude'  => $submission->data['current_address_latitude'],
                 'img'=>$submission->data['img']??''])
             ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'动态'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+
+        //关注的用户接收通知
+        $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();
+        foreach ($attention_users as $attention_uid) {
+            $attention_user = User::find($attention_uid);
+            $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
+        }
+        //提到了人，还未去重
+        $this->handleSubmissionMentions($submission);
 
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         return \Slack::to(config('slack.ask_activity_channel'))

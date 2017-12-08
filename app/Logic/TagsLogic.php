@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
  */
 
 class TagsLogic {
-    public static function loadTags($tag_type,$word){
+    public static function loadTags($tag_type,$word,$tagKey='value'){
 
         $cache_key = 'tags:'.$tag_type.':'.$word;
         $cache = Cache::get($cache_key);
@@ -51,11 +51,11 @@ class TagsLogic {
             }
             $item = [];
             $children = [];
-            $item['value'] = $category->id;
+            $item[$tagKey] = $category->id;
             $item['text'] = $category->name;
             foreach($query->get() as $val){
                 $children[] = [
-                    'value' => $val->id,
+                    $tagKey => $val->id,
                     'text'  => $val->name
                 ];
             }
@@ -74,7 +74,7 @@ class TagsLogic {
                 }
                 foreach($query_c->get() as $val){
                     $tags[] = [
-                        'value' => $val->id,
+                        $tagKey => $val->id,
                         'text'  => $val->name
                     ];
                 }

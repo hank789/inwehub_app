@@ -176,6 +176,12 @@ class UserController extends AdminController
             UserTag::detachByField($user->id,'industries');
             UserTag::multiIncrement($user->id,$tags,'industries');
         }
+        if($request->input('skill_tags') !== null){
+            $skill_tags = $request->input('skill_tags');
+            $tags = Tag::whereIn('id',explode(',',$skill_tags))->get();
+            UserTag::detachByField($user->id,'skills');
+            UserTag::multiIncrement($user->id,$tags,'skills');
+        }
 
         return $this->success(route('admin.user.index'),'用户修改成功');
     }

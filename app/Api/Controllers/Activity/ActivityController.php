@@ -271,7 +271,7 @@ class ActivityController extends Controller {
             'content' => $data['content'],
             'created_at' => date('Y/m/d H:i',strtotime($comment->created_at)),
             'user_name'  => $request->user()->name
-        ]);
+        ],ApiException::SUCCESS,'评论成功');
     }
 
 }

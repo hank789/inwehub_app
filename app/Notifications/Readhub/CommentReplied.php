@@ -5,7 +5,6 @@ namespace App\Notifications\Readhub;
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Comment;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -93,14 +92,13 @@ class CommentReplied extends Notification implements ShouldBroadcast,ShouldQueue
         $first = '您好，您的回复收到一条评论';
         $object = Comment::find($this->message['comment_id']);
         $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
-        $keyword3 = $object->body;
+        $keyword3 = $object->content;
         $remark = '请点击查看详情！';
         $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
         if (config('app.env') != 'production') {
             $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
         }
-        $user = User::find($notifiable->id);
-        $target_url = config('app.readhub_url').'/h5?uuid='.$user->uuid.'&redirect_url='.$this->message['url'];
+        $target_url = config('app.mobile_url').'#'.$this->message['url'];
         return [
             'first'    => $first,
             'keyword1' => $this->message['name'],
