@@ -111,6 +111,7 @@ class Answer extends Model
 
     //回答好评率
     public function getFeedbackRate(){
+        return 0;
         $count = $this->feedbacks()->count();
         $rate = $this->feedbacks()->sum('star');
         if ($count) {
