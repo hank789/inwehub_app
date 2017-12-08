@@ -150,8 +150,10 @@ class CommentObserver implements ShouldQueue {
                     }
                 }
                 $user = $comment->user;
-                if ($comment->parent_id > 0 && $comment->parent_id != $comment->user_id) {
-                    $parent_comment = Comment::find($comment->parent_id);
+                $notifyUids = [];
+                if ($comment->parent_id > 0 && $comment->parent->user_id != $comment->user_id) {
+                    $parent_comment = $comment->parent;
+                    $notifyUids[] = $parent_comment->user_id;
                     $notifyUser = User::find($parent_comment->user_id);
                     $notifyUser->notify(new CommentReplied($parent_comment->user_id,
                         [
@@ -165,19 +167,23 @@ class CommentObserver implements ShouldQueue {
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
                             'extra_body' => '原回复：'.$parent_comment->body
                         ]));
-                } elseif ($submission->user_id != $comment->user_id) {
-                    $notifyUser = User::find($submission->user_id);
-                    $notifyUser->notify(new SubmissionReplied($submission->user_id,
-                        [
-                            'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
-                            'name'   => $user->name,
-                            'avatar' => $user->avatar,
-                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
-                            'comment_id' => $comment->id,
-                            'body'   => $comment->content,
-                            'notification_type' => Notification::NOTIFICATION_TYPE_READ,
-                            'extra_body' => '原文：'.$submission->title
-                        ]));
+                }
+                if ($submission->user_id != $comment->user_id) {
+                    if (!(isset($parent_comment) && $parent_comment->user_id == $submission->user_id)) {
+                        $notifyUids[] = $submission->user_id;
+                        $notifyUser = User::find($submission->user_id);
+                        $notifyUser->notify(new SubmissionReplied($submission->user_id,
+                            [
+                                'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
+                                'name'   => $user->name,
+                                'avatar' => $user->avatar,
+                                'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
+                                'comment_id' => $comment->id,
+                                'body'   => $comment->content,
+                                'notification_type' => Notification::NOTIFICATION_TYPE_READ,
+                                'extra_body' => '原文：'.$submission->title
+                            ]));
+                    }
                 }
                 //@了某些人
                 //$this->handleCommentMentions($comment);
