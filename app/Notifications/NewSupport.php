@@ -76,7 +76,7 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                         $url = '/askCommunity/interaction/'.$source->id;
                         break;
                 }
-                $notification_type = NotificationModel::NOTIFICATION_TYPE_NOTICE;
+                $notification_type = NotificationModel::NOTIFICATION_TYPE_TASK;
                 $title = $this->support->user->name.'赞了您的回答';
                 $avatar = $this->support->user->avatar;
                 break;
