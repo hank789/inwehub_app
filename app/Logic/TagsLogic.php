@@ -36,7 +36,7 @@ class TagsLogic {
                 break;
             case 5:
                 //用户擅长，包括问题分类[question]和产品类型[product_type]
-                $category_name = ['question_sap','question_business','question_industry','product_type'];
+                $category_name = ['question_sap','question_business','question_industry','product_type', 'question_slution'];
                 break;
         }
 
