@@ -594,7 +594,8 @@ class AnswerController extends Controller
             'subject'  => '付费围观',
         ]);
         $answer->increment('collections');
-
+        //生成一条点评任务
+        $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
 
         event(new PayForView($order));
         return self::createJsonData(true,[

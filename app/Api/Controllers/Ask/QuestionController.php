@@ -706,7 +706,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'user_id' => $question->user_id,
                 'description'  => $question->title,
-                'hide' => 1,//暂时为1，等前端修复了改为$question->hide
+                'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,
                 'created_at' => (string)$question->created_at,
