@@ -94,6 +94,7 @@ class CompanyData extends Model
     }
 
     public static function initCompanyData($companyName,$user_id,$userCompanyStatus,$isShow = 1){
+        if (empty($companyName)) return;
         $exist = self::where('name',$companyName)->first();
         if (!$exist) {
             $location = BaiduMap::instance()->place($companyName);
