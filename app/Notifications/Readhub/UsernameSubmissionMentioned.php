@@ -102,16 +102,16 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
         $type = $this->submission->type == 'link' ? '文章':'动态';
         $first = '您好，'.$this->submission->owner->name.'在'.$type.'中提到了你';
         $keyword2 = date('Y-m-d H:i:s',strtotime($this->submission->created_at));
-        $keyword3 = $this->submission->title;
-        $remark = '请点击查看详情！';
-        $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
+        $keyword3 = '';
+        $remark = $this->submission->title;
+        $template_id = '8dthRe3ZODzHmVZj0120-XQ1P0CQVyaj-KTIZZUgrxw';
         if (config('app.env') != 'production') {
-            $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+            $template_id = '_781d_63IgFjtv7FeyghCdVuYeRs9xZSfPLqhQdi-ZQ';
         }
         $target_url = config('app.mobile_url').'#/c/'.$this->submission->category_id.'/'.$this->submission->slug;
         return [
             'first'    => $first,
-            'keyword1' => $this->submission->owner->name,
+            'keyword1' => $type,
             'keyword2' => $keyword2,
             'keyword3' => $keyword3,
             'remark'   => $remark,
