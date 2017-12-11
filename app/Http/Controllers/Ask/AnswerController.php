@@ -153,8 +153,12 @@ class AnswerController extends Controller
 
         $this->validate($request,$this->validateRules);
 
-        $answer->content = $request->input('content');
-        $answer->status = 1;
+        $answerContent = QuillLogic::parseImages($request->input('content'));
+        if ($answerContent === false){
+            $answerContent = $request->input('content');
+        }
+
+        $answer->content = $answerContent;
 
         $answer->save();
 
