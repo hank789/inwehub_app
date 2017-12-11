@@ -81,7 +81,7 @@ class AnswerObserver implements ShouldQueue {
                 }
 
                 if ($answer->status == Answer::ANSWER_STATUS_FINISH) {
-                    if (($update && $answer->question->question_type == 2) || ($update == false && $answer->question->question_type == 1 ) || ($answer->user_id == Role::getCustomerUserId())) {
+                    if (($answer->adopted_at && $answer->adopted_at <= date('Y-m-d H:i:s',strtotime('-5 minutes'))) || ($update && $answer->question->question_type == 2) || ($update == false && $answer->question->question_type == 1 ) || ($answer->user_id == Role::getCustomerUserId())) {
                         //互动问答修改和专业问答承诺回答时不通知,客服小哈的也不通知
                     } else {
                         //关注问题的用户接收通知

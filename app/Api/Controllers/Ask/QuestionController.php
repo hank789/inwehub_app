@@ -533,6 +533,7 @@ class QuestionController extends Controller
             $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
             $item['description'] = $info->description;
             $item['is_invited'] = $question->isInvited($info->id,$request->user()->id);
+            $item['is_answered'] = $question->answers()->where('user_id',$info->id)->exists();
             $data[] = $item;
         }
         return self::createJsonData(true,$data);

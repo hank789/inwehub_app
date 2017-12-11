@@ -20,7 +20,7 @@ class AnswerController extends Controller
 
     /*问题创建校验*/
     protected $validateRules = [
-        'content' => 'required|min:15|max:65535',
+        'content' => 'required|min:15',
     ];
 
 
@@ -153,8 +153,12 @@ class AnswerController extends Controller
 
         $this->validate($request,$this->validateRules);
 
-        $answer->content = $request->input('content');
-        $answer->status = 1;
+        $answerContent = QuillLogic::parseImages($request->input('content'));
+        if ($answerContent === false){
+            $answerContent = $request->input('content');
+        }
+
+        $answer->content = $answerContent;
 
         $answer->save();
 
