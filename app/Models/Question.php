@@ -311,7 +311,6 @@ class Question extends Model
         return $this->invitations()->where("user_id","=",$toUserId)->where("from_user_id","=",$fromUserId)->count();
     }
 
-
     /*问题搜索*/
     public static function search($word,$size=16)
     {
