@@ -55,7 +55,7 @@
         var editor = new Quill('#answer_editor', {
             modules: { toolbar: [
                 [{ header: [1, 2, false] }],
-                ['bold', 'italic', 'underline']
+                ['bold', 'italic', 'underline', 'image']
             ] },
             theme: 'snow'
         });
