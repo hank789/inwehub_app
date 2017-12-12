@@ -2,6 +2,7 @@
 
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Jobs\UploadFile;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\NewMessage;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 
 class MessageController extends Controller
 {
@@ -54,8 +56,17 @@ class MessageController extends Controller
             //客服
             $contact_id = Role::getCustomerUserId();
         }
+        $base64Img = $request->input('img');
+        $data = array_only($request->all(), ['text']);
+        if ($base64Img) {
+            $url = explode(';',$base64Img);
+            $url_type = explode('/',$url[0]);
+            $file_name = 'message/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
+            dispatch((new UploadFile($file_name,(substr($url[1],6)))));
+            $data['img'] = Storage::disk('oss')->url($file_name);
+        }
         $message = Auth::user()->messages()->create([
-            'data' => array_only($request->all(), ['text']),
+            'data' => $data,
         ]);
 
         Auth::user()->conversations()->attach($message, [
