@@ -42,7 +42,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
+        return ['broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**
