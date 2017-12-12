@@ -196,7 +196,7 @@ class CompanyController extends Controller {
         $longitude = $request->input('longitude');
         $latitude = $request->input('latitude');
         $distance = '未知';
-        if ($longitude) {
+        if ($longitude && $company->longitude) {
             $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
             $distance = bcadd($distance,0,0);
         }
