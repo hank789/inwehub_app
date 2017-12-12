@@ -153,7 +153,7 @@ class TaskLogic {
                             $user_name = $answer->user->name;
                             $user_avatar_url = $answer->user->avatar;
                             $priority = '中';
-                            $description = '用户'.$user_name.'回答了您的专业提问:'.$question->title;
+                            $description = '用户'.$user_name.'回答了专业提问:'.$question->title;
                             $status_description = '前往点评';
                             break;
                     }
