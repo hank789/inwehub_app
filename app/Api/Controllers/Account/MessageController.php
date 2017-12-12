@@ -44,7 +44,8 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'text'    => 'required',
+            'text'    => 'required_without:img',
+            'img'    => 'required_without:text',
             'contact_id' => 'required|integer',
         ]);
 
@@ -57,7 +58,8 @@ class MessageController extends Controller
             $contact_id = Role::getCustomerUserId();
         }
         $base64Img = $request->input('img');
-        $data = array_only($request->all(), ['text']);
+        $data = [];
+        $data['text'] = $request->input('text');
         if ($base64Img) {
             $url = explode(';',$base64Img);
             $url_type = explode('/',$url[0]);

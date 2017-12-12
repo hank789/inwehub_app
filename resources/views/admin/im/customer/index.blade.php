@@ -53,7 +53,7 @@
                                             <td>{{ $message->last_message->read_at?:'未读' }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('auth.message.show',['id'=>$message->contact->id]) }}" data-toggle="tooltip" title="查看对话"><i class="fa fa-comment-o"></i></a>
+                                                    <a target="_blank" class="btn btn-default" href="{{ route('auth.message.show',['id'=>$message->contact->id]) }}" data-toggle="tooltip" title="查看对话"><i class="fa fa-comment-o"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
