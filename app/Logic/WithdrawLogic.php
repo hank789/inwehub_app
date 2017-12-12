@@ -59,6 +59,7 @@ class WithdrawLogic {
             'check_name' => 'NO_CHECK',// NO_CHECK：不校验真实姓名  FORCE_CHECK：强校验真实姓名   OPTION_CHECK：针对已实名认证的用户才校验真实姓名
             'payer_real_name' => '',
             'amount' => $withdraw->amount,
+            'device_info' => 'WEB',
             'desc' => '提现',
             'spbill_create_ip' => $withdraw->client_ip,
         ];
