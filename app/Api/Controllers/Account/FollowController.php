@@ -115,6 +115,7 @@ class FollowController extends Controller
                     $feed_target = $source->id.'_'.$loginUser->id;
                     $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
                     if (!$is_feeded) {
+                        RateLimiter::instance()->increase($feed_event,$feed_target,3600);
                         feed()
                             ->causedBy($loginUser)
                             ->performedOn($source)
@@ -122,7 +123,17 @@ class FollowController extends Controller
                                 'follow_user_id' => $source->id
                             ])
                             ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
-                        RateLimiter::instance()->increase($feed_event,$feed_target,3600);
+                        //产生一条私信
+                        $message = $loginUser->messages()->create([
+                            'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
+                        ]);
+                        $loginUser->conversations()->attach($message, [
+                            'contact_id' => $source->id
+                        ]);
+
+                        $source->conversations()->attach($message, [
+                            'contact_id' => $loginUser->id,
+                        ]);
                     }
                     break;
                 case 'tag':
