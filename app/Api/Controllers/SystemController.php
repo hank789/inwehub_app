@@ -96,17 +96,6 @@ class SystemController extends Controller {
     }
 
     public function location(Request $request){
-        $validateRules = [
-            'device_system' => 'required',
-            'device_name'  => 'required',
-            'device_model' => 'required',
-            'device_code' => 'required',
-            'current_address_name' => 'required',
-            'current_address_longitude' => 'required',
-            'current_address_latitude' => 'required',
-        ];
-        $this->validate($request, $validateRules);
-        $data = $request->all();
         $user = $request->user();
         $clientIp = $request->getClientIp();
         $loginrecord = new LoginRecord();
