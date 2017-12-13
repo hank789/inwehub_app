@@ -5,21 +5,18 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Events\Frontend\System\SystemNotify;
+use App\Jobs\UploadFile;
 use App\Logic\TaskLogic;
 use App\Models\Credit;
-use App\Models\Doing;
 use App\Models\Notification;
-use App\Models\Task;
 use App\Models\User;
-use App\Models\UserData;
 use App\Services\RateLimiter;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Zhuzhichao\IpLocationZh\Ip;
 use App\Events\Frontend\System\Credit as CreditEvent;
+use Illuminate\Http\Request;
 
 trait BaseController {
 
@@ -211,6 +208,36 @@ trait BaseController {
         Cache::put($key,$count,$expiration);
 
         return $count;
+    }
+
+    protected function uploadFile($photos,$dir='submissions'){
+        $list = [];
+        if ($photos) {
+            foreach ($photos as $base64) {
+                $url = explode(';',$base64);
+                if(count($url) <=1){
+                    $parse_url = parse_url($base64);
+                    //非本地地址，存储到本地
+                    if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
+                        $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+                        dispatch((new UploadFile($file_name,base64_encode(file_get_contents($base64)))));
+                        //Storage::disk('oss')->put($file_name,file_get_contents($base64));
+                        $img_url = Storage::disk('oss')->url($file_name);
+                        $list[] = $img_url;
+                    } elseif(isset($parse_url['host'])) {
+                        $list[] = $base64;
+                    }
+                    continue;
+                }
+                $url_type = explode('/',$url[0]);
+                $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
+                dispatch((new UploadFile($file_name,(substr($url[1],6)))));
+                //Storage::disk('oss')->put($file_name,base64_decode(substr($url[1],6)));
+                $img_url = Storage::disk('oss')->url($file_name);
+                $list[] = $img_url;
+            }
+        }
+        return ['img'=>$list];
     }
 
 }

@@ -19,7 +19,7 @@ class UploadFile implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 1;
+    public $tries = 2;
 
     public $fileName;
     public $base64Contents;

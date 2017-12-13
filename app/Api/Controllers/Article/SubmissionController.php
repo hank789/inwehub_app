@@ -117,7 +117,7 @@ class SubmissionController extends Controller {
                 'type'  => 'required|in:link,text',
             ]);
 
-            $data = $this->textSubmission($request);
+            $data = $this->uploadFile($request->input('photos'));
         }
 
         try {

@@ -226,6 +226,10 @@ Route::post('system/func_zan','SystemController@funcZan')->middleware('jwt.auth'
 //保存用户设备信息
 Route::post('system/device','SystemController@device')->middleware('jwt.auth');
 
+//保存用户位置信息
+Route::post('system/location','SystemController@location')->middleware('jwt.auth');
+
+
 //申请添加用户擅长标签
 Route::post('system/applySkillTag','SystemController@applySkillTag')->middleware('jwt.auth');
 

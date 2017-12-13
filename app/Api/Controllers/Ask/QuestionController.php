@@ -333,6 +333,8 @@ class QuestionController extends Controller
             $this->checkAnswerUser($loginUser,$toUser->id);
         }
 
+        $data['data'] = $this->uploadFile($request->input('photos'));
+
         //如果订单存在且状态为处理中,有可能还未回调
         if($order && $order->status == Order::PAY_STATUS_PROCESS && Setting()->get('need_pay_actual',1)){
             if (PayQueryLogic::queryWechatPayOrder($order->id)){

@@ -9,6 +9,7 @@ use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\AppVersion;
+use App\Models\LoginRecord;
 use App\Models\UserDevice;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -91,6 +92,38 @@ class SystemController extends Controller {
         $user_device->updated_at = date('Y-m-d H:i:s');
         $user_device->save();
 
+        return self::createJsonData(true);
+    }
+
+    public function location(Request $request){
+        $validateRules = [
+            'device_system' => 'required',
+            'device_name'  => 'required',
+            'device_model' => 'required',
+            'device_code' => 'required',
+            'current_address_name' => 'required',
+            'current_address_longitude' => 'required',
+            'current_address_latitude' => 'required',
+        ];
+        $this->validate($request, $validateRules);
+        $data = $request->all();
+        $user = $request->user();
+        $clientIp = $request->getClientIp();
+        $loginrecord = new LoginRecord();
+        $loginrecord->ip = $clientIp;
+
+        $location = $this->findIp($clientIp);
+        array_filter($location);
+        $loginrecord->address = trim(implode(' ', $location));
+        $loginrecord->device_system = $request->input('device_system');
+        $loginrecord->device_name = $request->input('device_name');
+        $loginrecord->device_model = $request->input('device_model');
+        $loginrecord->device_code = $request->input('device_code');
+        $loginrecord->user_id = $user->id;
+        $loginrecord->address_detail = $request->input('current_address_name');
+        $loginrecord->longitude = $request->input('current_address_longitude');
+        $loginrecord->latitude = $request->input('current_address_latitude');
+        $loginrecord->save();
         return self::createJsonData(true);
     }
 
