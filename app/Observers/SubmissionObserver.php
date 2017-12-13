@@ -87,7 +87,7 @@ class SubmissionObserver implements ShouldQueue {
             ->disableMarkdown()
             ->attach(
                 [
-                    'text' => $submission->title,
+                    'text' => strip_tags($submission->title),
                     'pretext' => '[链接]('.$url.')',
                     'author_name' => $user->name,
                     'author_link' => $url,

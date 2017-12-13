@@ -157,7 +157,7 @@ class CommentObserver implements ShouldQueue {
 
                 $fields[] = [
                     'title' => '标题',
-                    'value' => $submission->title
+                    'value' => strip_tags($submission->title)
                 ];
                 $fields[] = [
                     'title' => '地址',
