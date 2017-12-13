@@ -98,6 +98,9 @@ class SystemController extends Controller {
     public function location(Request $request){
         $user = $request->user();
         $clientIp = $request->getClientIp();
+        if (RateLimiter::instance()->increase('user-location',$user->id.'-'.$clientIp,3600)) {
+            return self::createJsonData(true);
+        }
         $loginrecord = new LoginRecord();
         $loginrecord->ip = $clientIp;
 
