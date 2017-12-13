@@ -73,12 +73,14 @@ class SubmissionObserver implements ShouldQueue {
 
         //关注的用户接收通知
         $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();
+        //提到了人，还未去重
+        $notified_uids = $this->handleSubmissionMentions($submission);
+        $notified_uids[$submission->user_id] = $submission->user_id;
         foreach ($attention_users as $attention_uid) {
+            if (isset($notified_uids[$attention_uid])) continue;
             $attention_user = User::find($attention_uid);
             $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
         }
-        //提到了人，还未去重
-        $this->handleSubmissionMentions($submission);
 
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         return \Slack::to(config('slack.ask_activity_channel'))

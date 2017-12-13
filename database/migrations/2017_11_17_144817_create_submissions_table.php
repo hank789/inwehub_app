@@ -16,7 +16,7 @@ class CreateSubmissionsTable extends Migration
         Schema::create('submissions', function (Blueprint $table) {
             $table->increments('id');
             $table->string('slug');
-            $table->string('title',2000);
+            $table->string('title',3000);
             $table->string('type');
             $table->json('data');
             $table->string('category_name')->index();
