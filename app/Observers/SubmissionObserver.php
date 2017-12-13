@@ -79,7 +79,7 @@ class SubmissionObserver implements ShouldQueue {
         $notified_uids[$submission->user_id] = $submission->user_id;
         \Log::info('test2',$notified_uids);
         foreach ($attention_users as $attention_uid) {
-            \Log::info('test3',$attention_uid);
+            \Log::info('test3',[$attention_uid,isset($notified_uids[$attention_uid])]);
             if (isset($notified_uids[$attention_uid])) continue;
             $attention_user = User::find($attention_uid);
             $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
