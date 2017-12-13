@@ -4,9 +4,8 @@ namespace App\Notifications\Readhub;
 
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
-use App\Models\Comment;
 use App\Models\Submission;
-use App\Models\User;
+use App\Models\Notification as NotificationModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Notification;
@@ -76,6 +75,7 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
         $type = $this->submission->type == 'link' ? '文章':'动态';
         return [
             'url'    => '/c/'.$this->submission->category_id.'/'.$this->submission->slug,
+            'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'name'   => $this->submission->owner->name,
             'avatar' => $this->submission->owner->avatar,
             'title'  => $this->submission->owner->name.'在'.$type.'中提到了你',
