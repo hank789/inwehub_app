@@ -79,7 +79,7 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
             'name'   => $this->submission->owner->name,
             'avatar' => $this->submission->owner->avatar,
             'title'  => $this->submission->owner->name.'在'.$type.'中提到了你',
-            'body'   => $this->submission->title,
+            'body'   => strip_tags($this->submission->title),
             'submission_id' => $this->submission->id,
             'extra_body' => ''
         ];
@@ -89,8 +89,8 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
     {
         $type = $this->submission->type == 'link' ? '文章':'动态';
         return [
-            'title' => $this->submission->owner->username.'在'.$type.'中提到了你',
-            'body'  => $this->submission->title,
+            'title' => $this->submission->owner->name.'在'.$type.'中提到了你',
+            'body'  => strip_tags($this->submission->title),
             'payload' => [
                 'object_type'=>'readhub_username_mentioned',
                 'object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug
