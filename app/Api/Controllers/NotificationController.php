@@ -60,7 +60,7 @@ class NotificationController extends Controller
         $readhub_unread_count = $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->count();
         $money_unread_count = $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->count();
 
-        $total_unread = $todo_task + $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count;
+        $total_unread =  $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count;
         $im_messages = Conversation::where('user_id',$user->id)->groupBy('contact_id')->get();
 
         $im_list = [];
@@ -108,8 +108,8 @@ class NotificationController extends Controller
         }
 
         $data = [
-            'todo_tasks' => $total_unread,
-            'total_unread_count' => 0,
+            'todo_tasks' => $todo_task,
+            'total_unread_count' => $total_unread,
             'notice_message' => [
                 'unread_count' => $notice_unread_count,
                 'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first()
