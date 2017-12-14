@@ -28,10 +28,6 @@ class Message extends Model
     use BelongsToUserTrait;
     protected $table = 'im_messages';
 
-    protected $with = [
-        'user'
-    ];
-
     /**
      * The attributes that are mass assignable.
      *

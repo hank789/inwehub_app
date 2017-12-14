@@ -28,6 +28,7 @@ class MessageController extends Controller
             $contact_id = Role::getCustomerUserId();
         }
 
+        $contact = User::find($contact_id);
         $messages = $user->conversations()
             ->where('contact_id', $contact_id)
             ->orderBy('im_conversations.id', 'desc')
@@ -36,7 +37,14 @@ class MessageController extends Controller
         $this->markAllAsRead($contact_id);
 
         $messages['data'] = array_reverse($messages['data']);
-
+        $messages['user_avatars'][] = [
+            'id' => $user->id,
+            'avatar' => $user->avatar
+        ];
+        $messages['user_avatars'][] = [
+            'id' => $contact_id,
+            'avatar' => $contact->avatar
+        ];
         return self::createJsonData(true,$messages);
     }
 
