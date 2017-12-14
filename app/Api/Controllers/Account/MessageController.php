@@ -37,14 +37,13 @@ class MessageController extends Controller
         $this->markAllAsRead($contact_id);
 
         $messages['data'] = array_reverse($messages['data']);
-        $messages['user_avatars'][] = [
-            'id' => $user->id,
-            'avatar' => $user->avatar
-        ];
-        $messages['user_avatars'][] = [
-            'id' => $contact_id,
-            'avatar' => $contact->avatar
-        ];
+        $user_avatars = [];
+        $user_avatars[$user->id] = $user->avatar;
+        $user_avatars[$contact->id] = $contact->avatar;
+
+        foreach ($messages['data'] as &$item) {
+            $item['avatar'] = $user_avatars[$item['user_id']];
+        }
         return self::createJsonData(true,$messages);
     }
 
