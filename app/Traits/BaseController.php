@@ -60,7 +60,7 @@ trait BaseController {
         }
         if ($sendNotice) {
             if(!RateLimiter::instance()->increase('send:system:notice',$uid,50,1)){
-                event(new SystemNotify('用户['.$user->name.']简历完成了'.$percent));
+                event(new SystemNotify('用户'.$user->id.'['.$user->name.']简历完成了'.$percent));
             }
         }
     }

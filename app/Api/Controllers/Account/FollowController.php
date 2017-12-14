@@ -91,7 +91,7 @@ class FollowController extends Controller
                         'title' => '地址',
                         'value' => route('ask.question.detail',['id'=>$source->id])
                     ];
-                    event(new SystemNotify($loginUser->name.'关注了问题',$fields));
+                    event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']关注了问题',$fields));
                     //产生一条feed流
                     if ($source->question_type == 2) {
                         $feed_event = 'question_followed';
