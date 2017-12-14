@@ -82,7 +82,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'url'    => '',
+            'url'    => '/chat/'.$this->message->user->id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_IM,
             'name'   => $this->message->user->name,
             'avatar' => $this->message->user->avatar,
@@ -113,7 +113,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             'keyword3' => $this->message->data['text'],
             'remark'   => '请点击查看详情！',
             'template_id' => $template_id,
-            'target_url' => config('app.mobile_url').'#/chat'
+            'target_url' => config('app.mobile_url').'#/chat/'.$this->message->user->id
         ];
     }
 
