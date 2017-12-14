@@ -84,6 +84,7 @@ class NotificationController extends Controller
                 'unread_count' => $im_count,
                 'avatar'       => $contact->avatar,
                 'name'         => $contact->name,
+                'contact_id'   => $contact->id,
                 'last_message' => [
                     'id' => $last_message->id,
                     'text' => $last_message->data['text'],
@@ -98,6 +99,7 @@ class NotificationController extends Controller
                 'unread_count' => 0,
                 'avatar'       => $customer_user->avatar,
                 'name'         => $customer_user->name,
+                'contact_id'   => $customer_user->id,
                 'last_message' => [
                     'id' => 0,
                     'text' => '',
@@ -106,6 +108,10 @@ class NotificationController extends Controller
                 ]
             ];
         }
+        usort($im_list,function ($a,$b) {
+            if ($a['last_message']['created_at'] == $b['last_message']['created_at']) return 0;
+            return ($a['last_message']['created_at'] < $b['last_message']['created_at'])? 1 : -1;
+        });
 
         $data = [
             'todo_tasks' => $todo_task,
