@@ -57,6 +57,26 @@
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">动态数</span>
+                        <span class="info-box-number">{{ $submissionTextCount }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="fa fa-archive"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">文章数</span>
+                        <span class="info-box-number">{{ $submissionLinkCount }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
                     <div class="info-box-content">
                         <span class="info-box-text">邀请码总数</span>
                         <span class="info-box-number">{{ $totalUrcNum }}</span>
@@ -297,7 +317,7 @@
                 labels: [{!! implode(",",$questionChart['labels']) !!}],
                 datasets: [
                     {
-                    label: '提问',
+                        label: '提问',
                         backgroundColor: "rgba(204,102,51,0.9)",
                         data: [{{ implode(",",$questionChart['questionRange']) }}]
                     },
@@ -310,6 +330,16 @@
                         label: '评价',
                         backgroundColor: "rgba(0,166,90,0.9)",
                         data: [{{ implode(",",$questionChart['feedbackRange']) }}]
+                    },
+                    {
+                        label: '动态',
+                        backgroundColor: "rgba(255,100,97,1)",
+                        data: [{{ implode(",",$questionChart['submissionTextRange']) }}]
+                    },
+                    {
+                        label: '文章',
+                        backgroundColor: "rgba(238,153,34,1)",
+                        data: [{{ implode(",",$questionChart['submissionLinkRange']) }}]
                     },
                 ]
             },
