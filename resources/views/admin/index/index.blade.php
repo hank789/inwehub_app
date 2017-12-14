@@ -224,6 +224,9 @@
                                     <tr>
                                         <td>用户协议：<a href="http://www.inwehub.com/license.html" target="_blank">查看用户协议</a></td>
                                     </tr>
+                                    <tr>
+                                        <td>测试链接：<a href="inwehubtest://web.ywhub.com?__direct_page=http%3a%2f%2fm.weibo.cn%2fu%2f3196963860" target="_blank">启动app</a> </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
