@@ -30,11 +30,11 @@ class IndexController extends AdminController
         $totalFeedbackNum = Feedback::count();
         $totalAnswerNum = Answer::count();
         //邀请码总数
-        $totalUrcNum = UserRegistrationCode::count();
+        //$totalUrcNum = UserRegistrationCode::count();
         //邀请码激活数
-        $totalActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_USED)->count();
+        //$totalActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_USED)->count();
         //邀请码失效数
-        $totalInActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_EXPIRED)->count();
+        //$totalInActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_EXPIRED)->count();
 
         //简历平均完成时间
         $userInfoCompletes = Credit::where('action','user_info_complete')->get();
@@ -84,9 +84,6 @@ class IndexController extends AdminController
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
             'totalAnswerNum',
-            'totalUrcNum',
-            'totalActiveUrcNum',
-            'totalInActiveUrcNum',
             'userInfoCompleteTime',
             'userInfoCompletePercent',
             'questionAvaConfirmTime',
@@ -131,7 +128,7 @@ class IndexController extends AdminController
             foreach($users as $user){
                 if( $user->created_at > $startTime && $user->created_at < $endTime ){
                     $registerRange[$i]++;
-                    if( $user->status > 0 ){
+                    if( $user->rc_uid > 0 ){
                         $verifyRange[$i]++;
                     }
 
@@ -143,7 +140,7 @@ class IndexController extends AdminController
 
         }
 
-        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'verifyUsers'=>$verifyRange,'authUsers'=>$authRange];
+        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange];
     }
 
     private function drawQuestionChart()

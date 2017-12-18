@@ -78,44 +78,6 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
                     <div class="info-box-content">
-                        <span class="info-box-text">邀请码总数</span>
-                        <span class="info-box-number">{{ $totalUrcNum }}</span>
-                    </div><!-- /.info-box-content -->
-                </div><!-- /.info-box -->
-            </div><!-- /.col -->
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box">
-                    <div class="info-box-content">
-                        <span class="info-box-text">邀请码激活数</span>
-                        <span class="info-box-number">{{ $totalActiveUrcNum }}</span>
-                    </div><!-- /.info-box-content -->
-                </div><!-- /.info-box -->
-            </div><!-- /.col -->
-
-            <!-- fix for small devices only -->
-            <div class="clearfix visible-sm-block"></div>
-
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box">
-                    <div class="info-box-content">
-                        <span class="info-box-text">邀请码失效数</span>
-                        <span class="info-box-number">{{ $totalInActiveUrcNum }}</span>
-                    </div><!-- /.info-box-content -->
-                </div><!-- /.info-box -->
-            </div><!-- /.col -->
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box">
-                    <div class="info-box-content">
-                        <span class="info-box-text">转化率</span>
-                        <span class="info-box-number">{{ $totalUrcNum?100*round($totalActiveUrcNum/$totalUrcNum,2):0 }}%</span>
-                    </div><!-- /.info-box-content -->
-                </div><!-- /.info-box -->
-            </div><!-- /.col -->
-        </div>
-        <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12">
-                <div class="info-box">
-                    <div class="info-box-content">
                         <span class="info-box-text">简历完成率</span>
                         <span class="info-box-number">{{ $userInfoCompletePercent }}%</span>
                     </div><!-- /.info-box-content -->
@@ -280,8 +242,8 @@
                         backgroundColor: "rgba(153,51,51,0.8)",
                         borderColor: "rgba(153,51,51,0.8)",
 
-                        label: '已审核',
-                        data: [{{ implode(",",$userChart['verifyUsers']) }}]
+                        label: '邀请数',
+                        data: [{{ implode(",",$userChart['recommendUsers']) }}]
                     },
                     {
                         fill: false,
