@@ -9,6 +9,7 @@ use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Question;
 use App\Models\Submission;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\UserRegistrationCode;
 use Carbon\Carbon;
@@ -29,6 +30,9 @@ class IndexController extends AdminController
         $totalQuestionNum = Question::count();
         $totalFeedbackNum = Feedback::count();
         $totalAnswerNum = Answer::count();
+        $totalTasks = Task::count();
+        $totalUndoTasks = Task::where('status',0)->count();
+
         //邀请码总数
         //$totalUrcNum = UserRegistrationCode::count();
         //邀请码激活数
@@ -90,6 +94,8 @@ class IndexController extends AdminController
             'questionAvgAnswerTime',
             'submissionLinkCount',
             'submissionTextCount',
+            'totalTasks',
+            'totalUndoTasks',
             'userChart','questionChart','systemInfo'));
     }
 
