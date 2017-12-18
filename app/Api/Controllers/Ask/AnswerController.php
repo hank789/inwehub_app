@@ -483,6 +483,12 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::ASK_FEEDBACK_SELF_ANSWER);
         }
 
+        if ($loginUser->id == $question->id) {
+            $feedback_type = 1;//提问者点评
+        } else {
+            $feedback_type = 2;//围观者点评
+        }
+
         //防止重复评价
         $exist = Feedback::where('user_id',$loginUser->id)
             ->where('source_id',$request->input('answer_id'))
@@ -511,7 +517,7 @@ class AnswerController extends Controller
         $this->credit($request->user()->id,Credit::KEY_RATE_ANSWER,$answer->id,'回答评价');
 
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
-        return self::createJsonData(true,$request->all());
+        return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));
     }
 
     public function feedbackInfo(Request $request){
