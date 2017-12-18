@@ -8,7 +8,7 @@ return [
          * The name of this application. You can use this name to monitor
          * the backups.
          */
-        'name' => env('APP_URL'),
+        'name' => config('app.name'),
 
         'source' => [
 
@@ -18,7 +18,7 @@ return [
                  * The list of directories and files that will be included in the backup.
                  */
                 'include' => [
-
+                    
                 ],
 
                 /*
@@ -39,11 +39,10 @@ return [
 
             /*
              * The names of the connections to the databases that should be backed up
-             * Only MySQL and PostgreSQL databases are supported.
+             * MySQL, PostgreSQL, SQLite and Mongo databases are supported.
              */
             'databases' => [
                 'mysql',
-                'inwehub_read'
             ],
         ],
 
@@ -100,7 +99,7 @@ return [
             'webhook_url' => env('SLACK_ENDPOINT'),
 
             /*
-             * If this is set to null the default channel of the webhook will be used
+             * If this is set to null the default channel of the webhook will be used.
              */
             'channel' => env('SLACK_CHANNEL','#general'),
         ],
@@ -113,7 +112,7 @@ return [
      */
     'monitorBackups' => [
         [
-            'name' => env('APP_URL'),
+            'name' => config('app.name'),
             'disks' => ['local'],
             'newestBackupsShouldNotBeOlderThanDays' => 1,
             'storageUsedMayNotBeHigherThanMegabytes' => 5000,
