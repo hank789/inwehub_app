@@ -189,6 +189,9 @@ class PayController extends Controller {
                         break;
                 }
                 $ret = Charge::run($channel, $config, $payData);
+                if ($pay_channel == 'wx_pub') {
+                    $ret = json_encode($ret);
+                }
             }
             $order->status = Order::PAY_STATUS_PROCESS;
             $order->save();
@@ -196,7 +199,7 @@ class PayController extends Controller {
             return self::createJsonData(false,[],$e->getCode(),$e->getMessage());
         }
 
-        $return['order_info'] = json_encode($ret);
+        $return['order_info'] = $ret;
         $return['pay_channel'] = $pay_channel;
         $return['order_id'] = $order->id;
         $return['debug'] = 0;
