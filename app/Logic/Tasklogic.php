@@ -150,6 +150,7 @@ class TaskLogic {
                     $status = $question->status;
                     switch($task->action){
                         case Task::ACTION_TYPE_ANSWER_FEEDBACK:
+                            $task_type = 6;
                             $user_name = $answer->user->name;
                             $user_avatar_url = $answer->user->avatar;
                             $priority = '中';
