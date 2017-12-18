@@ -86,6 +86,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_IM,
             'name'   => $this->message->user->name,
             'avatar' => $this->message->user->avatar,
+            'uuid'   => $this->message->user->uuid,
             'body'   => $this->message->data,
             'created_at' => (string) $this->message->created_at
         ];

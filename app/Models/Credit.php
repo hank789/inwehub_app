@@ -63,6 +63,7 @@ class Credit extends Model
     const KEY_REWARD_USER = 'reward_user';
     const KEY_PUNISH_USER = 'punish_user';
     const KEY_RATE_ANSWER = 'rate_answer';
+    const KEY_FEEDBACK_RATE_ANSWER = 'feedback_rate_answer';
 
 
     public static $creditSetting = [
@@ -90,7 +91,8 @@ class Credit extends Model
         self::KEY_SHARE_SUCCESS => ['backend_label'=>'分享成功','notice_user'=>'分享成功'],
         self::KEY_REWARD_USER => ['backend_label'=>'奖励','notice_user'=>'奖励'],
         self::KEY_PUNISH_USER => ['backend_label'=>'惩罚','notice_user'=>'惩罚'],
-        self::KEY_RATE_ANSWER => ['backend_label'=>'专业回答评价','notice_user'=>'评分成功']
+        self::KEY_RATE_ANSWER => ['backend_label'=>'专业回答评价','notice_user'=>'评分成功'],
+        self::KEY_FEEDBACK_RATE_ANSWER => ['backend_label'=>'专业回答围观者评价','notice_user'=>'评分成功']
 
     ];
 }

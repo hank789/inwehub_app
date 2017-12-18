@@ -143,6 +143,7 @@ class QuestionController extends Controller
             'is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0),
             'is_followed' => $question->hide ? 0 : ($attention_question_user?1:0),
             'user_description' => $question->hide ? '':$question->user->description,
+            'data' => $question->data,
             'description'  => $question->title,
             'tags' => $question->tags()->get()->toArray(),
             'hide' => $question->hide,

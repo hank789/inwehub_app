@@ -150,6 +150,7 @@ class AnswerController extends Controller
             'tags' => $question->tags()->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
+            'data'  => $question->data,
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $answer->promise_time,
@@ -485,8 +486,10 @@ class AnswerController extends Controller
 
         if ($loginUser->id == $question->id) {
             $feedback_type = 1;//提问者点评
+            $action = Credit::KEY_RATE_ANSWER;
         } else {
             $feedback_type = 2;//围观者点评
+            $action = Credit::KEY_FEEDBACK_RATE_ANSWER;
         }
 
         //防止重复评价
@@ -514,7 +517,7 @@ class AnswerController extends Controller
 
         $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
 
-        $this->credit($request->user()->id,Credit::KEY_RATE_ANSWER,$answer->id,'回答评价');
+        $this->credit($loginUser->id,$action,$answer->id,'回答评价');
 
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));
