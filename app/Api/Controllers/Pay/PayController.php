@@ -196,7 +196,7 @@ class PayController extends Controller {
             return self::createJsonData(false,[],$e->getCode(),$e->getMessage());
         }
 
-        $return['order_info'] = $ret;
+        $return['order_info'] = json_encode($ret);
         $return['pay_channel'] = $pay_channel;
         $return['order_id'] = $order->id;
         $return['debug'] = 0;
