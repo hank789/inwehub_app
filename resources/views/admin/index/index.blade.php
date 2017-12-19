@@ -91,11 +91,24 @@
                 <div class="info-box">
                     <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">未清任务数</span>
+                        <span class="info-box-text">未清任务</span>
                         <span class="info-box-number">{{ $totalUndoTasks }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
+
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">未清任务人数</span>
+                        <span class="info-box-number">{{ $totalUndoTaskUsers }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
 
         </div>
         <div class="row">

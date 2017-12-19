@@ -32,6 +32,7 @@ class IndexController extends AdminController
         $totalAnswerNum = Answer::count();
         $totalTasks = Task::count();
         $totalUndoTasks = Task::where('status',0)->count();
+        $totalUndoTaskUsers = Task::where('status',0)->groupBy('user_id')->count();
 
         //邀请码总数
         //$totalUrcNum = UserRegistrationCode::count();
@@ -96,6 +97,7 @@ class IndexController extends AdminController
             'submissionTextCount',
             'totalTasks',
             'totalUndoTasks',
+            'totalUndoTaskUsers',
             'userChart','questionChart','systemInfo'));
     }
 
