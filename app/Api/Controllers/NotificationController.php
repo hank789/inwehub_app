@@ -87,7 +87,8 @@ class NotificationController extends Controller
                 'contact_id'   => $contact->id,
                 'last_message' => [
                     'id' => $last_message->id,
-                    'text' => $last_message->data['text'],
+                    'text' => '',
+                    'data'  => $last_message->data,
                     'read_at' => $last_message->read_at,
                     'created_at' => (string)$last_message->created_at
                 ]
@@ -103,6 +104,7 @@ class NotificationController extends Controller
                 'last_message' => [
                     'id' => 0,
                     'text' => '',
+                    'data' => ['text'=>'您好，欢迎来到InweHub！','img'=>''],
                     'read_at' => '',
                     'created_at' => ''
                 ]
