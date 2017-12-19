@@ -1,5 +1,11 @@
 <?php namespace App\Third\Weapp;
 
+/**
+ * 对微信小程序用户加密数据的解密示例代码.
+ *
+ * @copyright Copyright (c) 1998-2014 Tencent Inc.
+ */
+
 
 class WXBizDataCrypt
 {
@@ -11,7 +17,8 @@ class WXBizDataCrypt
      * @param $sessionKey string 用户在小程序登录后获取的会话密钥
      * @param $appid string 小程序的appid
      */
-    function __construct($appid, $sessionKey){
+    public function __construct( $appid, $sessionKey)
+    {
         $this->sessionKey = $sessionKey;
         $this->appid = $appid;
     }
@@ -40,14 +47,9 @@ class WXBizDataCrypt
 
         $aesCipher=base64_decode($encryptedData);
 
-        $pc = new Prpcrypt($aesKey);
-        $result = $pc->decrypt($aesCipher,$aesIV);
+        $result=openssl_decrypt( $aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
 
-        if ($result[0] != 0) {
-            return $result[0];
-        }
-
-        $dataObj=json_decode( $result[1] );
+        $dataObj=json_decode( $result );
         if( $dataObj  == NULL )
         {
             return ErrorCode::$IllegalBuffer;
@@ -56,7 +58,9 @@ class WXBizDataCrypt
         {
             return ErrorCode::$IllegalBuffer;
         }
-        $data = $result[1];
+        $data = $result;
         return ErrorCode::$OK;
     }
+
 }
+

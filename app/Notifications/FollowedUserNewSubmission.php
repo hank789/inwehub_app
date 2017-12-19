@@ -69,7 +69,7 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'avatar' => $this->submission->owner->avatar,
             'title'  => '您关注的用户'.$this->submission->owner->name.'发布了新的'.($this->submission->type == 'link'?'文章':'动态'),
-            'body'   => $this->submission->title,
+            'body'   => strip_tags($this->submission->title),
             'extra_body' => ''
         ];
     }
@@ -78,7 +78,7 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
     {
         return [
             'title' => '您关注的用户'.$this->submission->owner->name.'发布了新的'.($this->submission->type == 'link'?'文章':'动态'),
-            'body'  => $this->submission->title,
+            'body'  => strip_tags($this->submission->title),
             'payload' => ['object_type'=>'readhub_new_submission','object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug],
         ];
     }

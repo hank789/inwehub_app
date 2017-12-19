@@ -25,7 +25,6 @@ class ProjectController extends Controller {
         'begin_time'   => 'required|date_format:Y-m',
         'end_time'   => 'required',
         'industry_tags'  => 'required',
-        'product_tags'   => 'required',
         'description' => 'nullable'
     ];
 

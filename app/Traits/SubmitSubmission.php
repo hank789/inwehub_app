@@ -22,7 +22,7 @@ trait SubmitSubmission
      */
     protected function slug($title)
     {
-        $slug = str_slug($title);
+        $slug = str_slug(strip_tags($title));
         if(empty($slug)) {
             $slug = app('pinyin')->abbr($title);
         }

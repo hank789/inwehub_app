@@ -4,9 +4,8 @@ namespace App\Notifications\Readhub;
 
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
-use App\Models\Comment;
 use App\Models\Submission;
-use App\Models\User;
+use App\Models\Notification as NotificationModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Notifications\Notification;
@@ -76,10 +75,11 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
         $type = $this->submission->type == 'link' ? '文章':'动态';
         return [
             'url'    => '/c/'.$this->submission->category_id.'/'.$this->submission->slug,
+            'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'name'   => $this->submission->owner->name,
             'avatar' => $this->submission->owner->avatar,
             'title'  => $this->submission->owner->name.'在'.$type.'中提到了你',
-            'body'   => $this->submission->title,
+            'body'   => strip_tags($this->submission->title),
             'submission_id' => $this->submission->id,
             'extra_body' => ''
         ];
@@ -89,8 +89,8 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
     {
         $type = $this->submission->type == 'link' ? '文章':'动态';
         return [
-            'title' => $this->submission->owner->username.'在'.$type.'中提到了你',
-            'body'  => $this->submission->title,
+            'title' => $this->submission->owner->name.'在'.$type.'中提到了你',
+            'body'  => strip_tags($this->submission->title),
             'payload' => [
                 'object_type'=>'readhub_username_mentioned',
                 'object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug
@@ -102,16 +102,16 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
         $type = $this->submission->type == 'link' ? '文章':'动态';
         $first = '您好，'.$this->submission->owner->name.'在'.$type.'中提到了你';
         $keyword2 = date('Y-m-d H:i:s',strtotime($this->submission->created_at));
-        $keyword3 = $this->submission->title;
-        $remark = '请点击查看详情！';
-        $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
+        $keyword3 = '';
+        $remark = strip_tags($this->submission->title);
+        $template_id = '8dthRe3ZODzHmVZj0120-XQ1P0CQVyaj-KTIZZUgrxw';
         if (config('app.env') != 'production') {
-            $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+            $template_id = '_781d_63IgFjtv7FeyghCdVuYeRs9xZSfPLqhQdi-ZQ';
         }
         $target_url = config('app.mobile_url').'#/c/'.$this->submission->category_id.'/'.$this->submission->slug;
         return [
             'first'    => $first,
-            'keyword1' => $this->submission->owner->name,
+            'keyword1' => $type,
             'keyword2' => $keyword2,
             'keyword3' => $keyword3,
             'remark'   => $remark,

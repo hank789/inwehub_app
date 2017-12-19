@@ -3,9 +3,7 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
-use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
-use App\Models\Attention;
 use App\Models\Notification as NotificationModel;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -15,23 +13,23 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQueue
+class NewInviteUserRegister extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 
     protected $user_id;
 
-    protected $attention;
+    protected $register_uid;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, Attention $attention)
+    public function __construct($user_id, $register_uid)
     {
         $this->user_id = $user_id;
-        $this->attention = $attention;
+        $this->register_uid = $register_uid;
     }
 
     /**
@@ -42,7 +40,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
      */
     public function via($notifiable)
     {
-        return ['broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
+        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
     }
 
     /**
@@ -59,11 +57,6 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
                     ->line('Thank you for using our application!');
     }
 
-    protected function getTitle(){
-        $user = User::find($this->attention->user_id);
-        return '用户'.$user->name.'关注了你';
-    }
-
     /**
      * Get the array representation of the notification.
      *
@@ -72,12 +65,12 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
      */
     public function toArray($notifiable)
     {
-        $user = User::find($this->attention->user_id);
+        $user = User::find($this->register_uid);
         return [
-            'url'    => '/share/resume/'.$user->uuid,
+            'url'    => '/invitation/friends',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
-            'title'  => $this->getTitle(),
+            'avatar' => $user->avatar,
+            'title'  => '您邀请的'.$user->name.'注册成功',
             'body'   => '',
             'extra_body' => ''
         ];
@@ -85,26 +78,26 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
 
     public function toPush($notifiable)
     {
-        $user = User::find($this->attention->user_id);
-        $title = '用户'.$user->name.'关注了你';
+        $user = User::find($this->register_uid);
+        $title = '您邀请的'.$user->name.'注册成功';
         return [
             'title' => $title,
             'body'  => '点击前往查看',
-            'payload' => ['object_type'=>'user_following','object_id'=>$user->uuid],
+            'payload' => ['object_type'=>'invite_user_register','object_id'=>$user->uuid],
         ];
     }
 
     public function toWechatNotice($notifiable){
-        $first = '又有新用户关注了你';
-        $keyword2 = date('Y-m-d H:i:s',strtotime($this->attention->created_at));
-        $remark = '点击查看Ta的顾问名片';
-        $template_id = '24x-vyoHM0SncChmtbRv_uoPCBnI8JXFrmTsWfqccQs';
+        $user = User::find($this->register_uid);
+        $first = '您邀请的'.$user->name.'注册成功';
+        $keyword2 = date('Y-m-d H:i:s',strtotime($user->created_at));
+        $remark = '点击查看详情';
+        $template_id = '5Wqmbg6q6RGE5h_4cNqYjFLdrs3BjgyjoFmuelV9ZH0';
         if (config('app.env') != 'production') {
-            $template_id = 'mCMHMPCPc1ceoQy66mWPee-krVmAxAB9g7kCQex6bUs';
+            $template_id = 'VWF9KdZYtqUKBO38XrtDz-srNxaKQA4QWUuEgeUg8UU';
         }
-        $user = User::find($this->attention->user_id);
         $keyword1 = $user->name;
-        $target_url = config('app.mobile_url').'#/share/resume/'.$user->uuid;
+        $target_url = config('app.mobile_url').'#/invitation/friends';
         return [
             'first'    => $first,
             'keyword1' => $keyword1,
@@ -114,15 +107,6 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
             'template_id' => $template_id,
             'target_url' => $target_url,
         ];
-    }
-
-    public function toSlack($notifiable){
-        $user = User::find($this->attention->user_id);
-        $current_user = User::find($this->user_id);
-
-        return \Slack::to(config('slack.ask_activity_channel'))
-            ->disableMarkdown()
-            ->send('用户['.$user->name.']关注了用户['.$current_user->name.']');
     }
 
     public function broadcastOn(){

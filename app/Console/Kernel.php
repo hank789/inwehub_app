@@ -37,7 +37,8 @@ class Kernel extends ConsoleKernel
         Commands\Readhub\MigrateData::class,
         Commands\FixData\FixSubmissionSuport::class,
         Commands\FixData\FixSubmissionIds::class,
-        Commands\FixData\CompanyData::class
+        Commands\FixData\CompanyData::class,
+        Commands\FixData\AnswerFeedbackTask::class
 
 
     ];

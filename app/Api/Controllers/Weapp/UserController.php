@@ -38,8 +38,13 @@ class UserController extends controller {
         $return = $this->wxxcx->getUserInfo($encryptedData, $iv);
 
         \Log::info('return',$return);
-        $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
-            ->where('openid',$userInfo['openid'])->first();
+        if (isset($return['unionid'])) {
+            $oauthData = UserOauth::whereIn('auth_type',[UserOauth::AUTH_TYPE_WEAPP,UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
+                ->where('unionid',$userInfo['openid'])->first();
+        } else {
+            $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
+                ->where('openid',$userInfo['openid'])->first();
+        }
 
         if ($oauthData) {
             $user = User::find($oauthData->user_id);

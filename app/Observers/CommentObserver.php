@@ -157,7 +157,7 @@ class CommentObserver implements ShouldQueue {
 
                 $fields[] = [
                     'title' => '标题',
-                    'value' => $submission->title
+                    'value' => strip_tags($submission->title)
                 ];
                 $fields[] = [
                     'title' => '地址',
@@ -192,7 +192,7 @@ class CommentObserver implements ShouldQueue {
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
                             'title'  => $user->name.'回复了你的评论',
-                            'submission_title' => $submission->title,
+                            'submission_title' => strip_tags($submission->title),
                             'comment_id' => $comment->id,
                             'body'   => $comment->content,
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
@@ -211,7 +211,7 @@ class CommentObserver implements ShouldQueue {
                             'comment_id' => $comment->id,
                             'body'   => $comment->content,
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
-                            'extra_body' => '原文：'.$submission->title
+                            'extra_body' => '原文：'.strip_tags($submission->title)
                         ]));
                 }
                 //@了某些人

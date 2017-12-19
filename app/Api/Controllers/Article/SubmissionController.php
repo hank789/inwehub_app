@@ -56,7 +56,7 @@ class SubmissionController extends Controller {
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
-                'title' => 'required|between:1,2000',
+                'title' => 'required|between:1,3000',
             ]);
 
             //检查url是否重复
@@ -113,11 +113,11 @@ class SubmissionController extends Controller {
 
         if ($request->type == 'text') {
             $this->validate($request, [
-                'title' => 'required|between:1,2000',
+                'title' => 'required|between:1,3000',
                 'type'  => 'required|in:link,text',
             ]);
 
-            $data = $this->textSubmission($request);
+            $data = $this->uploadFile($request->input('photos'));
         }
 
         try {

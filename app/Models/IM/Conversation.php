@@ -39,7 +39,7 @@ class Conversation extends Model
         'message_id', 'user_id', 'contact_id',
     ];
 
-    protected $with = ['last_message', 'contact'];
+    protected $with = ['contact'];
 
     /**
      *   The attributes that should be hidden for arrays.
@@ -52,7 +52,8 @@ class Conversation extends Model
 
     public function last_message()
     {
-        return $this->belongsTo(Message::class, 'message_id');
+        $last_c = self::where('user_id',$this->user_id)->where('contact_id',$this->contact_id)->orderBy('id','desc')->first();
+        return Message::find($last_c->message_id);
     }
 
     public function contact()

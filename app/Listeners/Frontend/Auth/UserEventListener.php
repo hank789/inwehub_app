@@ -69,6 +69,8 @@ class UserEventListener implements ShouldQueue
         if ($event->user->rc_uid) {
             $rc_user = User::find($event->user->rc_uid);
             $title .= ';邀请者：'.$rc_user->name;
+            //给邀请者发送通知
+
         }
         \Slack::send('新用户注册: '.formatSlackUser($event->user).';设备：'.$event->from.$title);
     }

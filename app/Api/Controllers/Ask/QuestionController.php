@@ -143,6 +143,7 @@ class QuestionController extends Controller
             'is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0),
             'is_followed' => $question->hide ? 0 : ($attention_question_user?1:0),
             'user_description' => $question->hide ? '':$question->user->description,
+            'data' => $question->data,
             'description'  => $question->title,
             'tags' => $question->tags()->get()->toArray(),
             'hide' => $question->hide,
@@ -332,6 +333,8 @@ class QuestionController extends Controller
             $toUser = User::where('uuid',$to_user_uuid)->firstOrFail();
             $this->checkAnswerUser($loginUser,$toUser->id);
         }
+
+        $data['data'] = $this->uploadFile($request->input('photos'),'questions');
 
         //如果订单存在且状态为处理中,有可能还未回调
         if($order && $order->status == Order::PAY_STATUS_PROCESS && Setting()->get('need_pay_actual',1)){
@@ -706,7 +709,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'user_id' => $question->user_id,
                 'description'  => $question->title,
-                'hide' => 1,//暂时为1，等前端修复了改为$question->hide
+                'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,
                 'created_at' => (string)$question->created_at,

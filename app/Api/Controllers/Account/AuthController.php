@@ -189,20 +189,6 @@ class AuthController extends Controller
             if($this->credit($user->id,Credit::KEY_LOGIN)){
                 $message = '登陆成功! ';
             }
-            // 登录记录
-            $clientIp = $request->getClientIp();
-            $loginrecord = new LoginRecord();
-            $loginrecord->ip = $clientIp;
-
-            $location = $this->findIp($clientIp);
-            array_filter($location);
-            $loginrecord->address = trim(implode(' ', $location));
-            $loginrecord->device_system = $request->input('device_system');
-            $loginrecord->device_name = $request->input('device_name');
-            $loginrecord->device_model = $request->input('device_model');
-            $loginrecord->device_code = $device_code;
-            $loginrecord->user_id = $user->id;
-            $loginrecord->save();
 
             $info = [];
             $info['token'] = $token;

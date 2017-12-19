@@ -34,7 +34,12 @@
                             </div>
                             <div class="media-body">
                                 <a target="_blank" href="{{ route('auth.space.index',['id'=>$message->user_id]) }}"> {{ $message->user->name }}</a> :
-                                <div class="full-text fmt">{{ $message->data['text'] }}</div>
+                                <div class="full-text fmt">
+                                    {{ $message->data['text'] }}
+                                    @if (isset($message->data['img']))
+                                        <img class="media-object" src="{{ $message->data['img'] }}" alt="{{ $message->user->name }}">
+                                    @endif
+                                </div>
                                 <div class="meta mt-10">
                                     <span class="text-muted">{{ timestamp_format($message->created_at) }} </span>
                                 <span class="pull-right" style="display: none;">

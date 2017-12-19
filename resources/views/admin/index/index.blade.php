@@ -47,6 +47,7 @@
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-feed"></i></span>
                     <div class="info-box-content">
                         <span class="info-box-text">回答总数</span>
                         <span class="info-box-number">{{ $totalAnswerNum }}</span>
@@ -57,17 +58,19 @@
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">邀请码总数</span>
-                        <span class="info-box-number">{{ $totalUrcNum }}</span>
+                        <span class="info-box-text">动态数</span>
+                        <span class="info-box-number">{{ $submissionTextCount }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="fa fa-archive"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">邀请码激活数</span>
-                        <span class="info-box-number">{{ $totalActiveUrcNum }}</span>
+                        <span class="info-box-text">文章数</span>
+                        <span class="info-box-number">{{ $submissionLinkCount }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
@@ -77,20 +80,36 @@
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">邀请码失效数</span>
-                        <span class="info-box-number">{{ $totalInActiveUrcNum }}</span>
+                        <span class="info-box-text">总任务数</span>
+                        <span class="info-box-number">{{ $totalTasks }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
                     <div class="info-box-content">
-                        <span class="info-box-text">转化率</span>
-                        <span class="info-box-number">{{ $totalUrcNum?100*round($totalActiveUrcNum/$totalUrcNum,2):0 }}%</span>
+                        <span class="info-box-text">未清任务</span>
+                        <span class="info-box-number">{{ $totalUndoTasks }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
+
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">未清任务人数</span>
+                        <span class="info-box-number">{{ $totalUndoTaskUsers }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
+
         </div>
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
@@ -224,6 +243,9 @@
                                     <tr>
                                         <td>用户协议：<a href="http://www.inwehub.com/license.html" target="_blank">查看用户协议</a></td>
                                     </tr>
+                                    <tr>
+                                        <td>测试链接：<a href="inwehubtest://web.ywhub.com?__direct_page=http%3a%2f%2fm.weibo.cn%2fu%2f3196963860" target="_blank">启动app</a> </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -257,8 +279,8 @@
                         backgroundColor: "rgba(153,51,51,0.8)",
                         borderColor: "rgba(153,51,51,0.8)",
 
-                        label: '已审核',
-                        data: [{{ implode(",",$userChart['verifyUsers']) }}]
+                        label: '邀请数',
+                        data: [{{ implode(",",$userChart['recommendUsers']) }}]
                     },
                     {
                         fill: false,
@@ -294,7 +316,7 @@
                 labels: [{!! implode(",",$questionChart['labels']) !!}],
                 datasets: [
                     {
-                    label: '提问',
+                        label: '提问',
                         backgroundColor: "rgba(204,102,51,0.9)",
                         data: [{{ implode(",",$questionChart['questionRange']) }}]
                     },
@@ -307,6 +329,16 @@
                         label: '评价',
                         backgroundColor: "rgba(0,166,90,0.9)",
                         data: [{{ implode(",",$questionChart['feedbackRange']) }}]
+                    },
+                    {
+                        label: '动态',
+                        backgroundColor: "rgba(255,100,97,1)",
+                        data: [{{ implode(",",$questionChart['submissionTextRange']) }}]
+                    },
+                    {
+                        label: '文章',
+                        backgroundColor: "rgba(238,153,34,1)",
+                        data: [{{ implode(",",$questionChart['submissionLinkRange']) }}]
                     },
                 ]
             },

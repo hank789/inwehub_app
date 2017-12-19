@@ -150,6 +150,7 @@ class AnswerController extends Controller
             'tags' => $question->tags()->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
+            'data'  => $question->data,
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $answer->promise_time,
@@ -483,6 +484,14 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::ASK_FEEDBACK_SELF_ANSWER);
         }
 
+        if ($loginUser->id == $question->user_id) {
+            $feedback_type = 1;//提问者点评
+            $action = Credit::KEY_RATE_ANSWER;
+        } else {
+            $feedback_type = 2;//围观者点评
+            $action = Credit::KEY_FEEDBACK_RATE_ANSWER;
+        }
+
         //防止重复评价
         $exist = Feedback::where('user_id',$loginUser->id)
             ->where('source_id',$request->input('answer_id'))
@@ -502,16 +511,16 @@ class AnswerController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
-        if ($question->question_type == 1) $answer->question()->update(['status'=>7]);
+        if ($question->question_type == 1 && $feedback_type == 1) $answer->question()->update(['status'=>7]);
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
 
         $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
 
-        $this->credit($request->user()->id,Credit::KEY_RATE_ANSWER,$answer->id,'回答评价');
+        $this->credit($loginUser->id,$action,$answer->id,'回答评价');
 
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
-        return self::createJsonData(true,$request->all());
+        return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));
     }
 
     public function feedbackInfo(Request $request){
@@ -594,7 +603,8 @@ class AnswerController extends Controller
             'subject'  => '付费围观',
         ]);
         $answer->increment('collections');
-
+        //生成一条点评任务
+        $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
 
         event(new PayForView($order));
         return self::createJsonData(true,[

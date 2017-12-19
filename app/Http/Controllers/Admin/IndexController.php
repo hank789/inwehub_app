@@ -8,6 +8,8 @@ use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Question;
+use App\Models\Submission;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\UserRegistrationCode;
 use Carbon\Carbon;
@@ -28,12 +30,16 @@ class IndexController extends AdminController
         $totalQuestionNum = Question::count();
         $totalFeedbackNum = Feedback::count();
         $totalAnswerNum = Answer::count();
+        $totalTasks = Task::count();
+        $totalUndoTasks = Task::where('status',0)->count();
+        $totalUndoTaskUsers = Task::where('status',0)->groupBy('user_id')->count();
+
         //邀请码总数
-        $totalUrcNum = UserRegistrationCode::count();
+        //$totalUrcNum = UserRegistrationCode::count();
         //邀请码激活数
-        $totalActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_USED)->count();
+        //$totalActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_USED)->count();
         //邀请码失效数
-        $totalInActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_EXPIRED)->count();
+        //$totalInActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_EXPIRED)->count();
 
         //简历平均完成时间
         $userInfoCompletes = Credit::where('action','user_info_complete')->get();
@@ -58,7 +64,7 @@ class IndexController extends AdminController
         //问题平均接单时间
         $questionConfirmeds = Doing::where('action','question_answer_confirmed')->get();
         $questionCount = $questionConfirmeds->count();
-        $questionAnswerCount = Doing::where('action','question_answered')->get()->count();
+        $questionAnswerCount = Doing::where('action','question_answered')->count();
         $questionConfirmSecond = 0;
         $questionAnswerSecond = 0;
 
@@ -78,15 +84,20 @@ class IndexController extends AdminController
         $userChart = $this->drawUserChart();
         $questionChart = $this->drawQuestionChart();
         $systemInfo = $this->getSystemInfo();
+        $submissionTextCount = Submission::where('type','text')->count();
+        $submissionLinkCount = Submission::where('type','link')->count();
+
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
             'totalAnswerNum',
-            'totalUrcNum',
-            'totalActiveUrcNum',
-            'totalInActiveUrcNum',
             'userInfoCompleteTime',
             'userInfoCompletePercent',
             'questionAvaConfirmTime',
             'questionAvgAnswerTime',
+            'submissionLinkCount',
+            'submissionTextCount',
+            'totalTasks',
+            'totalUndoTasks',
+            'totalUndoTaskUsers',
             'userChart','questionChart','systemInfo'));
     }
 
@@ -125,7 +136,7 @@ class IndexController extends AdminController
             foreach($users as $user){
                 if( $user->created_at > $startTime && $user->created_at < $endTime ){
                     $registerRange[$i]++;
-                    if( $user->status > 0 ){
+                    if( $user->rc_uid > 0 ){
                         $verifyRange[$i]++;
                     }
 
@@ -137,7 +148,7 @@ class IndexController extends AdminController
 
         }
 
-        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'verifyUsers'=>$verifyRange,'authUsers'=>$authRange];
+        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange];
     }
 
     private function drawQuestionChart()
@@ -156,8 +167,10 @@ class IndexController extends AdminController
         $questions = Question::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
         $answers = Answer::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
         $feedbacks = Feedback::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
+        $submissions = Submission::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
-        $questionRange = $answerRange = $feedbackRange = [0,0,0,0,0,0,0];
+
+        $questionRange = $answerRange = $feedbackRange = $submissionTextRange = $submissionLinkRange = [0,0,0,0,0,0,0];
 
         for( $i=0 ; $i < 7 ; $i++ ){
             $startTime = $labelTimes[$i];
@@ -186,6 +199,16 @@ class IndexController extends AdminController
                 }
             }
 
+            //动态统计
+            foreach($submissions as $submission){
+                if($submission->type == 'text' && $submission->created_at > $startTime && $submission->created_at < $endTime ){
+                    $submissionTextRange[$i]++;
+                }
+                if($submission->type == 'link' && $submission->created_at > $startTime && $submission->created_at < $endTime ){
+                    $submissionLinkRange[$i]++;
+                }
+            }
+
         }
 
         return [
@@ -193,6 +216,8 @@ class IndexController extends AdminController
             'questionRange' => $questionRange,
             'answerRange' => $answerRange,
             'feedbackRange' => $feedbackRange,
+            'submissionLinkRange' => $submissionLinkRange,
+            'submissionTextRange' => $submissionTextRange
         ];
 
     }

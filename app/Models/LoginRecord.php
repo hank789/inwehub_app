@@ -40,6 +40,6 @@ class LoginRecord extends Model
     use BelongsToUserTrait;
 
     protected $table = 'login_records';
-    protected $fillable = ['user_id', 'ip','address','device_system','device_name','device_model','device_code'];
+    protected $fillable = ['user_id', 'ip','address','device_system','device_name','device_model','device_code','longitude','latitude','address_detail'];
 
 }

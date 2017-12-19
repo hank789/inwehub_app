@@ -60,7 +60,7 @@ class NotificationController extends Controller
         $readhub_unread_count = $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->count();
         $money_unread_count = $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->count();
 
-        $total_unread = $todo_task + $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count;
+        $total_unread =  $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count;
         $im_messages = Conversation::where('user_id',$user->id)->groupBy('contact_id')->get();
 
         $im_list = [];
@@ -84,9 +84,11 @@ class NotificationController extends Controller
                 'unread_count' => $im_count,
                 'avatar'       => $contact->avatar,
                 'name'         => $contact->name,
+                'contact_id'   => $contact->id,
                 'last_message' => [
                     'id' => $last_message->id,
-                    'text' => $last_message->data['text'],
+                    'text' => '',
+                    'data'  => $last_message->data,
                     'read_at' => $last_message->read_at,
                     'created_at' => (string)$last_message->created_at
                 ]
@@ -98,18 +100,24 @@ class NotificationController extends Controller
                 'unread_count' => 0,
                 'avatar'       => $customer_user->avatar,
                 'name'         => $customer_user->name,
+                'contact_id'   => $customer_user->id,
                 'last_message' => [
                     'id' => 0,
                     'text' => '',
+                    'data' => ['text'=>'您好，欢迎来到InweHub！','img'=>''],
                     'read_at' => '',
                     'created_at' => ''
                 ]
             ];
         }
+        usort($im_list,function ($a,$b) {
+            if ($a['last_message']['created_at'] == $b['last_message']['created_at']) return 0;
+            return ($a['last_message']['created_at'] < $b['last_message']['created_at'])? 1 : -1;
+        });
 
         $data = [
-            'todo_tasks' => $total_unread,
-            'total_unread_count' => 0,
+            'todo_tasks' => $todo_task,
+            'total_unread_count' => $total_unread,
             'notice_message' => [
                 'unread_count' => $notice_unread_count,
                 'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first()

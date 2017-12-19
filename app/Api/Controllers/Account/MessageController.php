@@ -2,6 +2,7 @@
 
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Jobs\UploadFile;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\NewMessage;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 
 class MessageController extends Controller
 {
@@ -26,6 +28,7 @@ class MessageController extends Controller
             $contact_id = Role::getCustomerUserId();
         }
 
+        $contact = User::find($contact_id);
         $messages = $user->conversations()
             ->where('contact_id', $contact_id)
             ->orderBy('im_conversations.id', 'desc')
@@ -34,7 +37,14 @@ class MessageController extends Controller
         $this->markAllAsRead($contact_id);
 
         $messages['data'] = array_reverse($messages['data']);
+        $users = [];
+        $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid];
+        $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid];
 
+        foreach ($messages['data'] as &$item) {
+            $item['avatar'] = $users[$item['user_id']]['avatar'];
+            $item['uuid'] = $users[$item['user_id']]['uuid'];
+        }
         return self::createJsonData(true,$messages);
     }
 
@@ -42,7 +52,8 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'text'    => 'required',
+            'text'    => 'required_without:img',
+            'img'    => 'required_without:text',
             'contact_id' => 'required|integer',
         ]);
 
@@ -54,11 +65,25 @@ class MessageController extends Controller
             //客服
             $contact_id = Role::getCustomerUserId();
         }
-        $message = Auth::user()->messages()->create([
-            'data' => array_only($request->all(), ['text']),
+        $user =  Auth::user();
+        if ($user->id == $contact_id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $base64Img = $request->input('img');
+        $data = [];
+        $data['text'] = $request->input('text');
+        if ($base64Img) {
+            $url = explode(';',$base64Img);
+            $url_type = explode('/',$url[0]);
+            $file_name = 'message/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
+            dispatch((new UploadFile($file_name,(substr($url[1],6)))));
+            $data['img'] = Storage::disk('oss')->url($file_name);
+        }
+        $message = $user->messages()->create([
+            'data' => $data,
         ]);
 
-        Auth::user()->conversations()->attach($message, [
+        $user->conversations()->attach($message, [
             'contact_id' => $contact_id
         ]);
 

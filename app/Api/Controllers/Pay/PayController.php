@@ -189,6 +189,9 @@ class PayController extends Controller {
                         break;
                 }
                 $ret = Charge::run($channel, $config, $payData);
+                if ($pay_channel == 'wx_pub') {
+                    $ret = json_encode($ret);
+                }
             }
             $order->status = Order::PAY_STATUS_PROCESS;
             $order->save();

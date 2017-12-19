@@ -122,7 +122,7 @@ class CollectionController extends Controller
                         'id' => $attention->id,
                         'type' => $submission->type,
                         'title' => $submission->title,
-                        'img'   => $submission->data['img']??'',
+                        'img'   => $submission->data['img']??[],
                         'submission_url' => $submission->data['url']??$comment_url,
                         'comment_url'    => $comment_url,
                         'domain'         => $submission->data['domain']??'',
