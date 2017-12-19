@@ -129,6 +129,9 @@ class CollectionController extends Controller
                         'category_name'  => $submission->category_name,
                         'created_at'     => (string) $submission->created_at
                     ];
+                    if (!is_array($item['img'])) {
+                        $item['img'] = [$item['img']];
+                    }
                     break;
             }
             $data[] = $item;
