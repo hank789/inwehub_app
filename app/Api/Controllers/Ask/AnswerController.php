@@ -484,7 +484,7 @@ class AnswerController extends Controller
             throw new ApiException(ApiException::ASK_FEEDBACK_SELF_ANSWER);
         }
 
-        if ($loginUser->id == $question->id) {
+        if ($loginUser->id == $question->user_id) {
             $feedback_type = 1;//提问者点评
             $action = Credit::KEY_RATE_ANSWER;
         } else {
