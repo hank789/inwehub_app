@@ -511,7 +511,7 @@ class AnswerController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
-        if ($question->question_type == 1) $answer->question()->update(['status'=>7]);
+        if ($question->question_type == 1 && $feedback_type == 1) $answer->question()->update(['status'=>7]);
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
 
