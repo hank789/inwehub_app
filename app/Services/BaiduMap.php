@@ -113,6 +113,18 @@ class BaiduMap
     }
 
     /**
+     * 根据经纬度查找位置信息
+     * @param $lat
+     * @param $lng
+     * @return mixed
+     */
+    public function geocoder($lat,$lng) {
+        $params['location'] = $lat.','.$lng;
+        $params['coordtype'] = $this->coord;
+        return $this->_sendHttp('geocoder/v2',$params);
+    }
+
+    /**
      * 生成URL
      * @param  string $uri
      * @param  array $params
