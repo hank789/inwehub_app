@@ -111,11 +111,10 @@ class Answer extends Model
 
     //回答好评率
     public function getFeedbackRate(){
-        return 0;
-        $count = $this->feedbacks()->count();
-        $rate = $this->feedbacks()->sum('star');
-        if ($count) {
-            return (bcdiv($rate,$count * 5,2) * 100).'%';
+        $good = $this->feedbacks()->where('star','>=',4)->count();
+        $all = $this->feedbacks()->count();
+        if ($all) {
+            return (bcdiv($good,$all,2) * 100).'%';
         }
         return 0;
     }
