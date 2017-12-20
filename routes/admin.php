@@ -291,6 +291,9 @@ Route::group(['prefix' => 'task'], function() {
 //客服聊天
 Route::group(['prefix' => 'im','namespace'=>'IM'], function() {
     Route::get('customer/index',['as'=>'admin.im.customer.index','uses'=>'CustomerController@index']);
+    Route::get('customer/group',['as'=>'admin.im.customer.group','uses'=>'CustomerController@group']);
+    Route::post('customer/group',['as'=>'admin.im.customer.group','uses'=>'CustomerController@group']);
+    Route::post('customer/groupTest',['as'=>'admin.im.customer.groupTest','uses'=>'CustomerController@groupTest']);
 
 });
 

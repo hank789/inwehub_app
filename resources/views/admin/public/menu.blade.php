@@ -95,6 +95,7 @@
         </a>
         <ul class="treeview-menu" id="im">
             <li><a href="{{ route('admin.im.customer.index') }}"><i class="fa fa-circle-o"></i> 客服小哈</a></li>
+            <li><a href="{{ route('admin.im.customer.group') }}"><i class="fa fa-circle-o"></i> 私信群发</a></li>
         </ul>
     </li>
 
