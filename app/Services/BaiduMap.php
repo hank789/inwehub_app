@@ -121,7 +121,9 @@ class BaiduMap
     public function geocoder($lat,$lng) {
         $params['location'] = $lat.','.$lng;
         $params['coordtype'] = $this->coord;
-        return $this->_sendHttp('geocoder/v2',$params);
+        $params['pois'] = 1;
+        $params['output'] = $this->output;
+        return $this->_sendHttp('geocoder/v2/',$params);
     }
 
     /**
@@ -136,6 +138,7 @@ class BaiduMap
             foreach ($params as $key => $v) {
                 $url .="&{$key}=" . urlencode($v);
             }
+            \Log::info('test',[$url]);
             $data = $this->_curl($url);
         } else {
             $url = urlencode($this->url . $uri);
