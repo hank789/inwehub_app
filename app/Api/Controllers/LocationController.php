@@ -20,7 +20,7 @@ class LocationController extends Controller {
         $places = [];
         if (isset($result['result']) && isset($result['formatted_address'])) {
             $places[] = [
-                'name' => $result['formatted_address'],
+                'name' => $result['sematic_description'],
                 'address' => $result['formatted_address'],
                 'distance' => 0
             ];
