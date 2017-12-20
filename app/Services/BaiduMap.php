@@ -111,6 +111,7 @@ class BaiduMap
         $params['coord'] = $this->coord;
         return $this->_sendHttp('highacciploc/v1',$params);
     }
+
     /**
      * 生成URL
      * @param  string $uri

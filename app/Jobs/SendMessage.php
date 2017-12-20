@@ -50,7 +50,7 @@ class SendMessage implements ShouldQueue
         ]);
 
         $contact_ids = $this->to_uids;
-        if (empty($this->to_uid)) {
+        if (empty($this->to_uids)) {
             $contact_ids = User::where('id','!=',$this->from_uid)->select('id')->get()->pluck('id')->toArray();
         }
 
