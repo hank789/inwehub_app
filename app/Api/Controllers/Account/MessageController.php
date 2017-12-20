@@ -45,6 +45,9 @@ class MessageController extends Controller
             $item['avatar'] = $users[$item['user_id']]['avatar'];
             $item['uuid'] = $users[$item['user_id']]['uuid'];
         }
+        $messages['contact'] = [
+            'name' => $contact->name
+        ];
         return self::createJsonData(true,$messages);
     }
 
