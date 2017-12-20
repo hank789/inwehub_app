@@ -72,8 +72,11 @@
             autosize($('textarea'));
             $("#test_push_notice_modal_submit").click(function(){
                 var test_user_id = $("#test_user_id").val();
+                var message = $("#test_message").val();
 
-                if( test_user_id ){
+                if (message.length <= 5) {
+                    alert("内容必须大于5个字符");
+                } else if( test_user_id ){
                     $("#test_push_notice_from").submit();
                 }else{
                     alert("您没有输入任何内容");

@@ -80,7 +80,7 @@ class CustomerController extends AdminController {
                 throw new ApiException(ApiException::ERROR);
             }
             $contact_id = $role_user->user_id;
-            $this->dispatch(new SendMessage($request->input('message'),$contact_id,[$request->input('test_user_id')]));
+            $this->dispatch(new SendMessage($request->input('test_message'),$contact_id,[$request->input('test_user_id')]));
             Session::flash('message','测试发送成功');
             Session::flash('message_type',2);
             return view('admin.im.customer.group')->with('message',$request->input('test_message'));
