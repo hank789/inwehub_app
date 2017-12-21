@@ -188,7 +188,7 @@ class CompanyController extends Controller {
         });
         $pageData = array_chunk($data,$per_page);
         $return['data'] = $pageData[$page-1]??[];
-        if (empty($return['data']) && $request->input('page',1) == 1) {
+        if (empty($return['data']) && $request->input('page',1) == 1 && $request->input('searchRule') == 2) {
             $ip = $request->getClientIp();
             $location = $this->findIp($ip);
             $result = BaiduMap::instance()->placeSuggestion($name,$location[1]??'上海',$latitude,$longitude);
