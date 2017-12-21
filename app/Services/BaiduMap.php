@@ -57,7 +57,9 @@ class BaiduMap
                 break;
             case 1:
                 $params['location'] = $location;
-                $params['radius'] = $radius;
+                if ($radius > 0) {
+                    $params['radius'] = $radius;
+                }
                 break;
             case 2:
                 $params['bounds'] = $bounds;
