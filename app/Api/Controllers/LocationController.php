@@ -18,15 +18,16 @@ class LocationController extends Controller {
         $this->validate($request, $validateRules);
         $result = BaiduMap::instance()->geocoder($request->input('latitude'),$request->input('longitude'));
         $places = [];
-        if (isset($result['result']) && isset($result['formatted_address'])) {
+        $data = $result['result'];
+        if (isset($data['formatted_address'])) {
             $places[] = [
-                'name' => $result['sematic_description'],
-                'address' => $result['formatted_address'],
+                'name' => $data['sematic_description'],
+                'address' => $data['formatted_address'],
                 'distance' => 0
             ];
         }
-        if (isset($result['pois'])) {
-            foreach ($result['pois'] as $item) {
+        if (isset($data['pois'])) {
+            foreach ($data['pois'] as $item) {
                 $places[] = [
                     'name' => $item['name'],
                     'address' => $item['addr'],
