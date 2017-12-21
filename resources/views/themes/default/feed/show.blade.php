@@ -35,6 +35,7 @@
                                 <div class="meta mt-10">
                                     <span class="text-muted">{{ $message->created_at }} </span>
                                 <span class="text-muted">
+                                    <a href="javascript:void(0)" onclick="top_message({{ $message->id }})">{{ $message->top > 0 ? '取消置顶('.$message->top.')':'置顶' }}</a>
                                     <a href="javascript:void(0)" onclick="delete_message({{ $message->id }})">删除</a>
                                 </span>
                                 </div>
@@ -61,6 +62,18 @@
         $.get('/manager/feed/destroy/'+message_id,function(msg){
             if(msg === 'ok'){
                 $("#message_"+message_id).remove();
+            }else{
+                alert('操作失败，请稍后再试！');
+            }
+        });
+    }
+    function top_message(message_id)
+    {
+        var sort = prompt('输入置顶排序(值越大越靠前，输入0则取消排序)',1);
+
+        $.get('/manager/feed/top/'+message_id+'/'+sort,function(msg){
+            if(msg === 'ok'){
+                alert('置顶成功！');
             }else{
                 alert('操作失败，请稍后再试！');
             }
