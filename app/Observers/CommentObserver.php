@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Notifications\NewComment;
 use App\Notifications\Readhub\CommentReplied;
 use App\Notifications\Readhub\SubmissionReplied;
+use App\Notifications\UserCommentMentioned;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\Frontend\System\Credit as CreditEvent;
 use Illuminate\Support\Facades\Redis;
@@ -214,11 +215,18 @@ class CommentObserver implements ShouldQueue {
                             'extra_body' => '原文：'.strip_tags($submission->title)
                         ]));
                 }
-                //@了某些人
-                //$this->handleCommentMentions($comment);
                 break;
             default:
                 return;
+        }
+
+        //@了某些人
+        if ($comment->mentions) {
+            foreach ($comment->mentions as $m_uid) {
+                if (isset($notifyUids[$m_uid])) continue;
+                $mUser = User::find($m_uid);
+                $mUser->notify(new UserCommentMentioned($m_uid,$comment));
+            }
         }
 
         $fields[] = [

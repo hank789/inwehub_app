@@ -46,10 +46,14 @@ class Comment extends Model
 {
     use BelongsToUserTrait;
     protected $table = 'comments';
-    protected $fillable = ['user_id','level','parent_id', 'content','source_id','source_type','to_user_id','supports','status'];
+    protected $fillable = ['user_id','level','parent_id', 'content','source_id','source_type','mentions','to_user_id','supports','status'];
 
     protected $with = [
         'owner', 'children',
+    ];
+
+    protected $casts = [
+        'mentions' => 'json',
     ];
 
     public function owner()

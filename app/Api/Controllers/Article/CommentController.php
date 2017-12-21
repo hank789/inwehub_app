@@ -35,8 +35,7 @@ class CommentController extends Controller {
 
         $submission = Submission::find($request->submission_id);
         $parentComment = ($request->parent_id > 0) ? Comment::find($request->parent_id) : null;
-
-        $comment = Comment::create([
+        $data = [
             'content'          => $request->body,
             'user_id'       => $user->id,
             'parent_id'     => $request->parent_id,
@@ -45,8 +44,11 @@ class CommentController extends Controller {
             'source_type' => get_class($submission),
             'to_user_id'  => 0,
             'status'      => 1,
-            'supports'    => 0
-        ]);
+            'supports'    => 0,
+        ];
+        $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):'';
+
+        $comment = Comment::create($data);
 
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }
