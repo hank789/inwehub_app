@@ -197,7 +197,7 @@ class CommentObserver implements ShouldQueue {
                             'comment_id' => $comment->id,
                             'body'   => $comment->content,
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
-                            'extra_body' => '原回复：'.$parent_comment->body
+                            'extra_body' => '原回复：'.$parent_comment->content
                         ]));
                 }
                 if ($submission->user_id != $comment->user_id && !isset($notifyUids[$submission->user_id])) {
@@ -212,7 +212,7 @@ class CommentObserver implements ShouldQueue {
                             'comment_id' => $comment->id,
                             'body'   => $comment->content,
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
-                            'extra_body' => '原文：'.strip_tags($submission->title)
+                            'extra_body' => '原文：'.$submission->title
                         ]));
                 }
                 break;

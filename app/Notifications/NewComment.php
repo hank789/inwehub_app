@@ -123,7 +123,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
         }
         return [
             'title' => $title,
-            'body'  => $this->comment->content,
+            'body'  => strip_tags($this->comment->content),
             'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
         ];
     }
@@ -156,7 +156,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                 return null;
         }
         $keyword2 = date('Y-m-d H:i',strtotime($source->created_at));
-        $keyword3 = $this->comment->content;
+        $keyword3 = strip_tags($this->comment->content);
         $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
         if (config('app.env') != 'production') {
             $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
