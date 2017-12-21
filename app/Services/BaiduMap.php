@@ -77,11 +77,14 @@ class BaiduMap
         return $this->_sendHttp('place/v2/search',$params);
     }
 
-    public function placeSuggestion($query,$region='上海'){
+    public function placeSuggestion($query,$region='上海',$lat='',$lng=''){
         $params = [];
         $params['query'] = $query;
         $params['region'] = $region;
         $params['city_limit'] = false;
+        if ($lat && $lng) {
+            $params['location'] = $lat.','.$lng;
+        }
         $params['output'] = $this->output;
         return $this->_sendHttp('place/v2/suggestion',$params);
     }
