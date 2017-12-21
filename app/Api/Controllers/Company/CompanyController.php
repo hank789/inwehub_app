@@ -191,14 +191,14 @@ class CompanyController extends Controller {
         if (empty($return['data']) && $request->input('page',1) == 1 && $request->input('searchRule') == 2) {
             $ip = $request->getClientIp();
             $location = $this->findIp($ip);
-            $result = BaiduMap::instance()->placeSuggestion($name,$location[1]??'上海',$latitude,$longitude);
-            $data = $result['result'];
+            $result = BaiduMap::instance()->place($name,1,$location[1]??'上海',$latitude ? $latitude.','.$longitude:'',2000,'',2,20,0,'公司企业');
+            $data = $result['results'];
             foreach ($data as $item) {
                 $return['data'][] = [
                     'id'   => -1,
                     'name' => $item['name'],
                     'logo' => '',
-                    'address_province' => $item['city'].$item['district'],
+                    'address_province' => $item['address'],
                     'tags' => [],
                     'distance' => '未知',
                     'distance_format' => '未知'

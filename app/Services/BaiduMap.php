@@ -50,7 +50,7 @@ class BaiduMap
      * @param  integer $coord_type [1:wgs84ll即GPS经纬度][2:gcj02ll即国测局经纬度坐标][3:bd09ll即百度经纬度坐标][4:bd09mc即百度米制坐标]
      * @link http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-placeapi
      */
-    public function place($query = '',$type = 0, $region = '上海',$location = '',$radius = 0,$bounds = '',$scope = 2,$page_size = 10,$page_num = 0,$tag = '',$filter = '',$coord_type = 3){
+    public function place($query = '',$type = 0, $region = '上海',$location = '',$radius = 2000,$bounds = '',$scope = 2,$page_size = 10,$page_num = 0,$tag = '',$filter = '',$coord_type = 3){
         switch ($type) {
             case 0:
                 $params['region'] = $region;
