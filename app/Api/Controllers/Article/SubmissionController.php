@@ -67,7 +67,7 @@ class SubmissionController extends Controller {
                     throw new ApiException(ApiException::ARTICLE_URL_ALREADY_EXIST);
                 }
                 $exist_submission_url = '/c/'.$exist_submission->category_id.'/'.$exist_submission->slug;
-                return self::createJsonData(false,[],500,"您提交的网址已经存在");
+                return self::createJsonData(false,['exist_url'=>$exist_submission_url],ApiException::ARTICLE_URL_ALREADY_EXIST,"您提交的网址已经存在");
             }
             try {
                 //$data = $this->linkSubmission($request);
