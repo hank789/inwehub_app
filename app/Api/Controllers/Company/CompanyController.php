@@ -9,6 +9,7 @@ use App\Models\Company\CompanyData;
 use App\Models\Company\CompanyDataUser;
 use App\Models\Company\CompanyService;
 use App\Models\Tag;
+use App\Services\BaiduMap;
 use App\Services\GeoHash;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -187,6 +188,23 @@ class CompanyController extends Controller {
         });
         $pageData = array_chunk($data,$per_page);
         $return['data'] = $pageData[$page-1]??[];
+        if (empty($return['data']) && $request->input('page',1) == 1) {
+            $ip = $request->getClientIp();
+            $location = $this->findIp($ip);
+            $result = BaiduMap::instance()->placeSuggestion($name,$location[1]??'上海',$latitude,$longitude);
+            $data = $result['result'];
+            foreach ($data as $item) {
+                $return['data'][] = [
+                    'id'   => -1,
+                    'name' => $item['name'],
+                    'logo' => '',
+                    'address_province' => $item['city'].$item['district'],
+                    'tags' => [],
+                    'distance' => '未知',
+                    'distance_format' => '未知'
+                ];
+            }
+        }
         return self::createJsonData(true,$return);
     }
 
