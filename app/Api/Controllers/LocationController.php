@@ -35,8 +35,15 @@ class LocationController extends Controller {
                 ];
             }
         }
+        $return = [
+            'data' => $places,
+            'current_page' => 1,
+            'per_page' => 40,
+            'from' => 1,
+            'to' => count($places)
+        ];
 
-        return self::createJsonData(true,$places);
+        return self::createJsonData(true,$return);
     }
 
 }
