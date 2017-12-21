@@ -34,11 +34,22 @@ class Task extends Model
 {
     use BelongsToUserTrait;
     protected $table = 'task';
-    protected $fillable = ['user_id', 'source_type','source_id','subject','status','action'];
+    protected $fillable = ['user_id', 'source_type','source_id','subject','status','priority','action'];
 
     const ACTION_TYPE_ANSWER = 'answer';
     const ACTION_TYPE_ANSWER_FEEDBACK = 'answer_feedback';
     const ACTION_TYPE_INVITE_ANSWER = 'invite_answer';
+    const ACTION_TYPE_NEWBIE_ASK = 'newbie_ask';
+    const ACTION_TYPE_NEWBIE_READHUB_COMMENT = 'newbie_readhub_comment';
+    const ACTION_TYPE_NEWBIE_COMPLETE_USERINFO = 'newbie_complete_userinfo';
 
+    public static $actionPriority = [
+        self::ACTION_TYPE_ANSWER => ['name'=>'回答','priority'=>500],
+        self::ACTION_TYPE_ANSWER_FEEDBACK => ['name'=>'回答点评','priority'=>400],
+        self::ACTION_TYPE_INVITE_ANSWER => ['name'=>'邀请回答','priority'=>450],
+        self::ACTION_TYPE_NEWBIE_ASK => ['name'=>'新手任务-提问','priority'=>590],
+        self::ACTION_TYPE_NEWBIE_READHUB_COMMENT => ['name'=>'新手任务-回复','priority'=>580],
+        self::ACTION_TYPE_NEWBIE_COMPLETE_USERINFO => ['name'=>'新手任务-完善个人信息','priority'=>600],
+    ];
 
 }

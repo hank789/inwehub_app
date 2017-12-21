@@ -65,10 +65,11 @@ class TaskLogic {
                 'source_id' => $source_id,
                 'source_type' => $source_type,
                 'action' => $action,
-                'status' => $status
+                'status' => $status,
+                'priority' => Task::$actionPriority[$action]['priority']
             ]);
         }catch (\Exception $e){
-            exit($e->getMessage());
+            app('sentry')->captureException($e);
         }
     }
 

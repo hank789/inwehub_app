@@ -19,18 +19,9 @@ use Illuminate\Support\Facades\Config;
 class TaskController extends Controller {
 
     public function myList(Request $request){
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
-
         $query = $request->user()->tasks()->where('status',0);
-        if($top_id){
-            $query = $query->where('id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('id','<',$bottom_id);
-        }else{
-            $query = $query->where('id','>',0);
-        }
-        $tasks = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+
+        $tasks = $query->orderBy('priority','DESC')->latest()->simplePaginate(Config::get('api_data_page_size'));
         $task_count = $request->user()->tasks()->where('status',0)->count();
         $notification_count = $request->user()->unreadNotifications()->whereIn('notification_type', [
             Notification::NOTIFICATION_TYPE_NOTICE,

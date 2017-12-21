@@ -4,6 +4,7 @@ namespace App\Listeners\Frontend\Auth;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Logic\TaskLogic;
 use App\Models\Readhub\ReadHubUser;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\UserOauth;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -45,11 +46,11 @@ class UserEventListener implements ShouldQueue
     {
         // 生成新手任务
         // 完善用户信息
-        TaskLogic::task($event->user->id,'newbie_complete_userinfo',0,'newbie_complete_userinfo');
+        TaskLogic::task($event->user->id,'newbie_complete_userinfo',0,Task::ACTION_TYPE_NEWBIE_COMPLETE_USERINFO);
         // 阅读评论
-        TaskLogic::task($event->user->id,'newbie_readhub_comment',0,'newbie_readhub_comment');
+        TaskLogic::task($event->user->id,'newbie_readhub_comment',0,Task::ACTION_TYPE_NEWBIE_READHUB_COMMENT);
         // 发起提问
-        TaskLogic::task($event->user->id,'newbie_ask',0,'newbie_ask');
+        TaskLogic::task($event->user->id,'newbie_ask',0,Task::ACTION_TYPE_NEWBIE_ASK);
         if ($event->oauthDataId) {
             $oauthData = UserOauth::find($event->oauthDataId);
             $event->user->avatar = saveImgToCdn($oauthData->avatar);
