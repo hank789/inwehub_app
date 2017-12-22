@@ -244,14 +244,14 @@ class IndexController extends Controller {
                     $type = 2;
                     $submission = Submission::find($comment->source_id);
                     if (!$submission) continue;
-                    $origin_title = ($submission->type == 'link'?'文章:':'动态:').$submission->title;
+                    $origin_title = ($submission->type == 'link'?'文章:':'动态:').$submission->formatTitle();
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                     break;
             }
             $return[] = [
                 'id' => $comment->id,
                 'type'    => $type,
-                'content' => $comment->content,
+                'content' => $comment->formatContent(),
                 'origin_title' => $origin_title,
                 'comment_url'  => $comment_url,
                 'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
