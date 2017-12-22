@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\SystemNotify;
@@ -116,6 +117,8 @@ class SystemController extends Controller {
         $loginrecord->longitude = $request->input('current_address_longitude');
         $loginrecord->latitude = $request->input('current_address_latitude');
         $loginrecord->save();
+        //登陆事件通知
+        event(new UserLoggedIn($user,'App唤起'));
         return self::createJsonData(true);
     }
 
