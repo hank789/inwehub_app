@@ -191,7 +191,7 @@ class Feed extends Model
                     ->where('supportable_type',Submission::class)
                     ->exists();
                 $data = [
-                    'title'     => $this->data['submission_title'],
+                    'title'     => $submission->formatTitle(),
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
                     'tags'      => $submission->tags()->get()->toArray(),
