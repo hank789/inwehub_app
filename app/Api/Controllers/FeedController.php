@@ -40,6 +40,7 @@ class FeedController extends Controller
             ];
         }
         $return['data'] = $data;
+        $return['per_page'] = count($data);
 
         return self::createJsonData(true,$return);
     }

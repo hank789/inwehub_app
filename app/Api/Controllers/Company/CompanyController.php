@@ -156,6 +156,7 @@ class CompanyController extends Controller {
         $per_page = 30;
         $return = [
             'current_page' => $page,
+            'next_page_url' => null,
             'per_page'     => $per_page,
             'from'         => ($page-1) * $per_page + 1,
             'to'           => $page * $per_page,
