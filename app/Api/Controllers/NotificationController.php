@@ -75,16 +75,16 @@ class NotificationController extends Controller
         $customer_user = User::find($customer_id);
 
         foreach ($im_messages as $im_message) {
-            if ($im_message->contact_id == $customer_id) $is_kefu_in = true;
             $contact = User::find($im_message->contact_id);
             $im_count = $user->conversations()->where('contact_id', $im_message->contact_id)->where('im_messages.user_id',$im_message->contact_id)->whereNull('read_at')->count();
             $total_unread += $im_count;
             $last_message = $user->conversations()->where('contact_id', $im_message->contact_id)->orderBy('im_conversations.id','DESC')->first();
-            $im_list[] = [
+            $item = [
                 'unread_count' => $im_count,
                 'avatar'       => $contact->avatar,
                 'name'         => $contact->name,
                 'contact_id'   => $contact->id,
+                'contact_uuid' => $contact->uuid,
                 'last_message' => [
                     'id' => $last_message->id,
                     'text' => '',
@@ -93,14 +93,21 @@ class NotificationController extends Controller
                     'created_at' => (string)$last_message->created_at
                 ]
             ];
+            if ($im_message->contact_id == $customer_id) {
+                $is_kefu_in = true;
+                $im_list[-1] = $item;
+            } else {
+                $im_list[] = $item;
+            }
         }
         if ($is_kefu_in == false) {
             //把客服小哈加进去
-            $im_list[] = [
+            $im_list[-1] = [
                 'unread_count' => 0,
                 'avatar'       => $customer_user->avatar,
                 'name'         => $customer_user->name,
                 'contact_id'   => $customer_user->id,
+                'contact_uuid' => $customer_user->uuid,
                 'last_message' => [
                     'id' => 0,
                     'text' => '',
