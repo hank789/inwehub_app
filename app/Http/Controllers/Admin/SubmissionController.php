@@ -70,8 +70,8 @@ class SubmissionController extends AdminController
      */
     public function destroy(Request $request)
     {
-        $ids = $request->input('id');
-        Article::where('status',Article::ARTICLE_STATUS_PENDING)->whereIn('id',$ids)->delete();
-        return $this->success(route('admin.article.index'),'活动删除成功');
+        $ids = $request->input('ids');
+        Submission::whereIn('id',$ids)->delete();
+        return $this->success(route('admin.operate.article.index'),'删除成功');
     }
 }

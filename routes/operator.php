@@ -27,6 +27,7 @@ Route::get('/shop',['as'=>'website.shop','uses'=>'IndexController@shop'])->middl
 //feed前台显示
 Route::get('feed/destroy/{id}',['as'=>'auth.feed.destroy','uses'=>'FeedController@destroy'])->where(['id'=>'[0-9]+'])->middleware(['auth','auth.admin']);
 Route::get('feeds',['as'=>'auth.feed.index','uses'=>'FeedController@index']);
+Route::get('feed/top/{id}/{sort}',['as'=>'auth.feed.top','uses'=>'FeedController@setTop'])->where(['id'=>'[0-9]+','sort'=>'[0-9]+'])->middleware(['auth','auth.admin']);
 
 
 /*用户账号管理，包含用户登录注册等操作*/

@@ -38,7 +38,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixSubmissionSuport::class,
         Commands\FixData\FixSubmissionIds::class,
         Commands\FixData\CompanyData::class,
-        Commands\FixData\AnswerFeedbackTask::class
+        Commands\FixData\AnswerFeedbackTask::class,
+        Commands\FixData\FixTaskPriority::class
 
 
     ];

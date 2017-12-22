@@ -16,26 +16,49 @@ class LocationController extends Controller {
             'latitude' => 'required'
         ];
         $this->validate($request, $validateRules);
-        $result = BaiduMap::instance()->geocoder($request->input('latitude'),$request->input('longitude'));
+        $name = $request->input('name');
         $places = [];
-        if (isset($result['result']) && isset($result['formatted_address'])) {
-            $places[] = [
-                'name' => $result['sematic_description'],
-                'address' => $result['formatted_address'],
-                'distance' => 0
-            ];
-        }
-        if (isset($result['pois'])) {
-            foreach ($result['pois'] as $item) {
+        if ($name) {
+            $ip = $request->getClientIp();
+            $location = $this->findIp($ip);
+            $result = BaiduMap::instance()->placeSuggestion($name,$location[1]??'上海',$request->input('latitude'),$request->input('longitude'));
+            $data = $result['result'];
+            foreach ($data as $item) {
                 $places[] = [
                     'name' => $item['name'],
-                    'address' => $item['addr'],
-                    'distance' => $item['distance']
+                    'address' => $item['city'].$item['district'],
+                    'distance' => null
                 ];
             }
+        } else {
+            $result = BaiduMap::instance()->geocoder($request->input('latitude'),$request->input('longitude'));
+            $data = $result['result'];
+            if (isset($data['formatted_address'])) {
+                $places[] = [
+                    'name' => $data['sematic_description'],
+                    'address' => $data['formatted_address'],
+                    'distance' => 0
+                ];
+            }
+            if (isset($data['pois'])) {
+                foreach ($data['pois'] as $item) {
+                    $places[] = [
+                        'name' => $item['name'],
+                        'address' => $item['addr'],
+                        'distance' => $item['distance']
+                    ];
+                }
+            }
         }
+        $return = [
+            'data' => $places,
+            'current_page' => 1,
+            'per_page' => count($places) + 10,
+            'from' => 1,
+            'to' => count($places)
+        ];
 
-        return self::createJsonData(true,$places);
+        return self::createJsonData(true,$return);
     }
 
 }

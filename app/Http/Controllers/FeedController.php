@@ -20,9 +20,25 @@ class FeedController extends Controller
     public function index()
     {
 
-        $messages = Feed::orderBy('id', 'desc')->paginate(20);
+        $messages = Feed::orderBy('top', 'desc')->latest()->paginate(20);
 
         return view('theme::feed.show')->with('messages',$messages);
+    }
+
+    public function setTop($id,$sort) {
+        $message = Feed::find($id);
+
+        if(!$message){
+            abort(404);
+        }
+        if ($sort <= 0) {
+            $message->top = 0;
+        } else {
+            $message->top = $sort;
+        }
+        $message->save();
+
+        return response('ok');
     }
 
     /**

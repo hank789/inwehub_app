@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Notifications\NewComment;
 use App\Notifications\Readhub\CommentReplied;
 use App\Notifications\Readhub\SubmissionReplied;
+use App\Notifications\UserCommentMentioned;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\Frontend\System\Credit as CreditEvent;
 use Illuminate\Support\Facades\Redis;
@@ -87,11 +88,11 @@ class CommentObserver implements ShouldQueue {
                             'name'   => $comment->user->name,
                             'avatar' => $comment->user->avatar,
                             'title'  => $comment->user->name.'回复了你的评论',
-                            'submission_title' => $question->title,
+                            'submission_title' => strip_tags($question->title),
                             'comment_id' => $comment->id,
-                            'body'   => $comment->content,
+                            'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_TASK,
-                            'extra_body' => '原回复：'.$parent_comment->content
+                            'extra_body' => '原回复：'.$parent_comment->formatContent()
                         ]));
                 }
                 //通知，自己除外
@@ -192,11 +193,11 @@ class CommentObserver implements ShouldQueue {
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
                             'title'  => $user->name.'回复了你的评论',
-                            'submission_title' => strip_tags($submission->title),
+                            'submission_title' => $submission->formatTitle(),
                             'comment_id' => $comment->id,
-                            'body'   => $comment->content,
+                            'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
-                            'extra_body' => '原回复：'.$parent_comment->body
+                            'extra_body' => '原回复：'.$parent_comment->formatContent()
                         ]));
                 }
                 if ($submission->user_id != $comment->user_id && !isset($notifyUids[$submission->user_id])) {
@@ -209,21 +210,28 @@ class CommentObserver implements ShouldQueue {
                             'avatar' => $user->avatar,
                             'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
                             'comment_id' => $comment->id,
-                            'body'   => $comment->content,
+                            'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
-                            'extra_body' => '原文：'.strip_tags($submission->title)
+                            'extra_body' => '原文：'.$submission->formatTitle()
                         ]));
                 }
-                //@了某些人
-                //$this->handleCommentMentions($comment);
                 break;
             default:
                 return;
         }
 
+        //@了某些人
+        if ($comment->mentions) {
+            foreach ($comment->mentions as $m_uid) {
+                if (isset($notifyUids[$m_uid])) continue;
+                $mUser = User::find($m_uid);
+                $mUser->notify(new UserCommentMentioned($m_uid,$comment));
+            }
+        }
+
         $fields[] = [
             'title' => '评论内容',
-            'value' => $comment->content,
+            'value' => $comment->formatContent(),
             'short' => false
         ];
         return \Slack::to(config('slack.ask_activity_channel'))

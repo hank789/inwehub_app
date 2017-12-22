@@ -855,6 +855,7 @@ class QuestionController extends Controller
     }
 
     protected function checkUserInfoPercent($user){
+        return;
         //字段完成度为90%才能创建问题
         $percent = $user->getInfoCompletePercent();
         $valid_percent = config('inwehub.user_info_valid_percent',90);

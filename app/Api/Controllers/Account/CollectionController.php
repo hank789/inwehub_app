@@ -121,7 +121,7 @@ class CollectionController extends Controller
                     $item = [
                         'id' => $attention->id,
                         'type' => $submission->type,
-                        'title' => $submission->title,
+                        'title' => $submission->formatTitle(),
                         'img'   => $submission->data['img']??[],
                         'submission_url' => $submission->data['url']??$comment_url,
                         'comment_url'    => $comment_url,

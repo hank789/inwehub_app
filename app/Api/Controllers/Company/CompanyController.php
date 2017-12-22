@@ -9,6 +9,7 @@ use App\Models\Company\CompanyData;
 use App\Models\Company\CompanyDataUser;
 use App\Models\Company\CompanyService;
 use App\Models\Tag;
+use App\Services\BaiduMap;
 use App\Services\GeoHash;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -155,6 +156,7 @@ class CompanyController extends Controller {
         $per_page = 30;
         $return = [
             'current_page' => $page,
+            'next_page_url' => null,
             'per_page'     => $per_page,
             'from'         => ($page-1) * $per_page + 1,
             'to'           => $page * $per_page,
@@ -187,6 +189,23 @@ class CompanyController extends Controller {
         });
         $pageData = array_chunk($data,$per_page);
         $return['data'] = $pageData[$page-1]??[];
+        if (empty($return['data']) && $request->input('page',1) == 1 && $request->input('searchRule') == 2) {
+            $ip = $request->getClientIp();
+            $location = $this->findIp($ip);
+            $result = BaiduMap::instance()->place($name,0,$location[1]??'上海',$latitude ? $latitude.','.$longitude:'',0,'',2,20,0,'公司企业');
+            $data = $result['results'];
+            foreach ($data as $item) {
+                $return['data'][] = [
+                    'id'   => -1,
+                    'name' => $item['name'],
+                    'logo' => '',
+                    'address_province' => $item['address'],
+                    'tags' => [],
+                    'distance' => '未知',
+                    'distance_format' => '未知'
+                ];
+            }
+        }
         return self::createJsonData(true,$return);
     }
 

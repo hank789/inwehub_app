@@ -115,6 +115,10 @@ class Submission extends Model {
         });
     }
 
+    public function formatTitle(){
+        return strip_tags($this->title);
+    }
+
     /**
      * A submission is owned by a user.
      *

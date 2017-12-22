@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\SystemNotify;
@@ -98,6 +99,8 @@ class SystemController extends Controller {
     public function location(Request $request){
         $user = $request->user();
         $clientIp = $request->getClientIp();
+        //登陆事件通知
+        event(new UserLoggedIn($user,'App唤起'));
         if (RateLimiter::instance()->increase('user-location',$user->id.'-'.$clientIp,3600)) {
             return self::createJsonData(true);
         }

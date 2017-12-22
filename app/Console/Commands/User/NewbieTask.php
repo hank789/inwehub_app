@@ -45,7 +45,7 @@ class NewbieTask extends Command
                 if ($comment) {
                     $status = 1;
                 }
-                TaskLogic::task($user->id,'newbie_readhub_comment',0,'newbie_readhub_comment',$status);
+                TaskLogic::task($user->id,'newbie_readhub_comment',0,Task::ACTION_TYPE_NEWBIE_READHUB_COMMENT,$status);
             }
             $newbie_ask_task = Task::where('user_id',$user->id)->where('source_type','newbie_ask')->first();
             if (!$newbie_ask_task) {

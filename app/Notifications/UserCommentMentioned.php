@@ -5,18 +5,16 @@ namespace App\Notifications;
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Comment;
-use App\Models\Notification as NotificationModel;
 use App\Models\Question;
+use App\Models\Notification as NotificationModel;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
+class UserCommentMentioned extends Notification implements ShouldBroadcast,ShouldQueue
 {
-    use Queueable,InteractsWithSockets;
+    use Queueable;
 
     protected $comment;
     protected $user_id;
@@ -35,40 +33,54 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        $via = ['database', 'broadcast'];
+        if ($notifiable->site_notifications['push_notify_mentions']??true){
+            $via[] = PushChannel::class;
+        }
+        if ($notifiable->site_notifications['wechat_notify_mentions']??true){
+            $via[] = WechatNoticeChannel::class;
+        }
+        return $via;
     }
 
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        //        return (new MailMessage)
+//                    ->line('The introduction to the notification.')
+//                    ->action('Notification Action', url('/'))
+//                    ->line('Thank you for using our application!');
     }
 
     /**
      * Get the array representation of the notification.
      *
-     * @param  mixed  $notifiable
+     * @param mixed $notifiable
+     *
      * @return array
      */
     public function toArray($notifiable)
     {
+        $source_type = $this->comment->source_type;
         $source = $this->comment->source;
-        switch ($this->comment->source_type) {
-            case 'App\Models\Article':
-                return;
+        $extra_body = '';
+        switch ($source_type) {
+            case 'App\Models\Submission':
+                $url = '/c/'.$source->category_id.'/'.$source->slug;
+                $notification_type = NotificationModel::NOTIFICATION_TYPE_READ;
+                $extra_body = '原文：'.$source->formatTitle();
                 break;
             case 'App\Models\Answer':
                 $question = Question::find($source->question_id);
@@ -81,86 +93,79 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                         break;
                 }
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_TASK;
-                $title = $this->comment->user->name.'回复了您的回答';
                 break;
-            default:
-                return;
         }
         return [
             'url'    => $url,
             'notification_type' => $notification_type,
+            'name'   => $this->comment->user->username,
             'avatar' => $this->comment->user->avatar,
-            'title'  => $title,
+            'title'  => $this->comment->user->name.'在回复中提到了你',
             'body'   => $this->comment->formatContent(),
-            'extra_body' => ''
+            'comment_id' => $this->comment->id,
+            'extra_body' => $extra_body
         ];
     }
 
     public function toPush($notifiable)
     {
+        $title = $this->comment->user->name.'在回复中提到了你';
+        $body = $this->comment->formatContent();
+        $source_type = $this->comment->source_type;
         $source = $this->comment->source;
-        switch ($this->comment->source_type) {
-            case 'App\Models\Article':
-                return;
+        switch ($source_type) {
+            case 'App\Models\Submission':
+                $url = '/c/'.$source->category_id.'/'.$source->slug;
                 break;
             case 'App\Models\Answer':
                 $question = Question::find($source->question_id);
-                $object_type = 'pay_answer_new_comment';
-                $object_id = $source->question_id;
                 switch ($question->question_type){
                     case 1:
-                        $object_type = 'pay_answer_new_comment';
+                        $url = '/askCommunity/major/'.$source->question_id;
                         break;
                     case 2:
-                        $object_type = 'free_answer_new_comment';
-                        $object_id = $source->id;
+                        $url = '/askCommunity/interaction/'.$source->id;
                         break;
                 }
-                $title = $this->comment->user->name.'回复了您的回答';
                 break;
-            default:
-                return;
         }
         return [
             'title' => $title,
-            'body'  => $this->comment->formatContent(),
-            'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
+            'body'  => $body,
+            'payload' => ['object_type'=>'readhub_username_mentioned','object_id'=>$url],
         ];
     }
 
     public function toWechatNotice($notifiable){
+        $first = '您好，'.$this->comment->user->name.'在回复中提到了你';
+        $keyword2 = date('Y-m-d H:i:s',strtotime($this->comment->created_at));
+        $keyword3 = $this->comment->formatContent();
+        $remark = '请点击查看详情！';
+        $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
+        if (config('app.env') != 'production') {
+            $template_id = '_kZK_NLs1GOAqlBfpp0c2eG3csMtAo0_CQT3bmqmDfQ';
+        }
+
+        $source_type = $this->comment->source_type;
         $source = $this->comment->source;
-        switch ($this->comment->source_type) {
-            case 'App\Models\Article':
-                return null;
+        switch ($source_type) {
+            case 'App\Models\Submission':
+                $url = '/c/'.$source->category_id.'/'.$source->slug;
                 break;
             case 'App\Models\Answer':
                 $question = Question::find($source->question_id);
                 switch ($question->question_type){
                     case 1:
-                        $first = '您好，有人回复了您的专业回答';
-                        $remark = '请点击查看详情！';
-                        $target_url = config('app.mobile_url').'#/askCommunity/major/'.$source->question_id;
+                        $url = '/askCommunity/major/'.$source->question_id;
                         break;
                     case 2:
-                        $first = '您好，有人回复了您的互动回答';
-                        $remark = '请点击查看详情！';
-                        $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$source->id;
-                        break;
-                    default:
-                        return null;
+                        $url = '/askCommunity/interaction/'.$source->id;
                         break;
                 }
                 break;
-            default:
-                return null;
         }
-        $keyword2 = date('Y-m-d H:i',strtotime($source->created_at));
-        $keyword3 = $this->comment->formatContent();
-        $template_id = 'LdZgOvnwDRJn9gEDu5UrLaurGLZfywfFkXsFelpKB94';
-        if (config('app.env') != 'production') {
-            $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
-        }
+
+        $target_url = config('app.mobile_url').'#'.$url;
         return [
             'first'    => $first,
             'keyword1' => $this->comment->user->name,

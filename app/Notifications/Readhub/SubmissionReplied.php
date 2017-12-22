@@ -83,7 +83,7 @@ class SubmissionReplied extends Notification implements ShouldBroadcast,ShouldQu
     public function toPush($notifiable)
     {
         $title = $this->message['title'];
-        $body = $this->message['body'];
+        $body = strip_tags($this->message['body']);
         return [
             'title' => $title,
             'body'  => $body,
@@ -95,7 +95,7 @@ class SubmissionReplied extends Notification implements ShouldBroadcast,ShouldQu
         $first = '您好，您发表的动态收到一条评论';
         $object = Comment::find($this->message['comment_id']);
         $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
-        $keyword3 = $object->content;
+        $keyword3 = strip_tags($object->content);
         $remark = '请点击查看详情！';
         $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
         if (config('app.env') != 'production') {
