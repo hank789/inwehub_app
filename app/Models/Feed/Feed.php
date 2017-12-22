@@ -240,11 +240,13 @@ class Feed extends Model
             case self::FEED_TYPE_COMMENT_PAY_QUESTION:
                 //评论了专业问答
                 $url = $this->data['feed_url'];
+                $this->data['comment_content'] = strip_tags($this->data['comment_content']);
                 $data = $this->data;
                 break;
             case self::FEED_TYPE_COMMENT_FREE_QUESTION:
                 //评论了互动问答
                 $url = $this->data['feed_url'];
+                $this->data['comment_content'] = strip_tags($this->data['comment_content']);
                 $data = $this->data;
                 break;
             case self::FEED_TYPE_COMMENT_READHUB_ARTICLE:
