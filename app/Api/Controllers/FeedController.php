@@ -18,11 +18,12 @@ class FeedController extends Controller
 
         $feeds = $query->orderBy('top','desc')->latest()
             ->simplePaginate(Config::get('api_data_page_size'));
-        $return = [];
+        $return = $feeds->toArray();
+        $data = [];
         foreach ($feeds as $feed) {
             $sourceData = $feed->getSourceFeedData();
             if (empty($sourceData)) continue;
-            $return[] = [
+            $data[] = [
                 'id' => $feed->id,
                 'title' => $feed->data['feed_content'],
                 'user'  => [
@@ -38,6 +39,7 @@ class FeedController extends Controller
                 'created_at' => (string)$feed->created_at
             ];
         }
+        $return['data'] = $data;
 
         return self::createJsonData(true,$return);
     }

@@ -29,9 +29,12 @@ class TaskController extends Controller {
             Notification::NOTIFICATION_TYPE_READ,
             Notification::NOTIFICATION_TYPE_MONEY
             ])->count();
+        $return = $tasks->toArray();
         $list = TaskLogic::formatList($tasks);
+        $return['data'] = $list;
+        $return['total'] = $task_count + $notification_count;
 
-        return self::createJsonData(true,['list'=>$list,'total'=>$task_count + $notification_count]);
+        return self::createJsonData(true,$return);
     }
 
 }
