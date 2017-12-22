@@ -73,6 +73,7 @@ class NotificationController extends Controller
         }
         $customer_id = $role_user->user_id;
         $customer_user = User::find($customer_id);
+        $customer_message = [];
 
         foreach ($im_messages as $im_message) {
             $contact = User::find($im_message->contact_id);
@@ -95,14 +96,14 @@ class NotificationController extends Controller
             ];
             if ($im_message->contact_id == $customer_id) {
                 $is_kefu_in = true;
-                $im_list[-1] = $item;
+                $customer_message = $item;
             } else {
                 $im_list[] = $item;
             }
         }
         if ($is_kefu_in == false) {
             //把客服小哈加进去
-            $im_list[-1] = [
+            $customer_message = [
                 'unread_count' => 0,
                 'avatar'       => $customer_user->avatar,
                 'name'         => $customer_user->name,
@@ -121,7 +122,7 @@ class NotificationController extends Controller
             if ($a['last_message']['created_at'] == $b['last_message']['created_at']) return 0;
             return ($a['last_message']['created_at'] < $b['last_message']['created_at'])? 1 : -1;
         });
-
+        $im_list[-1] = $customer_message;
         $data = [
             'todo_tasks' => $todo_task,
             'total_unread_count' => $total_unread,
