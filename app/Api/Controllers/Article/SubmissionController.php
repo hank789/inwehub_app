@@ -124,7 +124,7 @@ class SubmissionController extends Controller {
             $data['current_address_name'] = $request->input('current_address_name');
             $data['current_address_longitude'] = $request->input('current_address_longitude');
             $data['current_address_latitude'] = $request->input('current_address_latitude');
-            $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):'';
+            $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
 
             $submission = Submission::create([
                 'title'         => $request->title,

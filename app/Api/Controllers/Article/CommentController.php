@@ -46,7 +46,7 @@ class CommentController extends Controller {
             'status'      => 1,
             'supports'    => 0,
         ];
-        $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):'';
+        $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
 
         $comment = Comment::create($data);
 
