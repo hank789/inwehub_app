@@ -80,7 +80,7 @@ class CommentReplied extends Notification implements ShouldBroadcast,ShouldQueue
     public function toPush($notifiable)
     {
         $title = $this->message['title'];
-        $body = strip_tags($this->message['body']);
+        $body = $this->message['body'];
         return [
             'title' => $title,
             'body'  => $body,
@@ -92,7 +92,7 @@ class CommentReplied extends Notification implements ShouldBroadcast,ShouldQueue
         $first = '您好，您的回复收到一条评论';
         $object = Comment::find($this->message['comment_id']);
         $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
-        $keyword3 = strip_tags($object->content);
+        $keyword3 = $object->formatContent();
         $remark = '请点击查看详情！';
         $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
         if (config('app.env') != 'production') {

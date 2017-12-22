@@ -80,7 +80,7 @@ class UserCommentMentioned extends Notification implements ShouldBroadcast,Shoul
             case 'App\Models\Submission':
                 $url = '/c/'.$source->category_id.'/'.$source->slug;
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_READ;
-                $extra_body = '原文：'.$source->title;
+                $extra_body = '原文：'.$source->formatTitle();
                 break;
             case 'App\Models\Answer':
                 $question = Question::find($source->question_id);
@@ -101,7 +101,7 @@ class UserCommentMentioned extends Notification implements ShouldBroadcast,Shoul
             'name'   => $this->comment->user->username,
             'avatar' => $this->comment->user->avatar,
             'title'  => $this->comment->user->name.'在回复中提到了你',
-            'body'   => $this->comment->content,
+            'body'   => $this->comment->formatContent(),
             'comment_id' => $this->comment->id,
             'extra_body' => $extra_body
         ];
@@ -110,7 +110,7 @@ class UserCommentMentioned extends Notification implements ShouldBroadcast,Shoul
     public function toPush($notifiable)
     {
         $title = $this->comment->user->name.'在回复中提到了你';
-        $body = strip_tags($this->comment->content);
+        $body = $this->comment->formatContent();
         $source_type = $this->comment->source_type;
         $source = $this->comment->source;
         switch ($source_type) {
@@ -139,7 +139,7 @@ class UserCommentMentioned extends Notification implements ShouldBroadcast,Shoul
     public function toWechatNotice($notifiable){
         $first = '您好，'.$this->comment->user->name.'在回复中提到了你';
         $keyword2 = date('Y-m-d H:i:s',strtotime($this->comment->created_at));
-        $keyword3 = strip_tags($this->comment->content);
+        $keyword3 = $this->comment->formatContent();
         $remark = '请点击查看详情！';
         $template_id = 'H_uaNukeGPdLCXPSBIFLCFLo7J2UBDZxDkVmcc1in9A';
         if (config('app.env') != 'production') {

@@ -62,6 +62,10 @@ class Comment extends Model
             ->select(['id', 'name', 'avatar', 'uuid', 'is_expert']);
     }
 
+    public function formatContent(){
+        return strip_tags($this->content);
+    }
+
     public static function boot()
     {
         parent::boot();

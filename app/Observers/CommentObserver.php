@@ -88,11 +88,11 @@ class CommentObserver implements ShouldQueue {
                             'name'   => $comment->user->name,
                             'avatar' => $comment->user->avatar,
                             'title'  => $comment->user->name.'回复了你的评论',
-                            'submission_title' => $question->title,
+                            'submission_title' => strip_tags($question->title),
                             'comment_id' => $comment->id,
-                            'body'   => $comment->content,
+                            'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_TASK,
-                            'extra_body' => '原回复：'.$parent_comment->content
+                            'extra_body' => '原回复：'.$parent_comment->formatContent()
                         ]));
                 }
                 //通知，自己除外
@@ -193,11 +193,11 @@ class CommentObserver implements ShouldQueue {
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
                             'title'  => $user->name.'回复了你的评论',
-                            'submission_title' => strip_tags($submission->title),
+                            'submission_title' => $submission->formatTitle(),
                             'comment_id' => $comment->id,
-                            'body'   => $comment->content,
+                            'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
-                            'extra_body' => '原回复：'.$parent_comment->content
+                            'extra_body' => '原回复：'.$parent_comment->formatContent()
                         ]));
                 }
                 if ($submission->user_id != $comment->user_id && !isset($notifyUids[$submission->user_id])) {
@@ -210,9 +210,9 @@ class CommentObserver implements ShouldQueue {
                             'avatar' => $user->avatar,
                             'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
                             'comment_id' => $comment->id,
-                            'body'   => $comment->content,
+                            'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
-                            'extra_body' => '原文：'.$submission->title
+                            'extra_body' => '原文：'.$submission->formatTitle()
                         ]));
                 }
                 break;
@@ -231,7 +231,7 @@ class CommentObserver implements ShouldQueue {
 
         $fields[] = [
             'title' => '评论内容',
-            'value' => strip_tags($comment->content),
+            'value' => $comment->formatContent(),
             'short' => false
         ];
         return \Slack::to(config('slack.ask_activity_channel'))
