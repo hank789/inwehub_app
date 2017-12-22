@@ -62,6 +62,11 @@ class Comment extends Model
             ->select(['id', 'name', 'avatar', 'uuid', 'is_expert']);
     }
 
+    public function getContentAttribute($value)
+    {
+        return strip_tags($value);
+    }
+
     public function formatContent(){
         return strip_tags($this->content);
     }
