@@ -231,7 +231,7 @@ class CommentObserver implements ShouldQueue {
 
         $fields[] = [
             'title' => '评论内容',
-            'value' => $comment->content,
+            'value' => strip_tags($comment->content),
             'short' => false
         ];
         return \Slack::to(config('slack.ask_activity_channel'))
