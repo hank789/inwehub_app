@@ -122,7 +122,7 @@ class NotificationController extends Controller
             if ($a['last_message']['created_at'] == $b['last_message']['created_at']) return 0;
             return ($a['last_message']['created_at'] < $b['last_message']['created_at'])? 1 : -1;
         });
-        $im_list[-1] = $customer_message;
+        array_unshift($im_list,$customer_message);
         $data = [
             'todo_tasks' => $todo_task,
             'total_unread_count' => $total_unread,
