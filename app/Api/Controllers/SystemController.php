@@ -99,6 +99,8 @@ class SystemController extends Controller {
     public function location(Request $request){
         $user = $request->user();
         $clientIp = $request->getClientIp();
+        //登陆事件通知
+        event(new UserLoggedIn($user,'App唤起'));
         if (RateLimiter::instance()->increase('user-location',$user->id.'-'.$clientIp,3600)) {
             return self::createJsonData(true);
         }
@@ -117,8 +119,6 @@ class SystemController extends Controller {
         $loginrecord->longitude = $request->input('current_address_longitude');
         $loginrecord->latitude = $request->input('current_address_latitude');
         $loginrecord->save();
-        //登陆事件通知
-        event(new UserLoggedIn($user,'App唤起'));
         return self::createJsonData(true);
     }
 
