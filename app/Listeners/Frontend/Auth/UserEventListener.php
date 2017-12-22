@@ -7,6 +7,7 @@ use App\Models\Readhub\ReadHubUser;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserOauth;
+use App\Notifications\NewInviteUserRegister;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Redis;
 
@@ -71,7 +72,7 @@ class UserEventListener implements ShouldQueue
             $rc_user = User::find($event->user->rc_uid);
             $title .= ';邀请者：'.$rc_user->name;
             //给邀请者发送通知
-
+            $rc_user->notify(new NewInviteUserRegister($rc_user->id,$event->user->id));
         }
         \Slack::send('新用户注册: '.formatSlackUser($event->user).';设备：'.$event->from.$title);
     }
