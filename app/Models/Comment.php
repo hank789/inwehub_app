@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * App\Models\Comment
@@ -74,6 +75,10 @@ class Comment extends Model
     public static function boot()
     {
         parent::boot();
+
+        static::addGlobalScope('withHtml', function(Builder $builder) {
+            $builder->select('*','content as htmlContent');
+        });
 
         /*监听创建*/
         static::creating(function($comment){
