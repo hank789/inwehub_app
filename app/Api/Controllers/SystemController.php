@@ -100,7 +100,7 @@ class SystemController extends Controller {
         $user = $request->user();
         $clientIp = $request->getClientIp();
         //登陆事件通知
-        event(new UserLoggedIn($user,'App唤起'));
+        event(new UserLoggedIn($user,$request->input('device_system').'唤起'));
         if (RateLimiter::instance()->increase('user-location',$user->id.'-'.$clientIp,3600)) {
             return self::createJsonData(true);
         }
