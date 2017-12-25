@@ -3,6 +3,8 @@
 namespace App\Listeners\Frontend\Auth;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Logic\TaskLogic;
+use App\Models\IM\Room;
+use App\Models\IM\RoomUser;
 use App\Models\Readhub\ReadHubUser;
 use App\Models\Role;
 use App\Models\Task;
@@ -80,16 +82,23 @@ class UserEventListener implements ShouldQueue
         //客服
         $contact_id = Role::getCustomerUserId();
         $contact = User::find($contact_id);
+        $room = Room::create([
+            'user_id' => $contact_id,
+            'r_type'  => Room::ROOM_TYPE_WHISPER
+        ]);
+
         $message = $contact->messages()->create([
             'data' => ['text'=>'亲爱的'.$event->user->name.'，您好，欢迎您加入InweHub，首先邀请您更新自己的个人信息，这样可以让大家更方便的找到您，您的分享也会得到更好的展示，并且随着个人信息的完善，社区功能将会逐一解锁，希望您使用愉快，如有任何疑问或建议，请随时联系我。'],
+            'room_id' => $room->id
         ]);
 
-        $contact->conversations()->attach($message, [
-            'contact_id' => $event->user->id
+        RoomUser::create([
+            'user_id' => $contact_id,
+            'room_id' => $room->id
         ]);
-
-        $event->user->conversations()->attach($message, [
-            'contact_id' => $contact_id,
+        RoomUser::create([
+            'user_id' => $event->user->id,
+            'room_id' => $room->id
         ]);
 
         // broadcast the message to the other person

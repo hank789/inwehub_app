@@ -1,8 +1,12 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
+use App\Models\IM\Message;
+use App\Models\IM\Room;
+use App\Models\IM\RoomUser;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\NewMessage;
@@ -17,37 +21,46 @@ class MessageController extends Controller
     public function getMessages(Request $request)
     {
         $this->validate($request, [
+            'room_id' => 'required|integer',
             'contact_id' => 'required|integer',
             'page'       => 'required|integer',
         ]);
 
         $user = $request->user();
+        $room_id = $request->input('room_id');
         $contact_id = $request->input('contact_id');
-        if (!$contact_id) {
-            //客服
-            $contact_id = Role::getCustomerUserId();
+        if ($room_id <= 0 && $contact_id) {
+            //私信
+            $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
+            $roomUser = RoomUser::select('room_id')->where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
+            $room_id = $roomUser->room_id;
         }
 
-        $contact = User::find($contact_id);
-        $messages = $user->conversations()
-            ->where('contact_id', $contact_id)
-            ->orderBy('im_conversations.id', 'desc')
+        $messages = $user->messages()
+            ->where('room_id', $room_id)
+            ->orderBy('id', 'asc')
             ->simplePaginate(Config::get('api_data_page_size'))->toArray();
 
-        $this->markAllAsRead($contact_id);
+        Message::where('room_id',$room_id)->where('user_id','!=',$user->id)->update(['read_at' => Carbon::now()]);
 
-        $messages['data'] = array_reverse($messages['data']);
         $users = [];
         $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid];
+        $contact = User::find($contact_id);
         $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid];
 
         foreach ($messages['data'] as &$item) {
+            if (!isset($users[$item['user_id']])) {
+                $contact = User::find($item['user_id']);
+                $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid];
+            }
             $item['avatar'] = $users[$item['user_id']]['avatar'];
             $item['uuid'] = $users[$item['user_id']]['uuid'];
         }
         $messages['contact'] = [
-            'name' => $contact->name
+            'name' => $contact->name,
+            'id'   => $contact->id
         ];
+        $messages['room_id'] = $room_id;
         return self::createJsonData(true,$messages);
     }
 
@@ -57,21 +70,22 @@ class MessageController extends Controller
         $this->validate($request, [
             'text'    => 'required_without:img',
             'img'    => 'required_without:text',
+            'room_id' => 'required|integer',
             'contact_id' => 'required|integer',
         ]);
 
-        if ($request->contact == Auth::user()->id) {
-            throw new ApiException(ApiException::BAD_REQUEST);
+        $room_id = $request->input('room_id');
+        $user =  Auth::user();
+
+        if ($room_id <= 0) {
+            $room = Room::create([
+                'user_id' => $user->id,
+                'r_type'  => Room::ROOM_TYPE_WHISPER
+            ]);
+            $room_id = $room->id;
         }
         $contact_id = $request->input('contact_id');
-        if (!$contact_id) {
-            //客服
-            $contact_id = Role::getCustomerUserId();
-        }
-        $user =  Auth::user();
-        if ($user->id == $contact_id) {
-            throw new ApiException(ApiException::BAD_REQUEST);
-        }
+
         $base64Img = $request->input('img');
         $data = [];
         $data['text'] = $request->input('text');
@@ -84,19 +98,29 @@ class MessageController extends Controller
         }
         $message = $user->messages()->create([
             'data' => $data,
+            'room_id' => $room_id
         ]);
 
-        $user->conversations()->attach($message, [
-            'contact_id' => $contact_id
+        RoomUser::firstOrCreate([
+            'user_id' => $user->id,
+            'room_id' => $room_id
+        ],[
+            'user_id' => $user->id,
+            'room_id' => $room_id
         ]);
 
-        User::find($contact_id)->conversations()->attach($message, [
-            'contact_id' => $user->id,
-        ]);
-
-        // broadcast the message to the other person
-        $contact = User::find($contact_id);
-        $contact->notify(new NewMessage($contact_id,$message));
+        if ($contact_id) {
+            RoomUser::firstOrCreate([
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ],[
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ]);
+            // broadcast the message to the other person
+            $contact = User::find($contact_id);
+            $contact->notify(new NewMessage($contact_id,$message));
+        }
 
 
         return self::createJsonData(true, $message->toArray());
