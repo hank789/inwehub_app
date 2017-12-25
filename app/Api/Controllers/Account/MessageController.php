@@ -91,7 +91,7 @@ class MessageController extends Controller
         ]);
 
         User::find($contact_id)->conversations()->attach($message, [
-            'contact_id' => Auth::user()->id,
+            'contact_id' => $user->id,
         ]);
 
         // broadcast the message to the other person
