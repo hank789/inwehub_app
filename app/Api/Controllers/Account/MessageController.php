@@ -133,7 +133,7 @@ class MessageController extends Controller
         $contact_id = $request->input('contact_id');
         //私信
         $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
-        $roomUser = RoomUser::select('room_id')->where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
+        $roomUser = RoomUser::where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
         if ($roomUser) {
             $room_id = $roomUser->room_id;
         } else {
