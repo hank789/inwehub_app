@@ -46,9 +46,12 @@
                                         <th>操作</th>
                                     </tr>
                                     @foreach($messages as $message)
+                                        @php
+                                            $message->data = json_decode($message->data,true)
+                                        @endphp
                                         <tr>
                                             <td>{{ $message->user->name }}</td>
-                                            <td>{{ $message->data }}</td>
+                                            <td>{{ $message->data['text']?:'[图片]' }}</td>
                                             <td>{{ timestamp_format($message->created_at) }}</td>
                                             <td>{{ $message->read_at?:'未读' }}</td>
                                             <td>
