@@ -49,7 +49,7 @@
                                         <tr>
                                             <td>{{ $message->last_message()->user->name }}</td>
                                             <td>{{ $message->last_message()->data['text']?:'[图片]' }}</td>
-                                            <td>{{ timestamp_format($message->created_at) }}</td>
+                                            <td>{{ timestamp_format($message->last_message()->created_at) }}</td>
                                             <td>{{ $message->last_message()->read_at?:'未读' }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
