@@ -23,32 +23,25 @@ class MessageController extends Controller
     {
         $this->validate($request, [
             'room_id' => 'required|integer',
-            'contact_id' => 'required|integer',
             'page'       => 'required|integer',
         ]);
 
         $user = $request->user();
         $room_id = $request->input('room_id');
-        $contact_id = $request->input('contact_id');
-        if ($room_id <= 0 && $contact_id) {
-            //私信
-            $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
-            $roomUser = RoomUser::select('room_id')->where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
-            if ($roomUser) {
-                $room_id = $roomUser->room_id;
-            }
-        }
 
-        $messages = MessageRoom::where('room_id', $room_id)
-            ->orderBy('id', 'asc')
+        $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
+            ->select('im_messages.*')
+            ->orderBy('im_messages.id', 'asc')
             ->simplePaginate(Config::get('api_data_page_size'))->toArray();
 
-        Message::where('room_id',$room_id)->where('user_id','!=',$user->id)->update(['read_at' => Carbon::now()]);
-
+        if ($messages['data']) {
+            Message::where('user_id','!=',$user->id)->whereIn('id',array_column($messages['data'],'message_id'))->update(['read_at' => Carbon::now()]);
+        }
+        $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$user->id)->first();
         $users = [];
         $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid];
-        $contact = User::find($contact_id);
-        $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid];
+        $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid];
+
 
         foreach ($messages['data'] as &$item) {
             if (!isset($users[$item['user_id']])) {
@@ -59,8 +52,8 @@ class MessageController extends Controller
             $item['uuid'] = $users[$item['user_id']]['uuid'];
         }
         $messages['contact'] = [
-            'name' => $contact->name,
-            'id'   => $contact->id
+            'name' => $roomUser->user->name,
+            'id'   => $roomUser->user->id
         ];
         $messages['room_id'] = $room_id;
         return self::createJsonData(true,$messages);
