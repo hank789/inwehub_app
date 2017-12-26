@@ -21,15 +21,19 @@ class CreateImRoomTable extends Migration
             $table->string('r_description')->nullable()->comment('房间描述');
             $table->timestamps();
         });
-        Schema::table('im_messages', function (Blueprint $table) {
-            $table->integer('room_id')->unsigned()->default(0)->index()->after('user_id');;
-        });
         Schema::create('im_room_user', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->index()->comment('用户id');
             $table->integer('room_id')->unsigned()->index();
             $table->timestamps();
             $table->unique(['user_id','room_id']);
+        });
+        Schema::create('im_message_room', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('message_id')->unsigned()->index();
+            $table->integer('room_id')->unsigned()->index();
+            $table->timestamps();
+            $table->unique(['message_id','room_id']);
         });
     }
 
@@ -42,5 +46,6 @@ class CreateImRoomTable extends Migration
     {
         Schema::dropIfExists('im_room');
         Schema::dropIfExists('im_room_user');
+        Schema::dropIfExists('im_message_room');
     }
 }

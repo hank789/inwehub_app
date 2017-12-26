@@ -5,6 +5,7 @@ namespace App\Api\Controllers;
 use App\Exceptions\ApiException;
 use App\Models\IM\Conversation;
 use App\Models\IM\Message;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
 use App\Models\Notification;
@@ -79,9 +80,9 @@ class NotificationController extends Controller
         $customer_message = [];
 
         foreach ($im_room_users as $im_room_user) {
-            $im_count = Message::where('room_id', $im_room_user->room_id)->where('user_id','!=',$user->id)->whereNull('read_at')->count();
+            $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room_user->room_id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
             $total_unread += $im_count;
-            $last_message = Message::where('room_id',$im_room_user->room_id)->orderBy('id','desc')->first();
+            $last_message = MessageRoom::where('room_id',$im_room_user->room_id)->orderBy('id','desc')->first();
             $contact_room = RoomUser::where('room_id',$im_room_user->room_id)->where('user_id','!=',$user->id)->orderBy('id','desc')->first();
 
             $item = [
@@ -92,11 +93,11 @@ class NotificationController extends Controller
                 'contact_id'   => $contact_room->user->id,
                 'contact_uuid' => $contact_room->user->uuid,
                 'last_message' => [
-                    'id' => $last_message->id,
+                    'id' => $last_message?$last_message->message_id:0,
                     'text' => '',
-                    'data'  => $last_message->data,
-                    'read_at' => $last_message->read_at,
-                    'created_at' => (string)$last_message->created_at
+                    'data'  => $last_message?$last_message->message->data:['text'=>'','img'=>''],
+                    'read_at' => $last_message?$last_message->message->read_at:'',
+                    'created_at' => $last_message?(string)$last_message->created_at:''
                 ]
             ];
             if ($contact_room->user_id == $customer_id) {

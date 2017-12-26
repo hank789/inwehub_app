@@ -7,6 +7,7 @@
 
 use App\Models\IM\Conversation;
 use App\Models\IM\Message;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
 use Illuminate\Console\Command;
@@ -36,20 +37,24 @@ class FixImData extends Command
     {
         $conversations = Conversation::orderBy('id','asc')->get();
         $rooms = [];
-        $rooms2 = [];
-
         foreach ($conversations as $conversation) {
             $key = $conversation->user_id.'_'.$conversation->contact_id;
-            if (isset($rooms[$key]) || in_array($key,$rooms)) {
-                $room_id = $rooms2[$key]??$rooms2[$conversation->contact_id.'_'.$conversation->user_id];
-                Message::where('id',$conversation->message_id)->update(['room_id'=>$room_id]);
+            if (isset($rooms[$key])) {
+                $room_id = $rooms[$key];
+                MessageRoom::firstOrCreate([
+                    'message_id' => $conversation->message_id,
+                    'room_id'    => $room_id
+                ],[
+                    'message_id' => $conversation->message_id,
+                    'room_id'    => $room_id
+                ]);
             } else {
-                $rooms[$key] = $conversation->contact_id.'_'.$conversation->user_id;
                 $room = Room::create([
                     'user_id' => $conversation->user_id,
                     'r_type'  => 1,
                 ]);
-                $rooms2[$conversation->contact_id.'_'.$conversation->user_id] = $room->id;
+                $rooms[$conversation->contact_id.'_'.$conversation->user_id] = $room->id;
+                $rooms[$key] = $room->id;
                 RoomUser::firstOrCreate([
                     'room_id' => $room->id,
                     'user_id' => $conversation->user_id
@@ -64,7 +69,14 @@ class FixImData extends Command
                     'room_id' => $room->id,
                     'user_id' => $conversation->contact_id
                 ]);
-                Message::where('id',$conversation->message_id)->update(['room_id'=>$room->id]);
+
+                MessageRoom::firstOrCreate([
+                    'message_id' => $conversation->message_id,
+                    'room_id'    => $room->id
+                ],[
+                    'message_id' => $conversation->message_id,
+                    'room_id'    => $room->id
+                ]);
             }
         }
     }

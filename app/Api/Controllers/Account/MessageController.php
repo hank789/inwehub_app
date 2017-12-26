@@ -5,6 +5,7 @@ use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
 use App\Models\IM\Message;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
 use App\Models\Role;
@@ -33,11 +34,12 @@ class MessageController extends Controller
             //私信
             $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
             $roomUser = RoomUser::select('room_id')->where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
-            $room_id = $roomUser->room_id;
+            if ($roomUser) {
+                $room_id = $roomUser->room_id;
+            }
         }
 
-        $messages = $user->messages()
-            ->where('room_id', $room_id)
+        $messages = MessageRoom::where('room_id', $room_id)
             ->orderBy('id', 'asc')
             ->simplePaginate(Config::get('api_data_page_size'))->toArray();
 
@@ -98,7 +100,6 @@ class MessageController extends Controller
         }
         $message = $user->messages()->create([
             'data' => $data,
-            'room_id' => $room_id
         ]);
 
         RoomUser::firstOrCreate([
@@ -107,6 +108,11 @@ class MessageController extends Controller
         ],[
             'user_id' => $user->id,
             'room_id' => $room_id
+        ]);
+
+        MessageRoom::create([
+            'room_id' => $room_id,
+            'message_id' => $message->id
         ]);
 
         if ($contact_id) {
@@ -124,6 +130,42 @@ class MessageController extends Controller
 
 
         return self::createJsonData(true, $message->toArray());
+    }
+
+    public function getWhisperRoom(Request $request) {
+        $this->validate($request, [
+            'contact_id' => 'required|integer'
+        ]);
+        $user = $request->user();
+        $contact_id = $request->input('contact_id');
+        //私信
+        $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
+        $roomUser = RoomUser::select('room_id')->where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
+        if ($roomUser) {
+            $room_id = $roomUser->room_id;
+        } else {
+            $room = Room::create([
+                'user_id' => $user->id,
+                'r_type'  => Room::ROOM_TYPE_WHISPER
+            ]);
+            $room_id = $room->id;
+            RoomUser::firstOrCreate([
+                'user_id' => $user->id,
+                'room_id' => $room_id
+            ],[
+                'user_id' => $user->id,
+                'room_id' => $room_id
+            ]);
+
+            RoomUser::firstOrCreate([
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ],[
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ]);
+        }
+        return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id]);
     }
 
 
