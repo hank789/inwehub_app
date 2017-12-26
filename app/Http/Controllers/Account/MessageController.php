@@ -112,7 +112,7 @@ class MessageController extends Controller
 
         $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
             ->select('im_messages.*')
-            ->orderBy('im_messages.id', 'asc')
+            ->orderBy('im_messages.id', 'desc')
             ->paginate(Config::get('api_data_page_size'));
 
         return view('theme::message.show')->with('toUser',$roomUser->user)->with('fromUser',$user)->with('messages',$messages)->with('room_id',$room_id);
