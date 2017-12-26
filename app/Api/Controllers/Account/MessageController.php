@@ -22,7 +22,7 @@ class MessageController extends Controller
     public function getMessages(Request $request)
     {
         $this->validate($request, [
-            'room_id' => 'required|integer',
+            'room_id' => 'required|integer|min:1',
             'page'       => 'required|integer',
         ]);
 
@@ -49,6 +49,7 @@ class MessageController extends Controller
                 }
                 $item['avatar'] = $users[$item['user_id']]['avatar'];
                 $item['uuid'] = $users[$item['user_id']]['uuid'];
+                $item['data'] = json_decode($item['data'],true);
             }
         }
 
@@ -66,20 +67,12 @@ class MessageController extends Controller
         $this->validate($request, [
             'text'    => 'required_without:img',
             'img'    => 'required_without:text',
-            'room_id' => 'required|integer',
-            'contact_id' => 'required|integer',
+            'room_id' => 'required|integer|min:1',
+            'contact_id' => 'required|integer|min:1',
         ]);
 
         $room_id = $request->input('room_id');
         $user =  Auth::user();
-
-        if ($room_id <= 0) {
-            $room = Room::create([
-                'user_id' => $user->id,
-                'r_type'  => Room::ROOM_TYPE_WHISPER
-            ]);
-            $room_id = $room->id;
-        }
         $contact_id = $request->input('contact_id');
 
         $base64Img = $request->input('img');
@@ -109,18 +102,17 @@ class MessageController extends Controller
             'message_id' => $message->id
         ]);
 
-        if ($contact_id) {
-            RoomUser::firstOrCreate([
-                'user_id' => $contact_id,
-                'room_id' => $room_id
-            ],[
-                'user_id' => $contact_id,
-                'room_id' => $room_id
-            ]);
-            // broadcast the message to the other person
-            $contact = User::find($contact_id);
-            $contact->notify(new NewMessage($contact_id,$message));
-        }
+        RoomUser::firstOrCreate([
+            'user_id' => $contact_id,
+            'room_id' => $room_id
+        ],[
+            'user_id' => $contact_id,
+            'room_id' => $room_id
+        ]);
+        // broadcast the message to the other person
+        $contact = User::find($contact_id);
+        $contact->notify(new NewMessage($contact_id,$message));
+
 
 
         return self::createJsonData(true, $message->toArray());
@@ -128,7 +120,7 @@ class MessageController extends Controller
 
     public function getWhisperRoom(Request $request) {
         $this->validate($request, [
-            'contact_id' => 'required|integer'
+            'contact_id' => 'required|integer|min:1'
         ]);
         $user = $request->user();
         $contact_id = $request->input('contact_id');
