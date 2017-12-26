@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Account;
 
 use App\Exceptions\ApiException;
+use App\Jobs\SendMessage;
+use App\Models\IM\MessageRoom;
+use App\Models\IM\RoomUser;
 use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
@@ -81,27 +84,10 @@ class MessageController extends Controller
         }
 
         $this->validate($request,$this->validateRules);
-        $message = $fromUser->messages()->create([
-            'data' => array_only($request->all(), ['text']),
-        ]);
 
-        $fromUser->conversations()->attach($message, [
-            'contact_id' => $toUser->id
-        ]);
+        $this->dispatch(new SendMessage($request->input('text'),$fromUser->id,[$toUser->id]));
 
-        $toUser->conversations()->attach($message, [
-            'contact_id' => $fromUser->id,
-        ]);
-
-        // broadcast the message to the other person
-        $toUser->notify(new NewMessage($toUser->id,$message));
-
-        if($message){
-            return $this->success(route('auth.message.show',['user_id'=>$toUser->id]),'消息发送成功');
-        }
-
-        return  $this->error("消息发送失败，请稍后再试",route('website.index'));
-
+        return $this->success(route('auth.message.show',['user_id'=>$toUser->id]),'消息发送成功');
 
     }
 
@@ -111,10 +97,9 @@ class MessageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($contact_id)
+    public function show($room_id)
     {
 
-        $toUser = User::find($contact_id);
         //客服
         $role = Role::customerService()->first();
         $role_user = RoleUser::where('role_id',$role->id)->first();
@@ -123,16 +108,14 @@ class MessageController extends Controller
         }
         $customer_id = $role_user->user_id;
         $user = User::find($customer_id);
+        $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$customer_id)->first();
 
-        $messages = $user->conversations()
-            ->orderBy('im_conversations.id', 'desc')
-            ->where('contact_id', $contact_id)->paginate(20);
+        $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
+            ->select('im_messages.*')
+            ->orderBy('im_messages.id', 'asc')
+            ->paginate(Config::get('api_data_page_size'));
 
-        $user->conversations()->where('contact_id', $contact_id)->get()->map(function ($m) use ($user) {
-            if ($user->id != $m->user_id) $m->update(['read_at' => Carbon::now()]);
-        });
-
-        return view('theme::message.show')->with('toUser',$toUser)->with('fromUser',$user)->with('messages',$messages);
+        return view('theme::message.show')->with('toUser',$roomUser->user)->with('fromUser',$user)->with('messages',$messages);
     }
 
     /**

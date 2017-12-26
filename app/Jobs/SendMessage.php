@@ -59,7 +59,7 @@ class SendMessage implements ShouldQueue
 
         foreach ($contact_ids as $contact_id) {
             $room_ids = RoomUser::select('room_id')->where('user_id',$from_user->id)->get()->pluck('room_id')->toArray();
-            $roomUser = RoomUser::select('room_id')->where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
+            $roomUser = RoomUser::where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
             if ($roomUser) {
                 $room_id = $roomUser->room_id;
             } else {

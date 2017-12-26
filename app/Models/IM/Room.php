@@ -51,10 +51,4 @@ class Room extends Model
     const ROOM_TYPE_WHISPER = 1;//私聊
     const ROOM_TYPE_GROUP = 2;//群聊
 
-    public function last_message()
-    {
-        $last_c = Message::where('room_id',$this->id)->orderBy('id','desc')->first();
-        return Message::find($last_c->id);
-    }
-
 }

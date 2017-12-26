@@ -25,6 +25,9 @@
 
             <div class="widget-streams messages mt-15">
                     @foreach($messages as $message)
+                    @php
+                        $message->data = json_decode($message->data,true)
+                    @endphp
                     <section class="hover-show streams-item" id="message_{{ $message->id }}">
                         <div class="stream-wrap media">
                             <div class="pull-left">

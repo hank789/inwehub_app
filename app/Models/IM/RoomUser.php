@@ -48,10 +48,4 @@ class RoomUser extends Model
         'updated_at',
     ];
 
-    public function last_message()
-    {
-        $last_c = Message::where('room_id',$this->room_id)->orderBy('id','desc')->first();
-        return Message::find($last_c->id);
-    }
-
 }
