@@ -41,16 +41,17 @@ class MessageController extends Controller
         $users = [];
         $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid];
         $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid];
-
-
-        foreach ($messages['data'] as &$item) {
-            if (!isset($users[$item['user_id']])) {
-                $contact = User::find($item['user_id']);
-                $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid];
+        if ($messages['data']) {
+            foreach ($messages['data'] as &$item) {
+                if (!isset($users[$item['user_id']])) {
+                    $contact = User::find($item['user_id']);
+                    $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid];
+                }
+                $item['avatar'] = $users[$item['user_id']]['avatar'];
+                $item['uuid'] = $users[$item['user_id']]['uuid'];
             }
-            $item['avatar'] = $users[$item['user_id']]['avatar'];
-            $item['uuid'] = $users[$item['user_id']]['uuid'];
         }
+
         $messages['contact'] = [
             'name' => $roomUser->user->name,
             'id'   => $roomUser->user->id
