@@ -87,7 +87,7 @@ class MessageController extends Controller
 
         $this->dispatch(new SendMessage($request->input('text'),$fromUser->id,[$toUser->id]));
 
-        return $this->success(route('auth.message.show',['user_id'=>$toUser->id]),'消息发送成功');
+        return $this->success(route('auth.message.show',['room_id'=>$request->input('room_id')]),'消息发送成功');
 
     }
 
@@ -115,7 +115,7 @@ class MessageController extends Controller
             ->orderBy('im_messages.id', 'asc')
             ->paginate(Config::get('api_data_page_size'));
 
-        return view('theme::message.show')->with('toUser',$roomUser->user)->with('fromUser',$user)->with('messages',$messages);
+        return view('theme::message.show')->with('toUser',$roomUser->user)->with('fromUser',$user)->with('messages',$messages)->with('room_id',$room_id);
     }
 
     /**
