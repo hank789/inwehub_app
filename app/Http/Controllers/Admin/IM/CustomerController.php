@@ -44,7 +44,7 @@ class CustomerController extends AdminController {
             $query = $query->whereNull('im_messages.read_at');
         }
 
-        $messages = $query->select('im_messages.*','im_message_room.room_id','im_message_room.message_id')->groupBy('im_message_room.room_id')->orderBy('im_message_room.message_id','desc')->paginate(20);
+        $messages = $query->select('im_message_room.*')->groupBy('im_message_room.room_id')->orderBy('im_message_room.message_id','desc')->paginate(20);
         return view('admin.im.customer.index')->with(compact('filter','messages'));
     }
 

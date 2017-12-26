@@ -53,4 +53,10 @@ class MessageRoom extends Model
         return $this->belongsTo('App\Models\IM\Message');
     }
 
+    public function last_message()
+    {
+        $last = self::where('room_id',$this->room_id)->orderBy('message_id','desc')->first();
+        return Message::find($last->message_id);
+    }
+
 }
