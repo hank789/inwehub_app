@@ -35,7 +35,7 @@ class MessageController extends Controller
             ->simplePaginate(Config::get('api_data_page_size'))->toArray();
 
         if ($messages['data']) {
-            Message::where('user_id','!=',$user->id)->whereIn('id',array_column($messages['data'],'message_id'))->update(['read_at' => Carbon::now()]);
+            Message::where('user_id','!=',$user->id)->whereIn('id',array_column($messages['data'],'id'))->update(['read_at' => Carbon::now()]);
         }
         $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$user->id)->first();
         $users = [];
