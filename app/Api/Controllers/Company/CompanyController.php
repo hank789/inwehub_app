@@ -199,7 +199,7 @@ class CompanyController extends Controller {
                     'id'   => -1,
                     'name' => $item['name'],
                     'logo' => '',
-                    'address_province' => $item['address'],
+                    'address_province' => $item['address']??'',
                     'tags' => [],
                     'distance' => '未知',
                     'distance_format' => '未知'
