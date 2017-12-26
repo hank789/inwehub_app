@@ -3,6 +3,7 @@ use App\Exceptions\ApiException;
 use App\Http\Controllers\Admin\AdminController;
 use App\Jobs\SendMessage;
 use App\Models\IM\Conversation;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\RoomUser;
 use App\Models\Role;
 use App\Models\RoleUser;
@@ -30,8 +31,8 @@ class CustomerController extends AdminController {
             throw new ApiException(ApiException::ERROR);
         }
         $contact_id = $role_user->user_id;
-        $query = RoomUser::where('im_room_user.user_id',$contact_id);
-        $query = $query->leftJoin('im_message_room','im_room_user.room_id','=','im_message_room.room_id');
+        $roomIds = RoomUser::where('user_id',$contact_id)->get()->pluck('room_id')->toArray();
+        $query = MessageRoom::whereIn('room_id',$roomIds);
         $query = $query->leftJoin('im_messages','im_message_room.message_id','=','im_messages.id');
 
 
@@ -43,7 +44,7 @@ class CustomerController extends AdminController {
             $query = $query->whereNull('im_messages.read_at');
         }
 
-        $messages = $query->select('im_messages.*','im_message_room.room_id')->groupBy('im_message_room.room_id')->orderBy('im_messages.id','desc')->paginate(20);
+        $messages = $query->select('im_messages.*','im_message_room.room_id','im_message_room.message_id')->groupBy('im_message_room.room_id')->orderBy('im_message_room.message_id','desc')->paginate(20);
         return view('admin.im.customer.index')->with(compact('filter','messages'));
     }
 
