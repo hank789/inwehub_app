@@ -63,18 +63,18 @@ class UserEventListener implements ShouldQueue
         }
         $title = '';
         if ($event->user->company) {
-            $title .= ';公司：'.$event->user->company;
+            $title .= '；公司：'.$event->user->company;
             Redis::connection()->hset('user_company_level',$event->user->id,$event->user->company);
         }
         if ($event->user->title) {
-            $title .= ';职位：'.$event->user->title;
+            $title .= '；职位：'.$event->user->title;
         }
         if ($event->user->email) {
-            $title .= ';邮箱：'.$event->user->email;
+            $title .= '；邮箱：'.$event->user->email;
         }
         if ($event->user->rc_uid) {
             $rc_user = User::find($event->user->rc_uid);
-            $title .= ';邀请者：'.$rc_user->name;
+            $title .= '；邀请者：'.formatSlackUser($rc_user);
             //给邀请者发送通知
             $rc_user->notify(new NewInviteUserRegister($rc_user->id,$event->user->id));
         }
@@ -88,7 +88,7 @@ class UserEventListener implements ShouldQueue
         ]);
 
         $message = $contact->messages()->create([
-            'data' => ['text'=>'亲爱的'.$event->user->name.'，您好，欢迎您加入InweHub，首先邀请您更新自己的个人信息，这样可以让大家更方便的找到您，您的分享也会得到更好的展示，并且随着个人信息的完善，社区功能将会逐一解锁，希望您使用愉快，如有任何疑问或建议，请随时联系我。'],
+            'data' => ['text'=>'您好，欢迎您加入InweHub，欢迎体验社区的各种功能，找到您感兴趣的专家、用户或者问答，希望您使用愉快！如有任何疑问或建议，请随时联系我！'],
             'room_id' => $room->id
         ]);
 
@@ -104,7 +104,7 @@ class UserEventListener implements ShouldQueue
         // broadcast the message to the other person
         $event->user->notify(new NewMessage($event->user->id,$message));
 
-        \Slack::send('新用户注册: '.formatSlackUser($event->user).';设备：'.$event->from.$title);
+        \Slack::send('新用户注册: '.formatSlackUser($event->user).'；设备：'.$event->from.$title);
     }
 
     /**
