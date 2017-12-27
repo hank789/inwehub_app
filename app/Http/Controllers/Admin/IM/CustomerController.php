@@ -2,12 +2,10 @@
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Admin\AdminController;
 use App\Jobs\SendMessage;
-use App\Models\IM\Conversation;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\RoomUser;
 use App\Models\Role;
 use App\Models\RoleUser;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 

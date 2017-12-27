@@ -6,7 +6,6 @@
  */
 
 use App\Events\Frontend\Auth\UserLoggedIn;
-use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\AppVersion;
@@ -14,7 +13,6 @@ use App\Models\LoginRecord;
 use App\Models\UserDevice;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Spatie\Browsershot\Browsershot;
 
 class SystemController extends Controller {
