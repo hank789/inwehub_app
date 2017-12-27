@@ -159,6 +159,7 @@ class AnswerController extends Controller
             'created_at' => (string)$question->created_at
         ];
         $answer->increment('views');
+        $this->doing($user->id,Doing::ACTION_VIEW_ANSWER,get_class($answer),$answer->id,'查看回答');
 
 
         return self::createJsonData(true,[

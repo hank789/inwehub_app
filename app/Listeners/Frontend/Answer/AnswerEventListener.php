@@ -2,7 +2,9 @@
 use App\Events\Frontend\Answer\Feedback;
 use App\Events\Frontend\Answer\PayForView;
 use App\Logic\QuestionLogic;
+use App\Logic\TaskLogic;
 use App\Models\Answer;
+use App\Models\Doing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Models\Feedback as FeedbackModel;
 
@@ -47,6 +49,7 @@ class AnswerEventListener implements ShouldQueue
     public function payForView($event) {
         $order = $event->order;
         $answer = $order->answer()->first();
+        TaskLogic::doing($order->user->id,Doing::ACTION_PAY_FOR_VIEW_ANSWER,get_class($answer),$answer->id,'付费围观答案');
         QuestionLogic::slackMsg('用户'.$order->user->id.'['.$order->user->name.']付费围观了回答',$answer->question,[]);
     }
 

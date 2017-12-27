@@ -43,6 +43,13 @@ class Doing extends Model
     protected $fillable = ['user_id', 'action','source_type','source_id','subject','content','refer_id','refer_user_id','refer_content','created_at'];
     public $timestamps = false;
 
+    const ACTION_VIEW_RESUME = 'view_resume';
+    const ACTION_VIEW_PAY_QUESTION = 'view_pay_question';
+    const ACTION_VIEW_FREE_QUESTION = 'view_free_question';
+    const ACTION_VIEW_ANSWER = 'view_answer';
+    const ACTION_PAY_FOR_VIEW_ANSWER = 'pay_for_view_answer';
+    const ACTION_VIEW_SUBMISSION = 'view_submission';
+
     static function correlation(User $user)
     {
       $attentions = $user->attentions()->get();

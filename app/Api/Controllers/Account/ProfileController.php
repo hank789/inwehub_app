@@ -8,6 +8,7 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Collection;
 use App\Models\Credit;
+use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
@@ -202,6 +203,7 @@ class ProfileController extends Controller
         if($jwtToken){
             try{
                 $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
+                $this->doing($loginUser->id,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,'查看简历');
             } catch (\Exception $e){
 
             }
