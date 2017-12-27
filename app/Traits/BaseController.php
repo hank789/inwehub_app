@@ -81,20 +81,22 @@ trait BaseController {
      */
     protected function doing($user_id,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content=null)
     {
-        dispatch(new SaveActivity(
-            [
-                'user_id' => $user_id,
-                'action' => $action,
-                'source_id' => $source_id,
-                'source_type' => $source_type,
-                'subject' => substr($subject,0,128),
-                'content' => strip_tags(substr($content,0,256)),
-                'refer_id' => $refer_id,
-                'refer_user_id' => $refer_user_id,
-                'refer_content' => strip_tags(substr($refer_content,0,256)),
-                'created_at' => Carbon::now()
-            ]
-        ));
+        if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user_id.'_'.$source_id)){
+            dispatch(new SaveActivity(
+                [
+                    'user_id' => $user_id,
+                    'action' => $action,
+                    'source_id' => $source_id,
+                    'source_type' => $source_type,
+                    'subject' => substr($subject,0,128),
+                    'content' => strip_tags(substr($content,0,256)),
+                    'refer_id' => $refer_id,
+                    'refer_user_id' => $refer_user_id,
+                    'refer_content' => strip_tags(substr($refer_content,0,256)),
+                    'created_at' => Carbon::now()
+                ]
+            ));
+        }
     }
 
 

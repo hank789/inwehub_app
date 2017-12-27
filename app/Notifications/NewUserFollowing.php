@@ -76,7 +76,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
         return [
             'url'    => '/share/resume/'.$user->uuid,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => $user->avatar,
             'title'  => $this->getTitle(),
             'body'   => '',
             'extra_body' => ''
