@@ -50,6 +50,12 @@ class Doing extends Model
     const ACTION_PAY_FOR_VIEW_ANSWER = 'pay_for_view_answer';
     const ACTION_VIEW_SUBMISSION = 'view_submission';
 
+
+    public function source()
+    {
+        return $this->morphTo();
+    }
+
     static function correlation(User $user)
     {
       $attentions = $user->attentions()->get();
@@ -91,6 +97,4 @@ class Doing extends Model
              ->select('doings.*')
              ->orderBy('doings.created_at','DESC');
     }
-
-
 }
