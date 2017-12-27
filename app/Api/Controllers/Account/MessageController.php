@@ -1,14 +1,11 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Api\Controllers\Controller;
-use App\Events\Frontend\Auth\UserLoggedIn;
-use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
 use App\Models\IM\Message;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
-use App\Models\Role;
 use App\Models\User;
 use App\Notifications\NewMessage;
 use Illuminate\Http\Request;

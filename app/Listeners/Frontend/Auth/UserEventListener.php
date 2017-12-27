@@ -3,6 +3,7 @@
 namespace App\Listeners\Frontend\Auth;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Logic\TaskLogic;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
 use App\Models\Readhub\ReadHubUser;
@@ -90,6 +91,11 @@ class UserEventListener implements ShouldQueue
         $message = $contact->messages()->create([
             'data' => ['text'=>'您好，欢迎您加入InweHub，欢迎体验社区的各种功能，找到您感兴趣的专家、用户或者问答，希望您使用愉快！如有任何疑问或建议，请随时联系我！'],
             'room_id' => $room->id
+        ]);
+
+        MessageRoom::create([
+            'room_id' => $room->id,
+            'message_id' => $message->id
         ]);
 
         RoomUser::create([
