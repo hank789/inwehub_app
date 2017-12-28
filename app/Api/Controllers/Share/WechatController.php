@@ -88,6 +88,7 @@ class WechatController extends Controller
                     $user = User::select('id')->where('uuid',$target_id)->first();
                     if ($user) {
                         $refer_user_id = $user->id;
+                        $target_id = $user->id;
                     }
                     break;
                 case 'submission':
@@ -96,6 +97,7 @@ class WechatController extends Controller
                     $submission = Submission::where('slug',$target_id)->first();
                     if ($submission) {
                         $refer_user_id = $submission->user_id;
+                        $target_id = $submission->id;
                     }
                     break;
                 case 'invite_register':
@@ -104,6 +106,7 @@ class WechatController extends Controller
                     $invite_user = User::where('rc_code',$target_id)->first();
                     if ($invite_user) {
                         $refer_user_id = $invite_user->id;
+                        $target_id = $invite_user->id;
                     }
                     break;
             }
