@@ -40,7 +40,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\CompanyData::class,
         Commands\FixData\AnswerFeedbackTask::class,
         Commands\FixData\FixTaskPriority::class,
-        Commands\FixData\FixImData::class
+        Commands\FixData\FixImData::class,
+        Commands\FixData\NewUserFollowingNotification::class
 
 
     ];
