@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Comment;
+use App\Models\Doing;
 use App\Models\Submission;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -49,6 +50,7 @@ class CommentController extends Controller {
         $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
 
         $comment = Comment::create($data);
+        $this->doing($user->id,Doing::ACTION_SUBMIT_COMMENT,get_class($comment),$comment->id,$comment->content,'',$submission->id,$submission->user_id,$submission->title);
 
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }

@@ -57,6 +57,10 @@ class Doing extends Model
     const ACTION_SHARE_SUBMISSION_SUCCESS = 'share_submission_success';
     const ACTION_SHARE_INVITE_REGISTER_SUCCESS = 'share_invite_register_success';
 
+    const ACTION_SUBMIT_SUBMISSION = 'submit_submission';
+    const ACTION_SUBMIT_COMMENT = 'submit_comment';
+
+
 
 
     public function source()

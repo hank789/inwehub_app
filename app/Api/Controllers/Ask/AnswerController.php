@@ -698,8 +698,9 @@ class AnswerController extends Controller
         if (!$source) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        $user = $request->user();
         $data = [
-            'user_id'     => $request->user()->id,
+            'user_id'     => $user->id,
             'content'     => $data['content'],
             'parent_id'   => $request->input('parent_id',0),
             'source_id'   => $data['answer_id'],
@@ -715,6 +716,8 @@ class AnswerController extends Controller
         $comment = Comment::create($data);
         /*问题、回答、文章评论数+1*/
         $source->increment('comments');
+        $this->doing($user->id,Doing::ACTION_SUBMIT_COMMENT,get_class($comment),$comment->id,$comment->content,'',$source->id,$source->user_id,$source->getContentText());
+
 
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }
