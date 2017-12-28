@@ -29,6 +29,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Conversation whereContactId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Conversation whereMessageId($value)
+ * @property int $r_type 房间类型，1为私聊，2为群聊
+ * @property string|null $r_name 房间名字
+ * @property string|null $r_description 房间描述
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Room whereRDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Room whereRName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Room whereRType($value)
  */
 class Room extends Model
 {

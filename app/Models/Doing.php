@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\DB;
  * @mixin \Eloquent
  * @property int $is_hide
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Doing whereIsHide($value)
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
  */
 class Doing extends Model
 {

@@ -29,6 +29,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Conversation whereContactId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Conversation whereMessageId($value)
+ * @property int $room_id
+ * @property-read \App\Models\IM\Message $message
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\MessageRoom whereRoomId($value)
  */
 class MessageRoom extends Model
 {
