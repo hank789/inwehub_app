@@ -6,6 +6,7 @@
  */
 
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class NewUserFollowingNotification extends Command
@@ -36,7 +37,8 @@ class NewUserFollowingNotification extends Command
             $data = $notification->data;
             $urls = explode('/',$data['url']);
             if (isset($urls[3])) {
-                $data['avatar'] = $urls[3];
+                $user = User::where('uuid',$urls[3])->first();
+                $data['avatar'] = $user->avatar;
                 $notification->data = $data;
                 $notification->save();
             }
