@@ -15,6 +15,7 @@ use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use Zhuzhichao\IpLocationZh\Ip;
 use App\Events\Frontend\System\Credit as CreditEvent;
@@ -45,7 +46,7 @@ trait BaseController {
         $valid_percent = config('inwehub.user_info_valid_percent',90);
         $count = 0;
         if ($percent >= $valid_percent) {
-            $count = Cache::increment('account_info_complete_credit:'.$uid);
+            $count = Redis::connection()->incr('inwehub:account_info_complete_credit:'.$uid);
         }
         $user = User::find($uid);
         $sendNotice = false;
