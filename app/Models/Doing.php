@@ -49,6 +49,13 @@ class Doing extends Model
     const ACTION_VIEW_ANSWER = 'view_answer';
     const ACTION_PAY_FOR_VIEW_ANSWER = 'pay_for_view_answer';
     const ACTION_VIEW_SUBMISSION = 'view_submission';
+    const ACTION_SHARE_QUESTION_SUCCESS = 'share_question_success';
+    const ACTION_SHARE_ANSWER_SUCCESS = 'share_answer_success';
+    const ACTION_SHARE_INVITE_ANSWER_SUCCESS = 'share_invite_answer_success';
+    const ACTION_SHARE_RESUME_SUCCESS = 'share_resume_success';
+    const ACTION_SHARE_SUBMISSION_SUCCESS = 'share_submission_success';
+    const ACTION_SHARE_INVITE_REGISTER_SUCCESS = 'share_invite_register_success';
+
 
 
     public function source()
