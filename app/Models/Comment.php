@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * App\Models\Comment
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $user_id
  * @property string $content
+ * @property string $htmlContent
  * @property int $source_id
  * @property string $source_type
  * @property int $to_user_id
@@ -41,6 +43,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereParentId($value)
  * @property int $level
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereLevel($value)
+ * @property array $mentions
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Comment whereMentions($value)
  */
 class Comment extends Model
 {
@@ -62,10 +66,10 @@ class Comment extends Model
             ->select(['id', 'name', 'avatar', 'uuid', 'is_expert']);
     }
 
-    public function getContentAttribute($value)
+    /*public function getContentAttribute($value)
     {
         return strip_tags($value);
-    }
+    }*/
 
     public function formatContent(){
         return strip_tags($this->content);
@@ -74,6 +78,10 @@ class Comment extends Model
     public static function boot()
     {
         parent::boot();
+
+        static::addGlobalScope('withHtml', function(Builder $builder) {
+            $builder->select('*','content as htmlContent');
+        });
 
         /*监听创建*/
         static::creating(function($comment){

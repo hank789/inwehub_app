@@ -7,7 +7,6 @@ use App\Models\Credit as CreditModel;
 use App\Events\Frontend\System\Credit;
 use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\Push;
-use App\Models\Readhub\ReadHubUser;
 use App\Models\User;
 use App\Models\UserData;
 use App\Models\UserDevice;

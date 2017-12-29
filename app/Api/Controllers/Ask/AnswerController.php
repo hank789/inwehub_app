@@ -92,7 +92,7 @@ class AnswerController extends Controller
             $is_answer_author = true;
         }
         //是否已经付过围观费
-        $payOrder = $answer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
+        $payOrder = $answer->orders()->where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->first();
         if ($payOrder) {
             $is_pay_for_view = true;
         }
@@ -159,6 +159,7 @@ class AnswerController extends Controller
             'created_at' => (string)$question->created_at
         ];
         $answer->increment('views');
+        $this->doing($user->id,Doing::ACTION_VIEW_ANSWER,get_class($answer),$answer->id,'查看回答');
 
 
         return self::createJsonData(true,[
@@ -607,6 +608,8 @@ class AnswerController extends Controller
         $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
 
         event(new PayForView($order));
+        $this->doing($loginUser->id,Doing::ACTION_PAY_FOR_VIEW_ANSWER,get_class($answer),$answer->id,'付费围观答案','',0,$answer->user_id);
+
         return self::createJsonData(true,[
             'question_id' => $answer->question_id,
             'answer_id'   => $answer->id,
@@ -697,8 +700,9 @@ class AnswerController extends Controller
         if (!$source) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        $user = $request->user();
         $data = [
-            'user_id'     => $request->user()->id,
+            'user_id'     => $user->id,
             'content'     => $data['content'],
             'parent_id'   => $request->input('parent_id',0),
             'source_id'   => $data['answer_id'],

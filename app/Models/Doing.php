@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\DB;
  * @mixin \Eloquent
  * @property int $is_hide
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Doing whereIsHide($value)
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
  */
 class Doing extends Model
 {
@@ -42,6 +43,26 @@ class Doing extends Model
     protected $table = 'doings';
     protected $fillable = ['user_id', 'action','source_type','source_id','subject','content','refer_id','refer_user_id','refer_content','created_at'];
     public $timestamps = false;
+
+    const ACTION_VIEW_RESUME = 'view_resume';
+    const ACTION_VIEW_PAY_QUESTION = 'view_pay_question';
+    const ACTION_VIEW_FREE_QUESTION = 'view_free_question';
+    const ACTION_VIEW_ANSWER = 'view_answer';
+    const ACTION_PAY_FOR_VIEW_ANSWER = 'pay_for_view_answer';
+    const ACTION_VIEW_SUBMISSION = 'view_submission';
+    const ACTION_SHARE_QUESTION_SUCCESS = 'share_question_success';
+    const ACTION_SHARE_ANSWER_SUCCESS = 'share_answer_success';
+    const ACTION_SHARE_INVITE_ANSWER_SUCCESS = 'share_invite_answer_success';
+    const ACTION_SHARE_RESUME_SUCCESS = 'share_resume_success';
+    const ACTION_SHARE_SUBMISSION_SUCCESS = 'share_submission_success';
+    const ACTION_SHARE_INVITE_REGISTER_SUCCESS = 'share_invite_register_success';
+
+
+
+    public function source()
+    {
+        return $this->morphTo();
+    }
 
     static function correlation(User $user)
     {
@@ -84,6 +105,4 @@ class Doing extends Model
              ->select('doings.*')
              ->orderBy('doings.created_at','DESC');
     }
-
-
 }

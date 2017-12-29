@@ -30,6 +30,12 @@
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\LoginRecord whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\LoginRecord whereUserId($value)
  * @mixin \Eloquent
+ * @property string|null $address_detail 登录设备详细地理位置
+ * @property string|null $latitude 纬度
+ * @property string|null $longitude 经度
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\LoginRecord whereAddressDetail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\LoginRecord whereLatitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\LoginRecord whereLongitude($value)
  */
 
 use App\Models\Relations\BelongsToUserTrait;

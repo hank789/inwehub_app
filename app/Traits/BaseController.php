@@ -5,12 +5,14 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Events\Frontend\System\SystemNotify;
+use App\Jobs\SaveActivity;
 use App\Jobs\UploadFile;
 use App\Logic\TaskLogic;
 use App\Models\Credit;
 use App\Models\Notification;
 use App\Models\User;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
@@ -68,19 +70,34 @@ trait BaseController {
 
     /**
      * 记录用户动态
-     * @param $user_id 动态发起人
-     * @param $action  动作 ['ask','answer',...]
-     * @param $source_id 问题或文章ID
-     * @param $subject   问题或文章标题
-     * @param string $content 回答或评论内容
-     * @param int $refer_id  问题或者文章ID
-     * @param int $refer_user_id 引用内容作者ID
-     * @param null $refer_content 引用内容
+     * @param $user_id; 动态发起人
+     * @param $action;  动作 ['ask','answer',...]
+     * @param $source_id; 问题或文章ID
+     * @param $subject;   问题或文章标题
+     * @param string $content; 回答或评论内容
+     * @param int $refer_id;  问题或者文章ID
+     * @param int $refer_user_id; 引用内容作者ID
+     * @param null $refer_content; 引用内容
      * @return static
      */
     protected function doing($user_id,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content=null)
     {
-        return TaskLogic::doing($user_id,$action,$source_type,$source_id,$subject,$content,$refer_id,$refer_user_id,$refer_content);
+        if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user_id.'_'.$source_id)){
+            dispatch(new SaveActivity(
+                [
+                    'user_id' => $user_id,
+                    'action' => $action,
+                    'source_id' => $source_id,
+                    'source_type' => $source_type,
+                    'subject' => substr($subject,0,128),
+                    'content' => strip_tags(substr($content,0,256)),
+                    'refer_id' => $refer_id,
+                    'refer_user_id' => $refer_user_id,
+                    'refer_content' => strip_tags(substr($refer_content,0,256)),
+                    'created_at' => Carbon::now()
+                ]
+            ));
+        }
     }
 
 

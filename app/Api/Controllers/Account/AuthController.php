@@ -7,8 +7,6 @@ use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
 use App\Models\Credit;
-use App\Models\LoginRecord;
-use App\Models\Readhub\ReadHubUser;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserDevice;
@@ -18,9 +16,6 @@ use App\Services\RateLimiter;
 use App\Services\Registrar;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -312,7 +307,7 @@ class AuthController extends Controller
         $this->credit($user->id,Credit::KEY_REGISTER);
 
         //注册事件通知
-        event(new UserRegistered($user));
+        event(new UserRegistered($user,'',isset($formData['title']))?'官网':'App');
 
         $token = $JWTAuth->fromUser($user);
         return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);

@@ -13,6 +13,7 @@
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="to_user_id" value="{{ $toUser->id }}" />
                     <input type="hidden" name="from_user_id" value="{{ $fromUser->id }}" />
+                    <input type="hidden" name="room_id" value="{{ $room_id }}" />
                     <div class="form-group">
                         <textarea name="text" id="message_content" placeholder="请输入私信内容" class="form-control" style="height:100px;"></textarea>
                     </div>
@@ -25,6 +26,9 @@
 
             <div class="widget-streams messages mt-15">
                     @foreach($messages as $message)
+                    @php
+                        $message->data = json_decode($message->data,true)
+                    @endphp
                     <section class="hover-show streams-item" id="message_{{ $message->id }}">
                         <div class="stream-wrap media">
                             <div class="pull-left">

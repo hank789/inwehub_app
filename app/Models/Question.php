@@ -62,6 +62,8 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereIsHot($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereIsRecommend($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereQuestionType($value)
+ * @property array $data
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereData($value)
  */
 class Question extends Model
 {

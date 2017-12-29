@@ -64,8 +64,19 @@ class FollowController extends Controller
             $attention->delete();
             if($source_type==='user'){
                 $source->userData->decrement('followers');
+                event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了用户'.$source->id.'['.$source->name.']'));
             }else{
                 $source->decrement('followers');
+                $fields = [];
+                $fields[] = [
+                    'title' => '标题',
+                    'value' => $source->title
+                ];
+                $fields[] = [
+                    'title' => '地址',
+                    'value' => route('ask.question.detail',['id'=>$source->id])
+                ];
+                event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了问题',$fields));
             }
             return self::createJsonData(true,['tip'=>'取消关注成功','type'=>'unfollow']);
         }

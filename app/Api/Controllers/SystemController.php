@@ -6,7 +6,6 @@
  */
 
 use App\Events\Frontend\Auth\UserLoggedIn;
-use App\Events\Frontend\System\Feedback;
 use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\AppVersion;
@@ -14,7 +13,6 @@ use App\Models\LoginRecord;
 use App\Models\UserDevice;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Spatie\Browsershot\Browsershot;
 
 class SystemController extends Controller {
@@ -100,7 +98,7 @@ class SystemController extends Controller {
         $user = $request->user();
         $clientIp = $request->getClientIp();
         //登陆事件通知
-        event(new UserLoggedIn($user,'App唤起'));
+        event(new UserLoggedIn($user,$request->input('device_system').'唤起'));
         if (RateLimiter::instance()->increase('user-location',$user->id.'-'.$clientIp,3600)) {
             return self::createJsonData(true);
         }

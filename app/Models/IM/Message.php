@@ -34,7 +34,7 @@ class Message extends Model
      * @var array
      */
     protected $fillable = [
-        'data', 'user_id', 'read_at',
+        'data', 'user_id', 'read_at'
     ];
 
     protected $casts = [

@@ -76,7 +76,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
         return [
             'url'    => '/share/resume/'.$user->uuid,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => $user->avatar,
             'title'  => $this->getTitle(),
             'body'   => '',
             'extra_body' => ''
@@ -122,7 +122,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
 
         return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
-            ->send('用户['.$user->name.']关注了用户['.$current_user->name.']');
+            ->send('用户'.$user->id.'['.$user->name.']关注了用户'.$current_user->id.'['.$current_user->name.']');
     }
 
     public function broadcastOn(){

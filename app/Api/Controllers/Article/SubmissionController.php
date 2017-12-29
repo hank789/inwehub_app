@@ -5,6 +5,7 @@ use App\Jobs\UploadFile;
 use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
+use App\Models\Doing;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
@@ -212,7 +213,7 @@ class SubmissionController extends Controller {
         $return['data']['current_address_name'] = $return['data']['current_address_name']??'';
         $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
         $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
-
+        $this->doing($user->id,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,'查看动态');
         return self::createJsonData(true,$return);
     }
 

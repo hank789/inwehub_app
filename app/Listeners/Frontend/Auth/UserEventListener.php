@@ -3,11 +3,16 @@
 namespace App\Listeners\Frontend\Auth;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Logic\TaskLogic;
+use App\Models\IM\MessageRoom;
+use App\Models\IM\Room;
+use App\Models\IM\RoomUser;
 use App\Models\Readhub\ReadHubUser;
+use App\Models\Role;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserOauth;
 use App\Notifications\NewInviteUserRegister;
+use App\Notifications\NewMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Redis;
 
@@ -59,22 +64,53 @@ class UserEventListener implements ShouldQueue
         }
         $title = '';
         if ($event->user->company) {
-            $title .= ';公司：'.$event->user->company;
+            $title .= '；公司：'.$event->user->company;
             Redis::connection()->hset('user_company_level',$event->user->id,$event->user->company);
         }
         if ($event->user->title) {
-            $title .= ';职位：'.$event->user->title;
+            $title .= '；职位：'.$event->user->title;
         }
         if ($event->user->email) {
-            $title .= ';邮箱：'.$event->user->email;
+            $title .= '；邮箱：'.$event->user->email;
         }
         if ($event->user->rc_uid) {
             $rc_user = User::find($event->user->rc_uid);
-            $title .= ';邀请者：'.$rc_user->name;
+            $title .= '；邀请者：'.formatSlackUser($rc_user);
             //给邀请者发送通知
             $rc_user->notify(new NewInviteUserRegister($rc_user->id,$event->user->id));
         }
-        \Slack::send('新用户注册: '.formatSlackUser($event->user).';设备：'.$event->from.$title);
+        //客服欢迎信息
+        //客服
+        $contact_id = Role::getCustomerUserId();
+        $contact = User::find($contact_id);
+        $room = Room::create([
+            'user_id' => $contact_id,
+            'r_type'  => Room::ROOM_TYPE_WHISPER
+        ]);
+
+        $message = $contact->messages()->create([
+            'data' => ['text'=>'您好，欢迎您加入InweHub，欢迎体验社区的各种功能，找到您感兴趣的专家、用户或者问答，希望您使用愉快！如有任何疑问或建议，请随时联系我！'],
+            'room_id' => $room->id
+        ]);
+
+        MessageRoom::create([
+            'room_id' => $room->id,
+            'message_id' => $message->id
+        ]);
+
+        RoomUser::create([
+            'user_id' => $contact_id,
+            'room_id' => $room->id
+        ]);
+        RoomUser::create([
+            'user_id' => $event->user->id,
+            'room_id' => $room->id
+        ]);
+
+        // broadcast the message to the other person
+        $event->user->notify(new NewMessage($event->user->id,$message));
+
+        \Slack::send('新用户注册: '.formatSlackUser($event->user).'；设备：'.$event->from.$title);
     }
 
     /**

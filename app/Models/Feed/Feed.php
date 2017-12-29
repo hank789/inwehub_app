@@ -48,6 +48,8 @@ use Illuminate\Support\Facades\Auth;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Feed\Feed withoutTrashed()
  * @property int $is_anonymous 是否匿名
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereIsAnonymous($value)
+ * @property int $top
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereTop($value)
  */
 class Feed extends Model
 {
@@ -191,7 +193,7 @@ class Feed extends Model
                     ->where('supportable_type',Submission::class)
                     ->exists();
                 $data = [
-                    'title'     => $submission->formatTitle(),
+                    'title'     => $submission->title,
                     'img'       => $this->data['img'],
                     'domain'    => $this->data['domain'],
                     'tags'      => $submission->tags()->get()->toArray(),
@@ -241,13 +243,13 @@ class Feed extends Model
                 //评论了专业问答
                 $url = $this->data['feed_url'];
                 $data = $this->data;
-                $data['comment_content'] = strip_tags($this->data['comment_content']);
+                $data['comment_content'] = $this->data['comment_content'];
                 break;
             case self::FEED_TYPE_COMMENT_FREE_QUESTION:
                 //评论了互动问答
                 $url = $this->data['feed_url'];
                 $data = $this->data;
-                $data['comment_content'] = strip_tags($this->data['comment_content']);
+                $data['comment_content'] = $this->data['comment_content'];
                 break;
             case self::FEED_TYPE_COMMENT_READHUB_ARTICLE:
                 //评论了文章

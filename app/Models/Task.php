@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task whereUserId($value)
+ * @property int $priority
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Task wherePriority($value)
  */
 class Task extends Model
 {

@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Comment;
+use App\Models\Doing;
 use App\Models\Submission;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;

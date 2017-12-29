@@ -10,6 +10,7 @@ use App\Models\Activity\Coupon;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Credit;
+use App\Models\Doing;
 use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
@@ -86,7 +87,7 @@ class QuestionController extends Controller
                 $is_answer_author = true;
             }
             //是否已经付过围观费
-            $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
+            $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->first();
             if ($payOrder) {
                 $is_pay_for_view = true;
             }
@@ -183,6 +184,7 @@ class QuestionController extends Controller
             $myAnswer = Answer::where('question_id',$id)->where('user_id',$user->id)->first();
             if ($myAnswer) $my_answer_id = $myAnswer->id;
         }
+        $this->doing($user->id,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,'查看问题');
 
         return self::createJsonData(true,[
             'is_followed_question'=>$is_followed_question,

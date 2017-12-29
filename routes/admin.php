@@ -299,3 +299,4 @@ Route::group(['prefix' => 'im','namespace'=>'IM'], function() {
 
 //日志查看
 Route::get('loginLog',['as'=>'admin.logger.login','uses'=>'LoggerController@loginLog']);
+Route::get('doingLog',['as'=>'admin.logger.doing','uses'=>'LoggerController@doingLog']);
