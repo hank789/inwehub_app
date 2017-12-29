@@ -385,7 +385,7 @@ class QuestionController extends Controller
             }
 
             if($question->question_type == 1 && !$to_user_uuid){
-                $doing_obj = $this->doing(0,$doing_prefix.'question_process',get_class($question),$question->id,$question->title,'');
+                $doing_obj = TaskLogic::doing(0,$doing_prefix.'question_process',get_class($question),$question->id,$question->title,'');
                 $doing_obj->created_at = date('Y-m-d H:i:s',strtotime('+ '.$waiting_second.' seconds'));
                 $doing_obj->save();
             }
