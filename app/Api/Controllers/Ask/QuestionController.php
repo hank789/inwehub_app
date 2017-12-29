@@ -87,7 +87,7 @@ class QuestionController extends Controller
                 $is_answer_author = true;
             }
             //是否已经付过围观费
-            $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
+            $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->first();
             if ($payOrder) {
                 $is_pay_for_view = true;
             }

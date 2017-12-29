@@ -41,7 +41,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\AnswerFeedbackTask::class,
         Commands\FixData\FixTaskPriority::class,
         Commands\FixData\FixImData::class,
-        Commands\FixData\NewUserFollowingNotification::class
+        Commands\FixData\NewUserFollowingNotification::class,
+        Commands\FixData\AddPayForViewDoing::class
 
 
     ];

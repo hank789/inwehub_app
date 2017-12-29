@@ -140,7 +140,6 @@ class SubmissionController extends Controller {
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
             }
-            $this->doing($user->id,Doing::ACTION_SUBMIT_SUBMISSION,get_class($submission),$submission->id,$submission->title);
             /*添加标签*/
             Tag::multiSaveByIds($tagString,$submission);
 
