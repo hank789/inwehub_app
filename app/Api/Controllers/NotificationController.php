@@ -82,10 +82,10 @@ class NotificationController extends Controller
 
         foreach ($im_room_users as $im_room_user) {
             $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room_user->room_id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
-            if ($im_count <= 0) continue;
             $total_unread += $im_count;
             $last_message = MessageRoom::where('room_id',$im_room_user->room_id)->orderBy('id','desc')->first();
             $contact_room = RoomUser::where('room_id',$im_room_user->room_id)->where('user_id','!=',$user->id)->orderBy('id','desc')->first();
+            if (!$contact_room) continue;
             $item = [
                 'unread_count' => $im_count,
                 'avatar'       => $contact_room->user->avatar,
