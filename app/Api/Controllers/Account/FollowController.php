@@ -5,6 +5,9 @@ use App\Exceptions\ApiException;
 use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Feed\Feed;
+use App\Models\IM\MessageRoom;
+use App\Models\IM\Room;
+use App\Models\IM\RoomUser;
 use App\Models\Question;
 use App\Models\Tag;
 use App\Models\User;
@@ -120,12 +123,12 @@ class FollowController extends Controller
                     break;
                 case 'user':
                     $source->userData->increment('followers');
-                    $source->notify(new NewUserFollowing($source->id,$attention));
                     //产生一条feed流
                     $feed_event = 'user_followed';
                     $feed_target = $source->id.'_'.$loginUser->id;
                     $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
                     if (!$is_feeded) {
+                        $source->notify(new NewUserFollowing($source->id,$attention));
                         RateLimiter::instance()->increase($feed_event,$feed_target,3600);
                         feed()
                             ->causedBy($loginUser)
@@ -138,12 +141,36 @@ class FollowController extends Controller
                         $message = $loginUser->messages()->create([
                             'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
                         ]);
-                        $loginUser->conversations()->attach($message, [
-                            'contact_id' => $source->id
+                        $room_ids = RoomUser::select('room_id')->where('user_id',$loginUser->id)->get()->pluck('room_id')->toArray();
+                        $roomUser = RoomUser::where('user_id',$source->id)->whereIn('room_id',$room_ids)->first();
+                        if ($roomUser) {
+                            $room_id = $roomUser->room_id;
+                        } else {
+                            $room = Room::create([
+                                'user_id' => $loginUser->id,
+                                'r_type' => Room::ROOM_TYPE_WHISPER
+                            ]);
+                            $room_id = $room->id;
+                        }
+                        RoomUser::firstOrCreate([
+                            'user_id' => $loginUser->id,
+                            'room_id' => $room_id
+                        ],[
+                            'user_id' => $loginUser->id,
+                            'room_id' => $room_id
                         ]);
 
-                        $source->conversations()->attach($message, [
-                            'contact_id' => $loginUser->id,
+                        MessageRoom::create([
+                            'room_id' => $room_id,
+                            'message_id' => $message->id
+                        ]);
+
+                        RoomUser::firstOrCreate([
+                            'user_id' => $source->id,
+                            'room_id' => $room_id
+                        ],[
+                            'user_id' => $source->id,
+                            'room_id' => $room_id
                         ]);
                     }
                     break;
