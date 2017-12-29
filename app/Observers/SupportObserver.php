@@ -82,7 +82,7 @@ class SupportObserver implements ShouldQueue {
                 $title = '动态';
                 $fields[] = [
                     'title' => '标题',
-                    'value' => $source->title
+                    'value' => $source->formatTitle()
                 ];
                 $fields[] = [
                     'title' => '地址',
