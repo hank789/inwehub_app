@@ -141,7 +141,7 @@ class NotificationController extends Controller
             'total_unread_count' => $total_unread,
             'todo_task_message' => [
                 'unread_count' => $todo_task,
-                'last_message' => $format_last_task?$format_last_task[0]:[]
+                'last_message' => $format_last_task?$format_last_task[0]:null
             ],
             'notice_message' => [
                 'unread_count' => $notice_unread_count,
