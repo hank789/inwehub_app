@@ -3,6 +3,7 @@
 namespace App\Api\Controllers;
 
 use App\Exceptions\ApiException;
+use App\Logic\TaskLogic;
 use App\Models\IM\Conversation;
 use App\Models\IM\Message;
 use App\Models\IM\MessageRoom;
@@ -64,7 +65,7 @@ class NotificationController extends Controller
         $readhub_unread_count = $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->count();
         $money_unread_count = $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->count();
 
-        $total_unread =  $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count;
+        $total_unread =  $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count + $todo_task;
         $im_room_users = RoomUser::where('user_id',$user->id)->get();
 
         $im_list = [];
@@ -130,9 +131,14 @@ class NotificationController extends Controller
             return ($a['last_message']['created_at'] < $b['last_message']['created_at'])? 1 : -1;
         });
         array_unshift($im_list,$customer_message);
+        $last_task = TaskLogic::formatList([$user->tasks()->where('status',0)->orderBy('priority','DESC')->latest()->first()]);
         $data = [
             'todo_tasks' => $todo_task,
             'total_unread_count' => $total_unread,
+            'todo_task_message' => [
+                'unread_count' => $todo_task,
+                'last_message' => $last_task[0]
+            ],
             'notice_message' => [
                 'unread_count' => $notice_unread_count,
                 'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first()
