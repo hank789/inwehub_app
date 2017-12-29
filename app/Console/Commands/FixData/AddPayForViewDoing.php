@@ -49,7 +49,7 @@ class AddPayForViewDoing extends Command
                         'refer_id' => 0,
                         'refer_user_id' => $answer->user_id,
                         'refer_content' => '',
-                        'created_at' => Carbon::now()
+                        'created_at' => $order->created_at
                     ]
                 ));
             }
