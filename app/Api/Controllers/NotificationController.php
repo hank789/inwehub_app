@@ -131,13 +131,17 @@ class NotificationController extends Controller
             return ($a['last_message']['created_at'] < $b['last_message']['created_at'])? 1 : -1;
         });
         array_unshift($im_list,$customer_message);
-        $last_task = TaskLogic::formatList([$user->tasks()->where('status',0)->orderBy('priority','DESC')->latest()->first()]);
+        $last_task = $user->tasks()->where('status',0)->orderBy('priority','DESC')->latest()->first();
+        $format_last_task = '';
+        if ($last_task) {
+            $format_last_task = TaskLogic::formatList([$last_task]);
+        }
         $data = [
             'todo_tasks' => $todo_task,
             'total_unread_count' => $total_unread,
             'todo_task_message' => [
                 'unread_count' => $todo_task,
-                'last_message' => $last_task[0]
+                'last_message' => $format_last_task?$format_last_task[0]:[]
             ],
             'notice_message' => [
                 'unread_count' => $notice_unread_count,
