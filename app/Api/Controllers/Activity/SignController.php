@@ -69,7 +69,7 @@ class SignController extends Controller {
         $return['days'] = $days;
         $return['total_credits'] = RateLimiter::instance()->getValue($event,'credits');
         $return['total_coins'] = 0;
-        $return['total_money'] = 0;
+        $return['total_money'] = RateLimiter::instance()->getValue($event,'money');;
 
         return self::createJsonData(true,$return);
     }

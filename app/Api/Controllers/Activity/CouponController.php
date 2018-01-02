@@ -3,6 +3,7 @@ use App\Api\Controllers\Controller;
 use App\Logic\MoneyLogLogic;
 use App\Models\Activity\Coupon;
 use App\Models\Pay\MoneyLog;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
 /**
@@ -57,6 +58,7 @@ class CouponController extends Controller {
                         'days' => 1
                     ]);
                     MoneyLogLogic::addMoney($user->id,$coupon_value,MoneyLog::MONEY_TYPE_COUPON,$coupon,0);
+                    RateLimiter::instance()->increaseBy('sign:'.$user->id,'money',$coupon_value,0);
                 }
                 break;
             case Coupon::COUPON_TYPE_DAILY_SIGN_BIG:
@@ -74,6 +76,7 @@ class CouponController extends Controller {
                         'days' => 1
                     ]);
                     MoneyLogLogic::addMoney($user->id,$coupon_value,MoneyLog::MONEY_TYPE_COUPON,$coupon,0);
+                    RateLimiter::instance()->increaseBy('sign:'.$user->id,'money',$coupon_value,0);
                 }
                 break;
         }
