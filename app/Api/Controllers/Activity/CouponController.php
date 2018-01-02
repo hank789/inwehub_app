@@ -1,6 +1,8 @@
 <?php namespace App\Api\Controllers\Activity;
 use App\Api\Controllers\Controller;
+use App\Logic\MoneyLogLogic;
 use App\Models\Activity\Coupon;
+use App\Models\Pay\MoneyLog;
 use Illuminate\Http\Request;
 
 /**
@@ -41,11 +43,11 @@ class CouponController extends Controller {
                 }
                 break;
             case Coupon::COUPON_TYPE_DAILY_SIGN_SMALL:
-                $coupon_value = 5;
+                $coupon_value = rand(1,10);
                 $expire_at = date('Y-m-d 23:59:59');
                 $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_DAILY_SIGN_SMALL)->where('expire_at',$expire_at)->first();
                 if(!$coupon){
-                    Coupon::create([
+                    $coupon = Coupon::create([
                         'user_id' => $user->id,
                         'coupon_type' => Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,
                         'coupon_value' => $coupon_value,
@@ -54,14 +56,15 @@ class CouponController extends Controller {
                         'used_at' => date('Y-m-d H:i:s'),
                         'days' => 1
                     ]);
+                    MoneyLogLogic::addMoney($user->id,$coupon_value,MoneyLog::MONEY_TYPE_COUPON,$coupon,0);
                 }
                 break;
             case Coupon::COUPON_TYPE_DAILY_SIGN_BIG:
-                $coupon_value = 18;
+                $coupon_value = rand(10,30);
                 $expire_at = date('Y-m-d 23:59:59');
                 $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_DAILY_SIGN_BIG)->where('expire_at',$expire_at)->first();
                 if(!$coupon){
-                    Coupon::create([
+                    $coupon = Coupon::create([
                         'user_id' => $user->id,
                         'coupon_type' => Coupon::COUPON_TYPE_DAILY_SIGN_BIG,
                         'coupon_value' => $coupon_value,
@@ -70,6 +73,7 @@ class CouponController extends Controller {
                         'used_at' => date('Y-m-d H:i:s'),
                         'days' => 1
                     ]);
+                    MoneyLogLogic::addMoney($user->id,$coupon_value,MoneyLog::MONEY_TYPE_COUPON,$coupon,0);
                 }
                 break;
         }

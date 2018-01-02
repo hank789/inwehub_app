@@ -57,6 +57,8 @@ class Settlement extends Model {
     const SOURCE_TYPE_REWARD_QUESTION = 'question_reward';
     const SOURCE_TYPE_REWARD_ANSWER = 'answer_reward';
     const SOURCE_TYPE_REWARD_PAY_FOR_VIEW_ANSWER = 'pay_for_view_answer_reward';
+    const SOURCE_TYPE_REWARD_COUPON = 'reward_coupon';
+
 
 
 
