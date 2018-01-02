@@ -314,6 +314,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','na
     //我邀请的好友
     Route::post('inviteRegister/myList', 'InviteController@myRegisterList');
 
+    //每日签到
+    Route::post('sign/daily', 'SignController@daily');
+    //获取用户签到信息
+    Route::post('sign/dailyInfo', 'SignController@dailyInfo');
+
 });
 
 //获取邀请注册者消息

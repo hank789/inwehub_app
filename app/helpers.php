@@ -1189,3 +1189,35 @@ if (!function_exists('formatSlackUser')) {
         return $user->id.'['.$user->name.']';
     }
 }
+
+//获取每日签到奖励
+if (!function_exists('getDailySignInfo')) {
+    function getDailySignInfo($day) {
+        switch ($day) {
+            case 1:
+                return ['credits'=>5,'coins'=>0,'coupon_type'=>0];
+                break;
+            case 2:
+                return ['credits'=>10,'coins'=>0,'coupon_type'=>0];
+                break;
+            case 3:
+                return ['credits'=>15,'coins'=>0,'coupon_type'=>2];
+                break;
+            case 4:
+                return ['credits'=>20,'coins'=>0,'coupon_type'=>0];
+                break;
+            case 5:
+                return ['credits'=>25,'coins'=>0,'coupon_type'=>0];
+                break;
+            case 6:
+                return ['credits'=>30,'coins'=>0,'coupon_type'=>0];
+                break;
+            case 7:
+                return ['credits'=>35,'coins'=>0,'coupon_type'=>3];
+                break;
+            default:
+                return ['credits'=>0,'coins'=>0,'coupon_type'=>0];
+                break;
+        }
+    }
+}
