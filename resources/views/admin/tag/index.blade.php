@@ -3,8 +3,8 @@
 @section('content')
     <section class="content-header">
         <h1>
-            话题管理
-            <small>管理系统的所有话题</small>
+            标签管理
+            <small>管理系统的所有标题(tag)</small>
         </h1>
     </section>
     <section class="content">
