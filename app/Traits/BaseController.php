@@ -90,11 +90,11 @@ trait BaseController {
                         'action' => $action,
                         'source_id' => $source_id,
                         'source_type' => $source_type,
-                        'subject' => substr($subject,0,128),
-                        'content' => $content?strip_tags(substr($content,0,256)):'',
+                        'subject' => $subject?substr($subject,0,128):'',
+                        'content' => $content?substr($content,0,256):'',
                         'refer_id' => $refer_id,
                         'refer_user_id' => $refer_user_id,
-                        'refer_content' => strip_tags(substr($refer_content,0,256)),
+                        'refer_content' => $refer_content?substr($refer_content,0,256):'',
                         'created_at' => date('Y-m-d H:i:s')
                     ]
                 ));
