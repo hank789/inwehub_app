@@ -111,6 +111,7 @@ class Order extends Model
             case self::PAY_CHANNEL_WX_BAR:
                 break;
             case self::PAY_CHANNEL_WX_LITE:
+                return '微信小程序';
                 break;
             case self::PAY_CHANNEL_WX_WAP:
                 break;
