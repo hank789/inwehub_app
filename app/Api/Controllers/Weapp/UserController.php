@@ -38,59 +38,35 @@ class UserController extends controller {
         $return = $this->wxxcx->getUserInfo($encryptedData, $iv);
 
         \Log::info('return',$return);
-        if (isset($return['unionid'])) {
-            $oauthData = UserOauth::whereIn('auth_type',[UserOauth::AUTH_TYPE_WEAPP,UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
-                ->where('unionid',$userInfo['openid'])->first();
-        } else {
+        if (isset($return['unionId'])) {
             $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
                 ->where('openid',$userInfo['openid'])->first();
+            if (!$oauthData) {
+                $oauthData = UserOauth::where('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
+                    ->where('unionid',$return['unionId'])->first();
+                if ($oauthData) {
+                    UserOauth::create(
+                        [
+                            'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
+                            'user_id'=> $oauthData->user_id,
+                            'openid'   => $userInfo['openid'],
+                            'unionid'  => $return['unionId'],
+                            'nickname'=>$return['nickName'],
+                            'avatar'=>$return['avatarUrl'],
+                            'access_token'=>$userInfo['session_key'],
+                            'refresh_token'=>'',
+                            'expires_in'=>$userInfo['expires_in'],
+                            'full_info'=>json_encode($return),
+                            'scope'=>'authorization_code',
+                            'status' => 1
+                        ]
+                    );
+                }
+            }
         }
 
-        if ($oauthData) {
-            $user = User::find($oauthData->user_id);
-            $oauthData->update(
-                [
-                    'openid'   => $userInfo['openid'],
-                    'nickname'=>$return['nickName'],
-                    'avatar'=>$return['avatarUrl'],
-                    'access_token'=>$userInfo['session_key'],
-                    'refresh_token'=>'',
-                    'expires_in'=>$userInfo['expires_in'],
-                    'full_info'=>json_encode($return),
-                    'scope'=>'authorization_code'
-                ]
-            );
-        } else {
-            $user = $registrar->create([
-                'mobile' => null,
-                'email'  => null,
-                'name' => $return['nickName'],
-                'gender' => $return['gender'],
-                'password' => md5(time()),
-                'visit_ip' => $request->getClientIp(),
-                'status' => 1,
-                'source' => User::USER_SOURCE_WEAPP
-            ]);
-            $user->attachRole(2); //默认注册为普通用户角色
-            $user->userData->email_status = 1;
-            $user->userData->save();
-            UserOauth::create(
-                [
-                    'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
-                    'user_id'=> $user->id,
-                    'openid'   => $userInfo['openid'],
-                    'nickname'=>$return['nickName'],
-                    'avatar'=>$return['avatarUrl'],
-                    'access_token'=>$userInfo['session_key'],
-                    'refresh_token'=>'',
-                    'expires_in'=>$userInfo['expires_in'],
-                    'full_info'=>json_encode($return),
-                    'scope'=>'authorization_code'
-                ]
-            );
-        }
-
-        $token = $JWTAuth->fromUser($user);
-        return static::createJsonData(true,['token'=>$token,'name'=>$return['nickName'],'avatarUrl'=>$return['avatarUrl']]);
+        return self::createJsonData(true,['token'=>time()]);
+        //$token = $JWTAuth->fromUser($user);
+        //return static::createJsonData(true,['token'=>$token,'name'=>$return['nickName'],'avatarUrl'=>$return['avatarUrl']]);
     }
 }
