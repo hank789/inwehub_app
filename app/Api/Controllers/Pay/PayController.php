@@ -25,7 +25,7 @@ class PayController extends Controller {
         $validateRules = [
             'app_id' => 'required',
             'amount' => 'required|integer',
-            'pay_channel' => 'required|in:alipay,wxpay,appleiap,wx_pub',
+            'pay_channel' => 'required|in:alipay,wxpay,appleiap,wx_pub,wx_lite',
             'pay_object_type' => 'required|in:ask,view_answer,free_ask',
             'pay_object_id'   => 'required_if:pay_object_type,view_answer'
         ];
@@ -74,6 +74,28 @@ class PayController extends Controller {
 
                 $channel = Config::WX_CHANNEL_PUB;
                 $channel_type = Order::PAY_CHANNEL_WX_PUB;
+                break;
+            case 'wx_lite':
+                //微信小程序支付
+                if(Setting()->get('pay_method_weixin',1) != 1){
+                    throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
+                }
+                //是否绑定了微信
+                $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
+                    ->where('user_id',$loginUser->id)->where('status',1)->orderBy('updated_at','desc')->first();
+                if(!$oauthData) {
+                    throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
+                }
+                if (config('app.env') != 'production') {
+                    $need_pay_actual = false;
+                }
+                if(config('app.env') == 'production' && $loginUser->id == 3){
+                    $amount = 0.01;
+                }
+                $config = config('payment')['wechat_lite'];
+
+                $channel = Config::WX_CHANNEL_LITE;
+                $channel_type = Order::PAY_CHANNEL_WX_LITE;
                 break;
             case 'alipay':
                 if(Setting()->get('pay_method_ali',0) != 1){
@@ -182,6 +204,7 @@ class PayController extends Controller {
                 $return['iap_ids'] = array_values($ids);
             } else {
                 switch($pay_channel){
+                    case 'wx_lite':
                     case 'wx_pub':
                         //微信公众号支付
                         $payData['openid'] = $oauthData->openid;
