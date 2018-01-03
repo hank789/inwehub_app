@@ -62,9 +62,7 @@ class SignController extends Controller {
             $days = $i;
         }
         for ($j=1;$j<=7;$j++) {
-            $return['day'.$j] = getDailySignInfo($j);
-            $return['day'.$j]['signed'] = 0;
-            if ($j<=$days) $return['day'.$j]['signed'] = 1;
+            $return['info'][] = array_merge(getDailySignInfo($j),['signed'=>$j<=$days?1:0,'day'=>$j]);
         }
         $return['days'] = $days;
         $return['total_credits'] = RateLimiter::instance()->getValue($event,'credits');
