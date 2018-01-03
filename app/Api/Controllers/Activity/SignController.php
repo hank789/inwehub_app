@@ -35,6 +35,7 @@ class SignController extends Controller {
             }
             $return = getDailySignInfo($days);
             $return['days'] = $days;
+            $return['current_credits'] = $user->userData->credits + $return['credits'];
             RateLimiter::instance()->increaseBy($event,'credits',$return['credits'],0);
             event(new CreditEvent($user->id,Credit::KEY_FIRST_USER_SIGN_DAILY,$return['coins'],$return['credits'],0,'连续签到'.$days.'天'));
         } else {
