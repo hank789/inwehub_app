@@ -81,7 +81,7 @@ class PayController extends Controller {
                     throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 }
                 //是否绑定了微信
-                $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
+                $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
                     ->where('user_id',$loginUser->id)->where('status',1)->orderBy('updated_at','desc')->first();
                 if(!$oauthData) {
                     throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
