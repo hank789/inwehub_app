@@ -63,7 +63,7 @@ return [
         ],// 指定不能使用信用卡支付   不传入，则均可使用
         'fee_type'          => 'CNY',// 货币类型  当前仅支持该字段
 
-        'notify_url'        => env('PAYMENT_WECHAT_PUB_NOTIFY_URL'),//支付结果异步通知
+        'notify_url'        => env('PAYMENT_WECHAT_LITE_NOTIFY_URL'),//支付结果异步通知
 
         'redirect_url'      => env('PAYMENT_WECHAT_PUB_REDIRECT_URL'),// 如果是h5支付，可以设置该值，返回到指定页面
 

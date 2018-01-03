@@ -204,6 +204,7 @@ class PayController extends Controller {
                 $return['iap_ids'] = array_values($ids);
             } else {
                 switch($pay_channel){
+                    case 'wx_lite':
                     case 'wx_pub':
                         //微信公众号支付
                         $payData['openid'] = $oauthData->openid;
