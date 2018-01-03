@@ -42,7 +42,7 @@ class UserController extends controller {
             $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
                 ->where('openid',$userInfo['openid'])->first();
             if (!$oauthData) {
-                $oauthData = UserOauth::where('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
+                $oauthData = UserOauth::whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
                     ->where('unionid',$return['unionId'])->first();
                 if ($oauthData) {
                     UserOauth::create(
