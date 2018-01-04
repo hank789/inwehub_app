@@ -49,10 +49,10 @@ class SignController extends Controller {
         $user = $request->user();
         $event = 'sign:'.$user->id;
         $return = [];
-        for ($i=0;$i<=7;$i++) {
+        for ($i=1;$i<=7;$i++) {
             $date2 = date('Ymd',strtotime('-'.$i.' days'));
             $isSigned = RateLimiter::instance()->getValue($event,$date2);
-            if ($isSigned <= 0 && $i>0) {
+            if ($isSigned <= 0) {
                 break;
             }
         }
@@ -60,7 +60,11 @@ class SignController extends Controller {
             //下一个签到周期
             $days = 1;
         } else {
-            $days = $i;
+            $days = $i-1;
+            //判断今天是否已签到
+            if (RateLimiter::instance()->getValue($event,date('Ymd')) > 0) {
+                $days += 1;
+            }
         }
         for ($j=1;$j<=7;$j++) {
             $return['info'][] = array_merge(getDailySignInfo($j),['signed'=>$j<=$days?1:0,'day'=>$j]);
