@@ -77,7 +77,7 @@
                         </form>
                     </div>
                     <div class="box-footer clearfix">
-                        {!! str_replace('/?', '?', $services->render()) !!}
+                        {!! str_replace('/?', '?', $services->appends($filter)->render()) !!}
                     </div>
                 </div>
             </div>

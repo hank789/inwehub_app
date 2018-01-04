@@ -21,6 +21,9 @@
                                 <div class="col-xs-6">
                                     <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                 </div>
+                                <div class="col-xs-3">
+                                    <button type="submit" class="btn btn-primary">搜索</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -57,7 +60,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $records->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $records->render()) !!}
+                                    {!! str_replace('/?', '?', $records->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

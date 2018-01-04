@@ -61,7 +61,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $credits->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $credits->render()) !!}
+                                    {!! str_replace('/?', '?', $credits->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

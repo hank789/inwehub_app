@@ -139,7 +139,7 @@
                             <div class="col-sm-8">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $questions->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $questions->render()) !!}
+                                    {!! str_replace('/?', '?', $questions->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>
