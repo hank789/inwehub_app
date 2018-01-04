@@ -20,7 +20,7 @@ class SignController extends Controller {
         $date = date('Ymd');
         $event = 'sign:'.$user->id;
         if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($event,$date,86400*14)) {
-            for ($i=0;$i<=7;$i++) {
+            for ($i=1;$i<=7;$i++) {
                 $date2 = date('Ymd',strtotime('-'.$i.' days'));
                 $isSigned = RateLimiter::instance()->getValue($event,$date2);
                 if ($isSigned <= 0) {
@@ -31,7 +31,7 @@ class SignController extends Controller {
                 //下一个签到周期
                 $days = 1;
             } else {
-                $days = $i+1;
+                $days = $i;
             }
             $return = getDailySignInfo($days);
             $return['days'] = $days;
