@@ -94,7 +94,11 @@ class Comment extends Model
         /*监听删除事件*/
         static::deleting(function($comment){
             /*问题、回答、文章评论数 -1*/
-            $comment->source()->where("comments",">",0)->decrement('comments');
+            if ($comment->source_type == 'App\Models\Submission') {
+                $comment->source()->where("comments",">",0)->decrement('comments_number');
+            } else {
+                $comment->source()->where("comments",">",0)->decrement('comments');
+            }
         });
     }
 
