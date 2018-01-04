@@ -17,13 +17,12 @@ class SignController extends Controller {
     //每日签到
     public function daily(Request $request){
         $user = $request->user();
-        $date = date('Ymd');
         $event = 'sign:'.$user->id;
-        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($event,$date,86400*14)) {
+        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($event,date('Ymd'),86400*14)) {
             for ($i=1;$i<=7;$i++) {
-                $date2 = date('Ymd',strtotime('-'.$i.' days'));
-                $isSigned = RateLimiter::instance()->getValue($event,$date2);
-                if ($isSigned <= 0) {
+                $date = date('Ymd',strtotime('-'.$i.' days'));
+                $isSigned = RateLimiter::instance()->getValue($event,$date);
+                if ($isSigned <= 0 || is_null($isSigned)) {
                     break;
                 }
             }
@@ -50,9 +49,9 @@ class SignController extends Controller {
         $event = 'sign:'.$user->id;
         $return = [];
         for ($i=1;$i<=7;$i++) {
-            $date2 = date('Ymd',strtotime('-'.$i.' days'));
-            $isSigned = RateLimiter::instance()->getValue($event,$date2);
-            if ($isSigned <= 0) {
+            $date = date('Ymd',strtotime('-'.$i.' days'));
+            $isSigned = RateLimiter::instance()->getValue($event,$date);
+            if ($isSigned <= 0 || is_null($isSigned)) {
                 break;
             }
         }
