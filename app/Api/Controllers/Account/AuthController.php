@@ -148,7 +148,7 @@ class AuthController extends Controller
     public function login(Request $request,JWTAuth $JWTAuth){
 
         $validateRules = [
-            'mobile' => 'required|cn_phone',
+            'mobile' => 'required',
             'password' => 'required'
         ];
 
