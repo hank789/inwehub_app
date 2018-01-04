@@ -53,6 +53,7 @@ class SignController extends Controller {
         $user = $request->user();
         $event = 'sign:'.$user->id;
         $return = [];
+        $return['current_day_signed'] = 0;
         for ($i=1;$i<=7;$i++) {
             $date = date('Ymd',strtotime('-'.$i.' days'));
             $isSigned = RateLimiter::instance()->getValue($event,$date);
@@ -69,6 +70,7 @@ class SignController extends Controller {
         //判断今天是否已签到
         if (RateLimiter::instance()->getValue($event,date('Ymd')) > 0) {
             $days += 1;
+            $return['current_day_signed'] = 1;
         }
         for ($j=1;$j<=7;$j++) {
             $return['info'][] = array_merge(getDailySignInfo($j),['signed'=>$j<=$days?1:0,'day'=>$j]);
