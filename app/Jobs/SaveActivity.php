@@ -37,6 +37,9 @@ class SaveActivity implements ShouldQueue
     public function handle()
     {
         try{
+            $this->data['subject'] = str_limit($this->data['subject'],86,'');
+            $this->data['content'] = str_limit($this->data['content'],200,'');
+            $this->data['refer_content'] = str_limit($this->data['refer_content'],200,'');
             Doing::create($this->data);
         }catch (\Exception $e){
             app('sentry')->captureException($e);
