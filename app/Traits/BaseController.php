@@ -84,7 +84,7 @@ trait BaseController {
     {
         if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user_id.'_'.$source_id)){
             try {
-                $data = [
+                dispatch(new SaveActivity([
                     'user_id' => $user_id,
                     'action' => $action,
                     'source_id' => $source_id,
@@ -95,9 +95,7 @@ trait BaseController {
                     'refer_user_id' => $refer_user_id,
                     'refer_content' => $refer_content,
                     'created_at' => date('Y-m-d H:i:s')
-                ];
-                \Log::info('test',$data);
-                dispatch(new SaveActivity($data));
+                ]));
             } catch (\Exception $e) {
                 app('sentry')->captureException($e);
             }
