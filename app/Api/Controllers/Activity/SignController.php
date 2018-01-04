@@ -52,7 +52,7 @@ class SignController extends Controller {
         for ($i=0;$i<=7;$i++) {
             $date2 = date('Ymd',strtotime('-'.$i.' days'));
             $isSigned = RateLimiter::instance()->getValue($event,$date2);
-            if ($isSigned <= 0) {
+            if ($isSigned <= 0 && $i>0) {
                 break;
             }
         }

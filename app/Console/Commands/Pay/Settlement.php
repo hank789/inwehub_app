@@ -78,6 +78,7 @@ class Settlement extends Command {
                                 break;
                         }
                         break;
+                    case SettlementModel::SOURCE_TYPE_REWARD_COUPON:
                     case SettlementModel::SOURCE_TYPE_REWARD_ANSWER:
                     case SettlementModel::SOURCE_TYPE_REWARD_PAY_FOR_VIEW_ANSWER:
                     case SettlementModel::SOURCE_TYPE_REWARD_QUESTION:
