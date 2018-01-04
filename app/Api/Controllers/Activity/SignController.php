@@ -31,7 +31,7 @@ class SignController extends Controller {
                 //下一个签到周期
                 $days = 1;
             } else {
-                $days = $i;
+                $days = $i+1;
             }
             $return = getDailySignInfo($days);
             $return['days'] = $days;
@@ -58,13 +58,13 @@ class SignController extends Controller {
         }
         if ($i == 8) {
             //下一个签到周期
-            $days = 1;
+            $days = 0;
         } else {
             $days = $i-1;
-            //判断今天是否已签到
-            if (RateLimiter::instance()->getValue($event,date('Ymd')) > 0) {
-                $days += 1;
-            }
+        }
+        //判断今天是否已签到
+        if (RateLimiter::instance()->getValue($event,date('Ymd')) > 0) {
+            $days += 1;
         }
         for ($j=1;$j<=7;$j++) {
             $return['info'][] = array_merge(getDailySignInfo($j),['signed'=>$j<=$days?1:0,'day'=>$j]);
