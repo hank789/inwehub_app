@@ -126,6 +126,10 @@ class Submission extends Model {
         return strip_tags($this->title);
     }
 
+    public function partHtmlTitle(){
+        return strip_tags($this->title,'<a><span>');
+    }
+
     /**
      * A submission is owned by a user.
      *
