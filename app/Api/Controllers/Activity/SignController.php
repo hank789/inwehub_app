@@ -29,6 +29,11 @@ class SignController extends Controller {
             if ($i == 8) {
                 //下一个签到周期
                 $days = 1;
+                //删除上一7天的签到记录
+                for ($i=1;$i<=7;$i++) {
+                    $date = date('Ymd',strtotime('-'.$i.' days'));
+                    RateLimiter::instance()->clear($event,$date);
+                }
             } else {
                 $days = $i;
             }
