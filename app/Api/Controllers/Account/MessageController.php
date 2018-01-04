@@ -28,7 +28,7 @@ class MessageController extends Controller
 
         $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
             ->select('im_messages.*')
-            ->orderBy('im_messages.id', 'asc')
+            ->orderBy('im_messages.id', 'desc')
             ->simplePaginate(Config::get('api_data_page_size'))->toArray();
 
         if ($messages['data']) {
@@ -48,6 +48,7 @@ class MessageController extends Controller
                 $item['uuid'] = $users[$item['user_id']]['uuid'];
                 $item['data'] = json_decode($item['data'],true);
             }
+            $messages['data'] = array_reverse($messages['data']);
         }
 
         $messages['contact'] = [
