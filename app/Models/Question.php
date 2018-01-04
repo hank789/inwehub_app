@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\Question\ConfirmOvertimeAlertSystem;
+use App\Models\Feed\Feed;
 use App\Models\Relations\BelongsToCategoryTrait;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
@@ -120,6 +121,8 @@ class Question extends Model
 
             /*删除问题收藏*/
             Collection::where('source_type','=',get_class($question))->where('source_id','=',$question->id)->delete();
+            //删除动态
+            Feed::where('source_type','=',get_class($question))->where('source_id','=',$question->id)->delete();
 
             if(Setting()->get('xunsearch_open',0) == 1) {
                 App::offsetGet('search')->delete($question);

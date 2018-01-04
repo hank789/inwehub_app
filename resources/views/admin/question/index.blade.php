@@ -33,6 +33,7 @@
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消热门" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_hot') }}','确认将选中项取消热门？')"><i class="fa fa-fire-extinguisher"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.question.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-9">
@@ -132,6 +133,7 @@
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消热门" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_hot') }}','确认将选中项取消热门？')"><i class="fa fa-fire-extinguisher"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.question.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-sm-8">
