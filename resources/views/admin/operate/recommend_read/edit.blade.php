@@ -42,7 +42,7 @@
 
                             <div class="form-group">
                                 <label>封面图片地址</label>
-                                <input type="text" name="img_url" class="form-control "  placeholder="http://inwehub-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg" value="{{ old('img_url',is_array($recommendation->data['img'])?$recommendation->data['img'][0]:$recommendation->data['img']) }}">
+                                <input type="text" name="img_url" class="form-control "  placeholder="http://inwehub-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg" value="{{ old('img_url',(is_array($recommendation->data['img']) && $recommendation->data['img'])?$recommendation->data['img'][0]:$recommendation->data['img']) }}">
                             </div>
                             <div class="form-group">
                                 <label>排序</label>
