@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -40,7 +41,7 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast'];
+        return ['database', 'broadcast', SlackChannel::class];
     }
 
     /**
@@ -105,6 +106,26 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
         } else {
             return null;
         }
+    }
+
+    public function toSlack($notifiable){
+        $fields = [];
+        $fields[] = [
+            'title' => '行为',
+            'value' => $this->creditLog->action
+        ];
+        $fields[] = [
+            'title' => '主题',
+            'value' => $this->creditLog->source_subject
+        ];
+
+        return \Slack::to(config('slack.ask_activity_channel'))
+            ->attach(
+                [
+                    'fields' => $fields
+                ]
+            )
+            ->send('用户'.$this->creditLog->user_id.'['.$this->creditLog->user->name.']'.get_credit_message($this->creditLog->credits,$this->creditLog->coins));
     }
 
 
