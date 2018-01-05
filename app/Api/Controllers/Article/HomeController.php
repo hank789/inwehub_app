@@ -60,6 +60,7 @@ class HomeController extends Controller {
                 ->where('source_id',$item['id'])
                 ->where('source_type',Submission::class)
                 ->exists();
+            $item['title'] = strip_tags($item['title'],'<a><span>');
             $item['is_upvoted'] = $upvote ? 1 : 0;
             $item['is_bookmark'] = $bookmark ? 1: 0;
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';

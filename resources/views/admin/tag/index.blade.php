@@ -1,10 +1,10 @@
 @extends('admin/public/layout')
-@section('title')话题管理@endsection
+@section('title')标签管理@endsection
 @section('content')
     <section class="content-header">
         <h1>
-            话题管理
-            <small>管理系统的所有话题</small>
+            标签管理
+            <small>管理系统的所有标题(tag)</small>
         </h1>
     </section>
     <section class="content">
@@ -15,7 +15,7 @@
                         <div class="row">
                             <div class="col-xs-3">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.tag.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="添加话题"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('admin.tag.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="添加标签"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.tag.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
@@ -95,7 +95,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $tags->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $tags->render()) !!}
+                                    {!! str_replace('/?', '?', $tags->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

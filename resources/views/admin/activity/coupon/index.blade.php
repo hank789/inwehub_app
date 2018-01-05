@@ -85,7 +85,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $coupons->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $coupons->render()) !!}
+                                    {!! str_replace('/?', '?', $coupons->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

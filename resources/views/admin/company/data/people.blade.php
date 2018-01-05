@@ -84,7 +84,7 @@
                         </form>
                     </div>
                     <div class="box-footer clearfix">
-                        {!! str_replace('/?', '?', $companies->render()) !!}
+                        {!! str_replace('/?', '?', $companies->appends($filter)->render()) !!}
                     </div>
                 </div>
             </div>

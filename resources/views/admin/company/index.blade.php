@@ -98,7 +98,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $companies->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $companies->render()) !!}
+                                    {!! str_replace('/?', '?', $companies->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

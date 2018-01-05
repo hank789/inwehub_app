@@ -91,14 +91,12 @@ class CommentController extends Controller {
         ]);
 
         $comment = Comment::find($request->id);
-        $submission = Submission::find($comment->submission_id);
         $user = $request->user();
         if ($comment->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
         $comment->delete();
-        $submission->decrement('comments_number');
 
         return self::createJsonData(true);
 

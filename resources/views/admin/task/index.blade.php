@@ -82,7 +82,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $tasks->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $tasks->render()) !!}
+                                    {!! str_replace('/?', '?', $tasks->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

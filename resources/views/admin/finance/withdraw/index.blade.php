@@ -96,7 +96,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $withdraws->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $withdraws->render()) !!}
+                                    {!! str_replace('/?', '?', $withdraws->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

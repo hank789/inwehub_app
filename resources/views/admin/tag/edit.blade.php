@@ -5,13 +5,13 @@
 @endsection
 
 @section('title')
-    编辑话题
+    编辑标签
 @endsection
 
 @section('content')
     <section class="content-header">
         <h1>
-            编辑话题
+            编辑标签
         </h1>
     </section>
     <section class="content">
@@ -23,13 +23,13 @@
                         <input type="hidden" name="_token" id="editor_token" value="{{ csrf_token() }}">
                         <div class="box-body">
                             <div class="form-group @if ($errors->has('name')) has-error @endif">
-                                <label for="name">话题名称</label>
-                                <input type="text" name="name" class="form-control " placeholder="话题名称" value="{{ old('name',$tag->name) }}">
+                                <label for="name">标签名称</label>
+                                <input type="text" name="name" class="form-control " placeholder="标签名称" value="{{ old('name',$tag->name) }}">
                                 @if ($errors->has('name')) <p class="help-block">{{ $errors->first('name') }}</p> @endif
                             </div>
 
                             <div class="form-group">
-                                <label>话题图标</label>
+                                <label>标签图标</label>
                                 <input type="file" name="logo" />
                                 @if($tag->logo)
                                 <div style="margin-top: 10px;">
@@ -54,7 +54,7 @@
                             </div>
 
                             <div class="form-group @if ($errors->has('description')) has-error @endif">
-                                <label for="name">话题详细介绍</label>
+                                <label for="name">标签详细介绍</label>
                                 <div id="tag_editor">{!! old('description',$tag->description) !!}</div>
                                 @if ($errors->has('description')) <p class="help-block">{{ $errors->first('description') }}</p> @endif
                             </div>

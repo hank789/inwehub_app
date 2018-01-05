@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Models\User;
 use App\Models\UserOauth;
 use App\Third\Weapp\Wxxcx;
@@ -62,6 +63,9 @@ class UserController extends controller {
                         ]
                     );
                 }
+            }
+            if ($oauthData) {
+                event(new UserLoggedIn(User::find($oauthData->user_id),'小程序登陆'));
             }
         }
 

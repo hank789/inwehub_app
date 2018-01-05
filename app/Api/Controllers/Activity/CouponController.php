@@ -1,6 +1,9 @@
 <?php namespace App\Api\Controllers\Activity;
 use App\Api\Controllers\Controller;
+use App\Logic\MoneyLogLogic;
 use App\Models\Activity\Coupon;
+use App\Models\Pay\MoneyLog;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
 /**
@@ -18,6 +21,8 @@ class CouponController extends Controller {
         $this->validate($request,$validateRules);
         $user = $request->user();
         $data = $request->all();
+        $coupon_value = 0;
+        $coupon_value_type = 1;
         switch($data['coupon_type']){
             case Coupon::COUPON_TYPE_FIRST_ASK:
                 $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
@@ -38,8 +43,44 @@ class CouponController extends Controller {
                     $coupon->save();
                 }
                 break;
+            case Coupon::COUPON_TYPE_DAILY_SIGN_SMALL:
+                $coupon_value = rand(1,3);
+                $expire_at = date('Y-m-d 23:59:59');
+                $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_DAILY_SIGN_SMALL)->where('expire_at',$expire_at)->first();
+                if(!$coupon){
+                    $coupon = Coupon::create([
+                        'user_id' => $user->id,
+                        'coupon_type' => Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,
+                        'coupon_value' => $coupon_value,
+                        'coupon_status' => Coupon::COUPON_STATUS_USED,
+                        'expire_at' => $expire_at,
+                        'used_at' => date('Y-m-d H:i:s'),
+                        'days' => 1
+                    ]);
+                    MoneyLogLogic::addMoney($user->id,$coupon_value,MoneyLog::MONEY_TYPE_COUPON,$coupon,0);
+                    RateLimiter::instance()->increaseBy('sign:'.$user->id,'money',$coupon_value,0);
+                }
+                break;
+            case Coupon::COUPON_TYPE_DAILY_SIGN_BIG:
+                $coupon_value = rand(3,10);
+                $expire_at = date('Y-m-d 23:59:59');
+                $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_DAILY_SIGN_BIG)->where('expire_at',$expire_at)->first();
+                if(!$coupon){
+                    $coupon = Coupon::create([
+                        'user_id' => $user->id,
+                        'coupon_type' => Coupon::COUPON_TYPE_DAILY_SIGN_BIG,
+                        'coupon_value' => $coupon_value,
+                        'coupon_status' => Coupon::COUPON_STATUS_USED,
+                        'expire_at' => $expire_at,
+                        'used_at' => date('Y-m-d H:i:s'),
+                        'days' => 1
+                    ]);
+                    MoneyLogLogic::addMoney($user->id,$coupon_value,MoneyLog::MONEY_TYPE_COUPON,$coupon,0);
+                    RateLimiter::instance()->increaseBy('sign:'.$user->id,'money',$coupon_value,0);
+                }
+                break;
         }
-        return self::createJsonData(true,['tip'=>'领取成功','coupon_type'=>$data['coupon_type']]);
+        return self::createJsonData(true,['tip'=>'领取成功','coupon_type'=>$data['coupon_type'],'coupon_value_type'=>$coupon_value_type,'coupon_value'=>$coupon_value]);
 
     }
 

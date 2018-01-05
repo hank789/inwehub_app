@@ -68,6 +68,11 @@ class MoneyLogLogic {
                     //付费围观收入分红,实际收入*分红利率，从平台扣这笔钱，不影响收入者
                     $reward_source_type = Settlement::SOURCE_TYPE_REWARD_PAY_FOR_VIEW_ANSWER;
                     break;
+                case MoneyLog::MONEY_TYPE_COUPON:
+                    //现金红包分红
+                    $reward_source_type = Settlement::SOURCE_TYPE_REWARD_COUPON;
+                    $is_settlement = 1;
+                    break;
             }
             //分红处理
             $user = User::find($user_id);

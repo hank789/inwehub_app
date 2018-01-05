@@ -84,7 +84,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $projects->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $projects->render()) !!}
+                                    {!! str_replace('/?', '?', $projects->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

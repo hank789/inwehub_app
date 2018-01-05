@@ -526,6 +526,9 @@ class ProfileController extends Controller
                 case MoneyLog::MONEY_TYPE_REWARD:
                     $title = '分红';
                     break;
+                case MoneyLog::MONEY_TYPE_COUPON:
+                    $title = '红包';
+                    break;
             }
             $list[] = [
                 "id"=> $log->id,

@@ -68,7 +68,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $messages->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $messages->render()) !!}
+                                    {!! str_replace('/?', '?', $messages->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

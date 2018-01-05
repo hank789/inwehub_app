@@ -80,7 +80,7 @@
                         </form>
                     </div>
                     <div class="box-footer clearfix">
-                        {!! str_replace('/?', '?', $recommendations->render()) !!}
+                        {!! str_replace('/?', '?', $recommendations->appends($filter)->render()) !!}
                     </div>
                 </div>
             </div>

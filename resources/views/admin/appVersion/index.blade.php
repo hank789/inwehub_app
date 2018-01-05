@@ -94,7 +94,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $versions->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $versions->render()) !!}
+                                    {!! str_replace('/?', '?', $versions->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>
