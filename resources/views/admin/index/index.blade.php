@@ -195,6 +195,41 @@
             <div class="col-md-12">
                 <div class="box box-default">
                     <div class="box-header with-border">
+                        <h3 class="box-title">邀请用户统计</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>用户ID</th>
+                                            <th>用户姓名</th>
+                                            <th>手机</th>
+                                            <th>邀请用户数</th>
+                                        </tr>
+                                        @foreach($rcUsers as $user)
+                                            @if ($user->rc_uid)
+                                                <tr>
+                                                    <td>{{ $user->rc_uid }}</td>
+                                                    <td>{{ $user->getInviter()->name }}</td>
+                                                    <td>{{ $user->getInviter()->mobile }}</td>
+                                                    <td>{{ $user->total }}</td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
                         <h3 class="box-title">系统信息</h3>
                     </div>
                     <div class="box-body table-responsive">
