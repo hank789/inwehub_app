@@ -23,7 +23,7 @@
 
             <div class="form-group @if($errors->has('title')) has-error @endif ">
                 <label for="title">问题标题:</label>
-                <input id="title" type="text" name="title"  class="form-control input-lg" placeholder="请在这里概述您的问题" value="{{ old('title',$question->title) }}" />
+                <textarea id="title" type="text" name="title"  class="form-control input-lg" placeholder="请在这里概述您的问题" value="{{ old('title',$question->title) }}">{{ old('title',$question->title) }}</textarea>
                 @if($errors->has('title')) <p class="help-block">{{ $errors->first('title') }}</p> @endif
             </div>
             <div class="form-group  @if($errors->has('description')) has-error @endif">
