@@ -76,9 +76,9 @@ class SignController extends Controller {
             $return['info'][] = array_merge(getDailySignInfo($j),['signed'=>$j<=$days?1:0,'day'=>$j]);
         }
         $return['days'] = $days;
-        $return['total_credits'] = RateLimiter::instance()->getValue($event,'credits')?:0;
+        $return['total_credits'] = $user->userData->credits;
         $return['total_coins'] = 0;
-        $return['total_money'] = RateLimiter::instance()->getValue($event,'money')?:0;
+        $return['total_money'] = $user->userMoney->total_money;
 
         return self::createJsonData(true,$return);
     }
