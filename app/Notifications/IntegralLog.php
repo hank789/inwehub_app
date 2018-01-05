@@ -2,9 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Channels\PushChannel;
 use App\Channels\SlackChannel;
-use App\Channels\WechatNoticeChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
