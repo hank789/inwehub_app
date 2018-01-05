@@ -86,6 +86,8 @@ class IndexController extends AdminController
         $systemInfo = $this->getSystemInfo();
         $submissionTextCount = Submission::where('type','text')->count();
         $submissionLinkCount = Submission::where('type','link')->count();
+        //邀请用户统计
+        $rcUsers = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->get();
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
             'totalAnswerNum',
@@ -98,6 +100,7 @@ class IndexController extends AdminController
             'totalTasks',
             'totalUndoTasks',
             'totalUndoTaskUsers',
+            'rcUsers',
             'userChart','questionChart','systemInfo'));
     }
 
