@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 use App\Events\LogNotify;
+use App\Models\Activity\Coupon;
 use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Collection;
@@ -22,6 +23,7 @@ use App\Observers\AuthenticationObserver;
 use App\Observers\CollectObserver;
 use App\Observers\CommentObserver;
 use App\Observers\CompanyObserver;
+use App\Observers\CouponObserver;
 use App\Observers\QuestionInvitationObserver;
 use App\Observers\QuestionObserver;
 use App\Observers\SubmissionObserver;
@@ -102,6 +104,7 @@ class AppServiceProvider extends ServiceProvider
         Comment::observe(CommentObserver::class);
         Support::observe(SupportObserver::class);
         Submission::observe(SubmissionObserver::class);
+        Coupon::observe(CouponObserver::class);
     }
 
     /**

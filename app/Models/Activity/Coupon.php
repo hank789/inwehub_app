@@ -67,6 +67,12 @@ class Coupon extends Model
             case self::COUPON_TYPE_FIRST_ASK:
                 return '首次提问1元';
                 break;
+            case self::COUPON_TYPE_DAILY_SIGN_SMALL:
+                return '签到3天红包';
+                break;
+            case self::COUPON_TYPE_DAILY_SIGN_BIG:
+                return '签到7天红包';
+                break;
         }
     }
 
