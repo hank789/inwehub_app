@@ -39,7 +39,11 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', SlackChannel::class];
+        $via = ['database', SlackChannel::class];
+        if ($this->creditLog->action != CreditModel::KEY_FIRST_USER_SIGN_DAILY) {
+            $via[] = 'broadcast';
+        }
+        return $via;
     }
 
     /**
@@ -112,10 +116,12 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
             'title' => '行为',
             'value' => $this->creditLog->action
         ];
-        $fields[] = [
-            'title' => '主题',
-            'value' => $this->creditLog->source_subject
-        ];
+        if ($this->creditLog->source_subject) {
+            $fields[] = [
+                'title' => '主题',
+                'value' => $this->creditLog->source_subject
+            ];
+        }
 
         return \Slack::to(config('slack.ask_activity_channel'))
             ->attach(
