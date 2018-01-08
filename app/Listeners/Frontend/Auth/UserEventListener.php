@@ -3,6 +3,7 @@
 namespace App\Listeners\Frontend\Auth;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Logic\TaskLogic;
+use App\Models\Attention;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
@@ -106,6 +107,13 @@ class UserEventListener implements ShouldQueue
             'user_id' => $event->user->id,
             'room_id' => $room->id
         ]);
+        //客服关注新注册用户
+        Attention::create([
+            'user_id'     => $contact_id,
+            'source_id'   => $event->user->id,
+            'source_type' => get_class($contact),
+        ]);
+        $event->user->userData->increment('followers');
 
         // broadcast the message to the other person
         $event->user->notify(new NewMessage($event->user->id,$message));
