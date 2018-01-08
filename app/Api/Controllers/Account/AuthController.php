@@ -307,7 +307,7 @@ class AuthController extends Controller
         $this->credit($user->id,Credit::KEY_REGISTER);
 
         //注册事件通知
-        event(new UserRegistered($user,'',isset($formData['title']))?'官网':'App');
+        event(new UserRegistered($user,'',isset($formData['title'])?'官网':'App'));
 
         $token = $JWTAuth->fromUser($user);
         return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);
