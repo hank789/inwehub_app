@@ -559,17 +559,20 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
         $tags = $question->tags()->pluck('tag_id')->toArray();
-
+        //已经邀请过的用户
+        $invitedUsers = $question->invitations()->where("from_user_id","=",$request->user()->id)->pluck('user_id')->toArray();
+        $invitedUsers[] = $question->user_id;
         $query = UserTag::select('user_id');
         if ($tags) {
             $query = $query->whereIn('tag_id',$tags);
         }
+        if ($invitedUsers) {
+            $query = $query->whereNotIn('user_id',$invitedUsers);
+        }
         $userTags = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'));
         $data = [];
         foreach($userTags as $userTag){
-            if ($userTag->user_id == $question->user_id) continue;
             if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;
-            if ($question->isInvited($userTag->user_id,$request->user()->id)) continue;
             $info = User::find($userTag->user_id);
             $tag = $info->userTag()->whereIn('tag_id',$tags)->orderBy('skills','desc')->first();
             if ($tag) {
