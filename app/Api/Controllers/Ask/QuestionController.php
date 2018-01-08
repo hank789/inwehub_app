@@ -549,7 +549,7 @@ class QuestionController extends Controller
 
 
     //一键邀请回答
-    public function quickInviterList(Request $request){
+    public function recommendInviterList(Request $request){
         $validateRules = [
             'question_id'    => 'required|integer',
         ];
@@ -564,22 +564,34 @@ class QuestionController extends Controller
         if ($tags) {
             $query = $query->whereIn('tag_id',$tags);
         }
-        $userTags = $query->orderBy('skills','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'));
+        $userTags = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'));
         $data = [];
         foreach($userTags as $userTag){
             if ($userTag->user_id == $question->user_id) continue;
             if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;
+            if ($question->isInvited($userTag->user_id,$request->user()->id)) continue;
             $info = User::find($userTag->user_id);
-            $userTags = $info->userTag()->whereIn('tag_id',$tags)->get();
+            $tag = $info->userTag()->whereIn('tag_id',$tags)->orderBy('skills','desc')->first();
+            if ($tag) {
+                if ($tag->skills > 0) {
+                    $skillTags = Tag::select('name')->whereIn('id',$info->userSkillTag()->pluck('tag_id'))->distinct()->pluck('name')->toArray();
+                    $item['description'] = '擅长';
+                    foreach ($skillTags as $skillTag) {
+                        $item['description'] .= '"'.$skillTag.'"';
+                    }
+                } elseif ($tag->answers > 0){
+                    $answerTag = Tag::find($tag->tag_id);
+                    $item['description'] = '曾在"'.$answerTag->name.'"下有回答';
+                } else {
+                    $item['description'] = '向您推荐';
+                }
+            }
 
             $item = [];
             $item['id'] = $info->id;
             $item['name'] = $info->name;
             $item['avatar_url'] = $info->getAvatarUrl();
             $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
-            $item['description'] = $info->description;
-            $item['is_invited'] = $question->isInvited($info->id,$request->user()->id);
-            $item['is_answered'] = 0;
             $data[] = $item;
         }
         return self::createJsonData(true,$data);
