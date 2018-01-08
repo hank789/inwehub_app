@@ -4,6 +4,7 @@ namespace App\Listeners\Frontend\Auth;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Logic\TaskLogic;
 use App\Models\Attention;
+use App\Models\Feed\Feed;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
@@ -114,6 +115,14 @@ class UserEventListener implements ShouldQueue
             'source_type' => get_class($contact),
         ]);
         $event->user->userData->increment('followers');
+        //产生一条关注的feed
+        feed()
+            ->causedBy($contact)
+            ->performedOn($event->user)
+            ->withProperties([
+                'follow_user_id' => $event->user->id
+            ])
+            ->log($contact->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
         // broadcast the message to the other person
         $event->user->notify(new NewMessage($event->user->id,$message));
