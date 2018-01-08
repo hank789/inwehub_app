@@ -12,6 +12,7 @@ use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Pay\Order;
+use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Support;
@@ -247,6 +248,12 @@ class QuestionController extends Controller
         $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->where('coupon_status',Coupon::COUPON_STATUS_PENDING)->first();
         if($coupon && $coupon->expire_at > date('Y-m-d H:i:s')){
             $show_free_ask = true;
+        }
+        $tags['total_money'] = 0;
+
+        $user_money = UserMoney::find($user->id);
+        if($user_money && $user->id != 79){
+            $tags['total_money'] = $user_money->total_money;
         }
 
         $tags['pay_items'] = [
