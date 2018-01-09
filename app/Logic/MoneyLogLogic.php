@@ -126,11 +126,9 @@ class MoneyLogLogic {
                 throw new \Exception('手续费大于总金额');
             }
             $userMoney = UserMoney::find($user_id);
-
-            UserMoney::find($user_id)->decrement('total_money',$money);
-
+            $userMoney->total_money = bcsub($userMoney->total_money,$money,2);
             //资金记录
-            MoneyLog::create([
+            $moneyLog1 = MoneyLog::create([
                 'user_id' => $user_id,
                 'change_money' => $money,
                 'source_id'    => $object_class->id,
@@ -142,7 +140,7 @@ class MoneyLogLogic {
             ]);
             if($fee>0){
                 $userMoney = UserMoney::find($user_id);
-                UserMoney::find($user_id)->decrement('total_money',$fee);
+                $userMoney->total_money = bcsub($userMoney->total_money,$fee,2);
                 MoneyLog::create([
                     'user_id' => $user_id,
                     'change_money' => $fee,
@@ -154,11 +152,16 @@ class MoneyLogLogic {
                     'before_money' => $userMoney->total_money
                 ]);
             }
+            $userMoney->save();
             DB::commit();
+            if ($log_status == 1) {
+                $user = User::find($user_id);
+                $user->notify(new MoneyLogNotify($user_id,$moneyLog1));
+            }
             return true;
         }catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('扣除余额失败',['data'=>func_get_args(),'msg'=>$e->getMessage()]);
+            app('sentry')->captureException($e);
             return false;
         }
     }

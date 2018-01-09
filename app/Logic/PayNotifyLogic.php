@@ -51,28 +51,18 @@ class PayNotifyLogic implements PayNotifyInterface {
             $order->response_msg = $ret_data['trade_state'];
             $order->response_data = json_encode($ret_data);
             $order->save();
-            //这里不产生平台的资金记录
-            /*$return_param = $data['return_param'];
-            $io = 1;
-            $money_type = 1;
-            switch($return_param){
-                case 'ask':
-                    //付费问答
-                    $io = -1;
-                    $money_type = 1;
-                    break;
+            //是否有钱包支付
+            $order1 = Order::where('order_no',$order->order_no.'W')->first();
+            if ($order1) {
+                $order1->status = Order::PAY_STATUS_SUCCESS;
+                $order1->finish_time = date('Y-m-d H:i:s');
+                $order1->transaction_id = $ret_data['transaction_id'];
+                $order1->response_msg = $ret_data['trade_state'];
+                $order1->response_data = json_encode($ret_data);
+                $order1->save();
+                //减少用户余额
+                MoneyLogLogic::decMoney($order1->user_id,$order1->amount,MoneyLog::MONEY_TYPE_ASK_PAY_WALLET,$order1);
             }
-            $userMoney = UserMoney::find($order->user_id);
-            //资金记录
-            MoneyLog::create([
-                'user_id' => $order->user_id,
-                'change_money' => $order->amount,
-                'source_id'    => $order->id,
-                'source_type'  => get_class($order),
-                'io'           => $io,
-                'money_type'   => $money_type,
-                'before_money' => $userMoney->total_money
-            ]);*/
         }
     }
 

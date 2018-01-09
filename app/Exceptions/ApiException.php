@@ -81,6 +81,8 @@ class ApiException extends Exception
     const WITHDRAW_DAY_AMOUNT_LIMIT = 4008;
     const WITHDRAW_UNBIND_WEXIN = 4009;
     const WITHDRAW_SYSTEM_SUSPEND = 4010;
+    const PAYMENT_SYSTEM_ERROR = 4011;
+
 
     //企业模块响应码
     const PROJECT_NOT_FIND = 5000;
@@ -160,6 +162,7 @@ class ApiException extends Exception
         self::WITHDRAW_DAY_AMOUNT_LIMIT => '提现单日额度超限',
         self::WITHDRAW_UNBIND_WEXIN => '未绑定微信',
         self::WITHDRAW_SYSTEM_SUSPEND => '系统暂停提现',
+        self::PAYMENT_SYSTEM_ERROR => '支付失败，请1分钟后再试',
 
 
         //企业模块

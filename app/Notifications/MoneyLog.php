@@ -85,6 +85,9 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
             case MoneyLogModel::MONEY_TYPE_COUPON:
                 $title = '红包到账';
                 break;
+            case MoneyLogModel::MONEY_TYPE_ASK_PAY_WALLET:
+                $title = '余额支付';
+                break;
         }
         return $title;
     }

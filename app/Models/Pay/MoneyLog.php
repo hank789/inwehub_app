@@ -56,6 +56,7 @@ class MoneyLog extends Model {
     const MONEY_TYPE_PAY_FOR_VIEW_ANSWER = 5;
     const MONEY_TYPE_REWARD = 6;//分红
     const MONEY_TYPE_COUPON = 7;//红包
+    const MONEY_TYPE_ASK_PAY_WALLET = 8;//付费问答使用红包支付
 
     const STATUS_PROCESS = 0;
     const STATUS_SUCCESS = 1;

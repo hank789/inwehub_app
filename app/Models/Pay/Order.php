@@ -87,6 +87,8 @@ class Order extends Model
     const PAY_CHANNEL_ALIPAY_APP = 7;
 
     const PAY_CHANNEL_IOS_IAP = 11;
+    const PAY_CHANNEL_WALLET = 12;//钱包支付
+
 
     public function questions()
     {
