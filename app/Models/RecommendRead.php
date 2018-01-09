@@ -90,4 +90,9 @@ class RecommendRead extends Model
         return '';
     }
 
+    public function source()
+    {
+        return $this->morphTo();
+    }
+
 }
