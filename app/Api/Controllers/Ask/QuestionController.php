@@ -595,13 +595,17 @@ class QuestionController extends Controller
                 } else {
                     $item['description'] = '向您推荐';
                 }
+            } else {
+                $item['description'] = '向您推荐';
             }
 
             $item = [];
             $item['id'] = $info->id;
+            $item['uuid'] = $info->uuid;
             $item['name'] = $info->name;
             $item['avatar_url'] = $info->getAvatarUrl();
             $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
+            $item['is_invited'] = 0;
             $data[] = $item;
         }
         return self::createJsonData(true,$data);
