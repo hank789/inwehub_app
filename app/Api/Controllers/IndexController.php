@@ -201,8 +201,8 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_SUBMISSION:
                     // '发现分享';
                     $object = Submission::find($item['source_id']);
-                    $item['data']['comments_number'] = $object->comments_number;
-                    $item['data']['upvotes'] = $object->upvotes;
+                    $item['data']['comment_number'] = $object->comments_number;
+                    $item['data']['support_number'] = $object->upvotes;
                     break;
                 case RecommendRead::READ_TYPE_PAY_QUESTION:
                     // '专业问答';
