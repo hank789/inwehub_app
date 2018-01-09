@@ -582,6 +582,7 @@ class QuestionController extends Controller
             if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;
             $info = User::find($userTag->user_id);
             $tag = $info->userTag()->whereIn('tag_id',$tags)->orderBy('skills','desc')->first();
+            $item = [];
             if ($tag) {
                 if ($tag->skills > 0) {
                     $skillTags = Tag::select('name')->whereIn('id',$info->userSkillTag()->pluck('tag_id'))->distinct()->pluck('name')->toArray();
@@ -598,8 +599,6 @@ class QuestionController extends Controller
             } else {
                 $item['description'] = '向您推荐';
             }
-
-            $item = [];
             $item['id'] = $info->id;
             $item['uuid'] = $info->uuid;
             $item['name'] = $info->name;
