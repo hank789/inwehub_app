@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class TagsLogic {
     public static function loadTags($tag_type,$word,$tagKey='value',$sort=0){
 
-        $cache_key = 'tags:'.$tag_type.':'.$word;
+        $cache_key = 'tags:'.$tag_type.':'.$word.':'.$sort;
         $cache = Cache::get($cache_key);
         if ($cache){
             return $cache;
