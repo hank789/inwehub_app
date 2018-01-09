@@ -92,6 +92,37 @@ class Tag extends Model
         return $tags;
     }
 
+    /**通过字符串新增标签
+     * @param $tagString
+     * @param $question_id
+     */
+    public static function multiAddByName($tagString,$taggable)
+    {
+        if (!is_array($tagString)) {
+            $tags = array_unique(explode(",",$tagString));
+        } else {
+            $tags = array_unique($tagString);
+        }
+
+        $tagIds = [];
+
+        foreach($tags as $tag_name){
+
+            if(!trim($tag_name)){
+                continue;
+            }
+
+            $tag = self::firstOrCreate(['name'=>$tag_name]);
+
+            if(!$taggable->tags->contains($tag->id))
+            {
+                $taggable->tags()->attach($tag->id);
+                $tagIds[] = $tag->id;
+            }
+        }
+        return $tagIds;
+    }
+
     //通过tag id添加标签
     public static function multiSaveByIds($tags,$taggable)
     {

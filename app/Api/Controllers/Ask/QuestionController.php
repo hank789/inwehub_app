@@ -318,6 +318,8 @@ class QuestionController extends Controller
 
         $price = abs($request->input('price'));
         $tagString = $request->input('tags');
+        $newTagString = $request->input('new_tags');
+
 
         $category_id = 20;
         $data = [
@@ -363,6 +365,9 @@ class QuestionController extends Controller
 
             /*添加标签*/
             Tag::multiSaveByIds($tagString,$question);
+            if ($newTagString) {
+                Tag::multiAddByName($newTagString,$question);
+            }
 
             //订单和问题关联
             if($order){

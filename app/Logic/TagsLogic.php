@@ -90,7 +90,7 @@ class TagsLogic {
         if ($sort == 1) {
             $tagIds = array_column($tags,$tagKey);
             $query =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))
-                ->whereIn('tag_id',$tagIds)->where('taggable_type','=','App\Models\Question');
+                ->whereIn('tag_id',$tagIds)->whereIn('taggable_type',['App\Models\Question','App\Models\Submission']);
 
             $taggables = $query->groupBy('tag_id')
                 ->orderBy('total_num','desc')

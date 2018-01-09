@@ -53,6 +53,7 @@ class SubmissionController extends Controller {
         }
 
         $tagString = $request->input('tags');
+        $newTagString = $request->input('new_tags');
 
         if ($request->type == 'link') {
             $this->validate($request, [
@@ -142,6 +143,9 @@ class SubmissionController extends Controller {
             }
             /*添加标签*/
             Tag::multiSaveByIds($tagString,$submission);
+            if ($newTagString) {
+                Tag::multiAddByName($newTagString,$submission);
+            }
 
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);
