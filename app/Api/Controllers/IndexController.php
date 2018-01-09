@@ -201,22 +201,22 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_SUBMISSION:
                     // '发现分享';
                     $object = Submission::find($item['source_id']);
-                    $item['comments_number'] = $object->comments_number;
-                    $item['upvotes'] = $object->upvotes;
+                    $item['data']['comments_number'] = $object->comments_number;
+                    $item['data']['upvotes'] = $object->upvotes;
                     break;
                 case RecommendRead::READ_TYPE_PAY_QUESTION:
                     // '专业问答';
                     $object = Question::find($item['source_id']);
                     $bestAnswer = $object->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
 
-                    $item['price'] = $object->price;
-                    $item['average_rate'] = $bestAnswer->getFeedbackRate();
+                    $item['data']['price'] = $object->price;
+                    $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
                     break;
                 case RecommendRead::READ_TYPE_FREE_QUESTION:
                     // '互动问答';
                     $object = Question::find($item['source_id']);
-                    $item['answer_number'] = $object->answers;
-                    $item['follower_number'] = $object->followers;
+                    $item['data']['answer_number'] = $object->answers;
+                    $item['data']['follower_number'] = $object->followers;
                     break;
                 case RecommendRead::READ_TYPE_ACTIVITY:
                     // '活动';
@@ -227,8 +227,8 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER:
                     // '互动问答回复';
                     $object = Answer::find($item['source_id']);
-                    $item['comment_number'] = $object->comments;
-                    $item['support_number'] = $object->supports;
+                    $item['data']['comment_number'] = $object->comments;
+                    $item['data']['support_number'] = $object->supports;
                     break;
             }
         }
