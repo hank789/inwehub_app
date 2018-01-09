@@ -26,6 +26,7 @@ class FeedController extends Controller
             $data[] = [
                 'id' => $feed->id,
                 'title' => $feed->data['feed_content'],
+                'top' => $feed->top,
                 'user'  => [
                     'id'    => $feed->is_anonymous ? 0 : $feed->user->id ,
                     'uuid'  => $feed->is_anonymous ? '' : $feed->user->uuid,
