@@ -518,7 +518,7 @@ class AnswerController extends Controller
 
         $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
 
-        $this->credit($loginUser->id,$action,$answer->id,'回答评价');
+        $this->credit($loginUser->id,$action,$feedback->id,'回答评价');
 
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));

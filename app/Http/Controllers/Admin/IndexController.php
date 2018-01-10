@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Answer;
-use App\Models\Article;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
@@ -12,12 +11,8 @@ use App\Models\Submission;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserData;
-use App\Models\UserRegistrationCode;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class IndexController extends AdminController

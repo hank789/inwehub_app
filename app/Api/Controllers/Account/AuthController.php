@@ -304,8 +304,6 @@ class AuthController extends Controller
             $rcode->save();
         }
         $message = '注册成功!';
-        $this->credit($user->id,Credit::KEY_REGISTER);
-
         //注册事件通知
         event(new UserRegistered($user,'',isset($formData['title'])?'官网':'App'));
 
@@ -473,7 +471,6 @@ class AuthController extends Controller
         $oauthData->user_id = $user->id;
         $oauthData->save();
         $message = '注册成功!';
-        $this->credit($user->id,Credit::KEY_REGISTER);
 
         //注册事件通知
         event(new UserRegistered($user,$oauthData->id,'微信'));

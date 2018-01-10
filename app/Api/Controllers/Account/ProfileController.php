@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redis;
 
 class ProfileController extends Controller
 {
@@ -439,13 +440,13 @@ class ProfileController extends Controller
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
             if(in_array($extension, $extArray)){
                 $request->user()->addMediaFromRequest('user_avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
-                $upload_count = Cache::increment('user_avatar_upload:'.$user_id);
+                $upload_count = Redis::connection()->incr('user_avatar_upload:'.$user_id);
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
             }
         }else {
             $request->user()->addMediaFromBase64($request->input('user_avatar'))->toMediaCollection('avatar');
-            $upload_count = Cache::increment('user_avatar_upload:'.$user_id);
+            $upload_count = Redis::connection()->incr('user_avatar_upload:'.$user_id);
         }
 
         UserCache::delUserInfoCache($user_id);

@@ -42,7 +42,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixTaskPriority::class,
         Commands\FixData\FixImData::class,
         Commands\FixData\NewUserFollowingNotification::class,
-        Commands\FixData\AddPayForViewDoing::class
+        Commands\FixData\AddPayForViewDoing::class,
+        Commands\FixData\FixCredits::class
 
 
     ];

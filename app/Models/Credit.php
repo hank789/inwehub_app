@@ -35,7 +35,7 @@ class Credit extends Model
 {
     use BelongsToUserTrait;
     protected $table = 'credits';
-    protected $fillable = ['user_id', 'action','coins','credits','source_id','source_subject','created_at'];
+    protected $fillable = ['user_id', 'action','coins','credits','source_id','source_subject','current_coins','current_credits','created_at'];
     public $timestamps = false;
 
     const KEY_REGISTER = 'register';
