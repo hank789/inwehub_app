@@ -230,6 +230,76 @@
             <div class="col-md-12">
                 <div class="box box-default">
                     <div class="box-header with-border">
+                        <h3 class="box-title">贡献值排行前20</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>排名</th>
+                                            <th>用户ID</th>
+                                            <th>用户姓名</th>
+                                            <th>手机</th>
+                                            <th>贡献值</th>
+                                        </tr>
+                                        @foreach($coinUsers as $key=>$coinUser)
+                                            <tr>
+                                                <td>{{ $key+1 }}</td>
+                                                <td>{{ $coinUser->user_id }}</td>
+                                                <td>{{ $coinUser->user->name }}</td>
+                                                <td>{{ $coinUser->user->mobile }}</td>
+                                                <td>{{ $coinUser->coins }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">成长值排行前20</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>排名</th>
+                                            <th>用户ID</th>
+                                            <th>用户姓名</th>
+                                            <th>手机</th>
+                                            <th>成长值</th>
+                                        </tr>
+                                        @foreach($creditUsers as $key=>$creditUser)
+                                            <tr>
+                                                <td>{{ $key+1 }}</td>
+                                                <td>{{ $creditUser->user_id }}</td>
+                                                <td>{{ $creditUser->user->name }}</td>
+                                                <td>{{ $creditUser->user->mobile }}</td>
+                                                <td>{{ $creditUser->credits }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
                         <h3 class="box-title">系统信息</h3>
                     </div>
                     <div class="box-body table-responsive">

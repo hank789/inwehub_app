@@ -11,6 +11,7 @@ use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\UserData;
 use App\Models\UserRegistrationCode;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -88,6 +89,9 @@ class IndexController extends AdminController
         $submissionLinkCount = Submission::where('type','link')->count();
         //邀请用户统计
         $rcUsers = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->get();
+        $coinUsers = UserData::orderBy('coins','desc')->take(20)->get();
+        $creditUsers = UserData::orderBy('credits','desc')->take(20)->get();
+
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
             'totalAnswerNum',
@@ -101,6 +105,8 @@ class IndexController extends AdminController
             'totalUndoTasks',
             'totalUndoTaskUsers',
             'rcUsers',
+            'coinUsers',
+            'creditUsers',
             'userChart','questionChart','systemInfo'));
     }
 
