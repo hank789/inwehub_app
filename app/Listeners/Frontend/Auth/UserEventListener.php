@@ -4,11 +4,11 @@ namespace App\Listeners\Frontend\Auth;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Logic\TaskLogic;
 use App\Models\Attention;
+use App\Models\Credit;
 use App\Models\Feed\Feed;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
-use App\Models\Readhub\ReadHubUser;
 use App\Models\Role;
 use App\Models\Task;
 use App\Models\User;
@@ -17,6 +17,7 @@ use App\Notifications\NewInviteUserRegister;
 use App\Notifications\NewMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Redis;
+use App\Events\Frontend\System\Credit as CreditEvent;
 
 /**
  * Class UserEventListener.
@@ -80,6 +81,9 @@ class UserEventListener implements ShouldQueue
             $title .= '；邀请者：'.formatSlackUser($rc_user);
             //给邀请者发送通知
             $rc_user->notify(new NewInviteUserRegister($rc_user->id,$event->user->id));
+            //增加积分
+            $action = Credit::KEY_INVITE_USER;
+            event(new CreditEvent($rc_user->id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$event->user->id,'邀请好友注册成功'));
         }
         //客服欢迎信息
         //客服
