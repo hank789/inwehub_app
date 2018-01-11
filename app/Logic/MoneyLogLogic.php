@@ -126,7 +126,6 @@ class MoneyLogLogic {
                 throw new \Exception('手续费大于总金额');
             }
             $userMoney = UserMoney::find($user_id);
-            $userMoney->total_money = bcsub($userMoney->total_money,$money,2);
             //资金记录
             $moneyLog1 = MoneyLog::create([
                 'user_id' => $user_id,
@@ -138,9 +137,9 @@ class MoneyLogLogic {
                 'money_type'   => $money_type,
                 'before_money' => $userMoney->total_money
             ]);
+            $userMoney->total_money = bcsub($userMoney->total_money,$money,2);
             if($fee>0){
                 $userMoney = UserMoney::find($user_id);
-                $userMoney->total_money = bcsub($userMoney->total_money,$fee,2);
                 MoneyLog::create([
                     'user_id' => $user_id,
                     'change_money' => $fee,
@@ -151,6 +150,7 @@ class MoneyLogLogic {
                     'money_type'   => MoneyLog::MONEY_TYPE_FEE,
                     'before_money' => $userMoney->total_money
                 ]);
+                $userMoney->total_money = bcsub($userMoney->total_money,$fee,2);
             }
             $userMoney->save();
             DB::commit();
