@@ -131,7 +131,7 @@ class FixUserCredits implements ShouldQueue
             $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'专家认证',$user->authentication->updated_at);
         }
         //阅读回复
-        $comments = Comment::where('status',1)->get();
+        $comments = Comment::where('status',1)->where('user_id',$user->id)->get();
         $action = CreditModel::KEY_READHUB_NEW_COMMENT;
         foreach ($comments as $comment) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$comment->id)->first();
@@ -139,7 +139,7 @@ class FixUserCredits implements ShouldQueue
         }
         //阅读发文
         $action = CreditModel::KEY_READHUB_NEW_SUBMISSION;
-        $submissions = Submission::get();
+        $submissions = Submission::where('user_id',$user->id)->get();
         foreach ($submissions as $submission) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$submission->id)->first();
             $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$submission,'动态分享');

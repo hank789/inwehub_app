@@ -84,8 +84,8 @@ class IndexController extends AdminController
         $submissionLinkCount = Submission::where('type','link')->count();
         //邀请用户统计
         $rcUsers = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->get();
-        $coinUsers = UserData::orderBy('coins','desc')->take(20)->get();
-        $creditUsers = UserData::orderBy('credits','desc')->take(20)->get();
+        $coinUsers = UserData::orderBy('coins','desc')->take(50)->get();
+        $creditUsers = UserData::orderBy('credits','desc')->take(50)->get();
 
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
