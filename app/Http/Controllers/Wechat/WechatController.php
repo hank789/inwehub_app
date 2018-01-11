@@ -74,7 +74,6 @@ class WechatController extends Controller
 
     public function oauth(Request $request,JWTAuth $JWTAuth){
         Log::info('oauth_request');
-        $wechat = app('wechat');
         $redirect = $request->get('redirect','');
         Session::put("wechat_user_redirect",$redirect);
         $userInfo = session('wechat_userinfo');
@@ -85,17 +84,24 @@ class WechatController extends Controller
                     //登陆事件通知
                     event(new UserLoggedIn($user,'微信'));
                 } else {
+                    $wechat = app('wechat');
                     return $wechat->oauth->scopes(['snsapi_userinfo'])
                         ->setRequest($request)
                         ->redirect();
                 }
             } catch (JWTException $e) {
+                if (!isset($wechat)) {
+                    $wechat = app('wechat');
+                }
                 return $wechat->oauth->scopes(['snsapi_userinfo'])
                     ->setRequest($request)
                     ->redirect();
             }
 
             return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);
+        }
+        if (!isset($wechat)) {
+            $wechat = app('wechat');
         }
 
         return $wechat->oauth->scopes(['snsapi_userinfo'])
