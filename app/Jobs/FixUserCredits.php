@@ -126,9 +126,9 @@ class FixUserCredits implements ShouldQueue
         }
         //完成专家认证
         $action = CreditModel::KEY_EXPERT_VALID;
+        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         if ($user->authentication && $user->authentication->status === 1){
-            $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$user->id)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'专家认证',$user->authentication->updated_at);
+            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'专家认证',$user->authentication->updated_at);
         }
         //阅读回复
         $comments = Comment::where('status',1)->get();
