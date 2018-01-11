@@ -230,7 +230,7 @@
             <div class="col-md-12">
                 <div class="box box-default">
                     <div class="box-header with-border">
-                        <h3 class="box-title">贡献值排行前20</h3>
+                        <h3 class="box-title">贡献值排行前50</h3>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -265,7 +265,7 @@
             <div class="col-md-12">
                 <div class="box box-default">
                     <div class="box-header with-border">
-                        <h3 class="box-title">成长值排行前20</h3>
+                        <h3 class="box-title">成长值排行前50</h3>
                     </div>
                     <div class="box-body">
                         <div class="row">
