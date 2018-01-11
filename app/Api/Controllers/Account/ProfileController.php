@@ -275,7 +275,7 @@ class ProfileController extends Controller
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
 
         $info['submission_count'] = Submission::where('user_id',$user->id)->whereNull('deleted_at')->count();
-        $info['comment_count'] = Comment::where('user_id',$user->id)->whereNull('deleted_at')->count();
+        $info['comment_count'] = Comment::where('user_id',$user->id)->count();
 
         $projects = [];
         $jobs = [];
