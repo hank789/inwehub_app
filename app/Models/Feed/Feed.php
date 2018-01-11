@@ -152,7 +152,8 @@ class Feed extends Model
                     'support_number' => $answer->supports,
                     'follow_question_num'  => $question->followers,
                     'is_followed_question' => $is_followed_question,
-                    'answer_id' => $answer->id
+                    'answer_id' => $answer->id,
+                    'question_id' => $question->id
                 ];
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
@@ -174,7 +175,8 @@ class Feed extends Model
                     'answer_num' => $question->answers,
                     'follow_num' => $question->followers,
                     'answer_user_list' => $answer_users,
-                    'is_followed_question' => $is_followed_question
+                    'is_followed_question' => $is_followed_question,
+                    'question_id' => $question->id
                 ];
                 break;
             case self::FEED_TYPE_CREATE_PAY_QUESTION:
@@ -234,7 +236,8 @@ class Feed extends Model
                     'answer_num' => $question->answers,
                     'follow_num' => $question->followers,
                     'answer_user_list' => $answer_users,
-                    'is_followed_question' => $attention?1:0
+                    'is_followed_question' => $attention?1:0,
+                    'question_id' => $question->id
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_USER:
@@ -272,6 +275,7 @@ class Feed extends Model
                 $data['question_answer_num'] = $question->answers;
                 $data['answer_id'] = $answer->id;
                 $data['is_followed_question'] = $is_followed_question;
+                $data['question_id'] = $question->id;
                 break;
             case self::FEED_TYPE_COMMENT_READHUB_ARTICLE:
                 //评论了文章
@@ -331,6 +335,7 @@ class Feed extends Model
                 $data['question_answer_num'] = $question->answers;
                 $data['answer_id'] = $answer->id;
                 $data['is_followed_question'] = $is_followed_question;
+                $data['question_id'] = $question->id;
                 break;
             case self::FEED_TYPE_UPVOTE_READHUB_ARTICLE:
                 //赞了文章
