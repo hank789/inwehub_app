@@ -20,7 +20,7 @@ class CreateCreditsTable extends Migration
             $table->string('source_subject',128)->nullable();    //问题标题或文字标题等
             $table->integer('coins')->default(0);
             $table->integer('credits')->default(0);
-            $table->timestamp('created_at');
+            $table->timestamps();
 
         });
     }

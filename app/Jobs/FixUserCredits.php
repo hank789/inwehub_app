@@ -76,6 +76,7 @@ class FixUserCredits implements ShouldQueue
         }
         //专业提问
         $action = CreditModel::KEY_ASK;
+        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         $questions = Question::where('user_id',$user->id)->where('question_type',1)->orderBy('id','asc')->get();
         foreach ($questions as $key=>$question) {
             if ($key == 0) continue;
@@ -84,6 +85,7 @@ class FixUserCredits implements ShouldQueue
         }
         //互动提问
         $action = CreditModel::KEY_COMMUNITY_ASK;
+        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         $questions = Question::where('user_id',$user->id)->where('question_type',2)->orderBy('id','asc')->get();
         foreach ($questions as $key=>$question) {
             if ($key == 0) continue;
@@ -92,6 +94,7 @@ class FixUserCredits implements ShouldQueue
         }
 
         //专业问答回答&互动问答回答
+        CreditModel::where('user_id',$user->id)->whereIn('action',[CreditModel::KEY_ANSWER,CreditModel::KEY_COMMUNITY_ANSWER])->delete();
         $answers = Answer::where('user_id',$user->id)->where('status',1)->orderBy('id','asc')->get();
         $first_pay_answer = 0;
         $first_free_answer = 0;
@@ -133,12 +136,14 @@ class FixUserCredits implements ShouldQueue
         //阅读回复
         $comments = Comment::where('status',1)->where('user_id',$user->id)->get();
         $action = CreditModel::KEY_READHUB_NEW_COMMENT;
+        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         foreach ($comments as $comment) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$comment->id)->first();
             $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$comment,'回复');
         }
         //阅读发文
         $action = CreditModel::KEY_READHUB_NEW_SUBMISSION;
+        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         $submissions = Submission::where('user_id',$user->id)->get();
         foreach ($submissions as $submission) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$submission->id)->first();
@@ -194,7 +199,7 @@ class FixUserCredits implements ShouldQueue
                     'credits' => $credits,
                     'current_coins' => 0,
                     'current_credits' => 0,
-                    'created_at' => $created_at?:$source->created_at
+                    'created_at' => $created_at?:(string)$source->created_at
                 ]);
             }
             return true;
