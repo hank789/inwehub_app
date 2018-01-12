@@ -487,11 +487,16 @@ class AnswerController extends Controller
 
         if ($loginUser->id == $question->user_id) {
             $feedback_type = 1;//提问者点评
-            $action = Credit::KEY_RATE_ANSWER;
         } else {
             $feedback_type = 2;//围观者点评
-            $action = Credit::KEY_FEEDBACK_RATE_ANSWER;
         }
+
+        if ($request->input('rate_star') >= 4) {
+            $action = Credit::KEY_RATE_ANSWER_GOOD;
+        } else {
+            $action = Credit::KEY_RATE_ANSWER_BAD;
+        }
+
 
         //防止重复评价
         $exist = Feedback::where('user_id',$loginUser->id)
