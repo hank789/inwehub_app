@@ -578,7 +578,7 @@ class QuestionController extends Controller
         $page = $request->input('page',1);
         $page = $page%3;
         if ($page == 0) {
-            $page = 1;
+            $page = 3;
         }
         $tags = $question->tags()->pluck('tag_id')->toArray();
         //已经邀请过的用户
