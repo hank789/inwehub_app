@@ -133,7 +133,7 @@ class Feed extends Model
                     'answer_promise_time'    => Carbon::createFromTimestamp(strtotime($answer->promise_time))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h',
                     'answer_response_time'   => Carbon::createFromTimestamp(strtotime($answer->adopted_at))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h',
                     'answer_id' => $answer->id,
-                    'tags'      => $question->tags()->selete('id','name')->get()->toArray()
+                    'tags'      => $question->tags()->select('id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
@@ -156,7 +156,7 @@ class Feed extends Model
                     'is_followed_question' => $is_followed_question,
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
-                    'tags'      => $question->tags()->selete('id','name')->get()->toArray(),
+                    'tags'      => $question->tags()->select('id','name')->get()->toArray(),
                 ];
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
@@ -180,7 +180,7 @@ class Feed extends Model
                     'answer_user_list' => $answer_users,
                     'is_followed_question' => $is_followed_question,
                     'question_id' => $question->id,
-                    'tags'      => $question->tags()->selete('id','name')->get()->toArray()
+                    'tags'      => $question->tags()->select('id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_CREATE_PAY_QUESTION:
@@ -189,7 +189,7 @@ class Feed extends Model
                 $question = Question::find($this->data['question_id']);
                 $data = [
                     'title' => $this->data['question_title'],
-                    'tags'      => $question->tags()->selete('id','name')->get()->toArray()
+                    'tags'      => $question->tags()->select('id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
@@ -244,7 +244,7 @@ class Feed extends Model
                     'answer_user_list' => $answer_users,
                     'is_followed_question' => $attention?1:0,
                     'question_id' => $question->id,
-                    'tags'      => $question->tags()->selete('id','name')->get()->toArray(),
+                    'tags'      => $question->tags()->select('id','name')->get()->toArray(),
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_USER:
@@ -283,7 +283,7 @@ class Feed extends Model
                 $data['answer_id'] = $answer->id;
                 $data['is_followed_question'] = $is_followed_question;
                 $data['question_id'] = $question->id;
-                $data['tags'] = $question->tags()->selete('id','name')->get()->toArray();
+                $data['tags'] = $question->tags()->select('id','name')->get()->toArray();
                 break;
             case self::FEED_TYPE_COMMENT_READHUB_ARTICLE:
                 //评论了文章
@@ -325,7 +325,7 @@ class Feed extends Model
                 $data['answer_response_time'] = Carbon::createFromTimestamp(strtotime($answer->adopted_at))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h';
                 $data['answer_id'] = $answer->id;
                 $data['is_pay_for_view'] = ($is_self || $is_answer_author || $is_pay_for_view);
-                $data['tags'] = $question->tags()->selete('id','name')->get()->toArray();
+                $data['tags'] = $question->tags()->select('id','name')->get()->toArray();
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
                 //赞了互动问答
@@ -345,7 +345,7 @@ class Feed extends Model
                 $data['answer_id'] = $answer->id;
                 $data['is_followed_question'] = $is_followed_question;
                 $data['question_id'] = $question->id;
-                $data['tags'] = $question->tags()->selete('id','name')->get()->toArray();
+                $data['tags'] = $question->tags()->select('id','name')->get()->toArray();
                 break;
             case self::FEED_TYPE_UPVOTE_READHUB_ARTICLE:
                 //赞了文章
