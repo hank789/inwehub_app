@@ -575,8 +575,10 @@ class QuestionController extends Controller
         if(!$question){
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
-        if ($request->input('page',1) > 3) {
-            return self::createJsonData(true,[]);
+        $page = $request->input('page',1);
+        $page = $page%3;
+        if ($page == 0) {
+            $page = 1;
         }
         $tags = $question->tags()->pluck('tag_id')->toArray();
         //已经邀请过的用户
@@ -587,11 +589,11 @@ class QuestionController extends Controller
         if ($invitedUsers) {
             $query = $query->whereNotIn('user_id',$invitedUsers);
         }
-        if ($tags && $query->whereIn('tag_id',$tags)->distinct()->simplePaginate(Config::get('api_data_page_size'))->count() >= 1) {
+        if ($tags && $query->whereIn('tag_id',$tags)->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page)->count() >= 1) {
             $query = $query->whereIn('tag_id',$tags);
         }
 
-        $userTags = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'));
+        $userTags = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
         $data = [];
         foreach($userTags as $userTag){
             if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;
