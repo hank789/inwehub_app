@@ -83,6 +83,7 @@ class ApiException extends Exception
     const WITHDRAW_SYSTEM_SUSPEND = 4010;
     const PAYMENT_SYSTEM_ERROR = 4011;
     const WITHDRAW_PASSWORD_ERROR = 4012;
+    const WITHDRAW_PASSWORD_LIMIT = 4013;
 
 
     //企业模块响应码
@@ -165,6 +166,7 @@ class ApiException extends Exception
         self::WITHDRAW_SYSTEM_SUSPEND => '系统暂停提现',
         self::PAYMENT_SYSTEM_ERROR => '支付失败，请1分钟后再试',
         self::WITHDRAW_PASSWORD_ERROR => '提现密码错误',
+        self::WITHDRAW_PASSWORD_LIMIT => '今日提现密码已输错3次，已被锁定',
 
 
         //企业模块
