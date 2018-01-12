@@ -8,6 +8,7 @@ use App\Models\Pay\Withdraw;
 use App\Models\UserOauth;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @author: wanghui
@@ -23,6 +24,7 @@ class WithdrawController extends Controller {
 
         $validateRules = [
             'amount' => 'required|numeric',
+            'password' => 'required'
         ];
         $this->validate($request, $validateRules);
         $amount = $request->input('amount');
@@ -30,6 +32,10 @@ class WithdrawController extends Controller {
             throw new ApiException(ApiException::WITHDRAW_AMOUNT_INVALID);
         }
         $user = $request->user();
+        if (!Auth::validate(['mobile'=>$user->phone,'password'=>$request->input('password')])) {
+            throw new ApiException(ApiException::WITHDRAW_PASSWORD_ERROR);
+        }
+
         //是否绑定了微信
         $user_oauth = UserOauth::where('user_id',$user->id)->whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])->where('status',1)->orderBy('updated_at','desc')->first();
         if(empty($user_oauth)){
