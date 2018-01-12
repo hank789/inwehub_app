@@ -491,12 +491,6 @@ class AnswerController extends Controller
             $feedback_type = 2;//围观者点评
         }
 
-        if ($request->input('rate_star') >= 4) {
-            $action = Credit::KEY_RATE_ANSWER_GOOD;
-        } else {
-            $action = Credit::KEY_RATE_ANSWER_BAD;
-        }
-
 
         //防止重复评价
         $exist = Feedback::where('user_id',$loginUser->id)
@@ -523,7 +517,7 @@ class AnswerController extends Controller
 
         $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
 
-        $this->credit($loginUser->id,$action,$feedback->id,'回答评价');
+        $this->credit($loginUser->id,Credit::KEY_NEW_ANSWER_FEEDBACK,$feedback->id,'回答评价');
 
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));
