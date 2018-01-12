@@ -48,7 +48,8 @@ class CreditController extends AdminController
             'user_id' => 'required|integer',
             'action' => 'required|in:reward_user,punish_user',
             'coins' => 'required|integer|min:0',
-            'credits' => 'required|integer|min:0'
+            'credits' => 'required|integer|min:0',
+            'source_subject' => 'required'
         ];
         $request->flash();
         $this->validate($request,$validateRule);
@@ -65,7 +66,7 @@ class CreditController extends AdminController
             $credits = intval(-$credits);
             $coins   = intval(-$coins);
         }
-        event(new CreditEvent($userId,$action,$coins,$credits));
+        event(new CreditEvent($userId,$action,$coins,$credits,0,$request->input('source_subject')));
 
         return $this->success(route('admin.credit.index'),'充值成功');
     }

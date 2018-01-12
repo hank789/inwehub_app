@@ -173,40 +173,7 @@ class SettingController extends AdminController
     /*积分策略设置*/
     public function credits(Request $request)
     {
-        $validateRules = [
-            'credits_register' => 'required|integer',
-            'coins_register' => 'required|integer',
-            'credits_login' => 'required|integer',
-            'coins_login' => 'required|integer',
-            'credits_upload_avatar' => 'required|integer',
-            'coins_upload_avatar' => 'required|integer',
-            'credits_user_info_complete' => 'required|integer',
-            'coins_user_info_complete' => 'required|integer',
-            'credits_user_sign_daily' => 'required|integer',
-            'coins_user_sign_daily' => 'required|integer',
-            'credits_first_ask' => 'required|integer',
-            'coins_first_ask' => 'required|integer',
-            'credits_ask' => 'required|integer',
-            'coins_ask' => 'required|integer',
-            'credits_first_answer' => 'required|integer',
-            'coins_first_answer' => 'required|integer',
-            'credits_answer' => 'required|integer',
-            'coins_answer' => 'required|integer',
-            'credits_answer_over_promise_time_hourly' => 'required|integer',
-            'coins_answer_over_promise_time_hourly' => 'required|integer',
-            'credits_answer_over_promise_time_max' => 'required|integer',
-            'coins_answer_over_promise_time_max' => 'required|integer',
-            'credits_answer_good' => 'required|integer',
-            'coins_answer_good' => 'required|integer',
-            'credits_ask_good' => 'required|integer',
-            'coins_ask_good' => 'required|integer',
-            'credits_invite_user' => 'required|integer',
-            'coins_invite_user' => 'required|integer',
-            'credits_expert_valid' => 'required|integer',
-            'coins_expert_valid' => 'required|integer'
-        ];
         if($request->isMethod('post')){
-            $this->validate($request,$validateRules);
             $data = $request->except('_token');
             unset($data['_token']);
             foreach($data as $name=>$value){
