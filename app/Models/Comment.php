@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Feed\Feed;
 use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -99,6 +100,7 @@ class Comment extends Model
             } else {
                 $comment->source()->where("comments",">",0)->decrement('comments');
             }
+            Feed::where('source_id',$comment->id)->where('source_type',get_class($comment))->delete();
         });
     }
 
