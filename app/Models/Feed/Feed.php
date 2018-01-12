@@ -150,6 +150,7 @@ class Feed extends Model
                     'content'   => $this->data['answer_content'],
                     'comment_num' => $answer->comments,
                     'support_number' => $answer->supports,
+                    'answer_number' => $question->answers,
                     'follow_question_num'  => $question->followers,
                     'is_followed_question' => $is_followed_question,
                     'answer_id' => $answer->id,
