@@ -90,7 +90,10 @@ class CommentController extends Controller {
             'id' => 'required|integer',
         ]);
 
-        $comment = Comment::findOrFail($request->id);
+        $comment = Comment::find($request->id);
+        if (!$comment) {
+            return self::createJsonData(true);
+        }
         $user = $request->user();
         if ($comment->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
