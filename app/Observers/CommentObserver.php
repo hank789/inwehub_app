@@ -245,5 +245,20 @@ class CommentObserver implements ShouldQueue {
     }
 
 
+    public function deleting(Comment $comment){
+        $fields[] = [
+            'title' => '评论内容',
+            'value' => $comment->formatContent(),
+            'short' => false
+        ];
+        return \Slack::to(config('slack.ask_activity_channel'))
+            ->disableMarkdown()
+            ->attach(
+                [
+                    'color'  => 'good',
+                    'fields' => $fields
+                ]
+            )->send('用户'.$comment->user->id.'['.$comment->user->name.']删除了评论');
+    }
 
 }
