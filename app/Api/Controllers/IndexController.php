@@ -210,7 +210,7 @@ class IndexController extends Controller {
                     $bestAnswer = $object->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
 
                     $item['data']['price'] = $object->price;
-                    $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
+                    $item['data']['average_rate'] = trim($bestAnswer->getFeedbackRate(),'%');
                     break;
                 case RecommendRead::READ_TYPE_FREE_QUESTION:
                     // '互动问答';
