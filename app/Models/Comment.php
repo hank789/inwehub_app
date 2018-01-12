@@ -118,7 +118,7 @@ class Comment extends Model
      */
     public function children()
     {
-        return $this->hasMany(self::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id')->orderBy('created_at','desc');
     }
 
     public function parent()
