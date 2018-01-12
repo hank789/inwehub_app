@@ -596,6 +596,11 @@ class AnswerController extends Controller
 
 
         $answer->orders()->attach($order->id);
+        //是否存在余额支付订单
+        $order1 = Order::where('order_no',$order->order_no.'W')->first();
+        if ($order1) {
+            $answer->orders()->attach($order1->id);
+        }
         $answer->increment('pay_for_views');
 
         //进入结算中心

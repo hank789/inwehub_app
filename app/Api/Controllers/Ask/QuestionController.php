@@ -372,6 +372,11 @@ class QuestionController extends Controller
             //订单和问题关联
             if($order){
                 $question->orders()->attach($order->id);
+                //是否存在余额支付订单
+                $order1 = Order::where('order_no',$order->order_no.'W')->first();
+                if ($order1) {
+                    $question->orders()->attach($order1->id);
+                }
             }
             $doing_prefix = '';
             if ($question->question_type == 2) {

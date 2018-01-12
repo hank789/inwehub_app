@@ -219,6 +219,10 @@ class PayController extends Controller {
             } else {
                 $order->status = Order::PAY_STATUS_QUIT;
                 $order->save();
+                if (isset($order1)) {
+                    $order1->status = Order::PAY_STATUS_QUIT;
+                    $order1->save();
+                }
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
         }

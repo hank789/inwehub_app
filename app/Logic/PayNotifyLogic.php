@@ -55,10 +55,8 @@ class PayNotifyLogic implements PayNotifyInterface {
             $order1 = Order::where('order_no',$order->order_no.'W')->first();
             if ($order1) {
                 $order1->status = Order::PAY_STATUS_SUCCESS;
+                $order->transaction_id = $order->order_no;
                 $order1->finish_time = date('Y-m-d H:i:s');
-                $order1->transaction_id = $ret_data['transaction_id'];
-                $order1->response_msg = $ret_data['trade_state'];
-                $order1->response_data = json_encode($ret_data);
                 $order1->save();
                 //减少用户余额
                 MoneyLogLogic::decMoney($order1->user_id,$order1->amount,MoneyLog::MONEY_TYPE_ASK_PAY_WALLET,$order1);
