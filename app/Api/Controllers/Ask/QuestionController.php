@@ -586,7 +586,7 @@ class QuestionController extends Controller
         if ($invitedUsers) {
             $query = $query->whereNotIn('user_id',$invitedUsers);
         }
-        if ($tags && $query->whereIn('tag_id',$tags)->count() >= 1) {
+        if ($tags && $query->whereIn('tag_id',$tags)->distinct()->simplePaginate(Config::get('api_data_page_size'))->count() >= 1) {
             $query = $query->whereIn('tag_id',$tags);
         }
 
