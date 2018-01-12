@@ -90,7 +90,7 @@ class CommentController extends Controller {
             'id' => 'required|integer',
         ]);
 
-        $comment = Comment::find($request->id);
+        $comment = Comment::findOrFail($request->id);
         $user = $request->user();
         if ($comment->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
