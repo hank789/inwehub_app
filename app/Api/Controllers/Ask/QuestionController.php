@@ -582,6 +582,7 @@ class QuestionController extends Controller
         //已经邀请过的用户
         $invitedUsers = $question->invitations()->where("from_user_id","=",$request->user()->id)->pluck('user_id')->toArray();
         $invitedUsers[] = $question->user_id;
+        $invitedUsers[] = $request->user()->id;
         $query = UserTag::select('user_id');
         if ($invitedUsers) {
             $query = $query->whereNotIn('user_id',$invitedUsers);
