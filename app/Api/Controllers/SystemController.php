@@ -167,8 +167,11 @@ class SystemController extends Controller {
         return self::createJsonData(true,$data);
     }
 
-    public function getPayConfig(){
-        return self::createJsonData(true,get_pay_config());
+    public function getPayConfig(Request $request){
+        $user = $request->user();
+        $config = get_pay_config();
+        $config['user_total_money'] = $user->getAvailableTotalMoney();
+        return self::createJsonData(true,$config);
     }
 
     public function htmlToImage(Request $request){

@@ -58,7 +58,7 @@ class AuthenticationController extends AdminController
 
         $object = Authentication::create($data);
         if($object && isset($data['status']) && $data['status'] == 1){
-            $action = 'expert_valid';
+            $action = \App\Models\Credit::KEY_EXPERT_VALID;
             $object->user->notify(new AuthenticationUpdated($object));
             event(new Credit($data['user_id'],$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$data['user_id'],'专家认证'));
         }
@@ -112,7 +112,7 @@ class AuthenticationController extends AdminController
         }
 
         if($old_status != 1 && $new_status == 1){
-            $action = 'expert_valid';
+            $action = \App\Models\Credit::KEY_EXPERT_VALID;
             event(new Credit($authentication->user_id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$id,'专家认证'));
         }
         if ($old_status != $new_status && $new_status != 0) {

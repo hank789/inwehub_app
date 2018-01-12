@@ -7,14 +7,13 @@ use App\Logic\WithdrawLogic;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Collection;
+use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
-use App\Models\Readhub\Comment;
-use App\Models\Readhub\ReadHubUser;
-use App\Models\Readhub\Submission;
+use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
@@ -25,14 +24,11 @@ use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 
-use App\Http\Requests;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redis;
 
 class ProfileController extends Controller
 {
@@ -279,7 +275,7 @@ class ProfileController extends Controller
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
 
         $info['submission_count'] = Submission::where('user_id',$user->id)->whereNull('deleted_at')->count();
-        $info['comment_count'] = Comment::where('user_id',$user->id)->whereNull('deleted_at')->count();
+        $info['comment_count'] = Comment::where('user_id',$user->id)->count();
 
         $projects = [];
         $jobs = [];
@@ -444,13 +440,13 @@ class ProfileController extends Controller
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
             if(in_array($extension, $extArray)){
                 $request->user()->addMediaFromRequest('user_avatar')->setFileName(User::getAvatarFileName($user_id,'origin').'.'.$extension)->toMediaCollection('avatar');
-                $upload_count = Cache::increment('user_avatar_upload:'.$user_id);
+                $upload_count = Redis::connection()->incr('user_avatar_upload:'.$user_id);
             }else{
                 return self::createJsonData(false,[],ApiException::BAD_REQUEST,'头像上传失败');
             }
         }else {
             $request->user()->addMediaFromBase64($request->input('user_avatar'))->toMediaCollection('avatar');
-            $upload_count = Cache::increment('user_avatar_upload:'.$user_id);
+            $upload_count = Redis::connection()->incr('user_avatar_upload:'.$user_id);
         }
 
         UserCache::delUserInfoCache($user_id);
@@ -528,6 +524,9 @@ class ProfileController extends Controller
                     break;
                 case MoneyLog::MONEY_TYPE_COUPON:
                     $title = '红包';
+                    break;
+                case MoneyLog::MONEY_TYPE_ASK_PAY_WALLET:
+                    $title = '余额支付';
                     break;
             }
             $list[] = [

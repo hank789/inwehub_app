@@ -12,6 +12,7 @@ use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Pay\Order;
+use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Support;
@@ -248,6 +249,12 @@ class QuestionController extends Controller
         if($coupon && $coupon->expire_at > date('Y-m-d H:i:s')){
             $show_free_ask = true;
         }
+        $tags['total_money'] = 0;
+
+        $user_money = UserMoney::find($user->id);
+        if($user_money && $user->id != 79){
+            $tags['total_money'] = $user_money->total_money;
+        }
 
         $tags['pay_items'] = [
             [
@@ -311,6 +318,17 @@ class QuestionController extends Controller
 
         $price = abs($request->input('price'));
         $tagString = $request->input('tags');
+        $newTagString = $request->input('new_tags');
+        if ($newTagString) {
+            if (is_array($newTagString)) {
+                foreach ($newTagString as $s) {
+                    if (strlen($s) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                }
+            } else {
+                if (strlen($newTagString) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+            }
+        }
+
 
         $category_id = 20;
         $data = [
@@ -356,10 +374,18 @@ class QuestionController extends Controller
 
             /*添加标签*/
             Tag::multiSaveByIds($tagString,$question);
+            if ($newTagString) {
+                Tag::multiAddByName($newTagString,$question);
+            }
 
             //订单和问题关联
             if($order){
                 $question->orders()->attach($order->id);
+                //是否存在余额支付订单
+                $order1 = Order::where('order_no',$order->order_no.'W')->first();
+                if ($order1) {
+                    $question->orders()->attach($order1->id);
+                }
             }
             $doing_prefix = '';
             if ($question->question_type == 2) {
@@ -549,7 +575,7 @@ class QuestionController extends Controller
 
 
     //一键邀请回答
-    public function quickInviterList(Request $request){
+    public function recommendInviterList(Request $request){
         $validateRules = [
             'question_id'    => 'required|integer',
         ];
@@ -558,28 +584,53 @@ class QuestionController extends Controller
         if(!$question){
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
+        $page = $request->input('page',1);
+        $page = $page%3;
+        if ($page == 0) {
+            $page = 3;
+        }
         $tags = $question->tags()->pluck('tag_id')->toArray();
-
+        //已经邀请过的用户
+        $invitedUsers = $question->invitations()->where("from_user_id","=",$request->user()->id)->pluck('user_id')->toArray();
+        $invitedUsers[] = $question->user_id;
+        $invitedUsers[] = $request->user()->id;
         $query = UserTag::select('user_id');
-        if ($tags) {
+        if ($invitedUsers) {
+            $query = $query->whereNotIn('user_id',$invitedUsers);
+        }
+        if ($tags && $query->whereIn('tag_id',$tags)->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page)->count() >= 1) {
             $query = $query->whereIn('tag_id',$tags);
         }
-        $userTags = $query->orderBy('skills','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'));
+
+        $userTags = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
         $data = [];
         foreach($userTags as $userTag){
-            if ($userTag->user_id == $question->user_id) continue;
             if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;
             $info = User::find($userTag->user_id);
-            $userTags = $info->userTag()->whereIn('tag_id',$tags)->get();
-
+            $tag = $info->userTag()->whereIn('tag_id',$tags)->orderBy('skills','desc')->first();
             $item = [];
+            if ($tag) {
+                if ($tag->skills > 0) {
+                    $skillTags = Tag::select('name')->whereIn('id',$info->userSkillTag()->pluck('tag_id'))->distinct()->pluck('name')->toArray();
+                    $item['description'] = '擅长';
+                    foreach ($skillTags as $skillTag) {
+                        $item['description'] .= '"'.$skillTag.'"';
+                    }
+                } elseif ($tag->answers > 0){
+                    $answerTag = Tag::find($tag->tag_id);
+                    $item['description'] = '曾在"'.$answerTag->name.'"下有回答';
+                } else {
+                    $item['description'] = '向您推荐';
+                }
+            } else {
+                $item['description'] = '向您推荐';
+            }
             $item['id'] = $info->id;
+            $item['uuid'] = $info->uuid;
             $item['name'] = $info->name;
             $item['avatar_url'] = $info->getAvatarUrl();
             $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
-            $item['description'] = $info->description;
-            $item['is_invited'] = $question->isInvited($info->id,$request->user()->id);
-            $item['is_answered'] = 0;
+            $item['is_invited'] = 0;
             $data[] = $item;
         }
         return self::createJsonData(true,$data);
@@ -646,12 +697,17 @@ class QuestionController extends Controller
         $bottom_id = $request->input('bottom_id',0);
         $type = $request->input('type',0);
         $uuid = $request->input('uuid');
+        $loginUser = $request->user();
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
             if (!$user) {
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
-            $query = $user->questions()->where('hide',0);
+            if ($loginUser->id != $user->id) {
+                $query = $user->questions()->where('hide',0);
+            } else {
+                $query = $user->questions();
+            }
         } else {
             $query = $request->user()->questions();
         }

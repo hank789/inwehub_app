@@ -171,6 +171,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     //相关问题
     Route::post('question/relatedQuestion','QuestionController@relatedQuestion');
 
+    //一键推荐邀请回答
+    Route::post('question/recommendInviterList','QuestionController@recommendInviterList');
+
 
     //问答留言列表
     Route::post('answer/commentList','AnswerController@commentList');
@@ -242,7 +245,7 @@ Route::post('system/htmlToImage','SystemController@htmlToImage')->middleware('jw
 Route::post('system/version','SystemController@appVersion');
 
 //支付参数
-Route::post('pay/config','SystemController@getPayConfig');
+Route::post('pay/config','SystemController@getPayConfig')->middleware('jwt.auth');
 
 
 //获取服务条款

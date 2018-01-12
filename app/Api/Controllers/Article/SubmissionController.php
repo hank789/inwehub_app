@@ -53,7 +53,16 @@ class SubmissionController extends Controller {
         }
 
         $tagString = $request->input('tags');
-
+        $newTagString = $request->input('new_tags');
+        if ($newTagString) {
+            if (is_array($newTagString)) {
+                foreach ($newTagString as $s) {
+                    if (strlen($s) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                }
+            } else {
+                if (strlen($newTagString) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+            }
+        }
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
@@ -142,6 +151,9 @@ class SubmissionController extends Controller {
             }
             /*添加标签*/
             Tag::multiSaveByIds($tagString,$submission);
+            if ($newTagString) {
+                Tag::multiAddByName($newTagString,$submission);
+            }
 
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);

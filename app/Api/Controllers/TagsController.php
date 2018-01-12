@@ -27,7 +27,9 @@ class TagsController extends Controller {
 
         $word = $request->input('word');
 
-        $data = TagsLogic::loadTags($tag_type,$word);
+        $sort = $request->input('sort');
+
+        $data = TagsLogic::loadTags($tag_type,$word,'value',$sort);
 
         return self::createJsonData(true,$data);
     }

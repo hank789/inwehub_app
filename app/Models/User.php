@@ -5,6 +5,7 @@ use App\Models\IM\Message;
 use App\Models\Relations\HasRoleAndPermission;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\NotificationSettings;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -700,6 +701,24 @@ class User extends Model implements AuthenticatableContract,
                 break;
         }
         return $level;
+    }
+
+    public function getLockMoney(){
+        $s = RateLimiter::instance()->getValue('user:lock_money',$this->id);
+        return $s ? : 0;
+    }
+
+    public function lockMoney($money,$seconds=120) {
+        return RateLimiter::instance()->increaseBy('user:lock_money',$this->id,$money,$seconds);
+    }
+
+    //获取用户可用金额
+    public function getAvailableTotalMoney(){
+        if ($this->id == 79) return 0;
+        $user_total_money = $this->userMoney->total_money;
+        $lockMoney = $this->getLockMoney();
+        $user_total_money -= $lockMoney;
+        return $user_total_money;
     }
 
     public static function genRcCode(){

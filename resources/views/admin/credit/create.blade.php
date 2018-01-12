@@ -31,6 +31,12 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="form-group @if($errors->has('credits')) has-error @endif">
+                                <label>备注</label>
+                                <span class="text-muted">(为啥加分)</span>
+                                <input type="text" name="source_subject" class="form-control " placeholder="备注" value="{{ old('source_subject') }}">
+                                @if($errors->has('source_subject')) <p class="help-block">{{ $errors->first('source_subject') }}</p> @endif
+                            </div>
                             <div class="form-group @if($errors->has('coins')) has-error @endif">
                                 <label>贡献值</label>
                                 <span class="text-muted">(只能是正整数，0为不进行修改)</span>

@@ -1,6 +1,9 @@
 <?php namespace App\Logic;
 use App\Models\Category;
+use App\Models\Tag;
+use App\Models\Taggable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @author: wanghui
@@ -9,9 +12,9 @@ use Illuminate\Support\Facades\Cache;
  */
 
 class TagsLogic {
-    public static function loadTags($tag_type,$word,$tagKey='value'){
+    public static function loadTags($tag_type,$word,$tagKey='value',$sort=0){
 
-        $cache_key = 'tags:'.$tag_type.':'.$word;
+        $cache_key = 'tags:'.$tag_type.':'.$word.':'.$sort;
         $cache = Cache::get($cache_key);
         if ($cache){
             return $cache;
@@ -81,6 +84,24 @@ class TagsLogic {
                         'text'  => $val->name
                     ];
                 }
+            }
+        }
+        //如果热门排序
+        if ($sort == 1) {
+            $tagIds = array_column($tags,$tagKey);
+            $query =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))
+                ->whereIn('tag_id',$tagIds)->whereIn('taggable_type',['App\Models\Question','App\Models\Submission']);
+
+            $taggables = $query->groupBy('tag_id')
+                ->orderBy('total_num','desc')
+                ->get();
+            $tags = [];
+            foreach ($taggables as $taggable) {
+                $tagInfo = Tag::find($taggable->tag_id);
+                $tags[] = [
+                    $tagKey => $tagInfo->id,
+                    'text'  => $tagInfo->name
+                ];
             }
         }
         $data = [];

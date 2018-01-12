@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers;
 use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
+use App\Models\Answer;
 use App\Models\Article;
 use App\Models\Attention;
 use App\Models\Authentication;
@@ -194,7 +195,44 @@ class IndexController extends Controller {
     //精选推荐
     public function recommendRead(Request $request) {
         $reads = RecommendRead::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('api_data_page_size'));
-        return self::createJsonData(true, $reads->toArray());
+        $result = $reads->toArray();
+        foreach ($result['data'] as &$item) {
+            switch ($item['read_type']) {
+                case RecommendRead::READ_TYPE_SUBMISSION:
+                    // '发现分享';
+                    $object = Submission::find($item['source_id']);
+                    $item['data']['comment_number'] = $object->comments_number;
+                    $item['data']['support_number'] = $object->upvotes;
+                    break;
+                case RecommendRead::READ_TYPE_PAY_QUESTION:
+                    // '专业问答';
+                    $object = Question::find($item['source_id']);
+                    $bestAnswer = $object->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
+
+                    $item['data']['price'] = $object->price;
+                    $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
+                    break;
+                case RecommendRead::READ_TYPE_FREE_QUESTION:
+                    // '互动问答';
+                    $object = Question::find($item['source_id']);
+                    $item['data']['answer_number'] = $object->answers;
+                    $item['data']['follower_number'] = $object->followers;
+                    break;
+                case RecommendRead::READ_TYPE_ACTIVITY:
+                    // '活动';
+                    break;
+                case RecommendRead::READ_TYPE_PROJECT_OPPORTUNITY:
+                    // '项目机遇';
+                    break;
+                case RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER:
+                    // '互动问答回复';
+                    $object = Answer::find($item['source_id']);
+                    $item['data']['comment_number'] = $object->comments;
+                    $item['data']['support_number'] = $object->supports;
+                    break;
+            }
+        }
+        return self::createJsonData(true, $result);
     }
 
     public function myCommentList(Request $request){

@@ -129,7 +129,7 @@ class CommentObserver implements ShouldQueue {
             case 'App\Models\Submission':
                 //动态
                 $title = '动态';
-                event(new CreditEvent($comment->user_id,Credit::KEY_READHUB_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_COMMENT),$comment->id,''));
+                event(new CreditEvent($comment->user_id,Credit::KEY_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_NEW_COMMENT),$comment->id,''));
                 if (Redis::connection()->hget('user.'.$comment->user_id.'.data', 'commentsCount') <= 2) {
                     TaskLogic::finishTask('newbie_readhub_comment',0,'newbie_readhub_comment',[$comment->user_id]);
                 }
@@ -245,5 +245,20 @@ class CommentObserver implements ShouldQueue {
     }
 
 
+    public function deleting(Comment $comment){
+        $fields[] = [
+            'title' => '评论内容',
+            'value' => $comment->formatContent(),
+            'short' => false
+        ];
+        return \Slack::to(config('slack.ask_activity_channel'))
+            ->disableMarkdown()
+            ->attach(
+                [
+                    'color'  => 'good',
+                    'fields' => $fields
+                ]
+            )->send('用户'.$comment->user->id.'['.$comment->user->name.']删除了评论');
+    }
 
 }

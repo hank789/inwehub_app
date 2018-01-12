@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Feed\Feed;
 use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -95,10 +96,11 @@ class Comment extends Model
         static::deleting(function($comment){
             /*问题、回答、文章评论数 -1*/
             if ($comment->source_type == 'App\Models\Submission') {
-                $comment->source()->where("comments",">",0)->decrement('comments_number');
+                $comment->source()->where("comments_number",">",0)->decrement('comments_number');
             } else {
                 $comment->source()->where("comments",">",0)->decrement('comments');
             }
+            Feed::where('source_id',$comment->id)->where('source_type',get_class($comment))->delete();
         });
     }
 
@@ -118,7 +120,7 @@ class Comment extends Model
      */
     public function children()
     {
-        return $this->hasMany(self::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id')->orderBy('created_at','desc');
     }
 
     public function parent()

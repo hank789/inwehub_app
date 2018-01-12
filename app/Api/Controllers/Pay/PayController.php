@@ -1,8 +1,10 @@
 <?php namespace App\Api\Controllers\Pay;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Logic\MoneyLogLogic;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
+use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Order;
 use App\Models\Pay\Ordergable;
 use App\Models\UserOauth;
@@ -32,7 +34,7 @@ class PayController extends Controller {
         $this->validate($request, $validateRules);
         $loginUser = $request->user();
 
-        if(RateLimiter::instance()->increase('pay:request',$loginUser->id,2,1)){
+        if(RateLimiter::instance()->increase('pay:request',$loginUser->id,5,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -40,6 +42,7 @@ class PayController extends Controller {
         $amount = $data['amount'];
         $pay_channel = $data['pay_channel'];
         $need_pay_actual = true;
+        $use_wallet_pay = $request->input('use_wallet_pay',0);
         switch($pay_channel){
             case 'wxpay':
                 if(Setting()->get('pay_method_weixin',1) != 1){
@@ -154,6 +157,41 @@ class PayController extends Controller {
         }
 
         $orderNo = gen_order_number();
+        if ($use_wallet_pay && $amount > 0) {
+            $user_total_money = $loginUser->getAvailableTotalMoney();
+            if ($user_total_money > 0) {
+                if ($user_total_money >= $amount) {
+                    //钱包金额足够，不必使用第三方支付
+                    $wallet_money = $amount;
+                    $amount = 0;
+                    $need_pay_actual = false;
+                } else {
+                    $wallet_money = $user_total_money;
+                    $amount = bcsub($amount,$user_total_money,2);
+                    //60秒内锁住这部分金额
+                    $loginUser->lockMoney($wallet_money,60);
+                }
+                //使用钱包支付的金额
+                $order1 = Order::create([
+                    'user_id' => $loginUser->id,
+                    'body'    => $body,
+                    'subject'    => $subject,
+                    'order_no'    => $orderNo.'W',
+                    'timeout_express' => time() + 600,// 表示必须 600s 内付款
+                    'amount'    => $wallet_money,// 微信沙箱模式，需要金额固定为3.01
+                    'actual_amount' => $wallet_money,//实际支付金额
+                    'return_param' => $data['pay_object_type'],
+                    'pay_channel'  => Order::PAY_CHANNEL_WALLET,
+                    'client_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1',// 客户地址
+                ]);
+                if ($need_pay_actual == false && $amount <=0) {
+                    //使用钱包足额支付，马上减少余额
+                    MoneyLogLogic::decMoney($loginUser->id,$wallet_money,MoneyLog::MONEY_TYPE_ASK_PAY_WALLET,$order1);
+                }
+            } else {
+                throw new ApiException(ApiException::PAYMENT_SYSTEM_ERROR);
+            }
+        }
 
         // 订单信息
         $payData = [
@@ -171,7 +209,7 @@ class PayController extends Controller {
 
         $order = Order::create($payData);
         //首次提问
-        if($data['pay_object_type'] == 'ask' && $amount == 1)
+        if($data['pay_object_type'] == 'ask' && $request->input('amount') == 1)
         {
             $coupon = Coupon::where('user_id',$loginUser->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
             if($coupon && $coupon->coupon_status == Coupon::COUPON_STATUS_PENDING){
@@ -181,6 +219,10 @@ class PayController extends Controller {
             } else {
                 $order->status = Order::PAY_STATUS_QUIT;
                 $order->save();
+                if (isset($order1)) {
+                    $order1->status = Order::PAY_STATUS_QUIT;
+                    $order1->save();
+                }
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
         }
@@ -189,6 +231,11 @@ class PayController extends Controller {
             $order->status = Order::PAY_STATUS_SUCCESS;
             $order->finish_time = date('Y-m-d H:i:s');
             $order->save();
+            if (isset($order1)) {
+                $order1->status = Order::PAY_STATUS_SUCCESS;
+                $order1->finish_time = date('Y-m-d H:i:s');
+                $order1->save();
+            }
             //如果开启了非强制支付
             return self::createJsonData(true,[
                 'order_info' => [],
@@ -218,6 +265,10 @@ class PayController extends Controller {
             }
             $order->status = Order::PAY_STATUS_PROCESS;
             $order->save();
+            if (isset($order1)) {
+                $order1->status = Order::PAY_STATUS_PROCESS;
+                $order1->save();
+            }
         } catch (PayException $e) {
             return self::createJsonData(false,[],$e->getCode(),$e->getMessage());
         }

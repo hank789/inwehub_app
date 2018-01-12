@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Answer;
-use App\Models\Article;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
@@ -11,12 +10,9 @@ use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Task;
 use App\Models\User;
-use App\Models\UserRegistrationCode;
+use App\Models\UserData;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class IndexController extends AdminController
@@ -88,6 +84,9 @@ class IndexController extends AdminController
         $submissionLinkCount = Submission::where('type','link')->count();
         //邀请用户统计
         $rcUsers = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->get();
+        $coinUsers = UserData::orderBy('coins','desc')->take(50)->get();
+        $creditUsers = UserData::orderBy('credits','desc')->take(50)->get();
+
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
             'totalAnswerNum',
@@ -101,6 +100,8 @@ class IndexController extends AdminController
             'totalUndoTasks',
             'totalUndoTaskUsers',
             'rcUsers',
+            'coinUsers',
+            'creditUsers',
             'userChart','questionChart','systemInfo'));
     }
 

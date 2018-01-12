@@ -5,11 +5,14 @@ namespace App\Models\Feed;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Collection;
+use App\Models\Comment;
 use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
+use Carbon\Carbon;
+use function GuzzleHttp\Psr7\str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -105,26 +108,32 @@ class Feed extends Model
                 //回答专业问题
                 $url = '/askCommunity/major/'.$this->data['question_id'];
                 $answer = Answer::find($this->data['answer_id']);
+                $question = $answer->question;
                 $supporters = [];
                 $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
                 if ($support_uids) {
                     $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
                 }
                 $is_pay_for_view = false;
-                $is_self = Auth::user()->id == $answer->question->user_id;
+                $is_self = Auth::user()->id == $question->user_id;
                 $is_answer_author = Auth::user()->id == $answer->user_id;
                 $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
                 if ($payOrder) {
                     $is_pay_for_view = true;
                 }
                 $data = [
-                    'title' => $this->data['question_title'],
+                    'question_title' => $this->data['question_title'],
+                    'answer_content' => str_limit($answer->getContentText()),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
                     'supporter_list' => $supporters,
                     'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view),
-                    'answer_id' => $answer->id
+                    'question_price'  => $question->price,
+                    'answer_promise_time'    => Carbon::createFromTimestamp(strtotime($answer->promise_time))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h',
+                    'answer_response_time'   => Carbon::createFromTimestamp(strtotime($answer->adopted_at))->diffInHours(Carbon::createFromTimestamp(strtotime($question->created_at))).'h',
+                    'answer_id' => $answer->id,
+                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
@@ -142,9 +151,12 @@ class Feed extends Model
                     'content'   => $this->data['answer_content'],
                     'comment_num' => $answer->comments,
                     'support_number' => $answer->supports,
+                    'answer_number' => $question->answers,
                     'follow_question_num'  => $question->followers,
                     'is_followed_question' => $is_followed_question,
-                    'answer_id' => $answer->id
+                    'answer_id' => $answer->id,
+                    'question_id' => $question->id,
+                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
@@ -166,14 +178,18 @@ class Feed extends Model
                     'answer_num' => $question->answers,
                     'follow_num' => $question->followers,
                     'answer_user_list' => $answer_users,
-                    'is_followed_question' => $is_followed_question
+                    'is_followed_question' => $is_followed_question,
+                    'question_id' => $question->id,
+                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_CREATE_PAY_QUESTION:
                 //发布专业问题
                 $url = '/answer/'.$this->data['question_id'];
+                $question = Question::find($this->data['question_id']);
                 $data = [
-                    'title' => $this->data['question_title']
+                    'title' => $this->data['question_title'],
+                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
@@ -219,12 +235,16 @@ class Feed extends Model
                 if ($answer_uids) {
                     $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
                 }
+                $attention = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+
                 $data = [
                     'title' => $this->data['question_title'],
                     'answer_num' => $question->answers,
                     'follow_num' => $question->followers,
                     'answer_user_list' => $answer_users,
-                    'is_followed_question' => 1
+                    'is_followed_question' => $attention?1:0,
+                    'question_id' => $question->id,
+                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_USER:
@@ -243,13 +263,27 @@ class Feed extends Model
                 //评论了专业问答
                 $url = $this->data['feed_url'];
                 $data = $this->data;
-                $data['comment_content'] = $this->data['comment_content'];
                 break;
             case self::FEED_TYPE_COMMENT_FREE_QUESTION:
                 //评论了互动问答
                 $url = $this->data['feed_url'];
+                $comment = Comment::find($this->source_id);
+                $answer = $comment->source;
+                $question = Question::find($answer->question_id);
+                $is_followed_question = 0;
+                $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+                if ($attention_question) {
+                    $is_followed_question = 1;
+                }
                 $data = $this->data;
-                $data['comment_content'] = $this->data['comment_content'];
+                $data['comment_num'] = $answer->comments;
+                $data['support_number'] = $answer->supports;
+                $data['follow_question_num'] = $question->followers;
+                $data['question_answer_num'] = $question->answers;
+                $data['answer_id'] = $answer->id;
+                $data['is_followed_question'] = $is_followed_question;
+                $data['question_id'] = $question->id;
+                $data['tags'] = $question->tags()->select('tag_id','name')->get()->toArray();
                 break;
             case self::FEED_TYPE_COMMENT_READHUB_ARTICLE:
                 //评论了文章
@@ -268,6 +302,7 @@ class Feed extends Model
                 $url = $this->data['feed_url'];
                 $data = $this->data;
                 $answer = Answer::find($this->source_id);
+                $question = $answer->question;
                 $supporters = [];
                 $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
                 if ($support_uids) {
@@ -280,12 +315,17 @@ class Feed extends Model
                 if ($payOrder) {
                     $is_pay_for_view = true;
                 }
+                $data['answer_content'] = str_limit($answer->getContentText());
                 $data['comment_number'] = $answer->comments;
                 $data['average_rate']   = $answer->getFeedbackRate();
                 $data['support_number'] = $answer->supports;
                 $data['supporter_list'] = $supporters;
+                $data['question_price'] = $question->price;
+                $data['answer_promise_time'] = Carbon::createFromTimestamp(strtotime($answer->promise_time))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h';
+                $data['answer_response_time'] = Carbon::createFromTimestamp(strtotime($answer->adopted_at))->diffInHours(Carbon::createFromTimestamp(strtotime($question->created_at))).'h';
                 $data['answer_id'] = $answer->id;
                 $data['is_pay_for_view'] = ($is_self || $is_answer_author || $is_pay_for_view);
+                $data['tags'] = $question->tags()->select('tag_id','name')->get()->toArray();
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
                 //赞了互动问答
@@ -301,8 +341,11 @@ class Feed extends Model
                 $data['comment_num'] = $answer->comments;
                 $data['support_number'] = $answer->supports;
                 $data['follow_question_num'] = $question->followers;
+                $data['question_answer_num'] = $question->answers;
                 $data['answer_id'] = $answer->id;
                 $data['is_followed_question'] = $is_followed_question;
+                $data['question_id'] = $question->id;
+                $data['tags'] = $question->tags()->select('tag_id','name')->get()->toArray();
                 break;
             case self::FEED_TYPE_UPVOTE_READHUB_ARTICLE:
                 //赞了文章
