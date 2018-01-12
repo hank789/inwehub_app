@@ -135,8 +135,8 @@ class FixUserCredits implements ShouldQueue
         }
         //阅读回复
         $comments = Comment::where('status',1)->where('user_id',$user->id)->get();
-        $action = CreditModel::KEY_READHUB_NEW_COMMENT;
-        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
+        $action = CreditModel::KEY_NEW_COMMENT;
+        CreditModel::where('user_id',$user->id)->whereIn('action',['readhub_new_comment',CreditModel::KEY_NEW_COMMENT])->delete();
         foreach ($comments as $comment) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$comment->id)->first();
             $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$comment,'回复');
@@ -156,17 +156,13 @@ class FixUserCredits implements ShouldQueue
             $this->credit($model,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),'','');
         }
         //专业问答评价&专业问答围观者评价
-        CreditModel::where('user_id',$user->id)->whereIn('action',[CreditModel::KEY_RATE_ANSWER,CreditModel::KEY_FEEDBACK_RATE_ANSWER])->delete();
+        CreditModel::where('user_id',$user->id)->whereIn('action',['rate_answer','feedback_rate_answer'])->delete();
         $feedbacks = Feedback::where('user_id',$user->id)->where('source_type',Answer::class)->get();
         foreach ($feedbacks as $feedback) {
-            $answer = Answer::find($feedback->source_id);
-            $question = $answer->question;
-            if ($user->id == $question->user_id) {
-                //提问者点评
-                $action = CreditModel::KEY_RATE_ANSWER;
+            if ($feedback->star >= 4) {
+                $action = CreditModel::KEY_RATE_ANSWER_GOOD;
             } else {
-                //围观者点评
-                $action = CreditModel::KEY_FEEDBACK_RATE_ANSWER;
+                $action = CreditModel::KEY_RATE_ANSWER_BAD;
             }
             $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$feedback,'回答评价');
         }
