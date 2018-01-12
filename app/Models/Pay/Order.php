@@ -122,6 +122,9 @@ class Order extends Model
             case self::PAY_CHANNEL_IOS_IAP:
                 return '苹果';
                 break;
+            case self::PAY_CHANNEL_WALLET:
+                return '余额支付';
+                break;
         }
     }
 
