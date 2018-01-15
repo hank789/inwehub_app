@@ -613,7 +613,7 @@ class AnswerController extends Controller
 
         event(new PayForView($order));
         $this->doing($loginUser->id,Doing::ACTION_PAY_FOR_VIEW_ANSWER,get_class($answer),$answer->id,'付费围观答案','',0,$answer->user_id);
-
+        $this->credit($answer->question->user_id,Credit::KEY_PAY_FOR_VIEW_ANSWER,$order->id,'问题被付费围观');
         return self::createJsonData(true,[
             'question_id' => $answer->question_id,
             'answer_id'   => $answer->id,

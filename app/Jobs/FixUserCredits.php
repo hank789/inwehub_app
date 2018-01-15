@@ -9,6 +9,7 @@ use App\Models\Company\Company;
 use App\Models\Credit as CreditModel;
 use App\Models\Doing;
 use App\Models\Feedback;
+use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Support;
@@ -290,6 +291,18 @@ class FixUserCredits implements ShouldQueue
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$source->id)->first();
             $this->credit($reg,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,$source_subject);
         }
+
+        //付费围观
+        $action = CreditModel::KEY_PAY_FOR_VIEW_ANSWER;
+        $orders = Order::where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->get();
+        foreach ($orders as $order) {
+            $answer = $order->answer()->first();
+            if ($answer) {
+                $reg = CreditModel::where('user_id',$answer->question->user_id)->where('action',$action)->where('source_id',$order->id)->first();
+                $this->credit($reg,$action,$answer->question->user_id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$order,'问题被付费围观');
+            }
+        }
+
 
 
 
