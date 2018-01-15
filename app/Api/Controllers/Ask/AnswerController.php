@@ -346,6 +346,9 @@ class AnswerController extends Controller
 
                 $this->credit($request->user()->id,$credit_key,$answer->id,$answer->getContentText());
 
+                if ($question->question_type == 2) {
+                    $this->credit($question->user_id,Credit::KEY_COMMUNITY_ASK_ANSWERED,$answer->id,$answer->getContentText());
+                }
 
                 //进入结算中心
                 Settlement::answerSettlement($answer);
@@ -518,6 +521,13 @@ class AnswerController extends Controller
         $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
 
         $this->credit($loginUser->id,Credit::KEY_NEW_ANSWER_FEEDBACK,$feedback->id,'回答评价');
+        if ($feedback->star >= 4) {
+            $action = Credit::KEY_RATE_ANSWER_GOOD;
+        } else {
+            $action = Credit::KEY_RATE_ANSWER_BAD;
+        }
+        $this->credit($answer->user_id,$action,$feedback->id,'回答评价');
+
 
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));

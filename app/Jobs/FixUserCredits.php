@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Answer;
+use App\Models\Attention;
 use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Company\Company;
@@ -122,6 +123,8 @@ class FixUserCredits implements ShouldQueue
                     //完成首次互助回答
                     $action = CreditModel::KEY_FIRST_COMMUNITY_ANSWER;
                 }
+                $reg1 = CreditModel::where('user_id',$answer->question->user_id)->where('action',CreditModel::KEY_COMMUNITY_ASK_ANSWERED)->where('source_id',$answer->id)->first();
+                $this->credit($reg1,CreditModel::KEY_COMMUNITY_ASK_ANSWERED,$answer->question->user_id,Setting()->get('coins_'.CreditModel::KEY_COMMUNITY_ASK_ANSWERED),Setting()->get('credits_'.CreditModel::KEY_COMMUNITY_ASK_ANSWERED),$answer,$answer->getContentText());
             }
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$answer->id)->first();
             $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$answer,$answer->getContentText());
@@ -193,7 +196,7 @@ class FixUserCredits implements ShouldQueue
             $this->credit($model,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),'','');
         }
         //专业问答评价&专业问答围观者评价
-        CreditModel::where('user_id',$user->id)->whereIn('action',['rate_answer','feedback_rate_answer'])->delete();
+        CreditModel::where('user_id',$user->id)->whereIn('action',['rate_answer','feedback_rate_answer','new_answer_feedback'])->delete();
         $feedbacks = Feedback::where('user_id',$user->id)->where('source_type',Answer::class)->get();
         foreach ($feedbacks as $feedback) {
             if ($feedback->star >= 4) {
@@ -201,7 +204,10 @@ class FixUserCredits implements ShouldQueue
             } else {
                 $action = CreditModel::KEY_RATE_ANSWER_BAD;
             }
-            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$feedback,'回答评价');
+            $source = $feedback->source;
+            $reg = CreditModel::where('user_id',$source->user_id)->where('action',$action)->where('source_id',$feedback->id)->first();
+            $this->credit($reg,$action,$source->user_id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$feedback,'回答评价');
+            $this->credit('',CreditModel::KEY_NEW_ANSWER_FEEDBACK,$user->id,Setting()->get('coins_'.CreditModel::KEY_NEW_ANSWER_FEEDBACK),Setting()->get('credits_'.CreditModel::KEY_NEW_ANSWER_FEEDBACK),$feedback,'回答评价');
         }
         //点赞
         $action = CreditModel::KEY_NEW_UPVOTE;
@@ -300,6 +306,23 @@ class FixUserCredits implements ShouldQueue
             if ($answer) {
                 $reg = CreditModel::where('user_id',$answer->question->user_id)->where('action',$action)->where('source_id',$order->id)->first();
                 $this->credit($reg,$action,$answer->question->user_id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$order,'问题被付费围观');
+            }
+        }
+        //关注
+        $attentions = Attention::where('user_id',$user->id)->get();
+        $action = CreditModel::KEY_NEW_FOLLOW;
+        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
+        foreach ($attentions as $attention) {
+            $source = $attention->source;
+            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source,$attention->source_type,$attention->created_at);
+            switch ($attention->source_type) {
+                case 'App\Models\Question':
+                    $action1 = CreditModel::KEY_COMMUNITY_ASK_FOLLOWED;
+                    $reg = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$source->id)->first();
+                    $this->credit($reg,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,get_class($source),$attention->created_at);
+                    break;
+                case 'App\Models\User':
+                    break;
             }
         }
 
