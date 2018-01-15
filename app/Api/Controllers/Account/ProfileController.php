@@ -452,7 +452,7 @@ class ProfileController extends Controller
         UserCache::delUserInfoCache($user_id);
         if($upload_count == 1){
             //只有首次上传头像才加积分
-            $this->credit($user_id,Credit::KEY_UPLOAD_AVATAR);
+            $this->credit($user_id,Credit::KEY_UPLOAD_AVATAR,$user_id,'头像上传成功');
         }
         $percent = $request->user()->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user_id,$percent);

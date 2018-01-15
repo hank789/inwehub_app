@@ -53,6 +53,7 @@ class CommentObserver implements ShouldQueue {
                     'value' => route('blog.article.detail',['id'=>$source->id]),
                     'short' => false
                 ];
+                event(new CreditEvent($source->user_id,Credit::KEY_PRO_OPPORTUNITY_COMMENTED,Setting()->get('coins_'.Credit::KEY_PRO_OPPORTUNITY_COMMENTED),Setting()->get('credits_'.Credit::KEY_PRO_OPPORTUNITY_COMMENTED),$comment->id,'项目机遇被回复'));
                 break;
             case 'App\Models\Answer':
                 $title = '回答';
@@ -108,7 +109,10 @@ class CommentObserver implements ShouldQueue {
                     $feed_type = Feed::FEED_TYPE_COMMENT_PAY_QUESTION;
                     $feed_url = '/askCommunity/major/'.$source->question_id;
                     $feed_answer_content = '';
+                    event(new CreditEvent($source->user_id,Credit::KEY_ANSWER_COMMENT,Setting()->get('coins_'.Credit::KEY_ANSWER_COMMENT),Setting()->get('credits_'.Credit::KEY_ANSWER_COMMENT),$comment->id,'专业回答被回复'));
+
                 } else {
+                    event(new CreditEvent($source->user_id,Credit::KEY_COMMUNITY_ANSWER_COMMENT,Setting()->get('coins_'.Credit::KEY_COMMUNITY_ANSWER_COMMENT),Setting()->get('credits_'.Credit::KEY_COMMUNITY_ANSWER_COMMENT),$comment->id,'互动回答被回复'));
                     $feed_question_title = '互动回答';
                     $feed_type = Feed::FEED_TYPE_COMMENT_FREE_QUESTION;
                     $feed_url = '/askCommunity/interaction/'.$source->id;
@@ -129,12 +133,13 @@ class CommentObserver implements ShouldQueue {
             case 'App\Models\Submission':
                 //动态
                 $title = '动态';
-                event(new CreditEvent($comment->user_id,Credit::KEY_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_NEW_COMMENT),$comment->id,''));
                 if (Redis::connection()->hget('user.'.$comment->user_id.'.data', 'commentsCount') <= 2) {
                     TaskLogic::finishTask('newbie_readhub_comment',0,'newbie_readhub_comment',[$comment->user_id]);
                 }
+                event(new CreditEvent($source->user_id,Credit::KEY_READHUB_SUBMISSION_COMMENT,Setting()->get('coins_'.Credit::KEY_READHUB_SUBMISSION_COMMENT),Setting()->get('credits_'.Credit::KEY_READHUB_SUBMISSION_COMMENT),$comment->id,'动态分享被回复'));
+
                 //产生一条feed流
-                $submission = Submission::find($comment->source_id);
+                $submission = $source;
                 $submission->increment('comments_number');
                 $submission_user = User::find($submission->user_id);
                 if ($submission->type == 'link' && false) {
@@ -219,6 +224,8 @@ class CommentObserver implements ShouldQueue {
             default:
                 return;
         }
+        event(new CreditEvent($comment->user_id,Credit::KEY_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_NEW_COMMENT),$comment->id,'回复成功'));
+
 
         //@了某些人
         if ($comment->mentions) {

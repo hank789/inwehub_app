@@ -55,7 +55,7 @@ trait BaseController {
         }
 
         if ($count == 1){
-            $this->credit($uid,Credit::KEY_USER_INFO_COMPLETE);
+            $this->credit($uid,Credit::KEY_USER_INFO_COMPLETE,$uid,'简历完成');
             $sendNotice = true;
         }
         if ($count >= 1) {

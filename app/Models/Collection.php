@@ -39,5 +39,8 @@ class Collection extends Model
     const COLLECT_STATUS_NEED_RE_ENROLL = 3;//审核不通过，可重新报名
     const COLLECT_STATUS_REJECT = 4;//审核不通过，不可重新报名
 
-
+    public function source()
+    {
+        return $this->morphTo();
+    }
 }

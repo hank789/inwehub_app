@@ -55,6 +55,12 @@ class WechatController extends Controller
                     $answer = Answer::find($target_id);
                     if ($answer) {
                         $refer_user_id = $answer->user_id;
+                        $question = $answer->question;
+                        if ($question->question_type == 1) {
+                            $this->credit($refer_user_id,Credit::KEY_ANSWER_SHARE,$target_id,'专业回答被转发');
+                        } else {
+                            $this->credit($refer_user_id,Credit::KEY_COMMUNITY_ANSWER_SHARE,$target_id,'互动回答被转发');
+                        }
                     }
                     break;
                 case 'question':
@@ -98,6 +104,7 @@ class WechatController extends Controller
                     if ($submission) {
                         $refer_user_id = $submission->user_id;
                         $target_id = $submission->id;
+                        $this->credit($refer_user_id,Credit::KEY_READHUB_SUBMISSION_SHARE,$submission->id,'动态分享被转发');
                     }
                     break;
                 case 'invite_register':

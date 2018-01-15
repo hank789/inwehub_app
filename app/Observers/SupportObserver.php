@@ -5,12 +5,13 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Events\Frontend\System\Credit;
 use App\Models\Feed\Feed;
-use App\Models\Submission;
 use App\Models\Support;
 use App\Notifications\NewSupport;
 use App\Services\RateLimiter;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\Credit as CreditModel;
 
 class SupportObserver implements ShouldQueue {
 
@@ -108,6 +109,23 @@ class SupportObserver implements ShouldQueue {
                 break;
             default:
                 return;
+        }
+        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('upvote:'.get_class($source),$source->id.'_'.$support->user_id,0)) {
+            switch ($support->supportable_type) {
+                case 'App\Models\Answer':
+                    $question = $source->question;
+                    event(new Credit($support->user_id,CreditModel::KEY_NEW_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_NEW_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_NEW_UPVOTE),$support->supportable_id,'点赞回答'));
+                    if ($question->question_type == 1) {
+                        event(new Credit($source->user_id,CreditModel::KEY_ANSWER_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_ANSWER_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_ANSWER_UPVOTE),$support->supportable_id,'专业回答被点赞'));
+                    } else {
+                        event(new Credit($source->user_id,CreditModel::KEY_COMMUNITY_ANSWER_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_COMMUNITY_ANSWER_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_COMMUNITY_ANSWER_UPVOTE),$support->supportable_id,'互动回答被点赞'));
+                    }
+                    break;
+                case 'App\Models\Submission':
+                    event(new Credit($support->user_id,CreditModel::KEY_NEW_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_NEW_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_NEW_UPVOTE),$support->supportable_id,'点赞动态分享'));
+                    event(new Credit($source->user_id,CreditModel::KEY_READHUB_SUBMISSION_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_READHUB_SUBMISSION_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_READHUB_SUBMISSION_UPVOTE),$support->supportable_id,'动态分享被点赞'));
+                    break;
+            }
         }
 
         return \Slack::to(config('slack.ask_activity_channel'))

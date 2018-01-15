@@ -3,13 +3,18 @@
 namespace App\Jobs;
 
 use App\Models\Answer;
+use App\Models\Collection;
 use App\Models\Comment;
+use App\Models\Company\Company;
 use App\Models\Credit as CreditModel;
+use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Question;
 use App\Models\Submission;
+use App\Models\Support;
 use App\Models\User;
 use App\Models\UserData;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -133,21 +138,52 @@ class FixUserCredits implements ShouldQueue
         if ($user->authentication && $user->authentication->status === 1){
             $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'专家认证',$user->authentication->updated_at);
         }
+        //完成公司认证
+        $action = CreditModel::KEY_COMPANY_VALID;
+        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
+        $company = Company::find($user->id);
+        if ($company && $company->apply_status == 2){
+            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'企业认证',$company->updated_at);
+        }
+
         //阅读回复
         $comments = Comment::where('status',1)->where('user_id',$user->id)->get();
-        $action = CreditModel::KEY_NEW_COMMENT;
         CreditModel::where('user_id',$user->id)->whereIn('action',['readhub_new_comment',CreditModel::KEY_NEW_COMMENT])->delete();
         foreach ($comments as $comment) {
-            $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$comment->id)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$comment,'回复');
+            $source = $comment->source;
+            switch ($comment->source_type) {
+                case 'App\Models\Article':
+                    $action1 = CreditModel::KEY_PRO_OPPORTUNITY_COMMENTED;
+                    $source_subject = '项目机遇被回复';
+                    break;
+                case 'App\Models\Answer':
+                    $question = $source->question;
+                    if ($question->question_type == 1) {
+                        $action1 = CreditModel::KEY_ANSWER_COMMENT;
+                        $source_subject = '专业回答被回复';
+                    } else {
+                        $action1 = CreditModel::KEY_COMMUNITY_ANSWER_COMMENT;
+                        $source_subject = '互动回答被回复';
+                    }
+
+                    break;
+                case 'App\Models\Submission':
+                    $action1 = CreditModel::KEY_READHUB_SUBMISSION_COMMENT;
+                    $source_subject = '动态分享被回复';
+                    break;
+            }
+            $reg = CreditModel::where('user_id',$user->id)->where('action',CreditModel::KEY_NEW_COMMENT)->where('source_id',$comment->id)->first();
+            $this->credit($reg,CreditModel::KEY_NEW_COMMENT,$user->id,Setting()->get('coins_'.CreditModel::KEY_NEW_COMMENT),Setting()->get('credits_'.CreditModel::KEY_NEW_COMMENT),$comment,'回复成功');
+            $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$comment->id)->first();
+            $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$comment,$source_subject);
+
         }
         //阅读发文
         $action = CreditModel::KEY_READHUB_NEW_SUBMISSION;
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         $submissions = Submission::where('user_id',$user->id)->get();
         foreach ($submissions as $submission) {
-            $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$submission->id)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$submission,'动态分享');
+            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$submission,'动态分享');
         }
         //分享成功
         $action = CreditModel::KEY_SHARE_SUCCESS;
@@ -166,6 +202,97 @@ class FixUserCredits implements ShouldQueue
             }
             $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$feedback,'回答评价');
         }
+        //点赞
+        $action = CreditModel::KEY_NEW_UPVOTE;
+        $supports = Support::where("user_id",'=',$user->id)->get();
+        foreach ($supports as $support) {
+            $source = $support->source;
+            switch ($support->supportable_type) {
+                case 'App\Models\Answer':
+                    $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$support->supportable_id)->first();
+                    $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source,'点赞回答');
+                    $question = $source->question;
+                    if ($question->question_type == 1) {
+                        $action1 = CreditModel::KEY_ANSWER_UPVOTE;
+                        $reg1 = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$support->supportable_id)->first();
+                        $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'专业回答被点赞');
+                    } else {
+                        $action1 = CreditModel::KEY_COMMUNITY_ANSWER_UPVOTE;
+                        $reg1 = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$support->supportable_id)->first();
+                        $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'互动回答被点赞');
+                    }
+                    break;
+                case 'App\Models\Submission':
+                    $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$support->supportable_id)->first();
+                    $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source,'点赞动态分享');
+                    $action1 = CreditModel::KEY_READHUB_SUBMISSION_UPVOTE;
+                    $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$support->supportable_id)->first();
+                    $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'动态分享被点赞');
+                    break;
+            }
+            RateLimiter::instance()->increase('upvote:'.get_class($source),$source->id.'_'.$user->id,0);
+
+        }
+        //收藏
+        $action = CreditModel::KEY_NEW_COLLECT;
+        $collections = Collection::where('user_id',$user->id)->where('status',1)->get();
+        foreach ($collections as $collect) {
+            $source = $collect->source;
+            $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$collect->source_id)->first();
+            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source,'收藏成功');
+            switch ($collect->source_type) {
+                case 'App\Models\Article':
+                    $action1 = CreditModel::KEY_PRO_OPPORTUNITY_SIGNED;
+                    $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$collect->source_id)->first();
+                    $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'项目机遇被报名');
+                    break;
+                case 'App\Models\Submission':
+                    $action1 = CreditModel::KEY_READHUB_SUBMISSION_COLLECT;
+                    $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$collect->source_id)->first();
+                    $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'动态分享被收藏');
+                    break;
+                case 'App\Models\Answer':
+                    $action1 = CreditModel::KEY_COMMUNITY_ANSWER_COLLECT;
+                    $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$collect->source_id)->first();
+                    $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'回答被收藏');
+                    break;
+            }
+            RateLimiter::instance()->increase('collect:'.get_class($source),$collect->source_id.'_'.$collect->user_id,0);
+        }
+        //转发
+        $action = CreditModel::KEY_SHARE_SUCCESS;
+        $shares = CreditModel::where('user_id',$user->id)->where('action',$action)->get();
+        foreach ($shares as $share) {
+            $this->credit($share,$action,$share->user_id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$share,$share->source_subject);
+        }
+        $doings = Doing::where('user_id',$user->id)->whereIn('action',[Doing::ACTION_SHARE_SUBMISSION_SUCCESS,Doing::ACTION_SHARE_ANSWER_SUCCESS])->get();
+        foreach ($doings as $doing) {
+            switch ($doing->action) {
+                case Doing::ACTION_SHARE_SUBMISSION_SUCCESS:
+                    $action1 = CreditModel::KEY_READHUB_SUBMISSION_SHARE;
+                    $source = Submission::where('slug',$doing->source_id)->first();
+                    $source_subject = '动态分享被转发';
+                    break;
+                case Doing::ACTION_SHARE_ANSWER_SUCCESS:
+                    $source = Answer::find($doing->source_id);
+                    if ($source) {
+                        $question = $source->question;
+                        if ($question->question_type == 1) {
+                            $action1 = CreditModel::KEY_ANSWER_SHARE;
+                            $source_subject = '专业回答被转发';
+                        } else {
+                            $action1 = CreditModel::KEY_COMMUNITY_ANSWER_SHARE;
+                            $source_subject = '互动回答被转发';
+                        }
+                    }
+                    break;
+            }
+            $reg = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$source->id)->first();
+            $this->credit($reg,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,$source_subject);
+        }
+
+
+
         $total_coins = CreditModel::where('user_id',$user->id)->sum('coins');
         $total_credits = CreditModel::where('user_id',$user->id)->sum('credits');
         $userData = UserData::find($user->id);

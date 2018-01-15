@@ -4,17 +4,11 @@ namespace App\Http\Controllers\Admin\Company;
 
 use App\Events\Frontend\System\Credit;
 use App\Http\Controllers\Admin\AdminController;
-use App\Models\Area;
-use App\Models\Authentication;
 use App\Models\Company\Company;
-use App\Models\Tag;
 use App\Models\User;
-use App\Models\UserTag;
 use App\Notifications\CompanyAuth;
-use App\Services\City\CityData;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
+use App\Models\Credit as CreditModel;
 
 class CompanyController extends AdminController
 {
@@ -59,11 +53,14 @@ class CompanyController extends AdminController
     public function verify(Request $request)
     {
         $ids = $request->input('id');
+        $action = CreditModel::KEY_COMPANY_VALID;
         foreach ($ids as $id) {
             $company = Company::find($id);
             $company->apply_status = Company::APPLY_STATUS_SUCCESS;
             $company->save();
             $user = User::find($id);
+            event(new Credit($id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$id,'企业认证'));
+
             $user->notify(new CompanyAuth(Company::find($id)));
         }
 
