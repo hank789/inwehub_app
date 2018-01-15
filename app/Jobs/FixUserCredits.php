@@ -12,6 +12,7 @@ use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\Pay\Order;
 use App\Models\Question;
+use App\Models\QuestionInvitation;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
@@ -325,10 +326,15 @@ class FixUserCredits implements ShouldQueue
                     break;
             }
         }
-
-
-
-
+        //邀请回答
+        $questionInvitions = QuestionInvitation::where('from_user_id',$user->id)->get();
+        $action = CreditModel::KEY_COMMUNITY_ANSWER_INVITED;
+        CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
+        foreach ($questionInvitions as $questionInvition) {
+            $question = Question::find($questionInvition->question_id);
+            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$question,$questionInvition->user_id,$questionInvition->created_at);
+        }
+        
         $total_coins = CreditModel::where('user_id',$user->id)->sum('coins');
         $total_credits = CreditModel::where('user_id',$user->id)->sum('credits');
         $userData = UserData::find($user->id);
