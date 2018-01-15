@@ -215,6 +215,7 @@ class FixUserCredits implements ShouldQueue
         $supports = Support::where("user_id",'=',$user->id)->get();
         foreach ($supports as $support) {
             $source = $support->source;
+            if (!$source) continue;
             switch ($support->supportable_type) {
                 case 'App\Models\Answer':
                     $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$support->supportable_id)->first();
@@ -295,8 +296,10 @@ class FixUserCredits implements ShouldQueue
                     }
                     break;
             }
-            $reg = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$source->id)->first();
-            $this->credit($reg,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,$source_subject);
+            if (isset($source) && $source) {
+                $reg = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$source->id)->first();
+                $this->credit($reg,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,$source_subject);
+            }
         }
 
         //付费围观
@@ -334,7 +337,7 @@ class FixUserCredits implements ShouldQueue
             $question = Question::find($questionInvition->question_id);
             $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$question,$questionInvition->user_id,$questionInvition->created_at);
         }
-        
+
         $total_coins = CreditModel::where('user_id',$user->id)->sum('coins');
         $total_credits = CreditModel::where('user_id',$user->id)->sum('credits');
         $userData = UserData::find($user->id);
