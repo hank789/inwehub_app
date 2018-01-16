@@ -595,12 +595,14 @@ class QuestionController extends Controller
         $invitedUsers = $question->invitations()->where("from_user_id","=",$request->user()->id)->pluck('user_id')->toArray();
         $invitedUsers[] = $question->user_id;
         $invitedUsers[] = $request->user()->id;
-        $query = UserTag::select('user_id');
+        $query = UserTag::select(['user_id','skills','answers']);
+        $query1 = UserTag::select(['user_id','skills','answers']);
         if ($invitedUsers) {
             $query = $query->whereNotIn('user_id',$invitedUsers);
+            $query1 = $query1->whereNotIn('user_id',$invitedUsers);
         }
         if ($tags) {
-            $query1 = $query->whereIn('tag_id',$tags);
+            $query1 = $query1->whereIn('tag_id',$tags);
             $query = $query->union($query1);
         }
 
