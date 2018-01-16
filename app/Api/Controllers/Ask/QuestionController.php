@@ -601,7 +601,7 @@ class QuestionController extends Controller
         }
         if ($tags) {
             $query1 = $query->whereIn('tag_id',$tags);
-            $query->union($query1);
+            $query = $query->union($query1);
         }
 
         $userTags = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
