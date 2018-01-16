@@ -87,7 +87,7 @@ class MessageController extends Controller
 
         $this->dispatch(new SendMessage($request->input('text'),$fromUser->id,[$toUser->id]));
 
-        return $this->success(route('auth.message.show',['room_id'=>$request->input('room_id')]),'消息发送成功');
+        return $this->success(route('auth.message.show',['contact_id'=>$request->input('to_user_id')]),'消息发送成功');
 
     }
 
@@ -97,7 +97,7 @@ class MessageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($room_id)
+    public function show($contact_id)
     {
 
         //客服
@@ -108,8 +108,9 @@ class MessageController extends Controller
         }
         $customer_id = $role_user->user_id;
         $user = User::find($customer_id);
-        $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$customer_id)->first();
-
+        $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
+        $roomUser = RoomUser::where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
+        $room_id = $roomUser->room_id;
         $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
             ->select('im_messages.*')
             ->orderBy('im_messages.id', 'desc')
