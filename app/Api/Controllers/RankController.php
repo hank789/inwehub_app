@@ -17,6 +17,17 @@ use Illuminate\Http\Request;
 class RankController extends Controller
 {
 
+    //获取用户简单数据
+    public function userInfo(Request $request){
+        $info = [];
+        $user = $request->user();
+        $info['user_level'] = $user->userData->user_level;
+        $info['user_credits'] = $user->userData->credits;
+        $info['user_coins'] = $user->userData->coins;
+        $info['invited_users'] = User::where('rc_uid',$user->id)->count();
+        return self::createJsonData(true,$info);
+    }
+
     //用户贡献榜
     public function userContribution(Request $request)
     {

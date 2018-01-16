@@ -48,6 +48,8 @@ Route::group(['namespace'=>'Account'], function() {
 
 //榜单
 Route::group(['middleware' => ['jwt.auth','ban.user'], 'prefix'=>'rank'], function() {
+    //用户积分数据
+    Route::post('userInfo','RankController@userInfo');
     //用户贡献榜
     Route::post('userContribution','RankController@userContribution');
     //用户成长榜
@@ -64,6 +66,7 @@ Route::post('oauth/{type}/callback',['uses'=>'Account\OauthController@callback']
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
     Route::post('profile/info','ProfileController@info');
+
     //修改用户头像
     Route::post('profile/updateAvatar','ProfileController@postAvatar');
     //用户修改密码

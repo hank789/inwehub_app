@@ -130,7 +130,6 @@ class ProfileController extends Controller
         $info['user_level'] = $user->userData->user_level;
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
-        $info['invited_users'] = User::where('rc_uid',$user->id)->count();
         $info['my_activity_enroll'] = Collection::where('user_id',$user->id)->where('source_type','App\Models\Article')->count();
 
         $info['newbie_unfinish_tasks']= ['readhub_comment'=>false,'ask'=>false,'complete_userinfo'=>false];
