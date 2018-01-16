@@ -57,30 +57,30 @@ class FixUserCredits implements ShouldQueue
         //注册积分
         $action = CreditModel::KEY_REGISTER;
         $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->first();
-        $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'注册成功');
+        $this->credit($reg,$action,$user->id,$user,'注册成功');
         //上传头像积分
         $action = CreditModel::KEY_UPLOAD_AVATAR;
         $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->first();
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
-        $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'头像上传成功',$reg?$reg->created_at:'');
+        $this->credit('',$action,$user->id,$user,'头像上传成功',$reg?$reg->created_at:'');
         //简历完成积分
         $action = CreditModel::KEY_USER_INFO_COMPLETE;
         $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->first();
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
-        $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'简历完成',$reg?$reg->created_at:'');
+        $this->credit('',$action,$user->id,$user,'简历完成',$reg?$reg->created_at:'');
         //完成首次专业提问
         $action = CreditModel::KEY_FIRST_ASK;
         $question = Question::where('user_id',$user->id)->where('question_type',1)->orderBy('id','asc')->first();
         if ($question) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$question,$question->title);
+            $this->credit($reg,$action,$user->id,$question,$question->title);
         }
         //完成首次互动提问
         $action = CreditModel::KEY_FIRST_COMMUNITY_ASK;
         $question = Question::where('user_id',$user->id)->where('question_type',2)->orderBy('id','asc')->first();
         if ($question) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$question,$question->title);
+            $this->credit($reg,$action,$user->id,$question,$question->title);
         }
         //专业提问
         $action = CreditModel::KEY_ASK;
@@ -89,7 +89,7 @@ class FixUserCredits implements ShouldQueue
         foreach ($questions as $key=>$question) {
             if ($key == 0) continue;
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$question->id)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$question,$question->title);
+            $this->credit($reg,$action,$user->id,$question,$question->title);
         }
         //互动提问
         $action = CreditModel::KEY_COMMUNITY_ASK;
@@ -98,7 +98,7 @@ class FixUserCredits implements ShouldQueue
         foreach ($questions as $key=>$question) {
             if ($key == 0) continue;
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$question->id)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$question,$question->title);
+            $this->credit($reg,$action,$user->id,$question,$question->title);
         }
 
         //专业问答回答&互动问答回答
@@ -125,30 +125,30 @@ class FixUserCredits implements ShouldQueue
                     $action = CreditModel::KEY_FIRST_COMMUNITY_ANSWER;
                 }
                 $reg1 = CreditModel::where('user_id',$answer->question->user_id)->where('action',CreditModel::KEY_COMMUNITY_ASK_ANSWERED)->where('source_id',$answer->id)->first();
-                $this->credit($reg1,CreditModel::KEY_COMMUNITY_ASK_ANSWERED,$answer->question->user_id,Setting()->get('coins_'.CreditModel::KEY_COMMUNITY_ASK_ANSWERED),Setting()->get('credits_'.CreditModel::KEY_COMMUNITY_ASK_ANSWERED),$answer,$answer->getContentText());
+                $this->credit($reg1,CreditModel::KEY_COMMUNITY_ASK_ANSWERED,$answer->question->user_id,$answer,$answer->getContentText());
             }
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$answer->id)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$answer,$answer->getContentText());
+            $this->credit($reg,$action,$user->id,$answer,$answer->getContentText());
         }
         //邀请好友
         $action = CreditModel::KEY_INVITE_USER;
         $rcUsers = User::where('rc_uid',$user->id)->get();
         foreach ($rcUsers as $rcUser) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$rcUser->id)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$rcUser,'邀请好友注册成功');
+            $this->credit($reg,$action,$user->id,$rcUser,'邀请好友注册成功');
         }
         //完成专家认证
         $action = CreditModel::KEY_EXPERT_VALID;
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         if ($user->authentication && $user->authentication->status === 1){
-            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'专家认证',$user->authentication->updated_at);
+            $this->credit('',$action,$user->id,$user,'专家认证',$user->authentication->updated_at);
         }
         //完成公司认证
         $action = CreditModel::KEY_COMPANY_VALID;
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         $company = Company::find($user->id);
         if ($company && $company->apply_status == 2){
-            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user,'企业认证',$company->updated_at);
+            $this->credit('',$action,$user->id,$user,'企业认证',$company->updated_at);
         }
 
         //阅读回复
@@ -178,9 +178,9 @@ class FixUserCredits implements ShouldQueue
                     break;
             }
             $reg = CreditModel::where('user_id',$user->id)->where('action',CreditModel::KEY_NEW_COMMENT)->where('source_id',$comment->id)->first();
-            $this->credit($reg,CreditModel::KEY_NEW_COMMENT,$user->id,Setting()->get('coins_'.CreditModel::KEY_NEW_COMMENT),Setting()->get('credits_'.CreditModel::KEY_NEW_COMMENT),$comment,'回复成功');
+            $this->credit($reg,CreditModel::KEY_NEW_COMMENT,$user->id,$comment,'回复成功');
             $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$comment->id)->first();
-            $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$comment,$source_subject);
+            $this->credit($reg1,$action1,$source->user_id,$comment,$source_subject);
 
         }
         //阅读发文
@@ -188,13 +188,13 @@ class FixUserCredits implements ShouldQueue
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         $submissions = Submission::where('user_id',$user->id)->get();
         foreach ($submissions as $submission) {
-            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$submission,'动态分享');
+            $this->credit('',$action,$user->id,$submission,'动态分享');
         }
         //分享成功
         $action = CreditModel::KEY_SHARE_SUCCESS;
         $models = CreditModel::where('user_id',$user->id)->where('action',$action)->get();
         foreach ($models as $model) {
-            $this->credit($model,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),'','');
+            $this->credit($model,$action,$user->id,'','');
         }
         //专业问答评价&专业问答围观者评价
         CreditModel::where('user_id',$user->id)->whereIn('action',['rate_answer','feedback_rate_answer','new_answer_feedback'])->delete();
@@ -207,8 +207,8 @@ class FixUserCredits implements ShouldQueue
             }
             $source = $feedback->source;
             $reg = CreditModel::where('user_id',$source->user_id)->where('action',$action)->where('source_id',$feedback->id)->first();
-            $this->credit($reg,$action,$source->user_id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$feedback,'回答评价');
-            $this->credit('',CreditModel::KEY_NEW_ANSWER_FEEDBACK,$user->id,Setting()->get('coins_'.CreditModel::KEY_NEW_ANSWER_FEEDBACK),Setting()->get('credits_'.CreditModel::KEY_NEW_ANSWER_FEEDBACK),$feedback,'回答评价');
+            $this->credit($reg,$action,$source->user_id,$feedback,'回答评价');
+            $this->credit('',CreditModel::KEY_NEW_ANSWER_FEEDBACK,$user->id,$feedback,'回答评价');
         }
         //点赞
         $action = CreditModel::KEY_NEW_UPVOTE;
@@ -219,24 +219,24 @@ class FixUserCredits implements ShouldQueue
             switch ($support->supportable_type) {
                 case 'App\Models\Answer':
                     $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$support->supportable_id)->first();
-                    $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source,'点赞回答');
+                    $this->credit($reg,$action,$user->id,$source,'点赞回答');
                     $question = $source->question;
                     if ($question->question_type == 1) {
                         $action1 = CreditModel::KEY_ANSWER_UPVOTE;
                         $reg1 = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$support->supportable_id)->first();
-                        $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'专业回答被点赞');
+                        $this->credit($reg1,$action1,$source->user_id,$source,'专业回答被点赞');
                     } else {
                         $action1 = CreditModel::KEY_COMMUNITY_ANSWER_UPVOTE;
                         $reg1 = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$support->supportable_id)->first();
-                        $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'互动回答被点赞');
+                        $this->credit($reg1,$action1,$source->user_id,$source,'互动回答被点赞');
                     }
                     break;
                 case 'App\Models\Submission':
                     $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$support->supportable_id)->first();
-                    $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source,'点赞动态分享');
+                    $this->credit($reg,$action,$user->id,$source,'点赞动态分享');
                     $action1 = CreditModel::KEY_READHUB_SUBMISSION_UPVOTE;
                     $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$support->supportable_id)->first();
-                    $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'动态分享被点赞');
+                    $this->credit($reg1,$action1,$source->user_id,$source,'动态分享被点赞');
                     break;
             }
             RateLimiter::instance()->increase('upvote:'.get_class($source),$source->id.'_'.$user->id,0);
@@ -248,22 +248,22 @@ class FixUserCredits implements ShouldQueue
         foreach ($collections as $collect) {
             $source = $collect->source;
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$collect->source_id)->first();
-            $this->credit($reg,$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source,'收藏成功');
+            $this->credit($reg,$action,$user->id,$source,'收藏成功');
             switch ($collect->source_type) {
                 case 'App\Models\Article':
                     $action1 = CreditModel::KEY_PRO_OPPORTUNITY_SIGNED;
                     $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$collect->source_id)->first();
-                    $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'项目机遇被报名');
+                    $this->credit($reg1,$action1,$source->user_id,$source,'项目机遇被报名');
                     break;
                 case 'App\Models\Submission':
                     $action1 = CreditModel::KEY_READHUB_SUBMISSION_COLLECT;
                     $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$collect->source_id)->first();
-                    $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'动态分享被收藏');
+                    $this->credit($reg1,$action1,$source->user_id,$source,'动态分享被收藏');
                     break;
                 case 'App\Models\Answer':
                     $action1 = CreditModel::KEY_COMMUNITY_ANSWER_COLLECT;
                     $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$collect->source_id)->first();
-                    $this->credit($reg1,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,'回答被收藏');
+                    $this->credit($reg1,$action1,$source->user_id,$source,'回答被收藏');
                     break;
             }
             RateLimiter::instance()->increase('collect:'.get_class($source),$collect->source_id.'_'.$collect->user_id,0);
@@ -272,7 +272,7 @@ class FixUserCredits implements ShouldQueue
         $action = CreditModel::KEY_SHARE_SUCCESS;
         $shares = CreditModel::where('user_id',$user->id)->where('action',$action)->get();
         foreach ($shares as $share) {
-            $this->credit($share,$action,$share->user_id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$share,$share->source_subject);
+            $this->credit($share,$action,$share->user_id,$share,$share->source_subject);
         }
         $doings = Doing::where('user_id',$user->id)->whereIn('action',[Doing::ACTION_SHARE_SUBMISSION_SUCCESS,Doing::ACTION_SHARE_ANSWER_SUCCESS])->get();
         foreach ($doings as $doing) {
@@ -298,7 +298,7 @@ class FixUserCredits implements ShouldQueue
             }
             if (isset($source) && $source) {
                 $reg = CreditModel::where('user_id',$user->id)->where('action',$action1)->where('source_id',$source->id)->first();
-                $this->credit($reg,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,$source_subject);
+                $this->credit($reg,$action1,$source->user_id,$source,$source_subject);
             }
         }
 
@@ -309,7 +309,7 @@ class FixUserCredits implements ShouldQueue
             $answer = $order->answer()->first();
             if ($answer) {
                 $reg = CreditModel::where('user_id',$answer->question->user_id)->where('action',$action)->where('source_id',$order->id)->first();
-                $this->credit($reg,$action,$answer->question->user_id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$order,'问题被付费围观');
+                $this->credit($reg,$action,$answer->question->user_id,$order,'问题被付费围观');
             }
         }
         //关注
@@ -318,12 +318,12 @@ class FixUserCredits implements ShouldQueue
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         foreach ($attentions as $attention) {
             $source = $attention->source;
-            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source,$attention->source_type,$attention->created_at);
+            $this->credit('',$action,$user->id,$source,$attention->source_type,$attention->created_at);
             switch ($attention->source_type) {
                 case 'App\Models\Question':
                     $action1 = CreditModel::KEY_COMMUNITY_ASK_FOLLOWED;
                     $reg = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$source->id)->first();
-                    $this->credit($reg,$action1,$source->user_id,Setting()->get('coins_'.$action1),Setting()->get('credits_'.$action1),$source,get_class($source),$attention->created_at);
+                    $this->credit($reg,$action1,$source->user_id,$source,get_class($source),$attention->created_at);
                     break;
                 case 'App\Models\User':
                     break;
@@ -335,7 +335,7 @@ class FixUserCredits implements ShouldQueue
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
         foreach ($questionInvitions as $questionInvition) {
             $question = Question::find($questionInvition->question_id);
-            $this->credit('',$action,$user->id,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$question,$questionInvition->user_id,$questionInvition->created_at);
+            $this->credit('',$action,$user->id,$question,$questionInvition->user_id,$questionInvition->created_at);
         }
 
         $total_coins = CreditModel::where('user_id',$user->id)->sum('coins');
@@ -346,8 +346,10 @@ class FixUserCredits implements ShouldQueue
         $userData->save();
     }
 
-    public function credit($creditExist,$action,$user_id,$coins,$credits,$source,$source_subject,$created_at=''){
+    public function credit($creditExist,$action,$user_id,$source,$source_subject,$created_at=''){
         try{
+            $coins = Setting()->get('coins_'.$action);
+            $credits = Setting()->get('credits_'.$action);
             if($coins ==0 && $credits == 0) return false;
 
             if ($creditExist) {
