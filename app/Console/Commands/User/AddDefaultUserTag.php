@@ -1,0 +1,47 @@
+<?php namespace App\Console\Commands\User;
+/**
+ * @author: wanghui
+ * @date: 2017/6/21 下午8:59
+ * @email: wanghui@yonglibao.com
+ */
+
+use App\Models\User;
+use App\Models\UserTag;
+use Illuminate\Console\Command;
+
+class AddDefaultUserTag extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'user:add_default_tag';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = '为用户生成默认tag';
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $users = User::get();
+        foreach($users as $user){
+            $userTag = UserTag::where('user_id',$user->id)->first();
+            if (!$userTag) {
+                UserTag::create([
+                    'user_id' => $user->id,
+                    'tag_id'  => 0,
+                ]);
+            }
+        }
+    }
+
+}

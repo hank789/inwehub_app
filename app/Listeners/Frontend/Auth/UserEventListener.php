@@ -13,6 +13,7 @@ use App\Models\Role;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserOauth;
+use App\Models\UserTag;
 use App\Notifications\NewInviteUserRegister;
 use App\Notifications\NewMessage;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -89,6 +90,11 @@ class UserEventListener implements ShouldQueue
             $action = Credit::KEY_INVITE_USER;
             event(new CreditEvent($rc_user->id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$event->user->id,'邀请好友注册成功'));
         }
+        //加默认tag
+        UserTag::create([
+            'user_id' => $event->user->id,
+            'tag_id'  => 0,
+        ]);
         //客服欢迎信息
         //客服
         $contact_id = Role::getCustomerUserId();

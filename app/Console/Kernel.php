@@ -43,7 +43,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixImData::class,
         Commands\FixData\NewUserFollowingNotification::class,
         Commands\FixData\AddPayForViewDoing::class,
-        Commands\FixData\FixCredits::class
+        Commands\FixData\FixCredits::class,
+        Commands\User\AddDefaultUserTag::class,
 
 
     ];
