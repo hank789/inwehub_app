@@ -595,6 +595,15 @@ class QuestionController extends Controller
         $invitedUsers = $question->invitations()->where("from_user_id","=",$request->user()->id)->pluck('user_id')->toArray();
         $invitedUsers[] = $question->user_id;
         $invitedUsers[] = $request->user()->id;
+        $invitedUsers[] = 1;
+        $invitedUsers[] = 3;
+        $invitedUsers[] = 4;
+        $invitedUsers[] = 5;
+        $invitedUsers[] = 6;
+        $invitedUsers[] = 504;
+        $invitedUsers[] = 229;
+        $invitedUsers[] = 131;
+        $invitedUsers = array_unique($invitedUsers);
         $query = UserTag::select('user_id')->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
         $query1 = UserTag::select('user_id')->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
         if ($invitedUsers) {
