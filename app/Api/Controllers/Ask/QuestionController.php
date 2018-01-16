@@ -602,7 +602,7 @@ class QuestionController extends Controller
             $query1 = $query1->whereNotIn('user_id',$invitedUsers);
         }
         if ($tags) {
-            $query1 = $query1->whereIn('tag_id',$tags);
+            $query = $query->whereIn('tag_id',$tags);
             $query = $query->union($query1);
         }
 
