@@ -23,6 +23,7 @@ use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
 {
@@ -604,18 +605,22 @@ class QuestionController extends Controller
         $invitedUsers[] = 229;
         $invitedUsers[] = 131;
         $invitedUsers = array_unique($invitedUsers);
-        $query = UserTag::select('user_id')->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
-        $query1 = UserTag::select('user_id')->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
+        $query = UserTag::select('user_id');
+        $query1 = UserTag::select('user_id');
         if ($invitedUsers) {
             $query = $query->whereNotIn('user_id',$invitedUsers);
             $query1 = $query1->whereNotIn('user_id',$invitedUsers);
         }
         if ($tags) {
-            $query = $query->whereIn('tag_id',$tags);
+            $query = $query->whereIn('tag_id',$tags)->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
+            $query1 = $query1->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
             $query = $query->union($query1);
+            $userTags = $query->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
+        } else {
+            $query = $query->orderBy(DB::raw('RAND()'))->distinct();
+            $userTags = $query->take(Config::get('api_data_page_size'))->get();
         }
 
-        $userTags = $query->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
         $data = [];
         foreach($userTags as $userTag){
             if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;
