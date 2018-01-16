@@ -709,7 +709,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function lockMoney($money,$seconds=120) {
-        return RateLimiter::instance()->increaseBy('user:lock_money',$this->id,$money,$seconds);
+        return RateLimiter::instance()->increaseBy('user:lock_money',$this->id,ceil($money),$seconds);
     }
 
     //获取用户可用金额

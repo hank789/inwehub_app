@@ -26,7 +26,7 @@ class PayController extends Controller {
     {
         $validateRules = [
             'app_id' => 'required',
-            'amount' => 'required|numeric',
+            'amount' => 'required|integer',
             'pay_channel' => 'required|in:alipay,wxpay,appleiap,wx_pub,wx_lite',
             'pay_object_type' => 'required|in:ask,view_answer,free_ask',
             'pay_object_id'   => 'required_if:pay_object_type,view_answer'
