@@ -31,7 +31,7 @@ class ReadhubController extends Controller
         }elseif($bottom_id){
             $query = $query->where('id','<',$bottom_id);
         }
-        $submissions = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+        $submissions = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
 
         $list = [];
         foreach($submissions as $submission){

@@ -100,7 +100,7 @@ class CompanyController extends Controller {
 
 
     public function serviceList() {
-        $services = CompanyService::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('api_data_page_size'));
+        $services = CompanyService::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         return self::createJsonData(true, $services->toArray());
     }
 

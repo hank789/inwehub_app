@@ -499,7 +499,7 @@ class ProfileController extends Controller
         }else{
             $query = $query->where('id','>',0);
         }
-        $logs = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+        $logs = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
         $list = [];
         foreach($logs as $log){
             $title = '';

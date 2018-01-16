@@ -81,7 +81,7 @@ class QuestionController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $questions = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+        $questions = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
 
         $list = [];
         foreach($questions as $question){
@@ -164,7 +164,7 @@ class QuestionController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $comments = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+        $comments = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
 
         $list = [];
         foreach($comments as $comment){

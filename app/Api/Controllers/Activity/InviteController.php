@@ -42,7 +42,7 @@ class InviteController extends Controller {
         }
 
         $users = $query->orderBy('id','desc')
-            ->simplePaginate(Config::get('api_data_page_size'));
+            ->simplePaginate(Config::get('inwehub.api_data_page_size'));
 
         $list = [];
         foreach ($users as $user) {

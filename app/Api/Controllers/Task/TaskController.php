@@ -21,7 +21,7 @@ class TaskController extends Controller {
     public function myList(Request $request){
         $query = $request->user()->tasks()->where('status',0);
 
-        $tasks = $query->orderBy('priority','DESC')->latest()->simplePaginate(Config::get('api_data_page_size'));
+        $tasks = $query->orderBy('priority','DESC')->latest()->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $task_count = $request->user()->tasks()->where('status',0)->count();
         $notification_count = $request->user()->unreadNotifications()->whereIn('notification_type', [
             Notification::NOTIFICATION_TYPE_NOTICE,

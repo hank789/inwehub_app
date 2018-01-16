@@ -50,10 +50,10 @@ class ActivityController extends Controller {
                 ->where('collections.source_type','App\Models\Article')
                 ->select('articles.*','collections.status as c_status')
                 ->orderBy('articles.id','DESC')
-                ->paginate(Config::get('api_data_page_size'));
+                ->paginate(Config::get('inwehub.api_data_page_size'));
             $return = $articles->toArray();
         } else {
-            $articles = Article::where('category_id',$category->id)->where('status','>',0)->orderBy('articles.id','DESC')->paginate(Config::get('api_data_page_size'));
+            $articles = Article::where('category_id',$category->id)->where('status','>',0)->orderBy('articles.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
             $return = $articles->toArray();
         }
 
@@ -219,7 +219,7 @@ class ActivityController extends Controller {
         $user_id = $request->user()->id;
         $comments = $source->comments()->where(function ($query) use ($user_id) {
             $query->where('user_id',$user_id)->orWhere('to_user_id',$user_id);
-        })->orderBy('created_at','desc')->simplePaginate(Config::get('api_data_page_size'));
+        })->orderBy('created_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $comments->toArray();
         $return['data'] = [];
 

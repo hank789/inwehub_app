@@ -29,7 +29,7 @@ class MessageController extends Controller
         $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
             ->select('im_messages.*')
             ->orderBy('im_messages.id', 'desc')
-            ->simplePaginate(Config::get('api_data_page_size'))->toArray();
+            ->simplePaginate(Config::get('inwehub.api_data_page_size'))->toArray();
 
         if ($messages['data']) {
             Message::where('user_id','!=',$user->id)->whereIn('id',array_column($messages['data'],'id'))->update(['read_at' => Carbon::now()]);

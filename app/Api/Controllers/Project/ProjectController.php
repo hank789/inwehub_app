@@ -91,7 +91,7 @@ class ProjectController extends Controller {
         }else{
             $query = $query->where('id','>',0);
         }
-        $items = $query->where('status','!=',Project::STATUS_DRAFT)->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+        $items = $query->where('status','!=',Project::STATUS_DRAFT)->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
         $list = [];
         foreach($items as $item){
             $info = $item->toArray();

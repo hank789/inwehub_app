@@ -50,7 +50,7 @@ class HomeController extends Controller {
             $submissions->orderBy('rate', 'desc');
         }
 
-        $return = $submissions->simplePaginate(Config::get('api_data_page_size'))->toArray();
+        $return = $submissions->simplePaginate(Config::get('inwehub.api_data_page_size'))->toArray();
         foreach ($return['data'] as &$item) {
             $upvote = Support::where('user_id',$user->id)
                 ->where('supportable_id',$item['id'])

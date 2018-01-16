@@ -17,7 +17,7 @@ class FeedController extends Controller
         $query = Feed::where('audit_status', Feed::AUDIT_STATUS_SUCCESS);
 
         $feeds = $query->orderBy('top','desc')->latest()
-            ->simplePaginate(Config::get('api_data_page_size'));
+            ->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $feeds->toArray();
         $data = [];
         foreach ($feeds as $feed) {
