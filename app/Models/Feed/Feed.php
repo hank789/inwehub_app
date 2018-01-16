@@ -321,8 +321,8 @@ class Feed extends Model
                 $data['support_number'] = $answer->supports;
                 $data['supporter_list'] = $supporters;
                 $data['question_price'] = $question->price;
-                $data['answer_promise_time'] = Carbon::createFromTimestamp(strtotime('+120 seconds',strtotime($answer->promise_time)))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h';
-                $data['answer_response_time'] = Carbon::createFromTimestamp(strtotime($answer->adopted_at))->diffInHours(Carbon::createFromTimestamp(strtotime($question->created_at))).'h';
+                $data['answer_response_time'] = Carbon::createFromTimestamp(strtotime('+120 seconds',strtotime($answer->promise_time)))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h';
+                $data['answer_promise_time'] = Carbon::createFromTimestamp(strtotime($answer->adopted_at))->diffInHours(Carbon::createFromTimestamp(strtotime($question->created_at))).'h';
                 $data['answer_id'] = $answer->id;
                 $data['is_pay_for_view'] = ($is_self || $is_answer_author || $is_pay_for_view);
                 $data['tags'] = $question->tags()->select('tag_id','name')->get()->toArray();
