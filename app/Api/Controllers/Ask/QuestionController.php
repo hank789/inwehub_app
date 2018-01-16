@@ -613,7 +613,7 @@ class QuestionController extends Controller
         }
         if ($tags) {
             $query = $query->whereIn('tag_id',$tags)->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
-            $query1 = $query1->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
+            $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
             $query = $query->union($query1);
             $userTags = $query->simplePaginate(15,'*','page',$page);
         } else {
