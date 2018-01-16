@@ -599,9 +599,10 @@ class QuestionController extends Controller
         if ($invitedUsers) {
             $query = $query->whereNotIn('user_id',$invitedUsers);
         }
-        /*if ($tags && $query->whereIn('tag_id',$tags)->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page)->count() >= 1) {
-            $query = $query->whereIn('tag_id',$tags);
-        }*/
+        if ($tags) {
+            $query1 = $query->whereIn('tag_id',$tags);
+            $query->union($query1);
+        }
 
         $userTags = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
         $data = [];
