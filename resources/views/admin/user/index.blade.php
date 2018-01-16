@@ -88,7 +88,7 @@
                                             <td><input type="checkbox" value="{{ $user->id }}" name="id[]"/></td>
                                             <td>{{ $user->id }}</td>
                                             <td>{{ $user->name }}</td>
-                                            <td>{{ implode(',',$user->userOauth()->where('status',1)->pluck('nickname')->toArray()) }}</td>
+                                            <td>{{ implode(',',$user->userOauth()->where('status',1)->take(1)->pluck('nickname')->toArray()) }}</td>
                                             <td>{{ $user->mobile }}</td>
                                             <td>{{ $user->title }}</td>
                                             <td>{{ $user->userData->authentication_status ? '是':'否' }}</td>

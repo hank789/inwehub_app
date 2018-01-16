@@ -35,4 +35,8 @@ class Feedback extends Model
     protected $fillable = ['user_id', 'source_type','source_id','content','to_user_id','star','created_at'];
     public $timestamps = false;
 
+    public function source()
+    {
+        return $this->morphTo();
+    }
 }

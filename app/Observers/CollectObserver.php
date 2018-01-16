@@ -5,9 +5,10 @@
  * @email: wanghui@yonglibao.com
  */
 
-use App\Models\Article;
+use App\Events\Frontend\System\Credit;
 use App\Models\Collection;
-use App\Models\Submission;
+use App\Models\Credit as CreditModel;
+use App\Services\RateLimiter;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CollectObserver implements ShouldQueue {
@@ -27,9 +28,9 @@ class CollectObserver implements ShouldQueue {
      */
     public function created(Collection $collect)
     {
+        $object = $collect->source;
         switch ($collect->source_type) {
             case 'App\Models\Article':
-                $object = Article::find($collect->source_id);
                 $fields[] = [
                     'title' => '活动标题',
                     'value' => $object->title,
@@ -43,7 +44,6 @@ class CollectObserver implements ShouldQueue {
                 $title = '报名了活动';
                 break;
             case 'App\Models\Submission':
-                $object = Submission::find($collect->source_id);
                 $fields[] = [
                     'title' => '标题',
                     'value' => $object->title,
@@ -56,9 +56,31 @@ class CollectObserver implements ShouldQueue {
                 ];
                 $title = '收藏了文章';
                 break;
+            case 'App\Models\Answer':
+                $title = '收藏了回复';
+                $fields[] = [
+                    'title' => '回复内容',
+                    'value' => $object->getContentText(),
+                    'short' => false
+                ];
+                break;
             default:
                 return;
                 break;
+        }
+        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('collect:'.get_class($object),$collect->source_id.'_'.$collect->user_id,0)) {
+            event(new Credit($collect->user_id,CreditModel::KEY_NEW_COLLECT,Setting()->get('coins_'.CreditModel::KEY_NEW_COLLECT),Setting()->get('credits_'.CreditModel::KEY_NEW_COLLECT),$collect->source_id,'收藏成功'));
+            switch ($collect->source_type) {
+                case 'App\Models\Article':
+                    event(new Credit($object->user_id,CreditModel::KEY_PRO_OPPORTUNITY_SIGNED,Setting()->get('coins_'.CreditModel::KEY_PRO_OPPORTUNITY_SIGNED),Setting()->get('credits_'.CreditModel::KEY_PRO_OPPORTUNITY_SIGNED),$collect->source_id,'项目机遇被报名'));
+                    break;
+                case 'App\Models\Submission':
+                    event(new Credit($object->user_id,CreditModel::KEY_READHUB_SUBMISSION_COLLECT,Setting()->get('coins_'.CreditModel::KEY_READHUB_SUBMISSION_COLLECT),Setting()->get('credits_'.CreditModel::KEY_READHUB_SUBMISSION_COLLECT),$collect->source_id,'动态分享被收藏'));
+                    break;
+                case 'App\Models\Answer':
+                    event(new Credit($object->user_id,CreditModel::KEY_COMMUNITY_ANSWER_COLLECT,Setting()->get('coins_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),Setting()->get('credits_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),$collect->source_id,'回答被收藏'));
+                    break;
+            }
         }
 
         return \Slack::to(config('slack.ask_activity_channel'))

@@ -29,11 +29,9 @@ class Attention extends Model
     protected $table = 'attentions';
     protected $fillable = ['user_id','source_id','source_type'];
 
-
-    public static function store(){
-
+    public function source()
+    {
+        return $this->morphTo();
     }
-
-
 
 }

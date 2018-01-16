@@ -30,8 +30,6 @@
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.question.verify_heart') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-thumbs-o-up"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消推荐" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_recommend') }}','确认将选中项取消推荐？')"><i class="fa fa-thumbs-o-down"></i></button>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消热门" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_hot') }}','确认将选中项取消热门？')"><i class="fa fa-fire-extinguisher"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.question.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
@@ -48,7 +46,6 @@
                                         </div>
                                         <div class="col-xs-3">
                                             <div>
-                                                <label><input type="checkbox" name="is_hot" value="1" @if ( $filter['is_hot']??0) checked @endif >热门</label>&nbsp;&nbsp;&nbsp;&nbsp;
                                                 <label><input type="checkbox" name="is_recommend" value="1" @if ( $filter['is_recommend']??0) checked @endif >推荐</label>&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                         </div>
@@ -130,8 +127,6 @@
                                     <a href="{{ route('ask.question.create') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="发起提问"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为推荐" onclick="confirm_submit('item_form','{{  route('admin.question.verify_recommend') }}','确认将选中项设为推荐项？')"><i class="fa fa-thumbs-o-up"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消推荐" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_recommend') }}','确认将选中项取消推荐？')"><i class="fa fa-thumbs-o-down"></i></button>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为热门" onclick="confirm_submit('item_form','{{  route('admin.question.verify_hot') }}','确认将选中项设为热门项？')"><i class="fa fa-fire"></i></button>
-                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消热门" onclick="confirm_submit('item_form','{{  route('admin.question.cancel_hot') }}','确认将选中项取消热门？')"><i class="fa fa-fire-extinguisher"></i></button>
                                     <button class="btn btn-default btn-sm" title="移动分类"  data-toggle="modal" data-target="#change_category_modal" ><i data-toggle="tooltip" title="移动分类" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.question.destroy') }}','确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>

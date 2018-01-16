@@ -5,15 +5,13 @@ namespace App\Http\Controllers\Account;
 use App\Exceptions\ApiException;
 use App\Jobs\SendMessage;
 use App\Models\IM\MessageRoom;
+use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
 use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
-use App\Notifications\NewMessage;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -87,7 +85,7 @@ class MessageController extends Controller
 
         $this->dispatch(new SendMessage($request->input('text'),$fromUser->id,[$toUser->id]));
 
-        return $this->success(route('auth.message.show',['room_id'=>$request->input('room_id')]),'消息发送成功');
+        return $this->success(route('auth.message.show',['contact_id'=>$request->input('to_user_id')]),'消息发送成功');
 
     }
 
@@ -97,7 +95,7 @@ class MessageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($room_id)
+    public function show($contact_id)
     {
 
         //客服
@@ -108,14 +106,39 @@ class MessageController extends Controller
         }
         $customer_id = $role_user->user_id;
         $user = User::find($customer_id);
-        $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$customer_id)->first();
+        $toUser = User::find($contact_id);
+        $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
+        $roomUser = RoomUser::where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
+        if ($roomUser) {
+            $room_id = $roomUser->room_id;
+        } else {
+            $room = Room::create([
+                'user_id' => $user->id,
+                'r_type'  => Room::ROOM_TYPE_WHISPER
+            ]);
+            $room_id = $room->id;
+            RoomUser::firstOrCreate([
+                'user_id' => $user->id,
+                'room_id' => $room_id
+            ],[
+                'user_id' => $user->id,
+                'room_id' => $room_id
+            ]);
 
+            RoomUser::firstOrCreate([
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ],[
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ]);
+        }
         $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
             ->select('im_messages.*')
             ->orderBy('im_messages.id', 'desc')
             ->paginate(Config::get('api_data_page_size'));
 
-        return view('theme::message.show')->with('toUser',$roomUser->user)->with('fromUser',$user)->with('messages',$messages)->with('room_id',$room_id);
+        return view('theme::message.show')->with('toUser',$toUser)->with('fromUser',$user)->with('messages',$messages)->with('room_id',$room_id);
     }
 
     /**

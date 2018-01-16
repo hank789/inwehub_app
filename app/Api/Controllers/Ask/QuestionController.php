@@ -538,6 +538,7 @@ class QuestionController extends Controller
             //$this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
 
             $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id));
+            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$question->id,$toUser->id);
         }
 
         return self::createJsonData(true);
@@ -594,15 +595,18 @@ class QuestionController extends Controller
         $invitedUsers = $question->invitations()->where("from_user_id","=",$request->user()->id)->pluck('user_id')->toArray();
         $invitedUsers[] = $question->user_id;
         $invitedUsers[] = $request->user()->id;
-        $query = UserTag::select('user_id');
+        $query = UserTag::select('user_id')->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
+        $query1 = UserTag::select('user_id')->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
         if ($invitedUsers) {
             $query = $query->whereNotIn('user_id',$invitedUsers);
+            $query1 = $query1->whereNotIn('user_id',$invitedUsers);
         }
-        if ($tags && $query->whereIn('tag_id',$tags)->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page)->count() >= 1) {
+        if ($tags) {
             $query = $query->whereIn('tag_id',$tags);
+            $query = $query->union($query1);
         }
 
-        $userTags = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct()->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
+        $userTags = $query->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
         $data = [];
         foreach($userTags as $userTag){
             if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;

@@ -4,6 +4,7 @@ use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Models\Attention;
 use App\Models\Authentication;
+use App\Models\Credit;
 use App\Models\Feed\Feed;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
@@ -110,14 +111,14 @@ class FollowController extends Controller
                     if ($source->question_type == 2) {
                         $feed_event = 'question_followed';
                         $feed_target = $source->id.'_'.$loginUser->id;
-                        $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
-                        if (!$is_feeded) {
+                        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
                             feed()
                                 ->causedBy($loginUser)
                                 ->performedOn($source)
                                 ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                                 ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
-                            RateLimiter::instance()->increase($feed_event,$feed_target,3600);
+                            $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$source_id,get_class($source));
+                            $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$source_id,get_class($source));
                         }
                     }
                     break;
@@ -127,9 +128,8 @@ class FollowController extends Controller
                     $feed_event = 'user_followed';
                     $feed_target = $source->id.'_'.$loginUser->id;
                     $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
-                    if (!$is_feeded) {
+                    if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
                         $source->notify(new NewUserFollowing($source->id,$attention));
-                        RateLimiter::instance()->increase($feed_event,$feed_target,3600);
                         feed()
                             ->causedBy($loginUser)
                             ->performedOn($source)
@@ -137,6 +137,8 @@ class FollowController extends Controller
                                 'follow_user_id' => $source->id
                             ])
                             ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
+
+                        $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$source_id,get_class($source));
                         //产生一条私信
                         $message = $loginUser->messages()->create([
                             'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
