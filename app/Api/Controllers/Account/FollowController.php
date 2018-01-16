@@ -273,7 +273,7 @@ class FollowController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $attentions = $query->orderBy('created_at','desc')->paginate(Config::get('api_data_page_size'));
+        $attentions = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.api_data_page_size'));
 
         $data = [];
         foreach($attentions as $attention){

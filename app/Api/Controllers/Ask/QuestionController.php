@@ -615,10 +615,10 @@ class QuestionController extends Controller
             $query = $query->whereIn('tag_id',$tags)->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
             $query1 = $query1->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
             $query = $query->union($query1);
-            $userTags = $query->simplePaginate(Config::get('api_data_page_size'),'*','page',$page);
+            $userTags = $query->simplePaginate(15,'*','page',$page);
         } else {
             $query = $query->orderBy(DB::raw('RAND()'))->distinct();
-            $userTags = $query->take(Config::get('api_data_page_size'))->get();
+            $userTags = $query->take(15)->get();
         }
 
         $data = [];
@@ -745,7 +745,7 @@ class QuestionController extends Controller
         }elseif($bottom_id){
             $query = $query->where('id','<',$bottom_id);
         }
-        $questions = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+        $questions = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
 
         $list = [];
         foreach($questions as $question){
@@ -794,7 +794,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.views','desc')->paginate(Config::get('api_data_page_size'));
+        $questions = $query->orderBy('questions.views','desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -866,7 +866,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.updated_at','desc')->paginate(Config::get('api_data_page_size'));
+        $questions = $query->orderBy('questions.updated_at','desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
@@ -942,7 +942,7 @@ class QuestionController extends Controller
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
         $user = $request->user();
-        $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('api_data_page_size'));
+        $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
         foreach ($answers as $answer) {

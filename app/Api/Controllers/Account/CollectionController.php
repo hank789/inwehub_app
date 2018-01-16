@@ -94,7 +94,7 @@ class CollectionController extends Controller
             $query = $query->where('id','>',0);
         }
 
-        $attentions = $query->orderBy('id','desc')->paginate(Config::get('api_data_page_size'));
+        $attentions = $query->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
 
         $data = [];
         foreach($attentions as $attention){

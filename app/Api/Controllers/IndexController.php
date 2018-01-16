@@ -194,7 +194,7 @@ class IndexController extends Controller {
 
     //精选推荐
     public function recommendRead(Request $request) {
-        $reads = RecommendRead::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('api_data_page_size'));
+        $reads = RecommendRead::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
             switch ($item['read_type']) {
@@ -245,7 +245,7 @@ class IndexController extends Controller {
         } else {
             $user = $request->user();
         }
-        $comments = $user->comments()->orderBy('id','desc')->simplePaginate(Config::get('api_data_page_size'));
+        $comments = $user->comments()->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = [];
 
         $origin_title = '';

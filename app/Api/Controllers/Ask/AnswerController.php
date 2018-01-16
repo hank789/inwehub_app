@@ -440,7 +440,7 @@ class AnswerController extends Controller
             $query = $query->where('id','<',$bottom_id);
         }
 
-        $answers = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+        $answers = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
         $list = [];
         foreach($answers as $answer){
             $question = Question::find($answer->question_id);
@@ -637,7 +637,7 @@ class AnswerController extends Controller
             $query = $query->where('id','<',$bottom_id);
         }
 
-        $doings = $query->orderBy('id','DESC')->paginate(Config::get('api_data_page_size'));
+        $doings = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
 
         $list = [];
         foreach ($doings as $doing) {
@@ -680,14 +680,14 @@ class AnswerController extends Controller
         } else {
             $payOrder = $source->orders()->where('return_param','view_answer')->first();
             if (!$payOrder) {
-                return self::createJsonData(true, Comment::where('id',0)->simplePaginate(Config::get('api_data_page_size'))->toArray());
+                return self::createJsonData(true, Comment::where('id',0)->simplePaginate(Config::get('inwehub.api_data_page_size'))->toArray());
             }
         }
 
         $comments = $source->comments()
             ->where('parent_id', 0)
             ->orderBy('created_at','desc')
-            ->simplePaginate(Config::get('api_data_page_size'));
+            ->simplePaginate(Config::get('inwehub.api_data_page_size'));
 
         return self::createJsonData(true,  $comments->toArray());
     }
