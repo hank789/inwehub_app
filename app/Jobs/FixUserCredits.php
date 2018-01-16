@@ -265,9 +265,11 @@ class FixUserCredits implements ShouldQueue
                     $this->credit($reg1,$action1,$source->user_id,$source,'动态分享被收藏');
                     break;
                 case 'App\Models\Answer':
-                    $action1 = CreditModel::KEY_COMMUNITY_ANSWER_COLLECT;
-                    $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$collect->source_id)->first();
-                    $this->credit($reg1,$action1,$source->user_id,$source,'回答被收藏');
+                    if ($source->question->question_type == 2) {
+                        $action1 = CreditModel::KEY_COMMUNITY_ANSWER_COLLECT;
+                        $reg1 = CreditModel::where('user_id',$source->user_id)->where('action',$action1)->where('source_id',$collect->source_id)->first();
+                        $this->credit($reg1,$action1,$source->user_id,$source,'回答被收藏');
+                    }
                     break;
             }
             RateLimiter::instance()->increase('collect:'.get_class($source),$collect->source_id.'_'.$collect->user_id,0);

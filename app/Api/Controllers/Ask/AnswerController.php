@@ -610,13 +610,6 @@ class AnswerController extends Controller
         //进入结算中心
         Settlement::payForViewSettlement($order);
         //记录动态
-        //自动收藏
-        Collection::create([
-            'user_id'     => $loginUser->id,
-            'source_id'   => $answer->id,
-            'source_type' => get_class($answer),
-            'subject'  => '付费围观',
-        ]);
         $answer->increment('collections');
         //生成一条点评任务
         $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);

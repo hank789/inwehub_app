@@ -7,6 +7,7 @@
 
 
 use App\Jobs\FixUserCredits;
+use App\Models\Collection;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -34,6 +35,7 @@ class FixCredits extends Command
     public function handle()
     {
         $users = User::get();
+        Collection::where('subject','付费围观')->delete();
         foreach ($users as $user) {
             dispatch(new FixUserCredits($user->id));
         }
