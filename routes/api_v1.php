@@ -46,6 +46,17 @@ Route::group(['namespace'=>'Account'], function() {
     Route::any('profile/resumeInfo','ProfileController@resumeInfo');
 });
 
+//榜单
+Route::group(['middleware' => ['jwt.auth','ban.user'], 'prefix'=>'rank'], function() {
+    //用户贡献榜
+    Route::post('userContribution','RankController@userContribution');
+    //用户成长榜
+    Route::post('userGrowth','RankController@userGrowth');
+    //用户邀请榜
+    Route::post('userInvitation','RankController@userInvitation');
+
+});
+
 //用户oauth
 Route::post('oauth/{type}/callback',['uses'=>'Account\OauthController@callback'])->where(['type'=>'(weixinapp|weixin_gzh)']);
 
