@@ -40,7 +40,30 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
     public function via($notifiable)
     {
         $via = ['database', SlackChannel::class];
-        if ($this->creditLog->action != CreditModel::KEY_FIRST_USER_SIGN_DAILY) {
+        $notBroadcasts = [
+            CreditModel::KEY_FIRST_USER_SIGN_DAILY,
+            CreditModel::KEY_COMMUNITY_ASK_ANSWERED,
+            CreditModel::KEY_INVITE_USER,
+            CreditModel::KEY_PRO_OPPORTUNITY_COMMENTED,
+            CreditModel::KEY_ANSWER_COMMENT,
+            CreditModel::KEY_COMMUNITY_ANSWER_COMMENT,
+            CreditModel::KEY_READHUB_SUBMISSION_COMMENT,
+            CreditModel::KEY_RATE_ANSWER_GOOD,
+            CreditModel::KEY_RATE_ANSWER_BAD,
+            CreditModel::KEY_ANSWER_UPVOTE,
+            CreditModel::KEY_COMMUNITY_ANSWER_UPVOTE,
+            CreditModel::KEY_READHUB_SUBMISSION_UPVOTE,
+            CreditModel::KEY_PRO_OPPORTUNITY_SIGNED,
+            CreditModel::KEY_READHUB_SUBMISSION_COLLECT,
+            CreditModel::KEY_COMMUNITY_ANSWER_COLLECT,
+            CreditModel::KEY_READHUB_SUBMISSION_SHARE,
+            CreditModel::KEY_ANSWER_SHARE,
+            CreditModel::KEY_COMMUNITY_ANSWER_SHARE,
+            CreditModel::KEY_PAY_FOR_VIEW_ANSWER,
+            CreditModel::KEY_COMMUNITY_ASK_FOLLOWED,
+            CreditModel::KEY_COMMUNITY_ANSWER_INVITED
+        ];
+        if (!in_array($this->creditLog->action,$notBroadcasts)) {
             $via[] = 'broadcast';
         }
         return $via;
