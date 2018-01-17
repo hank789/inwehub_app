@@ -13,9 +13,41 @@ class FeedController extends Controller
 {
 
     public function index(Request $request) {
-
+        $search_type = $request->input('search_type',1);
         $query = Feed::where('audit_status', Feed::AUDIT_STATUS_SUCCESS);
-
+        $user = $request->user();
+        switch ($search_type) {
+            case 1:
+                //关注
+                $followers = $user->attentions()->where('source_type','=',get_class($user))->pluck('source_id')->toArray();
+                $query = $query->whereIn('user_id',$followers);
+                break;
+            case 2:
+                //全部
+                break;
+            case 3:
+                //问答
+                $query = $query->whereIn('feed_type',[
+                    Feed::FEED_TYPE_ANSWER_PAY_QUESTION,
+                    Feed::FEED_TYPE_ANSWER_FREE_QUESTION,
+                    Feed::FEED_TYPE_CREATE_FREE_QUESTION,
+                    Feed::FEED_TYPE_CREATE_PAY_QUESTION,
+                    Feed::FEED_TYPE_FOLLOW_FREE_QUESTION,
+                    Feed::FEED_TYPE_COMMENT_PAY_QUESTION,
+                    Feed::FEED_TYPE_COMMENT_FREE_QUESTION,
+                    Feed::FEED_TYPE_UPVOTE_PAY_QUESTION,
+                    Feed::FEED_TYPE_UPVOTE_FREE_QUESTION
+                ]);
+                break;
+            case 4:
+                //分享
+                $query = $query->whereIn('feed_type',[
+                    Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE,
+                    Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE,
+                    Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE
+                ]);
+                break;
+        }
         $feeds = $query->orderBy('top','desc')->latest()
             ->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $feeds->toArray();
