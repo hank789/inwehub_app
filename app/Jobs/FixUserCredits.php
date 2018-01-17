@@ -54,6 +54,11 @@ class FixUserCredits implements ShouldQueue
     public function handle()
     {
         $user = User::find($this->uid);
+        $action = CreditModel::KEY_LOGIN;
+        $creditModels = CreditModel::where('user_id',$user->id)->where('action',$action)->get();
+        foreach ($creditModels as $creditModel) {
+            $this->credit($creditModel,$action,$user->id,$creditModel,'用户登录');
+        }
         //注册积分
         $action = CreditModel::KEY_REGISTER;
         $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->first();
@@ -356,7 +361,6 @@ class FixUserCredits implements ShouldQueue
         try{
             $coins = Setting()->get('coins_'.$action);
             $credits = Setting()->get('credits_'.$action);
-            if($coins ==0 && $credits == 0) return false;
 
             if ($creditExist) {
                 if ($creditExist->coins != $coins || $creditExist->credits != $credits) {

@@ -778,23 +778,17 @@ class QuestionController extends Controller
 
     //专业问答-推荐问答列表
     public function majorList(Request $request) {
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
         $user = $request->user();
 
         $query = Question::where('questions.is_recommend',1)->where('questions.question_type',1);
-        if($top_id){
-            $query = $query->where('questions.id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('questions.id','<',$bottom_id);
-        }
 
         if ($tag_id) {
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -845,28 +839,23 @@ class QuestionController extends Controller
                 'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view)
             ];
         }
-        return self::createJsonData(true,$list);
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
     }
 
     //互动问答-问答列表
     public function commonList(Request $request) {
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
         $user = $request->user();
 
         $query = Question::where('questions.question_type',2);
-        if($top_id){
-            $query = $query->where('questions.id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('questions.id','<',$bottom_id);
-        }
 
         if ($tag_id) {
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
@@ -898,7 +887,8 @@ class QuestionController extends Controller
                 'is_followed_question' => $is_followed_question
             ];
         }
-        return self::createJsonData(true,$list);
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
     }
 
     //专业问答-热门问答
