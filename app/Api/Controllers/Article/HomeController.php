@@ -50,23 +50,29 @@ class HomeController extends Controller {
             $submissions->orderBy('rate', 'desc');
         }
 
-        $return = $submissions->simplePaginate(Config::get('inwehub.api_data_page_size'))->toArray();
-        foreach ($return['data'] as &$item) {
+        $submissions = $submissions->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $submissions->toArray();
+        $list = [];
+        foreach ($submissions as $submission) {
             $upvote = Support::where('user_id',$user->id)
-                ->where('supportable_id',$item['id'])
+                ->where('supportable_id',$submission['id'])
                 ->where('supportable_type',Submission::class)
                 ->exists();
             $bookmark = Collection::where('user_id',$user->id)
-                ->where('source_id',$item['id'])
+                ->where('source_id',$submission['id'])
                 ->where('source_type',Submission::class)
                 ->exists();
+            $item = $submission->toArray();
             $item['title'] = strip_tags($item['title'],'<a><span>');
             $item['is_upvoted'] = $upvote ? 1 : 0;
             $item['is_bookmark'] = $bookmark ? 1: 0;
+            $item['tags'] = $submission->tags()->get()->toArray();
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
+            $list[] = $item;
         }
+        $return['data'] = $list;
         return self::createJsonData(true, $return);
     }
 
