@@ -219,20 +219,11 @@ class FollowController extends Controller
         }
 
         $model = App::make($sourceClassMap[$source_type]);
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
 
         $query = $request->user()->attentions()->where('source_type','=',$sourceClassMap[$source_type]);
-        if($top_id){
-            $query = $query->where('id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('id','<',$bottom_id);
-        }else{
-            $query = $query->where('id','>',0);
-        }
 
-        $attentions = $query->orderBy('attentions.created_at','desc')->paginate(30);
-
+        $attentions = $query->orderBy('attentions.created_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $attentions->toArray();
         $data = [];
         foreach($attentions as $attention){
             $info = $model::find($attention->source_id);
@@ -260,10 +251,17 @@ class FollowController extends Controller
                     $item['follow_num'] = $info->followers;
                     $item['is_followed'] = 1;
                     break;
+                case 'tags':
+                    $item['tag_id'] = $info->id;
+                    $item['tag_name'] = $info->name;
+                    $item['tag_logo'] = $info->logo;
+                    $item['tag_summary'] = $info->summary;
+                    break;
             }
             $data[] = $item;
         }
-        return self::createJsonData(true,$data);
+        $return['data'] = $data;
+        return self::createJsonData(true,$return);
     }
 
 
@@ -271,8 +269,6 @@ class FollowController extends Controller
     public function followMe(Request $request)
     {
 
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
         $uuid = $request->input('uuid',0);
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
@@ -283,16 +279,9 @@ class FollowController extends Controller
             $user = $request->user();
         }
         $query = Attention::where('source_type','=','App\Models\User')->where('source_id',$user->id);
-        if($top_id){
-            $query = $query->where('id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('id','<',$bottom_id);
-        }else{
-            $query = $query->where('id','>',0);
-        }
 
-        $attentions = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.api_data_page_size'));
-
+        $attentions = $query->orderBy('created_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $attentions->toArray();
         $data = [];
         foreach($attentions as $attention){
             $info = User::find($attention->user_id);
@@ -313,7 +302,8 @@ class FollowController extends Controller
             $item['description'] = $info->description;
             $data[] = $item;
         }
-        return self::createJsonData(true,$data);
+        $return['data'] = $data;
+        return self::createJsonData(true,$return);
     }
 
 
