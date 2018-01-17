@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Activity\Coupon;
 use App\Models\Answer;
 use App\Models\Credit;
 use App\Models\Doing;
@@ -86,6 +87,7 @@ class IndexController extends AdminController
         $rcUsers = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->get();
         $coinUsers = UserData::orderBy('coins','desc')->take(50)->get();
         $creditUsers = UserData::orderBy('credits','desc')->take(50)->get();
+        $signTotalCouponMoney = Coupon::whereIn('coupon_type',[Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,Coupon::COUPON_TYPE_DAILY_SIGN_BIG])->sum('coupon_value');
 
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
@@ -102,6 +104,7 @@ class IndexController extends AdminController
             'rcUsers',
             'coinUsers',
             'creditUsers',
+            'signTotalCouponMoney',
             'userChart','questionChart','systemInfo'));
     }
 
@@ -129,14 +132,20 @@ class IndexController extends AdminController
 
         $users = User::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
-        $registerRange = $verifyRange = $authRange = [0,0,0,0,0,0,0];
+        $registerRange = $verifyRange = $authRange = $signRange = [0,0,0,0,0,0,0];
 
         for( $i=0 ; $i < 7 ; $i++ ){
             $startTime = $labelTimes[$i];
+            \Log::info('test',[$startTime]);
             $endTime = $nowTime;
             if(isset($labelTimes[$i+1])){
                 $endTime = $labelTimes[$i+1];
             }
+            $signRange[$i] = Credit::where('action',Credit::KEY_FIRST_USER_SIGN_DAILY)
+                ->where('created_at','>',$startTime)
+                ->where('created_at','<',$endTime)
+                ->count();
+
             foreach($users as $user){
                 if( $user->created_at > $startTime && $user->created_at < $endTime ){
                     $registerRange[$i]++;
@@ -152,7 +161,7 @@ class IndexController extends AdminController
 
         }
 
-        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange];
+        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange, 'signUsers'=>$signRange];
     }
 
     private function drawQuestionChart()

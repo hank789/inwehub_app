@@ -109,6 +109,16 @@
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">签到红包总金额</span>
+                        <span class="info-box-number">{{ $signTotalCouponMoney }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
 
         </div>
         <div class="row">
@@ -394,6 +404,14 @@
 
                         label: '行家认证',
                         data: [{{ implode(",",$userChart['authUsers']) }}]
+                    },
+                    {
+                        fill: false,
+                        backgroundColor: "rgba(80,100,0,0.8)",
+                        borderColor: "rgba(153,102,0,0.8)",
+
+                        label: '每日签到',
+                        data: [{{ implode(",",$userChart['signUsers']) }}]
                     },
                 ]
             },
