@@ -146,7 +146,7 @@ class Credit extends Model
         self::KEY_COMMUNITY_ANSWER_COLLECT => ['backend_label'=>'互动回答被收藏（回答者加分）','notice_user'=>'收藏成功'],
         self::KEY_COMMUNITY_ANSWER_COMMENT => ['backend_label'=>'互动回答被回复（回答者加分）','notice_user'=>'回复成功'],
         self::KEY_COMMUNITY_ANSWER_SHARE => ['backend_label'=>'互动回答被转发（回答者加分）','notice_user'=>'分享成功'],
-        self::KEY_COMMUNITY_ANSWER_INVITED => ['backend_label'=>'邀请互动回答（邀请者加分）','notice_user'=>'回答成功'],
+        self::KEY_COMMUNITY_ANSWER_INVITED => ['backend_label'=>'邀请互动回答（邀请者加分）','notice_user'=>'邀请成功'],
         //项目与机遇
         self::KEY_PUBLISH_PRO_OPPORTUNITY => ['backend_label'=>'发布项目与机遇','notice_user'=>'发布成功'],
         self::KEY_SIGN_UP_PRO_OPPORTUNITY => ['backend_label'=>'报名项目与机遇(报名者加分)','notice_user'=>'报名成功'],

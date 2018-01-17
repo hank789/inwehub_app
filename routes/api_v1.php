@@ -229,8 +229,19 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Withdraw'], 
 });
 
 
-//加载标签
-Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
+//标签
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], function() {
+    //加载标签
+    Route::post('load','TagsController@load');
+    //标签详情
+    Route::post('tagInfo','TagsController@tagInfo');
+    //标签用户
+    Route::post('users','TagsController@users');
+    //标签问答
+    Route::post('questions','TagsController@questions');
+    //标签动态
+    Route::post('submissions','TagsController@submissions');
+});
 
 //上传图片
 Route::post('upload/img','ImageController@upload')->middleware('jwt.auth');
