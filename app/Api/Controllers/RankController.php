@@ -21,6 +21,7 @@ class RankController extends Controller
     public function userInfo(Request $request){
         $info = [];
         $user = $request->user();
+        $info['user_name'] = $user->name;
         $info['user_level'] = $user->userData->user_level;
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
