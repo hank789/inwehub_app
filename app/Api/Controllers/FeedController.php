@@ -13,7 +13,7 @@ class FeedController extends Controller
 {
 
     public function index(Request $request) {
-        $search_type = $request->input('search_type',1);
+        $search_type = $request->input('search_type',2);
         $query = Feed::where('audit_status', Feed::AUDIT_STATUS_SUCCESS);
         $user = $request->user();
         switch ($search_type) {
