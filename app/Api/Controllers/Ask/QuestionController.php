@@ -652,8 +652,6 @@ class QuestionController extends Controller
             $data[] = $item;
         }
         return self::createJsonData(true,$data);
-
-
     }
 
 
@@ -873,7 +871,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'user_id' => $question->user_id,
                 'description'  => $question->title,
-                'tags' => $question->tags()->get()->toArray(),
+                'tags' => $question->tags()->select('tag_id','name')->get()->toArray(),
                 'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,

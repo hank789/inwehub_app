@@ -128,6 +128,12 @@ class UserEventListener implements ShouldQueue
             'source_id'   => $event->user->id,
             'source_type' => get_class($contact),
         ]);
+        //新注册用户关注客服
+        Attention::create([
+            'user_id'     => $event->user->id,
+            'source_id'   => $contact_id,
+            'source_type' => get_class($contact),
+        ]);
         $event->user->userData->increment('followers');
         //产生一条关注的feed
         feed()
