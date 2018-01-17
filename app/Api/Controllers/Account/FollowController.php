@@ -69,7 +69,7 @@ class FollowController extends Controller
             if($source_type==='user'){
                 $source->userData->decrement('followers');
                 event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了用户'.$source->id.'['.$source->name.']'));
-            }else{
+            }elseif ($source_type == 'question'){
                 $source->decrement('followers');
                 $fields = [];
                 $fields[] = [
@@ -81,6 +81,14 @@ class FollowController extends Controller
                     'value' => route('ask.question.detail',['id'=>$source->id])
                 ];
                 event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了问题',$fields));
+            } elseif ($source_type == 'tag') {
+                $source->decrement('followers');
+                $fields = [];
+                $fields[] = [
+                    'title' => '标签',
+                    'value' => $source->name
+                ];
+                event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了标签',$fields));
             }
             return self::createJsonData(true,['tip'=>'取消关注成功','type'=>'unfollow']);
         }
@@ -127,7 +135,6 @@ class FollowController extends Controller
                     //产生一条feed流
                     $feed_event = 'user_followed';
                     $feed_target = $source->id.'_'.$loginUser->id;
-                    $is_feeded = RateLimiter::instance()->getValue($feed_event,$feed_target);
                     if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
                         $source->notify(new NewUserFollowing($source->id,$attention));
                         feed()
@@ -178,6 +185,17 @@ class FollowController extends Controller
                     break;
                 case 'tag':
                     $source->increment('followers');
+                    $fields = [];
+                    $fields[] = [
+                        'title' => '标签',
+                        'value' => $source->name
+                    ];
+                    event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']关注了标签',$fields));
+                    $feed_event = 'tag_followed';
+                    $feed_target = $source->id.'_'.$loginUser->id;
+                    if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
+                        $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$source_id,get_class($source));
+                    }
                     break;
             }
         }

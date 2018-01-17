@@ -46,6 +46,19 @@ Route::group(['namespace'=>'Account'], function() {
     Route::any('profile/resumeInfo','ProfileController@resumeInfo');
 });
 
+//榜单
+Route::group(['middleware' => ['jwt.auth','ban.user'], 'prefix'=>'rank'], function() {
+    //用户积分数据
+    Route::post('userInfo','RankController@userInfo');
+    //用户贡献榜
+    Route::post('userContribution','RankController@userContribution');
+    //用户成长榜
+    Route::post('userGrowth','RankController@userGrowth');
+    //用户邀请榜
+    Route::post('userInvitation','RankController@userInvitation');
+
+});
+
 //用户oauth
 Route::post('oauth/{type}/callback',['uses'=>'Account\OauthController@callback'])->where(['type'=>'(weixinapp|weixin_gzh)']);
 
@@ -53,6 +66,7 @@ Route::post('oauth/{type}/callback',['uses'=>'Account\OauthController@callback']
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
     Route::post('profile/info','ProfileController@info');
+
     //修改用户头像
     Route::post('profile/updateAvatar','ProfileController@postAvatar');
     //用户修改密码
@@ -215,8 +229,19 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Withdraw'], 
 });
 
 
-//加载标签
-Route::post('tags/load','TagsController@load')->middleware('jwt.auth');
+//标签
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], function() {
+    //加载标签
+    Route::post('load','TagsController@load');
+    //标签详情
+    Route::post('tagInfo','TagsController@tagInfo');
+    //标签用户
+    Route::post('users','TagsController@users');
+    //标签问答
+    Route::post('questions','TagsController@questions');
+    //标签动态
+    Route::post('submissions','TagsController@submissions');
+});
 
 //上传图片
 Route::post('upload/img','ImageController@upload')->middleware('jwt.auth');

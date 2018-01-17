@@ -646,8 +646,8 @@ class QuestionController extends Controller
             $item['id'] = $info->id;
             $item['uuid'] = $info->uuid;
             $item['name'] = $info->name;
-            $item['avatar_url'] = $info->getAvatarUrl();
-            $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
+            $item['avatar_url'] = $info->avatar;
+            $item['is_expert'] = $info->is_expert;
             $item['is_invited'] = 0;
             $data[] = $item;
         }
@@ -794,7 +794,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.views','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -866,7 +866,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.updated_at','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
