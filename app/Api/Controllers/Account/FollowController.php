@@ -537,6 +537,8 @@ class FollowController extends Controller
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
 
+        $attentionUsers = array_unique(array_merge($attentionUsers,getSystemUids()));
+
         if ($attentionUsers) {
             $query = $query->whereNotIn('user_id',$attentionUsers);
             $query1 = $query1->whereNotIn('user_id',$attentionUsers);
