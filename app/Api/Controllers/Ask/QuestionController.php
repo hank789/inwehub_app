@@ -960,6 +960,31 @@ class QuestionController extends Controller
         return self::createJsonData(true,$return);
     }
 
+    //推荐相关问题
+    public function recommendUserQuestions(Request $request) {
+        $user = $request->user();
+        $skillTags = $user->userSkillTag()->pluck('tag_id');
+        $relatedQuestions = Question::correlationsPage($skillTags,5,2);
+        if (!$relatedQuestions) {
+            $relatedQuestions = Question::recent(5,2);
+        }
+        $return = $relatedQuestions->toArray();
+        $list = [];
+        foreach ($relatedQuestions as $relatedQuestion) {
+            $list[] = [
+                'id' => $relatedQuestion->id,
+                'title' => $relatedQuestion->title,
+                'question_type' => $relatedQuestion->question_type,
+                'answer_number' => $relatedQuestion->answers,
+                'follow_number' => $relatedQuestion->followers,
+                'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray()
+            ];
+        }
+        $return['data'] = $list;
+        $return['user_skill_tags'] = $skillTags;
+        return self::createJsonData(true,$return);
+    }
+
     protected function checkUserInfoPercent($user){
         return;
         //字段完成度为90%才能创建问题

@@ -189,6 +189,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     //相关问题
     Route::post('question/relatedQuestion','QuestionController@relatedQuestion');
 
+    //推荐用户问题
+    Route::post('question/recommendUser','QuestionController@recommendUserQuestions');
+
     //一键推荐邀请回答
     Route::post('question/recommendInviterList','QuestionController@recommendInviterList');
 
