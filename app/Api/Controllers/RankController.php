@@ -32,7 +32,7 @@ class RankController extends Controller
     //用户贡献榜
     public function userContribution(Request $request)
     {
-        $userDatas = UserData::orderBy('coins','desc')->take(20)->get();
+        $userDatas = UserData::whereNotIn('user_id',getSystemUids())->orderBy('coins','desc')->take(20)->get();
         $loginUser = $request->user();
         $data = [];
         foreach ($userDatas as $key=>$userData) {
@@ -60,7 +60,7 @@ class RankController extends Controller
     //用户邀请榜
     public function userInvitation(Request $request)
     {
-        $users = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->take(20)->get();
+        $users = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->take(40)->get();
         $loginUser = $request->user();
         $data = [];
         $rank = 0;
@@ -85,6 +85,7 @@ class RankController extends Controller
                 'is_followed' => $is_followed,
                 'user_avatar_url' => $rcUser->avatar
             ];
+            if ($rank >= 20) break;
         }
         return self::createJsonData(true,$data);
     }
@@ -92,7 +93,7 @@ class RankController extends Controller
     //用户成长榜
     public function userGrowth(Request $request)
     {
-        $userDatas = UserData::orderBy('credits','desc')->take(20)->get();
+        $userDatas = UserData::whereNotIn('user_id',getSystemUids())->orderBy('credits','desc')->take(20)->get();
         $loginUser = $request->user();
         $data = [];
         foreach ($userDatas as $key=>$userData) {
