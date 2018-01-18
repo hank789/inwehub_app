@@ -539,7 +539,7 @@ class QuestionController extends Controller
             //$this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
 
             $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id));
-            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$question->id,$toUser->id);
+            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$invitation->id,$toUser->id);
         }
 
         return self::createJsonData(true);

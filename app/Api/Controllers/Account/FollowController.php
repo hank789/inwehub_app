@@ -127,8 +127,8 @@ class FollowController extends Controller
                                 ->performedOn($source)
                                 ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                                 ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
-                            $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$source_id,get_class($source));
-                            $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$source_id,get_class($source));
+                            $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
+                            $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
                         }
                     }
                     break;
@@ -147,7 +147,7 @@ class FollowController extends Controller
                             ])
                             ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
-                        $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$source_id,get_class($source));
+                        $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                         //产生一条私信
                         $message = $loginUser->messages()->create([
                             'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
@@ -196,7 +196,7 @@ class FollowController extends Controller
                     $feed_event = 'tag_followed';
                     $feed_target = $source->id.'_'.$loginUser->id;
                     if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
-                        $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$source_id,get_class($source));
+                        $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                     }
                     break;
             }
@@ -248,7 +248,7 @@ class FollowController extends Controller
                     ])
                     ->log($user->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
-                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$id,get_class($source));
+                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                 //产生一条私信
                 $message = $user->messages()->create([
                     'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
@@ -317,7 +317,7 @@ class FollowController extends Controller
                 'source_type' => get_class($source),
             ];
 
-            Attention::create($data);
+            $attention = Attention::create($data);
 
             $source->increment('followers');
             $fields[] = [
@@ -327,7 +327,7 @@ class FollowController extends Controller
             $feed_event = 'tag_followed';
             $feed_target = $source->id.'_'.$user->id;
             if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
-                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$id,get_class($source));
+                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
             }
 
         }
@@ -363,7 +363,7 @@ class FollowController extends Controller
                 'source_type' => get_class($source),
             ];
 
-            Attention::create($data);
+            $attention = Attention::create($data);
 
             $source->increment('followers');
             $fields[] = [
@@ -384,8 +384,8 @@ class FollowController extends Controller
                         ->performedOn($source)
                         ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                         ->log($user->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
-                    $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$id,get_class($source));
-                    $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$id,get_class($source));
+                    $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
+                    $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
                 }
             }
 
