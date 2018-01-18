@@ -48,24 +48,24 @@ class TagsController extends Controller {
 
     public function tagInfo(Request $request){
         $validateRules = [
-            'tag_id' => 'required|integer'
+            'tag_name' => 'required'
         ];
 
         $this->validate($request,$validateRules);
-        $tag_id = $request->input('tag_id');
-        $tag = Tag::findOrFail($tag_id);
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
         return self::createJsonData(true,$tag->toArray());
     }
 
     //标签相关用户
     public function users(Request $request){
         $validateRules = [
-            'tag_id' => 'required|integer'
+            'tag_name' => 'required'
         ];
 
         $this->validate($request,$validateRules);
-        $tag_id = $request->input('tag_id');
-        $tag = Tag::findOrFail($tag_id);
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
         $loginUser = $request->user();
         $userTags = $tag->userTags()->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $userTags->toArray();
@@ -108,12 +108,12 @@ class TagsController extends Controller {
     //标签相关问答
     public function questions(Request $request) {
         $validateRules = [
-            'tag_id' => 'required|integer'
+            'tag_name' => 'required'
         ];
 
         $this->validate($request,$validateRules);
-        $tag_id = $request->input('tag_id');
-        $tag = Tag::findOrFail($tag_id);
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
         $user = $request->user();
         $questions = $tag->questions()->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
@@ -206,12 +206,12 @@ class TagsController extends Controller {
     //标签相关动态
     public function submissions(Request $request){
         $validateRules = [
-            'tag_id' => 'required|integer'
+            'tag_name' => 'required'
         ];
 
         $this->validate($request,$validateRules);
-        $tag_id = $request->input('tag_id');
-        $tag = Tag::findOrFail($tag_id);
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
         $user = $request->user();
         $submissions = $tag->submissions()->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $submissions->toArray();
