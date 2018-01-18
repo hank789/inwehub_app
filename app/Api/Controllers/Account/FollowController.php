@@ -473,9 +473,15 @@ class FollowController extends Controller
     public function recommendUserList(Request $request) {
         $user = $request->user();
         $tags = $user->attentions()->where('source_type','App\Models\Tag')->pluck('source_id')->toArray();
+        $attentionUsers = $user->attentions()->where('source_type','App\Models\User')->pluck('source_id')->toArray();
+
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
 
+        if ($attentionUsers) {
+            $query = $query->whereNotIn('user_id',$attentionUsers);
+            $query1 = $query1->whereNotIn('user_id',$attentionUsers);
+        }
         if ($tags) {
             $query = $query->whereIn('tag_id',$tags)->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
             $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
