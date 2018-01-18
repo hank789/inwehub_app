@@ -290,6 +290,52 @@ class FollowController extends Controller
 
     }
 
+    //一键关注多个标签
+    public function batchTags(Request $request) {
+        $validateRules = [
+            'ids' => 'required|array',
+        ];
+
+        $this->validate($request,$validateRules);
+
+        $ids = $request->input('ids');
+        $user = $request->user();
+        $fields = [];
+        foreach ($ids as $id) {
+            $source = Tag::find($id);
+            if(empty($source)){
+                continue;
+            }
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($source))->where('source_id','=',$id)->first();
+            if($attention){
+                continue;
+            }
+
+            $data = [
+                'user_id'     => $user->id,
+                'source_id'   => $id,
+                'source_type' => get_class($source),
+            ];
+
+            Attention::create($data);
+
+            $source->increment('followers');
+            $fields[] = [
+                'title' => '标签',
+                'value' => $source->name
+            ];
+            $feed_event = 'tag_followed';
+            $feed_target = $source->id.'_'.$user->id;
+            if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
+                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$id,get_class($source));
+            }
+
+        }
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']关注了标签',$fields));
+
+        return self::createJsonData(true,[],ApiException::SUCCESS,'关注成功');
+    }
+
     /*我的关注*/
     public function attentions(Request $request)
     {

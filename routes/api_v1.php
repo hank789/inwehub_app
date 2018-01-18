@@ -130,6 +130,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('follow/{source_type}',['uses'=>'FollowController@store'])->where(['source_type'=>'(question|tag|user)']);
     //批量关注
     Route::post('follow/batchUser',['uses'=>'FollowController@batchUser']);
+    //批量关注标签
+    Route::post('follow/batchTags',['uses'=>'FollowController@batchTags']);
     //推荐关注用户
     Route::post('follow/recommendUserList',['uses'=>'FollowController@recommendUserList']);
     /*我的关注*/
