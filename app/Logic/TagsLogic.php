@@ -32,7 +32,7 @@ class TagsLogic {
                 break;
             case 3:
                 //行业领域
-                $category_name = ['industry'];
+                $category_name = ['question_industry'];
                 break;
             case 4:
                 //产品类型
