@@ -84,7 +84,7 @@ class IndexController extends Controller {
                 $recommend_expert_is_followed = 1;
             }
             //检查活动时间
-            $ac_first_ask_begin_time = Setting()->get('ac_first_ask_begin_time');
+            /*$ac_first_ask_begin_time = Setting()->get('ac_first_ask_begin_time');
             $ac_first_ask_end_time = Setting()->get('ac_first_ask_end_time');
             if($ac_first_ask_begin_time && $ac_first_ask_end_time && $ac_first_ask_begin_time<=date('Y-m-d H:i') && $ac_first_ask_end_time>date('Y-m-d H:i')){
                 $is_first_ask = !$user->userData->questions;
@@ -97,7 +97,7 @@ class IndexController extends Controller {
                 {
                     $expire_at = $coupon->expire_at;
                 }
-            }
+            }*/
         }
         $show_ad = false;
         $notices = Notice::where('status',1)->orderBy('sort','DESC')->take(5)->get()->toArray();

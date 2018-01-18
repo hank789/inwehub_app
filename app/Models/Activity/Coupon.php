@@ -55,6 +55,7 @@ class Coupon extends Model
     const COUPON_TYPE_FIRST_ASK = 1;//首次提问
     const COUPON_TYPE_DAILY_SIGN_SMALL = 2;//累计签到3天小红包
     const COUPON_TYPE_DAILY_SIGN_BIG = 3;//累计签到7天大红包
+    const COUPON_TYPE_NEW_REGISTER_INVITATION = 4;//新手注册邀请红包
 
 
     const COUPON_STATUS_PENDING = 1;
@@ -72,6 +73,9 @@ class Coupon extends Model
                 break;
             case self::COUPON_TYPE_DAILY_SIGN_BIG:
                 return '签到7天红包';
+                break;
+            case self::COUPON_TYPE_NEW_REGISTER_INVITATION:
+                return '受邀注册红包';
                 break;
         }
     }
