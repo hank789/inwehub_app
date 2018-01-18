@@ -1,8 +1,10 @@
 <?php namespace App\Api\Controllers\Activity;
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Logic\MoneyLogLogic;
 use App\Models\Activity\Coupon;
 use App\Models\Pay\MoneyLog;
+use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
@@ -23,6 +25,7 @@ class CouponController extends Controller {
         $data = $request->all();
         $coupon_value = 0;
         $coupon_value_type = 1;
+        $coupon_description = '';
         switch($data['coupon_type']){
             case Coupon::COUPON_TYPE_FIRST_ASK:
                 $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->first();
@@ -80,7 +83,12 @@ class CouponController extends Controller {
                 }
                 break;
             case Coupon::COUPON_TYPE_NEW_REGISTER_INVITATION:
+                $rcUser = User::find($user->rc_uid);
+                if (!$rcUser) {
+                    throw new ApiException(ApiException::BAD_REQUEST);
+                }
                 $coupon_value = rand(1,3);
+                $coupon_description = $rcUser->name.'送你';
                 $expire_at = date('Y-m-d 23:59:59');
                 $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_NEW_REGISTER_INVITATION)->first();
                 if(!$coupon){
@@ -97,7 +105,7 @@ class CouponController extends Controller {
                 }
                 break;
         }
-        return self::createJsonData(true,['tip'=>'领取成功','coupon_type'=>$data['coupon_type'],'coupon_value_type'=>$coupon_value_type,'coupon_value'=>$coupon_value]);
+        return self::createJsonData(true,['tip'=>'领取成功','coupon_description'=>$coupon_description,'coupon_type'=>$data['coupon_type'],'coupon_value_type'=>$coupon_value_type,'coupon_value'=>$coupon_value]);
 
     }
 

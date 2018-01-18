@@ -19,6 +19,8 @@ class ConfigController extends AdminController
         $validateRules = [
             'ac_first_ask_begin_time' => 'required|date_format:Y-m-d H:i',
             'ac_first_ask_end_time' => 'required|date_format:Y-m-d H:i|after:ac_first_ask_begin_time',
+            'ac_invitation_coupon_begin_time' => 'required|date_format:Y-m-d H:i',
+            'ac_invitation_coupon_end_time' => 'required|date_format:Y-m-d H:i|after:ac_invitation_coupon_begin_time',
         ];
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);
