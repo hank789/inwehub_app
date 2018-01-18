@@ -336,6 +336,65 @@ class FollowController extends Controller
         return self::createJsonData(true,[],ApiException::SUCCESS,'关注成功');
     }
 
+    //一键关注多个问题
+    public function batchQuestions(Request $request) {
+        $validateRules = [
+            'ids' => 'required|array',
+        ];
+
+        $this->validate($request,$validateRules);
+
+        $ids = $request->input('ids');
+        $user = $request->user();
+        $fields = [];
+        foreach ($ids as $id) {
+            $source = Tag::find($id);
+            if(empty($source)){
+                continue;
+            }
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($source))->where('source_id','=',$id)->first();
+            if($attention){
+                continue;
+            }
+
+            $data = [
+                'user_id'     => $user->id,
+                'source_id'   => $id,
+                'source_type' => get_class($source),
+            ];
+
+            Attention::create($data);
+
+            $source->increment('followers');
+            $fields[] = [
+                'title' => '标题',
+                'value' => $source->title
+            ];
+            $fields[] = [
+                'title' => '地址',
+                'value' => route('ask.question.detail',['id'=>$source->id])
+            ];
+            //产生一条feed流
+            if ($source->question_type == 2) {
+                $feed_event = 'question_followed';
+                $feed_target = $source->id.'_'.$user->id;
+                if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
+                    feed()
+                        ->causedBy($user)
+                        ->performedOn($source)
+                        ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
+                        ->log($user->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
+                    $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$id,get_class($source));
+                    $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$id,get_class($source));
+                }
+            }
+
+        }
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']关注了问题',$fields));
+
+        return self::createJsonData(true,[],ApiException::SUCCESS,'关注成功');
+    }
+
     /*我的关注*/
     public function attentions(Request $request)
     {
