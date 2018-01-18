@@ -78,6 +78,7 @@ class IndexController extends Controller {
         }
 
         $show_invitation_coupon = false;
+        $show_ad = false;
         if($user){
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($recommend_expert_user))->where('source_id','=',$recommend_expert_uid)->first();
             if ($attention){
