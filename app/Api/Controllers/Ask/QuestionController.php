@@ -596,7 +596,9 @@ class QuestionController extends Controller
         $invitedUsers = $question->invitations()->where("from_user_id","=",$request->user()->id)->pluck('user_id')->toArray();
         $invitedUsers[] = $question->user_id;
         $invitedUsers[] = $request->user()->id;
-        $invitedUsers = array_unique(array_merge($invitedUsers,getSystemUids()));
+        //已经回答过的用户
+        $answeredUids = $question->answers()->pluck('user_id')->toArray();
+        $invitedUsers = array_unique(array_merge($invitedUsers,getSystemUids(),$answeredUids));
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
         if ($invitedUsers) {
@@ -615,7 +617,6 @@ class QuestionController extends Controller
 
         $data = [];
         foreach($userTags as $userTag){
-            if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;
             $info = User::find($userTag->user_id);
             $tag = $info->userTag()->whereIn('tag_id',$tags)->orderBy('skills','desc')->first();
             $item = [];
