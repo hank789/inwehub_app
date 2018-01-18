@@ -115,14 +115,15 @@ class TagsController extends Controller {
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
         $user = $request->user();
-        $questions = $tag->questions()->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $tag->questions()->where('status','>=',6)->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
         $list = [];
         foreach ($questions as $question) {
             if ($question->question_type == 1) {
-                $bestAnswer = [];
                 if($question->status >= 6 ){
                     $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+                } else {
+                    continue;
                 }
                 $supporters = [];
                 $is_pay_for_view = false;
