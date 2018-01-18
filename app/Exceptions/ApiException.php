@@ -156,7 +156,7 @@ class ApiException extends Exception
         self::ASK_ANSWER_NOT_EXIST => '回答不存在',
         self::ASK_ANSWER_FEEDBACK_EXIST => '您已评价过该回答',
         self::ASK_FEEDBACK_SELF_ANSWER => '您不能评价自己的回答',
-        self::TAGS_NAME_LENGTH_LIMIT => '标签长度不能超过15个字符',
+        self::TAGS_NAME_LENGTH_LIMIT => '标签长度不能超过15个汉字',
 
         //支付模块
         self::PAYMENT_UNKNOWN_CHANNEL => '暂不支持该支付渠道',
