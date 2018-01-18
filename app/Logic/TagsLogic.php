@@ -86,7 +86,7 @@ class TagsLogic {
                     ];
                 }
             }
-            $defaultTags = Tag::where('	category_id',0)->get();
+            $defaultTags = Tag::where('category_id',0)->get();
             foreach ($defaultTags as $defaultTag) {
                 $tags[] = [
                     $tagKey => $defaultTag->id,
