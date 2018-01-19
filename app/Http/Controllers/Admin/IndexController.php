@@ -10,11 +10,14 @@ use App\Models\Feedback;
 use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\Submission;
+use App\Models\Tag;
+use App\Models\Taggable;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserData;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class IndexController extends AdminController
@@ -96,6 +99,20 @@ class IndexController extends AdminController
         //待结算金融
         $totalSettlement = UserMoney::sum('settlement_money');
         $userMoney= UserMoney::orderBy('total_money','desc')->take(50)->get();
+        //热门标签
+        $taggables =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))->groupBy('tag_id')
+            ->orderBy('total_num','desc')
+            ->take(100)
+            ->get();
+        $hotTags = [];
+        foreach ($taggables as $taggable) {
+            $tagInfo = Tag::find($taggable->tag_id);
+            $hotTags[] = [
+                'tag_id' => $tagInfo->id,
+                'tag_name'  => $tagInfo->name,
+                'total_num' => $taggable->total_num
+            ];
+        }
 
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
@@ -117,6 +134,7 @@ class IndexController extends AdminController
             'totalBalance',
             'totalSettlement',
             'userMoney',
+            'hotTags',
             'userChart','questionChart','systemInfo'));
     }
 
@@ -148,7 +166,6 @@ class IndexController extends AdminController
 
         for( $i=0 ; $i < 7 ; $i++ ){
             $startTime = $labelTimes[$i];
-            \Log::info('test',[$startTime]);
             $endTime = $nowTime;
             if(isset($labelTimes[$i+1])){
                 $endTime = $labelTimes[$i+1];

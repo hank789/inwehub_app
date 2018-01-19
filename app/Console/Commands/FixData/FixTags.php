@@ -10,6 +10,7 @@ use App\Jobs\FixUserCredits;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Tag;
+use App\Models\Taggable;
 use App\Models\User;
 use App\Models\UserTag;
 use Illuminate\Console\Command;
@@ -40,17 +41,25 @@ class FixTags extends Command
         $userTags = UserTag::where('industries','>',0)->get();
         foreach ($userTags as $userTag) {
             $tag = Tag::find($userTag->tag_id);
-            if (!$tag) {
-                $userTag->delete();
+            if ($tag->category_id != 9) {
                 continue;
             }
-            $newTag = Tag::where('name',$tag->name)->where('id','!=',$tag->id)->first();
-            if ($newTag && $newTag->category_id == 23) {
+            $newTags = Tag::where('name',$tag->name)->whereIn('category_id',[23,29])->get();
+            foreach ($newTags as $newTag) {
                 $userTag->tag_id = $newTag->id;
                 $userTag->save();
-            } elseif($tag->category_id != 23) {
-                $this->comment($tag->name);
-                $userTag->delete();
+            }
+        }
+        $taggables = Taggable::get();
+        foreach ($taggables as $taggable) {
+            $tag = Tag::find($taggable->tag_id);
+            if ($tag->category_id != 9) {
+                continue;
+            }
+            $newTags = Tag::where('name',$tag->name)->whereIn('category_id',[23,29])->get();
+            foreach ($newTags as $newTag) {
+                $taggable->tag_id = $newTag->id;
+                $taggable->save();
             }
         }
         Tag::where('category_id',9)->delete();

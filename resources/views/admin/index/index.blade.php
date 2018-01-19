@@ -225,6 +225,26 @@
             <div class="col-md-12">
                 <div class="box box-default">
                     <div class="box-header with-border">
+                        <h3 class="box-title">热门标签Top100</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <ul class="taglist-inline multi">
+                                    @foreach($hotTags as $hotTag)
+                                        <li class="tagPopup"><a class="tag" target="_blank" data-toggle="popover"  href="{{ route('ask.tag.index',['id'=>$hotTag['tag_id']]) }}">{{ $hotTag['tag_name'].'('.$hotTag['total_num'].')' }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
                         <h3 class="box-title">用户等级统计</h3>
                     </div>
                     <div class="box-body">

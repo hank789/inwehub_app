@@ -20,6 +20,8 @@
                         @else
                             <button type="button" id="follow-button" class="btn btn-default btn-xs" data-source_type = "tag" data-source_id = "{{ $tag->id }}"  data-show_num="false" data-toggle="tooltip" data-placement="right" title="" data-original-title="关注后将获得更新提醒">关注</button>
                         @endif
+                            <a class="btn btn-default btn-xs" href="{{ route('admin.tag.edit',['id'=>$tag->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+
                     </div>
                 </div>
                 @if($tag->summary)
@@ -32,7 +34,6 @@
             <ul class="nav nav-tabs nav-tabs-zen">
                 <li @if($source_type==='questions') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">问题</a></li>
                 <li @if($source_type==='asks') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'asks']) }}">回答</a></li>
-                <li @if($source_type==='articles') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'articles']) }}">文章</a></li>
                 <li @if($source_type==='details') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'details']) }}">百科</a></li>
             </ul>
             <div class="tab-content">
