@@ -103,7 +103,7 @@ class IndexController extends Controller {
             //检查活动时间
             $ac_invitation_coupon_begin_time = Setting()->get('ac_invitation_coupon_begin_time');
             $ac_invitation_coupon_end_time = Setting()->get('ac_invitation_coupon_end_time');
-            if ($user->rc_uid && $ac_invitation_coupon_begin_time && $ac_invitation_coupon_end_time && $ac_invitation_coupon_begin_time <=date('Y-m-d H:i') && $ac_invitation_coupon_end_time > date('Y-m-d H:i')) {
+            if ($user->rc_uid && strtotime($user->created_at) >= strtotime($ac_invitation_coupon_begin_time) && $ac_invitation_coupon_begin_time && $ac_invitation_coupon_end_time && $ac_invitation_coupon_begin_time <=date('Y-m-d H:i') && $ac_invitation_coupon_end_time > date('Y-m-d H:i')) {
                 //用户是否已经领过红包
                 $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_NEW_REGISTER_INVITATION)->first();
                 if(!$coupon){
