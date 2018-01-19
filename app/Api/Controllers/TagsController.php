@@ -115,7 +115,7 @@ class TagsController extends Controller {
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
         $user = $request->user();
-        $questions = $tag->questions()->where('status','>=',6)->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $tag->questions()->where('status','>=',1)->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
         $list = [];
         foreach ($questions as $question) {
