@@ -34,7 +34,7 @@ class AddDefaultUserTag extends Command
     {
         $users = User::get();
         foreach($users as $user){
-            $userTag = UserTag::where('user_id',$user->id)->first();
+            $userTag = UserTag::where('user_id',$user->id)->where('tag_id',0)->first();
             if (!$userTag) {
                 UserTag::create([
                     'user_id' => $user->id,
