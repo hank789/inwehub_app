@@ -20,10 +20,11 @@ class FeedController extends Controller
             case 1:
                 //关注
                 $followers = $user->attentions()->where('source_type','=',get_class($user))->pluck('source_id')->toArray();
-                $query = $query->whereIn('user_id',$followers);
+                $query = $query->whereIn('user_id',$followers)->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER);
                 break;
             case 2:
                 //全部
+                $query = $query->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER);
                 break;
             case 3:
                 //问答
