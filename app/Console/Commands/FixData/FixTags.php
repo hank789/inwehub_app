@@ -62,8 +62,8 @@ class FixTags extends Command
                 $taggable->save();
             }
         }
-        //Tag::where('category_id',9)->delete();
-        //Category::where('id',9)->delete();
+        Tag::where('category_id',9)->delete();
+        Category::where('id',9)->delete();
     }
 
 }
