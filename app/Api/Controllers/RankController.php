@@ -26,6 +26,7 @@ class RankController extends Controller
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
         $info['invited_users'] = User::where('rc_uid',$user->id)->count();
+        $info['show_rank'] = config('app.env') == 'production' ? (time()>=strtotime('2018-01-22 00:00:01')?true:false):true ;
         return self::createJsonData(true,$info);
     }
 

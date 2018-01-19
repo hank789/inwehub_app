@@ -323,10 +323,10 @@ class QuestionController extends Controller
         if ($newTagString) {
             if (is_array($newTagString)) {
                 foreach ($newTagString as $s) {
-                    if (strlen($s) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                    if (strlen($s) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
                 }
             } else {
-                if (strlen($newTagString) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
         }
 
@@ -399,7 +399,7 @@ class QuestionController extends Controller
             $waiting_second = rand(1,5);
 
             //因为微信支付要有30天的流水,所以指定用户id为3的每天做流水
-            if(config('app.env') == 'production' && $loginUser->id == 3){
+            /*if(config('app.env') == 'production' && $loginUser->id == 3){
                 $res_data = [
                     'id'=>$question->id,
                     'price'=> $price,
@@ -409,7 +409,7 @@ class QuestionController extends Controller
                     'create_time'=>(string)$question->created_at
                 ];
                 return self::createJsonData(true,$res_data,ApiException::SUCCESS,'发起提问成功!');
-            }
+            }*/
 
             if($question->question_type == 1 && !$to_user_uuid){
                 $doing_obj = TaskLogic::doing(0,$doing_prefix.'question_process',get_class($question),$question->id,$question->title,'');
