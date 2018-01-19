@@ -133,6 +133,6 @@ class RankController extends Controller
     }
 
     protected function checkTankLimit($user){
-        return config('app.env') == 'production' ? (time()>=strtotime('2018-01-22 00:00:01') || in_array($user->id,getSystemUids())?true:false):true;
+        return config('app.env') == 'production' ? ((time()>=strtotime('2018-01-22 00:00:01') || in_array($user->id,getSystemUids()))?true:false):true;
     }
 }
