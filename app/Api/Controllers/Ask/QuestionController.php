@@ -957,9 +957,9 @@ class QuestionController extends Controller
     public function recommendUserQuestions(Request $request) {
         $user = $request->user();
         $skillTags = $user->userSkillTag()->pluck('tag_id');
-        $relatedQuestions = Question::correlationsPage($skillTags,5,2);
+        $relatedQuestions = Question::correlationsPage($skillTags,5,2,[$user->id]);
         if (!$relatedQuestions) {
-            $relatedQuestions = Question::recent(5,2);
+            $relatedQuestions = Question::recent(5,2,[$user->id]);
         }
         $return = $relatedQuestions->toArray();
         $list = [];
