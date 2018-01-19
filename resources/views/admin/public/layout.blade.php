@@ -14,7 +14,7 @@
     <link href="{{ asset('/static/css/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css" />
 
     <!-- Theme style -->
-    <link href="{{ asset('/css/admin/admin.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/css/admin/admin.css') }}?v={{ config('inwehub.release') }}" rel="stylesheet" type="text/css" />
     <!-- AdminLTE Skins. Choose a skin from the css/skins
          folder instead of downloading all of them to reduce the load. -->
     <link href="{{ asset('/css/admin/skins/_all-skins.min.css') }}" rel="stylesheet" type="text/css" />
