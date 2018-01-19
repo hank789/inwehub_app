@@ -77,7 +77,8 @@ class IndexController extends Controller {
             }
         }
 
-
+        $show_invitation_coupon = false;
+        $show_ad = false;
         if($user){
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($recommend_expert_user))->where('source_id','=',$recommend_expert_uid)->first();
             if ($attention){
@@ -98,8 +99,18 @@ class IndexController extends Controller {
                     $expire_at = $coupon->expire_at;
                 }
             }
+            //新注册领取受邀注册红包
+            //检查活动时间
+            $ac_invitation_coupon_begin_time = Setting()->get('ac_invitation_coupon_begin_time');
+            $ac_invitation_coupon_end_time = Setting()->get('ac_invitation_coupon_end_time');
+            if ($user->rc_uid && strtotime($user->created_at) >= strtotime($ac_invitation_coupon_begin_time) && $ac_invitation_coupon_begin_time && $ac_invitation_coupon_end_time && $ac_invitation_coupon_begin_time <=date('Y-m-d H:i') && $ac_invitation_coupon_end_time > date('Y-m-d H:i')) {
+                //用户是否已经领过红包
+                $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_NEW_REGISTER_INVITATION)->first();
+                if(!$coupon){
+                    $show_invitation_coupon = true;
+                }
+            }
         }
-        $show_ad = false;
         $notices = Notice::where('status',1)->orderBy('sort','DESC')->take(5)->get()->toArray();
 
         //随机7个专家
@@ -180,6 +191,7 @@ class IndexController extends Controller {
             'recommend_expert_avatar_url' => $recommend_expert_user->getAvatarUrl(),//资深专家头像
             'recommend_qa' => $host_question,
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
+            'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
             'recommend_experts' => $cache_experts,
             'recommend_read' => $recommend_read,
@@ -210,7 +222,7 @@ class IndexController extends Controller {
                     $bestAnswer = $object->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
 
                     $item['data']['price'] = $object->price;
-                    $item['data']['average_rate'] = trim($bestAnswer->getFeedbackRate(),'%');
+                    $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
                     break;
                 case RecommendRead::READ_TYPE_FREE_QUESTION:
                     // '互动问答';

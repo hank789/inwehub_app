@@ -323,10 +323,10 @@ class QuestionController extends Controller
         if ($newTagString) {
             if (is_array($newTagString)) {
                 foreach ($newTagString as $s) {
-                    if (strlen($s) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                    if (strlen($s) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
                 }
             } else {
-                if (strlen($newTagString) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
         }
 
@@ -399,7 +399,7 @@ class QuestionController extends Controller
             $waiting_second = rand(1,5);
 
             //因为微信支付要有30天的流水,所以指定用户id为3的每天做流水
-            if(config('app.env') == 'production' && $loginUser->id == 3){
+            /*if(config('app.env') == 'production' && $loginUser->id == 3){
                 $res_data = [
                     'id'=>$question->id,
                     'price'=> $price,
@@ -409,7 +409,7 @@ class QuestionController extends Controller
                     'create_time'=>(string)$question->created_at
                 ];
                 return self::createJsonData(true,$res_data,ApiException::SUCCESS,'发起提问成功!');
-            }
+            }*/
 
             if($question->question_type == 1 && !$to_user_uuid){
                 $doing_obj = TaskLogic::doing(0,$doing_prefix.'question_process',get_class($question),$question->id,$question->title,'');
@@ -539,7 +539,7 @@ class QuestionController extends Controller
             //$this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
 
             $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id));
-            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$question->id,$toUser->id);
+            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$invitation->id,$toUser->id);
         }
 
         return self::createJsonData(true);
@@ -596,15 +596,9 @@ class QuestionController extends Controller
         $invitedUsers = $question->invitations()->where("from_user_id","=",$request->user()->id)->pluck('user_id')->toArray();
         $invitedUsers[] = $question->user_id;
         $invitedUsers[] = $request->user()->id;
-        $invitedUsers[] = 1;
-        $invitedUsers[] = 3;
-        $invitedUsers[] = 4;
-        $invitedUsers[] = 5;
-        $invitedUsers[] = 6;
-        $invitedUsers[] = 504;
-        $invitedUsers[] = 229;
-        $invitedUsers[] = 131;
-        $invitedUsers = array_unique($invitedUsers);
+        //已经回答过的用户
+        $answeredUids = $question->answers()->pluck('user_id')->toArray();
+        $invitedUsers = array_unique(array_merge($invitedUsers,getSystemUids(),$answeredUids));
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
         if ($invitedUsers) {
@@ -623,7 +617,6 @@ class QuestionController extends Controller
 
         $data = [];
         foreach($userTags as $userTag){
-            if ($question->answers()->where('user_id',$userTag->user_id)->exists()) continue;
             $info = User::find($userTag->user_id);
             $tag = $info->userTag()->whereIn('tag_id',$tags)->orderBy('skills','desc')->first();
             $item = [];
@@ -652,8 +645,6 @@ class QuestionController extends Controller
             $data[] = $item;
         }
         return self::createJsonData(true,$data);
-
-
     }
 
 
@@ -778,23 +769,17 @@ class QuestionController extends Controller
 
     //专业问答-推荐问答列表
     public function majorList(Request $request) {
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
         $user = $request->user();
 
         $query = Question::where('questions.is_recommend',1)->where('questions.question_type',1);
-        if($top_id){
-            $query = $query->where('questions.id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('questions.id','<',$bottom_id);
-        }
 
         if ($tag_id) {
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
             /*已解决问题*/
@@ -845,28 +830,23 @@ class QuestionController extends Controller
                 'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view)
             ];
         }
-        return self::createJsonData(true,$list);
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
     }
 
     //互动问答-问答列表
     public function commonList(Request $request) {
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
         $tag_id = $request->input('tag_id',0);
         $user = $request->user();
 
         $query = Question::where('questions.question_type',2);
-        if($top_id){
-            $query = $query->where('questions.id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('questions.id','<',$bottom_id);
-        }
 
         if ($tag_id) {
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
             $is_followed_question = 0;
@@ -884,7 +864,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'user_id' => $question->user_id,
                 'description'  => $question->title,
-                'tags' => $question->tags()->pluck('name'),
+                'tags' => $question->tags()->select('tag_id','name')->get()->toArray(),
                 'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,
@@ -898,7 +878,8 @@ class QuestionController extends Controller
                 'is_followed_question' => $is_followed_question
             ];
         }
-        return self::createJsonData(true,$list);
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
     }
 
     //专业问答-热门问答
@@ -969,6 +950,37 @@ class QuestionController extends Controller
                 'created_at' => (string)$answer->created_at
             ];
         }
+        return self::createJsonData(true,$return);
+    }
+
+    //推荐相关问题
+    public function recommendUserQuestions(Request $request) {
+        $user = $request->user();
+        $skillTags = $user->userSkillTag()->pluck('tag_id');
+        $relatedQuestions = Question::correlationsPage($skillTags,5,2,[$user->id]);
+        if (!$relatedQuestions) {
+            $relatedQuestions = Question::recent(5,2,[$user->id]);
+        }
+        $return = $relatedQuestions->toArray();
+        $list = [];
+        foreach ($relatedQuestions as $relatedQuestion) {
+            $is_followed_question = 0;
+            $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($relatedQuestion))->where('source_id','=',$relatedQuestion->id)->first();
+            if ($attention_question) {
+                $is_followed_question = 1;
+            }
+            $list[] = [
+                'id' => $relatedQuestion->id,
+                'title' => $relatedQuestion->title,
+                'question_type' => $relatedQuestion->question_type,
+                'answer_number' => $relatedQuestion->answers,
+                'follow_number' => $relatedQuestion->followers,
+                'is_followed_question'   => $is_followed_question,
+                'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray()
+            ];
+        }
+        $return['data'] = $list;
+        $return['user_skill_tags'] = $skillTags;
         return self::createJsonData(true,$return);
     }
 

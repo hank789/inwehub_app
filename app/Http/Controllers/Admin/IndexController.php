@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Activity\Coupon;
 use App\Models\Answer;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
+use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\Submission;
+use App\Models\Tag;
+use App\Models\Taggable;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserData;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class IndexController extends AdminController
@@ -86,6 +91,28 @@ class IndexController extends AdminController
         $rcUsers = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->get();
         $coinUsers = UserData::orderBy('coins','desc')->take(50)->get();
         $creditUsers = UserData::orderBy('credits','desc')->take(50)->get();
+        $signTotalCouponMoney = Coupon::whereIn('coupon_type',[Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,Coupon::COUPON_TYPE_DAILY_SIGN_BIG])->sum('coupon_value');
+        //用户等级统计
+        $userLevels= UserData::selectRaw('count(*) as total,user_level')->groupBy('user_level')->orderBy('total','desc')->get();
+        //用户余额
+        $totalBalance = UserMoney::sum('total_money');
+        //待结算金融
+        $totalSettlement = UserMoney::sum('settlement_money');
+        $userMoney= UserMoney::orderBy('total_money','desc')->take(50)->get();
+        //热门标签
+        $taggables =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))->groupBy('tag_id')
+            ->orderBy('total_num','desc')
+            ->take(100)
+            ->get();
+        $hotTags = [];
+        foreach ($taggables as $taggable) {
+            $tagInfo = Tag::find($taggable->tag_id);
+            $hotTags[] = [
+                'tag_id' => $tagInfo->id,
+                'tag_name'  => $tagInfo->name,
+                'total_num' => $taggable->total_num
+            ];
+        }
 
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
@@ -102,6 +129,12 @@ class IndexController extends AdminController
             'rcUsers',
             'coinUsers',
             'creditUsers',
+            'signTotalCouponMoney',
+            'userLevels',
+            'totalBalance',
+            'totalSettlement',
+            'userMoney',
+            'hotTags',
             'userChart','questionChart','systemInfo'));
     }
 
@@ -129,7 +162,7 @@ class IndexController extends AdminController
 
         $users = User::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
-        $registerRange = $verifyRange = $authRange = [0,0,0,0,0,0,0];
+        $registerRange = $verifyRange = $authRange = $signRange = [0,0,0,0,0,0,0];
 
         for( $i=0 ; $i < 7 ; $i++ ){
             $startTime = $labelTimes[$i];
@@ -137,6 +170,11 @@ class IndexController extends AdminController
             if(isset($labelTimes[$i+1])){
                 $endTime = $labelTimes[$i+1];
             }
+            $signRange[$i] = Credit::where('action',Credit::KEY_FIRST_USER_SIGN_DAILY)
+                ->where('created_at','>',$startTime)
+                ->where('created_at','<',$endTime)
+                ->count();
+
             foreach($users as $user){
                 if( $user->created_at > $startTime && $user->created_at < $endTime ){
                     $registerRange[$i]++;
@@ -152,7 +190,7 @@ class IndexController extends AdminController
 
         }
 
-        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange];
+        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange, 'signUsers'=>$signRange];
     }
 
     private function drawQuestionChart()

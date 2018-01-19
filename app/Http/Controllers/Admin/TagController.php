@@ -6,6 +6,8 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class TagController extends AdminController
 {
@@ -74,13 +76,12 @@ class TagController extends AdminController
         $this->validate($request,$this->validateRules);
         $data = $request->all();
         if($request->hasFile('logo')){
-            $savePath = storage_path('app/tags/'.gmdate('ym'));
             $file = $request->file('logo');
-            $fileName = uniqid(str_random(8)).'.'.$file->getClientOriginalExtension();
-            $target = $file->move($savePath,$fileName);
-            if($target){
-                $data['logo'] = 'tags-'.gmdate('ym').'-'.$fileName;
-            }
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $data['logo'] = $img_url;
         }
         Tag::create($data);
         return $this->success(route('admin.tag.index'),'标签创建成功');
@@ -133,13 +134,13 @@ class TagController extends AdminController
         $tag->summary = $request->input('summary');
         $tag->description = $request->input('description');
         if($request->hasFile('logo')){
-            $savePath = storage_path('app/tags/'.gmdate('ym'));
             $file = $request->file('logo');
-            $fileName = uniqid(str_random(8)).'.'.$file->getClientOriginalExtension();
-            $target = $file->move($savePath,$fileName);
-            if($target){
-                $tag->logo = 'tags-'.gmdate('ym').'-'.$fileName;
-            }
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $tag->logo = $img_url;
+
         }
         $tag->save();
         return $this->success(route('admin.tag.index'),'标签修改成功');

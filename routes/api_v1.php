@@ -128,6 +128,14 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
 
     /*关注问题、人、标签*/
     Route::post('follow/{source_type}',['uses'=>'FollowController@store'])->where(['source_type'=>'(question|tag|user)']);
+    //批量关注
+    Route::post('follow/batchUser',['uses'=>'FollowController@batchUser']);
+    //批量关注标签
+    Route::post('follow/batchTags',['uses'=>'FollowController@batchTags']);
+    //批量关注问题
+    Route::post('follow/batchQuestions',['uses'=>'FollowController@batchQuestions']);
+    //推荐关注用户
+    Route::post('follow/recommendUserList',['uses'=>'FollowController@recommendUserList']);
     /*我的关注*/
     Route::post('followed/{source_type}',['uses'=>'FollowController@attentions'])->where(['source_type'=>'(questions|tags|users)']);
 
@@ -184,6 +192,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/inviterList','QuestionController@inviterList');
     //相关问题
     Route::post('question/relatedQuestion','QuestionController@relatedQuestion');
+
+    //推荐用户问题
+    Route::post('question/recommendUser','QuestionController@recommendUserQuestions');
 
     //一键推荐邀请回答
     Route::post('question/recommendInviterList','QuestionController@recommendInviterList');

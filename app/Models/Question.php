@@ -257,6 +257,21 @@ class Question extends Model
         return $questions;
     }
 
+    /*获取相关问题*/
+    public static function correlationsPage($tagIds,$pageSize=10,$questionType='',array $ignoreUsers=[])
+    {
+        $query = self::whereHas('tags', function($query) use ($tagIds) {
+            $query->whereIn('tag_id', $tagIds);
+        })->orderBy('created_at','DESC');
+        if ($questionType) {
+            $query = $query->where('question_type',$questionType);
+        }
+        if ($ignoreUsers) {
+            $query = $query->whereNotIn('user_id',$ignoreUsers);
+        }
+        return $query->simplePaginate($pageSize);
+    }
+
 
 
 
@@ -306,13 +321,16 @@ class Question extends Model
     }
 
     /*最近热门问题*/
-    public static function recent()
+    public static function recent($pageSize=10,$questionType='',array $ignoreUsers=[])
     {
-        $list = Cache::remember('recent_questions',300, function() {
-            return self::where('status','>',0)->where('created_at','>',Carbon::today()->subWeek())->orderBy('views','DESC')->orderBy('answers','DESC')->orderBy('created_at','DESC')->take(12)->get();
-        });
-
-        return $list;
+        $query = self::where('status','>',0)->where('created_at','>',Carbon::today()->subWeek())->orderBy('views','DESC')->orderBy('answers','DESC')->orderBy('created_at','DESC');
+        if ($questionType) {
+            $query = $query->where('question_type',$questionType);
+        }
+        if ($ignoreUsers) {
+            $query = $query->whereNotIn('user_id',$ignoreUsers);
+        }
+        return $query->simplePaginate($pageSize);
     }
 
     /*是否已经邀请用户回答了*/

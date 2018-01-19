@@ -56,11 +56,11 @@ class UserEventListener implements ShouldQueue
     {
         // 生成新手任务
         // 完善用户信息
-        TaskLogic::task($event->user->id,'newbie_complete_userinfo',0,Task::ACTION_TYPE_NEWBIE_COMPLETE_USERINFO);
+        //TaskLogic::task($event->user->id,'newbie_complete_userinfo',0,Task::ACTION_TYPE_NEWBIE_COMPLETE_USERINFO);
         // 阅读评论
-        TaskLogic::task($event->user->id,'newbie_readhub_comment',0,Task::ACTION_TYPE_NEWBIE_READHUB_COMMENT);
+        //TaskLogic::task($event->user->id,'newbie_readhub_comment',0,Task::ACTION_TYPE_NEWBIE_READHUB_COMMENT);
         // 发起提问
-        TaskLogic::task($event->user->id,'newbie_ask',0,Task::ACTION_TYPE_NEWBIE_ASK);
+        //TaskLogic::task($event->user->id,'newbie_ask',0,Task::ACTION_TYPE_NEWBIE_ASK);
         //注册积分
         $regAction = Credit::KEY_REGISTER;
         event(new CreditEvent($event->user->id,$regAction,Setting()->get('coins_'.$regAction),Setting()->get('credits_'.$regAction),$event->user->id,'注册成功'));
@@ -126,6 +126,12 @@ class UserEventListener implements ShouldQueue
         Attention::create([
             'user_id'     => $contact_id,
             'source_id'   => $event->user->id,
+            'source_type' => get_class($contact),
+        ]);
+        //新注册用户关注客服
+        Attention::create([
+            'user_id'     => $event->user->id,
+            'source_id'   => $contact_id,
             'source_type' => get_class($contact),
         ]);
         $event->user->userData->increment('followers');

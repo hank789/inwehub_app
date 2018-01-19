@@ -109,6 +109,36 @@
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">签到红包总金额</span>
+                        <span class="info-box-number">{{ $signTotalCouponMoney }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">用户账户总余额</span>
+                        <span class="info-box-number">{{ $totalBalance }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">用户账户待结算金额</span>
+                        <span class="info-box-number">{{ $totalSettlement }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
 
         </div>
         <div class="row">
@@ -184,6 +214,90 @@
                                 </p>
                                 <div class="chart">
                                     <canvas id="question_chart" height="400"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">热门标签Top100</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <ul class="taglist-inline multi">
+                                    @foreach($hotTags as $hotTag)
+                                        <li class="tagPopup"><a class="tag" target="_blank" data-toggle="popover"  href="{{ route('ask.tag.index',['id'=>$hotTag['tag_id']]) }}">{{ $hotTag['tag_name'].'('.$hotTag['total_num'].')' }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">用户等级统计</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>等级</th>
+                                            <th>人数</th>
+                                        </tr>
+                                        @foreach($userLevels as $userLevel)
+                                            <tr>
+                                                <td>{{ $userLevel->user_level }}</td>
+                                                <td>{{ $userLevel->total }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">用户余额统计</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>排名</th>
+                                            <th>用户ID</th>
+                                            <th>用户姓名</th>
+                                            <th>手机</th>
+                                            <th>余额</th>
+                                        </tr>
+                                        @foreach($userMoney as $key=>$user)
+                                            <tr>
+                                                <td>{{ $key+1 }}</td>
+                                                <td>{{ $user->user_id }}</td>
+                                                <td>{{ $user->user->name }}</td>
+                                                <td>{{ $user->user->mobile }}</td>
+                                                <td>{{ $user->total_money }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -394,6 +508,14 @@
 
                         label: '行家认证',
                         data: [{{ implode(",",$userChart['authUsers']) }}]
+                    },
+                    {
+                        fill: false,
+                        backgroundColor: "rgba(80,100,0,0.8)",
+                        borderColor: "rgba(153,102,0,0.8)",
+
+                        label: '每日签到',
+                        data: [{{ implode(",",$userChart['signUsers']) }}]
                     },
                 ]
             },

@@ -4,10 +4,14 @@ use App\Logic\TagsLogic;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Question;
+use App\Models\Submission;
+use App\Models\Support;
 use App\Models\Tag;
 use App\Models\Taggable;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 
@@ -31,31 +35,37 @@ class TagsController extends Controller {
 
         $sort = $request->input('sort');
 
+        $limit = $request->input('limit',0);
+
+
         $data = TagsLogic::loadTags($tag_type,$word,'value',$sort);
+        if ($limit) {
+            $data['tags'] = array_slice($data['tags'],0,$limit);
+        }
 
         return self::createJsonData(true,$data);
     }
 
     public function tagInfo(Request $request){
         $validateRules = [
-            'tag_id' => 'required|integer'
+            'tag_name' => 'required'
         ];
 
         $this->validate($request,$validateRules);
-        $tag_id = $request->input('tag_id');
-        $tag = Tag::findOrFail($tag_id);
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
         return self::createJsonData(true,$tag->toArray());
     }
 
     //标签相关用户
     public function users(Request $request){
         $validateRules = [
-            'tag_id' => 'required|integer'
+            'tag_name' => 'required'
         ];
 
         $this->validate($request,$validateRules);
-        $tag_id = $request->input('tag_id');
-        $tag = Tag::findOrFail($tag_id);
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
         $loginUser = $request->user();
         $userTags = $tag->userTags()->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $userTags->toArray();
@@ -98,25 +108,136 @@ class TagsController extends Controller {
     //标签相关问答
     public function questions(Request $request) {
         $validateRules = [
-            'tag_id' => 'required|integer'
+            'tag_name' => 'required'
         ];
 
         $this->validate($request,$validateRules);
-        $tag_id = $request->input('tag_id');
-        $tag = Tag::findOrFail($tag_id);
-        $loginUser = $request->user();
-        $questions = $tag->questions()->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
+        $user = $request->user();
+        $questions = $tag->questions()->where('status','>=',1)->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
-        $data = [];
+        $list = [];
         foreach ($questions as $question) {
+            if ($question->question_type == 1) {
+                if($question->status >= 6 ){
+                    $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+                } else {
+                    continue;
+                }
+                $supporters = [];
+                $is_pay_for_view = false;
+                $is_self = $user->id == $question->user_id;
+                $is_answer_author = false;
 
+                if ($bestAnswer) {
+                    //是否回答者
+                    if ($bestAnswer->user_id == $user->id) {
+                        $is_answer_author = true;
+                    }
+                    $support_uids = Support::where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->take(20)->pluck('user_id');
+                    if ($support_uids) {
+                        $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+                    }
+                    $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
+                    if ($payOrder) {
+                        $is_pay_for_view = true;
+                    }
+                }
+
+                $list[] = [
+                    'id' => $question->id,
+                    'question_type' => $question->question_type,
+                    'user_id' => $question->user_id,
+                    'description'  => $question->title,
+                    'tags' => $question->tags()->select('tag_id','name')->get()->toArray(),
+                    'hide' => $question->hide,
+                    'price' => $question->price,
+                    'status' => $question->status,
+                    'created_at' => (string)$question->created_at,
+                    'answer_user_id' => $bestAnswer ? $bestAnswer->user->id : '',
+                    'answer_username' => $bestAnswer ? $bestAnswer->user->name : '',
+                    'answer_user_title' => $bestAnswer ? $bestAnswer->user->title : '',
+                    'answer_user_company' => $bestAnswer ? $bestAnswer->user->company : '',
+                    'answer_user_is_expert' => $bestAnswer && $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
+                    'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
+                    'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : '',
+                    'comment_number' => $bestAnswer ? $bestAnswer->comments : 0,
+                    'average_rate'   => $bestAnswer ? $bestAnswer->getFeedbackRate() : 0,
+                    'support_number' => $bestAnswer ? $bestAnswer->supports : 0,
+                    'supporter_list' => $supporters,
+                    'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view)
+                ];
+            } else {
+                $is_followed_question = 0;
+                $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
+                if ($attention_question) {
+                    $is_followed_question = 1;
+                }
+                $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->distinct()->take(5)->pluck('user_id')->toArray();
+                $answer_users = [];
+                if ($answer_uids) {
+                    $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
+                }
+                $list[] = [
+                    'id' => $question->id,
+                    'question_type' => $question->question_type,
+                    'user_id' => $question->user_id,
+                    'description'  => $question->title,
+                    'tags' => $question->tags()->select('tag_id','name')->get()->toArray(),
+                    'hide' => $question->hide,
+                    'price' => $question->price,
+                    'status' => $question->status,
+                    'created_at' => (string)$question->created_at,
+                    'question_username' => $question->hide ? '匿名' : $question->user->name,
+                    'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0),
+                    'question_user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
+                    'answer_num' => $question->answers,
+                    'answer_user_list' => $answer_users,
+                    'follow_num' => $question->followers,
+                    'is_followed_question' => $is_followed_question
+                ];
+            }
         }
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
 
     }
 
     //标签相关动态
     public function submissions(Request $request){
+        $validateRules = [
+            'tag_name' => 'required'
+        ];
 
+        $this->validate($request,$validateRules);
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
+        $user = $request->user();
+        $submissions = $tag->submissions()->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $submissions->toArray();
+        $list = [];
+        foreach ($submissions as $submission) {
+            $upvote = Support::where('user_id',$user->id)
+                ->where('supportable_id',$submission['id'])
+                ->where('supportable_type',Submission::class)
+                ->exists();
+            $bookmark = Collection::where('user_id',$user->id)
+                ->where('source_id',$submission['id'])
+                ->where('source_type',Submission::class)
+                ->exists();
+            $item = $submission->toArray();
+            $item['title'] = strip_tags($item['title'],'<a><span>');
+            $item['is_upvoted'] = $upvote ? 1 : 0;
+            $item['is_bookmark'] = $bookmark ? 1: 0;
+            $item['tags'] = $submission->tags()->select('tag_id','name')->get()->toArray();
+            $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
+            $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
+            $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
+            $list[] = $item;
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
     }
 
 }

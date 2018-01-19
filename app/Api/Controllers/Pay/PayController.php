@@ -48,9 +48,6 @@ class PayController extends Controller {
                 if(Setting()->get('pay_method_weixin',1) != 1){
                     throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 }
-                if (config('app.env') == 'production' && $loginUser->id == 3) {
-                    $amount = 0.01;
-                }
                 $config = config('payment')['wechat'];
 
                 $channel = Config::WX_CHANNEL_APP;
@@ -70,9 +67,7 @@ class PayController extends Controller {
                 if (config('app.env') != 'production') {
                     $need_pay_actual = false;
                 }
-                if(config('app.env') == 'production' && $loginUser->id == 3){
-                    $amount = 0.01;
-                }
+
                 $config = config('payment')['wechat_pub'];
 
                 $channel = Config::WX_CHANNEL_PUB;
@@ -92,9 +87,7 @@ class PayController extends Controller {
                 if (config('app.env') != 'production') {
                     $need_pay_actual = false;
                 }
-                if(config('app.env') == 'production' && $loginUser->id == 3){
-                    $amount = 0.01;
-                }
+
                 $config = config('payment')['wechat_lite'];
 
                 $channel = Config::WX_CHANNEL_LITE;

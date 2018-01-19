@@ -57,10 +57,10 @@ class SubmissionController extends Controller {
         if ($newTagString) {
             if (is_array($newTagString)) {
                 foreach ($newTagString as $s) {
-                    if (strlen($s) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                    if (strlen($s) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
                 }
             } else {
-                if (strlen($newTagString) > 15) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
         }
         if ($request->type == 'link') {

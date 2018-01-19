@@ -4,6 +4,7 @@ use App\Models\Tag;
 use App\Models\Taggable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 /**
  * @author: wanghui
@@ -31,7 +32,7 @@ class TagsLogic {
                 break;
             case 3:
                 //行业领域
-                $category_name = ['industry'];
+                $category_name = ['question_industry'];
                 break;
             case 4:
                 //产品类型
@@ -85,12 +86,19 @@ class TagsLogic {
                     ];
                 }
             }
+            $defaultTags = Tag::where('category_id',0)->get();
+            foreach ($defaultTags as $defaultTag) {
+                $tags[] = [
+                    $tagKey => $defaultTag->id,
+                    'text'  => $defaultTag->name
+                ];
+            }
         }
         //如果热门排序
         if ($sort == 1) {
             $tagIds = array_column($tags,$tagKey);
             $query =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))
-                ->whereIn('tag_id',$tagIds)->whereIn('taggable_type',['App\Models\Question','App\Models\Submission']);
+                ->whereIn('tag_id',$tagIds);
 
             $taggables = $query->groupBy('tag_id')
                 ->orderBy('total_num','desc')
@@ -109,6 +117,12 @@ class TagsLogic {
         $data['level'] = $level;
         Cache::forever($cache_key,$data);
         return $data;
+    }
+
+    public static function delCache() {
+        $prefix = config('cache.prefix');
+        $keys = Redis::connection()->keys($prefix.':tags:*');
+        if ($keys) Redis::connection()->del($keys);
     }
 
     public static function formatTags($tags){

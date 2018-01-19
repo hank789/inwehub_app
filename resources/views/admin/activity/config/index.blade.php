@@ -37,6 +37,17 @@
 
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td>受邀注册领取红包活动</td>
+                                        <td>
+                                            <div class="col-md-8 col-md-offset-2 @if ($errors->has('ac_invitation_coupon_begin_time')) has-error @endif "><input type="text" class="form-control" name="ac_invitation_coupon_begin_time" placeholder="2017-09-09 14:00" value="{{ old('ac_invitation_coupon_begin_time',Setting()->get('ac_invitation_coupon_begin_time')) }}" /></div>
+                                        </td>
+                                        <td>
+                                            <div class="col-md-8 col-md-offset-2 @if ($errors->has('ac_invitation_coupon_end_time')) has-error @endif "><input type="text" class="form-control" name="ac_invitation_coupon_end_time" placeholder="2017-09-19 14:00" value="{{ old('ac_invitation_coupon_end_time',Setting()->get('ac_invitation_coupon_end_time')) }}" /></div>
+                                            @if($errors->has('ac_invitation_coupon_end_time')) <p class="help-block">{{ $errors->first('ac_invitation_coupon_end_time') }}</p> @endif
+
+                                        </td>
+                                    </tr>
 
                                     </tbody>
                                 </table>

@@ -608,9 +608,11 @@ class AnswerController extends Controller
         $answer->increment('pay_for_views');
 
         //进入结算中心
-        Settlement::payForViewSettlement($order);
-        //记录动态
-        $answer->increment('collections');
+        if ($order1) {
+            Settlement::payForViewSettlement($order1);
+        } else {
+            Settlement::payForViewSettlement($order);
+        }
         //生成一条点评任务
         $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
 

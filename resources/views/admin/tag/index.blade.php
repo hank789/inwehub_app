@@ -65,7 +65,7 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $tag->id }}"/></td>
                                             <td>{{ $tag->id }}</td>
                                             <td> @if($tag->logo)
-                                                    <img src="{{ route('website.image.show',['image_name'=>$tag->logo]) }}"  style="width: 27px;"/>
+                                                    <img src="{{ $tag->logo }}"  style="width: 27px;"/>
                                                 @endif
                                             </td>
                                             <td><a href="{{ route('ask.tag.index',['name'=>$tag->name,'source_type'=>'questions']) }}" target="_blank">{{ $tag->name }}</a></td>

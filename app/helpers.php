@@ -1221,3 +1221,18 @@ if (!function_exists('getDailySignInfo')) {
         }
     }
 }
+
+if (!function_exists('getSystemUids')) {
+    function getSystemUids() {
+        return [
+            1,//inwehub
+            3,//cicely
+            4,//武浩
+            5,//hank
+            6,//庞凡
+            504,//智能小哈
+            229,//何棠
+            131,//张震
+        ];
+    }
+}

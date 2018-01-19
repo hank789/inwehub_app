@@ -33,7 +33,7 @@
                                 <input type="file" name="logo" />
                                 @if($tag->logo)
                                 <div style="margin-top: 10px;">
-                                    <img src="{{ route('website.image.show',['image_name'=>$tag->logo]) }}" />
+                                    <img src="{{ $tag->logo }}" />
                                 </div>
                                 @endif
                             </div>

@@ -69,16 +69,16 @@ class CollectObserver implements ShouldQueue {
                 break;
         }
         if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('collect:'.get_class($object),$collect->source_id.'_'.$collect->user_id,0)) {
-            event(new Credit($collect->user_id,CreditModel::KEY_NEW_COLLECT,Setting()->get('coins_'.CreditModel::KEY_NEW_COLLECT),Setting()->get('credits_'.CreditModel::KEY_NEW_COLLECT),$collect->source_id,'收藏成功'));
+            event(new Credit($collect->user_id,CreditModel::KEY_NEW_COLLECT,Setting()->get('coins_'.CreditModel::KEY_NEW_COLLECT),Setting()->get('credits_'.CreditModel::KEY_NEW_COLLECT),$collect->id,'收藏成功'));
             switch ($collect->source_type) {
                 case 'App\Models\Article':
-                    event(new Credit($object->user_id,CreditModel::KEY_PRO_OPPORTUNITY_SIGNED,Setting()->get('coins_'.CreditModel::KEY_PRO_OPPORTUNITY_SIGNED),Setting()->get('credits_'.CreditModel::KEY_PRO_OPPORTUNITY_SIGNED),$collect->source_id,'项目机遇被报名'));
+                    event(new Credit($object->user_id,CreditModel::KEY_PRO_OPPORTUNITY_SIGNED,Setting()->get('coins_'.CreditModel::KEY_PRO_OPPORTUNITY_SIGNED),Setting()->get('credits_'.CreditModel::KEY_PRO_OPPORTUNITY_SIGNED),$collect->id,'项目机遇被报名'));
                     break;
                 case 'App\Models\Submission':
-                    event(new Credit($object->user_id,CreditModel::KEY_READHUB_SUBMISSION_COLLECT,Setting()->get('coins_'.CreditModel::KEY_READHUB_SUBMISSION_COLLECT),Setting()->get('credits_'.CreditModel::KEY_READHUB_SUBMISSION_COLLECT),$collect->source_id,'动态分享被收藏'));
+                    event(new Credit($object->user_id,CreditModel::KEY_READHUB_SUBMISSION_COLLECT,Setting()->get('coins_'.CreditModel::KEY_READHUB_SUBMISSION_COLLECT),Setting()->get('credits_'.CreditModel::KEY_READHUB_SUBMISSION_COLLECT),$collect->id,'动态分享被收藏'));
                     break;
                 case 'App\Models\Answer':
-                    event(new Credit($object->user_id,CreditModel::KEY_COMMUNITY_ANSWER_COLLECT,Setting()->get('coins_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),Setting()->get('credits_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),$collect->source_id,'回答被收藏'));
+                    event(new Credit($object->user_id,CreditModel::KEY_COMMUNITY_ANSWER_COLLECT,Setting()->get('coins_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),Setting()->get('credits_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),$collect->id,'回答被收藏'));
                     break;
             }
         }

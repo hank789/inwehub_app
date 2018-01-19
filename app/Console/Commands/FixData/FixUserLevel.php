@@ -1,29 +1,27 @@
-<?php namespace App\Console\Commands\User;
+<?php namespace App\Console\Commands\FixData;
 /**
  * @author: wanghui
  * @date: 2017/6/21 下午8:59
  * @email: wanghui@yonglibao.com
  */
-
 use App\Models\User;
-use App\Models\UserTag;
 use Illuminate\Console\Command;
 
-class AddDefaultUserTag extends Command
+class FixUserLevel extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'user:add_default_tag';
+    protected $signature = 'fix:data:user-level';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '为用户生成默认tag';
+    protected $description = '修复用户等级数据';
 
     /**
      * Execute the console command.
@@ -34,13 +32,9 @@ class AddDefaultUserTag extends Command
     {
         $users = User::get();
         foreach($users as $user){
-            $userTag = UserTag::where('user_id',$user->id)->where('tag_id',0)->first();
-            if (!$userTag) {
-                UserTag::create([
-                    'user_id' => $user->id,
-                    'tag_id'  => 0,
-                ]);
-            }
+            $level = $user->getUserLevel();
+            $user->userData->user_level = $level;
+            $user->userData->save();
         }
     }
 
