@@ -7,6 +7,7 @@ use App\Models\Answer;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
+use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Task;
@@ -90,6 +91,11 @@ class IndexController extends AdminController
         $signTotalCouponMoney = Coupon::whereIn('coupon_type',[Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,Coupon::COUPON_TYPE_DAILY_SIGN_BIG])->sum('coupon_value');
         //用户等级统计
         $userLevels= UserData::selectRaw('count(*) as total,user_level')->groupBy('user_level')->orderBy('total','desc')->get();
+        //用户余额
+        $totalBalance = UserMoney::sum('total_money');
+        //待结算金融
+        $totalSettlement = UserMoney::sum('settlement_money');
+        $userMoney= UserMoney::orderBy('total_money','desc')->take(50)->get();
 
 
         return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
@@ -108,6 +114,9 @@ class IndexController extends AdminController
             'creditUsers',
             'signTotalCouponMoney',
             'userLevels',
+            'totalBalance',
+            'totalSettlement',
+            'userMoney',
             'userChart','questionChart','systemInfo'));
     }
 
