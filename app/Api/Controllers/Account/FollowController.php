@@ -221,6 +221,7 @@ class FollowController extends Controller
             if(empty($source)){
                 $source  = User::findOrFail($id);
             }
+            if ($source->id == $user->id) continue;
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($source))->where('source_id','=',$id)->first();
             if($attention){
                 continue;
@@ -537,6 +538,7 @@ class FollowController extends Controller
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
 
+        $attentionUsers[] = $user->id;
         $attentionUsers = array_unique(array_merge($attentionUsers,getSystemUids()));
 
         if ($attentionUsers) {
