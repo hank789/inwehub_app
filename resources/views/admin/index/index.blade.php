@@ -205,6 +205,35 @@
             <div class="col-md-12">
                 <div class="box box-default">
                     <div class="box-header with-border">
+                        <h3 class="box-title">用户等级统计</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>等级</th>
+                                            <th>人数</th>
+                                        </tr>
+                                        @foreach($userLevels as $userLevel)
+                                            <tr>
+                                                <td>{{ $userLevel->user_level }}</td>
+                                                <td>{{ $userLevel->total }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
                         <h3 class="box-title">邀请用户统计</h3>
                     </div>
                     <div class="box-body">
