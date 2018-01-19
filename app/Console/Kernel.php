@@ -46,6 +46,7 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixCredits::class,
         Commands\User\AddDefaultUserTag::class,
         Commands\FixData\FixTags::class,
+        Commands\FixData\FixUserLevel::class,
 
 
     ];
