@@ -1231,6 +1231,7 @@ if (!function_exists('getSystemUids')) {
             5,//hank
             6,//庞凡
             504,//智能小哈
+            79,
             229,//何棠
             131,//张震
         ];

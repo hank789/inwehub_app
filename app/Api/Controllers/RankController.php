@@ -96,7 +96,10 @@ class RankController extends Controller
             if ($a['invited_users'] == $b['invited_users']) {
                 if ($a['coins'] == $b['coins']) return 0;
                 return $a['coins'] > $b['coins'] ? -1:1;
+            } elseif($a['invited_users'] > $b['invited_users']) {
+                return -1;
             }
+            return 1;
         });
         foreach ($data as $key=>&$item) {
             $item['rank'] = $key+1;
