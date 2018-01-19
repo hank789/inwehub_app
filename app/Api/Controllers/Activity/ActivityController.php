@@ -23,6 +23,8 @@ class ActivityController extends Controller {
             'activity_type'    => 'required|in:1,2'
         ];
         $this->validate($request,$validateRules);
+        $user = $request->user();
+        if ($user->getUserLevel() <= 2) throw new ApiException(ApiException::ACTIVITY_USER_LEVEL_PROJECT_LIMIT);
         $data = $request->all();
 
         switch ($data['activity_type']) {
