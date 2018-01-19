@@ -94,6 +94,8 @@ class ApiException extends Exception
     const ACTIVITY_TIME_OVER = 6000;
     const ACTIVITY_PERMISSION_LIMIT = 6001;
     const ACTIVITY_DAILY_SIGN_REPEAT = 6002;
+    const ACTIVITY_RANK_TIME_LIMIT = 6003;
+
 
     //文章模块
     const ARTICLE_URL_ALREADY_EXIST = 6101;
@@ -178,6 +180,7 @@ class ApiException extends Exception
         self::ACTIVITY_TIME_OVER => '活动已结束',
         self::ACTIVITY_PERMISSION_LIMIT => '权限不够',
         self::ACTIVITY_DAILY_SIGN_REPEAT => '重复签到',
+        self::ACTIVITY_RANK_TIME_LIMIT => '时候未到，稍安勿躁~',
 
         //文章feed
         self::ARTICLE_URL_ALREADY_EXIST => '您提交的网址已经存在',

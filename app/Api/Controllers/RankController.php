@@ -27,15 +27,16 @@ class RankController extends Controller
         $info['user_coins'] = $user->userData->coins;
         $info['invited_users'] = User::where('rc_uid',$user->id)->count();
 
-        $info['show_rank'] = config('app.env') == 'production' ? (time()>=strtotime('2018-01-22 00:00:01') || in_array($user->id,getSystemUids())?true:false):true ;
+        $info['show_rank'] = $this->checkTankLimit($user);
         return self::createJsonData(true,$info);
     }
 
     //用户贡献榜
     public function userContribution(Request $request)
     {
-        $userDatas = UserData::whereNotIn('user_id',getSystemUids())->orderBy('coins','desc')->take(20)->get();
         $loginUser = $request->user();
+        if ($this->checkTankLimit($loginUser) == false) throw new ApiException(ApiException::ACTIVITY_RANK_TIME_LIMIT);
+        $userDatas = UserData::whereNotIn('user_id',getSystemUids())->orderBy('coins','desc')->take(20)->get();
         $data = [];
         foreach ($userDatas as $key=>$userData) {
             $is_followed = 0;
@@ -129,5 +130,9 @@ class RankController extends Controller
             ];
         }
         return self::createJsonData(true,$data);
+    }
+
+    protected function checkTankLimit($user){
+        return config('app.env') == 'production' ? (time()>=strtotime('2018-01-22 00:00:01') || in_array($user->id,getSystemUids())?true:false):true;
     }
 }
