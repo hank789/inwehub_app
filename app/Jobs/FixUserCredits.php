@@ -377,6 +377,11 @@ class FixUserCredits implements ShouldQueue
         $userData = UserData::find($user->id);
         $userData->coins = $total_coins;
         $userData->credits = $total_credits;
+        //更新用户等级
+        $next_level = $user->getUserLevel();
+        if ($next_level != $userData->user_level) {
+            $userData->user_level = $next_level;
+        }
         $userData->save();
     }
 

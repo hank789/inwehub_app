@@ -67,6 +67,7 @@ class RankController extends Controller
         $rank = 0;
         foreach ($users as $user) {
             if (empty($user->rc_uid)) continue;
+            if (in_array($user->rc_uid,getSystemUids())) continue;
             $rank ++;
             $is_followed = 0;
             $rcUser = User::find($user->rc_uid);
@@ -79,6 +80,7 @@ class RankController extends Controller
             $data[] = [
                 'rank' => $rank,
                 'user_id' => $user->rc_uid,
+                'coins'   => $rcUser->userData->coins,
                 'uuid'    => $rcUser->uuid,
                 'user_name' => $rcUser->name,
                 'is_expert' => $rcUser->is_expert,
@@ -87,6 +89,15 @@ class RankController extends Controller
                 'user_avatar_url' => $rcUser->avatar
             ];
             if ($rank >= 20) break;
+        }
+        usort($data,function ($a,$b) {
+            if ($a['invited_users'] == $b['invited_users']) {
+                if ($a['coins'] == $b['coins']) return 0;
+                return $a['coins'] > $b['coins'] ? -1:1;
+            }
+        });
+        foreach ($data as $key=>&$item) {
+            $item['rank'] = $key+1;
         }
         return self::createJsonData(true,$data);
     }
