@@ -67,6 +67,29 @@ class RankController extends Controller
         $loginUser = $request->user();
         $data = [];
         $rank = 0;
+        $systemUsers = User::whereIn('id',[329,269])->get();
+        foreach ($systemUsers as $systemUser) {
+            $rank ++;
+            $is_followed = 0;
+            if($loginUser) {
+                $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($systemUser))->where('source_id','=',$systemUser->id)->first();
+                if ($attention){
+                    $is_followed = 1;
+                }
+            }
+            $data[] = [
+                'rank' => 1,
+                'user_id' => $systemUser->id,
+                'coins'   => $systemUser->userData->coins,
+                'uuid'    => $systemUser->uuid,
+                'user_name' => $systemUser->name,
+                'is_expert' => $systemUser->is_expert,
+                'invited_users'     => $systemUser->id == 329?13:10,
+                'is_followed' => $is_followed,
+                'user_avatar_url' => $systemUser->avatar
+            ];
+        }
+
         foreach ($users as $user) {
             if (empty($user->rc_uid)) continue;
             if (in_array($user->rc_uid,getSystemUids())) continue;
