@@ -398,11 +398,10 @@ class ProfileController extends Controller
 
     //添加用户擅长标签
     public function addSkillTag(Request $request) {
-        $validateRules = [
-            'tags' => 'required'
-        ];
         $user = $request->user();
-        $this->validate($request,$validateRules);
+        if(RateLimiter::instance()->increase('user:add:skill:tags',$user->id,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
         $newTagString = $request->input('new_tags');
         if ($newTagString) {
             if (is_array($newTagString)) {
@@ -418,6 +417,8 @@ class ProfileController extends Controller
             $tagids = array_merge($tagids,Tag::addByName($newTagString));
         }
         $tags = Tag::whereIn('id',$tagids)->get();
+
+        UserTag::multiDetachByField($user->id,Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get(),'skills');
         UserTag::multiIncrement($user->id,$tags,'skills');
         return self::createJsonData(true);
     }
