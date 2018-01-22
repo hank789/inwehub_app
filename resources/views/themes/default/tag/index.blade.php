@@ -71,21 +71,22 @@
                             </section>
                         @endforeach
                     @elseif($source_type==='users')
-                        @foreach($sources as $userTags)
+                        @foreach($sources as $userTag)
                             <section class="stream-list-item">
                                 <div class="summary">
-                                    <a href="{{ route('auth.space.index',['user_id'=>$userTags->user->user_id]) }}" class="user-card pull-left" target="_blank">
-                                        <img class="avatar-50"  src="{{ $userTags->user->avatar }}" alt="{{ $userTags->user->name }}"></a>
+                                    <a href="{{ route('auth.space.index',['user_id'=>$userTag->user->user_id]) }}" class="user-card pull-left" target="_blank">
+                                        <img class="avatar-50"  src="{{ $userTag->user->avatar }}" alt="{{ $userTag->user->name }}"></a>
                                     </a>
-                                    <strong><a href="{{ route('auth.space.index',['user_id'=>$userTags->user->user_id]) }}" target="_blank">{{ $userTags->user->name }}</a></strong>
+                                    <strong><a href="{{ route('auth.space.index',['user_id'=>$userTag->user->user_id]) }}" target="_blank">{{ $userTag->user->name }}</a></strong>
                                 </div>
-                                @if($userTags->user->tags)
+
                                     <ul class="taglist-inline ib">
-                                        @foreach($userTags->user->tags as $tag)
-                                            <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">{{ $tag->name }}</a></li>
+                                        @foreach($userTag->user->userTags as $tagInfo)
+                                            @if ($tagInfo->tag)
+                                                <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tagInfo->tag->id]) }}">{{ $tagInfo->tag->name }}</a></li>
+                                            @endif
                                         @endforeach
                                     </ul>
-                                @endif
                             </section>
                         @endforeach
                     @elseif($source_type==='submissions')
