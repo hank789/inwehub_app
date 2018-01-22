@@ -228,9 +228,11 @@ class QuestionController extends Controller
 
         $question->save();
         $tagString = trim($request->input('tags'));
+        \Log::info('test',[$tagString]);
 
         /*更新标签*/
-        Tag::multiAddByName($tagString,$question);
+        $question->tags()->detach();
+        Tag::multiSaveByIds($tagString,$question);
 
         return $this->success(route('ask.question.detail',['question_id'=>$question->id]),"问题编辑成功");
 

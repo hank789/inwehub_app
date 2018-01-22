@@ -231,8 +231,8 @@ $(function(){
                 },
                 cache: true
             },
-            minimumInputLength:1,
-            tags:true
+            minimumInputLength:2,
+            tags:false
         });
         $("#select_tags").change(function(){
             $("#tags").val($("#select_tags").val());

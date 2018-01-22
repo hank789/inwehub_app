@@ -35,7 +35,7 @@
                 <div class="col-xs-12">
                     <select id="select_tags" name="select_tags" class="form-control" multiple="multiple" >
                         @foreach($question->tags as $tag)
-                            <option selected="selected">{{ $tag->name }}</option>
+                            <option value="{{ $tag->id }}" selected="selected">{{ $tag->name }}</option>
                         @endforeach
                     </select>
                 </div>
