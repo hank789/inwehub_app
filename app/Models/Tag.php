@@ -84,7 +84,7 @@ class Tag extends Model
                 continue;
             }
 
-            $tag = self::firstOrCreate(['name'=>$tag_name,'category_id'=>1]);
+            $tag = self::firstOrCreate(['name'=>$tag_name]);
 
             if(!$taggable->tags->contains($tag->id))
             {
@@ -114,7 +114,7 @@ class Tag extends Model
                 continue;
             }
 
-            $tag = self::firstOrCreate(['name'=>$tag_name,'category_id'=>1]);
+            $tag = self::firstOrCreate(['name'=>$tag_name]);
 
             if(!$taggable->tags->contains($tag->id))
             {
@@ -137,7 +137,7 @@ class Tag extends Model
             if(!trim($tag_name)){
                 continue;
             }
-            $tag = self::firstOrCreate(['name'=>$tag_name,'category_id'=>1]);
+            $tag = self::firstOrCreate(['name'=>$tag_name]);
             $tagIds[] = $tag->id;
         }
         if ($tagIds) {
