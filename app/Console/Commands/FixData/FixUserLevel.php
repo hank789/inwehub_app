@@ -35,6 +35,8 @@ class FixUserLevel extends Command
             $level = $user->getUserLevel();
             $user->userData->user_level = $level;
             $user->userData->save();
+            $user->is_expert = ($user->authentication && $user->authentication->status == 1) ? 1 : 0;
+            $user->save();
         }
     }
 
