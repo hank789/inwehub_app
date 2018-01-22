@@ -84,7 +84,7 @@ class Tag extends Model
                 continue;
             }
 
-            $tag = self::firstOrCreate(['name'=>$tag_name]);
+            $tag = self::firstOrCreate(['name'=>$tag_name,'category_id'=>1]);
 
             if(!$taggable->tags->contains($tag->id))
             {
@@ -114,13 +114,31 @@ class Tag extends Model
                 continue;
             }
 
-            $tag = self::firstOrCreate(['name'=>$tag_name]);
+            $tag = self::firstOrCreate(['name'=>$tag_name,'category_id'=>1]);
 
             if(!$taggable->tags->contains($tag->id))
             {
                 $taggable->tags()->attach($tag->id);
                 $tagIds[] = $tag->id;
             }
+        }
+        if ($tagIds) {
+            TagsLogic::delCache();
+        }
+        return $tagIds;
+    }
+
+    public static function addByName(array $names){
+        $tags = array_unique($names);
+        $tagIds = [];
+
+        foreach($tags as $tag_name){
+
+            if(!trim($tag_name)){
+                continue;
+            }
+            $tag = self::firstOrCreate(['name'=>$tag_name,'category_id'=>1]);
+            $tagIds[] = $tag->id;
         }
         if ($tagIds) {
             TagsLogic::delCache();
