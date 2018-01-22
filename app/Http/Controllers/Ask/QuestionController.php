@@ -32,7 +32,6 @@ class QuestionController extends Controller
         'description' => 'sometimes|max:65535',
         'price'=> 'sometimes|digits_between:0,100',
         'tags' => 'sometimes|max:128',
-        'category_id' => 'sometimes|numeric'
     ];
 
 
@@ -225,15 +224,15 @@ class QuestionController extends Controller
 
         $this->validate($request,$this->validateRules);
         $question->title = trim($request->input('title'));
-        //$question->description = clean($request->input('description'));
         $question->hide = intval($request->input('hide'));
-        //$question->category_id = $request->input('category_id',0);
 
         $question->save();
-        //$tagString = trim($request->input('tags'));
+        $tagString = trim($request->input('tags'));
+        \Log::info('test',[$tagString]);
 
         /*更新标签*/
-        //Tag::multiSave($tagString,$question);
+        $question->tags()->detach();
+        Tag::multiSaveByIds($tagString,$question);
 
         return $this->success(route('ask.question.detail',['question_id'=>$question->id]),"问题编辑成功");
 

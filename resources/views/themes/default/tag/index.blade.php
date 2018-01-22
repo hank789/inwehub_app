@@ -10,7 +10,7 @@
             <section class="tag-header mt-20">
                 <div>
                     @if($tag->logo)
-                    <img class="pull-left avatar-27 mr-10" src="{{ route('website.image.show',['image_name'=>$tag->logo]) }}">
+                    <img class="pull-left avatar-27 mr-10" src="{{ $tag->logo }}">
                     @endif
                     <span class="h4 tag-header-title">{{ $tag->name }}</span>
 
@@ -33,8 +33,10 @@
 
             <ul class="nav nav-tabs nav-tabs-zen">
                 <li @if($source_type==='questions') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">问题</a></li>
-                <li @if($source_type==='asks') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'asks']) }}">回答</a></li>
-                <li @if($source_type==='details') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'details']) }}">百科</a></li>
+                <li @if($source_type==='users') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'users']) }}">用户标签</a></li>
+                <li @if($source_type==='submissions') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'submissions']) }}">分享</a></li>
+                <li @if($source_type==='userJobs') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'userJobs']) }}">工作经历</a></li>
+                <li @if($source_type==='userProjects') class="active" @endif ><a href="{{ route('ask.tag.index',['id'=>$tag->id,'source_type'=>'userProjects']) }}">项目经历</a></li>
             </ul>
             <div class="tab-content">
                 <div class="stream-list">
@@ -68,50 +70,91 @@
                                 </div>
                             </section>
                         @endforeach
-                    @elseif($source_type==='articles')
-                        @foreach($sources as $article)
+                    @elseif($source_type==='users')
+                        @foreach($sources as $userTags)
                             <section class="stream-list-item">
-                                <div class="blog-rank">
-                                    <div class="votes @if($article->supports>0) plus @endif">
-                                        {{ $article->supports }}<small>推荐</small>
-                                    </div>
-                                    <div class="views hidden-xs">
-                                        {{ $article->views }}<small>浏览</small>
-                                    </div>
-                                </div>
                                 <div class="summary">
-                                    <h2 class="title"><a href="{{ route('blog.article.detail',['id'=>$article->id]) }}">{{ $article->title }}</a></h2>
-                                    <p class="excerpt wordbreak hidden-xs">{{ $article->summary }}</p>
+                                    <a href="{{ route('auth.space.index',['user_id'=>$userTags->user->user_id]) }}" class="user-card pull-left" target="_blank">
+                                        <img class="avatar-50"  src="{{ $userTags->user->avatar }}" alt="{{ $userTags->user->name }}"></a>
+                                    </a>
+                                    <strong><a href="{{ route('auth.space.index',['user_id'=>$userTags->user->user_id]) }}" target="_blank">{{ $userTags->user->name }}</a></strong>
+                                </div>
+                                @if($userTags->user->tags)
+                                    <ul class="taglist-inline ib">
+                                        @foreach($userTags->user->tags as $tag)
+                                            <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">{{ $tag->name }}</a></li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </section>
+                        @endforeach
+                    @elseif($source_type==='submissions')
+                        @foreach($sources as $submission)
+                            <section class="stream-list-item">
+
+                                <div class="summary">
+                                    <h2 class="title">{{ $submission->title }}</h2>
                                     <ul class="author list-inline">
-                                        <li class="pull-right" title="{{ $article->collections }} 收藏">
-                                            <small class="glyphicon glyphicon-bookmark"></small> {{ $article->collections }}
+                                        <li class="pull-right" title="{{ $submission->collections }} 收藏">
+                                            <small class="glyphicon glyphicon-bookmark"></small> {{ $submission->collections }}
                                         </li>
                                         <li>
-                                            <a href="{{ route('auth.space.index',['user_id'=>$article->user_id]) }}">
-                                                <img class="avatar-20 mr-10 hidden-xs" src="{{ get_user_avatar($article->user_id,'small') }}" alt="{{ $article->user->name }}"> {{ $article->user->name }}
+                                            <a href="{{ route('auth.space.index',['user_id'=>$submission->user_id]) }}">
+                                                <img class="avatar-20 mr-10 hidden-xs" src="{{ $submission->user->avatar }}" alt="{{ $submission->user->name }}"> {{ $submission->user->name }}
                                             </a>
-                                            发布于 {{ timestamp_format($article->created_at) }}
+                                            发布于 {{ timestamp_format($submission->created_at) }}
                                         </li>
                                     </ul>
+                                    @if($submission->tags)
+                                        <ul class="taglist-inline ib">
+                                            @foreach($submission->tags as $tag)
+                                                <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">{{ $tag->name }}</a></li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
                                 </div>
                             </section>
                         @endforeach
-                    @elseif($source_type==='asks')
-                        @foreach($sources as $answer)
+                    @elseif($source_type==='userJobs')
+                        @foreach($sources as $userJob)
                             <section class="stream-list-item">
 
                                 <div class="summary">
                                     <ul class="author list-inline">
                                         <li>
-                                            <a href="{{ route('auth.space.index',['user_id'=>$answer->user->id]) }}">{{ $answer->user->name }}</a>
-                                            <span class="split"></span>
-                                            <span class="askDate">{{ $answer->created_at }}</span>
+                                            <a href="{{ route('auth.space.index',['user_id'=>$userJob->user->id]) }}">{{ $userJob->user->name }}</a>
                                         </li>
                                     </ul>
-                                    <h2 class="title"><a href="{{ route('ask.question.detail',['id'=>$answer->question->id]) }}">{{ $answer->content }}</a></h2>
-                                    @if($answer->tags)
+                                    <h2 class="title">{{ $userJob->company }}</h2>
+                                    <p class="excerpt wordbreak hidden-xs">{{ $userJob->title }}</p>
+                                    <p class="excerpt wordbreak hidden-xs">{{ $userJob->description }}</p>
+                                @if($userJob->tags)
                                         <ul class="taglist-inline ib">
-                                            @foreach($answer->tags as $tag)
+                                            @foreach($userJob->tags as $tag)
+                                                <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">{{ $tag->name }}</a></li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                            </section>
+                        @endforeach
+                    @elseif($source_type==='userProjects')
+                        @foreach($sources as $userProject)
+                            <section class="stream-list-item">
+
+                                <div class="summary">
+                                    <ul class="author list-inline">
+                                        <li>
+                                            <a href="{{ route('auth.space.index',['user_id'=>$userProject->user->id]) }}">{{ $userProject->user->name }}</a>
+                                        </li>
+                                    </ul>
+                                    <h2 class="title">{{ $userProject->project_name }}</h2>
+                                    <p class="excerpt wordbreak hidden-xs">{{ $userProject->title }}</p>
+                                    <p class="excerpt wordbreak hidden-xs">{{ $userProject->customer_name }}</p>
+                                    <p class="excerpt wordbreak hidden-xs">{{ $userProject->description }}</p>
+                                    @if($userProject->tags)
+                                        <ul class="taglist-inline ib">
+                                            @foreach($userProject->tags as $tag)
                                                 <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tag->id]) }}">{{ $tag->name }}</a></li>
                                             @endforeach
                                         </ul>

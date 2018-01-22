@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Logic\TagsLogic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
@@ -21,9 +22,7 @@ class ToolController extends AdminController
         if($request->isMethod('post')){
             $cacheItems = $request->input('cacheItems',[]);
             if(in_array('tags_question',$cacheItems)){
-                $prefix = config('cache.prefix');
-                $keys = Redis::connection()->keys($prefix.':tags:*');
-                if ($keys) Redis::connection()->del($keys);
+                TagsLogic::delCache();
             }
 
             return $this->success(route('admin.tool.clearCache'),'缓存更新成功');

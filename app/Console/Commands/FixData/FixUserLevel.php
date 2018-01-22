@@ -4,7 +4,9 @@
  * @date: 2017/6/21 下午8:59
  * @email: wanghui@yonglibao.com
  */
+use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserTag;
 use Illuminate\Console\Command;
 
 class FixUserLevel extends Command
