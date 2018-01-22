@@ -63,7 +63,7 @@ class RankController extends Controller
     //用户邀请榜
     public function userInvitation(Request $request)
     {
-        $users = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->take(40)->get();
+        $users = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->take(60)->get();
         $loginUser = $request->user();
         $data = [];
         $rank = 0;
@@ -113,7 +113,6 @@ class RankController extends Controller
                 'is_followed' => $is_followed,
                 'user_avatar_url' => $rcUser->avatar
             ];
-            if ($rank >= 20) break;
         }
         usort($data,function ($a,$b) {
             if ($a['invited_users'] == $b['invited_users']) {
@@ -127,7 +126,8 @@ class RankController extends Controller
         foreach ($data as $key=>&$item) {
             $item['rank'] = $key+1;
         }
-        return self::createJsonData(true,$data);
+
+        return self::createJsonData(true,array_slice($data,0,20));
     }
 
     //用户成长榜

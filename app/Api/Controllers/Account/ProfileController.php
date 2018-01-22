@@ -403,7 +403,20 @@ class ProfileController extends Controller
         ];
         $user = $request->user();
         $this->validate($request,$validateRules);
+        $newTagString = $request->input('new_tags');
+        if ($newTagString) {
+            if (is_array($newTagString)) {
+                foreach ($newTagString as $s) {
+                    if (strlen($s) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                }
+            } else {
+                if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+            }
+        }
         $tagids = $request->input('tags');
+        if ($newTagString) {
+            $tagids = array_merge($tagids,Tag::addByName($newTagString));
+        }
         $tags = Tag::whereIn('id',$tagids)->get();
         UserTag::multiIncrement($user->id,$tags,'skills');
         return self::createJsonData(true);
