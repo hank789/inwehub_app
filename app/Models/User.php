@@ -141,7 +141,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name','uuid','rc_code','rc_uid','mobile' ,'avatar','email','title','company', 'password','status','site_notifications','last_login_token','source'];
+    protected $fillable = ['name','uuid','rc_code','rc_uid','mobile' ,'is_expert','avatar','email','title','company', 'password','status','site_notifications','last_login_token','source'];
 
     protected $casts = [
         'site_notifications' => 'json',
