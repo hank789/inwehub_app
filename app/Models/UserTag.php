@@ -61,6 +61,10 @@ class UserTag extends Model
         }
     }
 
+    public function tag(){
+        return $this->belongsTo('App\Models\Tag');
+    }
+
     public static function multiDetachByField($user_id,$tags,$field){
         if(!$tags){
             return false;
