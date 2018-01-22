@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Logic\TagsLogic;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 
@@ -84,6 +85,7 @@ class TagController extends AdminController
             $data['logo'] = $img_url;
         }
         Tag::create($data);
+        TagsLogic::delCache();
         return $this->success(route('admin.tag.index'),'标签创建成功');
     }
 
@@ -143,6 +145,7 @@ class TagController extends AdminController
 
         }
         $tag->save();
+        TagsLogic::delCache();
         return $this->success(route('admin.tag.index'),'标签修改成功');
     }
 

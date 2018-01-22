@@ -159,11 +159,6 @@ class QuestionController extends AdminController
 
     /*修改分类*/
     public function changeCategories(Request $request){
-        $ids = $request->input('ids','');
-        $categoryId = $request->input('category_id',0);
-        if($ids){
-            Question::whereIn('id',explode(",",$ids))->update(['category_id'=>$categoryId]);
-        }
         return $this->success(route('admin.question.index'),'分类修改成功');
     }
 
