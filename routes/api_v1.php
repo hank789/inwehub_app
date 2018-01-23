@@ -438,8 +438,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('list','HomeController@feed');
     //存储文章
     Route::post('store','SubmissionController@store');
-    //文章详情
-    Route::post('detail-by-slug','SubmissionController@getBySlug');
     //推荐文章到app
     Route::post('recommend-app-submission','SubmissionController@recommendSubmission');
 
@@ -460,9 +458,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
 
     //赞文章
     Route::post('upvote-submission','SubmissionVotesController@upVote');
-
-
 });
+//文章详情
+Route::post('article/detail-by-slug','Article\SubmissionController@getBySlug');
 
 //点赞
 Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
