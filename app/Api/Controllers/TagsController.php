@@ -1,16 +1,11 @@
 <?php namespace App\Api\Controllers;
-use App\Api\Controllers\Controller;
 use App\Logic\TagsLogic;
 use App\Models\Answer;
 use App\Models\Attention;
-use App\Models\Category;
 use App\Models\Collection;
-use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
-use App\Models\Taggable;
-use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
