@@ -383,8 +383,10 @@ class Question extends Model
         $z = $views * 0.6 + $answers * 1 + $this->followers * 1.5;
         if ($this->question_type == 1) {
             $bestAnswer = $this->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
-            $stars = $bestAnswer->feedbacks()->sum('star');
-            $z += $stars;
+            if ($bestAnswer) {
+                $stars = $bestAnswer->feedbacks()->sum('star');
+                $z += $stars;
+            }
         }
         $y = $this->answers()->sum('pay_for_views') + 1;
 
