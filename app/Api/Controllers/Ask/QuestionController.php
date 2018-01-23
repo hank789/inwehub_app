@@ -24,6 +24,7 @@ use App\Notifications\NewQuestionInvitation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\JWTAuth;
 
 class QuestionController extends Controller
 {
@@ -38,7 +39,7 @@ class QuestionController extends Controller
     /**
      * 问题详情查看
      */
-    public function info(Request $request)
+    public function info(Request $request,JWTAuth $JWTAuth)
     {
 
         $id = $request->input('id');
@@ -47,7 +48,13 @@ class QuestionController extends Controller
         if(empty($question)){
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
-        $user = $request->user();
+
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
 
         $is_self = $user->id == $question->user_id;
         $is_answer_author = false;

@@ -177,7 +177,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     //查看点评
     Route::post('answer/feedbackInfo','AnswerController@feedbackInfo');
     //问题详情
-    Route::post('question/info','QuestionController@info');
+    //Route::post('question/info','QuestionController@info');
     //付费围观
     Route::post('answer/payforview','AnswerController@payForView');
     //专业问答-推荐问答列表
@@ -213,9 +213,13 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     //问题回答列表
     Route::post('question/answerList','QuestionController@answerList');
     //回答详情
-    Route::post('answer/info','AnswerController@info');
+    //Route::post('answer/info','AnswerController@info');
 
 });
+//问题详情
+Route::post('question/info', 'Ask/QuestionController@info');
+//回答详情
+Route::post('answer/info','Ask/AnswerController@info');
 
 //任务模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], function() {

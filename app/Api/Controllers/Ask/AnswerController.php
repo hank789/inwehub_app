@@ -27,6 +27,7 @@ use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\JWTAuth;
 
 class AnswerController extends Controller
 {
@@ -52,14 +53,19 @@ class AnswerController extends Controller
     }
 
     //回答详情
-    public function info(Request $request){
+    public function info(Request $request,JWTAuth $JWTAuth){
         $id = $request->input('id');
         $answer = Answer::find($id);
 
         if(empty($answer)){
             throw new ApiException(ApiException::ASK_ANSWER_NOT_EXIST);
         }
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $question = $answer->question;
 
         $is_self = $user->id == $question->user_id;
