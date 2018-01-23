@@ -52,14 +52,14 @@ class ProfileController extends Controller
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province']['key'] = $user->province;
-        $info['province']['name'] = CityData::getProvinceName($user->province);
+        $info['province']['name'] = CityData::getProvinceName($user->province)?:$user->province;
         $info['city']['key'] = $user->city;
-        $info['city']['name'] = CityData::getCityName($user->province,$user->city);
+        $info['city']['name'] = CityData::getCityName($user->province,$user->city)?:$user->city;
 
         $info['hometown_province']['key'] = $user->hometown_province;
-        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province);
+        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province)?:$user->hometown_province;
         $info['hometown_city']['key'] = $user->hometown_city;
-        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city);
+        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city)?:$user->hometown_city;
 
         $info['company'] = $user->company;
         $info['title'] = $user->title;
@@ -225,14 +225,14 @@ class ProfileController extends Controller
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province']['key'] = $user->province;
-        $info['province']['name'] = CityData::getProvinceName($user->province);
+        $info['province']['name'] = CityData::getProvinceName($user->province)?:$user->province;
         $info['city']['key'] = $user->city;
-        $info['city']['name'] = CityData::getCityName($user->province,$user->city);
+        $info['city']['name'] = CityData::getCityName($user->province,$user->city)?:$user->city;
 
         $info['hometown_province']['key'] = $user->hometown_province;
-        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province);
+        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province)?:$user->hometown_province;
         $info['hometown_city']['key'] = $user->hometown_city;
-        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city);
+        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city)?:$user->hometown_city;
 
         $info['company'] = $user->company;
         $info['title'] = $user->title;
