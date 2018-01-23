@@ -30,8 +30,8 @@ class OauthController extends Controller
         $token = null;
         $user_id = 0;
         try {
-            $user = JWTAuth::parseToken()->authenticate();
-            $token = JWTAuth::getToken();
+            $user = $JWTAuth->parseToken()->authenticate();
+            $token = $JWTAuth->getToken();
             $user_id = $user->id;
         } catch (\Exception $e) {
 
