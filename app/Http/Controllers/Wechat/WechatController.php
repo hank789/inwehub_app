@@ -84,7 +84,6 @@ class WechatController extends Controller
                 if ($user = $JWTAuth->authenticate($token)){
                     //登陆事件通知
                     event(new UserLoggedIn($user,'微信'));
-                    $this->saveLoginInfo($request,$user);
                 } else {
                     $wechat = app('wechat');
                     return $wechat->oauth->scopes(['snsapi_userinfo'])
@@ -175,7 +174,6 @@ class WechatController extends Controller
                 //登陆事件通知
                 event(new UserLoggedIn($user,'微信'));
                 Session::put("wechat_userinfo",$userInfo);
-                $this->saveLoginInfo($request,$user);
             }
         } elseif($userInfo['id']) {
             UserOauth::create(
@@ -199,25 +197,6 @@ class WechatController extends Controller
         }
 
         return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);
-    }
-
-    protected function saveLoginInfo(Request $request,User $user){
-        $clientIp = $request->getClientIp();
-        $loginrecord = new LoginRecord();
-        $loginrecord->ip = $clientIp;
-
-        $location = $this->findIp($clientIp);
-        array_filter($location);
-        $loginrecord->address = trim(implode(' ', $location));
-        $loginrecord->device_system = $request->input('device_system');
-        $loginrecord->device_name = $request->input('device_name');
-        $loginrecord->device_model = $request->input('device_model');
-        $loginrecord->device_code = $request->input('device_code');
-        $loginrecord->user_id = $user->id;
-        $loginrecord->address_detail = $request->input('current_address_name');
-        $loginrecord->longitude = $request->input('current_address_longitude');
-        $loginrecord->latitude = $request->input('current_address_latitude');
-        $loginrecord->save();
     }
 
 
