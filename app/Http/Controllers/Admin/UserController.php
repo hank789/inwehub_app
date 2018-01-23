@@ -162,12 +162,13 @@ class UserController extends AdminController
             }
         }
 
-        if ($rcUid) {
-            $user->rc_uid = $rcUid;
+        if ($rcUid && $rcUid != $user->rc_uid) {
             //邀请者增加积分
             $rc_user = User::find($rcUid);
             $action = Credit::KEY_INVITE_USER;
             event(new CreditEvent($rc_user->id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user->id,'邀请好友注册成功'));
+            
+            $user->rc_uid = $rcUid;
         }
         $user->save();
         $user->detachAllRoles();
