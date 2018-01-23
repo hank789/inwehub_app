@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Cache\UserCache;
-use App\Models\Area;
+use App\Models\Credit;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserInfo\EduInfo;
@@ -15,12 +15,8 @@ use App\Services\City\CityData;
 use App\Services\Registrar;
 use Bican\Roles\Models\Role;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
+use App\Events\Frontend\System\Credit as CreditEvent;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
 
 class UserController extends AdminController
 {
@@ -153,7 +149,7 @@ class UserController extends AdminController
         $user->hometown_province = $request->input('hometown_province');
         $user->hometown_city = $request->input('hometown_city');
         $user->address_detail = $request->input('address_detail');
-
+        $rcUid = $request->input('rc_uid',0);
 
         if($request->hasFile('avatar')){
             $user_id = $id;
@@ -166,6 +162,14 @@ class UserController extends AdminController
             }
         }
 
+        if ($rcUid && $rcUid != $user->rc_uid) {
+            //邀请者增加积分
+            $rc_user = User::find($rcUid);
+            $action = Credit::KEY_INVITE_USER;
+            event(new CreditEvent($rc_user->id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$user->id,'邀请好友注册成功'));
+            
+            $user->rc_uid = $rcUid;
+        }
         $user->save();
         $user->detachAllRoles();
         $user->attachRole($request->input('role_id'));
