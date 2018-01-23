@@ -94,7 +94,7 @@
                             <section class="stream-list-item">
 
                                 <div class="summary">
-                                    <h2 class="title">{{ $submission->title }}</h2>
+                                    <h2 class="title">{!! $submission->title !!}</h2>
                                     <ul class="author list-inline">
                                         <li class="pull-right" title="{{ $submission->collections }} 收藏">
                                             <small class="glyphicon glyphicon-bookmark"></small> {{ $submission->collections }}
