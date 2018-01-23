@@ -347,7 +347,8 @@ class QuestionController extends Controller
             'price'        => $price,
             'hide'         => intval($request->input('hide')),
             'status'       => 1,
-            'device'       => intval($request->input('device'))
+            'device'       => intval($request->input('device')),
+            'rate'          => firstRate()
         ];
 
         //查看支付订单是否成功
@@ -790,7 +791,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
@@ -857,7 +858,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){

@@ -2,6 +2,7 @@
 
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Logic\QuestionLogic;
 use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Credit;
@@ -129,6 +130,7 @@ class FollowController extends Controller
                                 ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                             $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                             $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
+                            QuestionLogic::calculationQuestionRate($source->id);
                         }
                     }
                     break;

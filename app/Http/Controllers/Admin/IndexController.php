@@ -154,8 +154,8 @@ class IndexController extends AdminController
         /*生成Labels*/
         $labelTimes = $chartLabels = [];
 
-        for( $i=0 ; $i < 7 ; $i++ ){
-            $labelTimes[$i] = Carbon::createFromTimestamp( Carbon::today()->timestamp - (6-$i) * 24 * 3600 );
+        for( $i=0 ; $i < 30 ; $i++ ){
+            $labelTimes[$i] = Carbon::createFromTimestamp( Carbon::today()->timestamp - (29-$i) * 24 * 3600 );
             $chartLabels[$i] = '"'.$labelTimes[$i]->month.'月-'.$labelTimes[$i]->day.'日'.'"';
         }
 
@@ -163,9 +163,9 @@ class IndexController extends AdminController
 
         $users = User::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
-        $registerRange = $verifyRange = $authRange = $signRange = $loginRange = [0,0,0,0,0,0,0];
+        $registerRange = $verifyRange = $authRange = $signRange = $loginRange = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
-        for( $i=0 ; $i < 7 ; $i++ ){
+        for( $i=0 ; $i < 30 ; $i++ ){
             $startTime = $labelTimes[$i];
             $endTime = $nowTime;
             if(isset($labelTimes[$i+1])){
@@ -202,8 +202,8 @@ class IndexController extends AdminController
 
         /*生成Labels*/
         $labelTimes = $chartLabels = [];
-        for( $i=0 ; $i < 7 ; $i++ ){
-            $labelTimes[$i] = Carbon::createFromTimestamp( Carbon::today()->timestamp - (6-$i) * 24 * 3600 );
+        for( $i=0 ; $i < 30 ; $i++ ){
+            $labelTimes[$i] = Carbon::createFromTimestamp( Carbon::today()->timestamp - (29-$i) * 24 * 3600 );
             $chartLabels[$i] = '"'.$labelTimes[$i]->month.'月-'.$labelTimes[$i]->day.'日'.'"';
         }
 
@@ -216,9 +216,9 @@ class IndexController extends AdminController
         $submissions = Submission::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
 
-        $questionRange = $answerRange = $feedbackRange = $submissionTextRange = $submissionLinkRange = [0,0,0,0,0,0,0];
+        $questionRange = $answerRange = $feedbackRange = $submissionTextRange = $submissionLinkRange = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
-        for( $i=0 ; $i < 7 ; $i++ ){
+        for( $i=0 ; $i < 30 ; $i++ ){
             $startTime = $labelTimes[$i];
             $endTime = $nowTime;
             if(isset($labelTimes[$i+1])){

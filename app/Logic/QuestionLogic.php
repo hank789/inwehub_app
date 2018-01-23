@@ -1,6 +1,9 @@
 <?php namespace App\Logic;
+use App\Jobs\UpdateQuestionRate;
 use App\Models\Answer;
 use App\Models\Question;
+use App\Services\RateLimiter;
+use Carbon\Carbon;
 
 /**
  * @author: wanghui
@@ -41,7 +44,15 @@ class QuestionLogic {
             app('sentry')->captureException($e);
         }
         return true;
+    }
 
+    public static function calculationQuestionRate($questionId){
+        $event = 'calculation:question:rate';
+        $limit = RateLimiter::instance()->getValue($event,$questionId);
+        if (!$limit) {
+            RateLimiter::instance()->increase($event,$questionId,600,1);
+            dispatch(new UpdateQuestionRate($questionId))->delay(Carbon::now()->addMinutes(10));
+        }
     }
 
 
