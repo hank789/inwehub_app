@@ -614,9 +614,14 @@ class QuestionController extends Controller
         }
         if ($tags) {
             $query = $query->whereIn('tag_id',$tags)->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
-            $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
-            $query = $query->union($query1);
-            $userTags = $query->simplePaginate(15,'*','page',$page);
+            if ($query->count() <= 0) {
+                $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
+                $userTags = $query1->take(15)->get();
+            } else {
+                $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
+                $query = $query->union($query1);
+                $userTags = $query->simplePaginate(15,'*','page',$page);
+            }
         } else {
             $query = $query->orderBy(DB::raw('RAND()'))->distinct();
             $userTags = $query->take(15)->get();
