@@ -161,8 +161,8 @@ class QuestionController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $promise_answer_time,
-            'answer_num' => $question->answers,
-            'follow_num' => $question->followers,
+            'question_answer_num' => $question->answers,
+            'question_follow_num' => $question->followers,
             'created_at' => (string)$question->created_at
         ];
 
