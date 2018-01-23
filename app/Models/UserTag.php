@@ -48,7 +48,6 @@ class UserTag extends Model
         if(!$tags){
             return false;
         }
-        $user = User::find($user_id);
         foreach( $tags as $tag ){
             $userTag = self::firstOrCreate([
                 'user_id'=> $user_id,
