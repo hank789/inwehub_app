@@ -71,6 +71,11 @@
                                     @endforeach
                               </select>
                           </div>
+                            <div class="form-group @if ($errors->has('rc_uid')) has-error @endif">
+                                <label for="name">邀请者注册者id</label>
+                                <input type="text" name="rc_uid" class="form-control " placeholder="邀请者id" value="{{ old('rc_uid',$user->rc_uid) }}">
+                                @if ($errors->has('rc_uid')) <p class="help-block">{{ $errors->first('rc_uid') }}</p> @endif
+                            </div>
 
 
 
