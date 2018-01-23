@@ -217,9 +217,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
 
 });
 //问题详情
-Route::post('question/info', 'Ask/QuestionController@info');
+Route::post('question/info', 'Ask\QuestionController@info');
 //回答详情
-Route::post('answer/info','Ask/AnswerController@info');
+Route::post('answer/info','Ask\AnswerController@info');
 
 //任务模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], function() {
