@@ -517,6 +517,14 @@
                         label: '每日签到',
                         data: [{{ implode(",",$userChart['signUsers']) }}]
                     },
+                    {
+                        fill: false,
+                        backgroundColor: "rgba(100,50,0,0.8)",
+                        borderColor: "rgba(153,102,0,0.8)",
+
+                        label: '每日登陆',
+                        data: [{{ implode(",",$userChart['loginUsers']) }}]
+                    },
                 ]
             },
             options: {

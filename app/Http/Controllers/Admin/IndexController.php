@@ -7,6 +7,7 @@ use App\Models\Answer;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
+use App\Models\LoginRecord;
 use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\Submission;
@@ -162,7 +163,7 @@ class IndexController extends AdminController
 
         $users = User::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
-        $registerRange = $verifyRange = $authRange = $signRange = [0,0,0,0,0,0,0];
+        $registerRange = $verifyRange = $authRange = $signRange = $loginRange = [0,0,0,0,0,0,0];
 
         for( $i=0 ; $i < 7 ; $i++ ){
             $startTime = $labelTimes[$i];
@@ -172,6 +173,9 @@ class IndexController extends AdminController
             }
             $signRange[$i] = Credit::where('action',Credit::KEY_FIRST_USER_SIGN_DAILY)
                 ->where('created_at','>',$startTime)
+                ->where('created_at','<',$endTime)
+                ->count();
+            $loginRange[$i] = LoginRecord::where('created_at','>',$startTime)
                 ->where('created_at','<',$endTime)
                 ->count();
 
@@ -190,7 +194,7 @@ class IndexController extends AdminController
 
         }
 
-        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange, 'signUsers'=>$signRange];
+        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange, 'signUsers'=>$signRange,'loginUsers'=>$loginRange];
     }
 
     private function drawQuestionChart()
