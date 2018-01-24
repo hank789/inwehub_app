@@ -360,6 +360,11 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany('App\Models\Answer');
     }
 
+    public function submissions()
+    {
+        return $this->hasMany('App\Models\Submission');
+    }
+
     public function tasks(){
         return $this->hasMany('App\Models\Task');
     }

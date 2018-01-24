@@ -261,7 +261,7 @@ class ProfileController extends Controller
 
         $info['questions'] = $user->userData->questions;
         $info['answers'] = $user->userData->answers;
-        $info['supports'] = $user->userTag->sum('supports');
+        $info['supports'] = $user->answers->sum('supports') + $user->submissions->sum('upvotes');
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['projects'] = $user->companyProjects->count();
