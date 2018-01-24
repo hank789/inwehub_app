@@ -991,7 +991,7 @@ class QuestionController extends Controller
         $user = $request->user();
         $skillTags = $user->userSkillTag()->pluck('tag_id');
         $relatedQuestions = Question::correlationsPage($skillTags,5,2,[$user->id]);
-        if (!$relatedQuestions) {
+        if ($relatedQuestions->count() <= 0) {
             $relatedQuestions = Question::recent(5,2,[$user->id]);
         }
         $return = $relatedQuestions->toArray();
