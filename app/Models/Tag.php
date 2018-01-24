@@ -59,6 +59,7 @@ class Tag extends Model
             $tag->userTags()->delete();
             /*删除用户标签*/
             UserTag::where('tag_id','=',$tag->id)->delete();
+            Taggable::where('tag_id',$tag->id)->delete();
             if(Setting()->get('xunsearch_open',0) == 1){
                 App::offsetGet('search')->delete($tag);
             }

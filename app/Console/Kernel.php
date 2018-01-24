@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixTags::class,
         Commands\FixData\FixUserLevel::class,
         Commands\FixData\FixQuestionRate::class,
-
+        Commands\FixData\DeleteUselessTags::class,
 
     ];
 
