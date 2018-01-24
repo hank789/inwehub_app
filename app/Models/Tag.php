@@ -62,6 +62,7 @@ class Tag extends Model
             if(Setting()->get('xunsearch_open',0) == 1){
                 App::offsetGet('search')->delete($tag);
             }
+            Taggable::where('tag_id',$tag->id)->delete();
         });
     }
 
