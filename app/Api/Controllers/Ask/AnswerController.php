@@ -625,14 +625,6 @@ class AnswerController extends Controller
         }
         //生成一条点评任务
         $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
-        //自动收藏
-        Collection::create([
-            'user_id'     => $loginUser->id,
-            'source_id'   => $answer->id,
-            'source_type' => get_class($answer),
-            'subject'  => '付费围观',
-        ]);
-        $answer->increment('collections');
         QuestionLogic::calculationQuestionRate($answer->question_id);
 
 
