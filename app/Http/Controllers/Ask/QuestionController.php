@@ -28,10 +28,10 @@ class QuestionController extends Controller
 
     /*问题创建校验*/
     protected $validateRules = [
-        'title' => 'required|max:255',
+        'title' => 'required',
         'description' => 'sometimes|max:65535',
-        'price'=> 'sometimes|digits_between:0,100',
-        'tags' => 'sometimes|max:128',
+        'price'=> 'sometimes|digits_between:0,200',
+        'tags' => 'sometimes',
     ];
 
 
