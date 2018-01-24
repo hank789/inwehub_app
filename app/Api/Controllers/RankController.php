@@ -2,6 +2,7 @@
 
 namespace App\Api\Controllers;
 
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Article;
@@ -36,6 +37,7 @@ class RankController extends Controller
     {
         $loginUser = $request->user();
         if ($this->checkTankLimit($loginUser) == false) throw new ApiException(ApiException::ACTIVITY_RANK_TIME_LIMIT);
+        event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']查看了贡献榜',[]));
         $userDatas = UserData::whereNotIn('user_id',getSystemUids())->orderBy('coins','desc')->take(20)->get();
         $data = [];
         foreach ($userDatas as $key=>$userData) {
@@ -67,6 +69,7 @@ class RankController extends Controller
         $loginUser = $request->user();
         $data = [];
         $rank = 0;
+        event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']查看了邀请榜',[]));
         $systemUsers = User::whereIn('id',[329,269])->get();
         foreach ($systemUsers as $systemUser) {
             $rank ++;
@@ -135,6 +138,7 @@ class RankController extends Controller
     {
         $userDatas = UserData::whereNotIn('user_id',getSystemUids())->orderBy('credits','desc')->take(20)->get();
         $loginUser = $request->user();
+        event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']查看了成长榜',[]));
         $data = [];
         foreach ($userDatas as $key=>$userData) {
             $is_followed = 0;
