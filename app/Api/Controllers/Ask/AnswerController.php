@@ -163,8 +163,8 @@ class AnswerController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $answer->promise_time,
-            'question_answer_num' => $question->answers,
-            'question_follow_num' => $question->followers,
+            'answer_num' => $question->answers,
+            'follow_num' => $question->followers,
             'created_at' => (string)$question->created_at
         ];
         $answer->increment('views');
