@@ -47,7 +47,7 @@ class Kernel extends ConsoleKernel
         Commands\User\AddDefaultUserTag::class,
         Commands\FixData\FixTags::class,
         Commands\FixData\FixUserLevel::class,
-
+        Commands\FixData\DeleteUselessTags::class,
 
     ];
 
