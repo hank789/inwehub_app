@@ -989,8 +989,8 @@ class QuestionController extends Controller
     //推荐相关问题
     public function recommendUserQuestions(Request $request) {
         $user = $request->user();
-        $skillTags = $user->userSkillTag()->pluck('tag_id');
-        $attentionTags = $user->attentions()->where('source_type','App\Models\Tag')->get()->pluck('source_id');
+        $skillTags = $user->userSkillTag()->pluck('tag_id')->toArray();
+        $attentionTags = $user->attentions()->where('source_type','App\Models\Tag')->get()->pluck('source_id')->toArray();
         $attentionTags = array_unique(array_merge($attentionTags,$skillTags));
         $relatedQuestions = Question::correlationsPage($attentionTags,5,2,[$user->id]);
         if ($relatedQuestions->count() <= 0) {
