@@ -78,7 +78,9 @@ class CollectObserver implements ShouldQueue {
                     event(new Credit($object->user_id,CreditModel::KEY_READHUB_SUBMISSION_COLLECT,Setting()->get('coins_'.CreditModel::KEY_READHUB_SUBMISSION_COLLECT),Setting()->get('credits_'.CreditModel::KEY_READHUB_SUBMISSION_COLLECT),$collect->id,'动态分享被收藏'));
                     break;
                 case 'App\Models\Answer':
-                    event(new Credit($object->user_id,CreditModel::KEY_COMMUNITY_ANSWER_COLLECT,Setting()->get('coins_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),Setting()->get('credits_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),$collect->id,'回答被收藏'));
+                    if ($object->question->question_type == 2) {
+                        event(new Credit($object->user_id,CreditModel::KEY_COMMUNITY_ANSWER_COLLECT,Setting()->get('coins_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),Setting()->get('credits_'.CreditModel::KEY_COMMUNITY_ANSWER_COLLECT),$collect->id,'回答被收藏'));
+                    }
                     break;
             }
         }
