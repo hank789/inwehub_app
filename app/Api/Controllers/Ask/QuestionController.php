@@ -990,7 +990,9 @@ class QuestionController extends Controller
     public function recommendUserQuestions(Request $request) {
         $user = $request->user();
         $skillTags = $user->userSkillTag()->pluck('tag_id');
-        $relatedQuestions = Question::correlationsPage($skillTags,5,2,[$user->id]);
+        $attentionTags = $user->attentions()->where('source_type','App\Models\Tag')->get()->pluck('source_id');
+        $attentionTags = array_unique(array_merge($attentionTags,$skillTags));
+        $relatedQuestions = Question::correlationsPage($attentionTags,5,2,[$user->id]);
         if ($relatedQuestions->count() <= 0) {
             $relatedQuestions = Question::recent(5,2,[$user->id]);
         }
