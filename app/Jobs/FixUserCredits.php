@@ -115,11 +115,6 @@ class FixUserCredits implements ShouldQueue
         }
 
         //专业问答回答&互动问答回答
-        CreditModel::where('user_id',$user->id)->whereIn('action',[
-            CreditModel::KEY_ANSWER,
-            CreditModel::KEY_FIRST_ANSWER,
-            CreditModel::KEY_FIRST_COMMUNITY_ANSWER,
-            CreditModel::KEY_COMMUNITY_ANSWER])->delete();
         $answers = Answer::where('user_id',$user->id)->where('status',1)->orderBy('id','asc')->get();
         $first_pay_answer = 0;
         $first_free_answer = 0;
@@ -170,7 +165,6 @@ class FixUserCredits implements ShouldQueue
 
         //阅读回复
         $comments = Comment::where('status',1)->where('user_id',$user->id)->get();
-        CreditModel::where('user_id',$user->id)->whereIn('action',['readhub_new_comment',CreditModel::KEY_NEW_COMMENT])->delete();
         foreach ($comments as $comment) {
             $source = $comment->source;
             switch ($comment->source_type) {
@@ -214,7 +208,6 @@ class FixUserCredits implements ShouldQueue
             $this->credit($model,$action,$user->id,'','');
         }
         //专业问答评价&专业问答围观者评价
-        CreditModel::where('user_id',$user->id)->whereIn('action',['rate_answer','feedback_rate_answer','new_answer_feedback'])->delete();
         $feedbacks = Feedback::where('user_id',$user->id)->where('source_type',Answer::class)->get();
         foreach ($feedbacks as $feedback) {
             if ($feedback->star >= 4) {
@@ -229,12 +222,6 @@ class FixUserCredits implements ShouldQueue
         }
         //点赞
         $action = CreditModel::KEY_NEW_UPVOTE;
-        CreditModel::where('user_id',$user->id)->whereIn('action',[
-            CreditModel::KEY_NEW_UPVOTE,
-            CreditModel::KEY_ANSWER_UPVOTE,
-            CreditModel::KEY_COMMUNITY_ANSWER_UPVOTE,
-            CreditModel::KEY_READHUB_SUBMISSION_UPVOTE
-        ])->delete();
         $supports = Support::where("user_id",'=',$user->id)->get();
         foreach ($supports as $support) {
             $source = $support->source;
@@ -267,12 +254,6 @@ class FixUserCredits implements ShouldQueue
         }
         //收藏
         $action = CreditModel::KEY_NEW_COLLECT;
-        CreditModel::where('user_id',$user->id)->whereIn('action',[
-            CreditModel::KEY_NEW_COLLECT,
-            CreditModel::KEY_PRO_OPPORTUNITY_SIGNED,
-            CreditModel::KEY_READHUB_SUBMISSION_COLLECT,
-            CreditModel::KEY_COMMUNITY_ANSWER_COLLECT
-        ])->delete();
         $collections = Collection::where('user_id',$user->id)->where('status',1)->get();
         foreach ($collections as $collect) {
             $source = $collect->source;
@@ -305,17 +286,12 @@ class FixUserCredits implements ShouldQueue
         foreach ($shares as $share) {
             $this->credit($share,$action,$share->user_id,$share,$share->source_subject);
         }
-        CreditModel::where('user_id',$user->id)->whereIn('action',[
-            CreditModel::KEY_READHUB_SUBMISSION_SHARE,
-            CreditModel::KEY_ANSWER_SHARE,
-            CreditModel::KEY_COMMUNITY_ANSWER_SHARE
-        ])->delete();
         $doings = Doing::where('user_id',$user->id)->whereIn('action',[Doing::ACTION_SHARE_SUBMISSION_SUCCESS,Doing::ACTION_SHARE_ANSWER_SUCCESS])->get();
         foreach ($doings as $doing) {
             switch ($doing->action) {
                 case Doing::ACTION_SHARE_SUBMISSION_SUCCESS:
                     $action1 = CreditModel::KEY_READHUB_SUBMISSION_SHARE;
-                    $source = Submission::where('slug',$doing->source_id)->first();
+                    $source = Submission::find($doing->source_id);
                     $source_subject = '动态分享被转发';
                     break;
                 case Doing::ACTION_SHARE_ANSWER_SUCCESS:
@@ -350,7 +326,6 @@ class FixUserCredits implements ShouldQueue
         //关注
         $attentions = Attention::where('user_id',$user->id)->get();
         $action = CreditModel::KEY_NEW_FOLLOW;
-        CreditModel::where('user_id',$user->id)->whereIn('action',[$action,CreditModel::KEY_COMMUNITY_ASK_FOLLOWED])->delete();
         foreach ($attentions as $attention) {
             $source = $attention->source;
             $this->credit('',$action,$user->id,$attention,$attention->source_type);
