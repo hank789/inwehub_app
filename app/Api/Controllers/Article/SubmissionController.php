@@ -15,6 +15,7 @@ use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -187,13 +188,18 @@ class SubmissionController extends Controller {
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getBySlug(Request $request)
+    public function getBySlug(Request $request,JWTAuth $JWTAuth)
     {
         $this->validate($request, [
             'slug' => 'required',
         ]);
 
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $submission = Submission::where('slug',$request->slug)->first();
         if (!$submission) {
             throw new ApiException(ApiException::BAD_REQUEST);

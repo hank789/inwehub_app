@@ -40,7 +40,7 @@
                                 </tr>
                                 @foreach($records as $record)
                                     <tr>
-                                        <td> @if($record->user){{ $record->user->name }} @else 未知 @endif [uid:{{ $record->user_id }}]</td>
+                                        <td> @if($record->user){{ $record->user->name }} @else 游客 @endif [uid:{{ $record->user_id }}]</td>
                                         <td>{{ $record->action }}</td>
                                         <td>{{ $record->subject }}</td>
                                         <td>{{ $record->source_id }}</td>

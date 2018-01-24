@@ -63,6 +63,7 @@ class Tag extends Model
             if(Setting()->get('xunsearch_open',0) == 1){
                 App::offsetGet('search')->delete($tag);
             }
+            Taggable::where('tag_id',$tag->id)->delete();
         });
     }
 
@@ -181,8 +182,6 @@ class Tag extends Model
         $tags = self::where('name',$tagName)->get();
         $ignores = [
             8,//拒绝回答
-            9,//行业
-            10,//产品类型
             30,//活动报名
             31,//项目机遇
             33,//动态频道
@@ -197,9 +196,6 @@ class Tag extends Model
         if (!isset($tag)) throw new ApiException(ApiException::BAD_REQUEST);
         return $tag;
     }
-
-
-
 
     /*搜索*/
     public static function search($word,$size=16)

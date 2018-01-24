@@ -20,15 +20,18 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
 
     protected $creditLog;
 
+    protected $notifySlack;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, CreditModel $creditLog)
+    public function __construct($user_id, CreditModel $creditLog,$notifySlack = true)
     {
         $this->user_id = $user_id;
         $this->creditLog = $creditLog;
+        $this->notifySlack = $notifySlack;
     }
 
     /**
@@ -39,7 +42,7 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
      */
     public function via($notifiable)
     {
-        $via = ['database', SlackChannel::class];
+        $via = ['database'];
         $notBroadcasts = [
             CreditModel::KEY_FIRST_USER_SIGN_DAILY,
             CreditModel::KEY_COMMUNITY_ASK_ANSWERED,
@@ -65,6 +68,9 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
         ];
         if (!in_array($this->creditLog->action,$notBroadcasts)) {
             $via[] = 'broadcast';
+        }
+        if ($this->notifySlack) {
+            $via[] = SlackChannel::class;
         }
         return $via;
     }

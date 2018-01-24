@@ -123,12 +123,23 @@
                 <div class="info-box">
                     <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
                     <div class="info-box-content">
+                        <span class="info-box-text">新手红包总金额</span>
+                        <span class="info-box-number">{{ $newbieTotalCouponMoney }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                    <div class="info-box-content">
                         <span class="info-box-text">用户账户总余额</span>
                         <span class="info-box-number">{{ $totalBalance }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
-
+        </div>
+        <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
                     <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
@@ -138,8 +149,6 @@
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
-
-
         </div>
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
@@ -516,6 +525,14 @@
 
                         label: '每日签到',
                         data: [{{ implode(",",$userChart['signUsers']) }}]
+                    },
+                    {
+                        fill: false,
+                        backgroundColor: "rgba(100,50,0,0.8)",
+                        borderColor: "rgba(153,102,0,0.8)",
+
+                        label: '每日登陆',
+                        data: [{{ implode(",",$userChart['loginUsers']) }}]
                     },
                 ]
             },

@@ -2,6 +2,7 @@
 
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
@@ -24,6 +25,7 @@ use App\Notifications\NewQuestionInvitation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\JWTAuth;
 
 class QuestionController extends Controller
 {
@@ -38,7 +40,7 @@ class QuestionController extends Controller
     /**
      * 问题详情查看
      */
-    public function info(Request $request)
+    public function info(Request $request,JWTAuth $JWTAuth)
     {
 
         $id = $request->input('id');
@@ -47,7 +49,13 @@ class QuestionController extends Controller
         if(empty($question)){
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
-        $user = $request->user();
+
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
 
         $is_self = $user->id == $question->user_id;
         $is_answer_author = false;
@@ -340,7 +348,8 @@ class QuestionController extends Controller
             'price'        => $price,
             'hide'         => intval($request->input('hide')),
             'status'       => 1,
-            'device'       => intval($request->input('device'))
+            'device'       => intval($request->input('device')),
+            'rate'          => firstRate()
         ];
 
         //查看支付订单是否成功
@@ -466,7 +475,7 @@ class QuestionController extends Controller
                 //记录任务
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
                 //通知
-                $toUser->notify(new NewQuestionInvitation($toUser->id,$question));
+                $toUser->notify(new NewQuestionInvitation($toUser->id,$question,$loginUser->id,$invitation->id));
             }elseif ($question->question_type == 1){
                 //专业问答非定向邀请的自动匹配一次
                 event(new AutoInvitation($question));
@@ -508,6 +517,24 @@ class QuestionController extends Controller
         if (!is_array($to_user_ids)) {
             $to_user_ids = [$to_user_ids];
         }
+        $fields = [];
+        $fields[] = [
+            'title' => '问题标题',
+            'value' => $question->title
+        ];
+        $fields[] = [
+            'title' => '标签',
+            'value' => implode(',',$question->tags()->pluck('name')->toArray())
+        ];
+        $fields[] = [
+            'title' => '类型',
+            'value' => $question->question_type == 1 ? '专业问答':'互动问答'
+        ];
+        $url = route('ask.question.detail',['id'=>$question->id]);
+        $fields[] = [
+            'title' => '地址',
+            'value' => $url
+        ];
         foreach ($to_user_ids as $to_user_id) {
             if($loginUser->id == $to_user_id){
                 continue;
@@ -526,6 +553,10 @@ class QuestionController extends Controller
             if($question->isInvited($toUser->id,$loginUser->id)){
                 continue;
             }
+            $fields[] = [
+                'title' => '邀请回答者',
+                'value' => $toUser->id.'['.$toUser->name.']'
+            ];
 
             $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$loginUser->id,'question_id'=>$question->id],[
                 'from_user_id'=> $loginUser->id,
@@ -534,13 +565,10 @@ class QuestionController extends Controller
                 'send_to'=> $toUser->email
             ]);
 
-            //记录动态
-            //记录任务
-            //$this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
-
-            $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id));
-            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$invitation->id,$toUser->id);
+            $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id,$invitation->id,false));
+            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$invitation->id,$toUser->id,false);
         }
+        event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']批量邀请回答问题',$fields));
 
         return self::createJsonData(true);
     }
@@ -607,9 +635,14 @@ class QuestionController extends Controller
         }
         if ($tags) {
             $query = $query->whereIn('tag_id',$tags)->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
-            $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
-            $query = $query->union($query1);
-            $userTags = $query->simplePaginate(15,'*','page',$page);
+            if ($query->count() <= 0) {
+                $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
+                $userTags = $query1->take(15)->get();
+            } else {
+                $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
+                $query = $query->union($query1);
+                $userTags = $query->simplePaginate(15,'*','page',$page);
+            }
         } else {
             $query = $query->orderBy(DB::raw('RAND()'))->distinct();
             $userTags = $query->take(15)->get();
@@ -778,7 +811,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
@@ -845,7 +878,7 @@ class QuestionController extends Controller
             $query = $query->leftJoin('taggables','questions.id','=','taggables.taggable_id')->where('taggables.taggable_type','App\Models\Question')->where('taggables.taggable_id',$tag_id);
         }
 
-        $questions = $query->orderBy('questions.id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $questions = $query->orderBy('questions.rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){

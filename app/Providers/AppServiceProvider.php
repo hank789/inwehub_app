@@ -97,7 +97,6 @@ class AppServiceProvider extends ServiceProvider
         EduInfo::observe(UserEduObserver::class);
         ProjectInfo::observe(UserProjectObserver::class);
         TrainInfo::observe(UserTrainObserver::class);
-        QuestionInvitation::observe(QuestionInvitationObserver::class);
         Company::observe(CompanyObserver::class);
         Withdraw::observe(WithdrawObserver::class);
         Collection::observe(CollectObserver::class);

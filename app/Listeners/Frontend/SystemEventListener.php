@@ -143,7 +143,7 @@ class SystemEventListener implements ShouldQueue
                 $user->userData->user_level = $next_level;
                 $user->userData->save();
             }
-            $user_data->user->notify(new IntegralLog($user_id,$credit));
+            $user_data->user->notify(new IntegralLog($user_id,$credit,$event->toSlack));
             return true;
         }catch (\Exception $e) {
             DB::rollBack();

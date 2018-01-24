@@ -34,11 +34,12 @@ trait BaseController {
      * @param $action;  执行动作：提问、回答、发起文章
      * @param int $source_id; 源：问题id、回答id、文章id等
      * @param string $source_subject; 源主题：问题标题、文章标题等
+     * @param bool $toSlack
      * @return bool;           操作成功返回true 否则  false
      */
-    protected function credit($user_id,$action,$source_id = 0 ,$source_subject = null)
+    protected function credit($user_id,$action,$source_id = 0 ,$source_subject = null, $toSlack = true)
     {
-        event(new CreditEvent($user_id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source_id,$source_subject));
+        event(new CreditEvent($user_id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source_id,$source_subject,$toSlack));
     }
 
 

@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Wechat;
 use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Http\Controllers\Controller;
+use App\Models\LoginRecord;
 use App\Models\User;
 use Log;
 use Illuminate\Http\Request;

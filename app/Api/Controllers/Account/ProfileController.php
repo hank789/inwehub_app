@@ -52,14 +52,14 @@ class ProfileController extends Controller
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province']['key'] = $user->province;
-        $info['province']['name'] = CityData::getProvinceName($user->province);
+        $info['province']['name'] = CityData::getProvinceName($user->province)?:$user->province;
         $info['city']['key'] = $user->city;
-        $info['city']['name'] = CityData::getCityName($user->province,$user->city);
+        $info['city']['name'] = CityData::getCityName($user->province,$user->city)?:$user->city;
 
         $info['hometown_province']['key'] = $user->hometown_province;
-        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province);
+        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province)?:$user->hometown_province;
         $info['hometown_city']['key'] = $user->hometown_city;
-        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city);
+        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city)?:$user->hometown_city;
 
         $info['company'] = $user->company;
         $info['title'] = $user->title;
@@ -225,14 +225,14 @@ class ProfileController extends Controller
         $info['gender'] = $user->gender;
         $info['birthday'] = $user->birthday;
         $info['province']['key'] = $user->province;
-        $info['province']['name'] = CityData::getProvinceName($user->province);
+        $info['province']['name'] = CityData::getProvinceName($user->province)?:$user->province;
         $info['city']['key'] = $user->city;
-        $info['city']['name'] = CityData::getCityName($user->province,$user->city);
+        $info['city']['name'] = CityData::getCityName($user->province,$user->city)?:$user->city;
 
         $info['hometown_province']['key'] = $user->hometown_province;
-        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province);
+        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province)?:$user->hometown_province;
         $info['hometown_city']['key'] = $user->hometown_city;
-        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city);
+        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city)?:$user->hometown_city;
 
         $info['company'] = $user->company;
         $info['title'] = $user->title;
@@ -261,7 +261,7 @@ class ProfileController extends Controller
 
         $info['questions'] = $user->userData->questions;
         $info['answers'] = $user->userData->answers;
-        $info['supports'] = $user->userTag->sum('supports');
+        $info['supports'] = $user->answers->sum('supports') + $user->submissions->sum('upvotes');
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['projects'] = $user->companyProjects->count();

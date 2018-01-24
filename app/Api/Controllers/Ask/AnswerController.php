@@ -3,7 +3,9 @@
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Answer\PayForView;
 use App\Exceptions\ApiException;
+use App\Jobs\UpdateQuestionRate;
 use App\Logic\PayQueryLogic;
+use App\Logic\QuestionLogic;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\Attention;
@@ -24,9 +26,11 @@ use App\Models\UserTag;
 use App\Notifications\NewQuestionAnswered;
 use App\Notifications\NewQuestionConfirm;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\JWTAuth;
 
 class AnswerController extends Controller
 {
@@ -52,14 +56,19 @@ class AnswerController extends Controller
     }
 
     //回答详情
-    public function info(Request $request){
+    public function info(Request $request,JWTAuth $JWTAuth){
         $id = $request->input('id');
         $answer = Answer::find($id);
 
         if(empty($answer)){
             throw new ApiException(ApiException::ASK_ANSWER_NOT_EXIST);
         }
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $question = $answer->question;
 
         $is_self = $user->id == $question->user_id;
@@ -159,6 +168,7 @@ class AnswerController extends Controller
             'created_at' => (string)$question->created_at
         ];
         $answer->increment('views');
+        QuestionLogic::calculationQuestionRate($question->id);
         $this->doing($user->id,Doing::ACTION_VIEW_ANSWER,get_class($answer),$answer->id,'查看回答');
 
 
@@ -353,6 +363,7 @@ class AnswerController extends Controller
                 //进入结算中心
                 Settlement::answerSettlement($answer);
                 Settlement::questionSettlement($question);
+                QuestionLogic::calculationQuestionRate($answer->question_id);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],ApiException::SUCCESS,$message);
 
             }else{
@@ -527,8 +538,7 @@ class AnswerController extends Controller
             $action = Credit::KEY_RATE_ANSWER_BAD;
         }
         $this->credit($answer->user_id,$action,$feedback->id,'回答评价');
-
-
+        QuestionLogic::calculationQuestionRate($answer->question_id);
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));
     }
@@ -615,6 +625,16 @@ class AnswerController extends Controller
         }
         //生成一条点评任务
         $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+        //自动收藏
+        Collection::create([
+            'user_id'     => $loginUser->id,
+            'source_id'   => $answer->id,
+            'source_type' => get_class($answer),
+            'subject'  => '付费围观',
+        ]);
+        $answer->increment('collections');
+        QuestionLogic::calculationQuestionRate($answer->question_id);
+
 
         event(new PayForView($order));
         $this->doing($loginUser->id,Doing::ACTION_PAY_FOR_VIEW_ANSWER,get_class($answer),$answer->id,'付费围观答案','',0,$answer->user_id);

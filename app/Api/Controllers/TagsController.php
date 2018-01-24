@@ -1,16 +1,11 @@
 <?php namespace App\Api\Controllers;
-use App\Api\Controllers\Controller;
 use App\Logic\TagsLogic;
 use App\Models\Answer;
 use App\Models\Attention;
-use App\Models\Category;
 use App\Models\Collection;
-use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
-use App\Models\Taggable;
-use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -52,9 +47,17 @@ class TagsController extends Controller {
         ];
 
         $this->validate($request,$validateRules);
+        $loginUser = $request->user();
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
-        return self::createJsonData(true,$tag->toArray());
+        $is_followed = 0;
+        $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->first();
+        if ($attention){
+            $is_followed = 1;
+        }
+        $data = $tag->toArray();
+        $data['is_followed'] = $is_followed;
+        return self::createJsonData(true,$data);
     }
 
     //标签相关用户

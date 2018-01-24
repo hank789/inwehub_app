@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Jobs\Question\ConfirmOvertimeAlertSystem;
 use App\Models\Feed\Feed;
+use App\Models\Pay\Order;
 use App\Models\Relations\BelongsToCategoryTrait;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
@@ -70,7 +71,7 @@ class Question extends Model
 {
     use BelongsToUserTrait,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToCategoryTrait, MorphManyDoingsTrait, MorphManyOrdersTrait;
     protected $table = 'questions';
-    protected $fillable = ['title', 'user_id','category_id','question_type','description','tags','price','hide','status','device','data'];
+    protected $fillable = ['title', 'user_id','category_id','rate','question_type','description','tags','price','hide','status','device','data'];
 
 
     protected $casts = [
@@ -370,6 +371,28 @@ class Question extends Model
                 break;
         }
         return $this->title;
+    }
+
+    //计算排名积分
+    public function calculationRate(){
+        $startTime = 1473696439; // strtotime('2016-09-12 16:07:19')
+        $created = strtotime($this->created_at);
+        $timeDiff = $created - $startTime;
+        $views = $this->answers()->sum('views');
+        $answers = $this->answers;
+        $z = $views * 0.6 + $answers * 1 + $this->followers * 1.5;
+        if ($this->question_type == 1) {
+            $bestAnswer = $this->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
+            if ($bestAnswer) {
+                $stars = $bestAnswer->feedbacks()->sum('star');
+                $z += $stars;
+            }
+        }
+        $y = $this->answers()->sum('pay_for_views') + 1;
+
+        $rate =  (log10($z) * $y) + ($timeDiff / 45000);
+        $this->rate = $rate;
+        $this->save();
     }
 
 

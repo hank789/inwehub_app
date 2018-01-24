@@ -7,6 +7,7 @@ use App\Models\Answer;
 use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
+use App\Models\LoginRecord;
 use App\Models\Pay\UserMoney;
 use App\Models\Question;
 use App\Models\Submission;
@@ -92,6 +93,7 @@ class IndexController extends AdminController
         $coinUsers = UserData::orderBy('coins','desc')->take(50)->get();
         $creditUsers = UserData::orderBy('credits','desc')->take(50)->get();
         $signTotalCouponMoney = Coupon::whereIn('coupon_type',[Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,Coupon::COUPON_TYPE_DAILY_SIGN_BIG])->sum('coupon_value');
+        $newbieTotalCouponMoney = Coupon::where('coupon_type',Coupon::COUPON_TYPE_NEW_REGISTER_INVITATION)->sum('coupon_value');
         //用户等级统计
         $userLevels= UserData::selectRaw('count(*) as total,user_level')->groupBy('user_level')->orderBy('total','desc')->get();
         //用户余额
@@ -130,6 +132,7 @@ class IndexController extends AdminController
             'coinUsers',
             'creditUsers',
             'signTotalCouponMoney',
+            'newbieTotalCouponMoney',
             'userLevels',
             'totalBalance',
             'totalSettlement',
@@ -153,8 +156,8 @@ class IndexController extends AdminController
         /*生成Labels*/
         $labelTimes = $chartLabels = [];
 
-        for( $i=0 ; $i < 7 ; $i++ ){
-            $labelTimes[$i] = Carbon::createFromTimestamp( Carbon::today()->timestamp - (6-$i) * 24 * 3600 );
+        for( $i=0 ; $i < 30 ; $i++ ){
+            $labelTimes[$i] = Carbon::createFromTimestamp( Carbon::today()->timestamp - (29-$i) * 24 * 3600 );
             $chartLabels[$i] = '"'.$labelTimes[$i]->month.'月-'.$labelTimes[$i]->day.'日'.'"';
         }
 
@@ -162,9 +165,9 @@ class IndexController extends AdminController
 
         $users = User::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
-        $registerRange = $verifyRange = $authRange = $signRange = [0,0,0,0,0,0,0];
+        $registerRange = $verifyRange = $authRange = $signRange = $loginRange = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
-        for( $i=0 ; $i < 7 ; $i++ ){
+        for( $i=0 ; $i < 30 ; $i++ ){
             $startTime = $labelTimes[$i];
             $endTime = $nowTime;
             if(isset($labelTimes[$i+1])){
@@ -172,6 +175,9 @@ class IndexController extends AdminController
             }
             $signRange[$i] = Credit::where('action',Credit::KEY_FIRST_USER_SIGN_DAILY)
                 ->where('created_at','>',$startTime)
+                ->where('created_at','<',$endTime)
+                ->count();
+            $loginRange[$i] = LoginRecord::where('created_at','>',$startTime)
                 ->where('created_at','<',$endTime)
                 ->count();
 
@@ -190,7 +196,7 @@ class IndexController extends AdminController
 
         }
 
-        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange, 'signUsers'=>$signRange];
+        return ['labels'=>$chartLabels,'registerUsers'=>$registerRange,'recommendUsers'=>$verifyRange,'authUsers'=>$authRange, 'signUsers'=>$signRange,'loginUsers'=>$loginRange];
     }
 
     private function drawQuestionChart()
@@ -198,8 +204,8 @@ class IndexController extends AdminController
 
         /*生成Labels*/
         $labelTimes = $chartLabels = [];
-        for( $i=0 ; $i < 7 ; $i++ ){
-            $labelTimes[$i] = Carbon::createFromTimestamp( Carbon::today()->timestamp - (6-$i) * 24 * 3600 );
+        for( $i=0 ; $i < 30 ; $i++ ){
+            $labelTimes[$i] = Carbon::createFromTimestamp( Carbon::today()->timestamp - (29-$i) * 24 * 3600 );
             $chartLabels[$i] = '"'.$labelTimes[$i]->month.'月-'.$labelTimes[$i]->day.'日'.'"';
         }
 
@@ -212,9 +218,9 @@ class IndexController extends AdminController
         $submissions = Submission::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
 
-        $questionRange = $answerRange = $feedbackRange = $submissionTextRange = $submissionLinkRange = [0,0,0,0,0,0,0];
+        $questionRange = $answerRange = $feedbackRange = $submissionTextRange = $submissionLinkRange = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
-        for( $i=0 ; $i < 7 ; $i++ ){
+        for( $i=0 ; $i < 30 ; $i++ ){
             $startTime = $labelTimes[$i];
             $endTime = $nowTime;
             if(isset($labelTimes[$i+1])){

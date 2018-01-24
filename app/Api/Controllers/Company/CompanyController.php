@@ -178,7 +178,9 @@ class CompanyController extends Controller {
                 'address_province' => $company->address_province,
                 'tags' => $tags,
                 'distance' => $distance,
-                'distance_format' => distanceFormat($distance)
+                'distance_format' => distanceFormat($distance),
+                'longitude' => $company->longitude,
+                'latitude'  => $company->latitude
             ];
         }
 
@@ -202,7 +204,9 @@ class CompanyController extends Controller {
                     'address_province' => $item['address']??'',
                     'tags' => [],
                     'distance' => '未知',
-                    'distance_format' => '未知'
+                    'distance_format' => '未知',
+                    'longitude' => $item['detail_info']['navi_location']['lng']??'',
+                    'latitude'  => $item['detail_info']['navi_location']['lat']??'',
                 ];
             }
         }
