@@ -2,6 +2,7 @@
 
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
@@ -474,7 +475,7 @@ class QuestionController extends Controller
                 //记录任务
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
                 //通知
-                $toUser->notify(new NewQuestionInvitation($toUser->id,$question));
+                $toUser->notify(new NewQuestionInvitation($toUser->id,$question,$loginUser->id,$invitation->id));
             }elseif ($question->question_type == 1){
                 //专业问答非定向邀请的自动匹配一次
                 event(new AutoInvitation($question));
@@ -516,6 +517,24 @@ class QuestionController extends Controller
         if (!is_array($to_user_ids)) {
             $to_user_ids = [$to_user_ids];
         }
+        $fields = [];
+        $fields[] = [
+            'title' => '问题标题',
+            'value' => $question->title
+        ];
+        $fields[] = [
+            'title' => '标签',
+            'value' => implode(',',$question->tags()->pluck('name')->toArray())
+        ];
+        $fields[] = [
+            'title' => '类型',
+            'value' => $question->question_type == 1 ? '专业问答':'互动问答'
+        ];
+        $url = route('ask.question.detail',['id'=>$question->id]);
+        $fields[] = [
+            'title' => '地址',
+            'value' => $url
+        ];
         foreach ($to_user_ids as $to_user_id) {
             if($loginUser->id == $to_user_id){
                 continue;
@@ -534,6 +553,10 @@ class QuestionController extends Controller
             if($question->isInvited($toUser->id,$loginUser->id)){
                 continue;
             }
+            $fields[] = [
+                'title' => '邀请回答者',
+                'value' => $toUser->id.'['.$toUser->name.']'
+            ];
 
             $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$toUser->id,'from_user_id'=>$loginUser->id,'question_id'=>$question->id],[
                 'from_user_id'=> $loginUser->id,
@@ -542,13 +565,10 @@ class QuestionController extends Controller
                 'send_to'=> $toUser->email
             ]);
 
-            //记录动态
-            //记录任务
-            //$this->task($to_user_id,get_class($invitation),$invitation->id,Task::ACTION_TYPE_INVITE_ANSWER);
-
-            $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id));
-            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$invitation->id,$toUser->id);
+            $toUser->notify(new NewQuestionInvitation($toUser->id, $question, $loginUser->id,$invitation->id,false));
+            $this->credit($loginUser->id,Credit::KEY_COMMUNITY_ANSWER_INVITED,$invitation->id,$toUser->id,false);
         }
+        event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']批量邀请回答问题',$fields));
 
         return self::createJsonData(true);
     }

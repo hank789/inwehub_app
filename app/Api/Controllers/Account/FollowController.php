@@ -218,6 +218,7 @@ class FollowController extends Controller
 
         $ids = $request->input('ids');
         $user = $request->user();
+        $fields = [];
         foreach ($ids as $id) {
             $source = User::where('uuid',$id)->first();
             if(empty($source)){
@@ -242,7 +243,11 @@ class FollowController extends Controller
             $feed_event = 'user_followed';
             $feed_target = $source->id.'_'.$user->id;
             if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
-                $source->notify(new NewUserFollowing($source->id,$attention));
+                $fields[] = [
+                    'title' => '用户',
+                    'value' => $source->id.'['.$source->name.']'
+                ];
+                $source->notify(new NewUserFollowing($source->id,$attention,false));
                 feed()
                     ->causedBy($user)
                     ->performedOn($source)
@@ -251,7 +256,7 @@ class FollowController extends Controller
                     ])
                     ->log($user->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
-                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
+                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
                 //产生一条私信
                 $message = $user->messages()->create([
                     'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
@@ -289,6 +294,7 @@ class FollowController extends Controller
                 ]);
             }
         }
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']批量关注了用户',$fields));
         return self::createJsonData(true,[],ApiException::SUCCESS,'关注成功');
 
     }
@@ -387,8 +393,8 @@ class FollowController extends Controller
                         ->performedOn($source)
                         ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                         ->log($user->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
-                    $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
-                    $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
+                    $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
+                    $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source),false);
                 }
             }
 

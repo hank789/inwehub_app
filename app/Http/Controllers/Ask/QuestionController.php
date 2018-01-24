@@ -373,7 +373,7 @@ class QuestionController extends Controller
         //记录任务
         $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
-        $toUser->notify(new NewQuestionInvitation($toUser->id, $question));
+        $toUser->notify(new NewQuestionInvitation($toUser->id, $question,0,$invitation->id));
 
         return $this->ajaxSuccess('邀请成功');
     }

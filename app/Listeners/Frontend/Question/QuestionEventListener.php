@@ -57,7 +57,7 @@ class QuestionEventListener implements ShouldQueue
             TaskLogic::task($uid,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
             $user = User::find($uid);
-            $user->notify(new NewQuestionInvitation($uid, $question));
+            $user->notify(new NewQuestionInvitation($uid, $question,0,$invitation->id));
         }
     }
 

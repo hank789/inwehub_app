@@ -20,6 +20,8 @@ class Credit
 
     public $source_subject;
 
+    public $toSlack;
+
 
     /**
      * 修改用户积分
@@ -29,8 +31,9 @@ class Credit
      * @param string $source_subject; 源主题：问题标题、文章标题等
      * @param int $coins;      金币数/财富值
      * @param int $credits;    经验值
+     * @param bool $toSlack
      */
-    public function __construct($user_id,$action,$coins = 0,$credits = 0,$source_id = 0 ,$source_subject = null)
+    public function __construct($user_id,$action,$coins = 0,$credits = 0,$source_id = 0 ,$source_subject = null,$toSlack = true)
     {
         $this->user_id = $user_id;
         $this->action = $action;
@@ -38,6 +41,7 @@ class Credit
         $this->credits = $credits;
         $this->source_id = $source_id;
         $this->source_subject = $source_subject;
+        $this->toSlack = $toSlack;
 
     }
 

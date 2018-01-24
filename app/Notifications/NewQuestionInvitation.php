@@ -3,10 +3,14 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
+use App\Jobs\Question\ConfirmOvertime;
+use App\Logic\QuestionLogic;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -21,17 +25,21 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
     protected $question;
     protected $user_id;
     protected $from_user_id;
+    protected $invitation_id;
+    protected $notifySlack;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, Question $question, $from_user_id = '')
+    public function __construct($user_id, Question $question, $from_user_id = '',$invitation_id='',$notifySlack = true)
     {
         $this->user_id = $user_id;
         $this->question = $question;
         $this->from_user_id = $from_user_id;
+        $this->invitation_id = $invitation_id;
+        $this->notifySlack = $notifySlack;
     }
 
     /**
@@ -42,7 +50,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class,SlackChannel::class];
     }
 
     /**
@@ -154,6 +162,23 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
             'template_id' => $template_id,
             'target_url' => $url
         ];
+    }
+
+    public function toSlack($notifiable){
+        if ($this->notifySlack) {
+            if ($this->from_user_id) {
+                $from_user = User::find($this->from_user_id);
+                $inviter = $from_user->id.'['.$from_user->name.']';
+            }else {
+                $inviter = '[系统]';
+            }
+            $user = User::find($this->user_id);
+            QuestionLogic::slackMsg('用户'.$inviter.'邀请用户'.$this->user_id.'['.$user->name.']回答问题',$this->question);
+        }
+        if ($this->invitation_id) {
+            //延时处理是否需要告警专家
+            dispatch((new ConfirmOvertime($this->question->id,$this->invitation_id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',10))));
+        }
     }
 
     public function broadcastOn(){

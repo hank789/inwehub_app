@@ -23,15 +23,18 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
 
     protected $attention;
 
+    protected $notifySlack;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, Attention $attention)
+    public function __construct($user_id, Attention $attention,$notifySlack = true)
     {
         $this->user_id = $user_id;
         $this->attention = $attention;
+        $this->notifySlack = $notifySlack;
     }
 
     /**
@@ -117,12 +120,14 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
     }
 
     public function toSlack($notifiable){
-        $user = User::find($this->attention->user_id);
-        $current_user = User::find($this->user_id);
+        if ($this->notifySlack) {
+            $user = User::find($this->attention->user_id);
+            $current_user = User::find($this->user_id);
 
-        return \Slack::to(config('slack.ask_activity_channel'))
-            ->disableMarkdown()
-            ->send('用户'.$user->id.'['.$user->name.']关注了用户'.$current_user->id.'['.$current_user->name.']');
+            return \Slack::to(config('slack.ask_activity_channel'))
+                ->disableMarkdown()
+                ->send('用户'.$user->id.'['.$user->name.']关注了用户'.$current_user->id.'['.$current_user->name.']');
+        }
     }
 
     public function broadcastOn(){
