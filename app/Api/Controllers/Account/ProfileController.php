@@ -132,7 +132,7 @@ class ProfileController extends Controller
         $info['user_coins'] = $user->userData->coins;
         $info['my_activity_enroll'] = Collection::where('user_id',$user->id)->where('source_type','App\Models\Article')->count();
 
-        $info['newbie_unfinish_tasks']= ['readhub_comment'=>false,'ask'=>false,'complete_userinfo'=>false];
+        $info['newbie_unfinish_tasks']= ['readhub_comment'=>false,'ask'=>false,'complete_userinfo'=>false,'show_guide'=>true];
         $newbie_readhub_comment_task = Task::where('user_id',$user->id)->where('source_type','newbie_readhub_comment')->where('status',1)->first();
         if ($newbie_readhub_comment_task) {
             $info['newbie_unfinish_tasks']['readhub_comment'] = true;
@@ -145,6 +145,9 @@ class ProfileController extends Controller
         $newbie_complete_userinfo_task = Task::where('user_id',$user->id)->where('source_type','newbie_complete_userinfo')->where('status',1)->first();
         if ($newbie_complete_userinfo_task) {
             $info['newbie_unfinish_tasks']['complete_userinfo'] = true;
+        }
+        if ($user->attentions()->count()>0) {
+            $info['newbie_unfinish_tasks']['show_guide'] = false;
         }
 
         $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
