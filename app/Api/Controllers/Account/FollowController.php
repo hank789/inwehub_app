@@ -336,7 +336,7 @@ class FollowController extends Controller
             $feed_event = 'tag_followed';
             $feed_target = $source->id.'_'.$user->id;
             if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
-                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
+                $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
             }
 
         }
