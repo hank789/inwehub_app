@@ -93,6 +93,7 @@ class IndexController extends AdminController
         $coinUsers = UserData::orderBy('coins','desc')->take(50)->get();
         $creditUsers = UserData::orderBy('credits','desc')->take(50)->get();
         $signTotalCouponMoney = Coupon::whereIn('coupon_type',[Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,Coupon::COUPON_TYPE_DAILY_SIGN_BIG])->sum('coupon_value');
+        $newbieTotalCouponMoney = Coupon::where('coupon_type',Coupon::COUPON_TYPE_NEW_REGISTER_INVITATION)->sum('coupon_value');
         //用户等级统计
         $userLevels= UserData::selectRaw('count(*) as total,user_level')->groupBy('user_level')->orderBy('total','desc')->get();
         //用户余额
@@ -131,6 +132,7 @@ class IndexController extends AdminController
             'coinUsers',
             'creditUsers',
             'signTotalCouponMoney',
+            'newbieTotalCouponMoney',
             'userLevels',
             'totalBalance',
             'totalSettlement',
