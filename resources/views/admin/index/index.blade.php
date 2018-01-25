@@ -199,11 +199,11 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default collapsed-box">
+                <div class="box box-default">
                     <div class="box-header with-border">
                         <h3 class="box-title">一周用户数据报告</h3>
                         <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                             </button>
                         </div>
                     </div>
@@ -224,11 +224,11 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default collapsed-box">
+                <div class="box box-default">
                     <div class="box-header with-border">
                         <h3 class="box-title">问答数据报告</h3>
                         <div class="box-tools pull-right">
-                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                             </button>
                         </div>
                     </div>
