@@ -192,9 +192,10 @@ class IndexController extends AdminController
                 ->where('created_at','>',$startTime)
                 ->where('created_at','<',$endTime)
                 ->count();
-            $loginRange[$i] = LoginRecord::where('created_at','>',$startTime)
+            $loginRange[$i] = LoginRecord::select('user_id')->where('created_at','>',$startTime)
                 ->where('created_at','<',$endTime)
-                ->count();
+                ->distinct()
+                ->count('user_id');
 
             foreach($users as $user){
                 if( $user->created_at > $startTime && $user->created_at < $endTime ){
