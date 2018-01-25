@@ -199,9 +199,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">一周用户数据报告</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -220,9 +224,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">问答数据报告</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -241,9 +249,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">热门标签Top100</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -261,9 +273,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">用户等级统计</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -290,9 +306,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">用户余额统计</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -325,9 +345,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">用户提现金额统计</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -360,9 +384,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">邀请用户统计</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -395,9 +423,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">贡献值排行前50</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -430,9 +462,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">成长值排行前50</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -465,9 +501,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">系统信息</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body table-responsive">
                         <div class="row">
