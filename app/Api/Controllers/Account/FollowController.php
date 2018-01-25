@@ -43,6 +43,7 @@ class FollowController extends Controller
         $source_id = $request->input('id');
         $loginUser = $request->user();
 
+        $limit_expire = 15;
         if($source_type === 'question'){
             $source  = Question::findOrFail($source_id);
             $subject = $source->title;
@@ -56,12 +57,13 @@ class FollowController extends Controller
                 throw new ApiException(ApiException::USER_CANNOT_FOLLOWED_SELF);
             }
             $subject = $source->name;
+            $limit_expire = 5;
         }else if($source_type==='tag'){
             $source  = Tag::findOrFail($source_id);
             $subject = $source->name;
         }
 
-        if (RateLimiter::instance()->increase('follow:'.$source_type,$loginUser->id,15,2)){
+        if (RateLimiter::instance()->increase('follow:'.$source_type,$loginUser->id,$limit_expire,2)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 

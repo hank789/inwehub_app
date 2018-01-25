@@ -9,6 +9,7 @@ use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\LoginRecord;
 use App\Models\Pay\UserMoney;
+use App\Models\Pay\Withdraw;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Tag;
@@ -101,6 +102,13 @@ class IndexController extends AdminController
         //待结算金融
         $totalSettlement = UserMoney::sum('settlement_money');
         $userMoney= UserMoney::orderBy('total_money','desc')->take(50)->get();
+        $userWithdrawMoneyList = Withdraw::select('user_id',DB::raw('SUM(amount) as total_amount'))
+            ->where('status',Withdraw::WITHDRAW_STATUS_SUCCESS)
+            ->orderBy('total_amount','desc')
+            ->groupBy('user_id')
+            ->take(50)->get();
+        //提现金额
+        $withDrawMoney = Withdraw::where('status',Withdraw::WITHDRAW_STATUS_SUCCESS)->sum('amount');
         //热门标签
         $taggables =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))->groupBy('tag_id')
             ->orderBy('total_num','desc')
@@ -137,6 +145,8 @@ class IndexController extends AdminController
             'totalBalance',
             'totalSettlement',
             'userMoney',
+            'withDrawMoney',
+            'userWithdrawMoneyList',
             'hotTags',
             'userChart','questionChart','systemInfo'));
     }

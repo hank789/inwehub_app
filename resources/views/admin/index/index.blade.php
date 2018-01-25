@@ -149,6 +149,15 @@
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">提现总金额</span>
+                        <span class="info-box-number">{{ $withDrawMoney }}</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
         </div>
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
@@ -304,6 +313,41 @@
                                                 <td>{{ $user->user->name }}</td>
                                                 <td>{{ $user->user->mobile }}</td>
                                                 <td>{{ $user->total_money }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">用户提现金额统计</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>排名</th>
+                                            <th>用户ID</th>
+                                            <th>用户姓名</th>
+                                            <th>手机</th>
+                                            <th>余额</th>
+                                        </tr>
+                                        @foreach($userWithdrawMoneyList as $key=>$userWithdrawMoney)
+                                            <tr>
+                                                <td>{{ $key+1 }}</td>
+                                                <td>{{ $userWithdrawMoney->user_id }}</td>
+                                                <td>{{ $userWithdrawMoney->user->name }}</td>
+                                                <td>{{ $userWithdrawMoney->user->mobile }}</td>
+                                                <td>{{ $userWithdrawMoney->total_amount }}</td>
                                             </tr>
                                         @endforeach
                                     </table>
