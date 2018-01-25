@@ -18,7 +18,10 @@
                                 <div class="col-xs-3">
                                     <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                 </div>
-                                <div class="col-xs-6">
+                                <div class="col-xs-3">
+                                    <input type="text" class="form-control" name="action" placeholder="行为" value="{{ $filter['action'] or '' }}"/>
+                                </div>
+                                <div class="col-xs-3">
                                     <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                 </div>
                                 <div class="col-xs-3">

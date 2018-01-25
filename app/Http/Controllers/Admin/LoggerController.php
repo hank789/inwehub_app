@@ -43,6 +43,10 @@ class LoggerController extends AdminController
         if( isset($filter['user_id']) &&  $filter['user_id'] > 0 ){
             $query->where('user_id','=',$filter['user_id']);
         }
+        /*行为过滤*/
+        if( isset($filter['action']) &&  $filter['action'] ){
+            $query->where('action','=',$filter['action']);
+        }
         /*时间过滤*/
         if( isset($filter['date_range']) && $filter['date_range'] ){
             $query->whereBetween('created_at',explode(" - ",$filter['date_range']));

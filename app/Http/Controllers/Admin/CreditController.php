@@ -28,14 +28,17 @@ class CreditController extends AdminController
         if( isset($filter['user_id']) &&  $filter['user_id'] > 0 ){
             $query->where('user_id','=',$filter['user_id']);
         }
+        /*行为过滤*/
+        if( isset($filter['action']) &&  $filter['action'] ){
+            $query->where('action','=',$filter['action']);
+        }
         /*时间过滤*/
         if( isset($filter['date_range']) && $filter['date_range'] ){
             $query->whereBetween('created_at',explode(" - ",$filter['date_range']));
         }
+
         $credits = $query->orderBy('created_at','desc')->paginate(20);
-        $credits->map(function($credit){
-            $credit->actionText = config('inwehub.user_actions.'.$credit->action);
-        });
+
         return view('admin.credit.index')->with(compact('credits','filter'));
     }
 
