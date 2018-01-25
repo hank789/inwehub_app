@@ -7,7 +7,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            网站总览
+            网站总览(缓存时间半个小时)
         </h1>
     </section>
 
