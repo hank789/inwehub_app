@@ -200,7 +200,8 @@ class SubmissionController extends Controller {
             $user = new \stdClass();
             $user->id = 0;
         }
-        $submission = Submission::where('slug',$request->slug)->first();
+        $slug = trim($request->slug,'?noback=1');
+        $submission = Submission::where('slug',$slug)->first();
         if (!$submission) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
