@@ -182,7 +182,8 @@ class NotificationController extends Controller
             'push_rel_mine_commented',
             'push_rel_mine_invited',
             'push_my_user_new_answered',
-            'push_my_question_new_answered'
+            'push_my_question_new_answered',
+            'push_do_not_disturb'
         ];
         foreach ($fields as $field) {
             if (-1 != $request->input($field,-1)) {
