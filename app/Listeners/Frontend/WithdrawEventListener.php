@@ -44,9 +44,10 @@ class WithdrawEventListener implements ShouldQueue {
             return;
         }
         //是否绑定了微信
-        $user_oauth = UserOauth::where('user_id',$user_id)->whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])->where('status',1)->orderBy('updated_at','desc')->first();
+        $user_oauth = UserOauth::where('user_id',$user_id)->where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)->where('status',1)->orderBy('updated_at','desc')->first();
         if(empty($user_oauth)){
-            return;
+            $user_oauth = UserOauth::where('user_id',$user_id)->where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)->where('status',1)->orderBy('updated_at','desc')->first();
+            if (empty($user_oauth)) return;
         }
         try{
             WithdrawLogic::checkUserWithdrawLimit($user_id,$amount);
