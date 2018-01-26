@@ -45,20 +45,34 @@
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>ID</th>
                                         <th>标题</th>
-                                        <th>频道</th>
+                                        <th>封面图片</th>
                                         <th>类型</th>
                                         <th>发布者</th>
                                         <th>更新时间</th>
+                                        <th>操作</th>
                                     </tr>
                                     @foreach($submissions as $submission)
                                         <tr>
                                             <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
                                             <td>{{ $submission->id }}</td>
                                             <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ strip_tags($submission->title) }}</a></td>
-                                            <td>{{ $submission->category_name }}</td>
+                                            <td>
+                                                @if ($submission->data['img'] && is_array($submission->data['img']))
+                                                    @foreach($submission->data['img'] as $img)
+                                                        <img width="100" height="100" src="{{ $img }}">
+                                                    @endforeach
+                                                @elseif ($submission->data['img'])
+                                                    <img width="100" height="100" src="{{ $submission->data['img'] ??'' }}">
+                                                @endif
+                                            </td>
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->owner->name }}</td>
                                             <td>{{ $submission->updated_at }}</td>
+                                            <td>
+                                                <div class="btn-group-xs" >
+                                                    <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
+                                                </div>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </table>

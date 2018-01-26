@@ -212,6 +212,8 @@ Route::post('rgcode/verify',['as'=>'admin.operate.rgcode.verify','uses'=>'Regist
 Route::get('submission/index',['as'=>'admin.operate.article.index','uses'=>'SubmissionController@index']);
 Route::post('submission/verify_recommend',['as'=>'admin.operate.article.verify_recommend','uses'=>'SubmissionController@verifyRecommend']);
 Route::post('submission/destroy',['as'=>'admin.operate.article.destroy','uses'=>'SubmissionController@destroy']);
+Route::get('submission/edit/{id}',['as'=>'admin.operate.article.edit','uses'=>'SubmissionController@edit'])->where(['id'=>'[0-9]+']);
+Route::put('submission/update',['as'=>'admin.operate.article.update','uses'=>'SubmissionController@update']);
 
 
 //企业管理
