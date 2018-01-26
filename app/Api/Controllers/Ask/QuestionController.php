@@ -1019,6 +1019,26 @@ class QuestionController extends Controller
                 'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray()
             ];
         }
+        if (count($list) < 5) {
+            $left = 5 - count($list);
+            $relatedQuestions = Question::recent($left,2,[$user->id]);
+            foreach ($relatedQuestions as $relatedQuestion) {
+                $is_followed_question = 0;
+                $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($relatedQuestion))->where('source_id','=',$relatedQuestion->id)->first();
+                if ($attention_question) {
+                    $is_followed_question = 1;
+                }
+                $list[] = [
+                    'id' => $relatedQuestion->id,
+                    'title' => $relatedQuestion->title,
+                    'question_type' => $relatedQuestion->question_type,
+                    'answer_number' => $relatedQuestion->answers,
+                    'follow_number' => $relatedQuestion->followers,
+                    'is_followed_question'   => $is_followed_question,
+                    'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray()
+                ];
+            }
+        }
         $return['data'] = $list;
         $return['user_skill_tags'] = $skillTags;
         return self::createJsonData(true,$return);
