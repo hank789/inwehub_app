@@ -36,6 +36,7 @@ class WithdrawController extends Controller {
         if ($limit >= 3) {
             throw new ApiException(ApiException::WITHDRAW_PASSWORD_LIMIT);
         }
+
         if (!Auth::validate(['mobile'=>$user->phone,'password'=>$request->input('password')])) {
             $limit = RateLimiter::instance()->increaseBy('withdraw_password_error_'.date('Ymd'),$user->id,1,86400);
             return self::createJsonData(false,[],ApiException::WITHDRAW_PASSWORD_ERROR,'密码输入错误，今天您还可以输入'.(3-$limit).'次');
@@ -60,6 +61,9 @@ class WithdrawController extends Controller {
 
         event(new WithdrawCreate($user->id,$amount,isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1'));
         return self::createJsonData(true,['withdraw_channel'=>Setting()->get('withdraw_channel',Withdraw::WITHDRAW_CHANNEL_WX),'tips'=>'您的提现请求已受理']);
+    }
 
+    public function username(){
+        return 'mobile';
     }
 }
