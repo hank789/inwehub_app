@@ -324,7 +324,7 @@ class Question extends Model
     /*最近热门问题*/
     public static function recent($pageSize=10,$questionType='',array $ignoreUsers=[])
     {
-        $query = self::where('status','>',0)->where('created_at','>',Carbon::today()->subWeek())->orderBy('views','DESC')->orderBy('answers','DESC')->orderBy('created_at','DESC');
+        $query = self::where('status','>',0)->orderBy('answers','ASC')->orderBy('created_at','DESC');
         if ($questionType) {
             $query = $query->where('question_type',$questionType);
         }
