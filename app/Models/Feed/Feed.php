@@ -209,7 +209,7 @@ class Feed extends Model
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
                     'img'       => $submission->data['img'],
-                    'domain'    => $submission->data['domain'],
+                    'domain'    => $this->data['domain'],
                     'tags'      => $submission->tags()->get()->toArray(),
                     'submission_id' => $this->source_id,
                     'current_address_name' => $this->data['current_address_name']??'',
