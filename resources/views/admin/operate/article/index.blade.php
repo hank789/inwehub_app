@@ -46,6 +46,7 @@
                                         <th>ID</th>
                                         <th>标题</th>
                                         <th>频道</th>
+                                        <th>类型</th>
                                         <th>发布者</th>
                                         <th>更新时间</th>
                                     </tr>
@@ -55,6 +56,7 @@
                                             <td>{{ $submission->id }}</td>
                                             <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ strip_tags($submission->title) }}</a></td>
                                             <td>{{ $submission->category_name }}</td>
+                                            <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->owner->name }}</td>
                                             <td>{{ $submission->updated_at }}</td>
                                         </tr>

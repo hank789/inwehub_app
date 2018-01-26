@@ -16,20 +16,24 @@
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-aqua"><i class="fa fa-users" aria-hidden="true"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">注册用户数</span>
-                        <span class="info-box-number">{{ $totalUserNum }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.user.index') }}">
+                        <span class="info-box-icon bg-aqua"><i class="fa fa-users" aria-hidden="true"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">注册用户数</span>
+                            <span class="info-box-number">{{ $totalUserNum }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-red"><i class="fa fa-question-circle"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">问题总数</span>
-                        <span class="info-box-number">{{ $totalQuestionNum }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.question.index') }}">
+                        <span class="info-box-icon bg-red"><i class="fa fa-question-circle"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">问题总数</span>
+                            <span class="info-box-number">{{ $totalQuestionNum }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
@@ -47,31 +51,37 @@
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-feed"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">回答总数</span>
-                        <span class="info-box-number">{{ $totalAnswerNum }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.answer.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-feed"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">回答总数</span>
+                            <span class="info-box-number">{{ $totalAnswerNum }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
         </div>
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">动态数</span>
-                        <span class="info-box-number">{{ $submissionTextCount }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.operate.article.index') }}">
+                        <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">动态数</span>
+                            <span class="info-box-number">{{ $submissionTextCount }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-red"><i class="fa fa-archive"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">文章数</span>
-                        <span class="info-box-number">{{ $submissionLinkCount }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.operate.article.index') }}">
+                        <span class="info-box-icon bg-red"><i class="fa fa-archive"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">文章数</span>
+                            <span class="info-box-number">{{ $submissionLinkCount }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
@@ -80,20 +90,24 @@
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">总任务数</span>
-                        <span class="info-box-number">{{ $totalTasks }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.task.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">总任务数</span>
+                            <span class="info-box-number">{{ $totalTasks }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">未清任务</span>
-                        <span class="info-box-number">{{ $totalUndoTasks }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.task.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">未清任务</span>
+                            <span class="info-box-number">{{ $totalUndoTasks }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
@@ -101,61 +115,73 @@
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">未清任务人数</span>
-                        <span class="info-box-number">{{ $totalUndoTaskUsers }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.task.index') }}">
+                        <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">未清任务人数</span>
+                            <span class="info-box-number">{{ $totalUndoTaskUsers }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">签到红包总金额</span>
-                        <span class="info-box-number">{{ $signTotalCouponMoney }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.activity.coupon') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">签到红包总金额</span>
+                            <span class="info-box-number">{{ $signTotalCouponMoney }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">新手红包总金额</span>
-                        <span class="info-box-number">{{ $newbieTotalCouponMoney }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.activity.coupon') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">新手红包总金额</span>
+                            <span class="info-box-number">{{ $newbieTotalCouponMoney }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">用户账户总余额</span>
-                        <span class="info-box-number">{{ $totalBalance }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.user.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">用户账户总余额</span>
+                            <span class="info-box-number">{{ $totalBalance }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
         </div>
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">用户账户待结算金额</span>
-                        <span class="info-box-number">{{ $totalSettlement }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.finance.settlement.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">用户账户待结算金额</span>
+                            <span class="info-box-number">{{ $totalSettlement }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">提现总金额</span>
-                        <span class="info-box-number">{{ $withDrawMoney }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.finance.withdraw.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">提现总金额</span>
+                            <span class="info-box-number">{{ $withDrawMoney }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
         </div>
