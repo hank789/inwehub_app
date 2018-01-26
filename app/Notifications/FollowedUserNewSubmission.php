@@ -39,7 +39,11 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class];
+        $via = ['database', 'broadcast'];
+        if ($notifiable->site_notifications['push_my_user_new_activity']??true){
+            $via[] = PushChannel::class;
+        }
+        return $via;
     }
 
     /**

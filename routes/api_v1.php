@@ -314,7 +314,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     Route::post('notification/mark_as_read','NotificationController@markAsRead');
     //统计
     Route::post('notification/count','NotificationController@count');
-
+    //推送设置
+    Route::post('notification/push/update','NotificationController@pushSettings');
+    //获取推送设置
+    Route::post('notification/push/info','NotificationController@getPushSettings');
 });
 
 

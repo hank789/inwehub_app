@@ -75,6 +75,9 @@ class PushNoticeController extends AdminController
                 if(!$recommendation){
                     return $this->error(route('admin.operate.pushNotice.edit',['id'=>$request->get('id')]),'推荐不存在，请核实');
                 }
+                if ($recommendation->type == 'text') {
+                    return $this->error(route('admin.operate.pushNotice.edit',['id'=>$request->get('id')]),'该动态非外联，请选择"app内页"项');
+                }
                 break;
         }
 

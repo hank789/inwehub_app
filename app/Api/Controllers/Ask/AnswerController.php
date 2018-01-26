@@ -142,7 +142,7 @@ class AnswerController extends Controller
 
 
         $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
-
+        $currentUserAnswer = Answer::where('question_id',$question->id)->where('user_id',$user->id)->where('status',1)->first();
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
@@ -163,8 +163,9 @@ class AnswerController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $answer->promise_time,
-            'answer_num' => $question->answers,
-            'follow_num' => $question->followers,
+            'question_answer_num' => $question->answers,
+            'question_follow_num' => $question->followers,
+            'current_user_answer_id' => $currentUserAnswer?$currentUserAnswer->id:0,
             'created_at' => (string)$question->created_at
         ];
         $answer->increment('views');

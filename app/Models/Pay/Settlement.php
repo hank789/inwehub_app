@@ -240,7 +240,11 @@ class Settlement extends Model {
                         break;
                 }
                 break;
+            case 'reward_coupon':
+                return '红包收入';
+                break;
         }
+        return $this->source_type;
     }
 
 }

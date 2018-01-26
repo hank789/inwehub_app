@@ -4,7 +4,6 @@ namespace App\Models\Feed;
 
 use App\Models\Answer;
 use App\Models\Attention;
-use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
@@ -12,7 +11,6 @@ use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
 use Carbon\Carbon;
-use function GuzzleHttp\Psr7\str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -123,7 +121,7 @@ class Feed extends Model
                 }
                 $data = [
                     'question_title' => $this->data['question_title'],
-                    'answer_content' => str_limit($answer->getContentText()),
+                    'answer_content' => str_limit($answer->getContentText(),120),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
@@ -210,7 +208,7 @@ class Feed extends Model
                     ->exists();
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
-                    'img'       => $this->data['img'],
+                    'img'       => $submission->data['img'],
                     'domain'    => $this->data['domain'],
                     'tags'      => $submission->tags()->get()->toArray(),
                     'submission_id' => $this->source_id,
@@ -315,7 +313,7 @@ class Feed extends Model
                 if ($payOrder) {
                     $is_pay_for_view = true;
                 }
-                $data['answer_content'] = str_limit($answer->getContentText());
+                $data['answer_content'] = str_limit($answer->getContentText(),120);
                 $data['comment_number'] = $answer->comments;
                 $data['average_rate']   = $answer->getFeedbackRate();
                 $data['support_number'] = $answer->supports;

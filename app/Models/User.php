@@ -14,7 +14,6 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;

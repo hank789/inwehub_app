@@ -71,7 +71,7 @@
                                         <tr>
                                             <td><input type="checkbox" value="{{ $withdraw->id }}" name="id[]"/></td>
                                             <td>{{ $withdraw->id }}</td>
-                                            <td>{{ $withdraw->user->name }}</td>
+                                            <td>{{ $withdraw->user->name.'['.$withdraw->user->id.']' }}</td>
                                             <td>{{ $withdraw->user->mobile }}</td>
                                             <td>{{ $withdraw->amount }}</td>
                                             <td>{{ $withdraw->created_at }}</td>

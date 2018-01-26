@@ -162,8 +162,8 @@ class QuestionController extends Controller
             'status' => $question->status,
             'status_description' => $question->statusHumanDescription($user->id),
             'promise_answer_time' => $promise_answer_time,
-            'answer_num' => $question->answers,
-            'follow_num' => $question->followers,
+            'question_answer_num' => $question->answers,
+            'question_follow_num' => $question->followers,
             'created_at' => (string)$question->created_at
         ];
 
@@ -989,8 +989,10 @@ class QuestionController extends Controller
     //推荐相关问题
     public function recommendUserQuestions(Request $request) {
         $user = $request->user();
-        $skillTags = $user->userSkillTag()->pluck('tag_id');
-        $relatedQuestions = Question::correlationsPage($skillTags,5,2,[$user->id]);
+        $skillTags = $user->userSkillTag()->pluck('tag_id')->toArray();
+        $attentionTags = $user->attentions()->where('source_type','App\Models\Tag')->get()->pluck('source_id')->toArray();
+        $attentionTags = array_unique(array_merge($attentionTags,$skillTags));
+        $relatedQuestions = Question::correlationsPage($attentionTags,5,2,[$user->id]);
         if ($relatedQuestions->count() <= 0) {
             $relatedQuestions = Question::recent(5,2,[$user->id]);
         }

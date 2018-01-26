@@ -79,6 +79,14 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_TASK;
                 $title = $this->support->user->name.'赞了您的回答';
                 $avatar = $this->support->user->avatar;
+                $body = $source->getContentText();
+                break;
+            case 'App\Models\Submission':
+                $notification_type = NotificationModel::NOTIFICATION_TYPE_READ;
+                $title = $this->support->user->name.'赞了您的动态';
+                $avatar = $this->support->user->avatar;
+                $body = $source->formatTitle();
+                $url = '/c/'.$source->category_id.'/'.$source->slug;
                 break;
             default:
                 return;
@@ -88,7 +96,7 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
             'notification_type' => $notification_type,
             'avatar' => $avatar,
             'title'  => $title,
-            'body'   => $source->getContentText(),
+            'body'   => $body,
             'extra_body' => ''
         ];
     }
@@ -113,13 +121,20 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                         return null;
                 }
                 $title = $this->support->user->name.'赞了您的回答';
+                $body = $source->getContentText();
+                break;
+            case 'App\Models\Submission':
+                $object_type = 'readhub_submission_upvoted';
+                $title = $this->support->user->name.'赞了您的动态';
+                $body = $source->formatTitle();
+                $object_id = '/c/'.$source->category_id.'/'.$source->slug;
                 break;
             default:
                 return null;
         }
         return [
             'title' => $title,
-            'body'  => $source->getContentText(),
+            'body'  => $body,
             'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
         ];
     }

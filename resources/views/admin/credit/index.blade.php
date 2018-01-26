@@ -18,7 +18,10 @@
                                 <div class="col-xs-3">
                                     <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                 </div>
-                                <div class="col-xs-6">
+                                <div class="col-xs-3">
+                                    <input type="text" class="form-control" name="action" placeholder="行为" value="{{ $filter['action'] or '' }}"/>
+                                </div>
+                                <div class="col-xs-3">
                                     <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
                                 </div>
                                 <div class="col-xs-3">
@@ -36,6 +39,7 @@
                                     <th>ID</th>
                                     <th>用户</th>
                                     <th>类型</th>
+                                    <th>行为</th>
                                     <th>成长值</th>
                                     <th>贡献值</th>
                                     <th>记录时间</th>
@@ -45,6 +49,7 @@
                                         <td>{{ $credit->id }}</td>
                                         <td> @if($credit->user){{ $credit->user->name }} @else 未知 @endif [uid:{{ $credit->user_id }}]</td>
                                         <td>{{ \App\Models\Credit::$creditSetting[$credit->action]['backend_label']??$credit->action }}</td>
+                                        <td>{{ $credit->action }}</td>
                                         <td>{{ $credit->credits }}</td>
                                         <td>{{ $credit->coins }}</td>
                                         <td>{{ timestamp_format($credit->created_at) }}</td>

@@ -57,7 +57,6 @@ class NotificationSettings
     public function set($key, $value)
     {
         $this->settings[$key] = $value;
-        $this->persist();
     }
 
     /**
@@ -105,7 +104,7 @@ class NotificationSettings
      *
      * @return mixed
      */
-    protected function persist()
+    public function persist()
     {
         return $this->user->update(['site_notifications' => $this->settings]);
     }

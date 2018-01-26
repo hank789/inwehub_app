@@ -262,7 +262,7 @@ class ProfileController extends Controller
             }
         }
 
-        $info['questions'] = $user->userData->questions;
+        $info['questions'] = $is_self?$user->userData->questions:$user->questions->where('hide',0)->count();
         $info['answers'] = $user->userData->answers;
         $info['supports'] = $user->answers->sum('supports') + $user->submissions->sum('upvotes');
         //加上承诺待回答的
@@ -670,5 +670,6 @@ class ProfileController extends Controller
 
         return self::createJsonData(true);
     }
+
 
 }

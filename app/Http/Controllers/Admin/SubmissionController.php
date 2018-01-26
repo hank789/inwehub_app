@@ -33,6 +33,50 @@ class SubmissionController extends AdminController
         return view("admin.operate.article.index")->with('submissions',$submissions)->with('filter',$filter);
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $submission = Submission::find($id);
+        return view("admin.operate.article.edit")->with('submission',$submission);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request)
+    {
+        $id = $request->input('id');
+        $submission = Submission::find($id);
+        if(!$submission){
+            return $this->error(route('admin.operate.article.index'),'文章不存在，请核实');
+        }
+        $validateRules = [
+            'img_url' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $img_url = formatCdnUrl($request->input('img_url'));
+        if (!$img_url) {
+            return $this->error(route('admin.operate.article.edit',['id'=>$id]),'url地址必须为cdn地址');
+        }
+
+        $object_data = $submission->data;
+        $object_data['img'] = $img_url;
+        $submission->data = $object_data;
+        $submission->save();
+
+        return $this->success(route('admin.operate.article.index'),'文章修改成功');
+    }
+
+
 
     /*文章推荐精选审核*/
     public function verifyRecommend(Request $request)

@@ -13,6 +13,7 @@ use App\Models\Notification;
 use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
+use App\Services\NotificationSettings;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -164,5 +165,40 @@ class NotificationController extends Controller
 
         return self::createJsonData(true,$data);
     }
+
+
+    //推送设置
+    public function pushSettings(Request $request){
+        $user = $request->user();
+        /**
+         * @var NotificationSettings $settings
+         */
+        $settings = $user->notificationSettings();
+        $fields = [
+            'push_system_notify',
+            'push_rel_mine_upvoted',
+            'push_rel_mine_followed',
+            'push_rel_mine_mentioned',
+            'push_rel_mine_commented',
+            'push_rel_mine_invited',
+            'push_my_user_new_activity',
+            'push_my_question_new_answered',
+            'push_do_not_disturb'
+        ];
+        foreach ($fields as $field) {
+            if (-1 != $request->input($field,-1)) {
+                $settings->set($field,$request->input($field));
+            }
+        }
+        $settings->persist();
+        return self::createJsonData(true,$settings->all());
+    }
+
+    //获取推送设置信息
+    public function getPushSettings(Request $request) {
+        $user = $request->user();
+        return self::createJsonData(true,$user->site_notifications);
+    }
+
 
 }

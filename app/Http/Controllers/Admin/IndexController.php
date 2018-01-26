@@ -9,6 +9,7 @@ use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\LoginRecord;
 use App\Models\Pay\UserMoney;
+use App\Models\Pay\Withdraw;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Tag;
@@ -18,6 +19,7 @@ use App\Models\User;
 use App\Models\UserData;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -28,117 +30,130 @@ class IndexController extends AdminController
      */
     public function index()
     {
-        $totalUserNum = User::count();
-        $totalQuestionNum = Question::count();
-        $totalFeedbackNum = Feedback::count();
-        $totalAnswerNum = Answer::count();
-        $totalTasks = Task::count();
-        $totalUndoTasks = Task::where('status',0)->count();
-        $totalUndoTaskUsers = Task::select('user_id')->distinct()->where('status',0)->count('user_id');
+        $data = Cache::remember('admin_index_dashboard',30,function () {
+            $totalUserNum = User::count();
+            $totalQuestionNum = Question::count();
+            $totalFeedbackNum = Feedback::count();
+            $totalAnswerNum = Answer::count();
+            $totalTasks = Task::count();
+            $totalUndoTasks = Task::where('status',0)->count();
+            $totalUndoTaskUsers = Task::select('user_id')->distinct()->where('status',0)->count('user_id');
 
-        //邀请码总数
-        //$totalUrcNum = UserRegistrationCode::count();
-        //邀请码激活数
-        //$totalActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_USED)->count();
-        //邀请码失效数
-        //$totalInActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_EXPIRED)->count();
+            //邀请码总数
+            //$totalUrcNum = UserRegistrationCode::count();
+            //邀请码激活数
+            //$totalActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_USED)->count();
+            //邀请码失效数
+            //$totalInActiveUrcNum = UserRegistrationCode::where('status',UserRegistrationCode::CODE_STATUS_EXPIRED)->count();
 
-        //简历平均完成时间
-        $userInfoCompletes = Credit::where('action','user_info_complete')->get();
-        $userInfoCompleteCount = $userInfoCompletes->count();
-        $userInfoCompleteTime = 0;
-        $diffSecond = 0;
-        foreach($userInfoCompletes as $userInfoComplete){
-            $registerTime = Credit::where('user_id',$userInfoComplete->user_id)->where('action','register')->first();
-            if($registerTime){
-                $diffSecond += strtotime($userInfoComplete->created_at) - strtotime($registerTime->created_at);
+            //简历平均完成时间
+            $userInfoCompletes = Credit::where('action','user_info_complete')->get();
+            $userInfoCompleteCount = $userInfoCompletes->count();
+            $userInfoCompleteTime = 0;
+            $diffSecond = 0;
+            foreach($userInfoCompletes as $userInfoComplete){
+                $registerTime = Credit::where('user_id',$userInfoComplete->user_id)->where('action','register')->first();
+                if($registerTime){
+                    $diffSecond += strtotime($userInfoComplete->created_at) - strtotime($registerTime->created_at);
+                }
             }
-        }
-        if($userInfoCompleteCount){
-            $userInfoCompleteTime = round($diffSecond/$userInfoCompleteCount/60,2);
-        }
-        //简历完成率
-        $userInfoCompletePercent = 0;
-        if($userInfoCompleteCount){
-            $userInfoCompletePercent = 100 * round($userInfoCompleteCount/$totalUserNum,2);
-        }
-
-        //问题平均接单时间
-        $questionConfirmeds = Doing::where('action','question_answer_confirmed')->get();
-        $questionCount = $questionConfirmeds->count();
-        $questionAnswerCount = Doing::where('action','question_answered')->count();
-        $questionConfirmSecond = 0;
-        $questionAnswerSecond = 0;
-
-        foreach($questionConfirmeds as $questionConfirmed){
-            $questionSubmit = Doing::where('action','question_submit')->where('source_id',$questionConfirmed->source_id)->where('source_type','App\Models\Question')->first();
-            $questionConfirmSecond += strtotime($questionConfirmed->created_at) - strtotime($questionSubmit->created_at);
-
-            $questionAnswer = Doing::where('action','question_answered')->where('source_id',$questionConfirmed->source_id)->where('source_type','App\Models\Question')->first();
-            if($questionAnswer){
-                $questionAnswerSecond += strtotime($questionAnswer->created_at) - strtotime($questionConfirmed->created_at);
+            if($userInfoCompleteCount){
+                $userInfoCompleteTime = round($diffSecond/$userInfoCompleteCount/60,2);
+            }
+            //简历完成率
+            $userInfoCompletePercent = 0;
+            if($userInfoCompleteCount){
+                $userInfoCompletePercent = 100 * round($userInfoCompleteCount/$totalUserNum,2);
             }
 
-        }
-        $questionAvaConfirmTime = $questionCount ? round($questionConfirmSecond/60/$questionCount,2) : 0;
-        $questionAvgAnswerTime = $questionAnswerCount ? round($questionAnswerSecond/60/$questionAnswerCount,2): 0;
+            //问题平均接单时间
+            $questionConfirmeds = Doing::where('action','question_answer_confirmed')->get();
+            $questionCount = $questionConfirmeds->count();
+            $questionAnswerCount = Doing::where('action','question_answered')->count();
+            $questionConfirmSecond = 0;
+            $questionAnswerSecond = 0;
 
-        $userChart = $this->drawUserChart();
-        $questionChart = $this->drawQuestionChart();
-        $systemInfo = $this->getSystemInfo();
-        $submissionTextCount = Submission::where('type','text')->count();
-        $submissionLinkCount = Submission::where('type','link')->count();
-        //邀请用户统计
-        $rcUsers = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->get();
-        $coinUsers = UserData::orderBy('coins','desc')->take(50)->get();
-        $creditUsers = UserData::orderBy('credits','desc')->take(50)->get();
-        $signTotalCouponMoney = Coupon::whereIn('coupon_type',[Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,Coupon::COUPON_TYPE_DAILY_SIGN_BIG])->sum('coupon_value');
-        $newbieTotalCouponMoney = Coupon::where('coupon_type',Coupon::COUPON_TYPE_NEW_REGISTER_INVITATION)->sum('coupon_value');
-        //用户等级统计
-        $userLevels= UserData::selectRaw('count(*) as total,user_level')->groupBy('user_level')->orderBy('total','desc')->get();
-        //用户余额
-        $totalBalance = UserMoney::sum('total_money');
-        //待结算金融
-        $totalSettlement = UserMoney::sum('settlement_money');
-        $userMoney= UserMoney::orderBy('total_money','desc')->take(50)->get();
-        //热门标签
-        $taggables =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))->groupBy('tag_id')
-            ->orderBy('total_num','desc')
-            ->take(100)
-            ->get();
-        $hotTags = [];
-        foreach ($taggables as $taggable) {
-            $tagInfo = Tag::find($taggable->tag_id);
-            $hotTags[] = [
-                'tag_id' => $tagInfo->id,
-                'tag_name'  => $tagInfo->name,
-                'total_num' => $taggable->total_num
-            ];
-        }
+            foreach($questionConfirmeds as $questionConfirmed){
+                $questionSubmit = Doing::where('action','question_submit')->where('source_id',$questionConfirmed->source_id)->where('source_type','App\Models\Question')->first();
+                $questionConfirmSecond += strtotime($questionConfirmed->created_at) - strtotime($questionSubmit->created_at);
+
+                $questionAnswer = Doing::where('action','question_answered')->where('source_id',$questionConfirmed->source_id)->where('source_type','App\Models\Question')->first();
+                if($questionAnswer){
+                    $questionAnswerSecond += strtotime($questionAnswer->created_at) - strtotime($questionConfirmed->created_at);
+                }
+
+            }
+            $questionAvaConfirmTime = $questionCount ? round($questionConfirmSecond/60/$questionCount,2) : 0;
+            $questionAvgAnswerTime = $questionAnswerCount ? round($questionAnswerSecond/60/$questionAnswerCount,2): 0;
+
+            $userChart = $this->drawUserChart();
+            $questionChart = $this->drawQuestionChart();
+            $systemInfo = $this->getSystemInfo();
+            $submissionTextCount = Submission::where('type','text')->count();
+            $submissionLinkCount = Submission::where('type','link')->count();
+            //邀请用户统计
+            $rcUsers = User::selectRaw('count(*) as total,rc_uid')->groupBy('rc_uid')->orderBy('total','desc')->get();
+            $coinUsers = UserData::orderBy('coins','desc')->take(50)->get();
+            $creditUsers = UserData::orderBy('credits','desc')->take(50)->get();
+            $signTotalCouponMoney = Coupon::whereIn('coupon_type',[Coupon::COUPON_TYPE_DAILY_SIGN_SMALL,Coupon::COUPON_TYPE_DAILY_SIGN_BIG])->sum('coupon_value');
+            $newbieTotalCouponMoney = Coupon::where('coupon_type',Coupon::COUPON_TYPE_NEW_REGISTER_INVITATION)->sum('coupon_value');
+            //用户等级统计
+            $userLevels= UserData::selectRaw('count(*) as total,user_level')->groupBy('user_level')->orderBy('total','desc')->get();
+            //用户余额
+            $totalBalance = UserMoney::sum('total_money');
+            //待结算金融
+            $totalSettlement = UserMoney::sum('settlement_money');
+            $userMoney= UserMoney::orderBy('total_money','desc')->take(50)->get();
+            $userWithdrawMoneyList = Withdraw::select('user_id',DB::raw('SUM(amount) as total_amount'))
+                ->where('status',Withdraw::WITHDRAW_STATUS_SUCCESS)
+                ->orderBy('total_amount','desc')
+                ->groupBy('user_id')
+                ->take(50)->get();
+            //提现金额
+            $withDrawMoney = Withdraw::where('status',Withdraw::WITHDRAW_STATUS_SUCCESS)->sum('amount');
+            //热门标签
+            $taggables =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))->groupBy('tag_id')
+                ->orderBy('total_num','desc')
+                ->take(100)
+                ->get();
+            $hotTags = [];
+            foreach ($taggables as $taggable) {
+                $tagInfo = Tag::find($taggable->tag_id);
+                $hotTags[] = [
+                    'tag_id' => $tagInfo->id,
+                    'tag_name'  => $tagInfo->name,
+                    'total_num' => $taggable->total_num
+                ];
+            }
+            return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
+                    'totalAnswerNum',
+                    'userInfoCompleteTime',
+                    'userInfoCompletePercent',
+                    'questionAvaConfirmTime',
+                    'questionAvgAnswerTime',
+                    'submissionLinkCount',
+                    'submissionTextCount',
+                    'totalTasks',
+                    'totalUndoTasks',
+                    'totalUndoTaskUsers',
+                    'rcUsers',
+                    'coinUsers',
+                    'creditUsers',
+                    'signTotalCouponMoney',
+                    'newbieTotalCouponMoney',
+                    'userLevels',
+                    'totalBalance',
+                    'totalSettlement',
+                    'userMoney',
+                    'withDrawMoney',
+                    'userWithdrawMoneyList',
+                    'hotTags',
+                    'userChart','questionChart','systemInfo')
+            ;
+        });
 
 
-        return view("admin.index.index")->with(compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
-            'totalAnswerNum',
-            'userInfoCompleteTime',
-            'userInfoCompletePercent',
-            'questionAvaConfirmTime',
-            'questionAvgAnswerTime',
-            'submissionLinkCount',
-            'submissionTextCount',
-            'totalTasks',
-            'totalUndoTasks',
-            'totalUndoTaskUsers',
-            'rcUsers',
-            'coinUsers',
-            'creditUsers',
-            'signTotalCouponMoney',
-            'newbieTotalCouponMoney',
-            'userLevels',
-            'totalBalance',
-            'totalSettlement',
-            'userMoney',
-            'hotTags',
-            'userChart','questionChart','systemInfo'));
+        return view("admin.index.index")->with($data);
     }
 
 
@@ -177,9 +192,10 @@ class IndexController extends AdminController
                 ->where('created_at','>',$startTime)
                 ->where('created_at','<',$endTime)
                 ->count();
-            $loginRange[$i] = LoginRecord::where('created_at','>',$startTime)
+            $loginRange[$i] = LoginRecord::select('user_id')->where('created_at','>',$startTime)
                 ->where('created_at','<',$endTime)
-                ->count();
+                ->distinct()
+                ->count('user_id');
 
             foreach($users as $user){
                 if( $user->created_at > $startTime && $user->created_at < $endTime ){

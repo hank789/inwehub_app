@@ -7,7 +7,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            网站总览
+            网站总览(缓存时间半个小时)
         </h1>
     </section>
 
@@ -16,20 +16,24 @@
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-aqua"><i class="fa fa-users" aria-hidden="true"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">注册用户数</span>
-                        <span class="info-box-number">{{ $totalUserNum }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.user.index') }}">
+                        <span class="info-box-icon bg-aqua"><i class="fa fa-users" aria-hidden="true"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">注册用户数</span>
+                            <span class="info-box-number">{{ $totalUserNum }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-red"><i class="fa fa-question-circle"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">问题总数</span>
-                        <span class="info-box-number">{{ $totalQuestionNum }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.question.index') }}">
+                        <span class="info-box-icon bg-red"><i class="fa fa-question-circle"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">问题总数</span>
+                            <span class="info-box-number">{{ $totalQuestionNum }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
@@ -47,31 +51,37 @@
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-feed"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">回答总数</span>
-                        <span class="info-box-number">{{ $totalAnswerNum }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.answer.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-feed"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">回答总数</span>
+                            <span class="info-box-number">{{ $totalAnswerNum }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
         </div>
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">动态数</span>
-                        <span class="info-box-number">{{ $submissionTextCount }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.operate.article.index') }}">
+                        <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">动态数</span>
+                            <span class="info-box-number">{{ $submissionTextCount }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-red"><i class="fa fa-archive"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">文章数</span>
-                        <span class="info-box-number">{{ $submissionLinkCount }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.operate.article.index') }}">
+                        <span class="info-box-icon bg-red"><i class="fa fa-archive"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">文章数</span>
+                            <span class="info-box-number">{{ $submissionLinkCount }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
@@ -80,20 +90,24 @@
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">总任务数</span>
-                        <span class="info-box-number">{{ $totalTasks }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.task.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">总任务数</span>
+                            <span class="info-box-number">{{ $totalTasks }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">未清任务</span>
-                        <span class="info-box-number">{{ $totalUndoTasks }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.task.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">未清任务</span>
+                            <span class="info-box-number">{{ $totalUndoTasks }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
@@ -101,52 +115,73 @@
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">未清任务人数</span>
-                        <span class="info-box-number">{{ $totalUndoTaskUsers }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.task.index') }}">
+                        <span class="info-box-icon bg-aqua"><i class="fa fa-anchor" aria-hidden="true"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">未清任务人数</span>
+                            <span class="info-box-number">{{ $totalUndoTaskUsers }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">签到红包总金额</span>
-                        <span class="info-box-number">{{ $signTotalCouponMoney }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.activity.coupon') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">签到红包总金额</span>
+                            <span class="info-box-number">{{ $signTotalCouponMoney }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">新手红包总金额</span>
-                        <span class="info-box-number">{{ $newbieTotalCouponMoney }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.activity.coupon') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">新手红包总金额</span>
+                            <span class="info-box-number">{{ $newbieTotalCouponMoney }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
 
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">用户账户总余额</span>
-                        <span class="info-box-number">{{ $totalBalance }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.user.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">用户账户总余额</span>
+                            <span class="info-box-number">{{ $totalBalance }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
         </div>
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
-                    <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">用户账户待结算金额</span>
-                        <span class="info-box-number">{{ $totalSettlement }}</span>
-                    </div><!-- /.info-box-content -->
+                    <a href="{{ route('admin.finance.settlement.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">用户账户待结算金额</span>
+                            <span class="info-box-number">{{ $totalSettlement }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <a href="{{ route('admin.finance.withdraw.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">提现总金额</span>
+                            <span class="info-box-number">{{ $withDrawMoney }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
         </div>
@@ -193,6 +228,10 @@
                 <div class="box box-default">
                     <div class="box-header with-border">
                         <h3 class="box-title">一周用户数据报告</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -214,6 +253,10 @@
                 <div class="box box-default">
                     <div class="box-header with-border">
                         <h3 class="box-title">问答数据报告</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -232,9 +275,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">热门标签Top100</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -252,9 +299,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">用户等级统计</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -281,9 +332,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">用户余额统计</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -316,9 +371,52 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">用户提现金额统计</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>排名</th>
+                                            <th>用户ID</th>
+                                            <th>用户姓名</th>
+                                            <th>手机</th>
+                                            <th>余额</th>
+                                        </tr>
+                                        @foreach($userWithdrawMoneyList as $key=>$userWithdrawMoney)
+                                            <tr>
+                                                <td>{{ $key+1 }}</td>
+                                                <td>{{ $userWithdrawMoney->user_id }}</td>
+                                                <td>{{ $userWithdrawMoney->user->name }}</td>
+                                                <td>{{ $userWithdrawMoney->user->mobile }}</td>
+                                                <td>{{ $userWithdrawMoney->total_amount }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">邀请用户统计</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -351,9 +449,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">贡献值排行前50</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -386,9 +488,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">成长值排行前50</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="row">
@@ -421,9 +527,13 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="box box-default">
+                <div class="box box-default collapsed-box">
                     <div class="box-header with-border">
                         <h3 class="box-title">系统信息</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="box-body table-responsive">
                         <div class="row">
@@ -512,24 +622,24 @@
                     },
                     {
                         fill: false,
-                        backgroundColor: "rgba(153,102,0,0.8)",
-                        borderColor: "rgba(153,102,0,0.8)",
+                        backgroundColor: "rgba(0,166,90,0.9)",
+                        borderColor: "rgba(0,166,90,0.9)",
 
                         label: '行家认证',
                         data: [{{ implode(",",$userChart['authUsers']) }}]
                     },
                     {
                         fill: false,
-                        backgroundColor: "rgba(80,100,0,0.8)",
-                        borderColor: "rgba(153,102,0,0.8)",
+                        backgroundColor: "rgba(255,100,97,1)",
+                        borderColor: "rgba(255,100,97,1)",
 
                         label: '每日签到',
                         data: [{{ implode(",",$userChart['signUsers']) }}]
                     },
                     {
                         fill: false,
-                        backgroundColor: "rgba(100,50,0,0.8)",
-                        borderColor: "rgba(153,102,0,0.8)",
+                        backgroundColor: "rgba(238,153,34,1)",
+                        borderColor: "rgba(238,153,34,1)",
 
                         label: '每日登陆',
                         data: [{{ implode(",",$userChart['loginUsers']) }}]
