@@ -175,7 +175,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
             $user = User::find($this->user_id);
             QuestionLogic::slackMsg('用户'.$inviter.'邀请用户'.$this->user_id.'['.$user->name.']回答问题',$this->question);
         }
-        if ($this->invitation_id) {
+        if ($this->invitation_id && $this->question->question_type == 1) {
             //延时处理是否需要告警专家
             dispatch((new ConfirmOvertime($this->question->id,$this->invitation_id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',10))));
         }

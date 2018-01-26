@@ -40,7 +40,12 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        $via = ['database', 'broadcast'];
+        if ($notifiable->site_notifications['push_my_user_new_activity']??true){
+            $via[] = PushChannel::class;
+            $via[] = WechatNoticeChannel::class;
+        }
+        return $via;
     }
 
     /**

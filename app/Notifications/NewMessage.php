@@ -135,7 +135,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                 'value' => $this->message->data['img']
             ];
         }
-        return \Slack::to(config('slack.ask_activity_channel'))
+        return \Slack::to(config('slack.user_chat_channel'))
             ->attach(
                 [
                     'fields' => $fields
