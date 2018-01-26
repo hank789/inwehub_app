@@ -4,7 +4,6 @@ namespace App\Models\Feed;
 
 use App\Models\Answer;
 use App\Models\Attention;
-use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
@@ -12,7 +11,6 @@ use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
 use Carbon\Carbon;
-use function GuzzleHttp\Psr7\str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -210,8 +208,8 @@ class Feed extends Model
                     ->exists();
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
-                    'img'       => $this->data['img'],
-                    'domain'    => $this->data['domain'],
+                    'img'       => $submission->data['img'],
+                    'domain'    => $submission->data['domain'],
                     'tags'      => $submission->tags()->get()->toArray(),
                     'submission_id' => $this->source_id,
                     'current_address_name' => $this->data['current_address_name']??'',
