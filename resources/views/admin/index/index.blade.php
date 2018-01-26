@@ -622,24 +622,24 @@
                     },
                     {
                         fill: false,
-                        backgroundColor: "rgba(153,102,0,0.8)",
-                        borderColor: "rgba(153,102,0,0.8)",
+                        backgroundColor: "rgba(0,166,90,0.9)",
+                        borderColor: "rgba(0,166,90,0.9)",
 
                         label: '行家认证',
                         data: [{{ implode(",",$userChart['authUsers']) }}]
                     },
                     {
                         fill: false,
-                        backgroundColor: "rgba(80,100,0,0.8)",
-                        borderColor: "rgba(153,102,0,0.8)",
+                        backgroundColor: "rgba(255,100,97,1)",
+                        borderColor: "rgba(255,100,97,1)",
 
                         label: '每日签到',
                         data: [{{ implode(",",$userChart['signUsers']) }}]
                     },
                     {
                         fill: false,
-                        backgroundColor: "rgba(100,50,0,0.8)",
-                        borderColor: "rgba(153,102,0,0.8)",
+                        backgroundColor: "rgba(238,153,34,1)",
+                        borderColor: "rgba(238,153,34,1)",
 
                         label: '每日登陆',
                         data: [{{ implode(",",$userChart['loginUsers']) }}]
