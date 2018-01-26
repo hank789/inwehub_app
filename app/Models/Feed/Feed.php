@@ -121,7 +121,7 @@ class Feed extends Model
                 }
                 $data = [
                     'question_title' => $this->data['question_title'],
-                    'answer_content' => $answer->getContentText(),
+                    'answer_content' => str_limit($answer->getContentText(),120),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
@@ -313,7 +313,7 @@ class Feed extends Model
                 if ($payOrder) {
                     $is_pay_for_view = true;
                 }
-                $data['answer_content'] = $answer->getContentText();
+                $data['answer_content'] = str_limit($answer->getContentText(),120);
                 $data['comment_number'] = $answer->comments;
                 $data['average_rate']   = $answer->getFeedbackRate();
                 $data['support_number'] = $answer->supports;
