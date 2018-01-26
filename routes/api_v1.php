@@ -210,8 +210,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('answer/getDraft','AnswerController@getDraft');
     //我的围观
     Route::post('answer/myOnlookList','AnswerController@myOnlookList');
-    //问题回答列表
-    Route::post('question/answerList','QuestionController@answerList');
     //回答详情
     //Route::post('answer/info','AnswerController@info');
 
@@ -220,7 +218,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
 Route::post('question/info', 'Ask\QuestionController@info');
 //回答详情
 Route::post('answer/info','Ask\AnswerController@info');
-
+//问题回答列表
+Route::post('question/answerList','Ask\QuestionController@answerList');
 //任务模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], function() {
     //我的任务列表
@@ -448,8 +447,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('fetch-url-title','SubmissionController@getTitleAPI');
     //获取频道
     Route::post('get-categories','CategoryController@getCategories');
-    //文章回复列表
-    Route::post('comments','CommentController@index');
+
     //文章回复
     Route::post('comment-store','CommentController@store');
     //删除回复
@@ -464,7 +462,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
 });
 //文章详情
 Route::post('article/detail-by-slug','Article\SubmissionController@getBySlug');
-
+//文章回复列表
+Route::post('article/comments','Article\CommentController@index');
 //点赞
 Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
 //附近位置

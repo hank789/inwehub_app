@@ -948,14 +948,19 @@ class QuestionController extends Controller
     }
 
     //问题回答列表
-    public function answerList(Request $request){
+    public function answerList(Request $request,JWTAuth $JWTAuth){
         $id = $request->input('question_id');
         $question = Question::find($id);
 
         if(empty($question)){
             throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
         }
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
