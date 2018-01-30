@@ -100,6 +100,7 @@ class NotificationController extends Controller
             $last_message = MessageRoom::where('room_id',$im_room_user->room_id)->orderBy('id','desc')->first();
             $contact_room = RoomUser::where('room_id',$im_room_user->room_id)->where('user_id','!=',$user->id)->orderBy('id','desc')->first();
             if (!$contact_room) continue;
+            if (!$contact_room->user) continue;
             $item = [
                 'unread_count' => $im_count,
                 'avatar'       => $contact_room->user->avatar,
