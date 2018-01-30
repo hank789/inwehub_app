@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Ask;
 
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\Answer\Answered;
 use App\Events\Frontend\Answer\PayForView;
 use App\Exceptions\ApiException;
 use App\Jobs\UpdateQuestionRate;
@@ -361,6 +362,7 @@ class AnswerController extends Controller
                     $this->credit($question->user_id,Credit::KEY_COMMUNITY_ASK_ANSWERED,$answer->id,$answer->getContentText());
                 }
 
+                event(new Answered($answer));
                 //进入结算中心
                 Settlement::answerSettlement($answer);
                 Settlement::questionSettlement($question);
@@ -376,6 +378,7 @@ class AnswerController extends Controller
                 /*记录动态*/
                 $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
                 RateLimiter::instance()->lock_release($lock_key);
+                event(new Answered($answer));
                 $question->user->notify(new NewQuestionConfirm($question->user_id,$question,$answer));
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
             }
