@@ -10,6 +10,7 @@ use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\User;
+use App\Notifications\FollowedQuestionAnswered;
 use App\Notifications\FollowedUserAnswered;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
