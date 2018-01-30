@@ -40,7 +40,7 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
     public function via($notifiable)
     {
         $via = ['database','broadcast'];
-        if ($notifiable->checkCanDisturbNotify() && $notifiable->site_notifications['push_rel_mine_upvoted']??true){
+        if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_rel_mine_upvoted']??true)){
             $via[] = PushChannel::class;
         }
         return $via;

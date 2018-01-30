@@ -39,7 +39,7 @@ class CommentReplied extends Notification implements ShouldBroadcast,ShouldQueue
     public function via($notifiable)
     {
         $via = ['database', 'broadcast'];
-        if ($notifiable->checkCanDisturbNotify() && $notifiable->site_notifications['push_rel_mine_commented']??true){
+        if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_rel_mine_commented']??true)){
             $via[] = PushChannel::class;
             $via[] = WechatNoticeChannel::class;
         }
