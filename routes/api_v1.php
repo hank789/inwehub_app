@@ -196,8 +196,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/recommendInviterList','QuestionController@recommendInviterList');
 
 
-    //问答留言列表
-    Route::post('answer/commentList','AnswerController@commentList');
     //问答留言
     Route::post('answer/comment','AnswerController@comment');
     //回答暂存
@@ -217,6 +215,9 @@ Route::post('question/commonList','Ask\QuestionController@commonList');
 Route::post('answer/info','Ask\AnswerController@info');
 //问题回答列表
 Route::post('question/answerList','Ask\QuestionController@answerList');
+//问答留言列表
+Route::post('answer/commentList','Ask\AnswerController@commentList');
+
 //任务模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], function() {
     //我的任务列表
@@ -281,7 +282,7 @@ Route::post('system/htmlToImage','SystemController@htmlToImage')->middleware('jw
 Route::post('system/version','SystemController@appVersion');
 
 //支付参数
-Route::post('pay/config','SystemController@getPayConfig')->middleware('jwt.auth');
+Route::post('pay/config','SystemController@getPayConfig');
 
 
 //获取服务条款

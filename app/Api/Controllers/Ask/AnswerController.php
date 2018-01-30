@@ -675,7 +675,7 @@ class AnswerController extends Controller
     }
 
     //问答留言列表
-    public function commentList(Request $request) {
+    public function commentList(Request $request,JWTAuth $JWTAuth) {
         $validateRules = [
             'answer_id'    => 'required|integer'
         ];
@@ -686,10 +686,15 @@ class AnswerController extends Controller
         if (!$source) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        $user_id = $request->user()->id;
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         //专业只有问题作者，回答者，付费围观的人才能看到回复
-        $is_question_author = $user_id == $source->question->user_id;
-        $is_answer_author = $user_id == $source->user_id;
+        $is_question_author = $user->id == $source->question->user_id;
+        $is_answer_author = $user->id == $source->user_id;
         if ((($is_question_author || $is_answer_author) && $source->question->question_type == 1) || $source->question->question_type == 2) {
 
         } else {
