@@ -300,6 +300,7 @@ class Feed extends Model
                 $url = $this->data['feed_url'];
                 $data = $this->data;
                 $answer = Answer::find($this->source_id);
+                if (empty($answer)) return false;
                 $question = $answer->question;
                 $supporters = [];
                 $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
