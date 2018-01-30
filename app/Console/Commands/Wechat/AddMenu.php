@@ -74,7 +74,7 @@ class AddMenu extends Command
             [
                 "type" => "view",
                 "name" => "进入平台",
-                "url"  => "https://m.inwehub.com",
+                "url"  => "https://m.inwehub.com/?#/home",
                 //"url"  => $url."/wechat/oauth?redirect=/home"
             ],
             [
