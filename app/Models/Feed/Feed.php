@@ -106,6 +106,7 @@ class Feed extends Model
                 //回答专业问题
                 $url = '/askCommunity/major/'.$this->data['question_id'];
                 $answer = Answer::find($this->data['answer_id']);
+                if (empty($answer)) return false;
                 $question = $answer->question;
                 $supporters = [];
                 $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
@@ -138,6 +139,7 @@ class Feed extends Model
                 //回答互动问题
                 $url = '/askCommunity/interaction/'.$this->source_id;
                 $answer = Answer::find($this->source_id);
+                if (empty($answer)) return false;
                 $question = Question::find($answer->question_id);
                 $is_followed_question = 0;
                 $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
