@@ -14,6 +14,7 @@ use App\Models\UserDevice;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Spatie\Browsershot\Browsershot;
+use Tymon\JWTAuth\JWTAuth;
 
 class SystemController extends Controller {
 
@@ -167,10 +168,17 @@ class SystemController extends Controller {
         return self::createJsonData(true,$data);
     }
 
-    public function getPayConfig(Request $request){
-        $user = $request->user();
+    public function getPayConfig(Request $request,JWTAuth $JWTAuth){
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+            $user_total_money = $user->getAvailableTotalMoney();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user_total_money = 0;
+        }
         $config = get_pay_config();
-        $config['user_total_money'] = $user->getAvailableTotalMoney();
+        $config['user_total_money'] = $user_total_money;
         return self::createJsonData(true,$config);
     }
 
