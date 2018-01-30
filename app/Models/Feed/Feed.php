@@ -331,6 +331,7 @@ class Feed extends Model
                 $url = $this->data['feed_url'];
                 $data = $this->data;
                 $answer = Answer::find($this->source_id);
+                if (empty($answer)) return false;
                 $question = Question::find($answer->question_id);
                 $is_followed_question = 0;
                 $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
