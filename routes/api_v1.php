@@ -180,10 +180,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     //Route::post('question/info','QuestionController@info');
     //付费围观
     Route::post('answer/payforview','AnswerController@payForView');
-    //专业问答-推荐问答列表
-    Route::post('question/majorList','QuestionController@majorList');
-    //互动问答-问答列表
-    Route::post('question/commonList','QuestionController@commonList');
     //专业问答-热门问答
     Route::post('question/majorHot','QuestionController@majorHot');
     //邀请回答
@@ -210,12 +206,13 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('answer/getDraft','AnswerController@getDraft');
     //我的围观
     Route::post('answer/myOnlookList','AnswerController@myOnlookList');
-    //回答详情
-    //Route::post('answer/info','AnswerController@info');
-
 });
 //问题详情
 Route::post('question/info', 'Ask\QuestionController@info');
+//专业问答-推荐问答列表
+Route::post('question/majorList','Ask\QuestionController@majorList');
+//互动问答-问答列表
+Route::post('question/commonList','Ask\QuestionController@commonList');
 //回答详情
 Route::post('answer/info','Ask\AnswerController@info');
 //问题回答列表

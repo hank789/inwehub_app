@@ -801,9 +801,14 @@ class QuestionController extends Controller
 
 
     //专业问答-推荐问答列表
-    public function majorList(Request $request) {
+    public function majorList(Request $request,JWTAuth $JWTAuth) {
         $tag_id = $request->input('tag_id',0);
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
 
         $query = Question::where('questions.is_recommend',1)->where('questions.question_type',1);
 
@@ -868,10 +873,14 @@ class QuestionController extends Controller
     }
 
     //互动问答-问答列表
-    public function commonList(Request $request) {
+    public function commonList(Request $request,JWTAuth $JWTAuth) {
         $tag_id = $request->input('tag_id',0);
-        $user = $request->user();
-
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $query = Question::where('questions.question_type',2);
 
         if ($tag_id) {
