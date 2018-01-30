@@ -1,16 +1,13 @@
 <?php
 
 namespace App\Providers;
-use App\Events\LogNotify;
 use App\Models\Activity\Coupon;
-use App\Models\Answer;
 use App\Models\Authentication;
 use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Company\Company;
 use App\Models\Pay\Withdraw;
 use App\Models\Question;
-use App\Models\QuestionInvitation;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
@@ -18,13 +15,11 @@ use App\Models\UserInfo\EduInfo;
 use App\Models\UserInfo\JobInfo;
 use App\Models\UserInfo\ProjectInfo;
 use App\Models\UserInfo\TrainInfo;
-use App\Observers\AnswerObserver;
 use App\Observers\AuthenticationObserver;
 use App\Observers\CollectObserver;
 use App\Observers\CommentObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\CouponObserver;
-use App\Observers\QuestionInvitationObserver;
 use App\Observers\QuestionObserver;
 use App\Observers\SubmissionObserver;
 use App\Observers\SupportObserver;
@@ -35,11 +30,9 @@ use App\Observers\UserProjectObserver;
 use App\Observers\UserTrainObserver;
 use App\Observers\WithdrawObserver;
 use Carbon\Carbon;
-use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
-use Queue;
 use Log;
 
 class AppServiceProvider extends ServiceProvider
@@ -90,7 +83,6 @@ class AppServiceProvider extends ServiceProvider
 
         //事件监听
         Question::observe(QuestionObserver::class);
-        Answer::observe(AnswerObserver::class);
         Authentication::observe(AuthenticationObserver::class);
         User::observe(UserObserver::class);
         JobInfo::observe(UserJobObserver::class);

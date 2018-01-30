@@ -7,6 +7,7 @@ use Illuminate\Queue\SerializesModels;
  */
 class PayForView
 {
+    use SerializesModels;
 
     public $order;
 
