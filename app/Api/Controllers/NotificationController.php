@@ -21,6 +21,18 @@ use Illuminate\Support\Facades\Config;
 class NotificationController extends Controller
 {
 
+    protected $notificationSettings = [
+        'push_system_notify'=>1,
+        'push_rel_mine_upvoted'=>1,
+        'push_rel_mine_followed'=>1,
+        'push_rel_mine_mentioned'=>1,
+        'push_rel_mine_commented'=>1,
+        'push_rel_mine_invited'=>1,
+        'push_my_user_new_activity'=>1,
+        'push_my_question_new_answered'=>1,
+        'push_do_not_disturb' => 0
+    ];
+
     public function readhubList(Request $request){
         $user = $request->user();
         $data = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->simplePaginate(Config::get('inwehub.api_data_page_size'))->toArray();
@@ -174,18 +186,8 @@ class NotificationController extends Controller
          * @var NotificationSettings $settings
          */
         $settings = $user->notificationSettings();
-        $fields = [
-            'push_system_notify',
-            'push_rel_mine_upvoted',
-            'push_rel_mine_followed',
-            'push_rel_mine_mentioned',
-            'push_rel_mine_commented',
-            'push_rel_mine_invited',
-            'push_my_user_new_activity',
-            'push_my_question_new_answered',
-            'push_do_not_disturb'
-        ];
-        foreach ($fields as $field) {
+        $fields = $this->notificationSettings;
+        foreach ($fields as $field=>$value) {
             if (-1 != $request->input($field,-1)) {
                 $settings->set($field,$request->input($field));
             }
@@ -197,7 +199,7 @@ class NotificationController extends Controller
     //获取推送设置信息
     public function getPushSettings(Request $request) {
         $user = $request->user();
-        return self::createJsonData(true,$user->site_notifications);
+        return self::createJsonData(true,$user->site_notifications?:$this->notificationSettings);
     }
 
 
