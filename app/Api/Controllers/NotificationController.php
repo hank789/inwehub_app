@@ -28,6 +28,7 @@ class NotificationController extends Controller
         'push_rel_mine_mentioned'=>1,
         'push_rel_mine_commented'=>1,
         'push_rel_mine_invited'=>1,
+        'push_rel_mine_chatted'=>1,
         'push_my_user_new_activity'=>1,
         'push_my_question_new_answered'=>1,
         'push_do_not_disturb' => 0
@@ -199,7 +200,13 @@ class NotificationController extends Controller
     //获取推送设置信息
     public function getPushSettings(Request $request) {
         $user = $request->user();
-        return self::createJsonData(true,$user->site_notifications?:$this->notificationSettings);
+        $data = $this->notificationSettings;
+        foreach ($data as $field=>$value) {
+            if (isset($user->site_notifications[$field])) {
+                $data[$field] = $user->site_notifications[$field];
+            }
+        }
+        return self::createJsonData(true,$data);
     }
 
 
