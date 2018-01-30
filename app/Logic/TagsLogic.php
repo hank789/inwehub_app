@@ -20,6 +20,7 @@ class TagsLogic {
         if ($cache){
             return $cache;
         }
+        $loadDefaultTags = false;
 
         switch($tag_type){
             case 1:
@@ -41,9 +42,11 @@ class TagsLogic {
             case 5:
                 //用户擅长，包括问题分类[question]和产品类型[product_type]
                 $category_name = Category::where('slug','like','question_%')->get()->pluck('slug')->toArray();
+                $loadDefaultTags = true;
                 break;
             case 'all':
                 $category_name = Category::where('slug','like','question_%')->get()->pluck('slug')->toArray();
+                $loadDefaultTags = true;
                 break;
         }
 
@@ -86,12 +89,14 @@ class TagsLogic {
                     ];
                 }
             }
-            $defaultTags = Tag::where('category_id',0)->get();
-            foreach ($defaultTags as $defaultTag) {
-                $tags[] = [
-                    $tagKey => $defaultTag->id,
-                    'text'  => $defaultTag->name
-                ];
+            if ($loadDefaultTags) {
+                $defaultTags = Tag::where('category_id',0)->get();
+                foreach ($defaultTags as $defaultTag) {
+                    $tags[] = [
+                        $tagKey => $defaultTag->id,
+                        'text'  => $defaultTag->name
+                    ];
+                }
             }
         }
         //如果热门排序
