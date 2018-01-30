@@ -197,7 +197,7 @@ class NotificationController extends Controller
     //获取推送设置信息
     public function getPushSettings(Request $request) {
         $user = $request->user();
-        return self::createJsonData(true,$user->site_notifications);
+        return self::createJsonData(true,$user->site_notifications?:[]);
     }
 
 
