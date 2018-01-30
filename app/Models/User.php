@@ -725,7 +725,7 @@ class User extends Model implements AuthenticatableContract,
         return $user_total_money;
     }
 
-    public function checkDisturbNotify(){
+    public function checkCanDisturbNotify(){
         $disturb = $this->site_notifications['push_do_not_disturb']??0;
         if ($disturb && (time()>=strtotime(date('Y-m-d 22:00:00')) || time()<=strtotime(date('Y-m-d 07:30:00'))))
         {

@@ -42,7 +42,11 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
      */
     public function via($notifiable)
     {
-        $via = ['broadcast', PushChannel::class, WechatNoticeChannel::class];
+        $via = ['broadcast'];
+        if ($notifiable->checkCanDisturbNotify() && $notifiable->site_notifications['push_rel_mine_chatted']??true){
+            $via[] = PushChannel::class;
+            $via[] = WechatNoticeChannel::class;
+        }
         if ((isset($notifiable->to_slack) && $notifiable->to_slack) || !isset($notifiable->to_slack)) {
             $via[] = SlackChannel::class;
         }

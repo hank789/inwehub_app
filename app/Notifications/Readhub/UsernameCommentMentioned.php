@@ -39,7 +39,7 @@ class UsernameCommentMentioned extends Notification implements ShouldBroadcast,S
     public function via($notifiable)
     {
         $via = ['database', 'broadcast'];
-        if ($notifiable->site_notifications['push_rel_mine_mentioned']??true){
+        if ($notifiable->checkCanDisturbNotify() && $notifiable->site_notifications['push_rel_mine_mentioned']??true){
             $via[] = PushChannel::class;
             $via[] = WechatNoticeChannel::class;
         }
