@@ -28,6 +28,7 @@ class NotificationController extends Controller
         'push_rel_mine_mentioned'=>1,
         'push_rel_mine_commented'=>1,
         'push_rel_mine_invited'=>1,
+        'push_rel_mine_chatted'=>1,
         'push_my_user_new_activity'=>1,
         'push_my_question_new_answered'=>1,
         'push_do_not_disturb' => 0
@@ -99,6 +100,7 @@ class NotificationController extends Controller
             $last_message = MessageRoom::where('room_id',$im_room_user->room_id)->orderBy('id','desc')->first();
             $contact_room = RoomUser::where('room_id',$im_room_user->room_id)->where('user_id','!=',$user->id)->orderBy('id','desc')->first();
             if (!$contact_room) continue;
+            if (!$contact_room->user) continue;
             $item = [
                 'unread_count' => $im_count,
                 'avatar'       => $contact_room->user->avatar,
@@ -199,7 +201,13 @@ class NotificationController extends Controller
     //获取推送设置信息
     public function getPushSettings(Request $request) {
         $user = $request->user();
-        return self::createJsonData(true,$user->site_notifications?:$this->notificationSettings);
+        $data = $this->notificationSettings;
+        foreach ($data as $field=>$value) {
+            if (isset($user->site_notifications[$field])) {
+                $data[$field] = $user->site_notifications[$field];
+            }
+        }
+        return self::createJsonData(true,$data);
     }
 
 
