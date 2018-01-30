@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Logic\QuillLogic;
+use App\Models\Feed\Feed;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
 use App\Models\Relations\MorphManyFeedbackTrait;
@@ -86,9 +87,14 @@ class Answer extends Model
             /*用户回答数 -1 */
             $answer->user->userData()->where('answers','>',0)->decrement('answers');
 
-            /*删除动态*/
             Doing::where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->delete();
-
+            Feed::where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->delete();
+            /*删除关注*/
+            Attention::where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->delete();
+            /*删除标签关联*/
+            Taggable::where('taggable_type','=',get_class($answer))->where('taggable_id','=',$answer->id)->delete();
+            /*删除收藏*/
+            Collection::where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->delete();
             /*删除回答评论*/
             Comment::where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->delete();
 
