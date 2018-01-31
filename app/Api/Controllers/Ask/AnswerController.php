@@ -536,12 +536,15 @@ class AnswerController extends Controller
         $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
 
         $this->credit($loginUser->id,Credit::KEY_NEW_ANSWER_FEEDBACK,$feedback->id,'回答评价');
+        $action = '';
         if ($feedback->star >= 4) {
             $action = Credit::KEY_RATE_ANSWER_GOOD;
-        } else {
+        } elseif($feedback->star <= 2) {
             $action = Credit::KEY_RATE_ANSWER_BAD;
         }
-        $this->credit($answer->user_id,$action,$feedback->id,'回答评价');
+        if ($action) {
+            $this->credit($answer->user_id,$action,$feedback->id,'回答评价');
+        }
         QuestionLogic::calculationQuestionRate($answer->question_id);
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
         return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));
