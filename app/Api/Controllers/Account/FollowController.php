@@ -48,7 +48,7 @@ class FollowController extends Controller
             $source  = Question::findOrFail($source_id);
             $subject = $source->title;
         }else if($source_type === 'user'){
-            $source = User::where('uuid',$source_id)->first();
+            $source = User::where('uuid','=',$source_id.'')->first();
             if(empty($source)){
                 $source  = User::findOrFail($source_id);
             }
@@ -222,7 +222,7 @@ class FollowController extends Controller
         $user = $request->user();
         $fields = [];
         foreach ($ids as $id) {
-            $source = User::where('uuid',$id)->first();
+            $source = User::where('uuid','=',$id.'')->first();
             if(empty($source)){
                 $source  = User::findOrFail($id);
             }
