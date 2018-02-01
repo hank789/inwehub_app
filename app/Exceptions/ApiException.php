@@ -126,7 +126,7 @@ class ApiException extends Exception
         self::USER_PASSWORD_ERROR => '用户账号或者密码不正确',
         self::ARGS_YZM_ERROR => '验证码错误',
         self::EXPERT_NEED_CONFIRM => '您的认证申请正在审核中',
-        self::USER_NEED_CONFIRM => '您的账户正在审核中,请耐心等待',
+        self::USER_NEED_CONFIRM => '您的账户正在审核中，如有疑问请微信联系客服：hiinwe',
         self::USER_DATE_RANGE_INVALID => '起始日期有误',
         self::USER_REGISTRATION_CODE_INVALID => '邀请码错误',
         self::USER_SUSPEND => '您的账户已被禁用',

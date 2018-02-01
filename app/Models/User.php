@@ -119,6 +119,8 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereCommentKarma($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereIsExpert($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSubmissionKarma($value)
+ * @property string|null $email_notifications
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Submission[] $submissions
  */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,

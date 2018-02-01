@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feedback whereStar($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feedback whereToUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feedback whereUserId($value)
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
  */
 class Feedback extends Model
 {

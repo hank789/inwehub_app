@@ -74,6 +74,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $collections
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereCollections($value)
+ * @property int $author_id
+ * @property-read \App\Models\User $author
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereAuthorId($value)
  */
 class Submission extends Model {
 

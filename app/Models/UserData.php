@@ -53,6 +53,12 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereJobPublic($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereProjectPublic($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereUserLevel($value)
+ * @property string $geohash
+ * @property string $latitude 纬度
+ * @property string $longitude 经度
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereGeohash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereLatitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserData whereLongitude($value)
  */
 class UserData extends Model
 {
@@ -67,7 +73,7 @@ class UserData extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'coins','credits','authentication_status','last_login_ip','registered_at','last_visit'];
+    protected $fillable = ['user_id', 'coins','credits','authentication_status','last_login_ip','registered_at','last_visit','geohash','longitude','latitude'];
 
     /**
      * The attributes excluded from the model's JSON form.

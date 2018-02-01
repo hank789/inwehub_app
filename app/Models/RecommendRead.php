@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendRead whereReadType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendRead whereSourceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\RecommendRead whereSourceType($value)
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
  */
 class RecommendRead extends Model
 {

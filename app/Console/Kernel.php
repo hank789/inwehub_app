@@ -49,6 +49,7 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixUserLevel::class,
         Commands\FixData\FixQuestionRate::class,
         Commands\FixData\DeleteUselessTags::class,
+        Commands\User\GenGeohash::class,
 
     ];
 

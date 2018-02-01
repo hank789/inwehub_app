@@ -468,3 +468,5 @@ Route::post('article/comments','Article\CommentController@index');
 Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
 //附近位置
 Route::post('location/nearbySearch',['uses'=>'LocationController@nearbySearch'])->middleware('jwt.auth');
+//附近的人
+Route::post('location/nearbyUser',['uses'=>'LocationController@nearbyUser'])->middleware('jwt.auth');
