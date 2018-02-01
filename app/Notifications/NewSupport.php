@@ -87,7 +87,7 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 break;
             case 'App\Models\Submission':
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_READ;
-                $title = $this->support->user->name.'赞了您的动态';
+                $title = $this->support->user->name.'赞了您的分享';
                 $avatar = $this->support->user->avatar;
                 $body = $source->formatTitle();
                 $url = '/c/'.$source->category_id.'/'.$source->slug;
@@ -129,7 +129,7 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 break;
             case 'App\Models\Submission':
                 $object_type = 'readhub_submission_upvoted';
-                $title = $this->support->user->name.'赞了您的动态';
+                $title = $this->support->user->name.'赞了您的分享';
                 $body = $source->formatTitle();
                 $object_id = '/c/'.$source->category_id.'/'.$source->slug;
                 break;

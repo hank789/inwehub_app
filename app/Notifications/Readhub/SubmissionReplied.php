@@ -90,7 +90,7 @@ class SubmissionReplied extends Notification implements ShouldBroadcast,ShouldQu
     }
 
     public function toWechatNotice($notifiable){
-        $first = '您好，您发表的动态收到一条评论';
+        $first = '您好，您发表的分享收到一条评论';
         $object = Comment::find($this->message['comment_id']);
         $keyword2 = date('Y-m-d H:i:s',strtotime($object->created_at));
         $keyword3 = strip_tags($object->content);

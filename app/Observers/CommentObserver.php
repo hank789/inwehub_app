@@ -213,7 +213,7 @@ class CommentObserver implements ShouldQueue {
                             'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
-                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
+                            'title'  => $user->name.'回复了分享',
                             'comment_id' => $comment->id,
                             'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
