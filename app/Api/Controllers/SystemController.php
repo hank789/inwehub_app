@@ -104,7 +104,7 @@ class SystemController extends Controller {
         $iosPushNoticeOpen = $request->input('ios_push_notify',-1);
         $pushNotify = '';
         if ($iosPushNoticeOpen >= 0) {
-            $pushNotify = 'ios推送:'.($iosPushNoticeOpen?'开启':'关闭');
+            $pushNotify = ';ios推送:'.($iosPushNoticeOpen?'开启':'关闭');
         }
         //登陆事件通知
         event(new UserLoggedIn($user,$request->input('device_system').'唤起'.$pushNotify));
