@@ -444,8 +444,8 @@ class QuestionController extends Controller
                     $credit_key = Credit::KEY_COMMUNITY_ASK;
                 }
             }
-            //匿名提问的不加分
-            if ($question->hide == 0) {
+            //匿名互动提问的不加分
+            if ($question->question_type == 1 || ($question->question_type == 2 && $question->hide==0)) {
                 $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
             }
 
