@@ -101,9 +101,9 @@ class SystemController extends Controller {
     public function location(Request $request){
         $user = $request->user();
         $clientIp = $request->getClientIp();
-        $iosPushNoticeOpen = $request->input('ios_push_notify');
+        $iosPushNoticeOpen = $request->input('ios_push_notify',-1);
         $pushNotify = '';
-        if ($iosPushNoticeOpen != -1) {
+        if ($iosPushNoticeOpen >= 0) {
             $pushNotify = 'ios推送:'.($iosPushNoticeOpen?'开启':'关闭');
         }
         //登陆事件通知
