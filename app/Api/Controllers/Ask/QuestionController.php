@@ -444,7 +444,10 @@ class QuestionController extends Controller
                     $credit_key = Credit::KEY_COMMUNITY_ASK;
                 }
             }
-            $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
+            //匿名提问的不加分
+            if ($question->hide == 0) {
+                $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
+            }
 
             //1元优惠使用红包
             if($price == 1){

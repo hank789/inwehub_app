@@ -82,7 +82,7 @@ class FixUserCredits implements ShouldQueue
         //完成首次专业提问
         $action = CreditModel::KEY_FIRST_ASK;
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
-        $question = Question::where('user_id',$user->id)->where('question_type',1)->orderBy('id','asc')->first();
+        $question = Question::where('user_id',$user->id)->where('question_type',1)->where('hide',0)->orderBy('id','asc')->first();
         if ($question) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->first();
             $this->credit($reg,$action,$user->id,$question,$question->title);
@@ -90,7 +90,7 @@ class FixUserCredits implements ShouldQueue
         //完成首次互动提问
         $action = CreditModel::KEY_FIRST_COMMUNITY_ASK;
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
-        $question = Question::where('user_id',$user->id)->where('question_type',2)->orderBy('id','asc')->first();
+        $question = Question::where('user_id',$user->id)->where('question_type',2)->where('hide',0)->orderBy('id','asc')->first();
         if ($question) {
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->first();
             $this->credit($reg,$action,$user->id,$question,$question->title);
@@ -98,7 +98,7 @@ class FixUserCredits implements ShouldQueue
         //专业提问
         $action = CreditModel::KEY_ASK;
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
-        $questions = Question::where('user_id',$user->id)->where('question_type',1)->orderBy('id','asc')->get();
+        $questions = Question::where('user_id',$user->id)->where('question_type',1)->where('hide',0)->orderBy('id','asc')->get();
         foreach ($questions as $key=>$question) {
             if ($key == 0) continue;
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$question->id)->first();
@@ -107,7 +107,7 @@ class FixUserCredits implements ShouldQueue
         //互动提问
         $action = CreditModel::KEY_COMMUNITY_ASK;
         CreditModel::where('user_id',$user->id)->where('action',$action)->delete();
-        $questions = Question::where('user_id',$user->id)->where('question_type',2)->orderBy('id','asc')->get();
+        $questions = Question::where('user_id',$user->id)->where('question_type',2)->where('hide',0)->orderBy('id','asc')->get();
         foreach ($questions as $key=>$question) {
             if ($key == 0) continue;
             $reg = CreditModel::where('user_id',$user->id)->where('action',$action)->where('source_id',$question->id)->first();
@@ -120,6 +120,7 @@ class FixUserCredits implements ShouldQueue
         $first_free_answer = 0;
         foreach ($answers as $key=>$answer) {
             $question = $answer->question;
+            if ($question->hide) continue;
             if ($question->question_type == 1) {
                 //专业回答
                 $first_pay_answer++;

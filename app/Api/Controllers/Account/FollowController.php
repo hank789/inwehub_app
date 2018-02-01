@@ -131,7 +131,9 @@ class FollowController extends Controller
                                 ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                                 ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                             $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
-                            $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
+                            if ($source->hide == 0) {
+                                $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
+                            }
                             QuestionLogic::calculationQuestionRate($source->id);
                         }
                     }
@@ -396,7 +398,9 @@ class FollowController extends Controller
                         ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                         ->log($user->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                     $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
-                    $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source),false);
+                    if ($source->hide == 0) {
+                        $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source),false);
+                    }
                 }
             }
 
