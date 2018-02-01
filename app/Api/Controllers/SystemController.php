@@ -128,7 +128,7 @@ class SystemController extends Controller {
         $loginrecord->save();
         UserData::where('user_id',$user->id)->update([
             'last_visit' => Carbon::now(),
-            'lat_login_ip' => $clientIp,
+            'last_login_ip' => $clientIp,
             'longitude'    => $loginrecord->longitude,
             'latitude'     => $loginrecord->latitude,
             'geohash'      => $loginrecord->longitude?GeoHash::instance()->encode($loginrecord->latitude,$loginrecord->longitude):''
