@@ -457,6 +457,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
 
     //赞文章
     Route::post('upvote-submission','SubmissionVotesController@upVote');
+    //他的专栏
+    Route::post('user','HomeController@userArticle');
 });
 //文章详情
 Route::post('article/detail-by-slug','Article\SubmissionController@getBySlug');

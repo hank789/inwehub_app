@@ -67,6 +67,10 @@ class SubmissionController extends AdminController
         if (!$img_url) {
             return $this->error(route('admin.operate.article.edit',['id'=>$id]),'url地址必须为cdn地址');
         }
+        $author_id = $request->input('author_id',-1);
+        if ($author_id != -1) {
+            $submission->author_id = $author_id;
+        }
 
         $object_data = $submission->data;
         $object_data['img'] = $img_url;

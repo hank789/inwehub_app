@@ -95,4 +95,24 @@ class HomeController extends Controller {
         return self::createJsonData(true, $return);
     }
 
+    public function userArticle(Request $request){
+        $uuid = $request->input('uuid');
+        $search_user = User::where('uuid',$uuid)->first();
+        if (!$search_user) throw new ApiException(ApiException::BAD_REQUEST);
+        $submissions = (new Submission())->newQuery();
+        $submissions = $submissions->where('author_id',$search_user->id)
+            ->where('type','link')
+            ->orderBy('rate', 'desc')
+            ->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $submissions->toArray();
+        $list = [];
+        foreach ($submissions as $submission) {
+            $item = $submission->toArray();
+            $item['title'] = strip_tags($item['title'],'<a><span>');
+            $list[] = $item;
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
+    }
+
 }

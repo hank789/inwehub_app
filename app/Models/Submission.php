@@ -93,7 +93,7 @@ class Submission extends Model {
      * @var array
      */
     protected $fillable = [
-        'data', 'title', 'slug', 'type', 'category_id', 'category_name', 'rate',
+        'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate',
         'upvotes', 'downvotes', 'user_id', 'data', 'approved_at',
         'deleted_at', 'comments_number'
     ];
@@ -139,6 +139,11 @@ class Submission extends Model {
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id')
+            ->select(['id', 'name', 'avatar', 'uuid','is_expert']);
+    }
+
+    public function author(){
+        return $this->belongsTo(User::class, 'author_id')
             ->select(['id', 'name', 'avatar', 'uuid','is_expert']);
     }
 
