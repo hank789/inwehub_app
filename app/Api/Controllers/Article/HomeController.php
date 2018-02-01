@@ -1,8 +1,10 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
+use App\Exceptions\ApiException;
 use App\Models\Collection;
 use App\Models\Submission;
 use App\Models\Support;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -31,6 +33,23 @@ class HomeController extends Controller {
 
         $user = $request->user();
         $submissions = (new Submission())->newQuery();
+        $type = $request->input('type',1);
+        switch ($type){
+            case 2:
+                //文章链接
+                $submissions->where('type','link');
+                break;
+            case 3:
+                //纯图文
+                $submissions->where('type','text');
+                break;
+        }
+        $uuid = $request->input('uuid');
+        if ($uuid) {
+            $search_user = User::where('uuid',$uuid)->first();
+            if (!$search_user) throw new ApiException(ApiException::BAD_REQUEST);
+            $submissions->where('user_id',$search_user->id);
+        }
 
         // spicify the filter:
         if ($request->filter == 'all-channels') {

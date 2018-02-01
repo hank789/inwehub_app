@@ -5,7 +5,9 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Exceptions\ApiException;
 use App\Models\Feed\Feed;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 
@@ -47,6 +49,12 @@ class FeedController extends Controller
                     Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE,
                     Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE
                 ]);
+                break;
+            case 5:
+                //他的动态
+                $search_user = User::where('uuid',$request->input('uuid'))->first();
+                if (!$search_user) throw new ApiException(ApiException::BAD_REQUEST);
+                $query = $query->where('user_id',$search_user->id);
                 break;
         }
         $feeds = $query->orderBy('top','desc')->latest()
