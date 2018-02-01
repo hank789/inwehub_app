@@ -121,6 +121,7 @@ class LocationController extends Controller {
             $data[] = [
                 'id' => $userData->user_id,
                 'uuid' => $userData->user->uuid,
+                'is_expert'=> $userData->user->is_expert,
                 'name' => $userData->user->name,
                 'avatar' => $userData->user->avatar,
                 'description'=>$userData->user->description,
