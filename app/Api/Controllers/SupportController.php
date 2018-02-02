@@ -59,6 +59,7 @@ class SupportController extends Controller
             'user_id'        => $loginUser->id,
             'supportable_id'   => $source_id,
             'supportable_type' => get_class($source),
+            'refer_user_id'    => $source->user_id
         ];
 
         $support = Support::create($data);

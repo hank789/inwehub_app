@@ -27,7 +27,10 @@ class RankController extends Controller
         $info['user_credits'] = $user->userData->credits;
         $info['user_coins'] = $user->userData->coins;
         $info['invited_users'] = User::where('rc_uid',$user->id)->count();
-
+        $beginTime = date('Y-m-01 00:00:00');
+        $endTime = date('Y-m-d 23:59:59',strtotime($beginTime.' +1 month -1 day'));
+        $info['current_month_invited_users'] = User::where('rc_uid',$user->id)->whereBetween('created_at',[$beginTime,$endTime])->count();
+        $info['current_month_user_upvotes'] = Support::where('refer_user_id',$user->id)->whereBetween('created_at',[$beginTime,$endTime])->count();
         $info['show_rank'] = $this->checkTankLimit($user);
         return self::createJsonData(true,$info);
     }
@@ -158,6 +161,50 @@ class RankController extends Controller
                 'is_followed' => $is_followed,
                 'user_avatar_url' => $userData->user->avatar
             ];
+        }
+        return self::createJsonData(true,$data);
+    }
+
+    //用户本月获赞榜
+    public function userUpvotes(Request $request){
+        $beginTime = date('Y-m-01 00:00:00');
+        $endTime = date('Y-m-d 23:59:59',strtotime($beginTime.' +1 month -1 day'));
+        $loginUser = $request->user();
+        $supports = Support::selectRaw('count(*) as total,refer_user_id')->whereNotIn('refer_user_id',getSystemUids())->whereBetween('created_at',[$beginTime,$endTime])->groupBy('refer_user_id')->orderBy('total','desc')->take(20)->get();
+        event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']查看了点赞榜',[]));
+        $data = [];
+        foreach ($supports as $key=>$support) {
+            $is_followed = 0;
+            if($loginUser) {
+                $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($loginUser))->where('source_id','=',$support->refer_user_id)->first();
+                if ($attention){
+                    $is_followed = 1;
+                }
+            }
+            $refer_user = User::find($support->refer_user_id);
+            $data[] = [
+                'rank' => $key+1,
+                'user_id' => $refer_user->id,
+                'uuid'    => $refer_user->uuid,
+                'user_name' => $refer_user->name,
+                'is_expert' => $refer_user->is_expert,
+                'upvotes'     => $support->total,
+                'is_followed' => $is_followed,
+                'coins'   => $refer_user->userData->coins,
+                'user_avatar_url' => $refer_user->avatar
+            ];
+        }
+        usort($data,function ($a,$b) {
+            if ($a['upvotes'] == $b['upvotes']) {
+                if ($a['coins'] == $b['coins']) return 0;
+                return $a['coins'] > $b['coins'] ? -1:1;
+            } elseif($a['upvotes'] > $b['upvotes']) {
+                return -1;
+            }
+            return 1;
+        });
+        foreach ($data as $key=>&$item) {
+            $item['rank'] = $key+1;
         }
         return self::createJsonData(true,$data);
     }

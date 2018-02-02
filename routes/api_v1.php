@@ -56,7 +56,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'prefix'=>'rank'], functi
     Route::post('userGrowth','RankController@userGrowth');
     //用户邀请榜
     Route::post('userInvitation','RankController@userInvitation');
-
+    //用户点赞榜
+    Route::post('userUpvotes','RankController@userUpvotes');
 });
 
 //用户oauth

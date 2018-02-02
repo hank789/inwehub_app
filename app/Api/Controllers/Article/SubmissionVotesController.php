@@ -127,6 +127,7 @@ class SubmissionVotesController extends Controller {
             'user_id'        => $user->id,
             'supportable_id'   => $submission->id,
             'supportable_type' => get_class($submission),
+            'refer_user_id'    => $submission->user_id
         ];
 
         $support = Support::create($data);
