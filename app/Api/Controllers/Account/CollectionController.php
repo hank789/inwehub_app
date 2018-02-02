@@ -38,7 +38,7 @@ class CollectionController extends Controller
         }
         $user = $request->user();
 
-        if (RateLimiter::instance()->increase('collect:'.$source_type,$user->id,15,2)){
+        if (RateLimiter::instance()->increase('collect:'.$source_type,$user->id,10,5)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
