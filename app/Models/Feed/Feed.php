@@ -63,7 +63,7 @@ class Feed extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'user_id', 'top', 'feed_type','source_id','source_type','data','audit_status', 'is_anonymous'
+        'user_id', 'user_id', 'top','tags', 'feed_type','source_id','source_type','data','audit_status', 'is_anonymous'
     ];
 
     protected $casts = [

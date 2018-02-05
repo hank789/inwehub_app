@@ -37,11 +37,21 @@ class FeedLogger
     /** @var \Illuminate\Support\Collection */
     protected $properties;
 
+    /**
+     * @var array
+     */
+    protected $tagIds;
+
     public function __construct()
     {
 
         $this->properties = collect();
 
+    }
+
+    public function tags(array $tagIds){
+        $this->tagIds = $tagIds;
+        return $this;
     }
 
     public function performedOn(Model $model)
@@ -129,6 +139,11 @@ class FeedLogger
         $activity->feed_type = $feedType;
 
         $activity->is_anonymous = $this->anonymous;
+
+        $activity->tags = '';
+        foreach ($this->tagIds as $tagId) {
+            $activity->tags.='['.$tagId.']';
+        }
 
         $activity->save();
 
