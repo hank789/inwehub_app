@@ -34,6 +34,8 @@ class RankController extends Controller
         $info['show_rank'] = $this->checkTankLimit($user);
         $info['is_expert'] = $user->is_expert;
         $info['user_avatar'] = $user->avatar;
+        $info['user_uuid'] = $user->uuid;
+
         return self::createJsonData(true,$info);
     }
 
