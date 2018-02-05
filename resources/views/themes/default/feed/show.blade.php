@@ -19,6 +19,7 @@
                                     source_id : {{ $message->source_id }}<br>
                                     source_type : {{ $message->source_type }}<br>
                                     feed_type : {{ $message->feed_type }}<br>
+                                    tags : {{ $message->tags }}<br>
                                 @if ($feedData = $message->getSourceFeedData())
                                         @foreach($feedData['feed'] as $field=>$value)
                                             @if (is_array($value))
