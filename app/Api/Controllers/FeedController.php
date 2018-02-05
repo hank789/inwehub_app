@@ -54,7 +54,7 @@ class FeedController extends Controller
                 //他的动态
                 $search_user = User::where('uuid',$request->input('uuid'))->first();
                 if (!$search_user) throw new ApiException(ApiException::BAD_REQUEST);
-                $query = $query->where('user_id',$search_user->id);
+                $query = $query->where('user_id',$search_user->id)->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER);
                 break;
         }
         $feeds = $query->orderBy('top','desc')->latest()

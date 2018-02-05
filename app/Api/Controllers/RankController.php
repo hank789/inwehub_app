@@ -32,6 +32,8 @@ class RankController extends Controller
         $info['current_month_invited_users'] = User::where('rc_uid',$user->id)->whereBetween('created_at',[$beginTime,$endTime])->count();
         $info['current_month_user_upvotes'] = Support::where('refer_user_id',$user->id)->whereBetween('created_at',[$beginTime,$endTime])->count();
         $info['show_rank'] = $this->checkTankLimit($user);
+        $info['is_expert'] = $user->is_expert;
+        $info['user_avatar'] = $user->avatar;
         return self::createJsonData(true,$info);
     }
 
