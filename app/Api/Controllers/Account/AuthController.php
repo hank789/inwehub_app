@@ -128,7 +128,8 @@ class AuthController extends Controller
         }
 
         $code = makeVerifyCode();
-        dispatch((new SendPhoneMessage($mobile,$code,$type)));
+        dispatch((new SendPhoneMessage($mobile,['code' => $code],$type)));
+        Cache::put(SendPhoneMessage::getCacheKey($type,$mobile), $code, 6);
         return self::createJsonData(true);
     }
 
