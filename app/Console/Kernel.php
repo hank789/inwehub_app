@@ -25,6 +25,9 @@ class Kernel extends ConsoleKernel
         //阅读站
         Commands\Readhub\InitUser::class,
 
+        //活动脚本
+        Commands\Activity\SendSms124425049::class,
+
         //修复数据用
         Commands\FixData\ReadhubNotification::class,
         Commands\User\NewbieTask::class,

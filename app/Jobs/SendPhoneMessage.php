@@ -10,7 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Flc\Alidayu\App;
 use Flc\Alidayu\Client;
 use Flc\Alidayu\Requests\AlibabaAliqinFcSmsNumSend;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 
@@ -30,20 +29,20 @@ class SendPhoneMessage implements ShouldQueue
 
     protected $type;
     protected $phone;
-    protected $code;
+    protected $params;
 
     /**
      * SendPhoneMessage constructor.
      * @param $phone
-     * @param $code
+     * @param $params
      * @param string $type
      */
-    public function __construct($phone,$code,$type='register')
+    public function __construct($phone,array $params,$type='register')
     {
         $app = new App(config('alidayu'));
         $this->alidayu = new Client($app);
         $this->phone = $phone;
-        $this->code = $code;
+        $this->params = $params;
         $this->type = $type;
     }
 
@@ -59,16 +58,19 @@ class SendPhoneMessage implements ShouldQueue
         switch($this->type){
             case 'register':
                 $templateId = config('alidayu.verify_template_id');
-                $params = ['code' => $this->code];
+                //$params = ['code' => $code]
+                break;
+            case '201802-happy-activity':
+                $templateId = 'SMS_124425049';
+                //$params = ['name' => $code]
                 break;
             default:
                 $templateId = config('alidayu.verify_template_id');
-                $params = ['code' => $this->code];
                 break;
         }
 
         $request = new AlibabaAliqinFcSmsNumSend();
-        $request->setSmsParam($params)
+        $request->setSmsParam($this->params)
             ->setSmsFreeSignName($freeSignName)
             ->setSmsTemplateCode($templateId)
             ->setRecNum($this->phone);
@@ -79,12 +81,10 @@ class SendPhoneMessage implements ShouldQueue
         $sub_code = isset($response->sub_code) ? $response->sub_code : null;
         $sub_msg = isset($response->sub_msg) ? $response->sub_msg : null;
 
-        Cache::put(self::getCacheKey($this->type,$this->phone), $this->code, 600);
-
         if ($result && $result->success == true) {
             // 发送成功～
         }else{
-            Log::error('短信验证码发送失败',[$result, $sub_code, $sub_msg]);
+            Log::error('短信验证码发送失败',[$this->type,$result, $sub_code, $sub_msg]);
         }
     }
 
