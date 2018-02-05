@@ -140,9 +140,11 @@ class FeedLogger
 
         $activity->is_anonymous = $this->anonymous;
 
-        $activity->tags = '';
-        foreach ($this->tagIds as $tagId) {
-            $activity->tags.='['.$tagId.']';
+        if ($this->tagIds) {
+            $activity->tags = '';
+            foreach ($this->tagIds as $tagId) {
+                $activity->tags.='['.$tagId.']';
+            }
         }
 
         $activity->save();
