@@ -120,6 +120,7 @@ class CommentObserver implements ShouldQueue {
                     feed()
                         ->causedBy($comment->user)
                         ->performedOn($comment)
+                        ->tags($question->tags()->pluck('tag_id')->toArray())
                         ->withProperties([
                             'comment_content' => $comment->content,
                             'answer_user_name' => $source->user->name,
@@ -147,6 +148,7 @@ class CommentObserver implements ShouldQueue {
                     feed()
                         ->causedBy($comment->user)
                         ->performedOn($comment)
+                        ->tags($submission->tags()->pluck('tag_id')->toArray())
                         ->withProperties([
                             'comment_id'=>$comment->id,
                             'category_id'=>$submission->category_id,

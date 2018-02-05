@@ -54,6 +54,7 @@ class QuestionObserver implements ShouldQueue {
             feed()
                 ->causedBy($question->user)
                 ->performedOn($question)
+                ->tags($question->tags()->pluck('tag_id')->toArray())
                 ->anonymous($question->hide)
                 ->withProperties(['question_id'=>$question->id,'question_title'=>$question->title])
                 ->log(($question->hide ? '匿名':$question->user->name).'发布了'.$feed_question_title, $feed_type);

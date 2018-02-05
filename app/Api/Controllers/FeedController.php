@@ -7,6 +7,7 @@
 
 use App\Exceptions\ApiException;
 use App\Models\Feed\Feed;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -16,13 +17,21 @@ class FeedController extends Controller
 
     public function index(Request $request) {
         $search_type = $request->input('search_type',2);
-        $query = Feed::where('audit_status', Feed::AUDIT_STATUS_SUCCESS);
+        $query = Feed::query();
         $user = $request->user();
         switch ($search_type) {
             case 1:
                 //关注
                 $followers = $user->attentions()->where('source_type','=',get_class($user))->pluck('source_id')->toArray();
+                $attentionTags = $user->attentions()->where('source_type','=',Tag::class)->pluck('source_id')->toArray();
                 $query = $query->whereIn('user_id',$followers)->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER);
+                if ($attentionTags) {
+                    $query = $query->orWhere(function ($query) use ($attentionTags) {
+                        foreach ($attentionTags as $attentionTag) {
+                            $query->orWhereRaw("locate('[".$attentionTag."]',tags)>0");
+                        }
+                    });
+                }
                 break;
             case 2:
                 //全部
@@ -57,7 +66,7 @@ class FeedController extends Controller
                 $query = $query->where('user_id',$search_user->id)->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER);
                 break;
         }
-        $feeds = $query->orderBy('top','desc')->latest()
+        $feeds = $query->distinct()->orderBy('top','desc')->latest()
             ->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $feeds->toArray();
         $data = [];
