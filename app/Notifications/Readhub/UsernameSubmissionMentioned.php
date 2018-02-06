@@ -75,7 +75,7 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'name'   => $this->submission->owner->name,
             'avatar' => $this->submission->owner->avatar,
-            'title'  => $this->submission->owner->name.'在分享中提到了你',
+            'title'  => $this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你',
             'body'   => strip_tags($this->submission->title),
             'submission_id' => $this->submission->id,
             'extra_body' => ''
@@ -85,7 +85,7 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
     public function toPush($notifiable)
     {
         return [
-            'title' => $this->submission->owner->name.'在分享中提到了你',
+            'title' => $this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你',
             'body'  => strip_tags($this->submission->title),
             'payload' => [
                 'object_type'=>'readhub_username_mentioned',
@@ -95,7 +95,7 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
     }
 
     public function toWechatNotice($notifiable){
-        $first = '您好，'.$this->submission->owner->name.'在分享中提到了你';
+        $first = '您好，'.$this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你';
         $keyword2 = date('Y-m-d H:i:s',strtotime($this->submission->created_at));
         $keyword3 = '';
         $remark = strip_tags($this->submission->title);
