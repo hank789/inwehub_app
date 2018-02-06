@@ -299,7 +299,8 @@ Route::post('system/service_help','SystemController@serviceHelp');
 Route::post('system/service_qa_help','SystemController@serviceQaHelp');
 //获取应用市场地址
 Route::post('system/app_market_url','SystemController@getAppMarketUrl')->middleware('jwt.auth');
-
+//启动页引导
+Route::post('system/boot_guide','SystemController@bootGuide');
 
 //消息模块
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
@@ -474,3 +475,4 @@ Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(
 Route::post('location/nearbySearch',['uses'=>'LocationController@nearbySearch'])->middleware('jwt.auth');
 //附近的人
 Route::post('location/nearbyUser',['uses'=>'LocationController@nearbyUser'])->middleware('jwt.auth');
+

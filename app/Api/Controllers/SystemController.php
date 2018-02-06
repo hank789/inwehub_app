@@ -248,4 +248,9 @@ class SystemController extends Controller {
         return self::createJsonData(true,$data);
     }
 
+    //启动页
+    public function bootGuide(){
+        return self::createJsonData(true,['show_guide'=>1]);
+    }
+
 }
