@@ -30,8 +30,8 @@
                                     <td>
                                         <div class="col-md-4 col-md-offset-4 @if ($errors->has('show_boot_guide')) has-error @endif ">
                                             <div class="radio">
-                                                <label><input type="radio" name="show_boot_guide" value="1" @if ( Setting()->get('show_boot_guide',0) == 1) checked @endif >开启</label>&nbsp;&nbsp;&nbsp;&nbsp;
-                                                <label><input type="radio" name="show_boot_guide" value="0" @if ( Setting()->get('show_boot_guide',0) == 0) checked @endif>关闭</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="radio" name="show_boot_guide" value="1" @if ( Setting()->get('show_boot_guide',1) == 1) checked @endif >开启</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="radio" name="show_boot_guide" value="0" @if ( Setting()->get('show_boot_guide',1) == 0) checked @endif>关闭</label>&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                         </div>
                                     </td>
