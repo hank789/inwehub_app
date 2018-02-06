@@ -254,6 +254,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], functio
     Route::post('questions','TagsController@questions');
     //标签动态
     Route::post('submissions','TagsController@submissions');
+    //提建议，谈工作，贺新春
+    Route::post('getThreeAc','TagsController@getThreeAc');
+
 });
 
 //上传图片

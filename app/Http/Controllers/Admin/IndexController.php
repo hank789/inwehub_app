@@ -130,7 +130,7 @@ class IndexController extends AdminController
             //累计围观总数
             $totalPayForView = Order::where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->count();
             //累计收入总数
-            $totalFeeMoney = Settlement::where('status',2)->sum('actual_fee');
+            $totalFeeMoney = Settlement::where('status',Settlement::SETTLEMENT_STATUS_SUCCESS)->sum('actual_fee');
             return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
                     'totalAnswerNum',
                     'userInfoCompleteTime',

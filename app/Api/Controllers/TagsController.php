@@ -243,4 +243,17 @@ class TagsController extends Controller {
         return self::createJsonData(true, $return);
     }
 
+    //提建议，谈工作，贺新春
+    public function getThreeAc(){
+        $tag1 = Tag::getTagByName('贺新春');
+        $tag2 = Tag::getTagByName('谈工作');
+        $tag3 = Tag::getTagByName('提建议');
+        $tags = [
+            ['value'=>$tag1->id,'text'=>$tag1->name],
+            ['value'=>$tag2->id,'text'=>$tag2->name],
+            ['value'=>$tag3->id,'text'=>$tag3->name]
+        ];
+        return self::createJsonData(true,['tags'=>$tags]);
+    }
+
 }
