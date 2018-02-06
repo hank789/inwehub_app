@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Logic\TagsLogic;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
 
@@ -23,6 +24,9 @@ class ToolController extends AdminController
             $cacheItems = $request->input('cacheItems',[]);
             if(in_array('tags_question',$cacheItems)){
                 TagsLogic::delCache();
+            }
+            if (in_array('home_index',$cacheItems)){
+                Cache::forget('admin_index_dashboard');
             }
 
             return $this->success(route('admin.tool.clearCache'),'缓存更新成功');
