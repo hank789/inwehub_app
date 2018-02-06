@@ -250,7 +250,7 @@ class SystemController extends Controller {
 
     //启动页
     public function bootGuide(){
-        return self::createJsonData(true,['show_guide'=>1]);
+        return self::createJsonData(true,['show_guide'=>Setting()->get('show_boot_guide',1)]);
     }
 
 }

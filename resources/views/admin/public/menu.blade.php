@@ -84,6 +84,7 @@
             <li><a href="{{ route('admin.operate.recommendExpert.refresh') }}"><i class="fa fa-circle-o"></i> 更新首页专家</a></li>
             <li><a href="{{ route('admin.operate.rgcode.index') }}"><i class="fa fa-circle-o"></i> 邀请码管理</a></li>
             <li><a href="{{ route('admin.appVersion.index') }}"><i class="fa fa-circle-o"></i> APP版本管理</a></li>
+            <li><a href="{{ route('admin.operate.bootGuide') }}"><i class="fa fa-circle-o"></i> 启动页管理</a></li>
             <li><a href="{{ route('admin.notice.index') }}"><i class="fa fa-circle-o"></i> 公告管理</a></li>
         </ul>
     </li>
