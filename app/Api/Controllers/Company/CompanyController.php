@@ -210,6 +210,7 @@ class CompanyController extends Controller {
                 ];
             }
         }
+        $return['total'] = count($data);
         return self::createJsonData(true,$return);
     }
 

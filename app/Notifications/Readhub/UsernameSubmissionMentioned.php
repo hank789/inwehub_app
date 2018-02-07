@@ -70,13 +70,12 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
      */
     public function toArray($notifiable)
     {
-        $type = $this->submission->type == 'link' ? '文章':'动态';
         return [
             'url'    => '/c/'.$this->submission->category_id.'/'.$this->submission->slug,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'name'   => $this->submission->owner->name,
             'avatar' => $this->submission->owner->avatar,
-            'title'  => $this->submission->owner->name.'在'.$type.'中提到了你',
+            'title'  => $this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你',
             'body'   => strip_tags($this->submission->title),
             'submission_id' => $this->submission->id,
             'extra_body' => ''
@@ -85,9 +84,8 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
 
     public function toPush($notifiable)
     {
-        $type = $this->submission->type == 'link' ? '文章':'动态';
         return [
-            'title' => $this->submission->owner->name.'在'.$type.'中提到了你',
+            'title' => $this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你',
             'body'  => strip_tags($this->submission->title),
             'payload' => [
                 'object_type'=>'readhub_username_mentioned',
@@ -97,8 +95,7 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
     }
 
     public function toWechatNotice($notifiable){
-        $type = $this->submission->type == 'link' ? '文章':'动态';
-        $first = '您好，'.$this->submission->owner->name.'在'.$type.'中提到了你';
+        $first = '您好，'.$this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你';
         $keyword2 = date('Y-m-d H:i:s',strtotime($this->submission->created_at));
         $keyword3 = '';
         $remark = strip_tags($this->submission->title);
@@ -109,7 +106,7 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
         $target_url = config('app.mobile_url').'#/c/'.$this->submission->category_id.'/'.$this->submission->slug;
         return [
             'first'    => $first,
-            'keyword1' => $type,
+            'keyword1' => '分享',
             'keyword2' => $keyword2,
             'keyword3' => $keyword3,
             'remark'   => $remark,

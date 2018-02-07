@@ -59,6 +59,7 @@ class SubmissionObserver implements ShouldQueue {
         feed()
             ->causedBy($user)
             ->performedOn($submission)
+            ->tags($submission->tags()->pluck('tag_id')->toArray())
             ->withProperties([
                 'view_url'=>$submission->data['url']??'',
                 'category_id'=>$submission->category_id,
@@ -69,7 +70,7 @@ class SubmissionObserver implements ShouldQueue {
                 'current_address_longitude' => $submission->data['current_address_longitude'],
                 'current_address_latitude'  => $submission->data['current_address_latitude'],
                 'img'=>$submission->data['img']??''])
-            ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'动态'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+            ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
 
         //关注的用户接收通知
         $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();

@@ -23,8 +23,17 @@ class InviteController extends Controller {
         $invited_users = User::where('rc_uid',$user->id)->count();
         $user_money = UserMoney::find($user->id);
         $reward_money = $user_money->reward_money;
-
-        return self::createJsonData(true,['invited_users'=>$invited_users,'reward_money'=>$reward_money]);
+        $beginTime = date('Y-m-01 00:00:00');
+        $endTime = date('Y-m-d 23:59:59',strtotime($beginTime.' +1 month -1 day'));
+        $current_month_invited_users = User::where('rc_uid',$user->id)->whereBetween('created_at',[$beginTime,$endTime])->count();
+        return self::createJsonData(true,[
+            'user_name'=>$user->name,
+            'user_mobile'=>$user->mobile,
+            'user_avatar'=>$user->avatar,
+            'user_is_expert' => $user->is_expert,
+            'invited_users'=>$invited_users,
+            'reward_money'=>$reward_money,
+            'current_month_invited_users'=>$current_month_invited_users]);
     }
 
     //我邀请注册的好友列表

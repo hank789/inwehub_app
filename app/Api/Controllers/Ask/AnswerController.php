@@ -358,7 +358,8 @@ class AnswerController extends Controller
 
                 $this->credit($request->user()->id,$credit_key,$answer->id,$answer->getContentText());
 
-                if ($question->question_type == 2) {
+                //匿名提问提问者不加分
+                if ($question->question_type == 2 && $question->hide == 0) {
                     $this->credit($question->user_id,Credit::KEY_COMMUNITY_ASK_ANSWERED,$answer->id,$answer->getContentText());
                 }
 

@@ -63,6 +63,7 @@ class SupportObserver implements ShouldQueue {
                     feed()
                         ->causedBy($support->user)
                         ->performedOn($source)
+                        ->tags($question->tags()->pluck('tag_id')->toArray())
                         ->withProperties([
                             'answer_user_name' => $source->user->name,
                             'question_title'   => $question->title,

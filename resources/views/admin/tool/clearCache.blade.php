@@ -21,6 +21,10 @@
                                             <input type="checkbox" name='cacheItems[]' value="tags_question" checked="checked"/>
                                             更新擅长标签缓存
                                         </label>
+                                        <label>
+                                            <input type="checkbox" name='cacheItems[]' value="home_index" checked="checked"/>
+                                            更新首页统计缓存
+                                        </label>
                                     </div>
 
                                 </div>

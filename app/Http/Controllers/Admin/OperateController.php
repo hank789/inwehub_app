@@ -66,4 +66,22 @@ class OperateController extends AdminController {
 
     }
 
+    public function bootGuide(Request $request){
+        $validateRules = [
+            'show_boot_guide' => 'required|integer'
+        ];
+        if($request->isMethod('post')){
+            $this->validate($request,$validateRules);
+            $data = $request->except('_token');
+            unset($data['_token']);
+            foreach($data as $name=>$value){
+                Setting()->set($name,$value);
+            }
+            Setting()->clearAll();
+
+            return $this->success(route('admin.operate.bootGuide'),'设置成功');
+        }
+
+        return view('admin.operate.bootGuide');
+    }
 }

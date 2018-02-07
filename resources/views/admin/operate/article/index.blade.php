@@ -48,6 +48,7 @@
                                         <th>封面图片</th>
                                         <th>类型</th>
                                         <th>发布者</th>
+                                        <th>专栏作者</th>
                                         <th>更新时间</th>
                                         <th>操作</th>
                                     </tr>
@@ -67,6 +68,7 @@
                                             </td>
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->owner->name }}</td>
+                                            <td>{{ $submission->author?$submission->author->name:'' }}</td>
                                             <td>{{ $submission->updated_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >

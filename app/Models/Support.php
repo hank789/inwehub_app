@@ -31,7 +31,7 @@ class Support extends Model
     use BelongsToUserTrait;
 
     protected $table = 'supports';
-    protected $fillable = ['user_id','supportable_id','supportable_type'];
+    protected $fillable = ['user_id','supportable_id','supportable_type','refer_user_id'];
 
     public function source()
     {

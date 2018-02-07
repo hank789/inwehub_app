@@ -10,6 +10,7 @@ use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
+use App\Models\Feed\Feed;
 use App\Models\Feedback;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
@@ -279,7 +280,10 @@ class ProfileController extends Controller
 
         $info['submission_count'] = Submission::where('user_id',$user->id)->whereNull('deleted_at')->count();
         $info['comment_count'] = Comment::where('user_id',$user->id)->count();
-
+        $info['feed_count'] = Feed::where('user_id',$user->id)->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER)->count();
+        $info['article_count'] = Submission::where('author_id',$user->id)->where('type','link')->whereNull('deleted_at')->count();
+        $info['article_comment_count'] = Submission::where('author_id',$user->id)->where('type','link')->whereNull('deleted_at')->sum('comments_number');
+        $info['article_upvote_count'] = Submission::where('author_id',$user->id)->where('type','link')->whereNull('deleted_at')->sum('upvotes');
         $projects = [];
         $jobs = [];
         $edus = [];

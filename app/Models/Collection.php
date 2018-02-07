@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $status
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Collection whereStatus($value)
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
  */
 class Collection extends Model
 {

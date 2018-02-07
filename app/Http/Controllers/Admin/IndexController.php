@@ -8,6 +8,8 @@ use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feedback;
 use App\Models\LoginRecord;
+use App\Models\Pay\Order;
+use App\Models\Pay\Settlement;
 use App\Models\Pay\UserMoney;
 use App\Models\Pay\Withdraw;
 use App\Models\Question;
@@ -125,6 +127,10 @@ class IndexController extends AdminController
                     'total_num' => $taggable->total_num
                 ];
             }
+            //累计围观总数
+            $totalPayForView = Order::where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->count();
+            //累计收入总数
+            $totalFeeMoney = Settlement::where('status',Settlement::SETTLEMENT_STATUS_SUCCESS)->sum('actual_fee');
             return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
                     'totalAnswerNum',
                     'userInfoCompleteTime',
@@ -148,6 +154,8 @@ class IndexController extends AdminController
                     'withDrawMoney',
                     'userWithdrawMoneyList',
                     'hotTags',
+                    'totalPayForView',
+                    'totalFeeMoney',
                     'userChart','questionChart','systemInfo')
             ;
         });

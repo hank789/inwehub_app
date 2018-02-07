@@ -74,6 +74,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $collections
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereCollections($value)
+ * @property int $author_id
+ * @property-read \App\Models\User $author
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereAuthorId($value)
  */
 class Submission extends Model {
 
@@ -93,7 +97,7 @@ class Submission extends Model {
      * @var array
      */
     protected $fillable = [
-        'data', 'title', 'slug', 'type', 'category_id', 'category_name', 'rate',
+        'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate',
         'upvotes', 'downvotes', 'user_id', 'data', 'approved_at',
         'deleted_at', 'comments_number'
     ];
@@ -115,6 +119,9 @@ class Submission extends Model {
                 ->delete();
             Comment::where('source_id',$submission->id)
                 ->where('source_type','App\Models\Submission')
+                ->delete();
+            Support::where('supportable_id',$submission->id)
+                ->where('supportable_type','App\Models\Submission')
                 ->delete();
             /*删除标签关联*/
             Taggable::where('taggable_type','=',get_class($submission))->where('taggable_id','=',$submission->id)->delete();
@@ -139,6 +146,11 @@ class Submission extends Model {
     public function owner()
     {
         return $this->belongsTo(User::class, 'user_id')
+            ->select(['id', 'name', 'avatar', 'uuid','is_expert']);
+    }
+
+    public function author(){
+        return $this->belongsTo(User::class, 'author_id')
             ->select(['id', 'name', 'avatar', 'uuid','is_expert']);
     }
 

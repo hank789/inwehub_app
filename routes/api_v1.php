@@ -56,7 +56,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'], 'prefix'=>'rank'], functi
     Route::post('userGrowth','RankController@userGrowth');
     //用户邀请榜
     Route::post('userInvitation','RankController@userInvitation');
-
+    //用户点赞榜
+    Route::post('userUpvotes','RankController@userUpvotes');
 });
 
 //用户oauth
@@ -253,6 +254,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], functio
     Route::post('questions','TagsController@questions');
     //标签动态
     Route::post('submissions','TagsController@submissions');
+    //提建议，谈工作，贺新春
+    Route::post('getThreeAc','TagsController@getThreeAc');
+
 });
 
 //上传图片
@@ -295,7 +299,8 @@ Route::post('system/service_help','SystemController@serviceHelp');
 Route::post('system/service_qa_help','SystemController@serviceQaHelp');
 //获取应用市场地址
 Route::post('system/app_market_url','SystemController@getAppMarketUrl')->middleware('jwt.auth');
-
+//启动页引导
+Route::post('system/boot_guide','SystemController@bootGuide');
 
 //消息模块
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
@@ -457,6 +462,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
 
     //赞文章
     Route::post('upvote-submission','SubmissionVotesController@upVote');
+    //他的专栏
+    Route::post('user','HomeController@userArticle');
 });
 //文章详情
 Route::post('article/detail-by-slug','Article\SubmissionController@getBySlug');
@@ -466,3 +473,6 @@ Route::post('article/comments','Article\CommentController@index');
 Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
 //附近位置
 Route::post('location/nearbySearch',['uses'=>'LocationController@nearbySearch'])->middleware('jwt.auth');
+//附近的人
+Route::post('location/nearbyUser',['uses'=>'LocationController@nearbyUser'])->middleware('jwt.auth');
+

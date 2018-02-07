@@ -184,6 +184,28 @@
                     </a>
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <a href="{{ route('admin.finance.withdraw.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">付费围观总数</span>
+                            <span class="info-box-number">{{ $totalPayForView }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <a href="{{ route('admin.finance.withdraw.index') }}">
+                        <span class="info-box-icon bg-green"><i class="fa fa-money"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">累计手续费收入</span>
+                            <span class="info-box-number">{{ $totalFeeMoney }}</span>
+                        </div><!-- /.info-box-content -->
+                    </a>
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
         </div>
         <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12">

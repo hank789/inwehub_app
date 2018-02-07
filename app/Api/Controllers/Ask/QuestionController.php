@@ -444,7 +444,10 @@ class QuestionController extends Controller
                     $credit_key = Credit::KEY_COMMUNITY_ASK;
                 }
             }
-            $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
+            //匿名互动提问的不加分
+            if ($question->question_type == 1 || ($question->question_type == 2 && $question->hide==0)) {
+                $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
+            }
 
             //1元优惠使用红包
             if($price == 1){
@@ -1013,12 +1016,14 @@ class QuestionController extends Controller
         $return = $relatedQuestions->toArray();
         $list = [];
         foreach ($relatedQuestions as $relatedQuestion) {
+            $is_answerd = Answer::where('user_id',$user->id)->where('question_id',$relatedQuestion->id)->first();
+            if ($is_answerd) continue;
             $is_followed_question = 0;
             $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($relatedQuestion))->where('source_id','=',$relatedQuestion->id)->first();
             if ($attention_question) {
                 $is_followed_question = 1;
             }
-            $list[] = [
+            $list[$relatedQuestion->id] = [
                 'id' => $relatedQuestion->id,
                 'title' => $relatedQuestion->title,
                 'question_type' => $relatedQuestion->question_type,
@@ -1029,15 +1034,16 @@ class QuestionController extends Controller
             ];
         }
         if (count($list) < 5) {
-            $left = 5 - count($list);
-            $relatedQuestions = Question::recent($left,2,[$user->id]);
+            $relatedQuestions = Question::recent(40,2,[$user->id]);
             foreach ($relatedQuestions as $relatedQuestion) {
+                $is_answerd = Answer::where('user_id',$user->id)->where('question_id',$relatedQuestion->id)->first();
+                if ($is_answerd) continue;
                 $is_followed_question = 0;
                 $attention_question = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($relatedQuestion))->where('source_id','=',$relatedQuestion->id)->first();
                 if ($attention_question) {
                     $is_followed_question = 1;
                 }
-                $list[] = [
+                $list[$relatedQuestion->id] = [
                     'id' => $relatedQuestion->id,
                     'title' => $relatedQuestion->title,
                     'question_type' => $relatedQuestion->question_type,
@@ -1046,9 +1052,10 @@ class QuestionController extends Controller
                     'is_followed_question'   => $is_followed_question,
                     'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray()
                 ];
+                if (count($list) >= 5) break;
             }
         }
-        $return['data'] = $list;
+        $return['data'] = array_values($list);
         $return['user_skill_tags'] = $skillTags;
         return self::createJsonData(true,$return);
     }

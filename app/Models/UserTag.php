@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\DB;
  * @property int $industries
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserTag whereIndustries($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\UserTag whereSkills($value)
+ * @property-read \App\Models\Tag $tag
  */
 class UserTag extends Model
 {

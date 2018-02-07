@@ -10,8 +10,11 @@ use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\AppVersion;
 use App\Models\LoginRecord;
+use App\Models\UserData;
 use App\Models\UserDevice;
+use App\Services\GeoHash;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Spatie\Browsershot\Browsershot;
 use Tymon\JWTAuth\JWTAuth;
@@ -98,8 +101,13 @@ class SystemController extends Controller {
     public function location(Request $request){
         $user = $request->user();
         $clientIp = $request->getClientIp();
+        $iosPushNoticeOpen = $request->input('ios_push_notify',-1);
+        $pushNotify = '';
+        if ($iosPushNoticeOpen >= 0) {
+            $pushNotify = ';ios推送:'.($iosPushNoticeOpen?'开启':'关闭');
+        }
         //登陆事件通知
-        event(new UserLoggedIn($user,$request->input('device_system').'唤起'));
+        event(new UserLoggedIn($user,$request->input('device_system').'唤起'.$pushNotify));
         if (RateLimiter::instance()->increase('user-location',$user->id.'-'.$clientIp,3600)) {
             return self::createJsonData(true);
         }
@@ -118,6 +126,13 @@ class SystemController extends Controller {
         $loginrecord->longitude = $request->input('current_address_longitude');
         $loginrecord->latitude = $request->input('current_address_latitude');
         $loginrecord->save();
+        UserData::where('user_id',$user->id)->update([
+            'last_visit' => Carbon::now(),
+            'last_login_ip' => $clientIp,
+            'longitude'    => $loginrecord->longitude,
+            'latitude'     => $loginrecord->latitude,
+            'geohash'      => $loginrecord->longitude?GeoHash::instance()->encode($loginrecord->latitude,$loginrecord->longitude):''
+        ]);
         return self::createJsonData(true);
     }
 
@@ -231,6 +246,11 @@ class SystemController extends Controller {
         ];
 
         return self::createJsonData(true,$data);
+    }
+
+    //启动页
+    public function bootGuide(){
+        return self::createJsonData(true,['show_guide'=>Setting()->get('show_boot_guide',1)?true:false]);
     }
 
 }

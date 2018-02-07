@@ -42,7 +42,7 @@ class SupportController extends Controller
 
         $loginUser = $request->user();
 
-        if (RateLimiter::instance()->increase('support:'.$source_type,$loginUser->id,15,2)){
+        if (RateLimiter::instance()->increase('support:'.$source_type,$loginUser->id,10,5)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -59,6 +59,7 @@ class SupportController extends Controller
             'user_id'        => $loginUser->id,
             'supportable_id'   => $source_id,
             'supportable_type' => get_class($source),
+            'refer_user_id'    => $source->user_id
         ];
 
         $support = Support::create($data);

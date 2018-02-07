@@ -39,10 +39,10 @@ class CustomerController extends AdminController {
         }
 
         if(isset($filter['is_unread']) && $filter['is_unread'] > 0 ){
-            $query = $query->whereNull('im_messages.read_at');
+            $query = $query->where('im_messages.user_id','!=',$contact_id)->whereNull('im_messages.read_at');
         }
 
-        $messages = $query->select('im_message_room.*')->groupBy('im_message_room.room_id')->orderBy('im_message_room.message_id','desc')->paginate(20);
+        $messages = $query->selectRaw('room_id,max(message_id) as message_id')->groupBy('im_message_room.room_id')->paginate(20);
         return view('admin.im.customer.index')->with(compact('filter','messages'));
     }
 

@@ -43,7 +43,7 @@ class FollowController extends Controller
         $source_id = $request->input('id');
         $loginUser = $request->user();
 
-        $limit_expire = 15;
+        $limit_expire = 10;
         if($source_type === 'question'){
             $source  = Question::findOrFail($source_id);
             $subject = $source->title;
@@ -63,7 +63,7 @@ class FollowController extends Controller
             $subject = $source->name;
         }
 
-        if (RateLimiter::instance()->increase('follow:'.$source_type,$loginUser->id,$limit_expire,2)){
+        if (RateLimiter::instance()->increase('follow:'.$source_type,$loginUser->id,$limit_expire,5)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -128,10 +128,13 @@ class FollowController extends Controller
                             feed()
                                 ->causedBy($loginUser)
                                 ->performedOn($source)
+                                ->tags($source->tags()->pluck('tag_id')->toArray())
                                 ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                                 ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                             $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
-                            $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
+                            if ($source->hide == 0) {
+                                $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
+                            }
                             QuestionLogic::calculationQuestionRate($source->id);
                         }
                     }
@@ -359,10 +362,18 @@ class FollowController extends Controller
         $user = $request->user();
         $fields = [];
         foreach ($ids as $id) {
-            $source = Tag::find($id);
+            $source = Question::find($id);
             if(empty($source)){
                 continue;
             }
+            $fields[] = [
+                'title' => '标题',
+                'value' => $source->title
+            ];
+            $fields[] = [
+                'title' => '地址',
+                'value' => route('ask.question.detail',['id'=>$source->id])
+            ];
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($source))->where('source_id','=',$id)->first();
             if($attention){
                 continue;
@@ -377,14 +388,7 @@ class FollowController extends Controller
             $attention = Attention::create($data);
 
             $source->increment('followers');
-            $fields[] = [
-                'title' => '标题',
-                'value' => $source->title
-            ];
-            $fields[] = [
-                'title' => '地址',
-                'value' => route('ask.question.detail',['id'=>$source->id])
-            ];
+            
             //产生一条feed流
             if ($source->question_type == 2) {
                 $feed_event = 'question_followed';
@@ -393,10 +397,13 @@ class FollowController extends Controller
                     feed()
                         ->causedBy($user)
                         ->performedOn($source)
+                        ->tags($source->tags()->pluck('tag_id')->toArray())
                         ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                         ->log($user->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                     $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
-                    $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source),false);
+                    if ($source->hide == 0) {
+                        $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source),false);
+                    }
                 }
             }
 

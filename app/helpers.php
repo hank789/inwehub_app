@@ -1175,12 +1175,16 @@ if (!function_exists('distanceFormat')) {
 
 if (!function_exists('formatCdnUrl')) {
     function formatCdnUrl($url) {
-        $cdn_url = str_replace('http://inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','https://cdn.inwehub.com',$url);
-        $format_url = parse_url($cdn_url);
-        if (isset($format_url['host']) && !in_array($format_url['host'],['cdn.inwehub.com'])) {
-            return false;
+        if (config('app.env') == 'production') {
+            $cdn_url = str_replace('http://inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','https://cdn.inwehub.com',$url);
+            $format_url = parse_url($cdn_url);
+            if (isset($format_url['host']) && !in_array($format_url['host'],['cdn.inwehub.com'])) {
+                return false;
+            }
+            return $cdn_url;
+        } else {
+            return $url;
         }
-        return $cdn_url;
     }
 }
 
@@ -1224,16 +1228,21 @@ if (!function_exists('getDailySignInfo')) {
 
 if (!function_exists('getSystemUids')) {
     function getSystemUids() {
-        return [
-            1,//inwehub
-            3,//cicely
-            4,//武浩
-            5,//hank
-            6,//庞凡
-            504,//智能小哈
-            79,
-            229,//何棠
-            131,//张震
-        ];
+        if (config('app.env') == 'production') {
+            return [
+                1,//inwehub
+                3,//cicely
+                4,//武浩
+                5,//hank
+                6,//庞凡
+                504,//智能小哈
+                79,
+                229,//何棠
+                131,//张震
+            ];
+        } else {
+            return [0];
+        }
+
     }
 }

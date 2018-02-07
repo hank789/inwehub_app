@@ -120,6 +120,7 @@ class CommentObserver implements ShouldQueue {
                     feed()
                         ->causedBy($comment->user)
                         ->performedOn($comment)
+                        ->tags($question->tags()->pluck('tag_id')->toArray())
                         ->withProperties([
                             'comment_content' => $comment->content,
                             'answer_user_name' => $source->user->name,
@@ -147,6 +148,7 @@ class CommentObserver implements ShouldQueue {
                     feed()
                         ->causedBy($comment->user)
                         ->performedOn($comment)
+                        ->tags($submission->tags()->pluck('tag_id')->toArray())
                         ->withProperties([
                             'comment_id'=>$comment->id,
                             'category_id'=>$submission->category_id,
@@ -213,7 +215,7 @@ class CommentObserver implements ShouldQueue {
                             'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
-                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'动态'),
+                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'分享'),
                             'comment_id' => $comment->id,
                             'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,

@@ -47,10 +47,10 @@
                                     </tr>
                                     @foreach($messages as $message)
                                         <tr>
-                                            <td>{{ $message->last_message()->user->name }}</td>
-                                            <td>{{ $message->last_message()->data['text']?:'[图片]' }}</td>
-                                            <td>{{ timestamp_format($message->last_message()->created_at) }}</td>
-                                            <td>{{ $message->last_message()->read_at?:'未读' }}</td>
+                                            <td>{{ $message->message->user->name }}</td>
+                                            <td>{{ $message->message->data['text']?:'[图片]' }}</td>
+                                            <td>{{ timestamp_format($message->message->created_at) }}</td>
+                                            <td>{{ $message->message->read_at?:'未读' }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a target="_blank" class="btn btn-default" href="{{ route('auth.message.show',['id'=>$message->room_id]) }}" data-toggle="tooltip" title="查看对话"><i class="fa fa-comment-o"></i></a>

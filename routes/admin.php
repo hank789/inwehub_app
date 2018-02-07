@@ -93,6 +93,9 @@ Route::group(['namespace'=>'Finance'],function(){
     Route::post('settlement/doitnow',['as'=>'admin.finance.settlement.doitnow','uses'=>'SettlementController@doitnow']);
 
 });
+//启动页配置
+Route::get('operate/bootGuide',['as'=>'admin.operate.bootGuide','uses'=>'OperateController@bootGuide']);
+Route::post('operate/bootGuide',['as'=>'admin.operate.bootGuide','uses'=>'OperateController@bootGuide']);
 
 
 /*问题删除*/
