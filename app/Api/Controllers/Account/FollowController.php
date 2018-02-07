@@ -380,10 +380,7 @@ class FollowController extends Controller
             $attention = Attention::create($data);
 
             $source->increment('followers');
-            $fields[] = [
-                'title' => '标题',
-                'value' => $source->title
-            ];
+            
             $fields[] = [
                 'title' => '地址',
                 'value' => route('ask.question.detail',['id'=>$source->id])
