@@ -91,7 +91,22 @@ class LocationController extends Controller {
             $values = substr($values, 0, -1);
         }
 
-        $query = UserData::where('user_id','!=',$user->id);
+        $ingores = [
+            269,
+            329,
+            79,
+            504,
+            6,
+            5,
+            733,
+            1397,
+            1,
+            131,
+            229,
+            1161,
+            $user->id
+        ];
+        $query = UserData::whereNotIn('user_id',$ingores);
         if ($longitude) {
             $query = $query->whereRaw('LEFT(`geohash`,3) IN ('.$values.')');
         }
