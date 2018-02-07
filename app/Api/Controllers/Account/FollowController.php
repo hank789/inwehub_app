@@ -382,7 +382,7 @@ class FollowController extends Controller
             $source->increment('followers');
             $fields[] = [
                 'title' => '标题',
-                'value' => $source->title
+                'value' => $source->id
             ];
             
             //产生一条feed流
