@@ -1055,7 +1055,7 @@ class QuestionController extends Controller
                 if (count($list) >= 5) break;
             }
         }
-        $return['data'] = $list;
+        $return['data'] = array_values($list);
         $return['user_skill_tags'] = $skillTags;
         return self::createJsonData(true,$return);
     }
