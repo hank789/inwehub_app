@@ -57,7 +57,6 @@ class SystemEventListener implements ShouldQueue
      */
     public function systemNotify($event){
         try {
-            \Log::info('test',$event->fields);
             \Slack::to(config('slack.ask_activity_channel'))
                 ->attach(
                     [

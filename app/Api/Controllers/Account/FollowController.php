@@ -366,6 +366,10 @@ class FollowController extends Controller
             if(empty($source)){
                 continue;
             }
+            $fields[] = [
+                'title' => '标题',
+                'value' => $source->title
+            ];
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($source))->where('source_id','=',$id)->first();
             if($attention){
                 continue;
@@ -380,10 +384,6 @@ class FollowController extends Controller
             $attention = Attention::create($data);
 
             $source->increment('followers');
-            $fields[] = [
-                'title' => '标题',
-                'value' => $source->id
-            ];
             
             //产生一条feed流
             if ($source->question_type == 2) {
