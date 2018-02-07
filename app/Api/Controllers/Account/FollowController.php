@@ -362,7 +362,7 @@ class FollowController extends Controller
         $user = $request->user();
         $fields = [];
         foreach ($ids as $id) {
-            $source = Tag::find($id);
+            $source = Question::find($id);
             if(empty($source)){
                 continue;
             }
