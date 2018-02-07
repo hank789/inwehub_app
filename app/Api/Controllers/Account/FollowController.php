@@ -370,6 +370,10 @@ class FollowController extends Controller
                 'title' => '标题',
                 'value' => $source->title
             ];
+            $fields[] = [
+                'title' => '地址',
+                'value' => route('ask.question.detail',['id'=>$source->id])
+            ];
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($source))->where('source_id','=',$id)->first();
             if($attention){
                 continue;
