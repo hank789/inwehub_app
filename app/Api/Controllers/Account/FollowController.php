@@ -380,11 +380,11 @@ class FollowController extends Controller
             $attention = Attention::create($data);
 
             $source->increment('followers');
-            
             $fields[] = [
-                'title' => '地址',
-                'value' => route('ask.question.detail',['id'=>$source->id])
+                'title' => '标题',
+                'value' => $source->title
             ];
+            
             //产生一条feed流
             if ($source->question_type == 2) {
                 $feed_event = 'question_followed';
