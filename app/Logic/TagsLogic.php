@@ -76,27 +76,20 @@ class TagsLogic {
         if(empty($tags)){
             $level = 1;
             //一维
-            foreach ($question_c as $cid) {
-                $c_model = Category::find($cid);
-                $query_c = $c_model->tags();
-                if(trim($word)){
-                    $query_c = $query_c->where('name','like','%'.$word.'%');
-                }
-                foreach($query_c->get() as $val){
-                    $tags[] = [
-                        $tagKey => $val->id,
-                        'text'  => $val->name
-                    ];
-                }
-            }
             if ($loadDefaultTags) {
-                $defaultTags = Tag::where('category_id',0)->get();
-                foreach ($defaultTags as $defaultTag) {
-                    $tags[] = [
-                        $tagKey => $defaultTag->id,
-                        'text'  => $defaultTag->name
-                    ];
-                }
+                $question_c[] = 0;
+            }
+            $tagQuery = Tag::whereIn('category_id',$question_c);
+            if (trim($word)) {
+                $tagQuery = $tagQuery->where('name','like','%'.$word.'%');
+            }
+            $tags2 = $tagQuery->get();
+
+            foreach ($tags2 as $tag) {
+                $tags[] = [
+                    $tagKey => $tag->id,
+                    'text'  => $tag->name
+                ];
             }
         }
         //如果热门排序
