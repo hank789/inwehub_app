@@ -55,6 +55,6 @@
 @endsection
 @section('script')
 <script type="text/javascript">
-    set_active_menu('operate',"{{ route('admin.operate.bootGuide') }}");
+    set_active_menu('operations',"{{ route('admin.operate.bootGuide') }}");
 </script>
 @endsection
