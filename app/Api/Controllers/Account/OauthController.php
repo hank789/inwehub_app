@@ -36,7 +36,6 @@ class OauthController extends Controller
         } catch (\Exception $e) {
 
         }
-
         //微信公众号和微信app的openid不同，但是unionid相同
         $unionid = isset($data['full_info']['unionid'])?$data['full_info']['unionid']:'';
         $oauthGzhData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
@@ -55,13 +54,12 @@ class OauthController extends Controller
             $user_id = $user->id;
         }
 
-        if($object && $user && $object->user_id != $user->id){
+        if($object && $user && $object->user_id && $object->user_id != $user->id){
             throw new ApiException(ApiException::USER_OAUTH_BIND_OTHERS);
         }
 
         $oauthData = UserOauth::updateOrCreate([
             'auth_type'=>$type,
-            'user_id'=> $user_id,
             'openid'   => $data['openid']
         ],[
             'auth_type'=>$type,
