@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Scout\Searchable;
 
 /**
  * App\Models\Attention
@@ -54,7 +55,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class Feed extends Model
 {
-    use BelongsToUserTrait,SoftDeletes;
+    use BelongsToUserTrait,SoftDeletes,Searchable;
     protected $table = 'feeds';
 
     /**
@@ -96,6 +97,18 @@ class Feed extends Model
     public function source(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'title' => implode(',',$this->data),
+        ];
     }
 
     public function getSourceFeedData() {

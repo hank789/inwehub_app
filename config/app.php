@@ -200,6 +200,8 @@ return [
         App\Third\Weapp\WxxcxServiceProvider::class,
         App\Third\Wechat\ServiceProvider::class,
         Overtrue\LaravelPinyin\ServiceProvider::class,
+        Laravel\Scout\ScoutServiceProvider::class,
+        ScoutEngines\Elasticsearch\ElasticsearchProvider::class,
     ],
 
     /*
