@@ -240,9 +240,9 @@ class IndexController extends AdminController
         $answers = Answer::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
         $feedbacks = Feedback::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
         $submissions = Submission::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
+        $shares = Credit::where('action','share_success')->where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
 
-
-        $questionRange = $answerRange = $feedbackRange = $submissionTextRange = $submissionLinkRange = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        $questionRange = $answerRange = $feedbackRange = $submissionTextRange = $submissionLinkRange = $shareRange = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
         for( $i=0 ; $i < 30 ; $i++ ){
             $startTime = $labelTimes[$i];
@@ -280,6 +280,12 @@ class IndexController extends AdminController
                     $submissionLinkRange[$i]++;
                 }
             }
+            //分享统计
+            foreach ($shares as $share) {
+                if( $share->created_at > $startTime && $share->created_at < $endTime ){
+                    $shareRange[$i]++;
+                }
+            }
 
         }
 
@@ -289,7 +295,8 @@ class IndexController extends AdminController
             'answerRange' => $answerRange,
             'feedbackRange' => $feedbackRange,
             'submissionLinkRange' => $submissionLinkRange,
-            'submissionTextRange' => $submissionTextRange
+            'submissionTextRange' => $submissionTextRange,
+            'shareRange' => $shareRange
         ];
 
     }
