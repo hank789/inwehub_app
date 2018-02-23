@@ -71,7 +71,7 @@ Route::Group(['namespace'=>'Account'],function(){
         Route::get('people/{user_id}/credits',['as'=>'auth.space.credits','uses'=>'SpaceController@credits'])->where(['user_id'=>'[0-9]+']);
 
         /*全局搜索*/
-        Route::any('search/{filter?}',['as'=>'auth.search.index','uses'=>'SearchController@index'])->where(['filter'=>'(all|questions|articles|tags|users)']);
+        Route::any('search/{filter?}',['as'=>'auth.search.index','uses'=>'SearchController@index'])->where(['filter'=>'(all|questions|articles|tags|users|feeds)']);
 
         /*邮箱token验证*/
         Route::get('email/{action}/{token}',['as'=>'auth.email.verifyToken','uses'=>'EmailController@verifyToken'])->where(['action'=>'(register|verify)']);

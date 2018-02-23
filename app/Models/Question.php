@@ -342,9 +342,9 @@ class Question extends Model
     }
 
     /*问题搜索*/
-    public static function search($word,$size=16)
+    public static function search($word)
     {
-        $list = self::where('title','like',"$word%")->paginate($size);
+        $list = self::where('title','like',"$word%");
         return $list;
     }
 
