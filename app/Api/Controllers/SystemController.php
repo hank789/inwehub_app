@@ -71,7 +71,7 @@ class SystemController extends Controller {
         ];
         $this->validate($request, $validateRules);
         $data = $request->all();
-        if (empty($data['client_id'])) return self::createJsonData(true);
+        if (empty($data['client_id']) || empty($data['device_token'])) return self::createJsonData(true);
         $user = $request->user();
         //将该用户所有类型的设备置为不可用状态
         UserDevice::where('user_id',$user->id)->update(['status'=>0]);
