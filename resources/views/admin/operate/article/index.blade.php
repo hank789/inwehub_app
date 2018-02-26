@@ -68,7 +68,11 @@
                                             </td>
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->owner->name }}</td>
-                                            <td>{{ $submission->author?$submission->author->name:'' }}</td>
+                                            <td>
+                                                @if ($submission->author_id)
+                                                    <span><img style="width: 30px;height: 30px;" src="{{ $submission->author->avatar }}" class="img-flag" />{{ $submission->author->name }}</span>
+                                                @endif
+                                            </td>
                                             <td>{{ $submission->updated_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >

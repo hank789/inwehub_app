@@ -92,13 +92,7 @@ class AjaxController extends Controller
     {
         $word = $request->input('word');
 
-        $users = User::where('id','<>',$request->user()->id)->where('name','like',"%$word%")->take(10)->get();
-        $users->map(function($user){
-            $user->avatar = $user->getAvatarUrl();
-            $user->coins = $user->userData->coins;
-            $user->answers = $user->userData->answers;
-            $user->followers = $user->userData->followers;
-        });
+        $users = User::where('name','like',"%$word%")->take(20)->get();
         return response()->json($users->toArray());
     }
 
