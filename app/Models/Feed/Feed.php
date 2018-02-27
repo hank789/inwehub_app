@@ -106,9 +106,18 @@ class Feed extends Model
      */
     public function toSearchableArray()
     {
+        $data = $this->data;
+        unset($data['img'],
+            $data['view_url'],
+            $data['category_id'],
+            $data['slug'],
+            $data['current_address_longitude'],
+            $data['current_address_latitude'],
+            $data['domain']);
         return [
-            'title' => implode(',',$this->data),
+            'title' => implode(',',array_values($data)),
         ];
+
     }
 
     public function getSourceFeedData() {
