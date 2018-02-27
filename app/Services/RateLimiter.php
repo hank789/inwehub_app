@@ -72,7 +72,7 @@ class RateLimiter extends Singleton
     }
 
     public function hIncrBy($event,$key,$value){
-        return $this->client->hIncrBy($event,$key,$value);
+        return $this->client->hIncrBy('inwehub:'.$event,$key,$value);
     }
 
     public function getValue($event, $target){

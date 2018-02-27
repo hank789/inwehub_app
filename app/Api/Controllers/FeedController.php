@@ -19,7 +19,7 @@ class FeedController extends Controller
 
     public function index(Request $request) {
         $search_type = $request->input('search_type',2);
-        $word = $request->input('word');
+        $word = $request->input('search_word');
         $user = $request->user();
         if ($word) {
             $feeds = Feed::search($word)->paginate(Config::get('inwehub.api_data_page_size'));
