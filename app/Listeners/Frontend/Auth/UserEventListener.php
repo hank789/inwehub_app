@@ -2,7 +2,6 @@
 
 namespace App\Listeners\Frontend\Auth;
 use App\Events\Frontend\Auth\UserRegistered;
-use App\Logic\TaskLogic;
 use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Feed\Feed;
@@ -16,6 +15,7 @@ use App\Models\UserOauth;
 use App\Models\UserTag;
 use App\Notifications\NewInviteUserRegister;
 use App\Notifications\NewMessage;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Redis;
 use App\Events\Frontend\System\Credit as CreditEvent;
@@ -145,7 +145,7 @@ class UserEventListener implements ShouldQueue
             ->log($contact->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
         // broadcast the message to the other person
-        $event->user->notify(new NewMessage($event->user->id,$message));
+        $event->user->notify((new NewMessage($event->user->id,$message))->delay(Carbon::now()->addMinutes(1)));
 
         \Slack::send('新用户注册: '.formatSlackUser($event->user).'；设备：'.$event->from.$title);
     }

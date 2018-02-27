@@ -716,6 +716,11 @@
                         backgroundColor: "rgba(238,153,34,1)",
                         data: [{{ implode(",",$questionChart['submissionLinkRange']) }}]
                     },
+                    {
+                        label: '分享',
+                        backgroundColor: "rgba(153,51,51,1)",
+                        data: [{{ implode(",",$questionChart['shareRange']) }}]
+                    }
                 ]
             },
             options: {

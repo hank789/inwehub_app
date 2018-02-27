@@ -42,7 +42,7 @@
             <div class="collapse navbar-collapse" id="global-navbar">
                 <form class="navbar-form navbar-left" role="search" id="top-search-form" action="{{ route('auth.search.index') }}" method="GET">
                     <div class="input-group">
-                        <input type="text" name="word" id="searchBox" class="form-control" placeholder="{{ Setting()->get('search_placeholder','') }}" />
+                        <input type="text" name="query" id="searchBox" class="form-control" placeholder="{{ Setting()->get('search_placeholder','') }}" />
                         <span class="input-group-addon btn" ><span id="search-button" class="glyphicon glyphicon-search" aria-hidden="true"></span></span>
                     </div>
                 </form>

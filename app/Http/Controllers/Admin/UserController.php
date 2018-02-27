@@ -17,6 +17,7 @@ use Bican\Roles\Models\Role;
 use Illuminate\Http\Request;
 use App\Events\Frontend\System\Credit as CreditEvent;
 use Illuminate\Support\Facades\Config;
+use Excel;
 
 class UserController extends AdminController
 {
@@ -31,6 +32,43 @@ class UserController extends AdminController
      */
     public function index(Request $request)
     {
+        $users = $this->getUserQuery($request)->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+        return view('admin.user.index')->with('users',$users)->with('filter',$request->all());
+    }
+
+    public function exportUsers(Request $request){
+        $users = $this->getUserQuery($request)->orderBy('created_at','desc')->get();
+        $cellData = [];
+        $cellData[] = ['ID','姓名','微信昵称','手机','身份职业','专家认证','企业用户','问题数','回答数','档案完整度','账户余额','成长值','贡献值','注册时间','邀请者','邀请人数'];
+        foreach ($users as $user) {
+            $inviter=$user->getInviter();
+            $cellData[] = [
+                $user->id,
+                $user->name,
+                implode(',',$user->userOauth()->where('status',1)->take(1)->pluck('nickname')->toArray()),
+                $user->mobile,
+                $user->title,
+                ($user->userData->authentication_status ? '是':'否'),
+                ($user->userData->is_company ? '是':'否'),
+                $user->userData->questions,
+                $user->userData->answers,
+                $user->getInfoCompletePercent(),
+                $user->userMoney->total_money,
+                $user->userData->credits,
+                $user->userData->coins,
+                $user->created_at,
+                $inviter?$inviter->name:'',
+                $user->getInvitedUserCount()
+            ];
+        }
+        Excel::create('users',function($excel) use ($cellData){
+            $excel->sheet('score', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->export('xlsx');
+    }
+
+    protected function getUserQuery(Request $request){
         $filter =  $request->all();
 
         $query = User::query();
@@ -43,7 +81,7 @@ class UserController extends AdminController
         if( isset($filter['word']) && $filter['word'] ){
             $query->where(function($subQuery) use ($filter) {
                 return $subQuery->where('name','like',$filter['word'].'%')
-                         ->orWhere('mobile','like',$filter['word'].'%');
+                    ->orWhere('mobile','like',$filter['word'].'%');
             });
         }
 
@@ -61,8 +99,7 @@ class UserController extends AdminController
             $query->where('rc_code','=',$filter['rc_code']);
         }
 
-        $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
-        return view('admin.user.index')->with('users',$users)->with('filter',$filter);
+        return $query;
     }
 
     /**
@@ -348,6 +385,4 @@ class UserController extends AdminController
         $resumes = $user->getResumeMedias();
         return view('admin.user.resume_info')->with('resumes',$resumes);
     }
-
-
 }

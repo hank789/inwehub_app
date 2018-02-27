@@ -200,6 +200,9 @@ return [
         App\Third\Weapp\WxxcxServiceProvider::class,
         App\Third\Wechat\ServiceProvider::class,
         Overtrue\LaravelPinyin\ServiceProvider::class,
+        Laravel\Scout\ScoutServiceProvider::class,
+        ScoutEngines\Elasticsearch\ElasticsearchProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -260,6 +263,7 @@ return [
         'Getui' => App\Third\Push\Getui\Facades\Getui::class,
         'EasyWeChat' => App\Third\Wechat\Facade::class,
         'Pinyin' => Overtrue\LaravelPinyin\Facades\Pinyin::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         Commands\User\CheckRgCode::class,
         Commands\Activity\CheckCoupon::class,
         Commands\User\RefreshUserLoginToken::class,
+        Commands\InitEs::class,
 
         //阅读站
         Commands\Readhub\InitUser::class,

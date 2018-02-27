@@ -74,7 +74,7 @@ class ProfileController extends Controller
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
         $info['is_company'] = $user->userData->is_company;
         $info['company_status'] = $user->userCompany->apply_status??0;
-        $info['show_my_wallet'] = $user->moneyLogs()->count() ? true:false;
+        $info['show_my_wallet'] = true;
         if ($user->id == 79) {
             $info['show_my_wallet'] = false;
         }
