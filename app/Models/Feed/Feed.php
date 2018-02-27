@@ -106,16 +106,24 @@ class Feed extends Model
      */
     public function toSearchableArray()
     {
-        $data = $this->data;
-        unset($data['img'],
-            $data['view_url'],
-            $data['category_id'],
-            $data['slug'],
-            $data['current_address_longitude'],
-            $data['current_address_latitude'],
-            $data['domain']);
+        $data = [];
+        $columns = [
+            'feed_content',
+            'question_title',
+            'submission_title',
+            'comment_content',
+            'submission_username',
+            'current_address_name',
+            'answer_content',
+            'answer_user_name'
+        ];
+        foreach ($this->data as $key=>$val) {
+            if (in_array($key,$columns)) {
+                $data[] = $val;
+            }
+        }
         return [
-            'title' => implode(',',array_values($data)),
+            'title' => implode(',',$data),
         ];
 
     }
