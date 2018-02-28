@@ -737,7 +737,7 @@ class AnswerController extends Controller
         $user = $request->user();
         $data = [
             'user_id'     => $user->id,
-            'content'     => $data['content'],
+            'content'     => formatContentUrls($data['content']),
             'parent_id'   => $request->input('parent_id',0),
             'source_id'   => $data['answer_id'],
             'source_type' => get_class($source),

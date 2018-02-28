@@ -1099,14 +1099,19 @@ if (!function_exists('getRequestIpAddress')) {
 
 if (!function_exists('getUrlTitle')) {
     function getUrlTitle($url) {
-        $f = file_get_contents($url);
-        preg_match('/<title>(?<title>.*?)<\/title>/si', $f, $title);
-        $encode = mb_detect_encoding($title['title'], array('GB2312','GBK','UTF-8', 'CP936')); //得到字符串编码
-        $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
-        if ( $encode != 'CP936' && $encode != $file_charset) {
-            return iconv($encode, $file_charset, $title['title']);
+        try {
+            $f = file_get_contents($url);
+            preg_match('/<title>(?<title>.*?)<\/title>/si', $f, $title);
+            $encode = mb_detect_encoding($title['title'], array('GB2312','GBK','UTF-8', 'CP936')); //得到字符串编码
+            $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
+            if ( $encode != 'CP936' && $encode != $file_charset) {
+                return iconv($encode, $file_charset, $title['title']);
+            }
+            return $title['title'];
+        } catch (Exception $e) {
+            return '';
         }
-        return $title['title'];
+
     }
 }
 
@@ -1244,5 +1249,27 @@ if (!function_exists('getSystemUids')) {
             return [0];
         }
 
+    }
+}
+
+if (!function_exists('getContentUrls')) {
+    function getContentUrls($content){
+        preg_match_all('/(http|https):[\/]{2}[A-Za-z0-9,:\\._\\?%&+\\-=\/]*/',$content,$urls);
+        return $urls[0];
+    }
+}
+
+if (!function_exists('formatContentUrls')) {
+    function formatContentUrls($content){
+        $urls = getContentUrls($content);
+        if ($urls) {
+            foreach ($urls as $url) {
+                $title = getUrlTitle($url);
+                if (empty($title)) continue;
+                $formatUrl = '['.$title.']('.$url.')';
+                $content = str_replace($url,$formatUrl,$content);
+            }
+        }
+        return $content;
     }
 }

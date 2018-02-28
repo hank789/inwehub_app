@@ -138,7 +138,7 @@ class SubmissionController extends Controller {
             $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
 
             $submission = Submission::create([
-                'title'         => $request->title,
+                'title'         => formatContentUrls($request->title),
                 'slug'          => $this->slug($request->title),
                 'type'          => $request->type,
                 'category_name' => $category->name,

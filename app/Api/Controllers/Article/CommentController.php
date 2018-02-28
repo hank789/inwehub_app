@@ -37,7 +37,7 @@ class CommentController extends Controller {
         $submission = Submission::find($request->submission_id);
         $parentComment = ($request->parent_id > 0) ? Comment::find($request->parent_id) : null;
         $data = [
-            'content'          => $request->body,
+            'content'          => formatContentUrls($request->body),
             'user_id'       => $user->id,
             'parent_id'     => $request->parent_id,
             'level'         => $request->parent_id == 0 ? 0 : ($parentComment->level + 1),

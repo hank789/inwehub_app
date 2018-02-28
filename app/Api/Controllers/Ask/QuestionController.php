@@ -343,7 +343,7 @@ class QuestionController extends Controller
         $data = [
             'user_id'      => $loginUser->id,
             'category_id'      => $category_id,
-            'title'        => trim($request->input('description')),
+            'title'        => formatContentUrls(trim($request->input('description'))),
             'question_type' => $request->input('question_type',1),
             'price'        => $price,
             'hide'         => intval($request->input('hide')),
