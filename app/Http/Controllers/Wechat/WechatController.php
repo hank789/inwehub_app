@@ -80,6 +80,7 @@ class WechatController extends Controller
         $userInfo = session('wechat_userinfo');
         if($userInfo && isset($userInfo['app_token'])){
             $token = $userInfo['app_token'];
+            if (empty($userInfo['id'])) return '请稍后再试';
             try {
                 if ($user = $JWTAuth->authenticate($token)){
                     //登陆事件通知
