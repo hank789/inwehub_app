@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\RecommendRead;
 use App\Models\Submission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class SubmissionController extends AdminController
 {
@@ -59,13 +61,15 @@ class SubmissionController extends AdminController
         if(!$submission){
             return $this->error(route('admin.operate.article.index'),'文章不存在，请核实');
         }
-        $validateRules = [
-            'img_url' => 'required',
-        ];
-        $this->validate($request,$validateRules);
-        $img_url = formatCdnUrl($request->input('img_url'));
-        if (!$img_url) {
-            return $this->error(route('admin.operate.article.edit',['id'=>$id]),'url地址必须为cdn地址');
+        $img_url = '';
+        if($request->hasFile('img_url')){
+            $file = $request->file('img_url');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filePath = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+        } elseif (empty($submission->data['img'])) {
+            return $this->error(route('admin.operate.article.edit',['id'=>$id]),'请上传文章封面图片');
         }
         $author_id = $request->input('author_id',-1);
         if ($author_id != -1) {

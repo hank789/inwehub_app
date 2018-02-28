@@ -54,8 +54,11 @@
                             </div>
 
                             <div class="form-group">
-                                <label>封面图片地址</label>
-                                <input type="text" name="img_url" class="form-control "  placeholder="http://inwehub-test.oss-cn-zhangjiakou.aliyuncs.com/media/16/user_origin_10.jpg" value="{{ old('img_url',is_array($submission->data['img'])?($submission->data['img']?$submission->data['img'][0]:''):$submission->data['img']) }}">
+                                <label>封面图片</label>
+                                <input type="file" name="img_url" />
+                                <div style="margin-top: 10px;">
+                                    <img src="{{ old('img_url',is_array($submission->data['img'])?($submission->data['img']?$submission->data['img'][0]:''):$submission->data['img']) }}" width="100"/>
+                                </div>
                             </div>
 
                         </div>
