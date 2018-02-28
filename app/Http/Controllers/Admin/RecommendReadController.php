@@ -7,7 +7,9 @@ use App\Models\RecommendRead;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 
 class RecommendReadController extends AdminController
 {
@@ -73,14 +75,19 @@ class RecommendReadController extends AdminController
         }
         $validateRules = [
             'title'   => 'required',
-            'img_url' => 'required',
             'recommend_status' => 'required|integer',
             'recommend_sort'   => 'required|integer',
         ];
         $this->validate($request,$validateRules);
-        $img_url = formatCdnUrl($request->input('img_url'));
-        if (!$img_url) {
-            return $this->error(route('admin.operate.recommendRead.edit',['id'=>$id]),'url地址必须为cdn地址');
+        $img_url = '';
+        if($request->hasFile('img_url')){
+            $file = $request->file('img_url');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filePath = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+        } elseif (empty($recommendation->data['img'])) {
+            return $this->error(route('admin.operate.recommendRead.edit',['id'=>$id]),'请上传封面图片');
         }
 
         $recommendation->sort = $request->input('recommend_sort');
