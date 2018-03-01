@@ -630,6 +630,10 @@ class QuestionController extends Controller
         //已经回答过的用户
         $answeredUids = $question->answers()->pluck('user_id')->toArray();
         $invitedUsers = array_unique(array_merge($invitedUsers,getSystemUids(),$answeredUids));
+        $banUsers = User::where('status',-1)->get()->pluck('id')->toArray();
+        if ($banUsers) {
+            $invitedUsers = array_unique(array_merge($invitedUsers,$banUsers));
+        }
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
         if ($invitedUsers) {

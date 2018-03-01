@@ -557,6 +557,10 @@ class FollowController extends Controller
 
         $attentionUsers[] = $user->id;
         $attentionUsers = array_unique(array_merge($attentionUsers,getSystemUids()));
+        $banUsers = User::where('status',-1)->get()->pluck('id')->toArray();
+        if ($banUsers) {
+            $attentionUsers = array_unique(array_merge($attentionUsers,$banUsers));
+        }
 
         if ($attentionUsers) {
             $query = $query->whereNotIn('user_id',$attentionUsers);
