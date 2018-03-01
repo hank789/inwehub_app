@@ -146,7 +146,7 @@ class ApiException extends Exception
         //问答模块
         self::ASK_NEED_USER_INFORMATION => '稍微花点时间补充下个人信息，平台为您匹配专家才会更精准额！个人信息完整度90%以上才能解锁问答等功能。',
         self::ASK_ANSWER_PROMISE_TIME_INVALID => '格式错误',
-        self::ASK_QUESTION_NOT_EXIST => '问题不存在',
+        self::ASK_QUESTION_NOT_EXIST => '这条信息已被作者删除',
         self::ASK_QUESTION_ALREADY_CONFIRMED => '手慢了一步，已经有专家赶在您前面确认应答了，下次加油啊！',
         self::ASK_PAYMENT_EXCEPTION => '支付异常',
         self::ASK_CANNOT_INVITE_SELF => '不能向自己提问',
@@ -156,7 +156,7 @@ class ApiException extends Exception
         self::ASK_QUESTION_ALREADY_REJECTED => '您已拒绝回答该问题',
         self::ASK_QUESTION_ALREADY_SELF_CONFIRMED => '您已经确认过此问题',
         self::ASK_ANSWER_CONTENT_TOO_SHORT => '您的回答内容太少了,请完善内容',
-        self::ASK_ANSWER_NOT_EXIST => '回答不存在',
+        self::ASK_ANSWER_NOT_EXIST => '这条信息已被作者删除',
         self::ASK_ANSWER_FEEDBACK_EXIST => '您已评价过该回答',
         self::ASK_FEEDBACK_SELF_ANSWER => '您不能评价自己的回答',
         self::TAGS_NAME_LENGTH_LIMIT => '标签长度不能超过15个汉字',
@@ -188,7 +188,7 @@ class ApiException extends Exception
         self::ARTICLE_URL_ALREADY_EXIST => '您提交的网址已经存在',
         self::ARTICLE_GET_URL_TITLE_ERROR => '获取文章标题失败，请手动输入',
         self::ARTICLE_CATEGORY_NOT_EXIST => '频道不存在',
-        self::ARTICLE_NOT_EXIST => '文章不存在'
+        self::ARTICLE_NOT_EXIST => '这条信息已被作者删除'
     ];
 
 

@@ -202,7 +202,7 @@ class SubmissionController extends Controller {
         }
         $submission = Submission::where('slug',$request->slug)->first();
         if (!$submission) {
-            throw new ApiException(ApiException::BAD_REQUEST);
+            throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
         }
         $return = $submission->toArray();
         $upvote = Support::where('user_id',$user->id)
