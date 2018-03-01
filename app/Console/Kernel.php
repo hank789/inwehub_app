@@ -56,6 +56,7 @@ class Kernel extends ConsoleKernel
         Commands\User\GenGeohash::class,
         Commands\FixData\FixSupportAddRefer::class,
         Commands\FixData\FixFeedTags::class,
+        Commands\User\GenUserInfoCompletePercent::class,
 
     ];
 

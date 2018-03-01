@@ -32,7 +32,7 @@
                                         <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                         </div>
-                                        <div class="col-xs-3 hidden-xs">
+                                        <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="word" placeholder="用户名|手机" value="{{ $filter['word'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2 hidden-xs">
@@ -44,6 +44,14 @@
                                                 @foreach(trans_common_status('all') as $key => $status)
                                                     <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
                                                 @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="order_by">
+                                                <option value="0">排序</option>
+                                                <option value="info_complete_percent|asc" @if( isset($filter['order_by']) && $filter['order_by']=='info_complete_percent|asc') selected @endif >档案完整度升序</option>
+                                                <option value="info_complete_percent|desc" @if( isset($filter['order_by']) && $filter['order_by']=='info_complete_percent|desc') selected @endif >档案完整度降序</option>
                                             </select>
                                         </div>
                                         
