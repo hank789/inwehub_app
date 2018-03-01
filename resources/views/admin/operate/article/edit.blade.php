@@ -26,7 +26,7 @@
                     </div>
                     <form role="form" name="editForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.operate.article.update',['id'=>$submission->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
-                        <input type="hidden" id="author_id" name="author_id" value="" />
+                        <input type="hidden" id="author_id" name="author_id" value="{{ $submission->author_id }}" />
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
                             <div class="form-group">
