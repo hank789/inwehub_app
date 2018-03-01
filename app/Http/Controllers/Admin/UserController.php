@@ -10,6 +10,7 @@ use App\Models\UserInfo\EduInfo;
 use App\Models\UserInfo\JobInfo;
 use App\Models\UserInfo\ProjectInfo;
 use App\Models\UserInfo\TrainInfo;
+use App\Models\UserOauth;
 use App\Models\UserTag;
 use App\Services\City\CityData;
 use App\Services\Registrar;
@@ -33,12 +34,17 @@ class UserController extends AdminController
     public function index(Request $request)
     {
         $filter = $request->all();
-        $query = $this->getUserQuery($request);
-        if (isset($filter['order_by']) && $filter['order_by']){
-            $orderBy = explode('|',$filter['order_by']);
-            $users = $query->orderBy($orderBy[0],$orderBy[1])->paginate(Config::get('inwehub.admin.page_size'));
+        if (isset($filter['wechat_nickname']) && $filter['wechat_nickname']) {
+            $oauths = UserOauth::where('nickname','like','%'.$filter['wechat_nickname'].'%')->get()->pluck('user_id')->toArray();
+            $users = User::whereIn('id',$oauths)->paginate(Config::get('inwehub.admin.page_size'));
         } else {
-            $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+            $query = $this->getUserQuery($request);
+            if (isset($filter['order_by']) && $filter['order_by']){
+                $orderBy = explode('|',$filter['order_by']);
+                $users = $query->orderBy($orderBy[0],$orderBy[1])->paginate(Config::get('inwehub.admin.page_size'));
+            } else {
+                $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+            }
         }
         return view('admin.user.index')->with('users',$users)->with('filter',$filter);
     }
