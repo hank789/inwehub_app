@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Cache\UserCache;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
@@ -340,7 +341,13 @@ class ProfileController extends Controller
         $user = $request->user();
         $validateRules['email'] = 'nullable|email|max:255|unique:users,email,'.$user->id;
         $this->validate($request,$validateRules);
+        $notifyInfo = '用户'.$user->id.'['.$user->name.']';
+        $notify = false;
         if($request->input('name') !== null){
+            if ($request->input('name') != $user->name) {
+                $notifyInfo .= '姓名变更为['.$request->input('name').'];';
+                $notify = true;
+            }
             $user->name = $request->input('name');
         }
 
@@ -357,10 +364,18 @@ class ProfileController extends Controller
         }
 
         if($request->input('title') !== null){
+            if ($user->title != $request->input('title')) {
+                $notifyInfo .= '职位['.$user->title.']变更为['.$request->input('title').'];';
+                $notify = true;
+            }
             $user->title = $request->input('title');
         }
 
         if($request->input('company') !== null){
+            if ($user->company != $request->input('company')) {
+                $notifyInfo .= '公司['.$user->company.']变更为['.$request->input('company').'];';
+                $notify = true;
+            }
             $user->company = $request->input('company');
         }
 
@@ -389,6 +404,9 @@ class ProfileController extends Controller
         }
 
         $user->save();
+        if ($notify) {
+            event(new SystemNotify($notifyInfo));
+        }
         if($request->input('industry_tags') !== null){
             $industry_tags = $request->input('industry_tags');
             $tags = Tag::whereIn('id',$industry_tags)->get();
