@@ -473,6 +473,44 @@ class FollowController extends Controller
         return self::createJsonData(true,$return);
     }
 
+    //关注标签的用户
+    public function tagUsers(Request $request) {
+        $validateRules = [
+            'tag_id' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $tag = Tag::find($request->input('tag_id'));
+        $loginUser = $request->user();
+        $attentions = Attention::where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $data = [];
+        foreach ($attentions as $attention) {
+            $is_followed = 0;
+            if($loginUser->id == $attention->user_id){
+                $is_followed = 1;
+            }else {
+                $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($loginUser))->where('source_id','=',$attention->user_id)->first();
+                if ($attention){
+                    $is_followed = 1;
+                }
+            }
+            $item = [];
+            $item['id'] = $attention->id;
+            $item['user_id'] = $attention->user->id;
+            $item['uuid'] = $attention->user->uuid;
+            $item['user_name'] = $attention->user->name;
+            $item['company'] = $attention->user->company;
+            $item['title'] = $attention->user->title;
+            $item['user_avatar_url'] = $attention->user->avatar;
+            $item['is_expert'] = $attention->user->is_expert;
+            $item['description'] = $attention->user->description;
+            $item['is_followed'] = $is_followed;
+            $data[] = $item;
+        }
+        $return = $attentions->toArray();
+        $return['data'] = $data;
+        return self::createJsonData(true,$return);
+    }
+
 
     /*关注我的用户*/
     public function followMe(Request $request)
