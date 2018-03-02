@@ -488,8 +488,8 @@ class FollowController extends Controller
             if($loginUser->id == $attention->user_id){
                 $is_followed = 1;
             }else {
-                $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($loginUser))->where('source_id','=',$attention->user_id)->first();
-                if ($attention){
+                $login_user_attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($loginUser))->where('source_id','=',$attention->user_id)->first();
+                if ($login_user_attention){
                     $is_followed = 1;
                 }
             }
