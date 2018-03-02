@@ -790,7 +790,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'user_id' => $question->user_id,
                 'user_name' => $question->user->name,
-                'user_avatar_url' => $question->user->getAvatarUrl(),
+                'user_avatar_url' => $question->user->avatar,
                 'description'  => $question->getFormatTitle(),
                 'hide' => $question->hide,
                 'price' => $question->price,

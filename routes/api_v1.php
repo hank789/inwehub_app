@@ -225,7 +225,18 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], func
     Route::post('task/myList','TaskController@myList');
 
 });
+//搜索模块
+Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
+    //搜索用户
+    Route::post('search/user','SearchController@user');
+    //搜索标签
+    Route::post('search/tag','SearchController@tag');
+    //搜索问答
+    Route::post('search/question','SearchController@question');
+    //搜索文章
+    Route::post('search/submission','SearchController@submission');
 
+});
 //支付
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Pay'], function() {
     //支付请求

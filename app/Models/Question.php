@@ -344,7 +344,7 @@ class Question extends Model
     /*问题搜索*/
     public static function search($word)
     {
-        $list = self::where('title','like',"$word%");
+        $list = self::where('title','like',"%$word%");
         return $list;
     }
 

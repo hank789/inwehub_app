@@ -130,6 +130,12 @@ class Submission extends Model {
         });
     }
 
+    public static function search($word)
+    {
+        $list = self::where('title','like',"%$word%");
+        return $list;
+    }
+
     public function formatTitle(){
         return strip_tags($this->title);
     }
