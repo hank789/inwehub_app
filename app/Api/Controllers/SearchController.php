@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers;
 
+use App\Events\Frontend\System\SystemNotify;
 use App\Models\Attention;
 use App\Models\Collection;
 use App\Models\Question;
@@ -7,12 +8,17 @@ use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 
 class SearchController extends Controller
 {
 
+    protected function searchNotify($user,$searchWord){
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']搜索['.$searchWord.']'));
+        RateLimiter::instance()->hIncrBy('search-word',$searchWord,1);
+    }
     public function user(Request $request)
     {
         $validateRules = [
@@ -20,6 +26,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
+        $this->searchNotify($loginUser,$request->input('search_word'));
         $users = User::where('status',1)->search($request->input('search_word'))->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($users as $user) {
@@ -53,6 +60,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
+        $this->searchNotify($loginUser,$request->input('search_word'));
         $tags = Tag::search($request->input('search_word'))->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($tags as $tag) {
@@ -82,6 +90,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
+        $this->searchNotify($loginUser,$request->input('search_word'));
         $questions = Question::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($questions as $question) {
@@ -117,6 +126,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
+        $this->searchNotify($user,$request->input('search_word'));
         $submissions = Submission::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($submissions as $submission) {
