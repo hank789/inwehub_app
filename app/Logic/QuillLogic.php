@@ -37,6 +37,8 @@ class QuillLogic {
                     //Storage::disk('oss')->put($file_name,base64_decode(substr($url[1],6)));
                     $img_url = Storage::disk('oss')->url($file_name);
                     $delta['insert']['image'] = $img_url;
+                } elseif (array_key_exists('insert', $delta) === true && is_array($delta['insert']) === false) {
+                    $delta['insert'] = formatContentUrls($delta['insert']);
                 }
             }
             $deltas['ops'] = $ops;
