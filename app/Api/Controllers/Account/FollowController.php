@@ -476,10 +476,10 @@ class FollowController extends Controller
     //关注标签的用户
     public function tagUsers(Request $request) {
         $validateRules = [
-            'tag_id' => 'required'
+            'tag_name' => 'required'
         ];
         $this->validate($request,$validateRules);
-        $tag = Tag::find($request->input('tag_id'));
+        $tag = Tag::getTagByName($request->input('tag_name'));;
         $loginUser = $request->user();
         $attentions = Attention::where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
