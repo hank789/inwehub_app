@@ -105,7 +105,7 @@ class UserEventListener implements ShouldQueue
         ]);
 
         $message = $contact->messages()->create([
-            'data' => ['text'=>'您好，欢迎您加入InweHub，欢迎体验社区的各种功能，找到您感兴趣的专家、用户或者问答，希望您使用愉快！如有任何疑问或建议，请随时联系我！'],
+            'data' => ['text'=>Setting()->get('register_title','您好，欢迎您加入InweHub，欢迎体验社区的各种功能，找到您感兴趣的专家、用户或者问答，希望您使用愉快！如有任何疑问或建议，请随时联系我！')],
             'room_id' => $room->id
         ]);
 

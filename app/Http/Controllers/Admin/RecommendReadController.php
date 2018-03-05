@@ -93,7 +93,9 @@ class RecommendReadController extends AdminController
         $recommendation->sort = $request->input('recommend_sort');
         $recommendation->audit_status = $request->input('recommend_status');
         $object_data = $recommendation->data;
-        $object_data['img'] = $img_url;
+        if ($img_url) {
+            $object_data['img'] = $img_url;
+        }
         $object_data['title'] = $request->input('title');
         $recommendation->data = $object_data;
         $recommendation->save();

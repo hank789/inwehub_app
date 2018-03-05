@@ -473,6 +473,44 @@ class FollowController extends Controller
         return self::createJsonData(true,$return);
     }
 
+    //关注标签的用户
+    public function tagUsers(Request $request) {
+        $validateRules = [
+            'tag_name' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $tag = Tag::getTagByName($request->input('tag_name'));;
+        $loginUser = $request->user();
+        $attentions = Attention::where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $data = [];
+        foreach ($attentions as $attention) {
+            $is_followed = 0;
+            if($loginUser->id == $attention->user_id){
+                $is_followed = 1;
+            }else {
+                $login_user_attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($loginUser))->where('source_id','=',$attention->user_id)->first();
+                if ($login_user_attention){
+                    $is_followed = 1;
+                }
+            }
+            $item = [];
+            $item['id'] = $attention->id;
+            $item['user_id'] = $attention->user->id;
+            $item['uuid'] = $attention->user->uuid;
+            $item['user_name'] = $attention->user->name;
+            $item['company'] = $attention->user->company;
+            $item['title'] = $attention->user->title;
+            $item['user_avatar_url'] = $attention->user->avatar;
+            $item['is_expert'] = $attention->user->is_expert;
+            $item['description'] = $attention->user->description;
+            $item['is_followed'] = $is_followed;
+            $data[] = $item;
+        }
+        $return = $attentions->toArray();
+        $return['data'] = $data;
+        return self::createJsonData(true,$return);
+    }
+
 
     /*关注我的用户*/
     public function followMe(Request $request)
@@ -557,6 +595,10 @@ class FollowController extends Controller
 
         $attentionUsers[] = $user->id;
         $attentionUsers = array_unique(array_merge($attentionUsers,getSystemUids()));
+        $banUsers = User::where('status',-1)->get()->pluck('id')->toArray();
+        if ($banUsers) {
+            $attentionUsers = array_unique(array_merge($attentionUsers,$banUsers));
+        }
 
         if ($attentionUsers) {
             $query = $query->whereNotIn('user_id',$attentionUsers);

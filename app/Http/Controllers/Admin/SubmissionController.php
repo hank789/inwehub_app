@@ -77,7 +77,9 @@ class SubmissionController extends AdminController
         }
 
         $object_data = $submission->data;
-        $object_data['img'] = $img_url;
+        if ($img_url) {
+            $object_data['img'] = $img_url;
+        }
         $submission->data = $object_data;
         $submission->save();
 

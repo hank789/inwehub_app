@@ -200,7 +200,7 @@ class Tag extends Model
     /*搜索*/
     public static function search($word)
     {
-        $list = self::where('name','like',"$word%");
+        $list = self::where('name','like',"%$word%");
         return $list;
     }
 

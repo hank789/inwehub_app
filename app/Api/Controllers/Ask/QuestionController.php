@@ -343,7 +343,7 @@ class QuestionController extends Controller
         $data = [
             'user_id'      => $loginUser->id,
             'category_id'      => $category_id,
-            'title'        => trim($request->input('description')),
+            'title'        => formatContentUrls(trim($request->input('description'))),
             'question_type' => $request->input('question_type',1),
             'price'        => $price,
             'hide'         => intval($request->input('hide')),
@@ -630,6 +630,10 @@ class QuestionController extends Controller
         //已经回答过的用户
         $answeredUids = $question->answers()->pluck('user_id')->toArray();
         $invitedUsers = array_unique(array_merge($invitedUsers,getSystemUids(),$answeredUids));
+        $banUsers = User::where('status',-1)->get()->pluck('id')->toArray();
+        if ($banUsers) {
+            $invitedUsers = array_unique(array_merge($invitedUsers,$banUsers));
+        }
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
         if ($invitedUsers) {
@@ -786,7 +790,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'user_id' => $question->user_id,
                 'user_name' => $question->user->name,
-                'user_avatar_url' => $question->user->getAvatarUrl(),
+                'user_avatar_url' => $question->user->avatar,
                 'description'  => $question->getFormatTitle(),
                 'hide' => $question->hide,
                 'price' => $question->price,

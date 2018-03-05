@@ -10,6 +10,7 @@ use App\Models\UserInfo\EduInfo;
 use App\Models\UserInfo\JobInfo;
 use App\Models\UserInfo\ProjectInfo;
 use App\Models\UserInfo\TrainInfo;
+use App\Models\UserOauth;
 use App\Models\UserTag;
 use App\Services\City\CityData;
 use App\Services\Registrar;
@@ -32,12 +33,31 @@ class UserController extends AdminController
      */
     public function index(Request $request)
     {
-        $users = $this->getUserQuery($request)->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
-        return view('admin.user.index')->with('users',$users)->with('filter',$request->all());
+        $filter = $request->all();
+        if (isset($filter['wechat_nickname']) && $filter['wechat_nickname']) {
+            $oauths = UserOauth::where('nickname','like','%'.$filter['wechat_nickname'].'%')->get()->pluck('user_id')->toArray();
+            $users = User::whereIn('id',$oauths)->paginate(Config::get('inwehub.admin.page_size'));
+        } else {
+            $query = $this->getUserQuery($request);
+            if (isset($filter['order_by']) && $filter['order_by']){
+                $orderBy = explode('|',$filter['order_by']);
+                $users = $query->orderBy($orderBy[0],$orderBy[1])->paginate(Config::get('inwehub.admin.page_size'));
+            } else {
+                $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+            }
+        }
+        return view('admin.user.index')->with('users',$users)->with('filter',$filter);
     }
 
     public function exportUsers(Request $request){
-        $users = $this->getUserQuery($request)->orderBy('created_at','desc')->get();
+        $filter = $request->all();
+        $query = $this->getUserQuery($request);
+        if (isset($filter['order_by']) && $filter['order_by']){
+            $orderBy = explode('|',$filter['order_by']);
+            $users = $query->orderBy($orderBy[0],$orderBy[1])->paginate(Config::get('inwehub.admin.page_size'));
+        } else {
+            $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+        }
         $cellData = [];
         $cellData[] = ['ID','姓名','微信昵称','手机','身份职业','专家认证','企业用户','问题数','回答数','档案完整度','账户余额','成长值','贡献值','注册时间','邀请者','邀请人数'];
         foreach ($users as $user) {
@@ -52,7 +72,7 @@ class UserController extends AdminController
                 ($user->userData->is_company ? '是':'否'),
                 $user->userData->questions,
                 $user->userData->answers,
-                $user->getInfoCompletePercent(),
+                $user->info_complete_percent,
                 $user->userMoney->total_money,
                 $user->userData->credits,
                 $user->userData->coins,

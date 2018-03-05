@@ -46,6 +46,7 @@ class Registrar {
             'status' => $data['status'],
             'avatar' => config('image.user_default_avatar'),
             'source' => $data['source']??0,
+            'info_complete_percent' => 10,
             'site_notifications' => [],
         ]);
 

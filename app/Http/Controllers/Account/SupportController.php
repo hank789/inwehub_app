@@ -80,7 +80,7 @@ class SupportController extends Controller
 
 
         /*再次关注相当于是取消关注*/
-        $support = Support::where("session_id",'=',$request->session()->getId())->where('supportable_type','=',get_class($source))->where('supportable_id','=',$source_id)->first();
+        $support = Support::where('supportable_type','=',get_class($source))->where('supportable_id','=',$source_id)->first();
         if($support){
             return response('failed');
         }

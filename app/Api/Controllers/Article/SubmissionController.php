@@ -138,7 +138,7 @@ class SubmissionController extends Controller {
             $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
 
             $submission = Submission::create([
-                'title'         => $request->title,
+                'title'         => formatContentUrls($request->title),
                 'slug'          => $this->slug($request->title),
                 'type'          => $request->type,
                 'category_name' => $category->name,
@@ -202,7 +202,7 @@ class SubmissionController extends Controller {
         }
         $submission = Submission::where('slug',$request->slug)->first();
         if (!$submission) {
-            throw new ApiException(ApiException::BAD_REQUEST);
+            throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
         }
         $return = $submission->toArray();
         $upvote = Support::where('user_id',$user->id)

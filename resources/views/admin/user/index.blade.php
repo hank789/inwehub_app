@@ -17,7 +17,7 @@
                 <div class="box">
                     <div class="box-header">
                         <div class="row">
-                            <div class="col-xs-3">
+                            <div class="col-xs-2">
                                 <div class="btn-group">
                                     <a href="{{ route('admin.user.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新用户"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.user.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
@@ -25,25 +25,36 @@
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.user.destroy') }}','确认禁用选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
-                            <div class="col-xs-9">
+                            <div class="col-xs-10">
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.user.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                         </div>
-                                        <div class="col-xs-3 hidden-xs">
+                                        <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="word" placeholder="用户名|手机" value="{{ $filter['word'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="rc_code" placeholder="邀请码" value="{{ $filter['rc_code'] or '' }}"/>
                                         </div>
-                                        <div class="col-xs-2">
+                                        <div class="col-xs-2 hidden-xs">
+                                            <input type="text" class="form-control" name="wechat_nickname" placeholder="微信昵称" value="{{ $filter['wechat_nickname'] or '' }}"/>
+                                        </div>
+                                        <div class="col-xs-1">
                                             <select class="form-control" name="status">
                                                 <option value="-9">状态</option>
                                                 @foreach(trans_common_status('all') as $key => $status)
                                                     <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
                                                 @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="order_by">
+                                                <option value="0">排序</option>
+                                                <option value="info_complete_percent|asc" @if( isset($filter['order_by']) && $filter['order_by']=='info_complete_percent|asc') selected @endif >档案完整度升序</option>
+                                                <option value="info_complete_percent|desc" @if( isset($filter['order_by']) && $filter['order_by']=='info_complete_percent|desc') selected @endif >档案完整度降序</option>
                                             </select>
                                         </div>
                                         

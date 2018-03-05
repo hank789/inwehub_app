@@ -1,6 +1,8 @@
 <?php namespace App\Models\Company;
 
+use App\Events\Frontend\System\SystemNotify;
 use App\Models\Relations\MorphManyTagsTrait;
+use App\Models\User;
 use App\Services\BaiduMap;
 use App\Services\GeoHash;
 use Illuminate\Database\Eloquent\Model;
@@ -144,6 +146,8 @@ class CompanyData extends Model
                 'is_show'         => $isShow,
                 'status'          => $userCompanyStatus
             ]);
+            $user = User::find($user_id);
+            event(new SystemNotify('用户'.$user->id.'['.$user->name.']维护了新公司['.$companyName.']'));
         } else {
             $existUser = CompanyDataUser::where('company_data_id',$exist->id)->where('user_id',$user_id)->first();
             if (!$existUser) {

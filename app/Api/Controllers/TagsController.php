@@ -51,12 +51,19 @@ class TagsController extends Controller {
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
         $is_followed = 0;
-        $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->first();
-        if ($attention){
-            $is_followed = 1;
+        $attentions = Attention::where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->simplePaginate(10);
+        $attentionUsers = [];
+        foreach ($attentions as $attention) {
+            if ($loginUser->id == $attention->user_id) $is_followed = 1;
+            $attentionUsers[] = [
+                'id' => $attention->user_id,
+                'name' => $attention->user->name,
+                'avatar' => $attention->user->avatar
+            ];
         }
         $data = $tag->toArray();
         $data['is_followed'] = $is_followed;
+        $data['followed_users'] = $attentionUsers;
         return self::createJsonData(true,$data);
     }
 

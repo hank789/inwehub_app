@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Feed\Feed;
 use App\Models\Relations\BelongsToCategoryTrait;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
@@ -90,10 +91,15 @@ class Article extends Model
 
             Collection::where('source_type','=',get_class($article))->where('source_id','=',$article->id)->delete();
 
+            Attention::where('source_type','=',get_class($article))->where('source_id','=',$article->id)->delete();
+
+            Taggable::where('taggable_type','=',get_class($article))->where('taggable_id','=',$article->id)->delete();
+
             /*删除回答评论*/
             Comment::where('source_type','=',get_class($article))->where('source_id','=',$article->id)->delete();
             /*删除动态*/
             Doing::where('source_type','=',get_class($article))->where('source_id','=',$article->id)->delete();
+            Feed::where('source_type','=',get_class($article))->where('source_id','=',$article->id)->delete();
 
 
         });

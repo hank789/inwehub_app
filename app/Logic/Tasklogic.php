@@ -179,7 +179,7 @@ class TaskLogic {
                     $task_type_description = '新手任务';
                     $status_description = '发起专业提问';
                     $task_type = 5;
-                    $description = '送你首次提问1元特惠券';
+                    $description = '由专家回答可获取分成';
                     break;
             }
             $list[] = [
