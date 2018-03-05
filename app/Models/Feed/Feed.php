@@ -178,7 +178,7 @@ class Feed extends Model
                 }
                 $data = [
                     'title'     => $this->data['question_title'],
-                    'content'   => $this->data['answer_content'],
+                    'content'   => $answer->getContentText(),
                     'comment_num' => $answer->comments,
                     'support_number' => $answer->supports,
                     'answer_number' => $question->answers,
@@ -306,6 +306,7 @@ class Feed extends Model
                     $is_followed_question = 1;
                 }
                 $data = $this->data;
+                $data['answer_content'] = $answer->getContentText();
                 $data['comment_num'] = $answer->comments;
                 $data['support_number'] = $answer->supports;
                 $data['follow_question_num'] = $question->followers;
@@ -370,6 +371,7 @@ class Feed extends Model
                 if ($attention_question) {
                     $is_followed_question = 1;
                 }
+                $data['answer_content'] = $answer->getContentText();
                 $data['comment_num'] = $answer->comments;
                 $data['support_number'] = $answer->supports;
                 $data['follow_question_num'] = $question->followers;
