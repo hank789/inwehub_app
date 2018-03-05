@@ -807,6 +807,40 @@ class QuestionController extends Controller
     }
 
 
+    //问答社区列表
+    public function questionList(Request $request){
+        $query = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);
+
+        $questions = $query->orderBy('questions.rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $questions->toArray();
+        $list = [];
+        foreach($questions as $question){
+            $item = [
+                'id' => $question->id,
+                'question_type' => $question->question_type,
+                'description'  => $question->title,
+                'tags' => $question->tags()->get()->toArray()
+            ];
+            if($question->type == 1){
+                $item['comment_number'] = 0;
+                $item['average_rate'] = 0;
+                $item['support_number'] = 0;
+                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+                if ($bestAnswer) {
+                    $item['comment_number'] = $bestAnswer->comments;
+                    $item['average_rate'] = $bestAnswer->getFeedbackRate();
+                    $item['support_number'] = $bestAnswer->supports;
+                }
+            } else {
+                $item['answer_number'] = $question->answers;
+                $item['follow_number'] = $question->followers;
+            }
+            $list[] = $item;
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
+    }
+
     //专业问答-推荐问答列表
     public function majorList(Request $request,JWTAuth $JWTAuth) {
         $tag_id = $request->input('tag_id',0);
