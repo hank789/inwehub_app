@@ -161,7 +161,7 @@ class AuthController extends Controller
         if(RateLimiter::instance()->increase('userLogin',$credentials['mobile'],3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
-        if ($credentials['phoneCode']) {
+        if (isset($credentials['phoneCode']) && $credentials['phoneCode']) {
             //验证手机验证码
             $code_cache = Cache::get(SendPhoneMessage::getCacheKey('login',$credentials['mobile']));
             if($code_cache != $credentials['phoneCode']){
