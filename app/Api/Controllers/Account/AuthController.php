@@ -150,23 +150,39 @@ class AuthController extends Controller
 
         $validateRules = [
             'mobile' => 'required',
-            'password' => 'required'
+            'password' => 'required_without:phoneCode',
+            'phoneCode' => 'required_without:password'
         ];
 
         $this->validate($request,$validateRules);
 
         /*只接收mobile和password的值*/
-        $credentials = $request->only('mobile', 'password');
+        $credentials = $request->only('mobile', 'password', 'phoneCode');
         if(RateLimiter::instance()->increase('userLogin',$credentials['mobile'],3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        if ($credentials['phoneCode']) {
+            //验证手机验证码
+            $code_cache = Cache::get(SendPhoneMessage::getCacheKey('login',$credentials['mobile']));
+            if($code_cache != $credentials['phoneCode']){
+                throw new ApiException(ApiException::ARGS_YZM_ERROR);
+            }
+            $user = User::where('mobile',$credentials['mobile'])->first();
+            $token = $JWTAuth->fromUser($user);
+            $loginFrom = '短信验证码';
+        } else {
+            $token = $JWTAuth->attempt($credentials);
+            $user = $request->user();
+            $loginFrom = '网站';
+        }
 
         /*根据邮箱地址和密码进行认证*/
-        if ($token = $JWTAuth->attempt($credentials))
+        if ($token)
         {
-
-            $user = $request->user();
-            $device_code = $request->input('device_code');
+            $device_code = $request->input('deviceCode');
+            if ($device_code) {
+                $loginFrom = 'App';
+            }
             if($user->last_login_token && $device_code){
                 try {
                     $JWTAuth->refresh($user->last_login_token);
@@ -180,7 +196,7 @@ class AuthController extends Controller
                 throw new ApiException(ApiException::USER_SUSPEND);
             }
             //登陆事件通知
-            event(new UserLoggedIn($user));
+            event(new UserLoggedIn($user, $loginFrom));
             $message = 'ok';
             if($this->credit($user->id,Credit::KEY_LOGIN)){
                 $message = '登陆成功! ';

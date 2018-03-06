@@ -75,6 +75,25 @@ class RateLimiter extends Singleton
         return $this->client->hIncrBy('inwehub:'.$event,$key,$value);
     }
 
+    public function sAdd($key,$value,$expire = 60) {
+        $this->client->sAdd($key,$value);
+        if ($expire) {
+            $this->client->expire($key,$expire);
+        }
+        return true;
+    }
+
+    public function sMembers($key) {
+        return $this->client->sMembers($key);
+    }
+
+
+    public function setVale($event, $target, $value,$expire = 60) {
+        $key = $this->key($event, $target);
+        return $this->client->set($key,$value,$expire);
+    }
+
+
     public function getValue($event, $target){
         $key = $this->key($event, $target);
         return $this->client->get($key);
