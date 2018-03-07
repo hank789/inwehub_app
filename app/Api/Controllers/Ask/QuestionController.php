@@ -821,7 +821,7 @@ class QuestionController extends Controller
                 'description'  => $question->title,
                 'tags' => $question->tags()->get()->toArray()
             ];
-            if($question->type == 1){
+            if($question->question_type == 1){
                 $item['comment_number'] = 0;
                 $item['average_rate'] = 0;
                 $item['support_number'] = 0;

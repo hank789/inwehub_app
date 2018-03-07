@@ -17,8 +17,8 @@ class SearchController extends Controller
 
     protected function searchNotify($user,$searchWord){
         event(new SystemNotify('用户'.$user->id.'['.$user->name.']搜索['.$searchWord.']'));
-        RateLimiter::instance()->hIncrBy('search-word',$searchWord,1);
-        RateLimiter::instance()->hIncrBy('search-uid-'.$user->id,$searchWord,1);
+        RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
+        RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
     public function user(Request $request)
     {
