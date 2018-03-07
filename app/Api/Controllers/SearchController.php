@@ -28,7 +28,7 @@ class SearchController extends Controller
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
         $this->searchNotify($loginUser,$request->input('search_word'));
-        $users = User::where('status',1)->search($request->input('search_word'))->paginate(Config::get('inwehub.api_data_page_size'));
+        $users = User::search($request->input('search_word'))->where('status',1)->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($users as $user) {
             $is_followed = 0;
