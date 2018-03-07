@@ -39,6 +39,7 @@ class UserController extends controller {
         $return = $this->wxxcx->getUserInfo($encryptedData, $iv);
 
         \Log::info('return',$return);
+        $token = '';
         if (isset($return['unionId'])) {
             $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
                 ->where('openid',$userInfo['openid'])->first();
@@ -62,14 +63,33 @@ class UserController extends controller {
                             'status' => 1
                         ]
                     );
+                } else {
+                    $oauthData = UserOauth::create(
+                        [
+                            'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
+                            'user_id'=> 0,
+                            'openid'   => $userInfo['openid'],
+                            'unionid'  => $return['unionId'],
+                            'nickname'=>$return['nickName'],
+                            'avatar'=>$return['avatarUrl'],
+                            'access_token'=>$userInfo['session_key'],
+                            'refresh_token'=>'',
+                            'expires_in'=>$userInfo['expires_in'],
+                            'full_info'=>json_encode($return),
+                            'scope'=>'authorization_code',
+                            'status' => 1
+                        ]
+                    );
                 }
             }
-            if ($oauthData) {
-                event(new UserLoggedIn(User::find($oauthData->user_id),'小程序登陆'));
+            if ($oauthData && $oauthData->user_id) {
+                $user = User::find($oauthData->user_id);
+                $token = $JWTAuth->fromUser($user);
+                event(new UserLoggedIn($user,'小程序登陆'));
             }
         }
 
-        return self::createJsonData(true,['token'=>time()]);
+        return self::createJsonData(true,['token'=>$token,'openid'=>$userInfo['openid']]);
         //$token = $JWTAuth->fromUser($user);
         //return static::createJsonData(true,['token'=>$token,'name'=>$return['nickName'],'avatarUrl'=>$return['avatarUrl']]);
     }

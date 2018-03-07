@@ -31,6 +31,8 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('wxgzh/check_rg', 'AuthController@checkWeiXinGzh');
     //微信公众号注册
     Route::post('wxgzh/register', 'AuthController@registerWeiXinGzh');
+    //微信小程序注册
+    Route::post('weapp/register', 'AuthController@registerWeapp');
 
 });
 

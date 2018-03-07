@@ -75,7 +75,7 @@ class AuthController extends Controller
     {
         $validateRules = [
             'mobile' => 'required|cn_phone',
-            'type'   => 'required|in:register,login,change,wx_gzh_register'
+            'type'   => 'required|in:register,login,change,wx_gzh_register,weapp_register'
         ];
 
         $this->validate($request,$validateRules);
@@ -395,6 +395,85 @@ class AuthController extends Controller
             $token = $JWTAuth->fromUser($user);
             //登陆事件通知
             event(new UserLoggedIn($user,'微信'));
+            return static::createJsonData(true,['token'=>$token]);
+        }
+        throw new ApiException(ApiException::BAD_REQUEST);
+    }
+
+
+    //检查微信小程序注册
+    public function registerWeapp(Request $request,JWTAuth $JWTAuth,Registrar $registrar)
+    {
+
+        /*表单数据校验*/
+        $validateRules = [
+            'mobile' => 'required|cn_phone',
+            'code'   => 'required',
+            'openid' => 'required'
+        ];
+
+        $this->validate($request,$validateRules);
+        $mobile = $request->input('mobile');
+        if(RateLimiter::instance()->increase('userRegister',$mobile,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
+        //验证手机验证码
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('weapp_register',$mobile));
+        $code = $request->input('code');
+        if($code_cache != $code){
+            throw new ApiException(ApiException::ARGS_YZM_ERROR);
+        }
+        $openid = $request->input('openid');
+        $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
+            ->where('openid',$openid)->first();
+        if (!$oauthData){
+            throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
+        }
+        $user = User::where('mobile',$mobile)->first();
+
+        //如果此微信号尚未关联用户且对应手机号用户已注册,将此微信号与用户作关联
+        if ($oauthData->user_id == 0 && $user){
+            $oauthData->user_id = $user->id;
+            $oauthData->save();
+            $token = $JWTAuth->fromUser($user);
+            //登陆事件通知
+            event(new UserLoggedIn($user,'微信小程序'));
+            return static::createJsonData(true,['token'=>$token]);
+        }
+
+        //如果此微信号尚未关联,且对应手机号不存在,走注册流程
+        if ($oauthData->user_id == 0 && !$user) {
+            $new_user = $registrar->create([
+                'name' => $oauthData->nickname,
+                'email' => null,
+                'mobile' => $mobile,
+                'rc_uid' => 0,
+                'title'  => '',
+                'company' => '',
+                'gender' => 0,
+                'password' => time(),
+                'status' => 1,
+                'source' => User::USER_SOURCE_WEAPP,
+            ]);
+            $new_user->attachRole(2); //默认注册为普通用户角色
+            $new_user->userData->email_status = 1;
+            $new_user->userData->save();
+            $new_user->avatar = $oauthData->avatar;
+            $new_user->save();
+            $oauthData->user_id = $new_user->id;
+            $oauthData->save();
+            //注册事件通知
+            event(new UserRegistered($user,$oauthData->id,'微信小程序'));
+            $token = $JWTAuth->fromUser($user);
+            return static::createJsonData(true,['token'=>$token]);
+        }
+
+        //如果此微信号已绑定用户
+        if($oauthData->user_id && $user){
+            $token = $JWTAuth->fromUser($user);
+            //登陆事件通知
+            event(new UserLoggedIn($user,'微信小程序'));
             return static::createJsonData(true,['token'=>$token]);
         }
         throw new ApiException(ApiException::BAD_REQUEST);
