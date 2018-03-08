@@ -260,11 +260,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Withdraw'], 
 
 });
 
-
+//加载标签
+Route::post('tags/load','TagsController@load');
 //标签
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], function() {
-    //加载标签
-    Route::post('load','TagsController@load');
+
     //标签详情
     Route::post('tagInfo','TagsController@tagInfo');
     //标签用户
