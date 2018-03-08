@@ -407,9 +407,13 @@ class AuthController extends Controller
 
         /*表单数据校验*/
         $validateRules = [
-            'mobile' => 'required|cn_phone',
-            'code'   => 'required',
-            'openid' => 'required'
+            'mobile'  => 'required|cn_phone',
+            'name'    => 'required',
+            'title'   => 'required',
+            'company' => 'required',
+            'email'   => 'required|email',
+            'code'    => 'required',
+            'openid'  => 'required'
         ];
 
         $this->validate($request,$validateRules);
@@ -445,12 +449,12 @@ class AuthController extends Controller
         //如果此微信号尚未关联,且对应手机号不存在,走注册流程
         if ($oauthData->user_id == 0 && !$user) {
             $new_user = $registrar->create([
-                'name' => $oauthData->nickname,
-                'email' => null,
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
                 'mobile' => $mobile,
                 'rc_uid' => 0,
-                'title'  => '',
-                'company' => '',
+                'title'  => $request->input('title'),
+                'company' => $request->input('company'),
                 'gender' => 0,
                 'password' => time(),
                 'status' => 1,

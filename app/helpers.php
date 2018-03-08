@@ -1254,7 +1254,7 @@ if (!function_exists('getSystemUids')) {
 
 if (!function_exists('getContentUrls')) {
     function getContentUrls($content){
-        preg_match_all('/(http|https):[\/]{2}[A-Za-z0-9,:\\._\\?%&+\\-=\/]*/',$content,$urls);
+        preg_match_all('/(http|https):[\/]{2}[A-Za-z0-9,:\\._\\?%&+\\-=\/]*/',strip_tags($content),$urls);
         return $urls[0];
     }
 }
