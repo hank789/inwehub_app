@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Config;
 class SearchController extends Controller
 {
 
-    protected function searchNotify($user,$searchWord){
-        event(new SystemNotify('用户'.$user->id.'['.$user->name.']搜索['.$searchWord.']'));
+    protected function searchNotify($user,$searchWord,$typeName=''){
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'));
         RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
         RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
@@ -27,7 +27,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'));
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[用户]');
         $users = User::search($request->input('search_word'))->where('status',1)->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($users as $user) {
@@ -61,7 +61,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'));
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[标签]');
         $tags = Tag::search($request->input('search_word'))->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($tags as $tag) {
@@ -82,7 +82,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'));
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[问答]');
         $questions = Question::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($questions as $question) {
@@ -120,7 +120,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $this->searchNotify($user,$request->input('search_word'));
+        $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]');
         $submissions = Submission::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($submissions as $submission) {
