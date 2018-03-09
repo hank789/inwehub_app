@@ -40,54 +40,54 @@ class UserController extends controller {
 
         \Log::info('return',$return);
         $token = '';
-        if (isset($return['unionId'])) {
-            $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
-                ->where('openid',$userInfo['openid'])->first();
-            if (!$oauthData) {
-                $oauthData = UserOauth::whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
-                    ->where('unionid',$return['unionId'])->first();
-                if ($oauthData) {
-                    UserOauth::create(
-                        [
-                            'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
-                            'user_id'=> $oauthData->user_id,
-                            'openid'   => $userInfo['openid'],
-                            'unionid'  => $return['unionId'],
-                            'nickname'=>$return['nickName'],
-                            'avatar'=>$return['avatarUrl'],
-                            'access_token'=>$userInfo['session_key'],
-                            'refresh_token'=>'',
-                            'expires_in'=>$userInfo['expires_in'],
-                            'full_info'=>json_encode($return),
-                            'scope'=>'authorization_code',
-                            'status' => 1
-                        ]
-                    );
-                } else {
-                    $oauthData = UserOauth::create(
-                        [
-                            'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
-                            'user_id'=> 0,
-                            'openid'   => $userInfo['openid'],
-                            'unionid'  => $return['unionId'],
-                            'nickname'=>$return['nickName'],
-                            'avatar'=>$return['avatarUrl'],
-                            'access_token'=>$userInfo['session_key'],
-                            'refresh_token'=>'',
-                            'expires_in'=>$userInfo['expires_in'],
-                            'full_info'=>json_encode($return),
-                            'scope'=>'authorization_code',
-                            'status' => 1
-                        ]
-                    );
-                }
-            }
-            if ($oauthData && $oauthData->user_id) {
-                $user = User::find($oauthData->user_id);
-                $token = $JWTAuth->fromUser($user);
-                event(new UserLoggedIn($user,'小程序登陆'));
+        $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
+            ->where('openid',$userInfo['openid'])->first();
+
+        if (!$oauthData && isset($return['unionId'])) {
+            $oauthData = UserOauth::whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
+                ->where('unionid',$return['unionId'])->first();
+            if ($oauthData) {
+                UserOauth::create(
+                    [
+                        'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
+                        'user_id'=> $oauthData->user_id,
+                        'openid'   => $userInfo['openid'],
+                        'unionid'  => $return['unionId'],
+                        'nickname'=>$return['nickName'],
+                        'avatar'=>$return['avatarUrl'],
+                        'access_token'=>$userInfo['session_key'],
+                        'refresh_token'=>'',
+                        'expires_in'=>$userInfo['expires_in'],
+                        'full_info'=>json_encode($return),
+                        'scope'=>'authorization_code',
+                        'status' => 1
+                    ]
+                );
+            } else {
+                $oauthData = UserOauth::create(
+                    [
+                        'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
+                        'user_id'=> 0,
+                        'openid'   => $userInfo['openid'],
+                        'unionid'  => $return['unionId'],
+                        'nickname'=>$return['nickName'],
+                        'avatar'=>$return['avatarUrl'],
+                        'access_token'=>$userInfo['session_key'],
+                        'refresh_token'=>'',
+                        'expires_in'=>$userInfo['expires_in'],
+                        'full_info'=>json_encode($return),
+                        'scope'=>'authorization_code',
+                        'status' => 1
+                    ]
+                );
             }
         }
+        if ($oauthData && $oauthData->user_id) {
+            $user = User::find($oauthData->user_id);
+            $token = $JWTAuth->fromUser($user);
+            event(new UserLoggedIn($user,'小程序登陆'));
+        }
+
 
         return self::createJsonData(true,['token'=>$token,'openid'=>$userInfo['openid']]);
         //$token = $JWTAuth->fromUser($user);
