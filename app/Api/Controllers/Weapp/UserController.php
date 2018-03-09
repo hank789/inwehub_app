@@ -91,16 +91,18 @@ class UserController extends controller {
             $oauth = $user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
             $status = $oauth->status;
         } catch (\Exception $e) {
+            $oauth = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
+                ->where('openid',$request->input('openid'))->first();
             $user = new \stdClass();
+            $status = 0;
             $user->id = 0;
             $user->mobile = '';
             $user->email = '';
             $user->title = '';
             $user->company = '';
-            $user->name = '';
-            $status = 0;
+            $user->name = $oauth->nickname;
         }
-        return self::createJsonData(true,['status'=>$status,'title'=>$user->title,'company'=>$user->company,'name'=>$user->name,'mobile'=>$user->mobile,'email'=>$user->email]);
+        return self::createJsonData(true,['status'=>$status,'avatarUrl'=>$oauth->avatar,'title'=>$user->title,'company'=>$user->company,'name'=>$user->name,'mobile'=>$user->mobile,'email'=>$user->email]);
     }
 
 }
