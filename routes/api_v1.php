@@ -33,7 +33,6 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     Route::post('wxgzh/register', 'AuthController@registerWeiXinGzh');
     //微信小程序注册
     Route::post('weapp/register', 'AuthController@registerWeapp');
-
 });
 
 Route::group(['namespace'=>'Share'], function() {
@@ -419,9 +418,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','nam
 
 
 //微信小程序
-Route::group(['namespace'=>'Weapp'], function() {
-    //获取用户登陆信息
-    Route::post('weapp/user/info','UserController@getWxUserInfo');
+Route::group(['namespace'=>'Weapp','prefix' => 'weapp'], function() {
+    //获取用户微信信息
+    Route::post('user/wxinfo','UserController@getWxUserInfo');
+    //获取用户信息
+    Route::post('user/info','UserController@getUserInfo');
 });
 
 Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {
