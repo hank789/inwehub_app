@@ -83,7 +83,7 @@ class SearchController extends Controller
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
         $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[问答]');
-        $questions = Question::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $questions = Question::search($request->input('search_word'))->where(function($query) {$query->where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);})->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($questions as $question) {
             $item = [
