@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class QuillLogic {
 
-    public static function parseImages($json_content){
+    public static function parseImages($json_content,$formatLink=true){
         $deltas = json_decode($json_content, true);
         if ($deltas !== null && count($deltas) > 0) {
             $ops = $deltas['ops'];
@@ -37,7 +37,7 @@ class QuillLogic {
                     //Storage::disk('oss')->put($file_name,base64_decode(substr($url[1],6)));
                     $img_url = Storage::disk('oss')->url($file_name);
                     $delta['insert']['image'] = $img_url;
-                } elseif (array_key_exists('insert', $delta) === true && is_array($delta['insert']) === false) {
+                } elseif ($formatLink && array_key_exists('insert', $delta) === true && is_array($delta['insert']) === false) {
                     $delta['insert'] = formatContentUrls($delta['insert']);
                 }
             }

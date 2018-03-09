@@ -56,6 +56,7 @@ class SendPhoneMessage implements ShouldQueue
         $freeSignName = config('alidayu.sign_name');
 
         switch($this->type){
+            case 'login':
             case 'register':
                 $templateId = config('alidayu.verify_template_id');
                 //$params = ['code' => $code]

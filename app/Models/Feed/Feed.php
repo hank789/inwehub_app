@@ -123,7 +123,7 @@ class Feed extends Model
             }
         }
         return [
-            'title' => implode(',',$data),
+            'title' => strip_tags(implode(',',$data)),
         ];
 
     }

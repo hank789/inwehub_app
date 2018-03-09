@@ -15,9 +15,10 @@ use Illuminate\Support\Facades\Config;
 class SearchController extends Controller
 {
 
-    protected function searchNotify($user,$searchWord){
-        event(new SystemNotify('用户'.$user->id.'['.$user->name.']搜索['.$searchWord.']'));
-        RateLimiter::instance()->hIncrBy('search-word',$searchWord,1);
+    protected function searchNotify($user,$searchWord,$typeName=''){
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'));
+        RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
+        RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
     public function user(Request $request)
     {
@@ -26,8 +27,8 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'));
-        $users = User::where('status',1)->search($request->input('search_word'))->paginate(Config::get('inwehub.api_data_page_size'));
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[用户]');
+        $users = User::search($request->input('search_word'))->where('status',1)->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($users as $user) {
             $is_followed = 0;
@@ -60,22 +61,13 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'));
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[标签]');
         $tags = Tag::search($request->input('search_word'))->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($tags as $tag) {
-            $is_followed = 0;
-            $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->first();
-            if ($attention){
-                $is_followed = 1;
-            }
             $item = [];
             $item['id'] = $tag->id;
             $item['name'] = $tag->name;
-            $item['logo'] = $tag->logo;
-            $item['summary'] = $tag->summary;
-            $item['followers'] = $tag->followers;
-            $item['is_followed'] = $is_followed;
             $data[] = $item;
         }
         $return = $tags->toArray();
@@ -90,28 +82,30 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'));
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[问答]');
         $questions = Question::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($questions as $question) {
-            $is_followed = 0;
-            $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
-            if ($attention){
-                $is_followed = 1;
-            }
             $item = [
                 'id' => $question->id,
                 'question_type' => $question->question_type,
-                'user_id' => $question->user_id,
-                'user_name' => $question->user->name,
-                'user_avatar_url' => $question->user->avatar,
-                'description'  => $question->getFormatTitle(),
-                'hide' => $question->hide,
-                'price' => $question->price,
-                'status' => $question->status,
-                'status_description' => $question->statusHumanDescription($question->user_id),
-                'created_at' => (string)$question->created_at
+                'description'  => $question->title,
+                'tags' => $question->tags()->get()->toArray()
             ];
+            if($question->type == 1){
+                $item['comment_number'] = 0;
+                $item['average_rate'] = 0;
+                $item['support_number'] = 0;
+                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+                if ($bestAnswer) {
+                    $item['comment_number'] = $bestAnswer->comments;
+                    $item['average_rate'] = $bestAnswer->getFeedbackRate();
+                    $item['support_number'] = $bestAnswer->supports;
+                }
+            } else {
+                $item['answer_number'] = $question->answers;
+                $item['follow_number'] = $question->followers;
+            }
             $data[] = $item;
         }
         $return = $questions->toArray();
@@ -126,7 +120,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $this->searchNotify($user,$request->input('search_word'));
+        $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]');
         $submissions = Submission::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($submissions as $submission) {

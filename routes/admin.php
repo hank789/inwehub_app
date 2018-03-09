@@ -304,6 +304,13 @@ Route::group(['prefix' => 'im','namespace'=>'IM'], function() {
 
 });
 
+//找顾问助手管理
+Route::group(['prefix' => 'weapp','namespace'=>'Weapp'], function() {
+    Route::get('user/index',['as'=>'admin.weapp.user.index','uses'=>'UserController@index']);
+    Route::post('user/verify',['as'=>'admin.weapp.user.verify','uses'=>'UserController@verify']);
+    Route::post('user/cancelVerify',['as'=>'admin.weapp.user.cancelVerify','uses'=>'UserController@cancelVerify']);
+});
+
 //日志查看
 Route::get('loginLog',['as'=>'admin.logger.login','uses'=>'LoggerController@loginLog']);
 Route::get('doingLog',['as'=>'admin.logger.doing','uses'=>'LoggerController@doingLog']);

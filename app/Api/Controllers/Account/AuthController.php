@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\Auth\UserLoggedOut;
 use App\Events\Frontend\Auth\UserRegistered;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
 use App\Models\Credit;
@@ -75,7 +76,7 @@ class AuthController extends Controller
     {
         $validateRules = [
             'mobile' => 'required|cn_phone',
-            'type'   => 'required|in:register,login,change,wx_gzh_register'
+            'type'   => 'required|in:register,login,change,wx_gzh_register,weapp_register'
         ];
 
         $this->validate($request,$validateRules);
@@ -150,23 +151,39 @@ class AuthController extends Controller
 
         $validateRules = [
             'mobile' => 'required',
-            'password' => 'required'
+            'password' => 'required_without:phoneCode',
+            'phoneCode' => 'required_without:password'
         ];
 
         $this->validate($request,$validateRules);
 
         /*只接收mobile和password的值*/
-        $credentials = $request->only('mobile', 'password');
+        $credentials = $request->only('mobile', 'password', 'phoneCode');
         if(RateLimiter::instance()->increase('userLogin',$credentials['mobile'],3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        if (isset($credentials['phoneCode']) && $credentials['phoneCode']) {
+            //验证手机验证码
+            $code_cache = Cache::get(SendPhoneMessage::getCacheKey('login',$credentials['mobile']));
+            if($code_cache != $credentials['phoneCode']){
+                throw new ApiException(ApiException::ARGS_YZM_ERROR);
+            }
+            $user = User::where('mobile',$credentials['mobile'])->first();
+            $token = $JWTAuth->fromUser($user);
+            $loginFrom = '短信验证码';
+        } else {
+            $token = $JWTAuth->attempt($credentials);
+            $user = $request->user();
+            $loginFrom = '网站';
+        }
 
         /*根据邮箱地址和密码进行认证*/
-        if ($token = $JWTAuth->attempt($credentials))
+        if ($token)
         {
-
-            $user = $request->user();
-            $device_code = $request->input('device_code');
+            $device_code = $request->input('deviceCode');
+            if ($device_code) {
+                $loginFrom = 'App';
+            }
             if($user->last_login_token && $device_code){
                 try {
                     $JWTAuth->refresh($user->last_login_token);
@@ -180,7 +197,7 @@ class AuthController extends Controller
                 throw new ApiException(ApiException::USER_SUSPEND);
             }
             //登陆事件通知
-            event(new UserLoggedIn($user));
+            event(new UserLoggedIn($user, $loginFrom));
             $message = 'ok';
             if($this->credit($user->id,Credit::KEY_LOGIN)){
                 $message = '登陆成功! ';
@@ -375,10 +392,93 @@ class AuthController extends Controller
         }
 
         //如果此微信号已绑定用户
-        if($oauthData->user_id && $user){
+        if($oauthData->user_id && $user && $oauthData->user_id == $user->id){
             $token = $JWTAuth->fromUser($user);
             //登陆事件通知
             event(new UserLoggedIn($user,'微信'));
+            return static::createJsonData(true,['token'=>$token]);
+        }
+        throw new ApiException(ApiException::BAD_REQUEST);
+    }
+
+
+    //检查微信小程序注册
+    public function registerWeapp(Request $request,JWTAuth $JWTAuth,Registrar $registrar)
+    {
+
+        /*表单数据校验*/
+        $validateRules = [
+            'mobile'  => 'required|cn_phone',
+            'name'    => 'required',
+            'title'   => 'required',
+            'company' => 'required',
+            'email'   => 'required|email',
+            'code'    => 'required',
+            'openid'  => 'required'
+        ];
+
+        $this->validate($request,$validateRules);
+        $mobile = $request->input('mobile');
+        if(RateLimiter::instance()->increase('userRegister',$mobile,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
+        //验证手机验证码
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('weapp_register',$mobile));
+        $code = $request->input('code');
+        if($code_cache != $code){
+            throw new ApiException(ApiException::ARGS_YZM_ERROR);
+        }
+        $openid = $request->input('openid');
+        $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
+            ->where('openid',$openid)->first();
+        if (!$oauthData){
+            throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
+        }
+        $user = User::where('mobile',$mobile)->first();
+
+        //如果此微信号尚未关联用户且对应手机号用户已注册,将此微信号与用户作关联
+        if ($oauthData->user_id == 0 && $user){
+            $oauthData->user_id = $user->id;
+            $oauthData->save();
+            $token = $JWTAuth->fromUser($user);
+            //登陆事件通知
+            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
+            return static::createJsonData(true,['token'=>$token]);
+        }
+
+        //如果此微信号尚未关联,且对应手机号不存在,走注册流程
+        if ($oauthData->user_id == 0 && !$user) {
+            $new_user = $registrar->create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'mobile' => $mobile,
+                'rc_uid' => 0,
+                'title'  => $request->input('title'),
+                'company' => $request->input('company'),
+                'gender' => 0,
+                'password' => time(),
+                'status' => 1,
+                'source' => User::USER_SOURCE_WEAPP,
+            ]);
+            $new_user->attachRole(2); //默认注册为普通用户角色
+            $new_user->userData->email_status = 1;
+            $new_user->userData->save();
+            $new_user->avatar = $oauthData->avatar;
+            $new_user->save();
+            $oauthData->user_id = $new_user->id;
+            $oauthData->save();
+            //注册事件通知
+            event(new UserRegistered($user,$oauthData->id,'微信小程序'));
+            $token = $JWTAuth->fromUser($user);
+            return static::createJsonData(true,['token'=>$token]);
+        }
+
+        //如果此微信号已绑定用户
+        if($oauthData->user_id && $user && $oauthData->user_id == $user->id){
+            $token = $JWTAuth->fromUser($user);
+            //登陆事件通知
+            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
             return static::createJsonData(true,['token'=>$token]);
         }
         throw new ApiException(ApiException::BAD_REQUEST);

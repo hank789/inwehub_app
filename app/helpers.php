@@ -1254,7 +1254,7 @@ if (!function_exists('getSystemUids')) {
 
 if (!function_exists('getContentUrls')) {
     function getContentUrls($content){
-        preg_match_all('/(http|https):[\/]{2}[A-Za-z0-9,:\\._\\?%&+\\-=\/]*/',$content,$urls);
+        preg_match_all('/(http|https):[\/]{2}[A-Za-z0-9,:\\._\\?#%&+\\-=\/]*/',strip_tags(strip_html_tags(['a'],$content,true)),$urls);
         return $urls[0];
     }
 }
@@ -1271,5 +1271,27 @@ if (!function_exists('formatContentUrls')) {
             }
         }
         return $content;
+    }
+}
+
+if (!function_exists('strip_html_tags')) {
+    /**
+     * 删除指定的标签和内容
+     * @param array  $tags 需要删除的标签数组
+     * @param string $str 数据源
+     * @param boole  $content 是否删除标签内的内容 默认为false保留内容  true不保留内容
+     * @return string
+     */
+    function strip_html_tags($tags,$str,$content=false){
+        $html=array();
+        foreach ($tags as $tag) {
+            if($content){
+                $html[]='/(<'.$tag.'.*?>[\s|\S]*?<\/'.$tag.'>)/';
+            }else{
+                $html[]="/(<(?:\/".$tag."|".$tag.")[^>]*>)/i";
+            }
+        }
+        $data=preg_replace($html, '', $str);
+        return $data;
     }
 }
