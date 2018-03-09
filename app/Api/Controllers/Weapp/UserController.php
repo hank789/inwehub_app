@@ -91,6 +91,7 @@ class UserController extends controller {
             $oauth = $user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
             $status = $oauth->status;
         } catch (\Exception $e) {
+            \Log::info('test',[$e->getMessage()]);
             $oauth = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
                 ->where('openid',$request->input('openid'))->first();
             $user = new \stdClass();
