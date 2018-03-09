@@ -133,7 +133,7 @@ class SearchController extends Controller
                 ->where('source_type',Submission::class)
                 ->exists();
             $item = $submission->toArray();
-            $item['title'] = strip_tags($item['title'],'<a><span>');
+            $item['title'] = strip_tags($item['title']);
             $item['is_upvoted'] = $upvote ? 1 : 0;
             $item['is_bookmark'] = $bookmark ? 1: 0;
             $item['tags'] = $submission->tags()->get()->toArray();
