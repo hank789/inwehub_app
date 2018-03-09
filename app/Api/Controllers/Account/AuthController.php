@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\Auth\UserLoggedOut;
 use App\Events\Frontend\Auth\UserRegistered;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
 use App\Models\Credit;
@@ -391,7 +392,7 @@ class AuthController extends Controller
         }
 
         //如果此微信号已绑定用户
-        if($oauthData->user_id && $user){
+        if($oauthData->user_id && $user && $oauthData->user_id == $user->id){
             $token = $JWTAuth->fromUser($user);
             //登陆事件通知
             event(new UserLoggedIn($user,'微信'));
@@ -442,7 +443,7 @@ class AuthController extends Controller
             $oauthData->save();
             $token = $JWTAuth->fromUser($user);
             //登陆事件通知
-            event(new UserLoggedIn($user,'微信小程序'));
+            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
             return static::createJsonData(true,['token'=>$token]);
         }
 
@@ -474,10 +475,10 @@ class AuthController extends Controller
         }
 
         //如果此微信号已绑定用户
-        if($oauthData->user_id && $user){
+        if($oauthData->user_id && $user && $oauthData->user_id == $user->id){
             $token = $JWTAuth->fromUser($user);
             //登陆事件通知
-            event(new UserLoggedIn($user,'微信小程序'));
+            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
             return static::createJsonData(true,['token'=>$token]);
         }
         throw new ApiException(ApiException::BAD_REQUEST);
