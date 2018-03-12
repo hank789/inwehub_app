@@ -55,7 +55,9 @@ class DemandController extends controller {
                 }
                 break;
         }
-        return self::createJsonData(true,$data);
+        $return = $list->toArray();
+        $return['data'] = $data;
+        return self::createJsonData(true,$return);
     }
 
     public function detail(Request $request){
