@@ -4,6 +4,7 @@
  * @date: 2017/6/16 下午6:49
  * @email: wanghui@yonglibao.com
  */
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Relations\BelongsToUserTrait;
 
@@ -55,5 +56,11 @@ class Demand extends Model
     const STATUS_REJECT = 2;
     const STATUS_CLOSED = 3;
     const STATUS_EXPIRED = 4;
+
+
+    public function getIndustryName(){
+        $tag = Tag::find($this->industry);
+        return $tag->name;
+    }
 
 }

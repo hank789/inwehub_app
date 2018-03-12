@@ -37,7 +37,8 @@ class DemandController extends controller {
                         'title' => $demand->title,
                         'avatar' => $oauth->avatar,
                         'address' => $demand->address,
-                        'industry' => $demand->industry,
+                        'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
+                        'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary
                     ];
                 }
@@ -51,7 +52,8 @@ class DemandController extends controller {
                         'title' => $demand->title,
                         'avatar' => $oauth->avatar,
                         'address' => $demand->address,
-                        'industry' => $demand->industry,
+                        'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
+                        'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary
                     ];
                 }
@@ -80,8 +82,8 @@ class DemandController extends controller {
             'title' => $demand->title,
             'address' => $demand->address,
             'salary' => $demand->salary,
-            'industry' => $demand->industry,
-            'project_cycle' => $demand->project_cycle,
+            'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
+            'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
             'project_begin_time' => $demand->project_begin_time,
             'description' => $demand->description,
             'views' => $demand->views
