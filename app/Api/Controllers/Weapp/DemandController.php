@@ -33,6 +33,7 @@ class DemandController extends controller {
                     $demand = Demand::find($item->demand_id);
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                     $data[] = [
+                        'id'    => $demand->id,
                         'title' => $demand->title,
                         'avatar' => $oauth->avatar,
                         'address' => $demand->address,
@@ -46,6 +47,7 @@ class DemandController extends controller {
                 foreach ($list as $demand) {
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                     $data[] = [
+                        'id'    => $demand->id,
                         'title' => $demand->title,
                         'avatar' => $oauth->avatar,
                         'address' => $demand->address,
@@ -82,6 +84,7 @@ class DemandController extends controller {
             'project_cycle' => $demand->project_cycle,
             'project_begin_time' => $demand->project_begin_time,
             'description' => $demand->description,
+            'views' => $demand->views
         ];
         $rel = DemandUserRel::where('user_id',$user->id)->where('demand_id',$demand->id)->first();
         if (!$rel) {
