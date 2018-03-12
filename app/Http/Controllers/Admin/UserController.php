@@ -43,7 +43,7 @@ class UserController extends AdminController
                 $orderBy = explode('|',$filter['order_by']);
                 $users = $query->orderBy($orderBy[0],$orderBy[1])->paginate(Config::get('inwehub.admin.page_size'));
             } else {
-                $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+                $users = $query->orderBy('id','desc')->paginate(Config::get('inwehub.admin.page_size'));
             }
         }
         return view('admin.user.index')->with('users',$users)->with('filter',$filter);
@@ -54,9 +54,9 @@ class UserController extends AdminController
         $query = $this->getUserQuery($request);
         if (isset($filter['order_by']) && $filter['order_by']){
             $orderBy = explode('|',$filter['order_by']);
-            $users = $query->orderBy($orderBy[0],$orderBy[1])->paginate(Config::get('inwehub.admin.page_size'));
+            $users = $query->orderBy($orderBy[0],$orderBy[1])->get();
         } else {
-            $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+            $users = $query->orderBy('id','desc')->get();
         }
         $cellData = [];
         $cellData[] = ['ID','姓名','微信昵称','手机','身份职业','专家认证','企业用户','问题数','回答数','档案完整度','账户余额','成长值','贡献值','注册时间','邀请者','邀请人数'];
