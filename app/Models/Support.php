@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
  * @property-read \App\Models\User|null $user
+ * @property int $refer_user_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Support whereReferUserId($value)
  */
 class Support extends Model
 {

@@ -52,6 +52,8 @@ use Laravel\Scout\Searchable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereIsAnonymous($value)
  * @property int $top
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereTop($value)
+ * @property string $tags
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Feed\Feed whereTags($value)
  */
 class Feed extends Model
 {

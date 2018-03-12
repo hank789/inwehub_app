@@ -423,6 +423,16 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp'], function() {
     Route::post('user/wxinfo','UserController@getWxUserInfo');
     //获取用户信息
     Route::post('user/info','UserController@getUserInfo');
+    //发布需求
+    Route::post('demand/store','DemandController@store');
+    //修改需求
+    Route::post('demand/update','DemandController@update');
+    //关闭需求
+    Route::post('demand/close','DemandController@close');
+    //列表
+    Route::post('demand/list','DemandController@showList');
+    //需求详情
+    Route::post('demand/detail','DemandController@detail');
 });
 
 Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {
