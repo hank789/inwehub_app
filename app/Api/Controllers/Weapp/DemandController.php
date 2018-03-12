@@ -79,6 +79,7 @@ class DemandController extends controller {
             'publisher_title'=>$demand->user->title,
             'publisher_company'=>$demand->user->company,
             'publisher_email'=>$demand->user->email,
+            'publisher_phone' => $demand->user->mobile,
             'title' => $demand->title,
             'address' => $demand->address,
             'salary' => $demand->salary,
