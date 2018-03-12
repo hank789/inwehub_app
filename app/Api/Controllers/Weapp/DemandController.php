@@ -80,6 +80,7 @@ class DemandController extends controller {
             'publisher_company'=>$demand->user->company,
             'publisher_email'=>$demand->user->email,
             'publisher_phone' => $demand->user->mobile,
+            'is_author' => $demand->user_id == $user->id ? true:false,
             'title' => $demand->title,
             'address' => $demand->address,
             'salary' => $demand->salary,
