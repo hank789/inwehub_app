@@ -34,7 +34,7 @@ class DemandController extends controller {
         $data = [];
         switch ($type){
             case 'all':
-                $list = DemandUserRel::where('user_id',$user->id)->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+                $list = DemandUserRel::where('demand_user_rel.user_id',$user->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->where('status',Demand::STATUS_PUBLISH)->select('demand.*')->orderBy('demand_user_rel.*','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $item) {
                     $demand = Demand::find($item->demand_id);
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
@@ -45,12 +45,13 @@ class DemandController extends controller {
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                        'salary' => $demand->salary
+                        'salary' => $demand->salary,
+                        'status' => $demand->status
                     ];
                 }
                 break;
             case 'mine':
-                $list = Demand::where('user_id',$user->id)->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+                $list = Demand::where('user_id',$user->id)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $demand) {
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                     $data[] = [
@@ -60,7 +61,8 @@ class DemandController extends controller {
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                        'salary' => $demand->salary
+                        'salary' => $demand->salary,
+                        'status' => $demand->status
                     ];
                 }
                 break;
@@ -99,7 +101,8 @@ class DemandController extends controller {
             'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
             'project_begin_time' => $demand->project_begin_time,
             'description' => $demand->description,
-            'views' => $demand->views
+            'views' => $demand->views,
+            'status' => $demand->status
         ];
         $rel = DemandUserRel::where('user_id',$user->id)->where('demand_id',$demand->id)->first();
         if (!$rel) {
