@@ -137,6 +137,10 @@ class DemandController extends controller {
             'status' => Demand::STATUS_PUBLISH,
             'expired_at' => strtotime('+7 days'),
         ]);
+        DemandUserRel::create([
+            'user_id'=>$user->id,
+            'demand_id'=>$demand->id
+        ]);
         $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime('+7 days'))));
         return self::createJsonData(true,['id'=>$demand->id]);
     }
