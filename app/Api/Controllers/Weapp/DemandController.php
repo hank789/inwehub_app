@@ -14,16 +14,22 @@ use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\JWTAuth;
 
 class DemandController extends controller {
 
 
-    public function showList(Request $request){
+    public function showList(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'type'   => 'required|in:all,mine'
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $type = $request->input('type');
         $data = [];
         switch ($type){
@@ -64,12 +70,17 @@ class DemandController extends controller {
         return self::createJsonData(true,$return);
     }
 
-    public function detail(Request $request){
+    public function detail(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $demand = Demand::findOrFail($request->input('id'));
         $demand->increment('views');
         $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();

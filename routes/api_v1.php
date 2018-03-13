@@ -430,9 +430,9 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp'], function() {
     //关闭需求
     Route::post('demand/close','DemandController@close')->middleware(['jwt.auth','ban.user']);
     //列表
-    Route::post('demand/list','DemandController@showList')->middleware(['jwt.auth','ban.user']);
+    Route::post('demand/list','DemandController@showList');
     //需求详情
-    Route::post('demand/detail','DemandController@detail')->middleware(['jwt.auth','ban.user']);
+    Route::post('demand/detail','DemandController@detail');
 });
 
 Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {
