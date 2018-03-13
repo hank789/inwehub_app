@@ -41,12 +41,16 @@ class DemandController extends controller {
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'avatar' => $oauth->avatar,
+                        'publisher_name'=>$oauth->nickname,
+                        'publisher_avatar'=>$oauth->avatar,
+                        'publisher_title'=>$demand->user->title,
+                        'publisher_company'=>$demand->user->company,
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
-                        'status' => $demand->status
+                        'status' => $demand->status,
+                        'created_time'=>$demand->created_at
                     ];
                 }
                 break;
@@ -57,12 +61,16 @@ class DemandController extends controller {
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'avatar' => $oauth->avatar,
+                        'publisher_name'=>$oauth->nickname,
+                        'publisher_avatar'=>$oauth->avatar,
+                        'publisher_title'=>$demand->user->title,
+                        'publisher_company'=>$demand->user->company,
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
-                        'status' => $demand->status
+                        'status' => $demand->status,
+                        'created_time'=>$demand->created_at
                     ];
                 }
                 break;
