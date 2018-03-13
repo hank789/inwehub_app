@@ -50,7 +50,7 @@ class DemandController extends controller {
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
                         'status' => $demand->status,
-                        'created_time'=>$demand->created_at
+                        'created_time'=>(string)$demand->created_at
                     ];
                 }
                 break;
@@ -70,7 +70,7 @@ class DemandController extends controller {
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
                         'status' => $demand->status,
-                        'created_time'=>$demand->created_at
+                        'created_time'=>(string)$demand->created_at
                     ];
                 }
                 break;
