@@ -135,7 +135,7 @@ class DemandController extends controller {
             'id'   => 'required|integer',
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
-            'salary' => 'required|float',
+            'salary' => 'required|numeric',
             'industry' => 'required',
             'project_cycle' => 'required|integer',
             'project_begin_time' => 'required|date',
