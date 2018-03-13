@@ -127,6 +127,7 @@ class DemandController extends controller {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $demand = Demand::create([
+            'user_id' => $user->id,
             'title' => $request->input('title'),
             'address' => $request->input('address'),
             'salary' => $request->input('salary'),
