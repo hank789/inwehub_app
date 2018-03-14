@@ -36,53 +36,57 @@ class UserController extends controller {
         $token = '';
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
             ->where('openid',$userInfo['openid'])->first();
+        $user_id = 0;
 
-        if (!$oauthData && isset($return['unionId'])) {
-            $oauthData = UserOauth::whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
-                ->where('unionid',$return['unionId'])->first();
-            if ($oauthData) {
-                UserOauth::create(
-                    [
-                        'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
-                        'user_id'=> $oauthData->user_id,
-                        'openid'   => $userInfo['openid'],
-                        'unionid'  => $return['unionId'],
-                        'nickname'=>$return['nickName'],
-                        'avatar'=>$return['avatarUrl'],
-                        'access_token'=>$userInfo['session_key'],
-                        'refresh_token'=>'',
-                        'expires_in'=>$userInfo['expires_in'],
-                        'full_info'=>json_encode($return),
-                        'scope'=>'authorization_code',
-                        'status' => 0
-                    ]
-                );
-            } else {
-                $oauthData = UserOauth::create(
-                    [
-                        'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
-                        'user_id'=> 0,
-                        'openid'   => $userInfo['openid'],
-                        'unionid'  => $return['unionId'],
-                        'nickname'=>$return['nickName'],
-                        'avatar'=>$return['avatarUrl'],
-                        'access_token'=>$userInfo['session_key'],
-                        'refresh_token'=>'',
-                        'expires_in'=>$userInfo['expires_in'],
-                        'full_info'=>json_encode($return),
-                        'scope'=>'authorization_code',
-                        'status' => 0
-                    ]
-                );
+        if (!$oauthData) {
+            if (isset($return['unionId'])) {
+                $oauthData = UserOauth::whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
+                    ->where('unionid',$return['unionId'])->first();
+                if ($oauthData) {
+                    $user_id = $oauthData->user_id;
+                }
             }
+            $oauthData = UserOauth::create(
+                [
+                    'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
+                    'user_id'=> $user_id,
+                    'openid'   => $userInfo['openid'],
+                    'unionid'  => $return['unionId'],
+                    'nickname'=>$return['nickName'],
+                    'avatar'=>$return['avatarUrl'],
+                    'access_token'=>$userInfo['session_key'],
+                    'refresh_token'=>'',
+                    'expires_in'=>$userInfo['expires_in'],
+                    'full_info'=>json_encode($return),
+                    'scope'=>'authorization_code',
+                    'status' => 0
+                ]
+            );
+        } else {
+            $user_id = $oauthData->user_id;
         }
+        $info = [
+            'id' => $user_id,
+            'status'=>$oauthData->status,
+            'avatarUrl'=>$oauthData->avatar,
+            'name'=>$oauthData->nickname,
+            'company'=>'',
+            'mobile' => '',
+            'email'  => ''
+        ];
+
         if ($oauthData && $oauthData->user_id) {
             $user = User::find($oauthData->user_id);
             $token = $JWTAuth->fromUser($user);
+            $info['id'] = $user->id;
+            $info['title'] = $user->title;
+            $info['company'] = $user->company;
+            $info['mobile'] = $user->mobile;
+            $info['email'] = $user->email;
             event(new UserLoggedIn($user,'小程序登陆'));
         }
 
-        return self::createJsonData(true,['token'=>$token,'openid'=>$userInfo['openid']]);
+        return self::createJsonData(true,['token'=>$token,'userInfo'=>$info,'openid'=>$userInfo['openid']]);
     }
 
     public function getUserInfo(Request $request,JWTAuth $JWTAuth){
