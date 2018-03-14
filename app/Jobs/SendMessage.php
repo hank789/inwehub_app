@@ -63,6 +63,9 @@ class SendMessage implements ShouldQueue
             } else {
                 $room = Room::create([
                     'user_id' => $from_user->id,
+                    'source_id' => $contact_id,
+                    'source_type' => get_class($from_user),
+                    'r_name' => '私信',
                     'r_type'  => Room::ROOM_TYPE_WHISPER
                 ]);
                 $room_id = $room->id;

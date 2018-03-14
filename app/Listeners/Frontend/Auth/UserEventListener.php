@@ -101,6 +101,9 @@ class UserEventListener implements ShouldQueue
         $contact = User::find($contact_id);
         $room = Room::create([
             'user_id' => $contact_id,
+            'source_id' => $event->user->id,
+            'source_type' => get_class($contact),
+            'r_name' => '私信',
             'r_type'  => Room::ROOM_TYPE_WHISPER
         ]);
 

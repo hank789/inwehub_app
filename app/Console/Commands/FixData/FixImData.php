@@ -10,6 +10,7 @@ use App\Models\IM\Message;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class FixImData extends Command
@@ -35,48 +36,18 @@ class FixImData extends Command
      */
     public function handle()
     {
-        $conversations = Conversation::orderBy('id','asc')->get();
-        $rooms = [];
-        foreach ($conversations as $conversation) {
-            $key = $conversation->user_id.'_'.$conversation->contact_id;
-            if (isset($rooms[$key])) {
-                $room_id = $rooms[$key];
-                MessageRoom::firstOrCreate([
-                    'message_id' => $conversation->message_id,
-                    'room_id'    => $room_id
-                ],[
-                    'message_id' => $conversation->message_id,
-                    'room_id'    => $room_id
-                ]);
-            } else {
-                $room = Room::create([
-                    'user_id' => $conversation->user_id,
-                    'r_type'  => 1,
-                ]);
-                $rooms[$conversation->contact_id.'_'.$conversation->user_id] = $room->id;
-                $rooms[$key] = $room->id;
-                RoomUser::firstOrCreate([
-                    'room_id' => $room->id,
-                    'user_id' => $conversation->user_id
-                ],[
-                    'room_id' => $room->id,
-                    'user_id' => $conversation->user_id
-                ]);
-                RoomUser::firstOrCreate([
-                    'room_id' => $room->id,
-                    'user_id' => $conversation->contact_id
-                ],[
-                    'room_id' => $room->id,
-                    'user_id' => $conversation->contact_id
-                ]);
-
-                MessageRoom::firstOrCreate([
-                    'message_id' => $conversation->message_id,
-                    'room_id'    => $room->id
-                ],[
-                    'message_id' => $conversation->message_id,
-                    'room_id'    => $room->id
-                ]);
+        $rooms = Room::get();
+        foreach ($rooms as $room) {
+            try {
+                $roomUser = RoomUser::where('room_id',$room->id)
+                    ->where('user_id','!=',$room->user_id)
+                    ->first();
+                $room->source_id = $roomUser->user_id;
+                $room->source_type = User::class;
+                $room->r_name = '私信';
+                $room->save();
+            } catch (\Exception $e) {
+                var_dump($room->id);
             }
         }
     }
