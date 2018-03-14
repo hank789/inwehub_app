@@ -158,6 +158,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('im/message-store','MessageController@store');
     Route::post('im/messages','MessageController@getMessages');
     Route::post('im/getWhisperRoom','MessageController@getWhisperRoom');
+    Route::post('im/getRoom','MessageController@getRoom');
 
 });
 

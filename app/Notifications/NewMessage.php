@@ -8,6 +8,7 @@ use App\Channels\WechatNoticeChannel;
 use App\Models\IM\Message;
 use App\Models\Notification as NotificationModel;
 use App\Models\User;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;

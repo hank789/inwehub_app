@@ -42,7 +42,7 @@ class Room extends Model
     protected $table = 'im_room';
 
     protected $fillable = [
-        'r_type', 'user_id', 'r_name', 'r_description'
+        'r_type', 'user_id','source_id', 'source_type', 'r_name', 'r_description'
     ];
 
     /**
