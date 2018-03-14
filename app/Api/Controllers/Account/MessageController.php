@@ -126,10 +126,18 @@ class MessageController extends Controller
         $user = $request->user();
         $contact_id = $request->input('contact_id');
         //私信
-        $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
-        $roomUser = RoomUser::where('user_id',$contact_id)->whereIn('room_id',$room_ids)->first();
-        if ($roomUser) {
-            $room_id = $roomUser->room_id;
+        $room = Room::where('user_id',$user->id)
+            ->where('source_id',$contact_id)
+            ->where('source_type',User::class)
+            ->first();
+        if (!$room) {
+            $room = Room::where('user_id',$contact_id)
+                ->where('source_id',$user->id)
+                ->where('source_type',User::class)
+                ->first();
+        }
+        if ($room) {
+            $room_id = $room->id;
         } else {
             $room = Room::create([
                 'user_id' => $user->id,

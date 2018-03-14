@@ -158,7 +158,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             $room = Room::find($this->room_id);
             switch ($room->source_type) {
                 case Demand::class:
-                    return new PrivateChannel('demand.'.$room->source_id.'.user.'.$this->user_id);
+                    return new PrivateChannel('room.'.$room->id.'.user.'.$this->user_id);
                     break;
             }
         }
