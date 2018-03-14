@@ -112,7 +112,7 @@ class MessageController extends Controller
         ]);
         // broadcast the message to the other person
         $contact = User::find($contact_id);
-        $contact->notify(new NewMessage($contact_id,$message));
+        $contact->notify(new NewMessage($contact_id,$message,$room_id));
 
 
 

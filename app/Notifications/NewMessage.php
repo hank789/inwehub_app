@@ -6,8 +6,10 @@ use App\Channels\PushChannel;
 use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\IM\Message;
+use App\Models\IM\Room;
 use App\Models\Notification as NotificationModel;
 use App\Models\User;
+use App\Models\Weapp\Demand;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
@@ -23,16 +25,18 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
 
     protected $message;
     protected $user_id;
+    protected $room_id;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, Message $message)
+    public function __construct($user_id, Message $message,$room_id = 0)
     {
         $this->user_id = $user_id;
         $this->message = $message;
+        $this->room_id = $room_id;
     }
 
     /**
@@ -150,6 +154,14 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     }
 
     public function broadcastOn(){
+        if ($this->room_id) {
+            $room = Room::find($this->room_id);
+            switch ($room->source_type) {
+                case Demand::class:
+                    return new PrivateChannel('demand.'.$room->source_id.'.user.'.$this->user_id);
+                    break;
+            }
+        }
         return ['notification.user.'.$this->user_id];
     }
 }
