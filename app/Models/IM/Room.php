@@ -57,4 +57,8 @@ class Room extends Model
     const ROOM_TYPE_WHISPER = 1;//私聊
     const ROOM_TYPE_GROUP = 2;//群聊
 
+    public function source()
+    {
+        return $this->morphTo();
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
 use App\Models\User;
+use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Notifications\NewMessage;
 use Illuminate\Http\Request;
@@ -210,6 +211,7 @@ class MessageController extends Controller
                     }
                 }
                 $contact_id = $request->input('source_id');
+                $source = User::find($contact_id)->toArray();
                 break;
             case 2:
                 //小程序需求发布
@@ -250,9 +252,28 @@ class MessageController extends Controller
                     ]);
                 }
                 $contact_id = $demand->user_id;
+                $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                $source = [
+                    'publisher_name'=>$oauth->nickname,
+                    'publisher_avatar'=>$oauth->avatar,
+                    'publisher_title'=>$demand->user->title,
+                    'publisher_company'=>$demand->user->company,
+                    'publisher_email'=>$demand->user->email,
+                    'publisher_phone' => $demand->user->mobile,
+                    'title' => $demand->title,
+                    'address' => $demand->address,
+                    'salary' => $demand->salary,
+                    'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
+                    'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
+                    'project_begin_time' => $demand->project_begin_time,
+                    'description' => $demand->description,
+                ];
                 break;
         }
-        return self::createJsonData(true,['room_id'=>$room->id,'contact_id'=>$contact_id]);
+        $return = $room->toArray();
+        $return['contact_id'] = $contact_id;
+        $return['source'] = $source;
+        return self::createJsonData(true,$return);
 
     }
 
