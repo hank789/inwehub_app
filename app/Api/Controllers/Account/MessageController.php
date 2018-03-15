@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Monolog\Handler\IFTTTHandler;
 
@@ -81,11 +82,22 @@ class MessageController extends Controller
         $data = [];
         $data['text'] = $request->input('text');
         if ($base64Img) {
-            $url = explode(';',$base64Img);
-            $url_type = explode('/',$url[0]);
-            $file_name = 'message/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
-            dispatch((new UploadFile($file_name,(substr($url[1],6)))));
-            $data['img'] = Storage::disk('oss')->url($file_name);
+            if ($base64Img == 1) {
+                //小程序上传
+                if($request->hasFile('img')){
+                    $file_0 = $request->file('img');
+                    $extension = strtolower($file_0->getClientOriginalExtension());
+                    $file_name = 'message/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+                    dispatch((new UploadFile($file_name,base64_encode(File::get($file_0)))));
+                    $data['img'] = Storage::disk('oss')->url($file_name);
+                }
+            } else {
+                $url = explode(';',$base64Img);
+                $url_type = explode('/',$url[0]);
+                $file_name = 'message/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
+                dispatch((new UploadFile($file_name,(substr($url[1],6)))));
+                $data['img'] = Storage::disk('oss')->url($file_name);
+            }
         }
         $message = $user->messages()->create([
             'data' => $data,
