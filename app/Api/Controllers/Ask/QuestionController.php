@@ -819,7 +819,10 @@ class QuestionController extends Controller
                 'id' => $question->id,
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
-                'tags' => $question->tags()->get()->toArray()
+                'tags' => $question->tags()->get()->toArray(),
+                'question_user_name' => $question->user->name,
+                'question_user_avatar' => $question->user->avatar,
+                'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0)
             ];
             if($question->question_type == 1){
                 $item['comment_number'] = 0;
