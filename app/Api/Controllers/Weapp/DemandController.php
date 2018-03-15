@@ -95,6 +95,7 @@ class DemandController extends controller {
         $demand->increment('views');
         $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
         $data = [
+            'publisher_user_id'=>$oauth->user_id,
             'publisher_name'=>$oauth->nickname,
             'publisher_avatar'=>$oauth->avatar,
             'publisher_title'=>$demand->user->title,
