@@ -169,8 +169,68 @@ class MessageController extends Controller
 
     public function getRoom(Request $request){
         $this->validate($request, [
+            'room_id' => 'required|integer|min:1'
+        ]);
+        $user = $request->user();
+        $room = Room::findOrFail($request->input('room_id'));
+        $return = $room->toArray();
+        switch ($return['source_type']) {
+            case User::class:
+                $source = User::find($room->source_id);
+                if ($room->source_id == $user->id) {
+                    $contact = [
+                        'id' => $room->user_id,
+                        'name'=>$room->user->name
+                    ];
+                } else {
+                    $contact = [
+                        'id' => $room->source_id,
+                        'name'=>$source->name
+                    ];
+                }
+                break;
+            case Demand::class:
+                $demand = Demand::find($room->source_id);
+                $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                $source = [
+                    'publisher_name'=>$oauth->nickname,
+                    'publisher_avatar'=>$oauth->avatar,
+                    'publisher_title'=>$demand->user->title,
+                    'publisher_company'=>$demand->user->company,
+                    'publisher_email'=>$demand->user->email,
+                    'publisher_phone' => $demand->user->mobile,
+                    'title' => $demand->title,
+                    'address' => $demand->address,
+                    'salary' => $demand->salary,
+                    'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
+                    'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
+                    'project_begin_time' => $demand->project_begin_time,
+                    'description' => $demand->description,
+                ];
+                if ($room->user_id == $user->id) {
+                    $contact = [
+                        'id' => $oauth->user_id,
+                        'name'=>$oauth->nickname
+                    ];
+                } else {
+                    $contact = [
+                        'id' => $room->user_id,
+                        'name'=>$room->user->name
+                    ];
+                }
+
+                break;
+        }
+        $return['contact'] = $contact;
+        $return['source'] = $source;
+        return self::createJsonData(true,$return);
+    }
+
+    public function createRoom(Request $request){
+        $this->validate($request, [
             'source_type' => 'required|in:1,2',
-            'source_id' => 'required|integer|min:1'
+            'source_id' => 'required|integer|min:1',
+            'contact_id' => 'required|integer|min:1'
         ]);
         $user = $request->user();
         switch ($request->input('source_type')){
@@ -210,8 +270,6 @@ class MessageController extends Controller
                         ]);
                     }
                 }
-                $contact_id = $request->input('source_id');
-                $source = User::find($contact_id)->toArray();
                 break;
             case 2:
                 //小程序需求发布
@@ -219,61 +277,44 @@ class MessageController extends Controller
                 if (!$demand) {
                     throw new ApiException(ApiException::BAD_REQUEST);
                 }
-                if ($user->id == $demand->user_id) {
-                    throw new ApiException(ApiException::BAD_REQUEST);
-                }
                 $room = Room::where('user_id',$user->id)
                     ->where('source_id',$request->input('source_id'))
                     ->where('source_type',Demand::class)
                     ->first();
                 if (!$room) {
-                    $room = Room::create([
-                        'user_id' => $user->id,
-                        'source_id' => $request->input('source_id'),
-                        'source_type' => get_class($demand),
-                        'r_name' => $demand->title,
-                        'r_description' => $demand->title,
-                        'r_type'  => Room::ROOM_TYPE_WHISPER
-                    ]);
-                    RoomUser::firstOrCreate([
-                        'user_id' => $user->id,
-                        'room_id' => $room->id
-                    ],[
-                        'user_id' => $user->id,
-                        'room_id' => $room->id
-                    ]);
+                    $room = Room::where('user_id',$request->input('contact_id'))
+                        ->where('source_id',$user->id)
+                        ->where('source_type',Demand::class)
+                        ->first();
+                    if (!$room) {
+                        $room = Room::create([
+                            'user_id' => $demand->user_id == $user->id?$request->input('contact_id'):$user->id,
+                            'source_id' => $request->input('source_id'),
+                            'source_type' => get_class($demand),
+                            'r_name' => $demand->title,
+                            'r_description' => $demand->title,
+                            'r_type'  => Room::ROOM_TYPE_WHISPER
+                        ]);
+                        RoomUser::firstOrCreate([
+                            'user_id' => $user->id,
+                            'room_id' => $room->id
+                        ],[
+                            'user_id' => $user->id,
+                            'room_id' => $room->id
+                        ]);
 
-                    RoomUser::firstOrCreate([
-                        'user_id' => $demand->user_id,
-                        'room_id' => $room->id
-                    ],[
-                        'user_id' => $demand->user_id,
-                        'room_id' => $room->id
-                    ]);
+                        RoomUser::firstOrCreate([
+                            'user_id' => $demand->user_id,
+                            'room_id' => $room->id
+                        ],[
+                            'user_id' => $demand->user_id,
+                            'room_id' => $room->id
+                        ]);
+                    }
                 }
-                $contact_id = $demand->user_id;
-                $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
-                $source = [
-                    'publisher_name'=>$oauth->nickname,
-                    'publisher_avatar'=>$oauth->avatar,
-                    'publisher_title'=>$demand->user->title,
-                    'publisher_company'=>$demand->user->company,
-                    'publisher_email'=>$demand->user->email,
-                    'publisher_phone' => $demand->user->mobile,
-                    'title' => $demand->title,
-                    'address' => $demand->address,
-                    'salary' => $demand->salary,
-                    'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
-                    'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                    'project_begin_time' => $demand->project_begin_time,
-                    'description' => $demand->description,
-                ];
                 break;
         }
-        $return = $room->toArray();
-        $return['contact_id'] = $contact_id;
-        $return['source'] = $source;
-        return self::createJsonData(true,$return);
+        return self::createJsonData(true,['id'=>$room->id]);
 
     }
 
