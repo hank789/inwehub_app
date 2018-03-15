@@ -84,8 +84,8 @@ class MessageController extends Controller
         if ($base64Img) {
             if ($base64Img == 1) {
                 //小程序上传
-                if($request->hasFile('img')){
-                    $file_0 = $request->file('img');
+                if($request->hasFile('img_file')){
+                    $file_0 = $request->file('img_file');
                     $extension = strtolower($file_0->getClientOriginalExtension());
                     $file_name = 'message/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
                     dispatch((new UploadFile($file_name,base64_encode(File::get($file_0)))));
