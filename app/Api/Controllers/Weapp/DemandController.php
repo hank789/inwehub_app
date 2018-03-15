@@ -7,6 +7,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\CloseDemand;
+use App\Models\IM\Room;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Models\Weapp\DemandUserRel;
@@ -94,6 +95,15 @@ class DemandController extends controller {
         $demand = Demand::findOrFail($request->input('id'));
         $demand->increment('views');
         $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+        $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
+        $candidates = [];
+        foreach ($rooms as $room) {
+            $candidate = $room->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+            $candidates[] = [
+                'room_id' => $room->id,
+                'user_avatar' => $candidate->avatar
+            ];
+        }
         $data = [
             'publisher_user_id'=>$oauth->user_id,
             'publisher_name'=>$oauth->nickname,
@@ -120,6 +130,7 @@ class DemandController extends controller {
                 'demand_id'=>$demand->id
             ]);
         }
+        $data['candidates'] = $candidates;
         return self::createJsonData(true,$data);
     }
 
