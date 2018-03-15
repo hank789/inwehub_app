@@ -51,7 +51,7 @@ class UserController extends controller {
                     'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
                     'user_id'=> $user_id,
                     'openid'   => $userInfo['openid'],
-                    'unionid'  => $return['unionId'],
+                    'unionid'  => $return['unionId']??null,
                     'nickname'=>$return['nickName'],
                     'avatar'=>$return['avatarUrl'],
                     'access_token'=>$userInfo['session_key'],
