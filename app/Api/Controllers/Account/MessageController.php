@@ -113,10 +113,10 @@ class MessageController extends Controller
         // broadcast the message to the other person
         $contact = User::find($contact_id);
         $contact->notify(new NewMessage($contact_id,$message,$room_id));
+        $return = $message->toArray();
+        $return['avatar'] = $user->avatar;
 
-
-
-        return self::createJsonData(true, $message->toArray());
+        return self::createJsonData(true, $return);
     }
 
     public function getWhisperRoom(Request $request) {
