@@ -76,9 +76,7 @@
                                             <td>{{ $demand->created_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    @if ($user->user_id)
-                                                        <a class="btn btn-default" href="{{ route('admin.weapp.demand.detail',['id'=>$demand->id]) }}" data-toggle="tooltip" title="基本信息"><i class="fa fa-eye"></i></a>
-                                                    @endif
+                                                    <a class="btn btn-default" href="{{ route('admin.weapp.demand.detail',['id'=>$demand->id]) }}" data-toggle="tooltip" title="基本信息"><i class="fa fa-eye"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
