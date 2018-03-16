@@ -103,6 +103,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
         return [
             'url'    => '/chat/'.$this->message->user->id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_IM,
+            'message_id' => $this->message->id,
             'name'   => $this->message->user->name,
             'avatar' => $this->message->user->avatar,
             'uuid'   => $this->message->user->uuid,
