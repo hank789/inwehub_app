@@ -57,7 +57,7 @@
 
                             <div class="form-group">
                                 <label>项目周期:</label>
-                                <label>{{ trans_project_project_cycle($detail->project_cycle) }}</label>
+                                <label>{{ trans_project_project_cycle($demand->project_cycle) }}</label>
                             </div>
 
                             <div class="form-group">
