@@ -80,7 +80,7 @@ class NotificationController extends Controller
         $money_unread_count = $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->count();
 
         $total_unread =  $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count + $todo_task;
-        $im_room_users = RoomUser::where('user_id',$user->id)->get();
+        $im_rooms = Room::where('source_type',User::class)->where(function ($query) use ($user) {$query->where('user_id',$user->id)->orWhere('source_id',$user->id);})->get();
 
         $im_list = [];
         $is_kefu_in = false;
@@ -94,20 +94,18 @@ class NotificationController extends Controller
         $customer_user = User::find($customer_id);
         $customer_message = [];
 
-        foreach ($im_room_users as $im_room_user) {
-            $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room_user->room_id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+        foreach ($im_rooms as $im_room) {
+            $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
             $total_unread += $im_count;
-            $last_message = MessageRoom::where('room_id',$im_room_user->room_id)->orderBy('id','desc')->first();
-            $contact_room = RoomUser::where('room_id',$im_room_user->room_id)->where('user_id','!=',$user->id)->orderBy('id','desc')->first();
-            if (!$contact_room) continue;
-            if (!$contact_room->user) continue;
+            $last_message = MessageRoom::where('room_id',$im_room->id)->orderBy('id','desc')->first();
+            $contact = User::find($im_room->user_id==$user->id?$im_room->source_id:$im_room->user_id);
             $item = [
                 'unread_count' => $im_count,
-                'avatar'       => $contact_room->user->avatar,
-                'name'         => $contact_room->user->name,
-                'room_id'      => $im_room_user->room_id,
-                'contact_id'   => $contact_room->user->id,
-                'contact_uuid' => $contact_room->user->uuid,
+                'avatar'       => $contact->avatar,
+                'name'         => $contact->name,
+                'room_id'      => $im_room->id,
+                'contact_id'   => $contact->id,
+                'contact_uuid' => $contact->uuid,
                 'last_message' => [
                     'id' => $last_message?$last_message->message_id:0,
                     'text' => '',
@@ -116,7 +114,7 @@ class NotificationController extends Controller
                     'created_at' => $last_message?(string)$last_message->created_at:''
                 ]
             ];
-            if ($contact_room->user_id == $customer_id) {
+            if ($contact->id == $customer_id) {
                 $is_kefu_in = true;
                 $customer_message = $item;
             } else {

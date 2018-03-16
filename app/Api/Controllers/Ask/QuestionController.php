@@ -753,7 +753,7 @@ class QuestionController extends Controller
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
             if ($loginUser->id != $user->id) {
-                $query = $user->questions()->where('hide',0);
+                $query = $user->questions()->where('hide',0)->where(function($query) {$query->where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);});
             } else {
                 $query = $user->questions();
             }

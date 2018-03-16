@@ -75,7 +75,7 @@ class FeedController extends Controller
         $return = $feeds->toArray();
         $data = [];
         foreach ($feeds as $feed) {
-            $sourceData = $feed->getSourceFeedData();
+            $sourceData = $feed->getSourceFeedData($search_type);
             if (empty($sourceData)) continue;
             $data[] = [
                 'id' => $feed->id,

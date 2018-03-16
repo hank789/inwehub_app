@@ -130,7 +130,7 @@ class Feed extends Model
 
     }
 
-    public function getSourceFeedData() {
+    public function getSourceFeedData($search_type=0) {
         $url = '';
         $data = [];
         switch ($this->feed_type) {
@@ -195,6 +195,14 @@ class Feed extends Model
                 //发布互动问题
                 $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
                 $question = Question::find($this->data['question_id']);
+                switch ($search_type) {
+                    case 1:
+                    case 5:
+                        if ($question->hide) {
+                            return null;
+                        }
+                        break;
+                }
                 $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->distinct()->take(5)->pluck('user_id')->toArray();
                 $answer_users = [];
                 if ($answer_uids) {
@@ -219,6 +227,14 @@ class Feed extends Model
                 //发布专业问题
                 $url = '/answer/'.$this->data['question_id'];
                 $question = Question::find($this->data['question_id']);
+                switch ($search_type) {
+                    case 1:
+                    case 5:
+                        if ($question->hide) {
+                            return null;
+                        }
+                        break;
+                }
                 $data = [
                     'title' => $this->data['question_title'],
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
