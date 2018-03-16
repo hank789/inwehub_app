@@ -114,6 +114,9 @@ class MessageController extends Controller
         } else {
             $room = Room::create([
                 'user_id' => $user->id,
+                'source_id' => $contact_id,
+                'source_type' => get_class($user),
+                'r_name' => '私信',
                 'r_type'  => Room::ROOM_TYPE_WHISPER
             ]);
             $room_id = $room->id;

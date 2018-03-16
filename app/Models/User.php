@@ -121,6 +121,8 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereSubmissionKarma($value)
  * @property string|null $email_notifications
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Submission[] $submissions
+ * @property int $info_complete_percent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User whereInfoCompletePercent($value)
  */
 class User extends Model implements AuthenticatableContract,
     AuthorizableContract,

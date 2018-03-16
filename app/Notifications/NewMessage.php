@@ -6,8 +6,11 @@ use App\Channels\PushChannel;
 use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\IM\Message;
+use App\Models\IM\Room;
 use App\Models\Notification as NotificationModel;
 use App\Models\User;
+use App\Models\Weapp\Demand;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
@@ -22,16 +25,18 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
 
     protected $message;
     protected $user_id;
+    protected $room_id;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, Message $message)
+    public function __construct($user_id, Message $message,$room_id = 0)
     {
         $this->user_id = $user_id;
         $this->message = $message;
+        $this->room_id = $room_id;
     }
 
     /**
@@ -43,13 +48,22 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     public function via($notifiable)
     {
         $via = ['broadcast'];
-        if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_rel_mine_chatted']??true)){
-            $via[] = PushChannel::class;
-            $via[] = WechatNoticeChannel::class;
-        }
         if ((isset($notifiable->to_slack) && $notifiable->to_slack) || !isset($notifiable->to_slack)) {
             $via[] = SlackChannel::class;
         }
+        if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_rel_mine_chatted']??true)){
+            if ($this->room_id) {
+                $room = Room::find($this->room_id);
+                switch ($room->source_type) {
+                    case Demand::class:
+                        return $via;
+                        break;
+                }
+            }
+            $via[] = PushChannel::class;
+            $via[] = WechatNoticeChannel::class;
+        }
+
         return $via;
     }
 
@@ -89,6 +103,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
         return [
             'url'    => '/chat/'.$this->message->user->id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_IM,
+            'message_id' => $this->message->id,
             'name'   => $this->message->user->name,
             'avatar' => $this->message->user->avatar,
             'uuid'   => $this->message->user->uuid,
@@ -139,6 +154,18 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                 'value' => $this->message->data['img']
             ];
         }
+        if ($this->room_id) {
+            $room = Room::find($this->room_id);
+            switch ($room->source_type) {
+                case Demand::class:
+                    $demand = Demand::find($room->source_id);
+                    $fields[] = [
+                        'title' => '回复对象：找顾问助手',
+                        'value' => $demand->title
+                    ];
+                    break;
+            }
+        }
         return \Slack::to(config('slack.user_chat_channel'))
             ->attach(
                 [
@@ -149,6 +176,14 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     }
 
     public function broadcastOn(){
+        if ($this->room_id) {
+            $room = Room::find($this->room_id);
+            switch ($room->source_type) {
+                case Demand::class:
+                    return new PrivateChannel('room.'.$room->id.'.user.'.$this->user_id);
+                    break;
+            }
+        }
         return ['notification.user.'.$this->user_id];
     }
 }

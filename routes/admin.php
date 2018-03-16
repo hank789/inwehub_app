@@ -309,6 +309,11 @@ Route::group(['prefix' => 'weapp','namespace'=>'Weapp'], function() {
     Route::get('user/index',['as'=>'admin.weapp.user.index','uses'=>'UserController@index']);
     Route::post('user/verify',['as'=>'admin.weapp.user.verify','uses'=>'UserController@verify']);
     Route::post('user/cancelVerify',['as'=>'admin.weapp.user.cancelVerify','uses'=>'UserController@cancelVerify']);
+    //需求管理
+    Route::get('demand/index',['as'=>'admin.weapp.demand.index','uses'=>'DemandController@index']);
+    Route::get('demand/detail',['as'=>'admin.weapp.demand.detail','uses'=>'DemandController@detail']);
+    Route::delete('demand/destroy',['as'=>'admin.weapp.demand.destroy','uses'=>'DemandController@destroy']);
+
 });
 
 //日志查看

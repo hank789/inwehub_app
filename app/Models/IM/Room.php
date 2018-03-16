@@ -42,7 +42,7 @@ class Room extends Model
     protected $table = 'im_room';
 
     protected $fillable = [
-        'r_type', 'user_id', 'r_name', 'r_description'
+        'r_type', 'user_id','source_id', 'source_type', 'r_name', 'r_description'
     ];
 
     /**
@@ -57,4 +57,8 @@ class Room extends Model
     const ROOM_TYPE_WHISPER = 1;//私聊
     const ROOM_TYPE_GROUP = 2;//群聊
 
+    public function source()
+    {
+        return $this->morphTo();
+    }
 }

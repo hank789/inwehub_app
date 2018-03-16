@@ -25,7 +25,7 @@
                             </div>
                             <div class="col-xs-10">
                                 <div class="row">
-                                    <form name="searchForm" action="{{ route('admin.user.index') }}" method="GET">
+                                    <form name="searchForm" action="{{ route('admin.weapp.user.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>

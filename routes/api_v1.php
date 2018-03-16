@@ -158,7 +158,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('im/message-store','MessageController@store');
     Route::post('im/messages','MessageController@getMessages');
     Route::post('im/getWhisperRoom','MessageController@getWhisperRoom');
-
+    Route::post('im/getRoom','MessageController@getRoom');
+    Route::post('im/createRoom','MessageController@createRoom');
 });
 
 
@@ -423,6 +424,16 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp'], function() {
     Route::post('user/wxinfo','UserController@getWxUserInfo');
     //获取用户信息
     Route::post('user/info','UserController@getUserInfo');
+    //发布需求
+    Route::post('demand/store','DemandController@store')->middleware(['jwt.auth','ban.user']);
+    //修改需求
+    Route::post('demand/update','DemandController@update')->middleware(['jwt.auth','ban.user']);
+    //关闭需求
+    Route::post('demand/close','DemandController@close')->middleware(['jwt.auth','ban.user']);
+    //列表
+    Route::post('demand/list','DemandController@showList');
+    //需求详情
+    Route::post('demand/detail','DemandController@detail');
 });
 
 Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {
