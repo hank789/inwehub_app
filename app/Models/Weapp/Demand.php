@@ -4,6 +4,7 @@
  * @date: 2017/6/16 下午6:49
  * @email: wanghui@yonglibao.com
  */
+use App\Models\IM\Room;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Relations\BelongsToUserTrait;
@@ -61,6 +62,10 @@ class Demand extends Model
     public function getIndustryName(){
         $tag = Tag::find($this->industry);
         return $tag->name;
+    }
+
+    public function getRoomCount(){
+        return Room::where('source_id',$this->id)->where('source_type',Demand::class)->count();
     }
 
 }

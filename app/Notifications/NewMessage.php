@@ -154,6 +154,18 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                 'value' => $this->message->data['img']
             ];
         }
+        if ($this->room_id) {
+            $room = Room::find($this->room_id);
+            switch ($room->source_type) {
+                case Demand::class:
+                    $demand = Demand::find($room->source_id);
+                    $fields[] = [
+                        'title' => '回复对象：找顾问助手',
+                        'value' => $demand->title
+                    ];
+                    break;
+            }
+        }
         return \Slack::to(config('slack.user_chat_channel'))
             ->attach(
                 [
