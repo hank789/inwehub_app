@@ -127,8 +127,12 @@ class UserController extends controller {
                 $scene = 'demand_id='.$demand->id;
                 break;
         }
-        $res_array = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
-        return self::createJsonData(true,$res_array);
+        try {
+            $res_array = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+        } Catch (\Exception $e) {
+            return self::createJsonData(true,['qrcode'=>config('image.user_default_avatar')]);
+        }
+        return self::createJsonData(true,['qrcode'=>$res_array]);
     }
 
 }
