@@ -30,7 +30,7 @@ class WxxcxServiceProvider extends ServiceProvider
     {
         $this->app->bind('wxxcx', function ()
         {
-            return new WeApp(config('weapp.appid', ''),config('weapp.secret', ''),storage_path('app/weapp/'));
+            return new WeApp();
         });
 
         $this->app->alias('wxxcx', WeApp::class);

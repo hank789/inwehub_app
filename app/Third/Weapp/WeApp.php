@@ -23,11 +23,11 @@ class WeApp
 	private $instance;
 	private $sessionKey;
 
-	public function __construct($appid,$secret,$token_cache_dir){
-		$this->appid = $appid;
-		$this->secret = $secret;
+	public function __construct(){
+		$this->appid = config('weapp.appid', '');
+		$this->secret = config('weapp.secret', '');
 		$this->instance = [];
-		SimpleCache::init($token_cache_dir);
+		SimpleCache::init(storage_path('app/weapp/'));
 	}
 
 	/**
