@@ -6,9 +6,12 @@
  */
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
+use App\Exceptions\ApiException;
 use App\Models\User;
 use App\Models\UserOauth;
-use App\Third\Weapp\Wxxcx;
+use App\Models\Weapp\Demand;
+use App\Services\RateLimiter;
+use App\Third\Weapp\WeApp;
 use Illuminate\Http\Request;
 use App\Services\Registrar;
 use Tymon\JWTAuth\JWTAuth;
@@ -16,7 +19,7 @@ use Tymon\JWTAuth\JWTAuth;
 class UserController extends controller {
 
     //小程序登录获取用户信息
-    public function getWxUserInfo(Request $request,JWTAuth $JWTAuth,Registrar $registrar, Wxxcx $wxxcx)
+    public function getWxUserInfo(Request $request,JWTAuth $JWTAuth,Registrar $registrar, WeApp $wxxcx)
     {
         //code 在小程序端使用 wx.login 获取
         $code = request('code', '');
@@ -107,6 +110,29 @@ class UserController extends controller {
             $user->name = $oauth->nickname;
         }
         return self::createJsonData(true,['status'=>$status,'avatarUrl'=>$oauth->avatar,'title'=>$user->title,'company'=>$user->company,'name'=>$user->name,'mobile'=>$user->mobile,'email'=>$user->email]);
+    }
+
+    public function getQrCode(Request $request,WeApp $wxxcx){
+        $validateRules = [
+            'object_type'=> 'required|integer',
+            'object_id'=> 'required|integer',
+
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        if(RateLimiter::instance()->increase('weapp_get_qrcode',$user->id,6,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        switch ($request->input('object_type')) {
+            case 1:
+                //获取需求
+                $demand = Demand::findOrFail($request->input('object_id'));
+                $page = 'pages/detail/detail';
+                $scene = 'demand_id='.$demand->id;
+                break;
+        }
+        $res_array = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+        return self::createJsonData(true,$res_array);
     }
 
 }
