@@ -19,6 +19,7 @@ class SessionKey extends BaseApi
 			'js_code'=>$code,
 			'grant_type'=>'authorization_code',
 		);
-		return file_get_contents($url.'?'.http_build_query($param));
+		$output = file_get_contents($url.'?'.http_build_query($param));
+		return json_decode($output,JSON_UNESCAPED_UNICODE);
 	}
 }
