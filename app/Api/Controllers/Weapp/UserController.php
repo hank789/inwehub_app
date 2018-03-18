@@ -119,10 +119,6 @@ class UserController extends controller {
 
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
-        if(RateLimiter::instance()->increase('weapp_get_qrcode',$user->id,6,1)){
-            throw new ApiException(ApiException::VISIT_LIMIT);
-        }
         switch ($request->input('object_type')) {
             case 1:
                 //获取需求
