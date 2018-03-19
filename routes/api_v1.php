@@ -426,6 +426,8 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp'], function() {
     Route::post('user/info','UserController@getUserInfo');
     //获取二维码
     Route::post('user/getQrCode','UserController@getQrCode');
+    //获取未读消息列表
+    Route::post('user/getMessageRooms','UserController@getMessageRooms');
     //发布需求
     Route::post('demand/store','DemandController@store')->middleware(['jwt.auth','ban.user']);
     //修改需求

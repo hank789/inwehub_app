@@ -145,8 +145,37 @@ class UserController extends controller {
         return self::createJsonData(true,['qrcode'=>$res_array]);
     }
 
-    public function getMessageRooms(){
-
+    public function getMessageRooms(Request $request){
+        $user = $request->user();
+        $demand_ids = Demand::where('user_id',$user->id)->get()->pluck('id')->toArray();
+        //获取未读消息数
+        $total_unread = 0;
+        $im_rooms = Room::where('source_type',Demand::class)->where(function ($query) use ($user,$demand_ids) {$query->where('user_id',$user->id)->orWhereIn('source_id',$demand_ids);})->get();
+        $im_list = [];
+        foreach ($im_rooms as $im_room) {
+            $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+            $total_unread += $im_count;
+            $last_message = MessageRoom::where('room_id',$im_room->id)->orderBy('id','desc')->first();
+            $demand = Demand::find($im_room->source_id);
+            $contact = User::find($im_room->user_id==$user->id?$demand->user_id:$im_room->user_id);
+            $item = [
+                'unread_count' => $im_count,
+                'avatar'       => $contact->avatar,
+                'name'         => $contact->name,
+                'room_id'      => $im_room->id,
+                'contact_id'   => $contact->id,
+                'contact_uuid' => $contact->uuid,
+                'last_message' => [
+                    'id' => $last_message?$last_message->message_id:0,
+                    'text' => '',
+                    'data'  => $last_message?$last_message->message->data:['text'=>'','img'=>''],
+                    'read_at' => $last_message?$last_message->message->read_at:'',
+                    'created_at' => $last_message?(string)$last_message->created_at:''
+                ]
+            ];
+            $im_list[] = $item;
+        }
+        return self::createJsonData(true,$im_list);
     }
 
 }
