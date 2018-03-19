@@ -7,6 +7,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\CloseDemand;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
@@ -39,6 +40,12 @@ class DemandController extends controller {
                 foreach ($list as $item) {
                     $demand = Demand::find($item->demand_id);
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->count();
+                    $total_unread = 0;
+                    foreach ($rooms as $im_room) {
+                        $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+                        $total_unread += $im_count;
+                    }
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
@@ -51,6 +58,9 @@ class DemandController extends controller {
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
                         'status' => $demand->status,
+                        'view_number'  => $demand->views,
+                        'communicate_number' => $rooms,
+                        'unread_number' => $total_unread,
                         'created_time'=>$demand->created_at->diffForHumans()
                     ];
                 }
@@ -59,6 +69,12 @@ class DemandController extends controller {
                 $list = Demand::where('user_id',$user->id)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $demand) {
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->count();
+                    $total_unread = 0;
+                    foreach ($rooms as $im_room) {
+                        $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+                        $total_unread += $im_count;
+                    }
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
@@ -71,6 +87,9 @@ class DemandController extends controller {
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
                         'status' => $demand->status,
+                        'view_number'  => $demand->views,
+                        'communicate_number' => $rooms,
+                        'unread_number' => $total_unread,
                         'created_time'=>$demand->created_at->diffForHumans()
                     ];
                 }
@@ -149,10 +168,12 @@ class DemandController extends controller {
         if(RateLimiter::instance()->increase('weapp_create_demand',$user->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        $address = $request->input('address');
+
         $demand = Demand::create([
             'user_id' => $user->id,
             'title' => $request->input('title'),
-            'address' => $request->input('address'),
+            'address' => is_array($address)?json_encode($address):$address,
             'salary' => $request->input('salary'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
@@ -189,9 +210,11 @@ class DemandController extends controller {
         if ($demand->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        $address = $request->input('address');
+
         $demand->update([
             'title' => $request->input('title'),
-            'address' => $request->input('address'),
+            'address' => is_array($address)?json_encode($address):$address,
             'salary' => $request->input('salary'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
