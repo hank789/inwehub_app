@@ -7,6 +7,8 @@
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Exceptions\ApiException;
+use App\Models\IM\MessageRoom;
+use App\Models\IM\Room;
 use App\Models\User;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
@@ -93,10 +95,18 @@ class UserController extends controller {
     }
 
     public function getUserInfo(Request $request,JWTAuth $JWTAuth){
+        $total_unread = 0;
         try {
             $user = $JWTAuth->parseToken()->authenticate();
             $oauth = $user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
             $status = $oauth->status;
+            $demand_ids = Demand::where('user_id',$user->id)->get()->pluck('id')->toArray();
+            //获取未读消息数
+            $im_rooms = Room::where('source_type',Demand::class)->where(function ($query) use ($user,$demand_ids) {$query->where('user_id',$user->id)->orWhereIn('source_id',$demand_ids);})->get();
+            foreach ($im_rooms as $im_room) {
+                $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+                $total_unread += $im_count;
+            }
         } catch (\Exception $e) {
             $oauth = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
                 ->where('openid',$request->input('openid'))->first();
@@ -109,7 +119,7 @@ class UserController extends controller {
             $user->company = '';
             $user->name = $oauth->nickname;
         }
-        return self::createJsonData(true,['status'=>$status,'avatarUrl'=>$oauth->avatar,'title'=>$user->title,'company'=>$user->company,'name'=>$user->name,'mobile'=>$user->mobile,'email'=>$user->email]);
+        return self::createJsonData(true,['total_unread'=>$total_unread,'status'=>$status,'avatarUrl'=>$oauth->avatar,'title'=>$user->title,'company'=>$user->company,'name'=>$user->name,'mobile'=>$user->mobile,'email'=>$user->email]);
     }
 
     public function getQrCode(Request $request,WeApp $wxxcx){
@@ -133,6 +143,10 @@ class UserController extends controller {
             return self::createJsonData(true,['qrcode'=>config('image.user_default_avatar')]);
         }
         return self::createJsonData(true,['qrcode'=>$res_array]);
+    }
+
+    public function getMessageRooms(){
+
     }
 
 }
