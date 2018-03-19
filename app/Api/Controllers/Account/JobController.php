@@ -65,6 +65,9 @@ class JobController extends Controller {
         $this->validate($request,$this->validateRules);
         $user = $request->user();
         $data = $request->all();
+        if (empty($request->input('description'))) {
+            $data['description'] = '';
+        }
         if($data['begin_time'] > $data['end_time'] && $data['end_time'] != '至今'){
             throw new ApiException(ApiException::USER_DATE_RANGE_INVALID);
         }
