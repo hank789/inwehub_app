@@ -120,7 +120,7 @@ class UserController extends controller {
             $user->company = '';
             $user->name = $oauth->nickname;
         }
-        return self::createJsonData(true,['total_unread'=>$total_unread,'status'=>$status,'avatarUrl'=>$oauth->avatar,'title'=>$user->title,'company'=>$user->company,'name'=>$user->name,'mobile'=>$user->mobile,'email'=>$user->email]);
+        return self::createJsonData(true,['id'=>$user->id,'total_unread'=>$total_unread,'status'=>$status,'avatarUrl'=>$oauth->avatar,'title'=>$user->title,'company'=>$user->company,'name'=>$user->name,'mobile'=>$user->mobile,'email'=>$user->email]);
     }
 
     public function getQrCode(Request $request,WeApp $wxxcx){
