@@ -16,6 +16,7 @@ use App\Services\RateLimiter;
 use App\Third\Weapp\WeApp;
 use Illuminate\Http\Request;
 use App\Services\Registrar;
+use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\JWTAuth;
 
 class UserController extends controller {
@@ -149,12 +150,10 @@ class UserController extends controller {
         $user = $request->user();
         $demand_ids = Demand::where('user_id',$user->id)->get()->pluck('id')->toArray();
         //获取未读消息数
-        $total_unread = 0;
-        $im_rooms = Room::where('source_type',Demand::class)->where(function ($query) use ($user,$demand_ids) {$query->where('user_id',$user->id)->orWhereIn('source_id',$demand_ids);})->get();
+        $im_rooms = Room::where('source_type',Demand::class)->where(function ($query) use ($user,$demand_ids) {$query->where('user_id',$user->id)->orWhereIn('source_id',$demand_ids);})->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $im_list = [];
         foreach ($im_rooms as $im_room) {
             $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
-            $total_unread += $im_count;
             $last_message = MessageRoom::where('room_id',$im_room->id)->orderBy('id','desc')->first();
             $demand = Demand::find($im_room->source_id);
             $contact = User::find($im_room->user_id==$user->id?$demand->user_id:$im_room->user_id);
@@ -175,7 +174,10 @@ class UserController extends controller {
             ];
             $im_list[] = $item;
         }
-        return self::createJsonData(true,$im_list);
+        $return = $im_rooms->toArray();
+        $return['data'] = $im_list;
+
+        return self::createJsonData(true,$return);
     }
 
 }

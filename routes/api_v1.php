@@ -427,7 +427,9 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp'], function() {
     //获取二维码
     Route::post('user/getQrCode','UserController@getQrCode');
     //获取未读消息列表
-    Route::post('user/getMessageRooms','UserController@getMessageRooms');
+    Route::post('user/getMessageRooms','UserController@getMessageRooms')->middleware(['jwt.auth','ban.user']);
+    //获取需求联系人消息列表
+    Route::post('demand/getRooms','DemandController@getRooms')->middleware(['jwt.auth','ban.user']);
     //发布需求
     Route::post('demand/store','DemandController@store')->middleware(['jwt.auth','ban.user']);
     //修改需求
