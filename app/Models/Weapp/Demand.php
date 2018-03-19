@@ -58,6 +58,10 @@ class Demand extends Model
     const STATUS_CLOSED = 3;
     const STATUS_EXPIRED = 4;
 
+    protected $casts = [
+        'address' => 'json'
+    ];
+
 
     public function getIndustryName(){
         $tag = Tag::find($this->industry);

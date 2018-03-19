@@ -173,7 +173,7 @@ class DemandController extends controller {
         $demand = Demand::create([
             'user_id' => $user->id,
             'title' => $request->input('title'),
-            'address' => is_array($address)?json_encode($address):$address,
+            'address' => $address,
             'salary' => $request->input('salary'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
@@ -214,7 +214,7 @@ class DemandController extends controller {
 
         $demand->update([
             'title' => $request->input('title'),
-            'address' => is_array($address)?json_encode($address):$address,
+            'address' => $address,
             'salary' => $request->input('salary'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
