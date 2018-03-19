@@ -40,7 +40,7 @@ class DemandController extends controller {
                 foreach ($list as $item) {
                     $demand = Demand::find($item->demand_id);
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
-                    $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->count();
+                    $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
                     $total_unread = 0;
                     foreach ($rooms as $im_room) {
                         $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
@@ -59,7 +59,7 @@ class DemandController extends controller {
                         'salary' => $demand->salary,
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
-                        'communicate_number' => $rooms,
+                        'communicate_number' => $rooms->count(),
                         'unread_number' => $total_unread,
                         'created_time'=>$demand->created_at->diffForHumans()
                     ];
@@ -69,7 +69,7 @@ class DemandController extends controller {
                 $list = Demand::where('user_id',$user->id)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $demand) {
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
-                    $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->count();
+                    $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
                     $total_unread = 0;
                     foreach ($rooms as $im_room) {
                         $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
@@ -88,7 +88,7 @@ class DemandController extends controller {
                         'salary' => $demand->salary,
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
-                        'communicate_number' => $rooms,
+                        'communicate_number' => $rooms->count(),
                         'unread_number' => $total_unread,
                         'created_time'=>$demand->created_at->diffForHumans()
                     ];
