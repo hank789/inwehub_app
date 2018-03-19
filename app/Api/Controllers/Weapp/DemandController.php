@@ -36,7 +36,7 @@ class DemandController extends controller {
         $data = [];
         switch ($type){
             case 'all':
-                $list = DemandUserRel::where('demand_user_rel.user_id',$user->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->where('status',Demand::STATUS_PUBLISH)->select('demand_user_rel.*')->orderBy('demand_user_rel.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+                $list = DemandUserRel::where('demand_user_rel.user_id',$user->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->select('demand_user_rel.*')->orderBy('status','ASC')->orderBy('demand.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $item) {
                     $demand = Demand::find($item->demand_id);
                     $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
