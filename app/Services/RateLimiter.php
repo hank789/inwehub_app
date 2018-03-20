@@ -76,7 +76,7 @@ class RateLimiter extends Singleton
     }
 
     public function hGetAll($event){
-        return $this->client->hGetAll($event);
+        return $this->client->hGetAll('inwehub:'.$event);
     }
 
     public function sAdd($key,$value,$expire = 60) {

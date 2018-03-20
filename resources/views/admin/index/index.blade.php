@@ -333,8 +333,8 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <ul class="taglist-inline multi">
-                                    @foreach($searchCount as $search)
-                                        <li class="tagPopup"><a class="tag" target="_blank" data-toggle="popover"  href="#">{{ $searchCount['tag_name'].'('.$searchCount['total_num'].')' }}</a></li>
+                                    @foreach($searchCount as $word=>$count)
+                                        <li class="tagPopup"><a class="tag" target="_blank" data-toggle="popover"  href="#">{{ $word.'('.$count.')' }}</a></li>
                                     @endforeach
                                 </ul>
                             </div>
