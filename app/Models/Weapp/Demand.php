@@ -64,7 +64,7 @@ class Demand extends Model
 
     public function getIndustryName(){
         $tag = Tag::find($this->industry);
-        return $tag->name;
+        return $tag?$tag->name:'';
     }
 
     public function getRoomCount(){

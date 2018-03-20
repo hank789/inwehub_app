@@ -276,6 +276,7 @@ class DemandController extends controller {
         }
         $return = $im_rooms->toArray();
         $return['data'] = $im_list;
+        $return['demand'] = $demand->toArray();
 
         return self::createJsonData(true,$return);
     }
