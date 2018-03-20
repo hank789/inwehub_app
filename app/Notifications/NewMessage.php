@@ -57,7 +57,6 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                 $room = Room::find($this->room_id);
                 switch ($room->source_type) {
                     case Demand::class:
-                        $via[] = WeappNoticeChannel::class;
                         return $via;
                         break;
                 }
