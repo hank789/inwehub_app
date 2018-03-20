@@ -135,6 +135,7 @@ class IndexController extends AdminController
             //搜索统计
             $searchCount = RateLimiter::instance()->hGetAll('search-word-count');
             arsort($searchCount);
+            $searchCount = array_slice($searchCount,0,100,true);
             return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
                     'totalAnswerNum',
                     'userInfoCompleteTime',

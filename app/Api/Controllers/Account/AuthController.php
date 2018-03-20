@@ -359,7 +359,9 @@ class AuthController extends Controller
         if (!$oauthData){
             $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)
                 ->where('openid',$openid)->first();
-            if (!$oauthData) throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
+            if (!$oauthData) {
+                throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
+            }
         }
         $user = User::where('mobile',$mobile)->first();
 

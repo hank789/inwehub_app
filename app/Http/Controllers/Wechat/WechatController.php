@@ -125,8 +125,7 @@ class WechatController extends Controller
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
             ->where('openid',$userInfo['id'])->first();
         if (!$oauthData && $unionid) {
-            $oauthAppData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)
-                ->where('unionid',$unionid)->first();
+            $oauthAppData = UserOauth::where('unionid',$unionid)->first();
             if ($oauthAppData) {
                 //如果已经用app微信登陆过了
                 $oauthData = UserOauth::create(
