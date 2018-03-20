@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Channels\PushChannel;
 use App\Channels\SlackChannel;
+use App\Channels\WeappNoticeChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\IM\Message;
 use App\Models\IM\Room;
@@ -56,6 +57,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                 $room = Room::find($this->room_id);
                 switch ($room->source_type) {
                     case Demand::class:
+                        $via[] = WeappNoticeChannel::class;
                         return $via;
                         break;
                 }
@@ -135,6 +137,35 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             'keyword3' => $this->message->data['text']?:'[图片]',
             'remark'   => '请点击查看详情！',
             'template_id' => $template_id,
+            'target_url' => config('app.mobile_url').'#/chat/'.$this->message->user->id
+        ];
+    }
+
+    public function toWeappNotice($notifiable) {
+        $room = Room::find($this->room_id);
+        $data = [];
+        switch ($room->source_type) {
+            case Demand::class:
+                $demand = Demand::find($room->source_id);
+                $data = [
+                    'keyword1' => $demand->title,
+                    'keyword2' => $this->message->data['text']?:'[图片]',
+                    'keyword3' => $this->message->user->name,
+                    'keyword4' => (string) $this->message->created_at,
+                ];
+                $page = 'pages/chat/chat?id='.$room->id;
+                break;
+        }
+        if (empty($data)) return null;
+        $template_id = 'DzHFhepcKwsjfwhqI6UBofyZKCfyEJih2e7iuUOB_P0';
+        if (config('app.env') != 'production') {
+            $template_id = 'DzHFhepcKwsjfwhqI6UBofyZKCfyEJih2e7iuUOB_P0';
+        }
+        return [
+            'data'     => $data,
+            'template_id' => $template_id,
+            'form_id' => 'form_id',
+            'page'    => $page,
             'target_url' => config('app.mobile_url').'#/chat/'.$this->message->user->id
         ];
     }
