@@ -483,6 +483,16 @@ class AuthController extends Controller
             event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
             return static::createJsonData(true,['token'=>$token]);
         }
+        //手机号系统不存在
+        if ($oauthData->user_id && !$user) {
+            $loginUser = User::find($oauthData->user_id);
+            $loginUser->mobile = $mobile;
+            $loginUser->save();
+            $token = $JWTAuth->fromUser($loginUser);
+            //登陆事件通知
+            event(new SystemNotify('用户登录: '.formatSlackUser($loginUser).';设备:微信小程序',$request->all()));
+            return static::createJsonData(true,['token'=>$token]);
+        }
         throw new ApiException(ApiException::BAD_REQUEST);
     }
 

@@ -6,6 +6,7 @@
  */
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
+use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
@@ -70,6 +71,28 @@ class UserController extends controller {
             );
         } else {
             $user_id = $oauthData->user_id;
+        }
+        //如系统中不存在该用户，创建新用户
+        if (empty($user_id)) {
+            $registrar = new Registrar();
+            $new_user = $registrar->create([
+                'name' => $oauthData->nickname,
+                'email' => null,
+                'mobile' => null,
+                'rc_uid' => 0,
+                'title'  => '',
+                'company' => '',
+                'gender' => $return['gender'],
+                'password' => time(),
+                'status' => 1,
+                'source' => User::USER_SOURCE_WEAPP,
+            ]);
+            $user_id = $new_user->id;
+            $oauthData->user_id = $new_user->id;
+            $oauthData->save();
+            $new_user->attachRole(2); //默认注册为普通用户角色
+            $new_user->avatar = $oauthData->avatar;
+            $new_user->save();
         }
         $info = [
             'id' => $user_id,
