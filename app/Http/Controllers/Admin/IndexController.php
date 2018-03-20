@@ -19,6 +19,7 @@ use App\Models\Taggable;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserData;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -131,6 +132,12 @@ class IndexController extends AdminController
             $totalPayForView = Order::where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->count();
             //累计收入总数
             $totalFeeMoney = Settlement::where('status',Settlement::SETTLEMENT_STATUS_SUCCESS)->sum('actual_fee');
+            //搜索统计
+            $searchCount = RateLimiter::instance()->hGetAll('search-word-count');
+            usort($searchCount,function ($a,$b) {
+                if ($a==$b) return 0;
+                return ($a<$b)?-1:1;
+            });
             return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
                     'totalAnswerNum',
                     'userInfoCompleteTime',
@@ -156,6 +163,7 @@ class IndexController extends AdminController
                     'hotTags',
                     'totalPayForView',
                     'totalFeeMoney',
+                    'searchCount',
                     'userChart','questionChart','systemInfo')
             ;
         });

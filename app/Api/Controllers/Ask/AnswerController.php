@@ -460,6 +460,7 @@ class AnswerController extends Controller
         $list = [];
         foreach($answers as $answer){
             $question = Question::find($answer->question_id);
+            if ($question->question_type == 1 && $question->is_recommend != 1) continue;
             $answer_promise_time = '';
 
             $list[] = [
