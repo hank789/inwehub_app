@@ -134,10 +134,7 @@ class IndexController extends AdminController
             $totalFeeMoney = Settlement::where('status',Settlement::SETTLEMENT_STATUS_SUCCESS)->sum('actual_fee');
             //搜索统计
             $searchCount = RateLimiter::instance()->hGetAll('search-word-count');
-            usort($searchCount,function ($a,$b) {
-                if ($a==$b) return 0;
-                return ($a<$b)?-1:1;
-            });
+            arsort($searchCount);
             return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
                     'totalAnswerNum',
                     'userInfoCompleteTime',
