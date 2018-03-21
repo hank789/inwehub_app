@@ -121,6 +121,9 @@ class AuthController extends Controller
                     }
                 }
                 break;
+            case 'weapp_register':
+                //微信小程序验证码
+                break;
             default:
                 if(!$user){
                     throw new ApiException(ApiException::USER_NOT_FOUND);
