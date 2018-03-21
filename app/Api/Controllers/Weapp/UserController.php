@@ -73,7 +73,7 @@ class UserController extends controller {
             $user_id = $oauthData->user_id;
         }
         //如系统中不存在该用户，创建新用户
-        if (empty($user_id)) {
+        if (empty($user_id) && false) {
             $registrar = new Registrar();
             $new_user = $registrar->create([
                 'name' => $oauthData->nickname,
