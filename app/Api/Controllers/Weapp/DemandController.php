@@ -35,6 +35,7 @@ class DemandController extends controller {
         }
         $type = $request->input('type');
         $data = [];
+        $closedId = 0;
         switch ($type){
             case 'all':
                 $list = DemandUserRel::where('demand_user_rel.user_id',$user->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->select('demand_user_rel.*')->orderBy('status','ASC')->orderBy('demand.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
@@ -46,6 +47,9 @@ class DemandController extends controller {
                     foreach ($rooms as $im_room) {
                         $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
                         $total_unread += $im_count;
+                    }
+                    if ($closedId == 0 && $demand->status == Demand::STATUS_CLOSED) {
+                        $closedId = $demand->id;
                     }
                     $data[] = [
                         'id'    => $demand->id,
@@ -76,6 +80,9 @@ class DemandController extends controller {
                         $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
                         $total_unread += $im_count;
                     }
+                    if ($closedId == 0 && $demand->status == Demand::STATUS_CLOSED) {
+                        $closedId = $demand->id;
+                    }
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
@@ -98,6 +105,7 @@ class DemandController extends controller {
         }
         $return = $list->toArray();
         $return['data'] = $data;
+        $return['closedDemandId'] = $closedId;
         return self::createJsonData(true,$return);
     }
 
