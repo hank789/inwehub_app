@@ -23,6 +23,6 @@ class DemandUserRel extends Model
 {
     use BelongsToUserTrait;
     protected $table = 'demand_user_rel';
-    protected $fillable = ['demand_id', 'user_id'];
+    protected $fillable = ['demand_id', 'user_oauth_id'];
 
 }
