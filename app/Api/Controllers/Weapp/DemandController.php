@@ -15,7 +15,6 @@ use App\Models\Weapp\Demand;
 use App\Models\Weapp\DemandUserRel;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\JWTAuth;
@@ -200,7 +199,7 @@ class DemandController extends controller {
             'expired_at' => strtotime('+7 days'),
         ]);
         DemandUserRel::create([
-            'user_id'=>$user->id,
+            'user_oauth_id'=>$oauth->id,
             'demand_id'=>$demand->id
         ]);
         $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime('+7 days'))));
