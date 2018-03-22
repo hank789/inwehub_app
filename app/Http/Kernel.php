@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\GetUserFromToken;
+use App\Http\Middleware\GetWeappUserFromToken;
 use App\Http\Middleware\RefreshToken;
 use App\Http\Middleware\WeappUserAuth;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -69,6 +70,7 @@ class Kernel extends HttpKernel
 
         'jwt.auth' => GetUserFromToken::class,
         'jwt.refresh' => RefreshToken::class,
-        'jwt.weappAuth' => WeappUserAuth::class
+        'jwt.weappAuth' => GetWeappUserFromToken::class,
+        'jwt.weappConfig' => WeappUserAuth::class,
     ];
 }

@@ -419,27 +419,27 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','nam
 
 
 //微信小程序
-Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.weappAuth']], function() {
+Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function() {
     //获取用户微信信息
     Route::post('user/wxinfo','UserController@getWxUserInfo');
     //获取用户信息
-    Route::post('user/info','UserController@getUserInfo')->middleware(['jwt.auth']);
+    Route::post('user/info','UserController@getUserInfo')->middleware(['jwt.weappAuth']);
     //获取二维码
     Route::post('user/getQrCode','UserController@getQrCode');
     //获取未读消息列表
-    Route::post('user/getMessageRooms','UserController@getMessageRooms')->middleware(['jwt.auth']);
+    Route::post('user/getMessageRooms','UserController@getMessageRooms')->middleware(['jwt.weappAuth']);
     //获取需求联系人消息列表
-    Route::post('demand/getRooms','DemandController@getRooms')->middleware(['jwt.auth']);
+    Route::post('demand/getRooms','DemandController@getRooms')->middleware(['jwt.weappAuth']);
     //发布需求
-    Route::post('demand/store','DemandController@store')->middleware(['jwt.auth']);
+    Route::post('demand/store','DemandController@store')->middleware(['jwt.weappAuth']);
     //修改需求
-    Route::post('demand/update','DemandController@update')->middleware(['jwt.auth']);
+    Route::post('demand/update','DemandController@update')->middleware(['jwt.weappAuth']);
     //关闭需求
-    Route::post('demand/close','DemandController@close')->middleware(['jwt.auth']);
+    Route::post('demand/close','DemandController@close')->middleware(['jwt.weappAuth']);
     //列表
-    Route::post('demand/list','DemandController@showList')->middleware(['jwt.auth']);
+    Route::post('demand/list','DemandController@showList')->middleware(['jwt.weappAuth']);
     //需求详情
-    Route::post('demand/detail','DemandController@detail')->middleware(['jwt.auth']);
+    Route::post('demand/detail','DemandController@detail')->middleware(['jwt.weappAuth']);
 });
 
 Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {

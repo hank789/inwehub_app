@@ -9,11 +9,12 @@ use App\Traits\ApiValidatesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use App\Traits\CreateJsonResponseData;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 
 class Controller extends BaseController
 {
-    use DispatchesJobs, ApiValidatesRequests, CreateJsonResponseData, \App\Traits\BaseController;
+    use AuthorizesRequests, DispatchesJobs, ApiValidatesRequests, CreateJsonResponseData, \App\Traits\BaseController;
 
 }
