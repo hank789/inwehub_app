@@ -425,7 +425,7 @@ class AuthController extends Controller
         if(RateLimiter::instance()->increase('userRegister',$mobile,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
-        $oauthData = $request->user();
+        $oauthData = $JWTAuth->parseToken()->toUser();
 
         //验证手机验证码
         $code_cache = Cache::get(SendPhoneMessage::getCacheKey('weapp_register',$mobile));

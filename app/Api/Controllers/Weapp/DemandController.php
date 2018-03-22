@@ -23,12 +23,12 @@ use Tymon\JWTAuth\JWTAuth;
 class DemandController extends controller {
 
 
-    public function showList(Request $request){
+    public function showList(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'type'   => 'required|in:all,mine'
         ];
         $this->validate($request,$validateRules);
-        $oauth = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
         \Log::info('oauth',[$oauth]);
         if ($oauth->user_id) {
             $user = $oauth->user;
@@ -117,7 +117,7 @@ class DemandController extends controller {
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        $oauth = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {
@@ -166,7 +166,7 @@ class DemandController extends controller {
         return self::createJsonData(true,$data);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request,JWTAuth $JWTAuth) {
         $validateRules = [
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
@@ -177,7 +177,7 @@ class DemandController extends controller {
             'description' => 'required|max:2000',
         ];
         $this->validate($request,$validateRules);
-        $oauth = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {
@@ -208,7 +208,7 @@ class DemandController extends controller {
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
-    public function update(Request $request){
+    public function update(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer',
             'title'=> 'required|max:255',
@@ -220,7 +220,7 @@ class DemandController extends controller {
             'description' => 'required|max:2000',
         ];
         $this->validate($request,$validateRules);
-        $oauth = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {
@@ -247,12 +247,12 @@ class DemandController extends controller {
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
-    public function close(Request $request){
+    public function close(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        $oauth = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {
@@ -270,12 +270,12 @@ class DemandController extends controller {
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
-    public function getRooms(Request $request){
+    public function getRooms(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        $oauth = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {

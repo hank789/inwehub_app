@@ -184,8 +184,8 @@ class UserController extends controller {
         return self::createJsonData(true,['qrcode'=>$res_array]);
     }
 
-    public function getMessageRooms(Request $request){
-        $oauth = $request->user();
+    public function getMessageRooms(Request $request,JWTAuth $JWTAuth){
+        $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {

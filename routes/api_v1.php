@@ -32,7 +32,7 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     //微信公众号注册
     Route::post('wxgzh/register', 'AuthController@registerWeiXinGzh');
     //微信小程序注册
-    Route::post('weapp/register', 'AuthController@registerWeapp')->middleware(['jwt.weappAuth','jwt.auth']);
+    Route::post('weapp/register', 'AuthController@registerWeapp')->middleware(['jwt.weappConfig','jwt.weappAuth']);
 });
 
 Route::group(['namespace'=>'Share'], function() {
