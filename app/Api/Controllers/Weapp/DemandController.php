@@ -15,15 +15,15 @@ use App\Models\Weapp\Demand;
 use App\Models\Weapp\DemandUserRel;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\JWTAuth;
 
 class DemandController extends controller {
 
 
-    public function showList(Request $request,Auth $auth){
+    public function showList(Request $request,Guard $auth){
         $validateRules = [
             'type'   => 'required|in:all,mine'
         ];
