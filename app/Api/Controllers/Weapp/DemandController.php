@@ -124,15 +124,14 @@ class DemandController extends controller {
         }
         $demand = Demand::findOrFail($request->input('id'));
         $demand->increment('views');
+        $is_author = ($demand->user_id == $user->id ? true:false);
         $demand_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
-        $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
-        $candidates = [];
-        foreach ($rooms as $room) {
-            $candidate = $room->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
-            $candidates[] = [
-                'room_id' => $room->id,
-                'user_avatar' => $candidate->avatar
-            ];
+        $im_count = 0;
+        if ($is_author) {
+            $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
+            foreach ($rooms as $room) {
+                $im_count += MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+            }
         }
         $data = [
             'publisher_user_id'=>$demand_oauth->user_id,
@@ -142,7 +141,7 @@ class DemandController extends controller {
             'publisher_company'=>$demand->user->company,
             'publisher_email'=>$demand->user->email,
             'publisher_phone' => $demand->user->mobile,
-            'is_author' => $demand->user_id == $user->id ? true:false,
+            'is_author' => $is_author,
             'title' => $demand->title,
             'address' => $demand->address,
             'salary' => $demand->salary,
@@ -161,7 +160,7 @@ class DemandController extends controller {
                 'demand_id'=>$demand->id
             ]);
         }
-        $data['candidates'] = $candidates;
+        $data['im_count'] = $im_count;
         return self::createJsonData(true,$data);
     }
 
