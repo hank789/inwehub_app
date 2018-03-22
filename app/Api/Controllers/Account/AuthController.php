@@ -410,7 +410,6 @@ class AuthController extends Controller
     //检查微信小程序注册
     public function registerWeapp(Request $request,JWTAuth $JWTAuth,Registrar $registrar)
     {
-
         /*表单数据校验*/
         $validateRules = [
             'mobile'  => 'required|cn_phone',
@@ -419,7 +418,6 @@ class AuthController extends Controller
             'company' => 'required',
             'email'   => 'required|email',
             'code'    => 'required',
-            'openid'  => 'required'
         ];
 
         $this->validate($request,$validateRules);
@@ -427,18 +425,13 @@ class AuthController extends Controller
         if(RateLimiter::instance()->increase('userRegister',$mobile,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        $oauthData = $request->user();
 
         //验证手机验证码
         $code_cache = Cache::get(SendPhoneMessage::getCacheKey('weapp_register',$mobile));
         $code = $request->input('code');
         if($code_cache != $code){
             throw new ApiException(ApiException::ARGS_YZM_ERROR);
-        }
-        $openid = $request->input('openid');
-        $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
-            ->where('openid',$openid)->first();
-        if (!$oauthData){
-            throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
         }
         $user = User::where('mobile',$mobile)->first();
 

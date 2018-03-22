@@ -72,7 +72,7 @@ return [
 
         'weapp_users' => [
              'driver' => 'database',
-             'table' => App\Models\User::class,
+             'table' => App\Models\UserOauth::class,
          ],
     ],
 

@@ -96,6 +96,7 @@ class UserController extends controller {
         }
         $info = [
             'id' => $user_id,
+            'oauth_id' => $oauthData->id,
             'status'=>$oauthData->status,
             'avatarUrl'=>$oauthData->avatar,
             'name'=>$oauthData->nickname,
@@ -103,10 +104,10 @@ class UserController extends controller {
             'mobile' => '',
             'email'  => ''
         ];
+        $token = $JWTAuth->fromUser($oauthData);
 
-        if ($oauthData && $oauthData->user_id) {
+        if ($oauthData->user_id) {
             $user = User::find($oauthData->user_id);
-            $token = $JWTAuth->fromUser($user);
             $info['id'] = $user->id;
             $info['title'] = $user->title;
             $info['company'] = $user->company;
@@ -118,32 +119,46 @@ class UserController extends controller {
         return self::createJsonData(true,['token'=>$token,'userInfo'=>$info,'openid'=>$userInfo['openid']]);
     }
 
-    public function getUserInfo(Request $request,JWTAuth $JWTAuth){
+    public function getUserInfo(Request $request){
         $total_unread = 0;
-        try {
-            $user = $JWTAuth->parseToken()->authenticate();
-            $oauth = $user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
-            $status = $oauth->status;
-            $demand_ids = Demand::where('user_id',$user->id)->get()->pluck('id')->toArray();
+        $oauth = $request->user();
+        $status = $oauth->status;
+        if ($oauth->user_id) {
+            $demand_ids = Demand::where('user_id',$oauth->user_id)->get()->pluck('id')->toArray();
+            $user = $oauth->user;
             //获取未读消息数
             $im_rooms = Room::where('source_type',Demand::class)->where(function ($query) use ($user,$demand_ids) {$query->where('user_id',$user->id)->orWhereIn('source_id',$demand_ids);})->get();
             foreach ($im_rooms as $im_room) {
                 $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
                 $total_unread += $im_count;
             }
-        } catch (\Exception $e) {
-            $oauth = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
-                ->where('openid',$request->input('openid'))->first();
-            $user = new \stdClass();
-            $status = 0;
-            $user->id = 0;
-            $user->mobile = '';
-            $user->email = '';
-            $user->title = '';
-            $user->company = '';
-            $user->name = $oauth->nickname;
+            $info = [
+                'id'=>$oauth->user_id,
+                'oauth_id' => $oauth->id,
+                'total_unread'=>$total_unread,
+                'status'=>$status,
+                'avatarUrl'=>$oauth->avatar,
+                'title'=>$user->title,
+                'company'=>$user->company,
+                'name'=>$user->name,
+                'mobile'=>$user->mobile,
+                'email'=>$user->email
+            ];
+        } else {
+            $info = [
+                'id'=>0,
+                'oauth_id' => $oauth->id,
+                'total_unread'=>$total_unread,
+                'status'=>$status,
+                'avatarUrl'=>$oauth->avatar,
+                'title'=>'',
+                'company'=>'',
+                'name'=>$oauth->nickname,
+                'mobile'=>'',
+                'email'=>''
+            ];
         }
-        return self::createJsonData(true,['id'=>$user->id,'total_unread'=>$total_unread,'status'=>$status,'avatarUrl'=>$oauth->avatar,'title'=>$user->title,'company'=>$user->company,'name'=>$user->name,'mobile'=>$user->mobile,'email'=>$user->email]);
+        return self::createJsonData(true,$info);
     }
 
     public function getQrCode(Request $request,WeApp $wxxcx){
@@ -170,7 +185,13 @@ class UserController extends controller {
     }
 
     public function getMessageRooms(Request $request){
-        $user = $request->user();
+        $oauth = $request->user();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $demand_ids = Demand::where('user_id',$user->id)->get()->pluck('id')->toArray();
         //获取未读消息数
         $im_rooms = Room::where('source_type',Demand::class)->where(function ($query) use ($user,$demand_ids) {$query->where('user_id',$user->id)->orWhereIn('source_id',$demand_ids);})->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));

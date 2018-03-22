@@ -22,14 +22,15 @@ use Tymon\JWTAuth\JWTAuth;
 class DemandController extends controller {
 
 
-    public function showList(Request $request,JWTAuth $JWTAuth){
+    public function showList(Request $request){
         $validateRules = [
             'type'   => 'required|in:all,mine'
         ];
         $this->validate($request,$validateRules);
-        try {
-            $user = $JWTAuth->parseToken()->authenticate();
-        } catch (\Exception $e) {
+        $oauth = $request->user();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
             $user = new \stdClass();
             $user->id = 0;
         }
@@ -114,9 +115,10 @@ class DemandController extends controller {
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        try {
-            $user = $JWTAuth->parseToken()->authenticate();
-        } catch (\Exception $e) {
+        $oauth = $request->user();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
             $user = new \stdClass();
             $user->id = 0;
         }
@@ -151,10 +153,10 @@ class DemandController extends controller {
             'views' => $demand->views,
             'status' => $demand->status
         ];
-        $rel = DemandUserRel::where('user_id',$user->id)->where('demand_id',$demand->id)->first();
+        $rel = DemandUserRel::where('user_oauth_id',$oauth->id)->where('demand_id',$demand->id)->first();
         if (!$rel) {
             DemandUserRel::create([
-                'user_id'=>$user->id,
+                'user_oauth_id'=>$oauth->id,
                 'demand_id'=>$demand->id
             ]);
         }
@@ -173,7 +175,12 @@ class DemandController extends controller {
             'description' => 'required|max:2000',
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
+        $oauth = $request->user();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
         if(RateLimiter::instance()->increase('weapp_create_demand',$user->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
@@ -211,7 +218,12 @@ class DemandController extends controller {
             'description' => 'required|max:2000',
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
+        $oauth = $request->user();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
         if(RateLimiter::instance()->increase('weapp_update_demand',$user->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
@@ -238,7 +250,12 @@ class DemandController extends controller {
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
+        $oauth = $request->user();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
         if(RateLimiter::instance()->increase('weapp_close_demand',$user->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
@@ -256,7 +273,13 @@ class DemandController extends controller {
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
+        $oauth = $request->user();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $demand = Demand::findOrFail($request->input('id'));
         $im_rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->paginate(Config::get('inwehub.api_data_page_size'));
         $im_list = [];
