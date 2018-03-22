@@ -41,10 +41,10 @@ class DemandController extends controller {
         $closedId = 0;
         switch ($type){
             case 'all':
-                $list = DemandUserRel::where('demand_user_rel.user_id',$user->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->select('demand_user_rel.*')->orderBy('status','ASC')->orderBy('demand.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+                $list = DemandUserRel::where('demand_user_rel.user_oauth_id',$oauth->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->select('demand_user_rel.*')->orderBy('status','ASC')->orderBy('demand.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $item) {
                     $demand = Demand::find($item->demand_id);
-                    $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                     $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
                     $total_unread = 0;
                     foreach ($rooms as $im_room) {
@@ -57,8 +57,8 @@ class DemandController extends controller {
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'publisher_name'=>$oauth->nickname,
-                        'publisher_avatar'=>$oauth->avatar,
+                        'publisher_name'=>$demand_user_oauth->nickname,
+                        'publisher_avatar'=>$demand_user_oauth->avatar,
                         'publisher_title'=>$demand->user->title,
                         'publisher_company'=>$demand->user->company,
                         'address' => $demand->address,
@@ -76,7 +76,7 @@ class DemandController extends controller {
             case 'mine':
                 $list = Demand::where('user_id',$user->id)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $demand) {
-                    $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                     $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
                     $total_unread = 0;
                     foreach ($rooms as $im_room) {
@@ -89,8 +89,8 @@ class DemandController extends controller {
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'publisher_name'=>$oauth->nickname,
-                        'publisher_avatar'=>$oauth->avatar,
+                        'publisher_name'=>$demand_user_oauth->nickname,
+                        'publisher_avatar'=>$demand_user_oauth->avatar,
                         'publisher_title'=>$demand->user->title,
                         'publisher_company'=>$demand->user->company,
                         'address' => $demand->address,
