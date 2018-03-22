@@ -119,9 +119,9 @@ class UserController extends controller {
         return self::createJsonData(true,['token'=>$token,'userInfo'=>$info,'openid'=>$userInfo['openid']]);
     }
 
-    public function getUserInfo(Request $request){
+    public function getUserInfo(Request $request,JWTAuth $JWTAuth){
         $total_unread = 0;
-        $oauth = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
         $status = $oauth->status;
         if ($oauth->user_id) {
             $demand_ids = Demand::where('user_id',$oauth->user_id)->get()->pluck('id')->toArray();
