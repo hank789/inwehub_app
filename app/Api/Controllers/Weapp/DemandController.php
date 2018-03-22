@@ -181,7 +181,7 @@ class DemandController extends controller {
         } else {
             throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
         }
-        if(RateLimiter::instance()->increase('weapp_create_demand',$user->id,6,1)){
+        if(RateLimiter::instance()->increase('weapp_create_demand',$oauth->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $address = $request->input('address');
@@ -224,7 +224,7 @@ class DemandController extends controller {
         } else {
             throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
         }
-        if(RateLimiter::instance()->increase('weapp_update_demand',$user->id,6,1)){
+        if(RateLimiter::instance()->increase('weapp_update_demand',$oauth->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $demand = Demand::findOrFail($request->input('id'));
@@ -256,7 +256,7 @@ class DemandController extends controller {
         } else {
             throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
         }
-        if(RateLimiter::instance()->increase('weapp_close_demand',$user->id,6,1)){
+        if(RateLimiter::instance()->increase('weapp_close_demand',$oauth->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $demand = Demand::findOrFail($request->input('id'));
