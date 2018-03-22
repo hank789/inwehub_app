@@ -16,18 +16,19 @@ use App\Models\Weapp\DemandUserRel;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\JWTAuth;
 
 class DemandController extends controller {
 
 
-    public function showList(Request $request){
+    public function showList(Request $request,Auth $auth){
         $validateRules = [
             'type'   => 'required|in:all,mine'
         ];
         $this->validate($request,$validateRules);
-        $oauth = $request->user();
+        $oauth = $auth->user();
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {
