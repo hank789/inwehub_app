@@ -23,12 +23,13 @@ use Tymon\JWTAuth\JWTAuth;
 class DemandController extends controller {
 
 
-    public function showList(Request $request,Guard $auth){
+    public function showList(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'type'   => 'required|in:all,mine'
         ];
         $this->validate($request,$validateRules);
-        $oauth = $auth->user();
+        $oauth = $JWTAuth->parseToken()->authenticate();
+        \Log::info('oauth',[$oauth]);
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {
