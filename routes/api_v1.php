@@ -437,7 +437,7 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     //关闭需求
     Route::post('demand/close','DemandController@close')->middleware(['jwt.auth']);
     //列表
-    Route::post('demand/list','DemandController@showList');
+    Route::post('demand/list','DemandController@showList')->middleware(['jwt.auth']);
     //需求详情
     Route::post('demand/detail','DemandController@detail')->middleware(['jwt.auth']);
 });
