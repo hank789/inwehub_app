@@ -6,14 +6,11 @@
  */
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
-use App\Events\Frontend\Auth\UserRegistered;
-use App\Exceptions\ApiException;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\User;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
-use App\Services\RateLimiter;
 use App\Third\Weapp\WeApp;
 use Illuminate\Http\Request;
 use App\Services\Registrar;
@@ -23,7 +20,7 @@ use Tymon\JWTAuth\JWTAuth;
 class UserController extends controller {
 
     //小程序登录获取用户信息
-    public function getWxUserInfo(Request $request,JWTAuth $JWTAuth,Registrar $registrar, WeApp $wxxcx)
+    public function getWxUserInfo(Request $request,JWTAuth $JWTAuth, WeApp $wxxcx)
     {
         //code 在小程序端使用 wx.login 获取
         $code = request('code', '');
@@ -39,8 +36,6 @@ class UserController extends controller {
         //ex:{\"openId\":\"oW2D-0DjAQNvKiMqiDME5wpDdymE\",\"nickName\":\"hank\",\"gender\":1,\"language\":\"zh_CN\",\"city\":\"Pudong New District\",\"province\":\"Shanghai\",\"country\":\"CN\",\"avatarUrl\":\"http://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKibUNMkQ0sVd8jUPHGXia2G78608O9qs9eGAd06jeI2ZRHiaH4DbxI9ppsucxbemxuPawrBh95Sd3PA/0\",\"watermark\":{\"timestamp\":1497602544,\"appid\":\"wx5f163b8ab1c05647\"}}
         $return = $wxxcx->getUserInfo($encryptedData, $iv);
 
-        \Log::info('return',$return);
-        $token = '';
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
             ->where('openid',$userInfo['openid'])->first();
         $user_id = 0;
@@ -116,10 +111,10 @@ class UserController extends controller {
             event(new UserLoggedIn($user,'小程序登陆'));
         }
 
-        return self::createJsonData(true,['token'=>$token,'userInfo'=>$info,'openid'=>$userInfo['openid']]);
+        return self::createJsonData(true,['token'=>$token,'userInfo'=>$info]);
     }
 
-    public function getUserInfo(Request $request,JWTAuth $JWTAuth){
+    public function getUserInfo(JWTAuth $JWTAuth){
         $total_unread = 0;
         $oauth = $JWTAuth->parseToken()->toUser();
         $status = $oauth->status;
@@ -184,7 +179,7 @@ class UserController extends controller {
         return self::createJsonData(true,['qrcode'=>$res_array]);
     }
 
-    public function getMessageRooms(Request $request,JWTAuth $JWTAuth){
+    public function getMessageRooms(JWTAuth $JWTAuth){
         $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;

@@ -29,7 +29,6 @@ class DemandController extends controller {
         ];
         $this->validate($request,$validateRules);
         $oauth = $JWTAuth->parseToken()->toUser();
-        \Log::info('oauth',[$oauth]);
         if ($oauth->user_id) {
             $user = $oauth->user;
         } else {
@@ -126,7 +125,7 @@ class DemandController extends controller {
         }
         $demand = Demand::findOrFail($request->input('id'));
         $demand->increment('views');
-        $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+        $demand_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
         $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
         $candidates = [];
         foreach ($rooms as $room) {
@@ -137,9 +136,9 @@ class DemandController extends controller {
             ];
         }
         $data = [
-            'publisher_user_id'=>$oauth->user_id,
-            'publisher_name'=>$oauth->nickname,
-            'publisher_avatar'=>$oauth->avatar,
+            'publisher_user_id'=>$demand_oauth->user_id,
+            'publisher_name'=>$demand_oauth->nickname,
+            'publisher_avatar'=>$demand_oauth->avatar,
             'publisher_title'=>$demand->user->title,
             'publisher_company'=>$demand->user->company,
             'publisher_email'=>$demand->user->email,
