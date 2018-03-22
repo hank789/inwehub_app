@@ -150,6 +150,7 @@ class DemandController extends controller {
             'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
             'project_begin_time' => $demand->project_begin_time,
             'description' => $demand->description,
+            'expired_at'  => $demand->expired_at,
             'views' => $demand->views,
             'status' => $demand->status
         ];
