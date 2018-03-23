@@ -56,12 +56,15 @@ class Demand extends Model
     const STATUS_PUBLISH = 1;
     const STATUS_REJECT = 2;
     const STATUS_CLOSED = 3;
-    const STATUS_EXPIRED = 4;
+
+    protected $casts = [
+        'address' => 'json'
+    ];
 
 
     public function getIndustryName(){
         $tag = Tag::find($this->industry);
-        return $tag->name;
+        return $tag?$tag->name:'';
     }
 
     public function getRoomCount(){

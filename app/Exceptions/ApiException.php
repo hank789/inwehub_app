@@ -56,6 +56,8 @@ class ApiException extends Exception
     const USER_COMPANY_APPLY_REPEAT = 1119;
     const USER_REGISTRATION_CODE_EXPIRED = 1120;
 
+    const USER_WEAPP_NEED_REGISTER = 1121;
+
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
     const ASK_ANSWER_PROMISE_TIME_INVALID = 3001;
@@ -141,6 +143,7 @@ class ApiException extends Exception
         self::USER_CANNOT_FOLLOWED_SELF => '您不能关注自己',
         self::USER_COMPANY_APPLY_REPEAT => '企业申请已经提交,请耐心等待',
         self::USER_REGISTRATION_CODE_EXPIRED => '您的邀请码已经过期，请重新获取有效邀请码',
+        self::USER_WEAPP_NEED_REGISTER => '发布需求需要完成用户认证',
 
 
         //问答模块

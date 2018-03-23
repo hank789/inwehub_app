@@ -71,6 +71,10 @@ class ProjectController extends Controller {
             throw new ApiException(ApiException::USER_DATE_RANGE_INVALID);
         }
 
+        if (empty($request->input('description'))) {
+            $data['description'] = '';
+        }
+
         $id = $data['id'];
 
         $project = ProjectInfo::find($id);

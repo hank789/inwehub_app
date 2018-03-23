@@ -45,7 +45,7 @@ class CloseDemand implements ShouldQueue
     {
         $demand = Demand::find($this->id);
         if ($demand) {
-            $demand->status = Demand::STATUS_EXPIRED;
+            $demand->status = Demand::STATUS_CLOSED;
             $demand->save();
         }
     }

@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Notifications\NewMessage;
+use App\Services\Registrar;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
@@ -18,18 +19,35 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Monolog\Handler\IFTTTHandler;
+use Tymon\JWTAuth\JWTAuth;
 
 class MessageController extends Controller
 {
-    public function getMessages(Request $request)
+    public function getMessages(Request $request,JWTAuth $JWTAuth)
     {
         $this->validate($request, [
             'room_id' => 'required|integer|min:1',
             'page'       => 'required|integer',
         ]);
-
-        $user = $request->user();
         $room_id = $request->input('room_id');
+        $room = Room::findOrFail($room_id);
+        switch ($room->source_type) {
+            case User::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                break;
+            case Demand::class:
+                $payload = $JWTAuth->parseToken()->getPayload();
+                $oauthUser = UserOauth::find($payload['sub']);
+                if (!$oauthUser) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $user = $oauthUser->user;
+                break;
+        }
 
         $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
             ->select('im_messages.*')
@@ -52,6 +70,7 @@ class MessageController extends Controller
                 $item['avatar'] = $users[$item['user_id']]['avatar'];
                 $item['uuid'] = $users[$item['user_id']]['uuid'];
                 $item['data'] = json_decode($item['data'],true);
+                $item['created_at_timestamp'] = strtotime($item['created_at']);
             }
             $messages['data'] = array_reverse($messages['data']);
         }
@@ -65,7 +84,7 @@ class MessageController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(Request $request,JWTAuth $JWTAuth)
     {
         $this->validate($request, [
             'text'    => 'required_without:img',
@@ -75,7 +94,24 @@ class MessageController extends Controller
         ]);
 
         $room_id = $request->input('room_id');
-        $user =  Auth::user();
+        $room = Room::findOrFail($room_id);
+        switch ($room->source_type) {
+            case User::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                break;
+            case Demand::class:
+                $payload = $JWTAuth->parseToken()->getPayload();
+                $oauthUser = UserOauth::find($payload['sub']);
+                if (!$oauthUser) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $user = $oauthUser->user;
+                break;
+        }
         $contact_id = $request->input('contact_id');
 
         $base64Img = $request->input('img');
@@ -179,15 +215,19 @@ class MessageController extends Controller
         return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id]);
     }
 
-    public function getRoom(Request $request){
+    public function getRoom(Request $request,JWTAuth $JWTAuth){
         $this->validate($request, [
             'room_id' => 'required|integer|min:1'
         ]);
-        $user = $request->user();
         $room = Room::findOrFail($request->input('room_id'));
         $return = $room->toArray();
         switch ($return['source_type']) {
             case User::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
                 $source = User::find($room->source_id);
                 if ($room->source_id == $user->id) {
                     $contact = [
@@ -202,6 +242,12 @@ class MessageController extends Controller
                 }
                 break;
             case Demand::class:
+                $payload = $JWTAuth->parseToken()->getPayload();
+                $oauthUser = UserOauth::find($payload['sub']);
+                if (!$oauthUser) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $user = $oauthUser->user;
                 $demand = Demand::find($room->source_id);
                 $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                 $source = [
@@ -238,15 +284,19 @@ class MessageController extends Controller
         return self::createJsonData(true,$return);
     }
 
-    public function createRoom(Request $request){
+    public function createRoom(Request $request,JWTAuth $JWTAuth){
         $this->validate($request, [
             'source_type' => 'required|in:1,2',
             'source_id' => 'required|integer|min:1',
             'contact_id' => 'required|integer|min:1'
         ]);
-        $user = $request->user();
         switch ($request->input('source_type')){
             case 1:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
                 //纯私信
                 $room = Room::where('user_id',$user->id)
                     ->where('source_id',$request->input('source_id'))
@@ -284,6 +334,33 @@ class MessageController extends Controller
                 }
                 break;
             case 2:
+                $payload = $JWTAuth->parseToken()->getPayload();
+                $oauthUser = UserOauth::find($payload['sub']);
+                if (!$oauthUser) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $user = $oauthUser->user;
+                if (!$user) {
+                    $registrar = new Registrar();
+                    $user = $registrar->create([
+                        'name' => $oauthUser->nickname,
+                        'email' => null,
+                        'mobile' => null,
+                        'rc_uid' => 0,
+                        'title'  => '',
+                        'company' => '',
+                        'gender' => $oauthUser['full_info']['gender'],
+                        'password' => time(),
+                        'status' => 1,
+                        'source' => User::USER_SOURCE_WEAPP,
+                        'visit_ip' => $request->getClientIp()
+                    ]);
+                    $oauthUser->user_id = $user->id;
+                    $oauthUser->save();
+                    $user->attachRole(2); //默认注册为普通用户角色
+                    $user->avatar = $oauthUser->avatar;
+                    $user->save();
+                }
                 //小程序需求发布
                 $demand = Demand::find($request->input('source_id'));
                 if (!$demand) {

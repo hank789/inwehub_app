@@ -8,8 +8,8 @@
 use App\Traits\ApiValidatesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Traits\CreateJsonResponseData;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 

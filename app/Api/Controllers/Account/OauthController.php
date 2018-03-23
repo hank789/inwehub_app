@@ -37,10 +37,9 @@ class OauthController extends Controller
 
         }
         //微信公众号和微信app的openid不同，但是unionid相同
-        $unionid = isset($data['full_info']['unionid'])?$data['full_info']['unionid']:'';
-        $oauthGzhData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
-            ->where('unionid',$unionid)->first();
-        if ($oauthGzhData && $oauthGzhData->user_id) {
+        $unionid = isset($data['full_info']['unionid'])?$data['full_info']['unionid']:'1';
+        $oauthGzhData = UserOauth::where('unionid',$unionid)->where('user_id','>',0)->first();
+        if ($oauthGzhData && $oauthGzhData->user_id && $oauthGzhData->user->mobile) {
             $user_id = $oauthGzhData->user_id;
             $user = User::find($user_id);
             $token = $JWTAuth->fromUser($user);

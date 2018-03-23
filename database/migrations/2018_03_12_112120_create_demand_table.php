@@ -31,9 +31,9 @@ class CreateDemandTable extends Migration
         });
         Schema::create('demand_user_rel', function (Blueprint $table) {
             $table->increments('id')->unsigned();
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_oauth_id')->unsigned();
             $table->integer('demand_id')->unsigned();
-            $table->unique(['user_id','demand_id']);
+            $table->unique(['user_oauth_id','demand_id']);
             $table->timestamps();
         });
     }

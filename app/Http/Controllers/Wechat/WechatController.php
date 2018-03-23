@@ -125,9 +125,8 @@ class WechatController extends Controller
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
             ->where('openid',$userInfo['id'])->first();
         if (!$oauthData && $unionid) {
-            $oauthAppData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN)
-                ->where('unionid',$unionid)->first();
-            if ($oauthAppData) {
+            $oauthAppData = UserOauth::where('unionid',$unionid)->where('user_id','>',0)->first();
+            if ($oauthAppData && $oauthAppData->user->mobile) {
                 //如果已经用app微信登陆过了
                 $oauthData = UserOauth::create(
                     [
@@ -139,7 +138,7 @@ class WechatController extends Controller
                         'access_token'=>$userInfo['token'],
                         'refresh_token'=>'',
                         'expires_in'=>3600,
-                        'full_info'=>json_encode($userInfo['original']),
+                        'full_info'=>$userInfo['original'],
                         'unionid' => $unionid,
                         'scope'=>'snsapi_userinfo'
                     ]
@@ -187,7 +186,7 @@ class WechatController extends Controller
                     'access_token'=>$userInfo['token'],
                     'refresh_token'=>'',
                     'expires_in'=>3600,
-                    'full_info'=>json_encode($userInfo['original']),
+                    'full_info'=>$userInfo['original'],
                     'unionid' => $unionid,
                     'scope'=>'snsapi_userinfo'
                 ]

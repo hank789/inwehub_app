@@ -54,6 +54,9 @@ class EduController extends Controller {
         if($data['begin_time'] > $data['end_time']){
             throw new ApiException(ApiException::USER_DATE_RANGE_INVALID);
         }
+        if (empty($request->input('description'))) {
+            $data['description'] = '';
+        }
 
         $id = $data['id'];
         $edu = EduInfo::find($id);

@@ -46,6 +46,9 @@ class TrainController extends Controller {
         $data = $request->all();
         $id = $data['id'];
         unset($this->validateRules['id']);
+        if (empty($request->input('description'))) {
+            $data['description'] = '';
+        }
         $update = [];
         foreach($this->validateRules as $field=>$rule){
             if(isset($data[$field])){

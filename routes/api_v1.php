@@ -32,7 +32,7 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
     //微信公众号注册
     Route::post('wxgzh/register', 'AuthController@registerWeiXinGzh');
     //微信小程序注册
-    Route::post('weapp/register', 'AuthController@registerWeapp');
+    Route::post('weapp/register', 'AuthController@registerWeapp')->middleware(['jwt.weappConfig','jwt.weappAuth']);
 });
 
 Route::group(['namespace'=>'Share'], function() {
@@ -154,14 +154,15 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
 
     //关注我的
     Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
-    //IM
-    Route::post('im/message-store','MessageController@store');
-    Route::post('im/messages','MessageController@getMessages');
-    Route::post('im/getWhisperRoom','MessageController@getWhisperRoom');
-    Route::post('im/getRoom','MessageController@getRoom');
-    Route::post('im/createRoom','MessageController@createRoom');
-});
 
+    Route::post('im/getWhisperRoom','MessageController@getWhisperRoom');
+
+});
+//IM
+Route::post('im/message-store','Account\MessageController@store');
+Route::post('im/messages','Account\MessageController@getMessages');
+Route::post('im/getRoom','Account\MessageController@getRoom');
+Route::post('im/createRoom','Account\MessageController@createRoom');
 
 //问答模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], function() {
@@ -195,8 +196,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/inviterList','QuestionController@inviterList');
     //相关问题
     Route::post('question/relatedQuestion','QuestionController@relatedQuestion');
-    //问答社区
-    Route::post('question/list','QuestionController@questionList');
 
     //推荐用户问题
     Route::post('question/recommendUser','QuestionController@recommendUserQuestions');
@@ -226,6 +225,8 @@ Route::post('answer/info','Ask\AnswerController@info');
 Route::post('question/answerList','Ask\QuestionController@answerList');
 //问答留言列表
 Route::post('answer/commentList','Ask\AnswerController@commentList');
+//问答社区
+Route::post('question/list','Ask\QuestionController@questionList');
 
 //任务模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], function() {
@@ -239,12 +240,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     Route::post('search/user','SearchController@user');
     //搜索标签
     Route::post('search/tag','SearchController@tag');
-    //搜索问答
-    Route::post('search/question','SearchController@question');
     //搜索文章
     Route::post('search/submission','SearchController@submission');
-
 });
+//搜索问答
+Route::post('search/question','SearchController@question');
+
 //支付
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Pay'], function() {
     //支付请求
@@ -419,21 +420,27 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','nam
 
 
 //微信小程序
-Route::group(['namespace'=>'Weapp','prefix' => 'weapp'], function() {
+Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function() {
     //获取用户微信信息
     Route::post('user/wxinfo','UserController@getWxUserInfo');
     //获取用户信息
-    Route::post('user/info','UserController@getUserInfo');
+    Route::post('user/info','UserController@getUserInfo')->middleware(['jwt.weappAuth']);
+    //获取二维码
+    Route::post('user/getQrCode','UserController@getQrCode');
+    //获取未读消息列表
+    Route::post('user/getMessageRooms','UserController@getMessageRooms')->middleware(['jwt.weappAuth']);
+    //获取需求联系人消息列表
+    Route::post('demand/getRooms','DemandController@getRooms')->middleware(['jwt.weappAuth']);
     //发布需求
-    Route::post('demand/store','DemandController@store')->middleware(['jwt.auth','ban.user']);
+    Route::post('demand/store','DemandController@store')->middleware(['jwt.weappAuth']);
     //修改需求
-    Route::post('demand/update','DemandController@update')->middleware(['jwt.auth','ban.user']);
+    Route::post('demand/update','DemandController@update')->middleware(['jwt.weappAuth']);
     //关闭需求
-    Route::post('demand/close','DemandController@close')->middleware(['jwt.auth','ban.user']);
+    Route::post('demand/close','DemandController@close')->middleware(['jwt.weappAuth']);
     //列表
-    Route::post('demand/list','DemandController@showList');
+    Route::post('demand/list','DemandController@showList')->middleware(['jwt.weappAuth']);
     //需求详情
-    Route::post('demand/detail','DemandController@detail');
+    Route::post('demand/detail','DemandController@detail')->middleware(['jwt.weappAuth']);
 });
 
 Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {

@@ -5,9 +5,12 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\CloseDemand;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
+use App\Models\User;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Models\Weapp\DemandUserRel;
@@ -25,25 +28,36 @@ class DemandController extends controller {
             'type'   => 'required|in:all,mine'
         ];
         $this->validate($request,$validateRules);
-        try {
-            $user = $JWTAuth->parseToken()->authenticate();
-        } catch (\Exception $e) {
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
             $user = new \stdClass();
             $user->id = 0;
         }
         $type = $request->input('type');
         $data = [];
+        $closedId = 0;
         switch ($type){
             case 'all':
-                $list = DemandUserRel::where('demand_user_rel.user_id',$user->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->where('status',Demand::STATUS_PUBLISH)->select('demand_user_rel.*')->orderBy('demand_user_rel.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+                $list = DemandUserRel::where('demand_user_rel.user_oauth_id',$oauth->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->select('demand_user_rel.*')->orderBy('status','ASC')->orderBy('demand.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $item) {
                     $demand = Demand::find($item->demand_id);
-                    $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
+                    $total_unread = 0;
+                    foreach ($rooms as $im_room) {
+                        $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+                        $total_unread += $im_count;
+                    }
+                    if ($closedId == 0 && $demand->status == Demand::STATUS_CLOSED) {
+                        $closedId = $demand->id;
+                    }
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'publisher_name'=>$oauth->nickname,
-                        'publisher_avatar'=>$oauth->avatar,
+                        'publisher_name'=>$demand_user_oauth->nickname,
+                        'publisher_avatar'=>$demand_user_oauth->avatar,
                         'publisher_title'=>$demand->user->title,
                         'publisher_company'=>$demand->user->company,
                         'address' => $demand->address,
@@ -51,6 +65,9 @@ class DemandController extends controller {
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
                         'status' => $demand->status,
+                        'view_number'  => $demand->views,
+                        'communicate_number' => $rooms->count(),
+                        'unread_number' => $total_unread,
                         'created_time'=>$demand->created_at->diffForHumans()
                     ];
                 }
@@ -58,12 +75,21 @@ class DemandController extends controller {
             case 'mine':
                 $list = Demand::where('user_id',$user->id)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $demand) {
-                    $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
+                    $total_unread = 0;
+                    foreach ($rooms as $im_room) {
+                        $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+                        $total_unread += $im_count;
+                    }
+                    if ($closedId == 0 && $demand->status == Demand::STATUS_CLOSED) {
+                        $closedId = $demand->id;
+                    }
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'publisher_name'=>$oauth->nickname,
-                        'publisher_avatar'=>$oauth->avatar,
+                        'publisher_name'=>$demand_user_oauth->nickname,
+                        'publisher_avatar'=>$demand_user_oauth->avatar,
                         'publisher_title'=>$demand->user->title,
                         'publisher_company'=>$demand->user->company,
                         'address' => $demand->address,
@@ -71,6 +97,9 @@ class DemandController extends controller {
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
                         'status' => $demand->status,
+                        'view_number'  => $demand->views,
+                        'communicate_number' => $rooms->count(),
+                        'unread_number' => $total_unread,
                         'created_time'=>$demand->created_at->diffForHumans()
                     ];
                 }
@@ -78,6 +107,7 @@ class DemandController extends controller {
         }
         $return = $list->toArray();
         $return['data'] = $data;
+        $return['closedDemandId'] = $closedId;
         return self::createJsonData(true,$return);
     }
 
@@ -86,33 +116,33 @@ class DemandController extends controller {
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        try {
-            $user = $JWTAuth->parseToken()->authenticate();
-        } catch (\Exception $e) {
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
             $user = new \stdClass();
             $user->id = 0;
         }
         $demand = Demand::findOrFail($request->input('id'));
         $demand->increment('views');
-        $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
-        $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
-        $candidates = [];
-        foreach ($rooms as $room) {
-            $candidate = $room->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
-            $candidates[] = [
-                'room_id' => $room->id,
-                'user_avatar' => $candidate->avatar
-            ];
+        $is_author = ($demand->user_id == $user->id ? true:false);
+        $demand_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+        $im_count = 0;
+        if ($is_author) {
+            $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
+            foreach ($rooms as $room) {
+                $im_count += MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+            }
         }
         $data = [
-            'publisher_user_id'=>$oauth->user_id,
-            'publisher_name'=>$oauth->nickname,
-            'publisher_avatar'=>$oauth->avatar,
+            'publisher_user_id'=>$demand_oauth->user_id,
+            'publisher_name'=>$demand_oauth->nickname,
+            'publisher_avatar'=>$demand_oauth->avatar,
             'publisher_title'=>$demand->user->title,
             'publisher_company'=>$demand->user->company,
             'publisher_email'=>$demand->user->email,
             'publisher_phone' => $demand->user->mobile,
-            'is_author' => $demand->user_id == $user->id ? true:false,
+            'is_author' => $is_author,
             'title' => $demand->title,
             'address' => $demand->address,
             'salary' => $demand->salary,
@@ -120,21 +150,22 @@ class DemandController extends controller {
             'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
             'project_begin_time' => $demand->project_begin_time,
             'description' => $demand->description,
+            'expired_at'  => $demand->expired_at,
             'views' => $demand->views,
             'status' => $demand->status
         ];
-        $rel = DemandUserRel::where('user_id',$user->id)->where('demand_id',$demand->id)->first();
+        $rel = DemandUserRel::where('user_oauth_id',$oauth->id)->where('demand_id',$demand->id)->first();
         if (!$rel) {
             DemandUserRel::create([
-                'user_id'=>$user->id,
+                'user_oauth_id'=>$oauth->id,
                 'demand_id'=>$demand->id
             ]);
         }
-        $data['candidates'] = $candidates;
+        $data['im_count'] = $im_count;
         return self::createJsonData(true,$data);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request,JWTAuth $JWTAuth) {
         $validateRules = [
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
@@ -145,31 +176,39 @@ class DemandController extends controller {
             'description' => 'required|max:2000',
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
-        if(RateLimiter::instance()->increase('weapp_create_demand',$user->id,6,1)){
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+        if(RateLimiter::instance()->increase('weapp_create_demand',$oauth->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        $address = $request->input('address');
+
         $demand = Demand::create([
             'user_id' => $user->id,
             'title' => $request->input('title'),
-            'address' => $request->input('address'),
+            'address' => $address,
             'salary' => $request->input('salary'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
             'project_begin_time' => $request->input('project_begin_time'),
             'description' => $request->input('description'),
             'status' => Demand::STATUS_PUBLISH,
-            'expired_at' => strtotime('+7 days'),
+            'expired_at' => date('Y-m-d',strtotime('+7 days')),
         ]);
         DemandUserRel::create([
-            'user_id'=>$user->id,
+            'user_oauth_id'=>$oauth->id,
             'demand_id'=>$demand->id
         ]);
-        $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime('+7 days'))));
+        $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime(date('Y-m-d',strtotime('+7 days'))))));
+        event(new SystemNotify('小程序用户发布了新的需求',$demand->toArray()));
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
-    public function update(Request $request){
+    public function update(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer',
             'title'=> 'required|max:255',
@@ -181,17 +220,24 @@ class DemandController extends controller {
             'description' => 'required|max:2000',
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
-        if(RateLimiter::instance()->increase('weapp_update_demand',$user->id,6,1)){
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+        if(RateLimiter::instance()->increase('weapp_update_demand',$oauth->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $demand = Demand::findOrFail($request->input('id'));
         if ($demand->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        $address = $request->input('address');
+
         $demand->update([
             'title' => $request->input('title'),
-            'address' => $request->input('address'),
+            'address' => $address,
             'salary' => $request->input('salary'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
@@ -201,13 +247,18 @@ class DemandController extends controller {
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
-    public function close(Request $request){
+    public function close(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
-        if(RateLimiter::instance()->increase('weapp_close_demand',$user->id,6,1)){
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+        if(RateLimiter::instance()->increase('weapp_close_demand',$oauth->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $demand = Demand::findOrFail($request->input('id'));
@@ -217,6 +268,50 @@ class DemandController extends controller {
         $demand->status = Demand::STATUS_CLOSED;
         $demand->save();
         return self::createJsonData(true,['id'=>$demand->id]);
+    }
+
+    public function getRooms(Request $request,JWTAuth $JWTAuth){
+        $validateRules = [
+            'id'   => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
+        $demand = Demand::findOrFail($request->input('id'));
+        $im_rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->paginate(Config::get('inwehub.api_data_page_size'));
+        $im_list = [];
+        foreach ($im_rooms as $im_room) {
+            $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+            $last_message = MessageRoom::where('room_id',$im_room->id)->orderBy('id','desc')->first();
+            $demand = Demand::find($im_room->source_id);
+            $contact = User::find($im_room->user_id==$user->id?$demand->user_id:$im_room->user_id);
+            $item = [
+                'unread_count' => $im_count,
+                'avatar'       => $contact->avatar,
+                'name'         => $contact->name,
+                'room_id'      => $im_room->id,
+                'contact_id'   => $contact->id,
+                'contact_uuid' => $contact->uuid,
+                'last_message' => [
+                    'id' => $last_message?$last_message->message_id:0,
+                    'text' => '',
+                    'data'  => $last_message?$last_message->message->data:['text'=>'','img'=>''],
+                    'read_at' => $last_message?$last_message->message->read_at:'',
+                    'created_at' => $last_message?(string)$last_message->created_at:''
+                ]
+            ];
+            $im_list[] = $item;
+        }
+        $return = $im_rooms->toArray();
+        $return['data'] = $im_list;
+        $return['demand'] = $demand->toArray();
+
+        return self::createJsonData(true,$return);
     }
 
 }
