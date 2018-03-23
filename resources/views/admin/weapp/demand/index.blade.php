@@ -66,7 +66,7 @@
                                             <td><input type="checkbox" value="{{ $demand->id }}" name="id[]"/></td>
                                             <td>{{ $demand->user_id }}</td>
                                             <td>{{ $demand->title }}</td>
-                                            <td>{{ $demand->address }}</td>
+                                            <td>{{ $demand->address['selProvince'].$demand->address['selCity'].$demand->address['selDistrict'] }}</td>
                                             <td>{{ $demand->user->name }}</td>
                                             <td>{{ $demand->user->mobile }}</td>
                                             <td>{{ $demand->user->title }}</td>
