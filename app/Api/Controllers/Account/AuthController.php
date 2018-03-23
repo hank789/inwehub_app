@@ -8,6 +8,9 @@ use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
 use App\Models\Credit;
+use App\Models\IM\Message;
+use App\Models\IM\Room;
+use App\Models\IM\RoomUser;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserDevice;
@@ -485,6 +488,19 @@ class AuthController extends Controller
             //登陆事件通知
             event(new SystemNotify('用户登录: '.formatSlackUser($loginUser).';设备:微信小程序',$request->all()));
             return static::createJsonData(true,['id'=>$oauthData->user_id]);
+        }
+        //app该手机号已注册，小程序已注册，但是小程序注册的用户手机为null，则删除小程序用户，关联到app用户
+        if ($oauthData->user_id && $user && $oauthData->user_id != $user->id && empty($oauthData->user->mobile)) {
+            $oauthUserId = $oauthData->user_id;
+            $oauthData->user_id = $user->id;
+            $oauthData->save();
+            Message::where('user_id',$oauthUserId)->update(['user_id'=>$user->id]);
+            Room::where('user_id',$oauthUserId)->update(['user_id'=>$user->id]);
+            RoomUser::where('user_id',$oauthUserId)->update(['user_id'=>$user->id]);
+            User::destroy($oauthUserId);
+            //登陆事件通知
+            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
+            return static::createJsonData(true,['id'=>$user->id]);
         }
         throw new ApiException(ApiException::BAD_REQUEST);
     }

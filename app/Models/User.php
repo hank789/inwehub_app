@@ -2,6 +2,7 @@
 
 namespace App\Models;
 use App\Models\IM\Message;
+use App\Models\Pay\UserMoney;
 use App\Models\Relations\HasRoleAndPermission;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\NotificationSettings;
@@ -166,7 +167,9 @@ class User extends Model implements AuthenticatableContract,
     {
         parent::boot();
         static::deleted(function($user){
-
+            UserData::where('user_id',$user->id)->delete();
+            UserMoney::where('user_id',$user->id)->delete();
+            RoleUser::where('user_id',$user->id)->delete();
         });
     }
 
