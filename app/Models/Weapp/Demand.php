@@ -50,7 +50,7 @@ class Demand extends Model
 {
     use BelongsToUserTrait;
     protected $table = 'demand';
-    protected $fillable = ['title', 'user_id', 'salary', 'industry', 'project_cycle', 'project_begin_time', 'description', 'expired_at', 'views','address', 'status'];
+    protected $fillable = ['title', 'user_id', 'salary', 'salary_type','industry', 'project_cycle', 'project_begin_time', 'description', 'expired_at', 'views','address', 'status'];
 
     const STATUS_DRAFT = 0;
     const STATUS_PUBLISH = 1;
