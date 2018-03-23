@@ -309,6 +309,7 @@ class MessageController extends Controller
                         'password' => time(),
                         'status' => 1,
                         'source' => User::USER_SOURCE_WEAPP,
+                        'visit_ip' => $request->getClientIp()
                     ]);
                     $oauthUser->user_id = $user->id;
                     $oauthUser->save();

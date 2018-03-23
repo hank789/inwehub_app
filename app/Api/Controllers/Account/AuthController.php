@@ -457,6 +457,7 @@ class AuthController extends Controller
                 'password' => time(),
                 'status' => 1,
                 'source' => User::USER_SOURCE_WEAPP,
+                'visit_ip' => $request->getClientIp()
             ]);
             $new_user->attachRole(2); //默认注册为普通用户角色
             $new_user->userData->email_status = 1;
