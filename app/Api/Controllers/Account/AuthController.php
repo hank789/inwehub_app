@@ -439,10 +439,9 @@ class AuthController extends Controller
         if ($oauthData->user_id == 0 && $user){
             $oauthData->user_id = $user->id;
             $oauthData->save();
-            $token = $JWTAuth->fromUser($user);
             //登陆事件通知
             event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
-            return static::createJsonData(true,['token'=>$token]);
+            return static::createJsonData(true,['id'=>$user->id]);
         }
 
         //如果此微信号尚未关联,且对应手机号不存在,走注册流程
@@ -468,26 +467,23 @@ class AuthController extends Controller
             $oauthData->save();
             //注册事件通知
             event(new UserRegistered($user,$oauthData->id,'微信小程序'));
-            $token = $JWTAuth->fromUser($user);
-            return static::createJsonData(true,['token'=>$token]);
+            return static::createJsonData(true,['id'=>$new_user->id]);
         }
 
         //如果此微信号已绑定用户
         if($oauthData->user_id && $user && $oauthData->user_id == $user->id){
-            $token = $JWTAuth->fromUser($user);
             //登陆事件通知
             event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
-            return static::createJsonData(true,['token'=>$token]);
+            return static::createJsonData(true,['id'=>$user->id]);
         }
         //手机号系统不存在
         if ($oauthData->user_id && !$user) {
             $loginUser = User::find($oauthData->user_id);
             $loginUser->mobile = $mobile;
             $loginUser->save();
-            $token = $JWTAuth->fromUser($loginUser);
             //登陆事件通知
             event(new SystemNotify('用户登录: '.formatSlackUser($loginUser).';设备:微信小程序',$request->all()));
-            return static::createJsonData(true,['token'=>$token]);
+            return static::createJsonData(true,['id'=>$oauthData->user_id]);
         }
         throw new ApiException(ApiException::BAD_REQUEST);
     }

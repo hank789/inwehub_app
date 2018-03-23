@@ -59,7 +59,7 @@ class UserController extends controller {
                     'access_token'=>$userInfo['session_key'],
                     'refresh_token'=>'',
                     'expires_in'=>$userInfo['expires_in'],
-                    'full_info'=>json_encode($return),
+                    'full_info'=>$return,
                     'scope'=>'authorization_code',
                     'status' => 0
                 ]

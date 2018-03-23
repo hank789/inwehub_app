@@ -138,7 +138,7 @@ class WechatController extends Controller
                         'access_token'=>$userInfo['token'],
                         'refresh_token'=>'',
                         'expires_in'=>3600,
-                        'full_info'=>json_encode($userInfo['original']),
+                        'full_info'=>$userInfo['original'],
                         'unionid' => $unionid,
                         'scope'=>'snsapi_userinfo'
                     ]
@@ -186,7 +186,7 @@ class WechatController extends Controller
                     'access_token'=>$userInfo['token'],
                     'refresh_token'=>'',
                     'expires_in'=>3600,
-                    'full_info'=>json_encode($userInfo['original']),
+                    'full_info'=>$userInfo['original'],
                     'unionid' => $unionid,
                     'scope'=>'snsapi_userinfo'
                 ]

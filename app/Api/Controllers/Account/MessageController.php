@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Notifications\NewMessage;
+use App\Services\Registrar;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Monolog\Handler\IFTTTHandler;
+use Tymon\JWTAuth\JWTAuth;
 
 class MessageController extends Controller
 {
@@ -238,15 +240,19 @@ class MessageController extends Controller
         return self::createJsonData(true,$return);
     }
 
-    public function createRoom(Request $request){
+    public function createRoom(Request $request,JWTAuth $JWTAuth){
         $this->validate($request, [
             'source_type' => 'required|in:1,2',
             'source_id' => 'required|integer|min:1',
             'contact_id' => 'required|integer|min:1'
         ]);
-        $user = $request->user();
         switch ($request->input('source_type')){
             case 1:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
                 //纯私信
                 $room = Room::where('user_id',$user->id)
                     ->where('source_id',$request->input('source_id'))
@@ -284,6 +290,32 @@ class MessageController extends Controller
                 }
                 break;
             case 2:
+                $payload = $JWTAuth->parseToken()->getPayload();
+                $oauthUser = UserOauth::find($payload['sub']);
+                if (!$oauthUser) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $user = $oauthUser->user;
+                if (!$user) {
+                    $registrar = new Registrar();
+                    $user = $registrar->create([
+                        'name' => $oauthUser->nickname,
+                        'email' => null,
+                        'mobile' => null,
+                        'rc_uid' => 0,
+                        'title'  => '',
+                        'company' => '',
+                        'gender' => $oauthUser['full_info']['gender'],
+                        'password' => time(),
+                        'status' => 1,
+                        'source' => User::USER_SOURCE_WEAPP,
+                    ]);
+                    $oauthUser->user_id = $user->id;
+                    $oauthUser->save();
+                    $user->attachRole(2); //默认注册为普通用户角色
+                    $user->avatar = $oauthUser->avatar;
+                    $user->save();
+                }
                 //小程序需求发布
                 $demand = Demand::find($request->input('source_id'));
                 if (!$demand) {
