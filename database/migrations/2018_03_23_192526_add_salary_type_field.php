@@ -14,7 +14,7 @@ class AddSalaryTypeField extends Migration
     public function up()
     {
         Schema::table('demand', function (Blueprint $table) {
-            $table->integer('salary_type')->after('salary');
+            $table->integer('salary_type')->after('salary')->default(0);;
         });
     }
 
