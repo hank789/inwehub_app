@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\JWTAuth;
 
 class SearchController extends Controller
 {
@@ -75,13 +76,19 @@ class SearchController extends Controller
         return self::createJsonData(true, $return);
     }
 
-    public function question(Request $request)
+    public function question(Request $request,JWTAuth $JWTAuth)
     {
         $validateRules = [
             'search_word' => 'required',
         ];
         $this->validate($request,$validateRules);
-        $loginUser = $request->user();
+        try {
+            $loginUser = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $loginUser = new \stdClass();
+            $loginUser->id = 0;
+            $loginUser->name = '游客';
+        }
         $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[问答]');
         $questions = Question::search($request->input('search_word'))->where(function($query) {$query->where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);})->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
