@@ -70,6 +70,7 @@ class MessageController extends Controller
                 $item['avatar'] = $users[$item['user_id']]['avatar'];
                 $item['uuid'] = $users[$item['user_id']]['uuid'];
                 $item['data'] = json_decode($item['data'],true);
+                $item['created_at_timestamp'] = strtotime($item['created_at']);
             }
             $messages['data'] = array_reverse($messages['data']);
         }
