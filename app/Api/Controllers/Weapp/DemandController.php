@@ -202,7 +202,7 @@ class DemandController extends controller {
             'user_oauth_id'=>$oauth->id,
             'demand_id'=>$demand->id
         ]);
-        $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(date('Y-m-d',strtotime('+7 days')))));
+        $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime(date('Y-m-d',strtotime('+7 days'))))));
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
