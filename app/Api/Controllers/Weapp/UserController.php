@@ -201,8 +201,6 @@ class UserController extends controller {
                 'avatar'       => $contact->avatar,
                 'name'         => $contact->name,
                 'room_id'      => $im_room->id,
-                'contact_id'   => $contact->id,
-                'contact_uuid' => $contact->uuid,
                 'last_message' => [
                     'id' => $last_message?$last_message->message_id:0,
                     'text' => '',
