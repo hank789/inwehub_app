@@ -154,13 +154,14 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
 
     //关注我的
     Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
-    //IM
-    Route::post('im/message-store','MessageController@store');
-    Route::post('im/messages','MessageController@getMessages');
-    Route::post('im/getWhisperRoom','MessageController@getWhisperRoom');
-    Route::post('im/getRoom','MessageController@getRoom');
-});
 
+    Route::post('im/getWhisperRoom','MessageController@getWhisperRoom');
+
+});
+//IM
+Route::post('im/message-store','Account\MessageController@store');
+Route::post('im/messages','Account\MessageController@getMessages');
+Route::post('im/getRoom','Account\MessageController@getRoom');
 Route::post('im/createRoom','Account\MessageController@createRoom');
 
 //问答模块

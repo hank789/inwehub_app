@@ -23,15 +23,31 @@ use Tymon\JWTAuth\JWTAuth;
 
 class MessageController extends Controller
 {
-    public function getMessages(Request $request)
+    public function getMessages(Request $request,JWTAuth $JWTAuth)
     {
         $this->validate($request, [
             'room_id' => 'required|integer|min:1',
             'page'       => 'required|integer',
         ]);
-
-        $user = $request->user();
         $room_id = $request->input('room_id');
+        $room = Room::findOrFail($room_id);
+        switch ($room->source_type) {
+            case User::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                break;
+            case Demand::class:
+                $payload = $JWTAuth->parseToken()->getPayload();
+                $oauthUser = UserOauth::find($payload['sub']);
+                if (!$oauthUser) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $user = $oauthUser->user;
+                break;
+        }
 
         $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
             ->select('im_messages.*')
@@ -67,7 +83,7 @@ class MessageController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(Request $request,JWTAuth $JWTAuth)
     {
         $this->validate($request, [
             'text'    => 'required_without:img',
@@ -77,7 +93,24 @@ class MessageController extends Controller
         ]);
 
         $room_id = $request->input('room_id');
-        $user =  Auth::user();
+        $room = Room::findOrFail($room_id);
+        switch ($room->source_type) {
+            case User::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                break;
+            case Demand::class:
+                $payload = $JWTAuth->parseToken()->getPayload();
+                $oauthUser = UserOauth::find($payload['sub']);
+                if (!$oauthUser) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $user = $oauthUser->user;
+                break;
+        }
         $contact_id = $request->input('contact_id');
 
         $base64Img = $request->input('img');
@@ -181,15 +214,19 @@ class MessageController extends Controller
         return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id]);
     }
 
-    public function getRoom(Request $request){
+    public function getRoom(Request $request,JWTAuth $JWTAuth){
         $this->validate($request, [
             'room_id' => 'required|integer|min:1'
         ]);
-        $user = $request->user();
         $room = Room::findOrFail($request->input('room_id'));
         $return = $room->toArray();
         switch ($return['source_type']) {
             case User::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
                 $source = User::find($room->source_id);
                 if ($room->source_id == $user->id) {
                     $contact = [
@@ -204,6 +241,12 @@ class MessageController extends Controller
                 }
                 break;
             case Demand::class:
+                $payload = $JWTAuth->parseToken()->getPayload();
+                $oauthUser = UserOauth::find($payload['sub']);
+                if (!$oauthUser) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $user = $oauthUser->user;
                 $demand = Demand::find($room->source_id);
                 $oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                 $source = [
