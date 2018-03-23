@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\CloseDemand;
 use App\Models\IM\MessageRoom;
@@ -203,6 +204,7 @@ class DemandController extends controller {
             'demand_id'=>$demand->id
         ]);
         $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime(date('Y-m-d',strtotime('+7 days'))))));
+        event(new SystemNotify('小程序用户发布了新的需求',$demand->toArray()));
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
