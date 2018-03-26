@@ -273,6 +273,7 @@ class DemandController extends controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $demand->status = Demand::STATUS_CLOSED;
+        $demand->expired_at = date('Y-m-d');
         $demand->save();
         return self::createJsonData(true,['id'=>$demand->id]);
     }

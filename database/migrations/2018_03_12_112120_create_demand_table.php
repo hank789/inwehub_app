@@ -23,7 +23,7 @@ class CreateDemandTable extends Migration
             $table->tinyInteger("project_cycle")->comment('项目周期');
             $table->string('project_begin_time',12)->comment('项目开始时间');
             $table->string('description',3072)->comment('需求描述');
-            $table->timestamp('expired_at')->comment('过期时间');
+            $table->string('expired_at',21)->comment('过期时间');
             $table->integer('views')->unsigned()->comment('查看次数')->default(0);
             $table->integer('status')->comment('状态:0,待发布,1已发布,2被拒绝,3已关闭，4已过期')->default(0);
             $table->softDeletes();
