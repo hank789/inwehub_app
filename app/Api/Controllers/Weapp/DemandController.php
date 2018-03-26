@@ -56,7 +56,7 @@ class DemandController extends controller {
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'publisher_name'=>$demand_user_oauth->nickname,
+                        'publisher_name'=>$demand->user->name,
                         'publisher_avatar'=>$demand_user_oauth->avatar,
                         'publisher_title'=>$demand->user->title,
                         'publisher_company'=>$demand->user->company,
@@ -89,7 +89,7 @@ class DemandController extends controller {
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'publisher_name'=>$demand_user_oauth->nickname,
+                        'publisher_name'=>$demand->user->name,
                         'publisher_avatar'=>$demand_user_oauth->avatar,
                         'publisher_title'=>$demand->user->title,
                         'publisher_company'=>$demand->user->company,
@@ -138,7 +138,7 @@ class DemandController extends controller {
         }
         $data = [
             'publisher_user_id'=>$demand_oauth->user_id,
-            'publisher_name'=>$demand_oauth->nickname,
+            'publisher_name'=>$demand->user->name,
             'publisher_avatar'=>$demand_oauth->avatar,
             'publisher_title'=>$demand->user->title,
             'publisher_company'=>$demand->user->company,
