@@ -61,6 +61,15 @@ class Demand extends Model
         'address' => 'json'
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+        static::deleted(function($demand){
+            DemandUserRel::where('demand_id',$demand->id)->delete();
+            Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->delete();
+        });
+    }
+
 
     public function getIndustryName(){
         $tag = Tag::find($this->industry);

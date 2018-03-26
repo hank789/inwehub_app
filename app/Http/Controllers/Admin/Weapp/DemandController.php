@@ -50,7 +50,7 @@ class DemandController extends AdminController {
 
     public function destroy(Request $request){
         $ids = $request->input('ids');
-        Demand::whereIn('id',$ids)->delete();
+        Demand::destroy($ids);
         return $this->success(route('admin.weapp.demand.index'),'删除成功');
     }
 
