@@ -190,6 +190,7 @@ class DemandController extends controller {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $address = $request->input('address');
+        $formId = $request->input('formId');
 
         $demand = Demand::create([
             'user_id' => $user->id,
@@ -208,6 +209,10 @@ class DemandController extends controller {
             'user_oauth_id'=>$oauth->id,
             'demand_id'=>$demand->id
         ]);
+        if ($formId) {
+            RateLimiter::instance()->sAdd('demand_formId_'.$demand->id,$formId,60*60*24*6);
+        }
+
         $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime(date('Y-m-d',strtotime('+7 days'))))));
         event(new SystemNotify('小程序用户发布了新的需求',$demand->toArray()));
         return self::createJsonData(true,['id'=>$demand->id]);
@@ -240,6 +245,7 @@ class DemandController extends controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $address = $request->input('address');
+        $formId = $request->input('formId');
 
         $demand->update([
             'title' => $request->input('title'),
@@ -251,6 +257,9 @@ class DemandController extends controller {
             'project_begin_time' => $request->input('project_begin_time'),
             'description' => $request->input('description'),
         ]);
+        if ($formId) {
+            RateLimiter::instance()->sAdd('demand_formId_'.$demand->id,$formId,60*60*24*6);
+        }
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 

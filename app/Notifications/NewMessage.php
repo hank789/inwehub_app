@@ -11,6 +11,7 @@ use App\Models\IM\Room;
 use App\Models\Notification as NotificationModel;
 use App\Models\User;
 use App\Models\Weapp\Demand;
+use App\Services\RateLimiter;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
@@ -57,6 +58,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                 $room = Room::find($this->room_id);
                 switch ($room->source_type) {
                     case Demand::class:
+                        $via[] = WeappNoticeChannel::class;
                         return $via;
                         break;
                 }
@@ -143,29 +145,34 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     public function toWeappNotice($notifiable) {
         $room = Room::find($this->room_id);
         $data = [];
+        $form_id = '';
         switch ($room->source_type) {
             case Demand::class:
                 $demand = Demand::find($room->source_id);
+                $formIds = RateLimiter::instance()->sMembers('demand_formId_'.$demand->id);
+                if ($formIds) {
+                    $form_id = $formIds[0];
+                    RateLimiter::instance()->sRem('demand_formId_'.$demand->id,$form_id);
+                }
                 $data = [
                     'keyword1' => $demand->title,
                     'keyword2' => $this->message->data['text']?:'[图片]',
                     'keyword3' => $this->message->user->name,
                     'keyword4' => (string) $this->message->created_at,
                 ];
-                $page = 'pages/chat/chat?id='.$room->id;
+                $page = 'pages/demandRooms/demandRooms?id='.$demand->id;
                 break;
         }
-        if (empty($data)) return null;
-        $template_id = 'DzHFhepcKwsjfwhqI6UBofyZKCfyEJih2e7iuUOB_P0';
+        if (empty($data) || empty($form_id)) return null;
+        $template_id = '_Kw_OpHk996L85oC1ij1mxS9kHoq0fKtcUdkjzbVL6g';
         if (config('app.env') != 'production') {
             $template_id = 'DzHFhepcKwsjfwhqI6UBofyZKCfyEJih2e7iuUOB_P0';
         }
         return [
             'data'     => $data,
             'template_id' => $template_id,
-            'form_id' => 'form_id',
-            'page'    => $page,
-            'target_url' => config('app.mobile_url').'#/chat/'.$this->message->user->id
+            'form_id' => $form_id,
+            'page'    => $page
         ];
     }
 
