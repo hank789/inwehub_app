@@ -172,7 +172,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                         'color'=>'#173177'
                     ],
                 ];
-                $page = 'pages/demandRooms/demandRooms?id='.$demand->id;
+                $page = 'pages/chat/chat?id='.$room->id;
                 break;
         }
         if (empty($data) || empty($form_id)) return null;
