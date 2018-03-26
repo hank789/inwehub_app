@@ -155,10 +155,22 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                     RateLimiter::instance()->sRem('demand_formId_'.$demand->id,$form_id);
                 }
                 $data = [
-                    'keyword1' => $demand->title,
-                    'keyword2' => $this->message->data['text']?:'[图片]',
-                    'keyword3' => $this->message->user->name,
-                    'keyword4' => (string) $this->message->created_at,
+                    'keyword1' => [
+                        'value'=>$demand->title,
+                        'color'=>'#173177'
+                        ],
+                    'keyword2' => [
+                        'value'=>$this->message->data['text']?:'[图片]',
+                        'color'=>'#173177'
+                    ],
+                    'keyword3' => [
+                        'value'=>$this->message->user->name,
+                        'color'=>'#173177'
+                    ],
+                    'keyword4' => [
+                        'value'=>(string) $this->message->created_at,
+                        'color'=>'#173177'
+                    ],
                 ];
                 $page = 'pages/demandRooms/demandRooms?id='.$demand->id;
                 break;
