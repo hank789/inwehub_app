@@ -210,7 +210,7 @@ class DemandController extends controller {
             'demand_id'=>$demand->id
         ]);
         if ($formId) {
-            RateLimiter::instance()->sAdd('demand_formId_'.$demand->id,$formId,60*60*24*6);
+            RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
         }
 
         $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime(date('Y-m-d',strtotime('+7 days'))))));
@@ -258,7 +258,7 @@ class DemandController extends controller {
             'description' => $request->input('description'),
         ]);
         if ($formId) {
-            RateLimiter::instance()->sAdd('demand_formId_'.$demand->id,$formId,60*60*24*6);
+            RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
         }
         return self::createJsonData(true,['id'=>$demand->id]);
     }

@@ -149,10 +149,10 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
         switch ($room->source_type) {
             case Demand::class:
                 $demand = Demand::find($room->source_id);
-                $formIds = RateLimiter::instance()->sMembers('demand_formId_'.$demand->id);
+                $formIds = RateLimiter::instance()->sMembers('user_formId_'.$notifiable->id);
                 if ($formIds) {
                     $form_id = $formIds[0];
-                    RateLimiter::instance()->sRem('demand_formId_'.$demand->id,$form_id);
+                    RateLimiter::instance()->sRem('user_formId_'.$notifiable->id,$form_id);
                 }
                 $data = [
                     'keyword1' => [

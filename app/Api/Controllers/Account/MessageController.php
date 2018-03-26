@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Notifications\NewMessage;
+use App\Services\RateLimiter;
 use App\Services\Registrar;
 use Illuminate\Http\Request;
 use Auth;
@@ -110,6 +111,9 @@ class MessageController extends Controller
                     throw new ApiException(ApiException::TOKEN_INVALID);
                 }
                 $user = $oauthUser->user;
+                if ($request->input('formId')) {
+                    RateLimiter::instance()->sAdd('user_formId_'.$user->id,$request->input('formId'),60*60*24*6);
+                }
                 break;
         }
         $contact_id = $request->input('contact_id');
