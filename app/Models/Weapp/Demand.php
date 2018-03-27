@@ -50,7 +50,7 @@ class Demand extends Model
 {
     use BelongsToUserTrait;
     protected $table = 'demand';
-    protected $fillable = ['title', 'user_id', 'salary', 'industry', 'project_cycle', 'project_begin_time', 'description', 'expired_at', 'views','address', 'status'];
+    protected $fillable = ['title', 'user_id', 'salary', 'salary_type','industry', 'project_cycle', 'project_begin_time', 'description', 'expired_at', 'views','address', 'status'];
 
     const STATUS_DRAFT = 0;
     const STATUS_PUBLISH = 1;
@@ -60,6 +60,15 @@ class Demand extends Model
     protected $casts = [
         'address' => 'json'
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+        static::deleted(function($demand){
+            DemandUserRel::where('demand_id',$demand->id)->delete();
+            Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->delete();
+        });
+    }
 
 
     public function getIndustryName(){

@@ -437,6 +437,7 @@ class AuthController extends Controller
             throw new ApiException(ApiException::ARGS_YZM_ERROR);
         }
         $user = User::where('mobile',$mobile)->first();
+        $formId = $request->input('formId');
 
         //如果此微信号尚未关联用户且对应手机号用户已注册,将此微信号与用户作关联
         if ($oauthData->user_id == 0 && $user){
@@ -444,6 +445,9 @@ class AuthController extends Controller
             $oauthData->save();
             //登陆事件通知
             event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
+            if ($formId) {
+                RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+            }
             return static::createJsonData(true,['id'=>$user->id]);
         }
 
@@ -471,6 +475,9 @@ class AuthController extends Controller
             $oauthData->save();
             //注册事件通知
             event(new UserRegistered($user,$oauthData->id,'微信小程序'));
+            if ($formId) {
+                RateLimiter::instance()->sAdd('user_formId_'.$new_user->id,$formId,60*60*24*6);
+            }
             return static::createJsonData(true,['id'=>$new_user->id]);
         }
 
@@ -478,6 +485,9 @@ class AuthController extends Controller
         if($oauthData->user_id && $user && $oauthData->user_id == $user->id){
             //登陆事件通知
             event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
+            if ($formId) {
+                RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+            }
             return static::createJsonData(true,['id'=>$user->id]);
         }
         //手机号系统不存在
@@ -487,6 +497,9 @@ class AuthController extends Controller
             $loginUser->save();
             //登陆事件通知
             event(new SystemNotify('用户登录: '.formatSlackUser($loginUser).';设备:微信小程序',$request->all()));
+            if ($formId) {
+                RateLimiter::instance()->sAdd('user_formId_'.$loginUser->id,$formId,60*60*24*6);
+            }
             return static::createJsonData(true,['id'=>$oauthData->user_id]);
         }
         //app该手机号已注册，小程序已注册，但是小程序注册的用户手机为null，则删除小程序用户，关联到app用户
@@ -500,6 +513,9 @@ class AuthController extends Controller
             User::destroy($oauthUserId);
             //登陆事件通知
             event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
+            if ($formId) {
+                RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+            }
             return static::createJsonData(true,['id'=>$user->id]);
         }
         throw new ApiException(ApiException::BAD_REQUEST);

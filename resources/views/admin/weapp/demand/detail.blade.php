@@ -39,7 +39,7 @@
                             </div>
                             <div class="form-group">
                                 <label>地址:</label>
-                                <label>{{ $demand->address }}</label>
+                                <label>{{ $demand->address['selProvince'].$demand->address['selCity'].$demand->address['selDistrict'] }}</label>
                             </div>
                             <div class="form-group">
                                 <label>薪资:</label>

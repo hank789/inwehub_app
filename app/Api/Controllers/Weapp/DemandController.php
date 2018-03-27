@@ -56,7 +56,7 @@ class DemandController extends controller {
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'publisher_name'=>$demand_user_oauth->nickname,
+                        'publisher_name'=>$demand->user->name,
                         'publisher_avatar'=>$demand_user_oauth->avatar,
                         'publisher_title'=>$demand->user->title,
                         'publisher_company'=>$demand->user->company,
@@ -64,6 +64,7 @@ class DemandController extends controller {
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
+                        'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
                         'communicate_number' => $rooms->count(),
@@ -88,7 +89,7 @@ class DemandController extends controller {
                     $data[] = [
                         'id'    => $demand->id,
                         'title' => $demand->title,
-                        'publisher_name'=>$demand_user_oauth->nickname,
+                        'publisher_name'=>$demand->user->name,
                         'publisher_avatar'=>$demand_user_oauth->avatar,
                         'publisher_title'=>$demand->user->title,
                         'publisher_company'=>$demand->user->company,
@@ -96,6 +97,7 @@ class DemandController extends controller {
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
+                        'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
                         'communicate_number' => $rooms->count(),
@@ -136,7 +138,7 @@ class DemandController extends controller {
         }
         $data = [
             'publisher_user_id'=>$demand_oauth->user_id,
-            'publisher_name'=>$demand_oauth->nickname,
+            'publisher_name'=>$demand->user->name,
             'publisher_avatar'=>$demand_oauth->avatar,
             'publisher_title'=>$demand->user->title,
             'publisher_company'=>$demand->user->company,
@@ -146,6 +148,7 @@ class DemandController extends controller {
             'title' => $demand->title,
             'address' => $demand->address,
             'salary' => $demand->salary,
+            'salary_type' => $demand->salary_type,
             'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
             'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
             'project_begin_time' => $demand->project_begin_time,
@@ -170,6 +173,7 @@ class DemandController extends controller {
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
             'salary' => 'required|numeric',
+            'salary_type' => 'required|numeric',
             'industry' => 'required',
             'project_cycle' => 'required|integer',
             'project_begin_time' => 'required|date',
@@ -186,12 +190,14 @@ class DemandController extends controller {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $address = $request->input('address');
+        $formId = $request->input('formId');
 
         $demand = Demand::create([
             'user_id' => $user->id,
             'title' => $request->input('title'),
             'address' => $address,
             'salary' => $request->input('salary'),
+            'salary_type' => $request->input('salary_type'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
             'project_begin_time' => $request->input('project_begin_time'),
@@ -203,6 +209,10 @@ class DemandController extends controller {
             'user_oauth_id'=>$oauth->id,
             'demand_id'=>$demand->id
         ]);
+        if ($formId) {
+            RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+        }
+
         $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime(date('Y-m-d',strtotime('+7 days'))))));
         event(new SystemNotify('小程序用户发布了新的需求',$demand->toArray()));
         return self::createJsonData(true,['id'=>$demand->id]);
@@ -214,6 +224,7 @@ class DemandController extends controller {
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
             'salary' => 'required|numeric',
+            'salary_type' => 'required|numeric',
             'industry' => 'required',
             'project_cycle' => 'required|integer',
             'project_begin_time' => 'required|date',
@@ -234,16 +245,21 @@ class DemandController extends controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $address = $request->input('address');
+        $formId = $request->input('formId');
 
         $demand->update([
             'title' => $request->input('title'),
             'address' => $address,
             'salary' => $request->input('salary'),
+            'salary_type' => $request->input('salary_type'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
             'project_begin_time' => $request->input('project_begin_time'),
             'description' => $request->input('description'),
         ]);
+        if ($formId) {
+            RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+        }
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
@@ -266,6 +282,7 @@ class DemandController extends controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $demand->status = Demand::STATUS_CLOSED;
+        $demand->expired_at = date('Y-m-d');
         $demand->save();
         return self::createJsonData(true,['id'=>$demand->id]);
     }
