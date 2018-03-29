@@ -109,6 +109,10 @@ class SupportObserver implements ShouldQueue {
                     }
                     event(new Credit($support->user_id,CreditModel::KEY_NEW_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_NEW_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_NEW_UPVOTE),$support->id,'点赞动态分享'));
                     event(new Credit($source->user_id,CreditModel::KEY_READHUB_SUBMISSION_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_READHUB_SUBMISSION_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_READHUB_SUBMISSION_UPVOTE),$support->id,'动态分享被点赞'));
+                    //通知专栏作者
+                    if ($source->author_id && $source->author_id != $support->user_id) {
+                        $source->author->notify(new NewSupport($source->user_id,$support));
+                    }
                     break;
                 default:
                     return;
