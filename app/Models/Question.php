@@ -73,7 +73,7 @@ class Question extends Model
 {
     use BelongsToUserTrait,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToCategoryTrait, MorphManyDoingsTrait, MorphManyOrdersTrait;
     protected $table = 'questions';
-    protected $fillable = ['title', 'user_id','category_id','rate','question_type','description','tags','price','hide','status','device','data'];
+    protected $fillable = ['title', 'user_id','category_id','rate','hot_rate','question_type','description','tags','price','hide','status','device','data'];
 
 
     protected $casts = [
@@ -382,7 +382,8 @@ class Question extends Model
         $timeDiff = $created - $startTime;
         $views = $this->answers()->sum('views');
         $answers = $this->answers;
-        $z = $views * 0.6 + $answers * 1 + $this->followers * 1.5;
+        $supports = $this->answers()->sum('supports');
+        $z = $views + $answers * 2 + $this->followers * 1.5 + $supports + 1;
         if ($this->question_type == 1) {
             $bestAnswer = $this->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
             if ($bestAnswer) {
@@ -392,8 +393,16 @@ class Question extends Model
         }
         $y = $this->answers()->sum('pay_for_views') + 1;
 
-        $rate =  (log10($z) * $y) + ($timeDiff / 45000);
+        $rate =  (log10($z) * $y) + ($timeDiff / 90000);
         $this->rate = $rate;
+        //计算热门排名
+        if ($this->question_type == 1) {
+            //专业问答
+            $this->hot_rate = $y + 3 * $supports;
+        } else {
+            //互动问答
+            $this->hot_rate = $this->followers + $answers + $supports + 1;
+        }
         $this->save();
     }
 

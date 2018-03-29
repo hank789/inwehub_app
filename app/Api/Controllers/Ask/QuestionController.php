@@ -809,10 +809,24 @@ class QuestionController extends Controller
 
     //问答社区列表
     public function questionList(Request $request){
-        $orderBy = $request->input('order_by',2);//1最新，2最热
+        $orderBy = $request->input('order_by',3);//1最新，2最热，3综合，
         $query = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);
-
-        $questions = $query->orderBy($orderBy==1?'questions.updated_at':'questions.rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $queryOrderBy = 'questions.rate';
+        switch ($orderBy) {
+            case 1:
+                //最新
+                $queryOrderBy = 'questions.updated_at';
+                break;
+            case 2:
+                //最热
+                $queryOrderBy = 'questions.hot_rate';
+                break;
+            case 3:
+                //综合
+                $queryOrderBy = 'questions.rate';
+                break;
+        }
+        $questions = $query->orderBy($queryOrderBy,'desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
