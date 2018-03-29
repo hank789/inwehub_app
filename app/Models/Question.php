@@ -377,7 +377,7 @@ class Question extends Model
 
     //计算排名积分
     public function calculationRate(){
-        $startTime = 1473696439; // strtotime('2016-09-12 16:07:19')
+        $startTime = 1498665600; // strtotime('2017-06-29')
         $created = strtotime($this->created_at);
         $timeDiff = $created - $startTime;
         $views = $this->answers()->sum('views');
