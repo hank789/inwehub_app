@@ -110,7 +110,13 @@ class QuestionController extends Controller
             $support_uids = Support::where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->take(20)->pluck('user_id');
             $supporters = [];
             if ($support_uids) {
-                $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+                foreach ($support_uids as $support_uid) {
+                    $supporter = User::find($support_uid);
+                    $supporters[] = [
+                      'name' => $supporter->name,
+                      'uuid' => $supporter->uuid
+                    ];
+                }
             }
             $answers_data[] = [
                 'id' => $bestAnswer->id,
@@ -809,10 +815,24 @@ class QuestionController extends Controller
 
     //问答社区列表
     public function questionList(Request $request){
-        $orderBy = $request->input('order_by',2);//1最新，2最热
+        $orderBy = $request->input('order_by',3);//1最新，2最热，3综合，
         $query = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);
-
-        $questions = $query->orderBy($orderBy==1?'questions.updated_at':'questions.rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $queryOrderBy = 'questions.rate';
+        switch ($orderBy) {
+            case 1:
+                //最新
+                $queryOrderBy = 'questions.updated_at';
+                break;
+            case 2:
+                //最热
+                $queryOrderBy = 'questions.hot_rate';
+                break;
+            case 3:
+                //综合
+                $queryOrderBy = 'questions.rate';
+                break;
+        }
+        $questions = $query->orderBy($queryOrderBy,'desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
@@ -882,7 +902,13 @@ class QuestionController extends Controller
                 }
                 $support_uids = Support::where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->take(20)->pluck('user_id');
                 if ($support_uids) {
-                    $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+                    foreach ($support_uids as $support_uid) {
+                        $supporter = User::find($support_uid);
+                        $supporters[] = [
+                            'name' => $supporter->name,
+                            'uuid' => $supporter->uuid
+                        ];
+                    }
                 }
                 $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
                 if ($payOrder) {

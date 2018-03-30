@@ -146,6 +146,7 @@ class TaskLogic {
                     $task_type = 2;
                     $task_type_description = '专业问答';
                     $answer = Answer::find($task->source_id);
+                    if (!$answer) continue;
                     $question = Question::find($answer->question_id);
                     $object_id = $question->id;
                     $status = $question->status;

@@ -99,6 +99,7 @@ class NotificationController extends Controller
             $total_unread += $im_count;
             $last_message = MessageRoom::where('room_id',$im_room->id)->orderBy('id','desc')->first();
             $contact = User::find($im_room->user_id==$user->id?$im_room->source_id:$im_room->user_id);
+            if (!$contact) continue;
             $item = [
                 'unread_count' => $im_count,
                 'avatar'       => $contact->avatar,

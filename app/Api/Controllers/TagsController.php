@@ -148,7 +148,13 @@ class TagsController extends Controller {
                     }
                     $support_uids = Support::where('supportable_type','=',get_class($bestAnswer))->where('supportable_id','=',$bestAnswer->id)->take(20)->pluck('user_id');
                     if ($support_uids) {
-                        $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+                        foreach ($support_uids as $support_uid) {
+                            $supporter = User::find($support_uid);
+                            $supporters[] = [
+                                'name' => $supporter->name,
+                                'uuid' => $supporter->uuid
+                            ];
+                        }
                     }
                     $payOrder = $bestAnswer->orders()->where('user_id',$user->id)->where('return_param','view_answer')->first();
                     if ($payOrder) {

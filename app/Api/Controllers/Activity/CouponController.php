@@ -65,7 +65,7 @@ class CouponController extends Controller {
                 }
                 break;
             case Coupon::COUPON_TYPE_DAILY_SIGN_BIG:
-                $coupon_value = rand(3,5);
+                $coupon_value = rand(1,3);
                 $expire_at = date('Y-m-d 23:59:59');
                 $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_DAILY_SIGN_BIG)->where('expire_at',$expire_at)->first();
                 if(!$coupon){

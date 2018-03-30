@@ -217,7 +217,13 @@ class SubmissionController extends Controller {
             ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
         $supporters = [];
         if ($support_uids) {
-            $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+            foreach ($support_uids as $support_uid) {
+                $supporter = User::find($support_uid);
+                $supporters[] = [
+                    'name' => $supporter->name,
+                    'uuid' => $supporter->uuid
+                ];
+            }
         }
         $attention_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
         $return['is_followed_author'] = $attention_user ?1 :0;

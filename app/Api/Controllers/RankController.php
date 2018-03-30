@@ -8,6 +8,7 @@ use App\Models\Answer;
 use App\Models\Article;
 use App\Models\Attention;
 use App\Models\Comment;
+use App\Models\Credit;
 use App\Models\Support;
 use App\Models\User;
 use App\Models\UserData;
@@ -143,27 +144,29 @@ class RankController extends Controller
     //用户成长榜
     public function userGrowth(Request $request)
     {
-        $userDatas = UserData::whereNotIn('user_id',getSystemUids())->orderBy('credits','desc')->take(20)->get();
+        $beginTime = date('Y-m-01 00:00:00');
+        $endTime = date('Y-m-d 23:59:59',strtotime($beginTime.' +1 month -1 day'));
+        $userCredits = Credit::selectRaw('sum(credits) as total_credits,user_id')->whereNotIn('user_id',getSystemUids())->whereBetween('created_at',[$beginTime,$endTime])->groupBy('user_id')->orderBy('total_credits','desc')->take(20)->get();
         $loginUser = $request->user();
         event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']查看了成长榜',[]));
         $data = [];
-        foreach ($userDatas as $key=>$userData) {
+        foreach ($userCredits as $key=>$userCredit) {
             $is_followed = 0;
             if($loginUser) {
-                $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($userData->user))->where('source_id','=',$userData->user_id)->first();
+                $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($userCredit->user))->where('source_id','=',$userCredit->user_id)->first();
                 if ($attention){
                     $is_followed = 1;
                 }
             }
             $data[] = [
                 'rank' => $key+1,
-                'user_id' => $userData->user_id,
-                'uuid'    => $userData->user->uuid,
-                'user_name' => $userData->user->name,
-                'is_expert' => $userData->user->is_expert,
-                'credits'     => $userData->credits,
+                'user_id' => $userCredit->user_id,
+                'uuid'    => $userCredit->user->uuid,
+                'user_name' => $userCredit->user->name,
+                'is_expert' => $userCredit->user->is_expert,
+                'credits'     => $userCredit->total_credits,
                 'is_followed' => $is_followed,
-                'user_avatar_url' => $userData->user->avatar
+                'user_avatar_url' => $userCredit->user->avatar
             ];
         }
         return self::createJsonData(true,$data);

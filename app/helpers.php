@@ -1210,7 +1210,7 @@ if (!function_exists('getDailySignInfo')) {
                 return ['credits'=>10,'coins'=>0,'coupon_type'=>0];
                 break;
             case 3:
-                return ['credits'=>15,'coins'=>0,'coupon_type'=>2];
+                return ['credits'=>15,'coins'=>0,'coupon_type'=>0];
                 break;
             case 4:
                 return ['credits'=>20,'coins'=>0,'coupon_type'=>0];

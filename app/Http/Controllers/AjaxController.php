@@ -159,6 +159,27 @@ class AjaxController extends Controller
 
                 $users[] = $user;
             }
+        } else {
+            $users = User::where('id','<>',$request->user()->id)->take(10)->get();
+            $users->map(function($user) use($tagIds,$question) {
+                $user->tag_name = '';
+                $user->tag_answers = 0;
+                if ($tagIds) {
+                    $userTag = UserTag::where("user_id","=",$user->id)->whereIn("tag_id",$tagIds)->orderBy("answers","desc")->orderBy("created_at","desc")->first();
+                    if($userTag){
+                        $tag = Tag::find($userTag->tag_id);
+                        if($tag){
+                            $user->tag_name = $tag->name;
+                        }
+                        $user->tag_answers = $userTag->answers;
+                    }
+                }
+
+                $user->avatar = $user->getAvatarUrl();
+                $user->url = route('auth.space.index',['user_id'=>$user->user_id]);
+                $user->isInvited = 0;
+                $user->isExpert = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+            });
         }
 
         return $this->ajaxSuccess($users);

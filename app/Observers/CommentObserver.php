@@ -222,6 +222,22 @@ class CommentObserver implements ShouldQueue {
                             'extra_body' => '原文：'.$submission->formatTitle()
                         ]));
                 }
+                //通知专栏作者
+                if ($submission->author_id != $comment->user_id && !isset($notifyUids[$submission->author_id])) {
+                    $notifyUids[$submission->user_id] = $submission->author_id;
+                    $notifyUser = User::find($submission->author_id);
+                    $notifyUser->notify(new SubmissionReplied($submission->author_id,
+                        [
+                            'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
+                            'name'   => $user->name,
+                            'avatar' => $user->avatar,
+                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'分享'),
+                            'comment_id' => $comment->id,
+                            'body'   => $comment->formatContent(),
+                            'notification_type' => Notification::NOTIFICATION_TYPE_READ,
+                            'extra_body' => '原文：'.$submission->formatTitle()
+                        ]));
+                }
                 break;
             default:
                 return;
