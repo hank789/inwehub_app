@@ -266,7 +266,8 @@ class ProfileController extends Controller
 
         $info['questions'] = $is_self?$user->userData->questions:$user->questions->where('hide',0)->count();
         $info['answers'] = $user->userData->answers;
-        $info['supports'] = $user->answers->sum('supports') + $user->submissions->sum('upvotes');
+        $authSupport = Submission::where('author_id',$user->id)->sum('upvotes');
+        $info['supports'] = $user->answers->sum('supports') + $user->submissions->sum('upvotes') + $authSupport;
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
         $info['projects'] = $user->companyProjects->count();
