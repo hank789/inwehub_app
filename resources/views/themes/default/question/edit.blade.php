@@ -19,7 +19,7 @@
         <form id="questionForm" method="POST" role="form" action="{{ route('ask.question.update') }}">
             <input type="hidden" id="editor_token" name="_token" value="{{ csrf_token() }}">
             <input type="hidden" name="id" value="{{ $question->id }}" />
-            <input type="hidden" id="tags" name="tags" value="{{ $question->tags->implode('name',',') }}" />
+            <input type="hidden" id="tags" name="tags" value="{{ $question->tags->implode('id',',') }}" />
 
             <div class="form-group @if($errors->has('title')) has-error @endif ">
                 <label for="title">问题标题:</label>
