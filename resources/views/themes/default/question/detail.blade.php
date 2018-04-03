@@ -5,7 +5,7 @@
 @section('seo_description'){{ parse_seo_template('seo_question_description',$question) }}@endsection
 
 @section('css')
-    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
+    <link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
 @endsection
 
 @section('content')
