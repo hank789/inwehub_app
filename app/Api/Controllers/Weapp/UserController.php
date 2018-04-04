@@ -35,7 +35,7 @@ class UserController extends controller {
         $userInfo = $wxxcx->getLoginInfo($code);
 
         if(RateLimiter::instance()->increase('weapp:getUserInfo',$userInfo['openid'],2,1)){
-            sleep(2);
+            sleep(1);
         }
 
         //获取解密后的用户信息
