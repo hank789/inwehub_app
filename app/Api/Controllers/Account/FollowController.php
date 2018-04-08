@@ -436,8 +436,9 @@ class FollowController extends Controller
         $model = App::make($sourceClassMap[$source_type]);
 
         $query = $request->user()->attentions()->where('source_type','=',$sourceClassMap[$source_type]);
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
 
-        $attentions = $query->orderBy('attentions.created_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $attentions = $query->orderBy('attentions.created_at','desc')->simplePaginate($perPage);
         $return = $attentions->toArray();
         $data = [];
         foreach($attentions as $attention){
