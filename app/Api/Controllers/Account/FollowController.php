@@ -468,8 +468,8 @@ class FollowController extends Controller
                     $item['is_followed'] = 1;
                     break;
                 case 'tags':
-                    $item['tag_id'] = $info->id;
-                    $item['tag_name'] = $info->name;
+                    $item['value'] = $info->id;
+                    $item['text'] = $info->name;
                     $item['tag_logo'] = $info->logo;
                     $item['tag_summary'] = $info->summary;
                     break;
