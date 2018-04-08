@@ -321,6 +321,7 @@ class FollowController extends Controller
         $ids = $request->input('ids');
         $user = $request->user();
         $fields = [];
+        Attention::where("user_id",'=',$user->id)->where('source_type','=',Tag::class)->delete();
         foreach ($ids as $id) {
             $source = Tag::find($id);
             if(empty($source)){
