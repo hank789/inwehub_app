@@ -5,6 +5,8 @@ namespace App\Models\Feed;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Comment;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Submission;
@@ -256,6 +258,7 @@ class Feed extends Model
                     ->where('supportable_id',$submission->id)
                     ->where('supportable_type',Submission::class)
                     ->exists();
+                $group = Group::find($submission->group_id);
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
                     'img'       => $submission->data['img'],
@@ -271,7 +274,8 @@ class Feed extends Model
                     'supporter_list' => $supporters,
                     'is_upvoted'     => $upvote ? 1 : 0,
                     'submission_type' => $submission->type,
-                    'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get()
+                    'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
+                    'group'    => $group->toArray()
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:

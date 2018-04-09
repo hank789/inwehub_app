@@ -67,6 +67,18 @@ class FeedController extends Controller
                 if (!$search_user) throw new ApiException(ApiException::BAD_REQUEST);
                 $query = $query->where('user_id', $search_user->id)->where('feed_type', '!=', Feed::FEED_TYPE_FOLLOW_USER);
                 break;
+            case 6:
+                //推荐
+                $attentionTags = $user->attentions()->where('source_type', '=', Tag::class)->pluck('source_id')->toArray();
+                $query = $query->where('feed_type', '!=', Feed::FEED_TYPE_FOLLOW_USER);
+                if ($attentionTags) {
+                    $query = $query->orWhere(function ($query) use ($attentionTags) {
+                        foreach ($attentionTags as $attentionTag) {
+                            $query->orWhereRaw("locate('[" . $attentionTag . "]',tags)>0");
+                        }
+                    });
+                }
+                break;
         }
 
         $feeds = $query->distinct()->orderBy('top', 'desc')->latest()
@@ -99,5 +111,6 @@ class FeedController extends Controller
 
         return self::createJsonData(true,$return);
     }
+
 
 }

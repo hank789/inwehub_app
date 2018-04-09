@@ -38,7 +38,8 @@ class CreateGroupsTables extends Migration
         Schema::table('submissions', function (Blueprint $table) {
             $table->integer("group_id")->after('user_id')->unsigned()->index()->default(0);
             $table->integer('views')->after('user_id')->unsigned()->default(0);
-            $table->integer("is_recommend")->default(0);
+            $table->boolean('public')->after('user_id')->default(1);
+            $table->integer("is_recommend")->after('user_id')->default(0);
         });
     }
 

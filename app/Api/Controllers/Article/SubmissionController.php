@@ -6,6 +6,7 @@ use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Doing;
+use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
@@ -70,6 +71,7 @@ class SubmissionController extends Controller {
         if (!$groupMember) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        $group = Group::find($group_id);
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
@@ -152,6 +154,7 @@ class SubmissionController extends Controller {
                 'category_name' => $category->name,
                 'category_id'   => $category->id,
                 'group_id'      => $request->input('group_id'),
+                'public'        => $group->public,
                 'rate'          => firstRate(),
                 'user_id'       => $user->id,
                 'data'          => $data,

@@ -11,6 +11,7 @@ use App\Models\Submission;
 use App\Models\Support;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -292,7 +293,6 @@ class GroupController extends Controller
         return self::createJsonData(true,$return);
     }
 
-
     //我的圈子
     public function mine(Request $request) {
         $user = $request->user();
@@ -319,6 +319,37 @@ class GroupController extends Controller
             ];
         }
         return self::createJsonData(true,$return);
+    }
+
+    //随机推荐圈子内容
+    public function hotRecommend(Request $request){
+        $submissions = Submission::where('public',1)->where('upvotes','>',1)->orderBy(DB::raw('RAND()'))->take(5)->get();
+        $return = $submissions->toArray();
+        $list = [];
+        $user = $request->user();
+        foreach ($submissions as $submission) {
+            $upvote = Support::where('user_id',$user->id)
+                ->where('supportable_id',$submission['id'])
+                ->where('supportable_type',Submission::class)
+                ->exists();
+            $bookmark = Collection::where('user_id',$user->id)
+                ->where('source_id',$submission['id'])
+                ->where('source_type',Submission::class)
+                ->exists();
+            $group = Group::find($submission->group_id);
+            $item = $submission->toArray();
+            $item['title'] = strip_tags($item['title'],'<a><span>');
+            $item['is_upvoted'] = $upvote ? 1 : 0;
+            $item['is_bookmark'] = $bookmark ? 1: 0;
+            $item['tags'] = $submission->tags()->get()->toArray();
+            $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
+            $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
+            $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
+            $item['group'] = $group->toArray();
+            $list[] = $item;
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
     }
 
 }
