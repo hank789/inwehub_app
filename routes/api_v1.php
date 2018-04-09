@@ -475,6 +475,32 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'readhub'], fu
     Route::post('mySubmission','ReadhubController@mySubmission');
 });
 
+//圈子
+Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'group'], function() {
+    //创建圈子
+    Route::post('store','GroupController@store');
+    //修改圈子
+    Route::post('update','GroupController@update');
+    //加入圈子
+    Route::post('join','GroupController@join');
+    //圈子分享列表
+    Route::post('submissionList','GroupController@submissionList');
+    //圈子成员列表
+    Route::post('members','GroupController@members');
+    //圈子精华列表
+    Route::post('recommendList','GroupController@recommendList');
+    //圈子详情
+    Route::post('detail','GroupController@detail');
+    //审核通过圈子成员
+    Route::post('joinAgree','GroupController@joinAgree');
+    //我的圈子
+    Route::post('mine','GroupController@mine');
+    //拒绝通过圈子成员
+    Route::post('joinReject','GroupController@joinReject');
+    //退出圈子
+    Route::post('quit','GroupController@quit');
+});
+
 //文章
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','prefix' => 'article'], function() {
     //文章列表

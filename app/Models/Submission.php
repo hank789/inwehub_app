@@ -98,7 +98,7 @@ class Submission extends Model {
      */
     protected $fillable = [
         'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate',
-        'upvotes', 'downvotes', 'user_id', 'data', 'approved_at',
+        'upvotes', 'downvotes', 'user_id', 'views', 'data', 'approved_at',
         'deleted_at', 'comments_number'
     ];
 

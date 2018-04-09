@@ -68,6 +68,7 @@ class SubmissionController extends Controller {
             $this->validate($request, [
                 'url'   => 'required|url',
                 'title' => 'required|between:1,6000',
+                'group_id' => 'required|integer'
             ]);
 
             //检查url是否重复
@@ -126,6 +127,7 @@ class SubmissionController extends Controller {
             $this->validate($request, [
                 'title' => 'required|between:1,6000',
                 'type'  => 'required|in:link,text',
+                'group_id' => 'required|integer'
             ]);
 
             $data = $this->uploadFile($request->input('photos'));
@@ -204,6 +206,7 @@ class SubmissionController extends Controller {
         if (!$submission) {
             throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
         }
+        $submission->increment('views');
         $return = $submission->toArray();
         $upvote = Support::where('user_id',$user->id)
             ->where('supportable_id',$submission->id)
