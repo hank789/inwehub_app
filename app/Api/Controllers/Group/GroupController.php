@@ -222,8 +222,28 @@ class GroupController extends Controller
 
     //圈子分享列表
     public function submissionList(Request $request) {
-        $this->validate($request,['id'=>'required|integer']);
-        $submissions = Submission::where('group_id',$request->input('id'))->orderBy('rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $this->validate($request,[
+            'id'=>'required|integer',
+            'type' => 'required|in:1,2,3'
+        ]);
+        $type = $request->input('type');
+        $group = Group::find($request->input('id'));
+        $query = Submission::where('group_id',$request->input('id'));
+        switch ($type) {
+            case 1:
+                //全部
+                break;
+            case 2:
+                //圈主
+                $query = $query->where('user_id',$group->user_id);
+                break;
+            case 3:
+                //精华
+                $query = $query->where('is_recommend',1);
+                break;
+        }
+
+        $submissions = $query->orderBy('rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $user = $request->user();
         $return = $submissions->toArray();
         $list = [];
@@ -272,35 +292,6 @@ class GroupController extends Controller
         return self::createJsonData(true,$return);
     }
 
-    //圈子精华
-    public function recommendList(Request $request) {
-        $this->validate($request,['id'=>'required|integer']);
-        $submissions = Submission::where('group_id',$request->input('id'))->where('is_recommend',1)->orderBy('rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
-        $user = $request->user();
-        $return = $submissions->toArray();
-        $list = [];
-        foreach ($submissions as $submission) {
-            $upvote = Support::where('user_id',$user->id)
-                ->where('supportable_id',$submission['id'])
-                ->where('supportable_type',Submission::class)
-                ->exists();
-            $bookmark = Collection::where('user_id',$user->id)
-                ->where('source_id',$submission['id'])
-                ->where('source_type',Submission::class)
-                ->exists();
-            $item = $submission->toArray();
-            $item['title'] = strip_tags($item['title'],'<a><span>');
-            $item['is_upvoted'] = $upvote ? 1 : 0;
-            $item['is_bookmark'] = $bookmark ? 1: 0;
-            $item['tags'] = $submission->tags()->get()->toArray();
-            $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
-            $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
-            $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
-            $list[] = $item;
-        }
-        $return['data'] = $list;
-        return self::createJsonData(true, $return);
-    }
 
     //我的圈子
     public function mine(Request $request) {
@@ -316,6 +307,7 @@ class GroupController extends Controller
                 'logo' => $group->logo,
                 'public' => $group->public,
                 'subscribers' => $group->subscribers,
+                'articles'    => $group->articles,
                 'owner' => [
                     'id' => $group->user->id,
                     'uuid' => $group->user->uuid,

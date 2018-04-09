@@ -44,7 +44,7 @@ class Group extends Model
     use SoftDeletes,BelongsToUserTrait;
 
     protected $table = 'groups';
-    protected $fillable = ['user_id','name','description','logo','public','audit_status','subscribers', 'articles'];
+    protected $fillable = ['user_id','name','description','logo','public','audit_status','subscribers', 'articles','failed_reason'];
 
 
     const AUDIT_STATUS_DRAFT = 0;
@@ -53,6 +53,12 @@ class Group extends Model
 
     public function members() {
         return $this->hasMany(GroupMember::class, 'group_id');
+    }
+
+    public static function search($word)
+    {
+        $list = self::where('name','like',"%$word%");
+        return $list;
     }
 
 }

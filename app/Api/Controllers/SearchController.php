@@ -3,6 +3,8 @@
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Attention;
 use App\Models\Collection;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Support;
@@ -154,6 +156,44 @@ class SearchController extends Controller
         return self::createJsonData(true, $return);
     }
 
-
-
+    public function group(Request $request) {
+        $validateRules = [
+            'search_word' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $this->searchNotify($user,$request->input('search_word'),'在栏目[圈子]');
+        $groups = Group::search($request->input('search_word'))->where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $return = $groups->toArray();
+        $return['data'] = [];
+        foreach ($groups as $group) {
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+            $is_joined = -1;
+            if ($groupMember) {
+                $is_joined = $groupMember->audit_status;
+            }
+            if ($user->id == $group->user_id) {
+                $is_joined = 3;
+            }
+            $return['data'][] = [
+                'id' => $group->id,
+                'name' => $group->name,
+                'description' => $group->description,
+                'logo' => $group->logo,
+                'public' => $group->public,
+                'subscribers' => $group->subscribers,
+                'articles'    => $group->articles,
+                'is_joined'  => $is_joined,
+                'owner' => [
+                    'id' => $group->user->id,
+                    'uuid' => $group->user->uuid,
+                    'name' => $group->user->name,
+                    'avatar' => $group->user->avatar,
+                    'description' => $group->user->description,
+                    'is_expert' => $group->user->is_expert
+                ]
+            ];
+        }
+        return self::createJsonData(true,$return);
+    }
 }

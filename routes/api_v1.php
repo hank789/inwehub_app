@@ -487,8 +487,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'group'], func
     Route::post('submissionList','GroupController@submissionList');
     //圈子成员列表
     Route::post('members','GroupController@members');
-    //圈子精华列表
-    Route::post('recommendList','GroupController@recommendList');
     //圈子详情
     Route::post('detail','GroupController@detail');
     //审核通过圈子成员

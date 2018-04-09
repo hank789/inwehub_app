@@ -9,6 +9,8 @@ use App\Logic\TaskLogic;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Feed\Feed;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Notification;
 use App\Models\Question;
 use App\Models\Submission;
@@ -40,6 +42,7 @@ class CommentObserver implements ShouldQueue {
     public function created(Comment $comment)
     {
         $source = $comment->source;
+        $members = [];
         switch ($comment->source_type) {
             case 'App\Models\Article':
                 $title = '活动';
@@ -143,6 +146,11 @@ class CommentObserver implements ShouldQueue {
                 $submission = $source;
                 $submission->increment('comments_number');
                 $submission_user = User::find($submission->user_id);
+                $group = Group::find($submission->group_id);
+                if (!$group->public) {
+                    //私密圈子的分享只通知圈子内的人
+                    $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
+                }
                 if ($submission->type == 'link' && false) {
                     //评论的feed不产生，全部在发布文章上聚合显示
                     feed()
@@ -249,6 +257,7 @@ class CommentObserver implements ShouldQueue {
         if ($comment->mentions) {
             foreach ($comment->mentions as $m_uid) {
                 if (isset($notifyUids[$m_uid])) continue;
+                if ($members && !in_array($m_uid,$members)) continue;
                 $mUser = User::find($m_uid);
                 $mUser->notify(new UserCommentMentioned($m_uid,$comment));
             }

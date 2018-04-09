@@ -6,6 +6,7 @@ use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Doing;
+use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
@@ -63,6 +64,11 @@ class SubmissionController extends Controller {
             } else {
                 if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
+        }
+        $group_id = $request->input('group_id',0);
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+        if (!$groupMember) {
+            throw new ApiException(ApiException::BAD_REQUEST);
         }
         if ($request->type == 'link') {
             $this->validate($request, [
@@ -145,6 +151,7 @@ class SubmissionController extends Controller {
                 'type'          => $request->type,
                 'category_name' => $category->name,
                 'category_id'   => $category->id,
+                'group_id'      => $request->input('group_id'),
                 'rate'          => firstRate(),
                 'user_id'       => $user->id,
                 'data'          => $data,
