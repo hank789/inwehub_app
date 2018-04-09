@@ -52,8 +52,9 @@ class GroupController extends AdminController {
         return view('admin.group.edit')->with(compact('group'));
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request){
         $validateRules = [
+            'id'      => 'required',
             'name'   => 'required',
             'audit_status' => 'required|integer',
             'description'   => 'required',
@@ -61,7 +62,7 @@ class GroupController extends AdminController {
             'public' => 'required'
         ];
         $this->validate($request,$validateRules);
-        $group = Group::find($id);
+        $group = Group::find($request->input('id'));
         $img_url = '';
         if($request->hasFile('img_url')){
             $file = $request->file('img_url');

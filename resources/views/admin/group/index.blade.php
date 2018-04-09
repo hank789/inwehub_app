@@ -64,8 +64,8 @@
                                         <th>圈子名称</th>
                                         <th>logo</th>
                                         <th>描述</th>
-                                        <th>公司</th>
                                         <th>公开</th>
+                                        <th>人数/贴子数</th>
                                         <th>创建时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
@@ -78,14 +78,13 @@
                                             <td>{{ $group->name }}</td>
                                             <td><img width="100" height="100" src="{{ $group->logo }}"></td>
                                             <td>{{ $group->description }}</td>
-                                            <td>{{ $group->public }}</td>
+                                            <td>{{ $group->public?'公开':'私密' }}</td>
+                                            <td>{{ $group->subscribers.'/'.$group->articles }}</td>
                                             <td>{{ $group->created_at }}</td>
                                             <td><span class="label @if($group->audit_status===0) label-warning @elseif($group->audit_status===2) label-danger @elseif($group->audit_status===1) label-success @endif">{{ trans_authentication_status($group->audit_status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    @if ($user->user_id)
-                                                        <a class="btn btn-default" href="{{ route('admin.group.edit',['id'=>$group->id]) }}" data-toggle="tooltip" title="基本信息"><i class="fa fa-edit"></i></a>
-                                                    @endif
+                                                    <a class="btn btn-default" href="{{ route('admin.group.edit',['id'=>$group->id]) }}" data-toggle="tooltip" title="基本信息"><i class="fa fa-edit"></i></a>
                                                 </div>
                                             </td>
                                         </tr>

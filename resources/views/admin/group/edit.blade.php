@@ -29,9 +29,12 @@
                         <input type="hidden" id="author_id" name="author_id" value="{{ $group->user_id }}" />
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
-                            <div class="form-group">
+                            <div class="form-group @if ($errors->first('name')) has-error @endif">
                                 <label>圈子名称</label>
                                 <input type="text" name="name" class="form-control "  placeholder="圈子名称" value="{{ old('name',$group->name) }}">
+                                @if ($errors->first('name'))
+                                    <span class="help-block">{{ $errors->first('name') }}</span>
+                                @endif
                             </div>
 
                             <div class="form-group">
@@ -62,7 +65,7 @@
                                 @if ($errors->has('description')) <p class="help-block">{{ $errors->first('description') }}</p> @endif
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @if ($errors->first('public')) has-error @endif">
                                 <label>公开</label>
                                 <div class="radio">
                                     <label>
@@ -74,7 +77,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group @if ($errors->first('audit_status')) has-error @endif">
                                 <label>审核状态</label>
                                 <div class="radio">
                                     <label>
