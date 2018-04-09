@@ -27,6 +27,17 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-users"></i> <span>圈子</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_group">
+            <li><a href="{{ route('admin.group.index') }}"><i class="fa fa-circle-o"></i> 圈子管理</a></li>
+
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-building"></i> <span>企业</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
