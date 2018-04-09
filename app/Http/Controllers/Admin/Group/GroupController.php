@@ -60,7 +60,8 @@ class GroupController extends AdminController {
             'audit_status' => 'required|integer',
             'description'   => 'required',
             'author_id' => 'required',
-            'public' => 'required'
+            'public' => 'required',
+            'failed_reason' => 'required_if:audit_status,2'
         ];
         $this->validate($request,$validateRules);
         $group = Group::find($request->input('id'));
@@ -82,19 +83,22 @@ class GroupController extends AdminController {
                 'logo'         => $img_url
             ]);
         } else {
+            $oldStatus = $group->audit_status;
             $group->audit_status = $request->input('audit_status');
             $group->name = $request->input('name');
             $group->description = $request->input('description');
             $group->public = $request->input('public');
             $group->user_id = $request->input('author_id');
+            $group->failed_reason = $request->input('failed_reason');
 
             if ($img_url) {
                 $group->logo = $img_url;
             }
             $group->save();
+            if ($oldStatus != $request->input('audit_status')) {
+                $group->user->notify(new GroupAuditResult($group->user_id,$group));
+            }
         }
-
-
         return $this->success(route('admin.group.index'),'圈子操作成功');
     }
 
@@ -108,21 +112,6 @@ class GroupController extends AdminController {
             $group->user->notify(new GroupAuditResult($group->user_id,$group));
         }
         return $this->success(route('admin.group.index'),'审核成功');
-
-    }
-
-    /**
-     * 审核不通过
-     */
-    public function cancelVerify(Request $request)
-    {
-        $ids = $request->input('id');
-        Group::whereIn('id',$ids)->update(['status'=>Group::AUDIT_STATUS_REJECT]);
-        foreach ($ids as $id) {
-            $group = Group::find($id);
-            $group->user->notify(new GroupAuditResult($group->user_id,$group));
-        }
-        return $this->success(route('admin.group.index'),'圈子审核未通过');
 
     }
 

@@ -300,7 +300,6 @@ Route::group(['prefix' => 'group','namespace'=>'Group'], function() {
     Route::get('index',['as'=>'admin.group.index','uses'=>'GroupController@index']);
     Route::get('create',['as'=>'admin.group.create','uses'=>'GroupController@create']);
     Route::post('verify',['as'=>'admin.group.verify','uses'=>'GroupController@verify']);
-    Route::post('cancelVerify',['as'=>'admin.group.cancelVerify','uses'=>'GroupController@cancelVerify']);
     Route::get('edit/{id}',['as'=>'admin.group.edit','uses'=>'GroupController@edit'])->where(['id'=>'[0-9]+']);
     Route::post('update',['as'=>'admin.group.update','uses'=>'GroupController@update']);
 });

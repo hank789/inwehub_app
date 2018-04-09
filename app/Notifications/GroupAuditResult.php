@@ -82,7 +82,7 @@ class GroupAuditResult extends Notification implements ShouldQueue,ShouldBroadca
             'avatar' => config('image.user_default_avatar'),
             'title'  => $this->getTitle(),
             'body'   => $this->group->name,
-            'extra_body' => ''
+            'extra_body' => $this->group->failed_reason
         ];
     }
 
@@ -105,7 +105,7 @@ class GroupAuditResult extends Notification implements ShouldQueue,ShouldBroadca
             'keyword1' => $this->group->name,
             'keyword2' => date('Y-m-d H:i',strtotime($this->group->created_at)),
             'keyword3' => $this->getTitle(),
-            'remark'   => '点击查看详情！',
+            'remark'   => $this->group->failed_reason ? $this->group->failed_reason:'点击查看详情！',
             'template_id' => $template_id,
             'target_url' => config('app.mobile_url').'#/group/'.$this->group->id
         ];

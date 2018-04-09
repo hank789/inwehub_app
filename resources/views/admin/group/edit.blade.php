@@ -87,9 +87,14 @@
                                         <input type="radio" name="audit_status" value="1" @if($group->audit_status===1) checked @endif /> 已审核
                                     </label>
                                     <label>
-                                        <input type="radio" name="audit_status" value="2" @if($group->audit_status===2) checked @endif /> 已拒绝
+                                        <input type="radio" name="audit_status" value="2" @if($group->audit_status===2) checked @endif /> 审核失败
                                     </label>
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label>审核失败的原因</label>
+                                <textarea class="form-control" name="failed_reason" placeholder="仅审核失败的情况下填写">{{ $group->failed_reason }}</textarea>
+                                @if ($errors->has('failed_reason')) <p class="help-block">{{ $errors->first('failed_reason') }}</p> @endif
                             </div>
 
                         </div>
