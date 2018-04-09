@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Group;
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
 use App\Models\Attention;
@@ -53,6 +54,7 @@ class GroupController extends Controller
             'audit_status' => Group::AUDIT_STATUS_DRAFT,
             'subscribers'  => 1
         ]);
+        event(new SystemNotify('用户'.formatSlackUser($user).'创建了圈子:'.$group->name, $group->toArray()));
         return self::createJsonData(true,['id'=>$group->id]);
     }
 

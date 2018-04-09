@@ -14,7 +14,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ApplyGroupMemberResult extends Notification implements ShouldQueue,ShouldBroadcast
+class GroupMemberApplyResult extends Notification implements ShouldQueue,ShouldBroadcast
 {
     use Queueable,InteractsWithSockets;
 

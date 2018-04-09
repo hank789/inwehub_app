@@ -2,6 +2,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Models\Groups\Group;
 use App\Models\UserOauth;
+use App\Notifications\GroupAuditResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -102,6 +103,10 @@ class GroupController extends AdminController {
     {
         $ids = $request->input('id');
         Group::whereIn('id',$ids)->update(['status'=>Group::AUDIT_STATUS_SUCCESS]);
+        foreach ($ids as $id) {
+            $group = Group::find($id);
+            $group->user->notify(new GroupAuditResult($group->user_id,$group));
+        }
         return $this->success(route('admin.group.index'),'审核成功');
 
     }
@@ -113,6 +118,10 @@ class GroupController extends AdminController {
     {
         $ids = $request->input('id');
         Group::whereIn('id',$ids)->update(['status'=>Group::AUDIT_STATUS_REJECT]);
+        foreach ($ids as $id) {
+            $group = Group::find($id);
+            $group->user->notify(new GroupAuditResult($group->user_id,$group));
+        }
         return $this->success(route('admin.group.index'),'圈子审核未通过');
 
     }

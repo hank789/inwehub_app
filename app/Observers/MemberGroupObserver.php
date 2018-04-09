@@ -6,7 +6,7 @@
  */
 
 use App\Models\Groups\GroupMember;
-use App\Notifications\ApplyGroupMemberResult;
+use App\Notifications\GroupMemberApplyResult;
 use App\Notifications\NewGroupMemberApply;
 use App\Notifications\NewGroupMemberJoin;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,11 +33,11 @@ class MemberGroupObserver implements ShouldQueue {
                     //公开圈子
                     $group->user->notify(new NewGroupMemberJoin($group->user_id,$member));
                 } else {
-                    $member->user->notify(new ApplyGroupMemberResult($member->user_id,$member));
+                    $member->user->notify(new GroupMemberApplyResult($member->user_id,$member));
                 }
                 break;
             case GroupMember::AUDIT_STATUS_REJECT:
-                $member->user->notify(new ApplyGroupMemberResult($member->user_id,$member));
+                $member->user->notify(new GroupMemberApplyResult($member->user_id,$member));
                 break;
         }
     }
