@@ -275,7 +275,7 @@ class Feed extends Model
                     'is_upvoted'     => $upvote ? 1 : 0,
                     'submission_type' => $submission->type,
                     'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
-                    'group'    => $group->toArray()
+                    'group'    => $group?$group->toArray():[]
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
