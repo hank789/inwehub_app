@@ -68,6 +68,8 @@ use Illuminate\Support\Facades\Cache;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereData($value)
  * @property float $rate
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereRate($value)
+ * @property float $hot_rate
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Question whereHotRate($value)
  */
 class Question extends Model
 {

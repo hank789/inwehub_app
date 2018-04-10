@@ -6,37 +6,43 @@ use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 /**
  * App\Models\Groups\Group
  *
  * @property int $id
- * @property int $parent_id
- * @property int $grade
+ * @property int $user_id
  * @property string $name
- * @property string $icon
- * @property string $slug
- * @property string $type
- * @property int $sort
- * @property string $role_id
- * @property int $status
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Article[] $articles
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Authentication[] $experts
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Question[] $questions
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereCreatedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereGrade($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereIcon($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereId($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereName($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereParentId($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereRoleId($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereSlug($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereSort($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereStatus($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereType($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Models\Category whereUpdatedAt($value)
+ * @property string $description
+ * @property string $logo
+ * @property int $public
+ * @property int $audit_status 审核状态:0待审核，1审核通过，2审核不通过
+ * @property int $subscribers 订阅人数
+ * @property int $articles 贴子数
+ * @property string $failed_reason
+ * @property string|null $deleted_at
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Groups\GroupMember[] $members
+ * @property-read \App\Models\User $user
+ * @method static bool|null forceDelete()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Groups\Group onlyTrashed()
+ * @method static bool|null restore()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereArticles($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereAuditStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereFailedReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereLogo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group wherePublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereSubscribers($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Groups\Group whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Groups\Group withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Models\Groups\Group withoutTrashed()
  * @mixin \Eloquent
  */
 class Group extends Model

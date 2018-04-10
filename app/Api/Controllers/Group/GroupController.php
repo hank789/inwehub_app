@@ -302,7 +302,8 @@ class GroupController extends Controller
     //我的圈子
     public function mine(Request $request) {
         $user = $request->user();
-        $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+        $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','desc')->simplePaginate($perPage);
         $return = $groupMembers->toArray();
         $return['data'] = [];
         foreach ($groupMembers as $groupMember) {

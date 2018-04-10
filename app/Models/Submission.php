@@ -78,6 +78,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \App\Models\User $author
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereAuthorId($value)
+ * @property int $views
+ * @property int $group_id
+ * @property int $is_recommend
+ * @property int $public
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereIsRecommend($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission wherePublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereViews($value)
  */
 class Submission extends Model {
 

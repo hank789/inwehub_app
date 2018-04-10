@@ -159,6 +159,7 @@ class SubmissionController extends Controller {
                 'user_id'       => $user->id,
                 'data'          => $data,
             ]);
+            $group->increment('articles');
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
             }

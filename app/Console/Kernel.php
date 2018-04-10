@@ -57,6 +57,7 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixSupportAddRefer::class,
         Commands\FixData\FixFeedTags::class,
         Commands\User\GenUserInfoCompletePercent::class,
+        Commands\FixData\InitGroup::class
 
     ];
 

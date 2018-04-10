@@ -45,6 +45,8 @@ use App\Models\Relations\BelongsToUserTrait;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\Demand whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\Demand whereViews($value)
  * @mixin \Eloquent
+ * @property int $salary_type
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\Demand whereSalaryType($value)
  */
 class Demand extends Model
 {
