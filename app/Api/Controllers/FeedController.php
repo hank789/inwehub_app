@@ -69,6 +69,7 @@ class FeedController extends Controller
                 break;
             case 6:
                 //推荐
+                $page = $request->input('page',1);
                 $attentionTags = $user->attentions()->where('source_type', '=', Tag::class)->pluck('source_id')->toArray();
                 $query = $query->where('feed_type', '!=', Feed::FEED_TYPE_FOLLOW_USER);
                 if ($attentionTags) {
@@ -78,11 +79,17 @@ class FeedController extends Controller
                         }
                     });
                 }
+                if ($page == 1) {
+
+                }
                 break;
         }
-
-        $feeds = $query->distinct()->orderBy('top', 'desc')->latest()
-            ->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        if ($search_type == 6) {
+            //推荐
+        } else {
+            $feeds = $query->distinct()->orderBy('top', 'desc')->latest()
+                ->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        }
 
         $return = $feeds->toArray();
         $data = [];
