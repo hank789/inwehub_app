@@ -242,6 +242,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     Route::post('search/tag','SearchController@tag');
     //搜索文章
     Route::post('search/submission','SearchController@submission');
+    //搜索圈子
+    Route::post('search/group','SearchController@group');
 });
 //搜索问答
 Route::post('search/question','SearchController@question');
@@ -495,6 +497,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'group'], func
     Route::post('joinAgree','GroupController@joinAgree');
     //我的圈子
     Route::post('mine','GroupController@mine');
+    //推荐圈子
+    Route::post('recommend','GroupController@recommend');
     //拒绝通过圈子成员
     Route::post('joinReject','GroupController@joinReject');
     //退出圈子

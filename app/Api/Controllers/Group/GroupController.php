@@ -274,8 +274,13 @@ class GroupController extends Controller
     //圈子成员
     public function members(Request $request) {
         $this->validate($request,['id'=>'required|integer']);
+        $type = $request->input('type',2);
         $user = $request->user();
-        $members = GroupMember::where('group_id',$request->input('id'))->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','asc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $query = GroupMember::where('group_id',$request->input('id'));
+        if ($type == 2) {
+            $query = $query->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS);
+        }
+        $members = $query->orderBy('id','asc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $members->toArray();
         $return['data'] = [];
         foreach ($members as $member) {
@@ -285,6 +290,7 @@ class GroupController extends Controller
                 'uuid' => $member->user->uuid,
                 'name' => $member->user->name,
                 'avatar' => $member->user->avatar,
+                'audit_status' => $member->audit_status,
                 'description' => $member->user->description,
                 'is_expert'   => $member->user->is_expert,
                 'is_followed' => $attention?1:0
@@ -296,7 +302,36 @@ class GroupController extends Controller
     //我的圈子
     public function mine(Request $request) {
         $user = $request->user();
-        $groups = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $groupMembers->toArray();
+        $return['data'] = [];
+        foreach ($groupMembers as $groupMember) {
+            $group = $groupMember->group;
+            $return['data'][] = [
+                'id' => $group->id,
+                'name' => $group->name,
+                'description' => $group->description,
+                'logo' => $group->logo,
+                'public' => $group->public,
+                'subscribers' => $group->subscribers,
+                'articles'    => $group->articles,
+                'owner' => [
+                    'id' => $group->user->id,
+                    'uuid' => $group->user->uuid,
+                    'name' => $group->user->name,
+                    'avatar' => $group->user->avatar,
+                    'description' => $group->user->description,
+                    'is_expert' => $group->user->is_expert
+                ]
+            ];
+        }
+        return self::createJsonData(true,$return);
+    }
+
+    //推荐圈子
+    public function recommend(Request $request) {
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers','desc')->simplePaginate($perPage);
         $return = $groups->toArray();
         $return['data'] = [];
         foreach ($groups as $group) {
