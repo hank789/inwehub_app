@@ -95,6 +95,17 @@ class RateLimiter extends Singleton
         return $this->client->sRem($key,$value);
     }
 
+    public function sIsMember($key,$value){
+        return $this->client->sIsMember($key,$value);
+    }
+
+    public function sClear($key){
+        $members = $this->sMembers($key);
+        foreach ($members as $member) {
+            $this->sRem($key,$member);
+        }
+    }
+
 
     public function setVale($event, $target, $value,$expire = 60) {
         $key = $this->key($event, $target);

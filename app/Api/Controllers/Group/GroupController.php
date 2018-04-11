@@ -11,6 +11,7 @@ use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -120,6 +121,8 @@ class GroupController extends Controller
         if ($user->id == $group->user_id) {
             $return['is_joined'] = 3;
         }
+        //标记该用户已读圈子内文章
+        RateLimiter::instance()->sAdd('group_read_users:'.$group->id,$user->id,0);
         $return['owner']['id'] = $group->user->id;
         $return['owner']['uuid'] = $group->user->uuid;
         $return['owner']['name'] = $group->user->name;
@@ -356,6 +359,7 @@ class GroupController extends Controller
                 'public' => $group->public,
                 'subscribers' => $group->subscribers,
                 'articles'    => $group->articles,
+                'unread_count' => RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?1:0,
                 'owner' => [
                     'id' => $group->user->id,
                     'uuid' => $group->user->uuid,

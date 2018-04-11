@@ -160,6 +160,7 @@ class SubmissionController extends Controller {
                 'data'          => $data,
             ]);
             $group->increment('articles');
+            RateLimiter::instance()->sClear('group_read_users:'.$group->id);
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
             }
