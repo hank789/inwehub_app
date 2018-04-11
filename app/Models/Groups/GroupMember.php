@@ -30,7 +30,7 @@ class GroupMember extends Model
     use BelongsToUserTrait;
 
     protected $table = 'group_members';
-    protected $fillable = ['user_id','group_id','audit_status'];
+    protected $fillable = ['user_id','group_id','audit_status','created_at'];
 
     const AUDIT_STATUS_DRAFT = 0;
     const AUDIT_STATUS_SUCCESS = 1;

@@ -7,8 +7,10 @@
 
 
 use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Question;
 use App\Models\Submission;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class InitGroup extends Command
@@ -46,7 +48,17 @@ class InitGroup extends Command
 
         $submissions = Submission::get();
         $group->articles = $submissions->count();
+        $group->subscribers = User::count();
         $group->save();
+        $users = User::get();
+        foreach ($users as $user) {
+            GroupMember::create([
+                'user_id'=>$user->id,
+                'group_id'=>$group->id,
+                'audit_status'=>Group::AUDIT_STATUS_SUCCESS,
+                'created_at' => '2018-04-13 18:00:00'
+            ]);
+        }
         foreach ($submissions as $submission) {
             $submission->views = $submission->upvotes * rand(5,10) + $submission->comments_number * rand(5,10);
             $submission->group_id = $group->id;

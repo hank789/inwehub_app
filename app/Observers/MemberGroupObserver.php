@@ -23,7 +23,7 @@ class MemberGroupObserver implements ShouldQueue {
 
     public function created(GroupMember $member){
         $group = $member->group;
-        if ($group->user_id == $member->user_id) return;
+        if ($group->user_id == $member->user_id || $member->created_at == '2018-04-13 18:00:00') return;
         switch ($member->audit_status) {
             case GroupMember::AUDIT_STATUS_DRAFT:
                 $user = $group->user;
