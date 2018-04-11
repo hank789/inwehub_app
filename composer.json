@@ -7,11 +7,13 @@
     "require": {
         "php": ">=5.5.9",
         "barryvdh/laravel-cors": "^0.9.2",
+        "barryvdh/laravel-snappy": "^0.4.1",
         "bizly/roles": "^2.1",
         "doctrine/dbal": "~2.3",
         "elasticsearch/elasticsearch": "^6.0",
         "fabpot/goutte": "^3.2",
         "flc/alidayu": "^2.0",
+        "h4cc/wkhtmltoimage-amd64": "^0.12.4",
         "intervention/image": "^2.3",
         "jacobcyl/ali-oss-storage": "dev-master",
         "laravel/framework": "5.5.*",
@@ -31,6 +33,7 @@
         "spatie/laravel-backup": "5.*",
         "spatie/laravel-medialibrary": "6.*",
         "symfony/filesystem": "^3.3",
+        "tightenco/collect": "^5.6",
         "tlapi/slack-laravel": "dev-master",
         "tymon/jwt-auth": "^0.5.10",
         "zhuzhichao/ip-location-zh": "^2.2"
