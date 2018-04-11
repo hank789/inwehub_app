@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class FeedController extends Controller
 {
@@ -80,7 +81,10 @@ class FeedController extends Controller
                     });
                 }
                 if ($page == 1) {
-
+                    $count = $query->count();
+                    $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
+                    $feeds = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))
+                        ->simplePaginate(Config::get('inwehub.api_data_page_size'));
                 }
                 break;
         }
