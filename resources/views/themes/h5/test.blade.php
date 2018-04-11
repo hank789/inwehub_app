@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8" />
     <title>71SRM贺新春</title>
     <style type="text/css">
         /* Client-specific Styles */
