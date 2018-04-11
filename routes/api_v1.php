@@ -478,7 +478,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'readhub'], fu
 });
 
 //圈子
-Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'group'], function() {
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','prefix' => 'group'], function() {
     //创建圈子
     Route::post('store','GroupController@store');
     //修改圈子
