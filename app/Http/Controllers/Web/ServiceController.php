@@ -15,7 +15,7 @@ class ServiceController extends Controller
     }
 
     public function about(){
-        return view('h5::about');
+        return view('h5::test');
     }
 
 }
