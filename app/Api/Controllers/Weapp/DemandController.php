@@ -356,8 +356,9 @@ class DemandController extends controller {
         if($demand->getMedia($collection)->isEmpty()){
             $snappy = App::make('snappy.image');
             $image = $snappy->getOutput(config('app.url').'/service/about');
-            $demand->addMedia($image)->toMediaCollection($collection);
+            $demand->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
         }
+        $demand = Demand::find($request->input('id'));
         $url = $demand->getMedia($collection)->last()->getUrl();
         return self::createJsonData(true,['url'=>$url]);
     }
