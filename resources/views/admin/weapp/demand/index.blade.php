@@ -49,10 +49,11 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
-                                        <th>用户ID</th>
+                                        <th>需求ID</th>
                                         <th>需求标题</th>
                                         <th>地点</th>
                                         <th>发布者</th>
+                                        <th>发布者ID</th>
                                         <th>手机</th>
                                         <th>身份职业</th>
                                         <th>公司</th>
@@ -64,10 +65,11 @@
                                     @foreach($demands as $demand)
                                         <tr>
                                             <td><input type="checkbox" value="{{ $demand->id }}" name="id[]"/></td>
-                                            <td>{{ $demand->user_id }}</td>
+                                            <td>{{ $demand->id }}</td>
                                             <td>{{ $demand->title }}</td>
                                             <td>{{ $demand->address['selProvince'].$demand->address['selCity'].$demand->address['selDistrict'] }}</td>
                                             <td>{{ $demand->user->name }}</td>
+                                            <td>{{ $demand->user_id }}</td>
                                             <td>{{ $demand->user->mobile }}</td>
                                             <td>{{ $demand->user->title }}</td>
                                             <td>{{ $demand->user->company }}</td>
