@@ -2,21 +2,13 @@
 use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
-use App\Models\Article;
-use App\Models\Attention;
-use App\Models\Authentication;
-use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Notice;
 use App\Models\Question;
-use App\Models\Readhub\Comment as ReadhubComment;
-use App\Models\Readhub\Submission as ReadhubSubmission;
 use App\Models\Submission;
 use App\Models\RecommendRead;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Config;
 
 /**
@@ -60,40 +52,13 @@ class IndexController extends Controller {
                 }
             }
         }
-
-        //随机7个专家
-        $cache_experts = Cache::get('home_experts');
-        if (!$cache_experts){
-            $experts = Authentication::where('status',1)->pluck('user_id')->toArray();
-            shuffle($experts);
-            $cache_experts = [];
-            $expert_uids = array_slice($experts,0,7);
-            foreach ($expert_uids as $key=>$expert_uid) {
-                $expert_user = User::find($expert_uid);
-                $cache_experts[$key]['id'] = $expert_uid;
-                $cache_experts[$key]['name'] = $expert_user->name;
-                $cache_experts[$key]['title'] = $expert_user->title;
-                $cache_experts[$key]['uuid'] = $expert_user->uuid;
-                $cache_experts[$key]['work_years'] = $expert_user->getWorkYears();
-                $cache_experts[$key]['avatar_url'] = $expert_user->avatar;
-                $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($expert_user))->where('source_id','=',$expert_user->id)->first();
-                $cache_experts[$key]['is_followed'] = $attention?1:0;
-
-            }
-            Cache::put('home_experts',$cache_experts,60*24);
-        } else {
-            foreach ($cache_experts as $key=>$cache_expert) {
-                $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$cache_experts[$key]['id'])->first();
-                $cache_experts[$key]['is_followed'] = $attention?1:0;
-            }
-        }
-
-
+        //轮播图
+        $notices = Notice::orderBy('sort','desc')->take(4)->get()->toArray();
 
         $data = [
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
-            'recommend_experts' => $cache_experts
+            'notices' => $notices
         ];
 
         return self::createJsonData(true,$data);
