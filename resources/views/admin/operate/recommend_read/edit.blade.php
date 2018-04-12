@@ -44,7 +44,7 @@
                                 <label>封面图片</label>
                                 <input type="file" name="img_url" />
                                 <div style="margin-top: 10px;">
-                                    <img src="{{ old('img_url',is_array($recommendation->data['img'])?($recommendation->data['img']?$recommendation->data['img'][0]:''):$recommendation->data['img']) }}" width="100"/>
+                                    <img src="{{ old('img_url',is_array($recommendation->data['img'])?($recommendation->data['img']?$recommendation->data['img'][0]:''):$recommendation->data['img']) }}" width="200" height="200" />
                                 </div>
                             </div>
 
