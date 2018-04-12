@@ -359,6 +359,7 @@ class GroupController extends Controller
                 'public' => $group->public,
                 'subscribers' => $group->subscribers,
                 'articles'    => $group->articles,
+                'is_joined'   => 1,
                 'unread_count' => RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?1:0,
                 'owner' => [
                     'id' => $group->user->id,
