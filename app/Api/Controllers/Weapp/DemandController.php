@@ -348,14 +348,16 @@ class DemandController extends controller {
         if ($type == 1) {
             //分享到朋友圈的长图
             $collection = 'images_big';
+            $showUrl = 'getDemandShareLongInfo';
         } else {
             //分享到公众号的短图
             $collection = 'images_small';
+            $showUrl = 'getDemandShareShortInfo';
         }
         $demand = Demand::findOrFail($request->input('id'));
         if($demand->getMedia($collection)->isEmpty()){
             $snappy = App::make('snappy.image');
-            $image = $snappy->getOutput(config('app.url').'/service/about');
+            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$demand->id);
             $demand->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
         }
         $demand = Demand::find($request->input('id'));
