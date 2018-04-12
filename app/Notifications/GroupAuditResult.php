@@ -79,7 +79,7 @@ class GroupAuditResult extends Notification implements ShouldQueue,ShouldBroadca
         return [
             'url'    => '/group/'.$this->group->id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => config('image.notice_default_icon'),
             'title'  => $this->getTitle(),
             'body'   => $this->group->name,
             'extra_body' => $this->group->failed_reason

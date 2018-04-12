@@ -67,7 +67,7 @@ class CompanyAuth extends Notification implements ShouldQueue,ShouldBroadcast
         return [
             'url'    => '/company/my',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => config('image.notice_default_icon'),
             'title'  => $title,
             'body'   => '',
             'extra_body' => ''

@@ -68,7 +68,7 @@ class NewGroupMemberJoin extends Notification implements ShouldQueue,ShouldBroad
         return [
             'url'    => '/group/'.$this->member->group_id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => $this->member->user->avatar,
             'title'  => $this->member->user->name.'加入了您的圈子',
             'body'   => $this->member->group->name,
             'extra_body' => ''

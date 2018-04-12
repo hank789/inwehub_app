@@ -80,7 +80,7 @@ class GroupMemberApplyResult extends Notification implements ShouldQueue,ShouldB
         return [
             'url'    => '/group/'.$this->member->group_id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => config('image.notice_default_icon'),
             'title'  => $this->getTitle(),
             'body'   => $this->member->group->name,
             'extra_body' => ''

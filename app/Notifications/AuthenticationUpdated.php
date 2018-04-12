@@ -66,7 +66,7 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
         return [
             'url'    => '/my',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => config('image.notice_default_icon'),
             'title'  => $title,
             'body'   => '',
             'extra_body' => ''

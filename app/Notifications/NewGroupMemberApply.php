@@ -68,7 +68,7 @@ class NewGroupMemberApply extends Notification implements ShouldQueue,ShouldBroa
         return [
             'url'    => '/informbar',
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => $this->member->user->avatar,
             'title'  => $this->member->user->name.'申请入圈',
             'body'   => $this->member->group->name,
             'extra_body' => ''
