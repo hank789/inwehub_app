@@ -332,14 +332,18 @@ class GroupController extends Controller
         foreach ($members as $member) {
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$member->user_id)->first();
             $return['data'][] = [
-                'id' => $member->user_id,
+                'id' => $member->id,
+                'user_id' => $member->user_id,
                 'uuid' => $member->user->uuid,
-                'name' => $member->user->name,
-                'avatar_url' => $member->user->avatar,
+                'user_name' => $member->user->name,
+                'user_avatar_url' => $member->user->avatar,
                 'audit_status' => $member->audit_status,
                 'description' => $member->user->description,
                 'is_expert'   => $member->user->is_expert,
-                'is_followed' => $attention?1:0
+                'is_followed' => $attention?1:0,
+                "title" => $member->user->title,
+                "company" =>  $member->user->company,//公司
+                "created_at" => (string) $member->created_at
             ];
         }
         return self::createJsonData(true,$return);
