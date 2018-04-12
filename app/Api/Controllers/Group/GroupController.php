@@ -380,7 +380,16 @@ class GroupController extends Controller
         $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers','desc')->simplePaginate($perPage);
         $return = $groups->toArray();
         $return['data'] = [];
+        $user = $request->user();
         foreach ($groups as $group) {
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+            $is_joined = -1;
+            if ($groupMember) {
+                $is_joined = $groupMember->audit_status;
+            }
+            if ($user->id == $group->user_id) {
+                $is_joined = 3;
+            }
             $return['data'][] = [
                 'id' => $group->id,
                 'name' => $group->name,
@@ -389,6 +398,7 @@ class GroupController extends Controller
                 'public' => $group->public,
                 'subscribers' => $group->subscribers,
                 'articles'    => $group->articles,
+                'is_joined'  => $is_joined,
                 'owner' => [
                     'id' => $group->user->id,
                     'uuid' => $group->user->uuid,

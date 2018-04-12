@@ -198,6 +198,6 @@
     <li class="header">常用菜单</li>
     <li><a href="{{ route('website.index') }}" target="_blank"><i class="fa fa-circle-o text-success"></i> <span>网站首页</span></a></li>
     <li><a href="{{ route('auth.feed.index') }}" target="_blank"><i class="fa fa-circle-o text-info"></i> <span>动态流</span></a></li>
-    <li><a href="{{ config('app.readhub_url').'/backend' }}" target="_blank"><i class="fa fa-circle-o text-success"></i> <span>阅读站</span></a></li>
+    <li><a href="https://www.inwehub.com/" target="_blank"><i class="fa fa-circle-o text-success"></i> <span>官网</span></a></li>
     <li><a href="{{ route('admin.tool.clearCache') }}"><i class="fa fa-circle-o text-info"></i> <span>清空缓存</span></a></li>
 </ul>
