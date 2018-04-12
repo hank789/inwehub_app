@@ -17,6 +17,7 @@ use App\Models\Weapp\DemandUserRel;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\JWTAuth;
 
@@ -335,6 +336,30 @@ class DemandController extends controller {
         $return['demand'] = $demand->toArray();
 
         return self::createJsonData(true,$return);
+    }
+
+    public function getShareImage(Request $request){
+        $validateRules = [
+            'id'   => 'required|integer',
+            'type' => 'required|in:1,2'
+        ];
+        $this->validate($request,$validateRules);
+        $type = $request->input('type',1);
+        if ($type == 1) {
+            //分享到朋友圈的长图
+            $collection = 'images_big';
+        } else {
+            //分享到公众号的短图
+            $collection = 'images_small';
+        }
+        $demand = Demand::findOrFail($request->input('id'));
+        if($demand->getMedia($collection)->isEmpty()){
+            $snappy = App::make('snappy.image');
+            $image = $snappy->getOutput(config('app.url').'/service/about');
+            $demand->addMedia($image)->toMediaCollection($collection);
+        }
+        $url = $demand->getMedia($collection)->last()->getUrl();
+        return self::createJsonData(true,['url'=>$url]);
     }
 
 }

@@ -429,6 +429,8 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('user/info','UserController@getUserInfo')->middleware(['jwt.weappAuth']);
     //获取二维码
     Route::post('user/getQrCode','UserController@getQrCode');
+    //获取需求分享图片
+    Route::post('demand/getShareImage','DemandController@getShareImage');
     //获取未读消息列表
     Route::post('user/getMessageRooms','UserController@getMessageRooms')->middleware(['jwt.weappAuth']);
     //获取需求联系人消息列表
