@@ -106,7 +106,7 @@ class SubmissionObserver implements ShouldQueue {
                     'color'     => 'good',
                     'fields' => $slackFields
                 ]
-            )->send('新文章提交');
+            )->send('用户'.formatSlackUser($user).'在圈子['.$group->name.']提交了新分享');
     }
 
 

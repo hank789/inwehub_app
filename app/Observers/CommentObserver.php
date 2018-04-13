@@ -170,7 +170,10 @@ class CommentObserver implements ShouldQueue {
                         ])
                         ->log($comment->user->name.'评论了文章', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
                 }
-
+                $fields[] = [
+                    'title' => '圈子',
+                    'value' => $group->name
+                ];
                 $fields[] = [
                     'title' => '标题',
                     'value' => strip_tags($submission->title)
@@ -233,6 +236,7 @@ class CommentObserver implements ShouldQueue {
                 //通知专栏作者
                 if ($submission->author_id != $comment->user_id && !isset($notifyUids[$submission->author_id])) {
                     $notifyUids[$submission->user_id] = $submission->author_id;
+                    if ($members && !in_array($submission->author_id,$members)) continue;
                     $notifyUser = User::find($submission->author_id);
                     $notifyUser->notify(new SubmissionReplied($submission->author_id,
                         [
