@@ -72,10 +72,13 @@ class FeedController extends Controller
                 //推荐
                 $page = $request->input('page',1);
                 $attentionTags = $user->attentions()->where('source_type', '=', Tag::class)->pluck('source_id')->toArray();
+                $userTags = $user->userTag->pluck('tag_id')->toArray();
+                $attentionTags = array_unique(array_merge($attentionTags,$userTags));
                 $query = $query->where('feed_type', '!=', Feed::FEED_TYPE_FOLLOW_USER);
                 if ($attentionTags) {
                     $query = $query->orWhere(function ($query) use ($attentionTags) {
                         foreach ($attentionTags as $attentionTag) {
+                            if ($attentionTag <=0) continue;
                             $query->orWhereRaw("locate('[" . $attentionTag . "]',tags)>0");
                         }
                     });

@@ -12,6 +12,7 @@ use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserTag;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
@@ -169,6 +170,7 @@ class SubmissionController extends Controller {
             if ($newTagString) {
                 Tag::multiAddByName($newTagString,$submission);
             }
+            UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);
