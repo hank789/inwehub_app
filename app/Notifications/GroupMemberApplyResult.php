@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
@@ -40,7 +41,7 @@ class GroupMemberApplyResult extends Notification implements ShouldQueue,ShouldB
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**
@@ -110,6 +111,16 @@ class GroupMemberApplyResult extends Notification implements ShouldQueue,ShouldB
             'template_id' => $template_id,
             'target_url' => config('app.mobile_url').'#/group/'.$this->member->group_id
         ];
+    }
+
+    public function toSlack($notifiable){
+        return \Slack::to(config('slack.ask_activity_channel'))
+            ->attach(
+                [
+                    'fields' => []
+                ]
+            )
+            ->send('用户'.$this->member->user_id.'['.$this->member->user->name.']入圈['.$this->member->group->name.']请求审核结果:'.$this->getTitle());
     }
 
     public function broadcastOn(){

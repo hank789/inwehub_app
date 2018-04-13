@@ -194,6 +194,7 @@ class GroupController extends Controller
         if ($groupMember) {
             $groupMember->delete();
             $group->decrement('subscribers');
+            event(new SystemNotify('用户'.formatSlackUser($user).'退出了圈子:'.$group->name, $group->toArray()));
         }
         return self::createJsonData(true);
     }
@@ -254,6 +255,15 @@ class GroupController extends Controller
         if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
         $submission->is_recommend = 1;
         $submission->save();
+        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', [
+            'text' => strip_tags($submission->title),
+            'pretext' => '[链接]('.config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')',
+            'author_name' => $user->name,
+            'author_link' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug,
+            'mrkdwn_in' => ['pretext'],
+            'color'     => 'good',
+            'fields' => []
+        ]));
         return self::createJsonData(true);
     }
 
