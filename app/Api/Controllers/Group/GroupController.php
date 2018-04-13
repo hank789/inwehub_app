@@ -146,6 +146,7 @@ class GroupController extends Controller
                 'is_expert'   => $member->user->is_expert
             ];
         }
+        RateLimiter::instance()->sRem('group_read_users:'.$group->id,$user->id);
         return self::createJsonData(true,$return);
     }
 
