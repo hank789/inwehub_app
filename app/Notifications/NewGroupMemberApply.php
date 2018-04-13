@@ -67,7 +67,7 @@ class NewGroupMemberApply extends Notification implements ShouldQueue,ShouldBroa
     public function toArray($notifiable)
     {
         return [
-            'url'    => '/informbar',
+            'url'    => '/group/detail/'.$this->member->group_id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
             'avatar' => $this->member->user->avatar,
             'title'  => $this->member->user->name.'申请入圈',
@@ -97,7 +97,7 @@ class NewGroupMemberApply extends Notification implements ShouldQueue,ShouldBroa
             'keyword3' => '',
             'remark'   => '点击前往处理',
             'template_id' => $template_id,
-            'target_url' => config('app.mobile_url').'#/informbar'
+            'target_url' => config('app.mobile_url').'#/group/detail/'.$this->member->group_id
         ];
     }
 

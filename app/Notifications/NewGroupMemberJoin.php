@@ -67,7 +67,7 @@ class NewGroupMemberJoin extends Notification implements ShouldQueue,ShouldBroad
     public function toArray($notifiable)
     {
         return [
-            'url'    => '/group/'.$this->member->group_id,
+            'url'    => '/group/detail/'.$this->member->group_id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
             'avatar' => $this->member->user->avatar,
             'title'  => $this->member->user->name.'加入了您的圈子',
@@ -97,7 +97,7 @@ class NewGroupMemberJoin extends Notification implements ShouldQueue,ShouldBroad
             'keyword3' => '',
             'remark'   => '点击前往查看',
             'template_id' => $template_id,
-            'target_url' => config('app.mobile_url').'#/group/'.$this->member->group_id
+            'target_url' => config('app.mobile_url').'#/group/detail/'.$this->member->group_id
         ];
     }
 

@@ -79,7 +79,7 @@ class GroupMemberApplyResult extends Notification implements ShouldQueue,ShouldB
     {
 
         return [
-            'url'    => '/group/'.$this->member->group_id,
+            'url'    => '/group/detail/'.$this->member->group_id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_NOTICE,
             'avatar' => config('image.notice_default_icon'),
             'title'  => $this->getTitle(),
@@ -109,7 +109,7 @@ class GroupMemberApplyResult extends Notification implements ShouldQueue,ShouldB
             'keyword3' => $this->getTitle(),
             'remark'   => '点击查看详情！',
             'template_id' => $template_id,
-            'target_url' => config('app.mobile_url').'#/group/'.$this->member->group_id
+            'target_url' => config('app.mobile_url').'#/group/detail/'.$this->member->group_id
         ];
     }
 
