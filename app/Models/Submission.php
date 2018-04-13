@@ -168,4 +168,8 @@ class Submission extends Model {
             ->select(['id', 'name', 'avatar', 'uuid','is_expert']);
     }
 
+    public function group() {
+        return $this->belongsTo('App\Models\Groups\Group');
+    }
+
 }

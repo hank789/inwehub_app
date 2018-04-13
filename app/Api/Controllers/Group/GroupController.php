@@ -240,6 +240,23 @@ class GroupController extends Controller
         return self::createJsonData(true);
     }
 
+    //圈子内容设为推荐
+    public function setSubmissionRecommend(Request $request) {
+        $this->validate($request,[
+            'submission_id'=>'required|integer'
+        ]);
+        $submission = Submission::find($request->input('submission_id'));
+        $group = Group::find($submission->group_id);
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $submission->is_recommend = 1;
+        $submission->save();
+        return self::createJsonData(true);
+    }
+
     //圈子分享列表
     public function submissionList(Request $request) {
         $this->validate($request,[

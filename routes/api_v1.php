@@ -487,6 +487,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('update','GroupController@update');
     //加入圈子
     Route::post('join','GroupController@join');
+    //分享设为精华
+    Route::post('setSubmissionRecommend','GroupController@setSubmissionRecommend');
     //圈子分享列表
     Route::post('submissionList','GroupController@submissionList');
     //随机推荐热门

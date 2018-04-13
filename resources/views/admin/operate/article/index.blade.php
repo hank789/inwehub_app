@@ -47,6 +47,7 @@
                                         <th>标题</th>
                                         <th>封面图片</th>
                                         <th>类型</th>
+                                        <th>圈子</th>
                                         <th>私密圈子</th>
                                         <th>发布者</th>
                                         <th>专栏作者</th>
@@ -68,6 +69,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ $submission->type }}</td>
+                                            <td>{{ $submission->group->name }}</td>
                                             <td>{{ $submission->public?'公开':'私密' }}</td>
                                             <td>{{ $submission->owner->name }}</td>
                                             <td>
