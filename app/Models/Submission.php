@@ -105,7 +105,7 @@ class Submission extends Model {
      * @var array
      */
     protected $fillable = [
-        'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate',
+        'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate','group_id',
         'upvotes', 'downvotes', 'user_id', 'views', 'data', 'approved_at','public',
         'deleted_at', 'comments_number'
     ];
