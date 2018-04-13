@@ -220,8 +220,26 @@ class SubmissionController extends Controller {
         if (!$submission) {
             throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
         }
-        $submission->increment('views');
         $return = $submission->toArray();
+
+        $group = Group::find($submission->group_id);
+        $return['group'] = $group->toArray();
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+        $return['group']['is_joined'] = -1;
+        if ($groupMember) {
+            $return['group']['is_joined'] = $groupMember->audit_status;
+        }
+        if ($user->id == $group->user_id) {
+            $return['group']['is_joined'] = 3;
+        }
+
+        if ($group->public == 0 && in_array($return['is_joined'],[-1,0,2]) ) {
+            //私有圈子
+            return self::createJsonData(true,$return);
+        }
+
+        $submission->increment('views');
+
         $upvote = Support::where('user_id',$user->id)
             ->where('supportable_id',$submission->id)
             ->where('supportable_type',Submission::class)
