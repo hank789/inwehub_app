@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Collection;
+use App\Models\Groups\Group;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
@@ -89,6 +90,8 @@ class HomeController extends Controller {
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
+            $group = Group::find($submission->group_id);
+            $item['group']= $group->toArray();
             $list[] = $item;
         }
         $return['data'] = $list;
