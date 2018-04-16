@@ -136,7 +136,7 @@ class GroupController extends Controller
             //私有圈子
             return self::createJsonData(true,$return);
         }
-        $members = $group->members()->where('audit_status',1)->take(20)->get();
+        $members = $group->members()->where('audit_status',1)->take(6)->get();
         foreach ($members as $member) {
             if ($member->user_id == $group->user_id) continue;
             $return['members'][] = [
