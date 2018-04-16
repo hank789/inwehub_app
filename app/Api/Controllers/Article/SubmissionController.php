@@ -236,7 +236,7 @@ class SubmissionController extends Controller {
             $return['group']['is_joined'] = 3;
         }
 
-        if ($group->public == 0 && in_array($return['is_joined'],[-1,0,2]) ) {
+        if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
             //私有圈子
             return self::createJsonData(true,$return);
         }
