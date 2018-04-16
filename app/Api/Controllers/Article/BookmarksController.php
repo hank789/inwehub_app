@@ -2,6 +2,8 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Collection;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 
@@ -29,6 +31,20 @@ class BookmarksController extends Controller {
             throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
         }
         $user = $request->user();
+
+        $group = Group::find($submission->group_id);
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group_id)->first();
+        $is_joined = -1;
+        if ($groupMember) {
+            $is_joined = $groupMember->audit_status;
+        }
+        if ($user->id == $group->user_id) {
+            $is_joined = 3;
+        }
+        if (in_array($is_joined,[-1,0,2])) {
+            throw new ApiException(ApiException::GROUP_NOT_JOINED);
+        }
+
         /*不能多次收藏*/
         $userCollect = $user->isCollected(get_class($submission),$submission->id);
         if($userCollect){

@@ -108,6 +108,7 @@ class ApiException extends Exception
     const GROUP_EXIST = 6105;
     const GROUP_NOT_EXIST = 6106;
     const GROUP_UNDER_AUDIT = 6107;
+    const GROUP_NOT_JOINED = 6108;
 
 
     public static $errorMessages = [
@@ -197,7 +198,8 @@ class ApiException extends Exception
         self::ARTICLE_NOT_EXIST => '这条信息已被作者删除',
         self::GROUP_EXIST => '圈子已存在',
         self::GROUP_NOT_EXIST => '圈子不存在',
-        self::GROUP_UNDER_AUDIT => '圈子正在审核中'
+        self::GROUP_UNDER_AUDIT => '圈子正在审核中',
+        self::GROUP_NOT_JOINED => '您还未加入该圈子'
     ];
 
 
