@@ -73,6 +73,9 @@ class SubmissionController extends Controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $group = Group::find($group_id);
+        if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+            throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+        }
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',

@@ -157,6 +157,9 @@ class GroupController extends Controller
         if (!$group) {
             throw new ApiException(ApiException::GROUP_NOT_EXIST);
         }
+        if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+            throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+        }
         $user = $request->user();
         $user_ids = $request->input('user_ids');
         $audit_status = GroupMember::AUDIT_STATUS_DRAFT;
