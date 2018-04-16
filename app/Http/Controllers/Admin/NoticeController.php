@@ -119,6 +119,7 @@ class NoticeController extends AdminController
         if(!$notice){
             return $this->error(route('admin.notice.index'),'公告不存在，请核实');
         }
+        unset($this->validateRules['img_url']);
         $this->validate($request,$this->validateRules);
         $img_url = '';
         if($request->hasFile('img_url')){
