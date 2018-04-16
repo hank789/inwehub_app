@@ -87,7 +87,7 @@ class FeedController extends Controller
                     $count = $query->count();
                     $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
                     $feeds = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))
-                        ->simplePaginate(Config::get('inwehub.api_data_page_size'));
+                        ->simplePaginate(10);
                 } else {
                     $feeds = $query->distinct()->latest()->simplePaginate(Config::get('inwehub.api_data_page_size'));
                 }
