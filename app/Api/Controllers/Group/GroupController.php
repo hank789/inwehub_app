@@ -194,7 +194,7 @@ class GroupController extends Controller
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
         if ($groupMember) {
             $groupMember->delete();
-            $group->decrement('subscribers');
+            if ($group->subscribers > 0) $group->decrement('subscribers');
             event(new SystemNotify('用户'.formatSlackUser($user).'退出了圈子:'.$group->name, $group->toArray()));
         }
         return self::createJsonData(true);

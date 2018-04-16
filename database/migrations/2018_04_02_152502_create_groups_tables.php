@@ -21,9 +21,9 @@ class CreateGroupsTables extends Migration
             $table->string('logo');
             $table->boolean('public')->default(1);
             $table->integer('audit_status')->default(0)->comment('审核状态:0待审核，1审核通过，2审核不通过');
-            $table->integer('subscribers')->default(1)->comment('订阅人数');
-            $table->integer('articles')->default(0)->comment('贴子数');
-            $table->string('failed_reason')->default('');;
+            $table->integer('subscribers')->default(1)->unsigned()->comment('订阅人数');
+            $table->integer('articles')->default(0)->unsigned()->comment('贴子数');
+            $table->string('failed_reason')->default('');
             $table->softDeletes();
             $table->timestamps();
         });
