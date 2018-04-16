@@ -13,6 +13,7 @@ use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feed\Feed;
 use App\Models\Feedback;
+use App\Models\Groups\GroupMember;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
 use App\Models\Submission;
@@ -312,6 +313,20 @@ class ProfileController extends Controller
             $edus = $user->edus()->orderBy('begin_time','desc')->get();
             $edus = $edus->toArray();
         }
+        $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','desc')->get();
+        $groups = [];
+        foreach ($groupMembers as $groupMember) {
+            $group = $groupMember->group;
+            $groups[] = [
+                'id' => $group->id,
+                'name' => $group->name,
+                'description' => $group->description,
+                'logo' => $group->logo,
+                'public' => $group->public,
+                'subscribers' => $group->subscribers,
+                'articles'    => $group->articles
+            ];
+        }
 
         $data = [
             'info'   => $info,
@@ -319,6 +334,7 @@ class ProfileController extends Controller
             'jobs'   => $jobs,
             'projects' => $projects,
             'edus'   => $edus,
+            'groups' => $groups
         ];
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
 
