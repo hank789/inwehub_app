@@ -408,6 +408,7 @@ class GroupController extends Controller
                 'subscribers' => $group->subscribers,
                 'articles'    => $group->articles,
                 'is_joined'   => 1,
+                'audit_status' => $group->audit_status,
                 'unread_count' => RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?1:0,
                 'owner' => [
                     'id' => $group->user->id,
