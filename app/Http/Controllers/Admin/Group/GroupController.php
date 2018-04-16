@@ -120,7 +120,7 @@ class GroupController extends AdminController {
     public function verify(Request $request)
     {
         $ids = $request->input('id');
-        Group::whereIn('id',$ids)->update(['status'=>Group::AUDIT_STATUS_SUCCESS]);
+        Group::whereIn('id',$ids)->update(['audit_status'=>Group::AUDIT_STATUS_SUCCESS]);
         foreach ($ids as $id) {
             $group = Group::find($id);
             $group->user->notify(new GroupAuditResult($group->user_id,$group));
