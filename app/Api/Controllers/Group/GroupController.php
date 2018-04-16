@@ -86,6 +86,7 @@ class GroupController extends Controller
             }
         }
         $img_url = $group->logo;
+        $oldPublic = $group->public;
         $group->name = $request->input('name');
         $group->description = $request->input('description');
         $group->public = $request->input('public');
@@ -101,6 +102,7 @@ class GroupController extends Controller
         }
         $group->logo = $img_url;
         $group->save();
+        if ($oldPublic != $request->input('public')) Submission::where('group_id',$group->id)->update(['public'=>$group->public]);
         return self::createJsonData(true,['id'=>$group->id]);
     }
 

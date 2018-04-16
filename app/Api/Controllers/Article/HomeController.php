@@ -3,6 +3,7 @@ use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Collection;
 use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
@@ -33,7 +34,7 @@ class HomeController extends Controller {
         ]);
 
         $user = $request->user();
-        $submissions = (new Submission())->newQuery();
+        $submissions = Submission::where('public',1);
         $type = $request->input('type',1);
         switch ($type){
             case 2:
@@ -91,7 +92,16 @@ class HomeController extends Controller {
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
             $group = Group::find($submission->group_id);
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+            $is_joined = -1;
+            if ($groupMember) {
+                $is_joined = $groupMember->audit_status;
+            }
+            if ($user->id == $group->user_id) {
+                $is_joined = 3;
+            }
             $item['group']= $group->toArray();
+            $item['group']['is_joined'] = $is_joined;
             $list[] = $item;
         }
         $return['data'] = $list;
