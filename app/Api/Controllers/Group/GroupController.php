@@ -185,7 +185,7 @@ class GroupController extends Controller
                 $groupMember->save();
             }
         }
-        return self::createJsonData(true);
+        return self::createJsonData(true,[],ApiException::SUCCESS,$audit_status==GroupMember::AUDIT_STATUS_SUCCESS?'加入圈子成功':'您的入圈申请已提交');
     }
 
     //退出圈子
