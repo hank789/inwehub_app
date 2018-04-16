@@ -311,7 +311,7 @@ class GroupController extends Controller
                 ->exists();
             $sourceData = [
                 'title'     => $submission->partHtmlTitle(),
-                'img'       => $submission->data['img'],
+                'img'       => $submission->data['img']??'',
                 'domain'    => $submission->data['domain']??'',
                 'tags'      => $submission->tags()->get()->toArray(),
                 'submission_id' => $submission->id,
