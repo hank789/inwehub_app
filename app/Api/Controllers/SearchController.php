@@ -130,7 +130,22 @@ class SearchController extends Controller
         $this->validate($request,$validateRules);
         $user = $request->user();
         $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]');
-        $submissions = Submission::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $userGroups = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
+        $userPrivateGroups = [];
+        foreach ($userGroups as $groupId) {
+            $group = Group::find($groupId);
+            if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
+        }
+
+        $query = Submission::search($request->input('search_word'));
+        if ($userPrivateGroups) {
+            $query = $query->Where(function ($query) use ($userPrivateGroups) {
+                $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);
+            });
+        } else {
+            $query = $query->where('public',1);
+        }
+        $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($submissions as $submission) {
             $upvote = Support::where('user_id',$user->id)
