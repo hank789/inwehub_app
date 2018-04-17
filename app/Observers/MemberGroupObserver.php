@@ -44,7 +44,7 @@ class MemberGroupObserver implements ShouldQueue {
     }
 
     public function updated(GroupMember $member){
-        $this->updated($member);
+        $this->created($member);
     }
 
 }
