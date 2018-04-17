@@ -18,8 +18,8 @@ use Tymon\JWTAuth\JWTAuth;
 class SearchController extends Controller
 {
 
-    protected function searchNotify($user,$searchWord,$typeName=''){
-        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'));
+    protected function searchNotify($user,$searchWord,$typeName='',$searchResult=''){
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'.$searchResult));
         RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
         RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
@@ -30,7 +30,6 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[用户]');
         $users = User::search($request->input('search_word'))->where('status',1)->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($users as $user) {
@@ -54,6 +53,7 @@ class SearchController extends Controller
         }
         $return = $users->toArray();
         $return['data'] = $data;
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[用户]',',搜索结果'.$users->total());
         return self::createJsonData(true, $return);
     }
 
@@ -64,7 +64,6 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[标签]');
         $tags = Tag::search($request->input('search_word'))->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($tags as $tag) {
@@ -75,6 +74,7 @@ class SearchController extends Controller
         }
         $return = $tags->toArray();
         $return['data'] = $data;
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[标签]',',搜索结果'.$tags->total());
         return self::createJsonData(true, $return);
     }
 
@@ -91,7 +91,6 @@ class SearchController extends Controller
             $loginUser->id = 0;
             $loginUser->name = '游客';
         }
-        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[问答]');
         $questions = Question::search($request->input('search_word'))->where(function($query) {$query->where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);})->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($questions as $question) {
@@ -119,6 +118,7 @@ class SearchController extends Controller
         }
         $return = $questions->toArray();
         $return['data'] = $data;
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[问答]',',搜索结果'.$questions->total());
         return self::createJsonData(true, $return);
     }
 
@@ -129,7 +129,6 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]');
         $userGroups = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
         $userPrivateGroups = [];
         foreach ($userGroups as $groupId) {
@@ -168,6 +167,7 @@ class SearchController extends Controller
         }
         $return = $submissions->toArray();
         $return['data'] = $data;
+        $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]',',搜索结果'.$submissions->total());
         return self::createJsonData(true, $return);
     }
 
@@ -177,7 +177,6 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $this->searchNotify($user,$request->input('search_word'),'在栏目[圈子]');
         $groups = Group::search($request->input('search_word'))->where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $return = $groups->toArray();
         $return['data'] = [];
@@ -209,6 +208,7 @@ class SearchController extends Controller
                 ]
             ];
         }
+        $this->searchNotify($user,$request->input('search_word'),'在栏目[圈子]',',搜索结果'.$groups->total());
         return self::createJsonData(true,$return);
     }
 }
