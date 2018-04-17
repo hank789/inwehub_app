@@ -330,7 +330,7 @@ class GroupController extends Controller
                 'is_upvoted'     => $upvote ? 1 : 0,
                 'submission_type' => $submission->type,
                 'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
-                'group'    => []
+                'group'    => null
             ];
 
             $list[] = [
