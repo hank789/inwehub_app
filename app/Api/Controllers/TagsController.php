@@ -267,6 +267,7 @@ class TagsController extends Controller {
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
+            $item['group'] = Group::find($submission->group_id)->toArray();
             $list[] = $item;
         }
         $return['data'] = $list;
