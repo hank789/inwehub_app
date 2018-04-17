@@ -53,7 +53,7 @@ class ReadhubController extends Controller
         $list = [];
         foreach($submissions as $submission){
             $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-
+            $group = Group::find($submission->group_id);
             $list[] = [
                 'id' => $submission->id,
                 'type' => $submission->type,
@@ -62,7 +62,7 @@ class ReadhubController extends Controller
                 'submission_url' => $submission->data['url']??$comment_url,
                 'comment_url'    => $comment_url,
                 'domain'         => $submission->data['domain']??'',
-                'category_name'  => $submission->category_name,
+                'category_name'  => $group->name,
                 'created_at'     => (string) $submission->created_at
             ];
         }
