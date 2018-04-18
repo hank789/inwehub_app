@@ -57,6 +57,7 @@ class ApiException extends Exception
     const USER_REGISTRATION_CODE_EXPIRED = 1120;
 
     const USER_WEAPP_NEED_REGISTER = 1121;
+    const USER_WEAPP_SALARY_INVALID = 1122;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -148,6 +149,7 @@ class ApiException extends Exception
         self::USER_COMPANY_APPLY_REPEAT => '企业申请已经提交,请耐心等待',
         self::USER_REGISTRATION_CODE_EXPIRED => '您的邀请码已经过期，请重新获取有效邀请码',
         self::USER_WEAPP_NEED_REGISTER => '发布需求需要完成用户认证',
+        self::USER_WEAPP_SALARY_INVALID => '薪资范围有误',
 
 
         //问答模块
