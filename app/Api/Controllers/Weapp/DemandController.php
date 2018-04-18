@@ -46,9 +46,13 @@ class DemandController extends controller {
                     $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                     $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
                     $total_unread = 0;
+                    $total = 0;
                     foreach ($rooms as $im_room) {
-                        $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
-                        $total_unread += $im_count;
+                        if ($im_room->user_id == $user->id || $demand->user_id == $user->id) {
+                            $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+                            $total_unread += $im_count;
+                            $total += MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->count();
+                        }
                     }
                     if ($closedId == 0 && $demand->status == Demand::STATUS_CLOSED) {
                         $closedId = $demand->id;
@@ -63,11 +67,12 @@ class DemandController extends controller {
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                        'salary' => $demand->salary,
+                        'salary' => salaryFormat($demand->salary,''),
+                        'salary_upper' => salaryFormat($demand->salary_upper?:$demand->salary),
                         'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
-                        'communicate_number' => $rooms->count(),
+                        'communicate_number' => $total,
                         'unread_number' => $total_unread,
                         'created_time'=>$demand->created_at->diffForHumans()
                     ];
@@ -96,7 +101,8 @@ class DemandController extends controller {
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                        'salary' => $demand->salary,
+                        'salary' => salaryFormat($demand->salary,''),
+                        'salary_upper' => salaryFormat($demand->salary_upper?:$demand->salary),
                         'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
@@ -148,6 +154,7 @@ class DemandController extends controller {
             'title' => $demand->title,
             'address' => $demand->address,
             'salary' => $demand->salary,
+            'salary_upper' => $demand->salary_upper?:$demand->salary,
             'salary_type' => $demand->salary_type,
             'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
             'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
@@ -189,6 +196,10 @@ class DemandController extends controller {
         if(RateLimiter::instance()->increase('weapp_create_demand',$oauth->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        $salary_upper = $request->input('salary_upper',0);
+        if ($salary_upper > 0 && $salary_upper < $request->input('salary')) {
+            throw new ApiException(ApiException::USER_WEAPP_SALARY_INVALID);
+        }
         $address = $request->input('address');
         $formId = $request->input('formId');
 
@@ -197,6 +208,7 @@ class DemandController extends controller {
             'title' => $request->input('title'),
             'address' => $address,
             'salary' => $request->input('salary'),
+            'salary_upper' => $salary_upper,
             'salary_type' => $request->input('salary_type'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
@@ -244,6 +256,10 @@ class DemandController extends controller {
         if ($demand->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        $salary_upper = $request->input('salary_upper',0);
+        if ($salary_upper > 0 && $salary_upper < $request->input('salary')) {
+            throw new ApiException(ApiException::USER_WEAPP_SALARY_INVALID);
+        }
         $address = $request->input('address');
         $formId = $request->input('formId');
 
@@ -251,6 +267,7 @@ class DemandController extends controller {
             'title' => $request->input('title'),
             'address' => $address,
             'salary' => $request->input('salary'),
+            'salary_upper' => $salary_upper,
             'salary_type' => $request->input('salary_type'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
