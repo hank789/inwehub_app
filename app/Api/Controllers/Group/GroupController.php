@@ -185,6 +185,10 @@ class GroupController extends Controller
                 $groupMember->save();
             }
         }
+        if ($group->public) {
+            $group->subscribers = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->count();
+            $group->save();
+        }
         return self::createJsonData(true,[],ApiException::SUCCESS,$audit_status==GroupMember::AUDIT_STATUS_SUCCESS?'加入圈子成功':'您的入圈申请已提交');
     }
 
