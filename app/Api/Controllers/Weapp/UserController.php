@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use App\Services\Registrar;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\JWTAuth;
-
+use App\Events\Frontend\System\SystemNotify;
 class UserController extends controller {
 
     //小程序登录获取用户信息
