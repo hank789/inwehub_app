@@ -68,7 +68,7 @@ class DemandController extends controller {
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
-                        'salary_upper' => $demand->salary_upper?:$demand->salary,
+                        'salary_upper' => $demand->salary_upper,
                         'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
@@ -102,7 +102,7 @@ class DemandController extends controller {
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
                         'salary' => $demand->salary,
-                        'salary_upper' => $demand->salary_upper?:$demand->salary,
+                        'salary_upper' => $demand->salary_upper,
                         'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
@@ -154,7 +154,7 @@ class DemandController extends controller {
             'title' => $demand->title,
             'address' => $demand->address,
             'salary' => $demand->salary,
-            'salary_upper' => $demand->salary_upper?:$demand->salary,
+            'salary_upper' => $demand->salary_upper,
             'salary_type' => $demand->salary_type,
             'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
             'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
@@ -180,7 +180,6 @@ class DemandController extends controller {
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
             'salary' => 'required|numeric',
-            'salary_upper' => 'required|numeric',
             'salary_type' => 'required|numeric',
             'industry' => 'required',
             'project_cycle' => 'required|integer',
@@ -197,7 +196,8 @@ class DemandController extends controller {
         if(RateLimiter::instance()->increase('weapp_create_demand',$oauth->id,6,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
-        if ($request->input('salary_upper') < $request->input('salary')) {
+        $salary_upper = $request->input('salary_upper',0);
+        if ($salary_upper > 0 && $salary_upper < $request->input('salary')) {
             throw new ApiException(ApiException::USER_WEAPP_SALARY_INVALID);
         }
         $address = $request->input('address');
@@ -208,7 +208,7 @@ class DemandController extends controller {
             'title' => $request->input('title'),
             'address' => $address,
             'salary' => $request->input('salary'),
-            'salary_upper' => $request->input('salary_upper'),
+            'salary_upper' => $salary_upper,
             'salary_type' => $request->input('salary_type'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
@@ -236,7 +236,6 @@ class DemandController extends controller {
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
             'salary' => 'required|numeric',
-            'salary_upper' => 'required|numeric',
             'salary_type' => 'required|numeric',
             'industry' => 'required',
             'project_cycle' => 'required|integer',
@@ -257,7 +256,8 @@ class DemandController extends controller {
         if ($demand->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        if ($request->input('salary_upper') < $request->input('salary')) {
+        $salary_upper = $request->input('salary_upper',0);
+        if ($salary_upper > 0 && $salary_upper < $request->input('salary')) {
             throw new ApiException(ApiException::USER_WEAPP_SALARY_INVALID);
         }
         $address = $request->input('address');
@@ -267,6 +267,7 @@ class DemandController extends controller {
             'title' => $request->input('title'),
             'address' => $address,
             'salary' => $request->input('salary'),
+            'salary_upper' => $salary_upper,
             'salary_type' => $request->input('salary_type'),
             'industry' => $request->input('industry'),
             'project_cycle' => $request->input('project_cycle'),
