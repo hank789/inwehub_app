@@ -288,7 +288,7 @@ if (! function_exists('trans_project_project_cycle')) {
             6 => '4~6月',
             7 => '半年以上',
             8 => '不确定',
-            9 => '其它'
+            9 => '长期或入职'
         ];
         if($mode==='all'){
             return $map;
