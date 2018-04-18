@@ -35,10 +35,12 @@ class ReadhubController extends Controller
         $query = Submission::where('user_id',$user->id);
         if ($uuid) {
             if ($userPrivateGroups) {
+                \Log::info('test',$userPrivateGroups);
                 $query = $query->Where(function ($query) use ($userPrivateGroups) {
                     $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);
                 });
             } else {
+                \Log::info('test1',[]);
                 $query = $query->where('public',1);
             }
         }
@@ -49,6 +51,7 @@ class ReadhubController extends Controller
             $query = $query->where('id','<',$bottom_id);
         }
         $submissions = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+        \Log::info('test2',[$query->toSql()]);
 
         $list = [];
         foreach($submissions as $submission){
