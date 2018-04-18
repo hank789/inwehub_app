@@ -264,6 +264,7 @@ class MessageController extends Controller
                     'title' => $demand->title,
                     'address' => $demand->address,
                     'salary' => $demand->salary,
+                    'salary_upper' => $demand->salary_upper,
                     'salary_type' => $demand->salary_type,
                     'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                     'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
