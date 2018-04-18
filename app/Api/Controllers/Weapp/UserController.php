@@ -114,9 +114,8 @@ class UserController extends controller {
             $info['company'] = $user->company;
             $info['mobile'] = $user->mobile;
             $info['email'] = $user->email;
-            event(new UserLoggedIn($user,'小程序登陆'));
         }
-
+        event(new SystemNotify('用户登录: '.$oauthData->user_id.'['.$oauthData->nickname.'];设备:小程序登陆'));
         return self::createJsonData(true,['token'=>$token,'userInfo'=>$info]);
     }
 
