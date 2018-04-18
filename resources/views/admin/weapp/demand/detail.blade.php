@@ -22,6 +22,10 @@
                                 <label>{{ $demand->title }}</label>
                             </div>
                             <div class="form-group">
+                                <label>微信扫描访问:</label>
+                                <label><img src="{{ $qrcode }}"></label>
+                            </div>
+                            <div class="form-group">
                                 <label>发布者:</label>
                                 <label>{{ $demand->user->name }}</label>
                             </div>
