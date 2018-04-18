@@ -366,12 +366,14 @@ class GroupController extends Controller
         $user = $request->user();
         $query = GroupMember::where('group_id',$request->input('id'));
         if ($type == 2) {
-            $query = $query->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS);
+            $query = $query->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','asc');
         } elseif($type == 3) {
             //待审核的
-            $query = $query->where('audit_status',GroupMember::AUDIT_STATUS_DRAFT);
+            $query = $query->where('audit_status',GroupMember::AUDIT_STATUS_DRAFT)->orderBy('id','desc');
+        } else {
+            $query = $query->orderBy('id','desc');
         }
-        $members = $query->orderBy('id','asc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $members = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $members->toArray();
         $return['data'] = [];
         foreach ($members as $member) {
