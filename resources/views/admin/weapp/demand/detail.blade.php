@@ -23,7 +23,7 @@
                             </div>
                             <div class="form-group">
                                 <label>微信扫描访问:</label>
-                                <label><img src="{{ $qrcode }}"></label>
+                                <label><img src="data:image/png;base64,{{ $qrcode }}"></label>
                             </div>
                             <div class="form-group">
                                 <label>发布者:</label>

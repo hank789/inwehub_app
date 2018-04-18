@@ -52,7 +52,7 @@ class DemandController extends AdminController {
             $qrcode = '';
         }
 
-        return view('admin.weapp.demand.detail')->with(compact('demand','qrcode'));
+        return view('admin.weapp.demand.detail')->with($demand)->with($qrcode);
     }
 
 
