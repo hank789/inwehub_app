@@ -48,10 +48,10 @@ class DemandController extends AdminController {
         $scene = 'demand_id='.$demand->id;
         try {
             $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+            $qrcode = base64_encode($qrcode);
         } Catch (\Exception $e) {
             $qrcode = '';
         }
-
         return view('admin.weapp.demand.detail')->with('demand',$demand)->with('qrcode',$qrcode);
     }
 
