@@ -178,11 +178,11 @@ class UserController extends controller {
                 break;
         }
         try {
-            $res_array = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+            $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
         } Catch (\Exception $e) {
             return self::createJsonData(true,['qrcode'=>config('image.user_default_avatar')]);
         }
-        return self::createJsonData(true,['qrcode'=>$res_array]);
+        return self::createJsonData(true,['qrcode'=>$qrcode]);
     }
 
     public function getMessageRooms(JWTAuth $JWTAuth){
