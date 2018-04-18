@@ -1178,6 +1178,15 @@ if (!function_exists('distanceFormat')) {
     }
 }
 
+if (!function_exists('salaryFormat')) {
+    function salaryFormat($salary,$format='k') {
+        if (floatval($salary) < 1000) {
+            return $salary;
+        }
+        return ($salary/1000).$format;
+    }
+}
+
 if (!function_exists('formatCdnUrl')) {
     function formatCdnUrl($url) {
         if (config('app.env') == 'production') {
