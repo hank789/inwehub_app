@@ -17,13 +17,14 @@ class ReadhubController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $uuid = $request->input('uuid');
+        $loginUser = $request->user();
         $userPrivateGroups = [];
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
             if (!$user) {
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
-            $userGroups = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
+            $userGroups = GroupMember::where('user_id',$loginUser->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
             foreach ($userGroups as $groupId) {
                 $group = Group::find($groupId);
                 if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
@@ -35,12 +36,10 @@ class ReadhubController extends Controller
         $query = Submission::where('user_id',$user->id);
         if ($uuid) {
             if ($userPrivateGroups) {
-                \Log::info('test',$userPrivateGroups);
                 $query = $query->Where(function ($query) use ($userPrivateGroups) {
                     $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);
                 });
             } else {
-                \Log::info('test1',[]);
                 $query = $query->where('public',1);
             }
         }
@@ -51,7 +50,6 @@ class ReadhubController extends Controller
             $query = $query->where('id','<',$bottom_id);
         }
         $submissions = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
-        \Log::info('test2',[$query->toSql()]);
 
         $list = [];
         foreach($submissions as $submission){
