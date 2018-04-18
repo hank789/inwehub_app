@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Collection;
+use App\Models\Groups\Group;
 use App\Models\Question;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -117,7 +118,7 @@ class CollectionController extends Controller
                 case 'readhubSubmission':
                     $submission = $model::find($attention->source_id);
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-
+                    $group = Group::find($submission->group_id);
                     $item = [
                         'id' => $attention->id,
                         'type' => $submission->type,
@@ -126,7 +127,7 @@ class CollectionController extends Controller
                         'submission_url' => $submission->data['url']??$comment_url,
                         'comment_url'    => $comment_url,
                         'domain'         => $submission->data['domain']??'',
-                        'category_name'  => $submission->category_name,
+                        'category_name'  => $group->name,
                         'created_at'     => (string) $submission->created_at
                     ];
                     if (!is_array($item['img'])) {
