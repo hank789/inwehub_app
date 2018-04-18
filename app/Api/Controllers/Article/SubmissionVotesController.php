@@ -125,7 +125,7 @@ class SubmissionVotesController extends Controller {
             $is_joined = 3;
         }
         if (in_array($is_joined,[-1,0,2])) {
-            throw new ApiException(ApiException::GROUP_NOT_JOINED);
+            return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
         }
         $previous_vote = null;
         /*再次点赞相当于是取消点赞*/
