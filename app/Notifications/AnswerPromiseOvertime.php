@@ -72,7 +72,7 @@ class AnswerPromiseOvertime extends Notification implements ShouldBroadcast,Shou
         return [
             'url'    => '/answer/'.$this->question->id,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
-            'avatar' => config('image.user_default_avatar'),
+            'avatar' => config('image.notice_default_icon'),
             'title'  => '您的回答即将延误，请及时处理！',
             'body'   => $this->question->title,
             'extra_body' => '截止时间：'.$this->answer->promise_time

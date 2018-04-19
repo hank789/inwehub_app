@@ -8,6 +8,8 @@ use App\Models\IM\Room;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Relations\BelongsToUserTrait;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 
 /**
  * Class Demand
@@ -45,10 +47,12 @@ use App\Models\Relations\BelongsToUserTrait;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\Demand whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\Demand whereViews($value)
  * @mixin \Eloquent
+ * @property int $salary_type
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\Demand whereSalaryType($value)
  */
-class Demand extends Model
+class Demand extends Model implements HasMedia
 {
-    use BelongsToUserTrait;
+    use BelongsToUserTrait,HasMediaTrait;
     protected $table = 'demand';
     protected $fillable = ['title', 'user_id', 'salary', 'salary_upper', 'salary_type','industry', 'project_cycle', 'project_begin_time', 'description', 'expired_at', 'views','address', 'status'];
 

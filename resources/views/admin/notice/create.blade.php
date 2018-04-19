@@ -20,7 +20,7 @@
                     <div class="box-header">
                         <h3 class="box-title">基本信息</h3>
                     </div>
-                    <form role="form" name="addForm" method="POST" action="{{ route('admin.notice.store') }}">
+                    <form role="form" name="addForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.notice.store') }}">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
                             <div class="form-group">
@@ -32,8 +32,8 @@
                                 <input type="text" name="url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url','') }}">
                             </div>
                             <div class="form-group">
-                                <label>公告图片地址</label>
-                                <input type="text" name="img_url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url','') }}">
+                                <label>封面图片</label>
+                                <input type="file" name="img_url" />
                             </div>
                             <div class="form-group">
                                 <label>公告排序(越大越靠前)</label>

@@ -5,6 +5,8 @@ namespace App\Models\Feed;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Comment;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Question;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Submission;
@@ -153,7 +155,7 @@ class Feed extends Model
                     $is_pay_for_view = true;
                 }
                 $data = [
-                    'question_title' => $this->data['question_title'],
+                    'question_title' => $question->title,
                     'answer_content' => str_limit($answer->getContentText(),120),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
@@ -179,7 +181,7 @@ class Feed extends Model
                     $is_followed_question = 1;
                 }
                 $data = [
-                    'title'     => $this->data['question_title'],
+                    'title'     => $question->title,
                     'content'   => $answer->getContentText(),
                     'comment_num' => $answer->comments,
                     'support_number' => $answer->supports,
@@ -214,7 +216,7 @@ class Feed extends Model
                     $is_followed_question = 1;
                 }
                 $data = [
-                    'title' => $this->data['question_title'],
+                    'title' => $question->title,
                     'answer_num' => $question->answers,
                     'follow_num' => $question->followers,
                     'answer_user_list' => $answer_users,
@@ -236,8 +238,8 @@ class Feed extends Model
                         break;
                 }
                 $data = [
-                    'title' => $this->data['question_title'],
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
+                    'title' => $question->title,
+                    'tags'  => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
@@ -256,6 +258,7 @@ class Feed extends Model
                     ->where('supportable_id',$submission->id)
                     ->where('supportable_type',Submission::class)
                     ->exists();
+                $group = Group::find($submission->group_id);
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
                     'img'       => $submission->data['img'],
@@ -271,7 +274,8 @@ class Feed extends Model
                     'supporter_list' => $supporters,
                     'is_upvoted'     => $upvote ? 1 : 0,
                     'submission_type' => $submission->type,
-                    'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get()
+                    'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
+                    'group'    => $group?$group->toArray():[]
                 ];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:

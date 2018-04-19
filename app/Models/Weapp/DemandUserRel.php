@@ -18,6 +18,8 @@ use App\Models\Relations\BelongsToUserTrait;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\DemandUserRel whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\DemandUserRel whereUserId($value)
  * @mixin \Eloquent
+ * @property int $user_oauth_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Weapp\DemandUserRel whereUserOauthId($value)
  */
 class DemandUserRel extends Model
 {

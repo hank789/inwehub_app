@@ -321,6 +321,7 @@ class FollowController extends Controller
         $ids = $request->input('ids');
         $user = $request->user();
         $fields = [];
+        Attention::where("user_id",'=',$user->id)->where('source_type','=',Tag::class)->delete();
         foreach ($ids as $id) {
             $source = Tag::find($id);
             if(empty($source)){
@@ -436,8 +437,9 @@ class FollowController extends Controller
         $model = App::make($sourceClassMap[$source_type]);
 
         $query = $request->user()->attentions()->where('source_type','=',$sourceClassMap[$source_type]);
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
 
-        $attentions = $query->orderBy('attentions.created_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $attentions = $query->orderBy('attentions.created_at','desc')->simplePaginate($perPage);
         $return = $attentions->toArray();
         $data = [];
         foreach($attentions as $attention){
@@ -467,8 +469,8 @@ class FollowController extends Controller
                     $item['is_followed'] = 1;
                     break;
                 case 'tags':
-                    $item['tag_id'] = $info->id;
-                    $item['tag_name'] = $info->name;
+                    $item['value'] = $info->id;
+                    $item['text'] = $info->name;
                     $item['tag_logo'] = $info->logo;
                     $item['tag_summary'] = $info->summary;
                     break;

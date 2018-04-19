@@ -2,21 +2,16 @@
 use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
-use App\Models\Article;
 use App\Models\Attention;
 use App\Models\Authentication;
-use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Notice;
 use App\Models\Question;
-use App\Models\Readhub\Comment as ReadhubComment;
-use App\Models\Readhub\Submission as ReadhubSubmission;
 use App\Models\Submission;
 use App\Models\RecommendRead;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Config;
 
 /**
@@ -78,7 +73,6 @@ class IndexController extends Controller {
                 $cache_experts[$key]['avatar_url'] = $expert_user->avatar;
                 $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($expert_user))->where('source_id','=',$expert_user->id)->first();
                 $cache_experts[$key]['is_followed'] = $attention?1:0;
-
             }
             Cache::put('home_experts',$cache_experts,60*24);
         } else {
@@ -88,11 +82,13 @@ class IndexController extends Controller {
             }
         }
 
-
+        //轮播图
+        $notices = Notice::orderBy('sort','desc')->take(4)->get()->toArray();
 
         $data = [
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
+            'notices' => $notices,
             'recommend_experts' => $cache_experts
         ];
 
@@ -101,7 +97,8 @@ class IndexController extends Controller {
 
     //精选推荐
     public function recommendRead(Request $request) {
-        $reads = RecommendRead::where('audit_status',1)->orderBy('sort','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+        $reads = RecommendRead::where('audit_status',1)->orderBy('sort','desc')->simplePaginate($perPage);
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
             switch ($item['read_type']) {
@@ -110,6 +107,7 @@ class IndexController extends Controller {
                     $object = Submission::find($item['source_id']);
                     $item['data']['comment_number'] = $object->comments_number;
                     $item['data']['support_number'] = $object->upvotes;
+                    $item['data']['view_number'] = $object->views;
                     break;
                 case RecommendRead::READ_TYPE_PAY_QUESTION:
                     // '专业问答';
@@ -118,12 +116,15 @@ class IndexController extends Controller {
 
                     $item['data']['price'] = $object->price;
                     $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
+                    $item['data']['view_number'] = $bestAnswer->views;
+                    $item['data']['support_number'] = $bestAnswer->supports;
                     break;
                 case RecommendRead::READ_TYPE_FREE_QUESTION:
                     // '互动问答';
                     $object = Question::find($item['source_id']);
                     $item['data']['answer_number'] = $object->answers;
                     $item['data']['follower_number'] = $object->followers;
+                    $item['data']['view_number'] = $object->views;
                     break;
                 case RecommendRead::READ_TYPE_ACTIVITY:
                     // '活动';
@@ -136,6 +137,7 @@ class IndexController extends Controller {
                     $object = Answer::find($item['source_id']);
                     $item['data']['comment_number'] = $object->comments;
                     $item['data']['support_number'] = $object->supports;
+                    $item['data']['view_number'] = $object->views;
                     break;
             }
         }

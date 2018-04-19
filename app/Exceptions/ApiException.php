@@ -106,6 +106,10 @@ class ApiException extends Exception
     const ARTICLE_GET_URL_TITLE_ERROR = 6102;
     const ARTICLE_CATEGORY_NOT_EXIST = 6103;
     const ARTICLE_NOT_EXIST = 6104;
+    const GROUP_EXIST = 6105;
+    const GROUP_NOT_EXIST = 6106;
+    const GROUP_UNDER_AUDIT = 6107;
+    const GROUP_NOT_JOINED = 6108;
 
 
     public static $errorMessages = [
@@ -193,7 +197,11 @@ class ApiException extends Exception
         self::ARTICLE_URL_ALREADY_EXIST => '您提交的网址已经存在',
         self::ARTICLE_GET_URL_TITLE_ERROR => '获取文章标题失败，请手动输入',
         self::ARTICLE_CATEGORY_NOT_EXIST => '频道不存在',
-        self::ARTICLE_NOT_EXIST => '这条信息已被作者删除'
+        self::ARTICLE_NOT_EXIST => '这条信息已被作者删除',
+        self::GROUP_EXIST => '圈子已存在',
+        self::GROUP_NOT_EXIST => '圈子不存在',
+        self::GROUP_UNDER_AUDIT => '圈子正在审核中',
+        self::GROUP_NOT_JOINED => '您还未加入该圈子'
     ];
 
 

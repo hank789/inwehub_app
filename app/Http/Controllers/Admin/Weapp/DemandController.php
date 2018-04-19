@@ -2,9 +2,11 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
+use App\Services\RateLimiter;
 use App\Third\Weapp\WeApp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @author: wanghui
@@ -44,15 +46,22 @@ class DemandController extends AdminController {
     public function detail(Request $request,WeApp $wxxcx) {
         $id = $request->input('id');
         $demand = Demand::find($id);
-        $page = 'pages/detail/detail';
-        $scene = 'demand_id='.$demand->id;
+
         try {
-            $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
-            $qrcode = base64_encode($qrcode);
-        } Catch (\Exception $e) {
-            $qrcode = '';
+            $url = RateLimiter::instance()->hGet('demand-qrcode',$demand->id);
+            if (!$url) {
+                $page = 'pages/detail/detail';
+                $scene = 'demand_id='.$demand->id;
+                $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+                $file_name = 'demand/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+                Storage::disk('oss')->put($file_name,$qrcode);
+                $url = Storage::disk('oss')->url($file_name);
+                RateLimiter::instance()->hSet('demand-qrcode',$demand->id,$url);
+            }
+        } catch (\Exception $e) {
+            $url = '';
         }
-        return view('admin.weapp.demand.detail')->with('demand',$demand)->with('qrcode',$qrcode);
+        return view('admin.weapp.demand.detail')->with('demand',$demand)->with('qrcode',$url);
     }
 
 

@@ -31,12 +31,13 @@ trait UsernameMentions
         }
     }
 
-    public function handleSubmissionMentions(Submission $submission){
+    public function handleSubmissionMentions(Submission $submission,$members = []){
         $mentions = $submission->data['mentions'];
         if (empty($mentions)) return [];
         $notified_uids = [];
         foreach ($mentions as $uid) {
             if ($uid == $submission->user_id) continue;
+            if ($members && !in_array($uid,$members)) continue;
             $notified_uids[$uid] = $uid;
             $user = User::find($uid);
             $user->notify(new UsernameSubmissionMentioned($user->id,$submission));

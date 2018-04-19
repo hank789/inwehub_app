@@ -7,6 +7,8 @@
 
 use App\Events\Frontend\System\Credit;
 use App\Models\Feed\Feed;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Support;
 use App\Notifications\NewSupport;
 use App\Services\RateLimiter;
@@ -33,6 +35,7 @@ class SupportObserver implements ShouldQueue {
         $source = $support->source;
         $fields = [];
         $title = '';
+        $notified = [];
         if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('upvote:'.get_class($source),$source->id.'_'.$support->user_id,0)) {
             switch ($support->supportable_type) {
                 case 'App\Models\Answer':
@@ -111,14 +114,23 @@ class SupportObserver implements ShouldQueue {
                     event(new Credit($source->user_id,CreditModel::KEY_READHUB_SUBMISSION_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_READHUB_SUBMISSION_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_READHUB_SUBMISSION_UPVOTE),$support->id,'动态分享被点赞'));
                     //通知专栏作者
                     if ($source->author_id && $source->author_id != $support->user_id) {
-                        $source->author->notify(new NewSupport($source->user_id,$support));
+                        $group = Group::find($source->group_id);
+                        $members = null;
+                        if (!$group->public) {
+                            //私密圈子的分享只通知圈子内的人
+                            $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
+                        }
+                        if ($members === null || in_array($source->author_id,$members)) {
+                            $notified[$source->author_id] = $source->author_id;
+                            $source->author->notify(new NewSupport($source->user_id,$support));
+                        }
                     }
                     break;
                 default:
                     return;
                     break;
             }
-            if ($source->user_id != $support->user_id) {
+            if ($source->user_id != $support->user_id && !isset($notified[$source->user_id])) {
                 $source->user->notify(new NewSupport($source->user_id,$support));
             }
         }

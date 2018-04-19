@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Mockery\Matcher\Not;
 
 class NoticeController extends AdminController
@@ -16,7 +18,7 @@ class NoticeController extends AdminController
     protected $validateRules = [
         'subject' => 'required|max:255',
         'url' => 'required|max:255',
-        'img_url' => 'required|max:255',
+        'img_url' => 'required',
         'sort' => 'required'
     ];
 
@@ -60,7 +62,19 @@ class NoticeController extends AdminController
     {
         $request->flash();
         $this->validate($request,$this->validateRules);
-        Notice::create($request->all());
+        $img_url = '';
+        if($request->hasFile('img_url')){
+            $file = $request->file('img_url');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filePath = 'notices/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+        } else {
+            return $this->error(route('admin.notice.create'),'请上传封面图片');
+        }
+        $data = $request->all();
+        $data['img_url'] = $img_url;
+        Notice::create($data);
         return $this->success(route('admin.notice.index'),'公告添加成功');
 
     }
@@ -105,10 +119,19 @@ class NoticeController extends AdminController
         if(!$notice){
             return $this->error(route('admin.notice.index'),'公告不存在，请核实');
         }
+        unset($this->validateRules['img_url']);
         $this->validate($request,$this->validateRules);
+        $img_url = '';
+        if($request->hasFile('img_url')){
+            $file = $request->file('img_url');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filePath = 'notices/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+        }
         $notice->subject = $request->input('subject');
         $notice->url = $request->input('url');
-        $notice->img_url = $request->input('img_url');
+        if ($img_url) $notice->img_url = $img_url;
         $notice->sort = $request->input('sort');
         $notice->status = $request->input('status');
         $notice->save();

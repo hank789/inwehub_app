@@ -6,10 +6,13 @@ use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Doing;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\UserTag;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
@@ -64,10 +67,20 @@ class SubmissionController extends Controller {
                 if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
         }
+        $group_id = $request->input('group_id',0);
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+        if (!$groupMember) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $group = Group::find($group_id);
+        if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+            throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+        }
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
                 'title' => 'required|between:1,6000',
+                'group_id' => 'required|integer'
             ]);
 
             //检查url是否重复
@@ -126,6 +139,7 @@ class SubmissionController extends Controller {
             $this->validate($request, [
                 'title' => 'required|between:1,6000',
                 'type'  => 'required|in:link,text',
+                'group_id' => 'required|integer'
             ]);
 
             $data = $this->uploadFile($request->input('photos'));
@@ -143,10 +157,14 @@ class SubmissionController extends Controller {
                 'type'          => $request->type,
                 'category_name' => $category->name,
                 'category_id'   => $category->id,
+                'group_id'      => $request->input('group_id'),
+                'public'        => $group->public,
                 'rate'          => firstRate(),
                 'user_id'       => $user->id,
                 'data'          => $data,
             ]);
+            $group->increment('articles');
+            RateLimiter::instance()->sClear('group_read_users:'.$group->id);
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
             }
@@ -155,6 +173,7 @@ class SubmissionController extends Controller {
             if ($newTagString) {
                 Tag::multiAddByName($newTagString,$submission);
             }
+            UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);
@@ -205,6 +224,25 @@ class SubmissionController extends Controller {
             throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
         }
         $return = $submission->toArray();
+
+        $group = Group::find($submission->group_id);
+        $return['group'] = $group->toArray();
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+        $return['group']['is_joined'] = -1;
+        if ($groupMember) {
+            $return['group']['is_joined'] = $groupMember->audit_status;
+        }
+        if ($user->id == $group->user_id) {
+            $return['group']['is_joined'] = 3;
+        }
+
+        if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
+            //私有圈子
+            return self::createJsonData(true,$return);
+        }
+
+        $submission->increment('views');
+
         $upvote = Support::where('user_id',$user->id)
             ->where('supportable_id',$submission->id)
             ->where('supportable_type',Submission::class)
@@ -237,6 +275,17 @@ class SubmissionController extends Controller {
         $return['data']['current_address_name'] = $return['data']['current_address_name']??'';
         $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
         $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
+        $img = $return['data']['img']??'';
+        if (in_array($return['group']['is_joined'],[-1,0,2]) && $img) {
+            if (is_array($img)) {
+                foreach ($img as &$item) {
+                    $item .= '?x-oss-process=image/blur,r_20,s_20';
+                }
+            } else {
+                $img .= '?x-oss-process=image/blur,r_20,s_20';
+            }
+        }
+        $return['data']['img'] = $img;
         $this->doing($user->id,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,'查看动态');
         return self::createJsonData(true,$return);
     }

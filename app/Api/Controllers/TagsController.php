@@ -3,6 +3,8 @@ use App\Logic\TagsLogic;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Collection;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
@@ -231,7 +233,21 @@ class TagsController extends Controller {
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
         $user = $request->user();
-        $submissions = $tag->submissions()->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $userGroups = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
+        $userPrivateGroups = [];
+        foreach ($userGroups as $groupId) {
+            $group = Group::find($groupId);
+            if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
+        }
+        $query = $tag->submissions();
+        if ($userPrivateGroups) {
+            $query = $query->Where(function ($query) use ($userPrivateGroups) {
+                $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);
+            });
+        } else {
+            $query = $query->where('public',1);
+        }
+        $submissions = $query->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $submissions->toArray();
         $list = [];
         foreach ($submissions as $submission) {
@@ -251,6 +267,7 @@ class TagsController extends Controller {
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
+            $item['group'] = Group::find($submission->group_id)->toArray();
             $list[] = $item;
         }
         $return['data'] = $list;

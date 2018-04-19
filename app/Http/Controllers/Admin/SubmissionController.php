@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Groups\Group;
 use App\Models\RecommendRead;
 use App\Models\Submission;
 use Illuminate\Http\Request;
@@ -94,6 +95,8 @@ class SubmissionController extends AdminController
         $articleIds = $request->input('ids');
         foreach ($articleIds as $articleId) {
             $article = Submission::find($articleId);
+            $group = Group::find($article->group_id);
+            if (!$group->public) return $this->error(route('admin.operate.article.index'),'私有圈子里的文章不能设为推荐');
             RecommendRead::firstOrCreate([
                 'source_id' => $articleId,
                 'source_type' => get_class($article)
@@ -109,7 +112,8 @@ class SubmissionController extends AdminController
                     'category_id' => $article->category_id,
                     'category_name' => $article->category_name,
                     'type' => $article->type,
-                    'slug' => $article->slug
+                    'slug' => $article->slug,
+                    'group_id' => $article->group_id
                 ],$article->data)
             ]);
         }

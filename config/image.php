@@ -17,4 +17,5 @@ return array(
 
     'driver' => 'gd',
     'user_default_avatar' => 'https://cdn.inwehub.com/system/user_default_avatar.png',
+    'notice_default_icon' => 'https://cdn.inwehub.com/system/notice@3x.png'
 );

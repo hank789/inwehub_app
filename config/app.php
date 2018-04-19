@@ -203,6 +203,7 @@ return [
         Laravel\Scout\ScoutServiceProvider::class,
         ScoutEngines\Elasticsearch\ElasticsearchProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Barryvdh\Snappy\ServiceProvider::class,
     ],
 
     /*
@@ -264,6 +265,7 @@ return [
         'EasyWeChat' => App\Third\Wechat\Facade::class,
         'Pinyin' => Overtrue\LaravelPinyin\Facades\Pinyin::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
     ],
 
 ];

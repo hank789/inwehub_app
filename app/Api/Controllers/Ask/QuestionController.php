@@ -145,6 +145,8 @@ class QuestionController extends Controller
                 $promise_answer_time = $promise_answer->promise_time;
             }
         }
+        $question->increment('views');
+
 
         $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
 

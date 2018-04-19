@@ -13,6 +13,9 @@ Route::group(['namespace'=>'Web'], function() {
     Route::get('/service/register',['as'=>'website.service.register','uses'=>'ServiceController@register']);
     Route::get('/service/about',['as'=>'website.service.about','uses'=>'ServiceController@about']);
 
+    Route::get('/weapp/getDemandShareLongInfo/{id}',['uses'=>'WeappController@getDemandShareLongInfo'])->where(['id'=>'[0-9]+']);
+    Route::get('/weapp/getDemandShareShortInfo/{id}',['uses'=>'WeappController@getDemandShareShortInfo'])->where(['id'=>'[0-9]+']);
+
 });
 
 

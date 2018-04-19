@@ -8,6 +8,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\CloseDemand;
+use App\Jobs\UploadFile;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\User;
@@ -15,9 +16,12 @@ use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Models\Weapp\DemandUserRel;
 use App\Services\RateLimiter;
+use App\Third\Weapp\WeApp;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
 
 class DemandController extends controller {
@@ -67,7 +71,7 @@ class DemandController extends controller {
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                        'salary' => salaryFormat($demand->salary,''),
+                        'salary' => salaryFormat($demand->salary),
                         'salary_upper' => salaryFormat($demand->salary_upper?:$demand->salary),
                         'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
@@ -85,8 +89,10 @@ class DemandController extends controller {
                     $rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->get();
                     $total_unread = 0;
                     foreach ($rooms as $im_room) {
-                        $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
-                        $total_unread += $im_count;
+                        if ($im_room->user_id == $user->id || $demand->user_id == $user->id) {
+                            $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+                            $total_unread += $im_count;
+                        }
                     }
                     if ($closedId == 0 && $demand->status == Demand::STATUS_CLOSED) {
                         $closedId = $demand->id;
@@ -101,7 +107,7 @@ class DemandController extends controller {
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                        'salary' => salaryFormat($demand->salary,''),
+                        'salary' => salaryFormat($demand->salary),
                         'salary_upper' => salaryFormat($demand->salary_upper?:$demand->salary),
                         'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
@@ -175,7 +181,7 @@ class DemandController extends controller {
         return self::createJsonData(true,$data);
     }
 
-    public function store(Request $request,JWTAuth $JWTAuth) {
+    public function store(Request $request,JWTAuth $JWTAuth,WeApp $wxxcx) {
         $validateRules = [
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
@@ -223,6 +229,18 @@ class DemandController extends controller {
         ]);
         if ($formId) {
             RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+        }
+
+        $file_name = 'demand/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+        $page = 'pages/detail/detail';
+        $scene = 'demand_id='.$demand->id;
+        try {
+            $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+            $this->dispatch(new UploadFile($file_name,base64_encode($qrcode)));
+            $url = Storage::disk('oss')->url($file_name);
+            RateLimiter::instance()->hSet('demand-qrcode',$demand->id,$url);
+        } catch (\Exception $e) {
+
         }
 
         $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime(date('Y-m-d',strtotime('+7 days'))))));
@@ -346,6 +364,33 @@ class DemandController extends controller {
         $return['demand'] = $demand->toArray();
 
         return self::createJsonData(true,$return);
+    }
+
+    public function getShareImage(Request $request){
+        $validateRules = [
+            'id'   => 'required|integer',
+            'type' => 'required|in:1,2'
+        ];
+        $this->validate($request,$validateRules);
+        $type = $request->input('type',1);
+        if ($type == 1) {
+            //分享到朋友圈的长图
+            $collection = 'images_big';
+            $showUrl = 'getDemandShareLongInfo';
+        } else {
+            //分享到公众号的短图
+            $collection = 'images_small';
+            $showUrl = 'getDemandShareShortInfo';
+        }
+        $demand = Demand::findOrFail($request->input('id'));
+        if($demand->getMedia($collection)->isEmpty()){
+            $snappy = App::make('snappy.image');
+            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$demand->id);
+            $demand->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
+        }
+        $demand = Demand::find($request->input('id'));
+        $url = $demand->getMedia($collection)->last()->getUrl();
+        return self::createJsonData(true,['url'=>$url]);
     }
 
 }

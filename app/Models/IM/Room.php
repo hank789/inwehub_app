@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Room whereRDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Room whereRName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\IM\Room whereRType($value)
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $source
  */
 class Room extends Model
 {

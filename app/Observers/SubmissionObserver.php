@@ -8,6 +8,8 @@
 use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Feed\Feed;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\User;
 use App\Notifications\FollowedUserNewSubmission;
@@ -55,30 +57,38 @@ class SubmissionObserver implements ShouldQueue {
         $user = User::find($submission->user_id);
 
         event(new CreditEvent($submission->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$submission->id,'动态分享'));
-        //产生一条feed流
-        feed()
-            ->causedBy($user)
-            ->performedOn($submission)
-            ->tags($submission->tags()->pluck('tag_id')->toArray())
-            ->withProperties([
-                'view_url'=>$submission->data['url']??'',
-                'category_id'=>$submission->category_id,
-                'slug'=>$submission->slug,
-                'submission_title'=>$submission->title,
-                'domain'=>$submission->data['domain']??'',
-                'current_address_name' => $submission->data['current_address_name'],
-                'current_address_longitude' => $submission->data['current_address_longitude'],
-                'current_address_latitude'  => $submission->data['current_address_latitude'],
-                'img'=>$submission->data['img']??''])
-            ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+        $group = Group::find($submission->group_id);
+        $members = [];
+        if ($group->public) {
+            //公开圈子的内容产生一条feed流
+            feed()
+                ->causedBy($user)
+                ->performedOn($submission)
+                ->tags($submission->tags()->pluck('tag_id')->toArray())
+                ->withProperties([
+                    'view_url'=>$submission->data['url']??'',
+                    'category_id'=>$submission->category_id,
+                    'slug'=>$submission->slug,
+                    'submission_title'=>$submission->title,
+                    'domain'=>$submission->data['domain']??'',
+                    'current_address_name' => $submission->data['current_address_name'],
+                    'current_address_longitude' => $submission->data['current_address_longitude'],
+                    'current_address_latitude'  => $submission->data['current_address_latitude'],
+                    'img'=>$submission->data['img']??''])
+                ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+        } else {
+            //私密圈子的分享只通知圈子内的人
+            $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
+        }
 
         //关注的用户接收通知
         $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();
         //提到了人，还未去重
-        $notified_uids = $this->handleSubmissionMentions($submission);
+        $notified_uids = $this->handleSubmissionMentions($submission,$members);
         $notified_uids[$submission->user_id] = $submission->user_id;
         foreach ($attention_users as $attention_uid) {
             if (isset($notified_uids[$attention_uid])) continue;
+            if ($members && !in_array($attention_uid,$members)) continue;
             $attention_user = User::find($attention_uid);
             $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
         }
@@ -96,7 +106,7 @@ class SubmissionObserver implements ShouldQueue {
                     'color'     => 'good',
                     'fields' => $slackFields
                 ]
-            )->send('新文章提交');
+            )->send('用户'.formatSlackUser($user).'在圈子['.$group->name.']提交了新分享');
     }
 
 

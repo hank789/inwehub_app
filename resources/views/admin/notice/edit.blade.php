@@ -20,7 +20,7 @@
                     <div class="box-header">
                         <h3 class="box-title">基本信息</h3>
                     </div>
-                    <form role="form" name="editForm" method="POST" action="{{ route('admin.notice.update',['id'=>$notice->id]) }}">
+                    <form role="form" name="editForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.notice.update',['id'=>$notice->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
@@ -33,8 +33,11 @@
                                 <input type="text" name="url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url',$notice->url) }}">
                             </div>
                             <div class="form-group">
-                                <label>公告图片地址</label>
-                                <input type="text" name="img_url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('img_url',$notice->img_url) }}">
+                                <label>封面图片</label>
+                                <input type="file" name="img_url" />
+                                <div style="margin-top: 10px;">
+                                    <img src="{{ old('img_url',$notice->img_url) }}" width="200" height="200" />
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>排序</label>

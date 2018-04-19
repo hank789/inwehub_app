@@ -6,6 +6,7 @@ use App\Models\Authentication;
 use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Company\Company;
+use App\Models\Groups\GroupMember;
 use App\Models\Pay\Withdraw;
 use App\Models\Question;
 use App\Models\Submission;
@@ -20,6 +21,7 @@ use App\Observers\CollectObserver;
 use App\Observers\CommentObserver;
 use App\Observers\CompanyObserver;
 use App\Observers\CouponObserver;
+use App\Observers\MemberGroupObserver;
 use App\Observers\QuestionObserver;
 use App\Observers\SubmissionObserver;
 use App\Observers\SupportObserver;
@@ -96,6 +98,7 @@ class AppServiceProvider extends ServiceProvider
         Support::observe(SupportObserver::class);
         Submission::observe(SubmissionObserver::class);
         Coupon::observe(CouponObserver::class);
+        GroupMember::observe(MemberGroupObserver::class);
     }
 
     /**

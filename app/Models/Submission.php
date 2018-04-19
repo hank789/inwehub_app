@@ -78,6 +78,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \App\Models\User $author
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereAuthorId($value)
+ * @property int $views
+ * @property int $group_id
+ * @property int $is_recommend
+ * @property int $public
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereIsRecommend($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission wherePublic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereViews($value)
  */
 class Submission extends Model {
 
@@ -97,8 +105,8 @@ class Submission extends Model {
      * @var array
      */
     protected $fillable = [
-        'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate',
-        'upvotes', 'downvotes', 'user_id', 'data', 'approved_at',
+        'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate','group_id',
+        'upvotes', 'downvotes', 'user_id', 'views', 'data', 'approved_at','public','is_recommend',
         'deleted_at', 'comments_number'
     ];
 
@@ -158,6 +166,10 @@ class Submission extends Model {
     public function author(){
         return $this->belongsTo(User::class, 'author_id')
             ->select(['id', 'name', 'avatar', 'uuid','is_expert']);
+    }
+
+    public function group() {
+        return $this->belongsTo('App\Models\Groups\Group');
     }
 
 }

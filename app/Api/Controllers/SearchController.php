@@ -3,6 +3,8 @@
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Attention;
 use App\Models\Collection;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Support;
@@ -16,8 +18,8 @@ use Tymon\JWTAuth\JWTAuth;
 class SearchController extends Controller
 {
 
-    protected function searchNotify($user,$searchWord,$typeName=''){
-        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'));
+    protected function searchNotify($user,$searchWord,$typeName='',$searchResult=''){
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'.$searchResult));
         RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
         RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
@@ -28,7 +30,6 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[用户]');
         $users = User::search($request->input('search_word'))->where('status',1)->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($users as $user) {
@@ -52,6 +53,7 @@ class SearchController extends Controller
         }
         $return = $users->toArray();
         $return['data'] = $data;
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[用户]',',搜索结果'.$users->total());
         return self::createJsonData(true, $return);
     }
 
@@ -62,7 +64,6 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[标签]');
         $tags = Tag::search($request->input('search_word'))->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($tags as $tag) {
@@ -73,6 +74,7 @@ class SearchController extends Controller
         }
         $return = $tags->toArray();
         $return['data'] = $data;
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[标签]',',搜索结果'.$tags->total());
         return self::createJsonData(true, $return);
     }
 
@@ -89,7 +91,6 @@ class SearchController extends Controller
             $loginUser->id = 0;
             $loginUser->name = '游客';
         }
-        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[问答]');
         $questions = Question::search($request->input('search_word'))->where(function($query) {$query->where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);})->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($questions as $question) {
@@ -117,6 +118,7 @@ class SearchController extends Controller
         }
         $return = $questions->toArray();
         $return['data'] = $data;
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[问答]',',搜索结果'.$questions->total());
         return self::createJsonData(true, $return);
     }
 
@@ -127,8 +129,22 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]');
-        $submissions = Submission::search($request->input('search_word'))->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $userGroups = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
+        $userPrivateGroups = [];
+        foreach ($userGroups as $groupId) {
+            $group = Group::find($groupId);
+            if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
+        }
+
+        $query = Submission::search($request->input('search_word'));
+        if ($userPrivateGroups) {
+            $query = $query->Where(function ($query) use ($userPrivateGroups) {
+                $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);
+            });
+        } else {
+            $query = $query->where('public',1);
+        }
+        $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($submissions as $submission) {
             $upvote = Support::where('user_id',$user->id)
@@ -151,9 +167,48 @@ class SearchController extends Controller
         }
         $return = $submissions->toArray();
         $return['data'] = $data;
+        $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]',',搜索结果'.$submissions->total());
         return self::createJsonData(true, $return);
     }
 
-
-
+    public function group(Request $request) {
+        $validateRules = [
+            'search_word' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $groups = Group::search($request->input('search_word'))->where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $return = $groups->toArray();
+        $return['data'] = [];
+        foreach ($groups as $group) {
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+            $is_joined = -1;
+            if ($groupMember) {
+                $is_joined = $groupMember->audit_status;
+            }
+            if ($user->id == $group->user_id) {
+                $is_joined = 3;
+            }
+            $return['data'][] = [
+                'id' => $group->id,
+                'name' => $group->name,
+                'description' => $group->description,
+                'logo' => $group->logo,
+                'public' => $group->public,
+                'subscribers' => $group->subscribers,
+                'articles'    => $group->articles,
+                'is_joined'  => $is_joined,
+                'owner' => [
+                    'id' => $group->user->id,
+                    'uuid' => $group->user->uuid,
+                    'name' => $group->user->name,
+                    'avatar' => $group->user->avatar,
+                    'description' => $group->user->description,
+                    'is_expert' => $group->user->is_expert
+                ]
+            ];
+        }
+        $this->searchNotify($user,$request->input('search_word'),'在栏目[圈子]',',搜索结果'.$groups->total());
+        return self::createJsonData(true,$return);
+    }
 }

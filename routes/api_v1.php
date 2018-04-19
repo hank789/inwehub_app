@@ -242,6 +242,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     Route::post('search/tag','SearchController@tag');
     //搜索文章
     Route::post('search/submission','SearchController@submission');
+    //搜索圈子
+    Route::post('search/group','SearchController@group');
 });
 //搜索问答
 Route::post('search/question','SearchController@question');
@@ -427,6 +429,8 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('user/info','UserController@getUserInfo')->middleware(['jwt.weappAuth']);
     //获取二维码
     Route::post('user/getQrCode','UserController@getQrCode');
+    //获取需求分享图片
+    Route::post('demand/getShareImage','DemandController@getShareImage');
     //获取未读消息列表
     Route::post('user/getMessageRooms','UserController@getMessageRooms')->middleware(['jwt.weappAuth']);
     //获取需求联系人消息列表
@@ -474,6 +478,37 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'readhub'], fu
     //我的文章列表
     Route::post('mySubmission','ReadhubController@mySubmission');
 });
+
+//圈子
+Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','prefix' => 'group'], function() {
+    //创建圈子
+    Route::post('store','GroupController@store');
+    //修改圈子
+    Route::post('update','GroupController@update');
+    //加入圈子
+    Route::post('join','GroupController@join');
+    //分享设为精华
+    Route::post('setSubmissionRecommend','GroupController@setSubmissionRecommend');
+    //圈子分享列表
+    Route::post('submissionList','GroupController@submissionList');
+    //随机推荐热门
+    Route::post('hotRecommend','GroupController@hotRecommend');
+    //圈子成员列表
+    Route::post('members','GroupController@members');
+    //审核通过圈子成员
+    Route::post('joinAgree','GroupController@joinAgree');
+    //我的圈子
+    Route::post('mine','GroupController@mine');
+    //推荐圈子
+    Route::post('recommend','GroupController@recommend');
+    //拒绝通过圈子成员
+    Route::post('joinReject','GroupController@joinReject');
+    //退出圈子
+    Route::post('quit','GroupController@quit');
+});
+
+//圈子详情
+Route::post('group/detail','Group\GroupController@detail');
 
 //文章
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','prefix' => 'article'], function() {

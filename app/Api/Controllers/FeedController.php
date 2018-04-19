@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class FeedController extends Controller
 {
@@ -67,10 +68,37 @@ class FeedController extends Controller
                 if (!$search_user) throw new ApiException(ApiException::BAD_REQUEST);
                 $query = $query->where('user_id', $search_user->id)->where('feed_type', '!=', Feed::FEED_TYPE_FOLLOW_USER);
                 break;
+            case 6:
+                //推荐
+                $page = $request->input('page',1);
+                $attentionTags = $user->attentions()->where('source_type', '=', Tag::class)->pluck('source_id')->toArray();
+                $userTags = $user->userTag->pluck('tag_id')->toArray();
+                $attentionTags = array_unique(array_merge($attentionTags,$userTags));
+                $query = $query->where('feed_type', '!=', Feed::FEED_TYPE_FOLLOW_USER);
+                if ($attentionTags) {
+                    $query = $query->orWhere(function ($query) use ($attentionTags) {
+                        foreach ($attentionTags as $attentionTag) {
+                            if ($attentionTag <=0) continue;
+                            $query->orWhereRaw("locate('[" . $attentionTag . "]',tags)>0");
+                        }
+                    });
+                }
+                if ($page == 1) {
+                    $count = $query->count();
+                    $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
+                    $feeds = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))
+                        ->simplePaginate(10);
+                } else {
+                    $feeds = $query->distinct()->latest()->simplePaginate(Config::get('inwehub.api_data_page_size'));
+                }
+                break;
         }
-
-        $feeds = $query->distinct()->orderBy('top', 'desc')->latest()
-            ->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        if ($search_type == 6) {
+            //推荐
+        } else {
+            $feeds = $query->distinct()->orderBy('top', 'desc')->latest()
+                ->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        }
 
         $return = $feeds->toArray();
         $data = [];
@@ -99,5 +127,6 @@ class FeedController extends Controller
 
         return self::createJsonData(true,$return);
     }
+
 
 }
