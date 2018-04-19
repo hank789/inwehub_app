@@ -5,8 +5,6 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Api\Controllers\Controller;
-use App\Events\Frontend\Auth\UserLoggedIn;
-use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
@@ -19,7 +17,7 @@ use Illuminate\Http\Request;
 use App\Services\Registrar;
 use Illuminate\Support\Facades\Config;
 use Tymon\JWTAuth\JWTAuth;
-
+use App\Events\Frontend\System\SystemNotify;
 class UserController extends controller {
 
     //小程序登录获取用户信息
@@ -117,7 +115,6 @@ class UserController extends controller {
             $info['email'] = $user->email;
         }
         event(new SystemNotify('用户登录: '.$oauthData->user_id.'['.$oauthData->nickname.'];设备:小程序登陆'));
-
         return self::createJsonData(true,['token'=>$token,'userInfo'=>$info]);
     }
 
@@ -179,11 +176,11 @@ class UserController extends controller {
                 break;
         }
         try {
-            $res_array = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+            $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
         } Catch (\Exception $e) {
             return self::createJsonData(true,['qrcode'=>config('image.user_default_avatar')]);
         }
-        return self::createJsonData(true,['qrcode'=>$res_array]);
+        return self::createJsonData(true,['qrcode'=>$qrcode]);
     }
 
     public function getMessageRooms(JWTAuth $JWTAuth){

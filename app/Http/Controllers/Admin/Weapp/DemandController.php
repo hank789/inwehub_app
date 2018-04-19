@@ -2,6 +2,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
+use App\Third\Weapp\WeApp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 
@@ -40,11 +41,18 @@ class DemandController extends AdminController {
         return view('admin.weapp.demand.index')->with('demands',$demands)->with('filter',$filter);
     }
 
-    public function detail(Request $request) {
+    public function detail(Request $request,WeApp $wxxcx) {
         $id = $request->input('id');
         $demand = Demand::find($id);
-
-        return view('admin.weapp.demand.detail')->with(compact('demand'));
+        $page = 'pages/detail/detail';
+        $scene = 'demand_id='.$demand->id;
+        try {
+            $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+            $qrcode = base64_encode($qrcode);
+        } Catch (\Exception $e) {
+            $qrcode = '';
+        }
+        return view('admin.weapp.demand.detail')->with('demand',$demand)->with('qrcode',$qrcode);
     }
 
 
