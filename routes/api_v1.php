@@ -489,14 +489,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('join','GroupController@join');
     //分享设为精华
     Route::post('setSubmissionRecommend','GroupController@setSubmissionRecommend');
-    //圈子分享列表
-    Route::post('submissionList','GroupController@submissionList');
+
     //随机推荐热门
     Route::post('hotRecommend','GroupController@hotRecommend');
     //圈子成员列表
     Route::post('members','GroupController@members');
-    //圈子详情
-    Route::post('detail','GroupController@detail');
     //审核通过圈子成员
     Route::post('joinAgree','GroupController@joinAgree');
     //我的圈子
@@ -508,6 +505,11 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     //退出圈子
     Route::post('quit','GroupController@quit');
 });
+
+//圈子详情
+Route::post('group/detail','Group\GroupController@detail');
+//圈子分享列表
+Route::post('group/submissionList','Group\GroupController@submissionList');
 
 //文章
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','prefix' => 'article'], function() {

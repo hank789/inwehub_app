@@ -191,7 +191,7 @@ class UserController extends controller {
                 $url = Storage::disk('oss')->url($file_name);
                 RateLimiter::instance()->hSet($cacheKey,$object->id,$url);
             }
-        } Catch (\Exception $e) {
+        } catch (\Exception $e) {
             return self::createJsonData(true,['qrcode'=>config('image.user_default_avatar')]);
         }
         return self::createJsonData(true,['qrcode'=>$url]);

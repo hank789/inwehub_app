@@ -239,7 +239,7 @@ class DemandController extends controller {
             $this->dispatch(new UploadFile($file_name,base64_encode($qrcode)));
             $url = Storage::disk('oss')->url($file_name);
             RateLimiter::instance()->hSet('demand-qrcode',$demand->id,$url);
-        } Catch (\Exception $e) {
+        } catch (\Exception $e) {
 
         }
 

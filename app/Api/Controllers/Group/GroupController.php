@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -107,13 +108,18 @@ class GroupController extends Controller
     }
 
     //圈子详情
-    public function detail(Request $request) {
+    public function detail(Request $request,JWTAuth $JWTAuth) {
         $this->validate($request,['id'=>'required|integer']);
         $group = Group::find($request->input('id'));
         if (!$group) {
             throw new ApiException(ApiException::GROUP_NOT_EXIST);
         }
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $return = $group->toArray();
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
         $return['is_joined'] = -1;
@@ -278,7 +284,7 @@ class GroupController extends Controller
     }
 
     //圈子分享列表
-    public function submissionList(Request $request) {
+    public function submissionList(Request $request,JWTAuth $JWTAuth) {
         $this->validate($request,[
             'id'=>'required|integer',
             'type' => 'required|in:1,2,3'
@@ -301,7 +307,12 @@ class GroupController extends Controller
         }
 
         $submissions = $query->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $return = $submissions->toArray();
         $list = [];
         foreach ($submissions as $submission) {

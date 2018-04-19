@@ -58,7 +58,7 @@ class DemandController extends AdminController {
                 $url = Storage::disk('oss')->url($file_name);
                 RateLimiter::instance()->hSet('demand-qrcode',$demand->id,$url);
             }
-        } Catch (\Exception $e) {
+        } catch (\Exception $e) {
             $url = '';
         }
         return view('admin.weapp.demand.detail')->with('demand',$demand)->with('qrcode',$url);
