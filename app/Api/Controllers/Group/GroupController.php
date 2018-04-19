@@ -329,9 +329,19 @@ class GroupController extends Controller
                 ->where('supportable_id',$submission->id)
                 ->where('supportable_type',Submission::class)
                 ->exists();
+            $img = $submission->data['img']??'';
+            if ($user->id <= 0 && $img) {
+                if (is_array($img)) {
+                    foreach ($img as &$item) {
+                        $item .= '?x-oss-process=image/blur,r_20,s_20';
+                    }
+                } else {
+                    $img .= '?x-oss-process=image/blur,r_20,s_20';
+                }
+            }
             $sourceData = [
                 'title'     => $submission->partHtmlTitle(),
-                'img'       => $submission->data['img']??'',
+                'img'       => $img,
                 'domain'    => $submission->data['domain']??'',
                 'tags'      => $submission->tags()->get()->toArray(),
                 'submission_id' => $submission->id,

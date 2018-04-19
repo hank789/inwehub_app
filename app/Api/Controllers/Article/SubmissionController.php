@@ -275,6 +275,17 @@ class SubmissionController extends Controller {
         $return['data']['current_address_name'] = $return['data']['current_address_name']??'';
         $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
         $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
+        $img = $return['data']['img']??'';
+        if ($user->id <= 0 && $img) {
+            if (is_array($img)) {
+                foreach ($img as &$item) {
+                    $item .= '?x-oss-process=image/blur,r_20,s_20';
+                }
+            } else {
+                $img .= '?x-oss-process=image/blur,r_20,s_20';
+            }
+        }
+        $return['data']['img'] = $img;
         $this->doing($user->id,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,'查看动态');
         return self::createJsonData(true,$return);
     }
