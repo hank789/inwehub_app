@@ -300,7 +300,7 @@ class GroupController extends Controller
                 break;
         }
 
-        $submissions = $query->orderBy('rate','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $submissions = $query->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $user = $request->user();
         $return = $submissions->toArray();
         $list = [];

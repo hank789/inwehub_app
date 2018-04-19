@@ -155,7 +155,7 @@ class Feed extends Model
                     $is_pay_for_view = true;
                 }
                 $data = [
-                    'question_title' => $this->data['question_title'],
+                    'question_title' => $question->title,
                     'answer_content' => str_limit($answer->getContentText(),120),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
@@ -181,7 +181,7 @@ class Feed extends Model
                     $is_followed_question = 1;
                 }
                 $data = [
-                    'title'     => $this->data['question_title'],
+                    'title'     => $question->title,
                     'content'   => $answer->getContentText(),
                     'comment_num' => $answer->comments,
                     'support_number' => $answer->supports,
@@ -216,7 +216,7 @@ class Feed extends Model
                     $is_followed_question = 1;
                 }
                 $data = [
-                    'title' => $this->data['question_title'],
+                    'title' => $question->title,
                     'answer_num' => $question->answers,
                     'follow_num' => $question->followers,
                     'answer_user_list' => $answer_users,
@@ -238,8 +238,8 @@ class Feed extends Model
                         break;
                 }
                 $data = [
-                    'title' => $this->data['question_title'],
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
+                    'title' => $question->title,
+                    'tags'  => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
