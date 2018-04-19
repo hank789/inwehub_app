@@ -489,7 +489,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('join','GroupController@join');
     //分享设为精华
     Route::post('setSubmissionRecommend','GroupController@setSubmissionRecommend');
-
+    //圈子分享列表
+    Route::post('submissionList','GroupController@submissionList');
     //随机推荐热门
     Route::post('hotRecommend','GroupController@hotRecommend');
     //圈子成员列表
@@ -508,8 +509,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
 
 //圈子详情
 Route::post('group/detail','Group\GroupController@detail');
-//圈子分享列表
-Route::post('group/submissionList','Group\GroupController@submissionList');
 
 //文章
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','prefix' => 'article'], function() {

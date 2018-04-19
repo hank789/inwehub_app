@@ -284,13 +284,19 @@ class GroupController extends Controller
     }
 
     //圈子分享列表
-    public function submissionList(Request $request,JWTAuth $JWTAuth) {
+    public function submissionList(Request $request) {
         $this->validate($request,[
             'id'=>'required|integer',
             'type' => 'required|in:1,2,3'
         ]);
         $type = $request->input('type');
         $group = Group::find($request->input('id'));
+        $user = $request->user();
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+        if (!$groupMember && $user->id != $group->user_id) {
+            return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
+        }
+
         $query = Submission::where('group_id',$request->input('id'));
         switch ($type) {
             case 1:
@@ -307,12 +313,7 @@ class GroupController extends Controller
         }
 
         $submissions = $query->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
-        try {
-            $user = $JWTAuth->parseToken()->authenticate();
-        } catch (\Exception $e) {
-            $user = new \stdClass();
-            $user->id = 0;
-        }
+
         $return = $submissions->toArray();
         $list = [];
         foreach ($submissions as $submission) {
@@ -330,15 +331,6 @@ class GroupController extends Controller
                 ->where('supportable_type',Submission::class)
                 ->exists();
             $img = $submission->data['img']??'';
-            if ($user->id <= 0 && $img) {
-                if (is_array($img)) {
-                    foreach ($img as &$item) {
-                        $item .= '?x-oss-process=image/blur,r_20,s_20';
-                    }
-                } else {
-                    $img .= '?x-oss-process=image/blur,r_20,s_20';
-                }
-            }
             $sourceData = [
                 'title'     => $submission->partHtmlTitle(),
                 'img'       => $img,
