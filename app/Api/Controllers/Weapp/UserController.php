@@ -16,6 +16,7 @@ use App\Third\Weapp\WeApp;
 use Illuminate\Http\Request;
 use App\Services\Registrar;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
 use App\Events\Frontend\System\SystemNotify;
 class UserController extends controller {
@@ -167,20 +168,33 @@ class UserController extends controller {
 
         ];
         $this->validate($request,$validateRules);
+        $url = '';
+        $cacheKey = '';
         switch ($request->input('object_type')) {
             case 1:
                 //获取需求
-                $demand = Demand::findOrFail($request->input('object_id'));
+                $object = Demand::findOrFail($request->input('object_id'));
+                $cacheKey = 'demand-qrcode';
+                $url = RateLimiter::instance()->hGet($cacheKey,$object->id);
                 $page = 'pages/detail/detail';
-                $scene = 'demand_id='.$demand->id;
+                $scene = 'demand_id='.$object->id;
+                break;
+            default:
+                throw new ApiException(ApiException::BAD_REQUEST);
                 break;
         }
         try {
-            $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+            if (!$url) {
+                $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+                $file_name = 'demand/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+                Storage::disk('oss')->put($file_name,$qrcode);
+                $url = Storage::disk('oss')->url($file_name);
+                RateLimiter::instance()->hSet($cacheKey,$object->id,$url);
+            }
         } Catch (\Exception $e) {
             return self::createJsonData(true,['qrcode'=>config('image.user_default_avatar')]);
         }
-        return self::createJsonData(true,['qrcode'=>$qrcode]);
+        return self::createJsonData(true,['qrcode'=>$url]);
     }
 
     public function getMessageRooms(JWTAuth $JWTAuth){

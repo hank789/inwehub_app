@@ -8,6 +8,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\CloseDemand;
+use App\Jobs\UploadFile;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\User;
@@ -15,10 +16,12 @@ use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Models\Weapp\DemandUserRel;
 use App\Services\RateLimiter;
+use App\Third\Weapp\WeApp;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
 
 class DemandController extends controller {
@@ -68,7 +71,7 @@ class DemandController extends controller {
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                        'salary' => salaryFormat($demand->salary,''),
+                        'salary' => salaryFormat($demand->salary),
                         'salary_upper' => salaryFormat($demand->salary_upper?:$demand->salary),
                         'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
@@ -104,7 +107,7 @@ class DemandController extends controller {
                         'address' => $demand->address,
                         'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
                         'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
-                        'salary' => salaryFormat($demand->salary,''),
+                        'salary' => salaryFormat($demand->salary),
                         'salary_upper' => salaryFormat($demand->salary_upper?:$demand->salary),
                         'salary_type' => $demand->salary_type,
                         'status' => $demand->status,
@@ -178,7 +181,7 @@ class DemandController extends controller {
         return self::createJsonData(true,$data);
     }
 
-    public function store(Request $request,JWTAuth $JWTAuth) {
+    public function store(Request $request,JWTAuth $JWTAuth,WeApp $wxxcx) {
         $validateRules = [
             'title'=> 'required|max:255',
             'address'=> 'required|max:255',
@@ -226,6 +229,18 @@ class DemandController extends controller {
         ]);
         if ($formId) {
             RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+        }
+
+        $file_name = 'demand/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+        $page = 'pages/detail/detail';
+        $scene = 'demand_id='.$demand->id;
+        try {
+            $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+            $this->dispatch(new UploadFile($file_name,base64_encode($qrcode)));
+            $url = Storage::disk('oss')->url($file_name);
+            RateLimiter::instance()->hSet('demand-qrcode',$demand->id,$url);
+        } Catch (\Exception $e) {
+
         }
 
         $this->dispatch((new CloseDemand($demand->id))->delay(Carbon::createFromTimestamp(strtotime(date('Y-m-d',strtotime('+7 days'))))));

@@ -263,7 +263,7 @@ class MessageController extends Controller
                     'publisher_phone' => $demand->user->mobile,
                     'title' => $demand->title,
                     'address' => $demand->address,
-                    'salary' => salaryFormat($demand->salary,''),
+                    'salary' => salaryFormat($demand->salary),
                     'salary_upper' => salaryFormat($demand->salary_upper),
                     'salary_type' => $demand->salary_type,
                     'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
