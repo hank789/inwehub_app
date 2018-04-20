@@ -154,6 +154,7 @@ class GroupController extends Controller
                 'is_expert'   => $member->user->is_expert
             ];
         }
+        $return['subscribers'] = $group->getHotIndex();
         RateLimiter::instance()->sRem('group_read_users:'.$group->id,$user->id);
         return self::createJsonData(true,$return);
     }
@@ -445,7 +446,7 @@ class GroupController extends Controller
                 'description' => $group->description,
                 'logo' => $group->logo,
                 'public' => $group->public,
-                'subscribers' => $group->subscribers,
+                'subscribers' => $group->getHotIndex(),
                 'articles'    => $group->articles,
                 'is_joined'   => 1,
                 'audit_status' => $group->audit_status,
@@ -485,7 +486,7 @@ class GroupController extends Controller
                 'description' => $group->description,
                 'logo' => $group->logo,
                 'public' => $group->public,
-                'subscribers' => $group->subscribers,
+                'subscribers' => $group->getHotIndex(),
                 'articles'    => $group->articles,
                 'is_joined'  => $is_joined,
                 'owner' => [
@@ -526,6 +527,7 @@ class GroupController extends Controller
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
             $item['group'] = $group->toArray();
+            $item['group']['subscribers'] = $group->getHotIndex();
             $list[] = $item;
         }
         $return['data'] = $list;

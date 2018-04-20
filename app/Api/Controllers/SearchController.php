@@ -165,6 +165,7 @@ class SearchController extends Controller
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
             $group = Group::find($submission->group_id);
             $item['group'] = $group->toArray();
+            $item['group']['subscribers'] = $group->getHotIndex();
             $item['category_name'] = $group->name;
             $data[] = $item;
         }
@@ -198,7 +199,7 @@ class SearchController extends Controller
                 'description' => $group->description,
                 'logo' => $group->logo,
                 'public' => $group->public,
-                'subscribers' => $group->subscribers,
+                'subscribers' => $group->getHotIndex(),
                 'articles'    => $group->articles,
                 'is_joined'  => $is_joined,
                 'owner' => [
