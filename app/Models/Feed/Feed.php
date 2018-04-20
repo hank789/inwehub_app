@@ -277,6 +277,7 @@ class Feed extends Model
                     'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
                     'group'    => $group?$group->toArray():[]
                 ];
+                $data['group']['subscribers'] = $group->getHotIndex();
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答

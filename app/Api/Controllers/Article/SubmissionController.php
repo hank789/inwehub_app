@@ -235,6 +235,7 @@ class SubmissionController extends Controller {
         if ($user->id == $group->user_id) {
             $return['group']['is_joined'] = 3;
         }
+        $return['group']['subscribers'] = $group->getHotIndex();
 
         if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
             //私有圈子

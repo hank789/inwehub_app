@@ -3,6 +3,7 @@
 namespace App\Models\Groups;
 
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\Submission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -65,6 +66,15 @@ class Group extends Model
     {
         $list = self::where('name','like',"%$word%");
         return $list;
+    }
+
+    /**
+     * 人气：总人数+动态数+点赞数+评论数
+     */
+    public function getHotIndex(){
+        $upvotes = Submission::where('group_id',$this->id)->sum('upvotes');
+        $commnets = Submission::where('group_id',$this->id)->sum('comments_number');
+        return $this->subscribers + $this->articles + $upvotes + $commnets;
     }
 
 }

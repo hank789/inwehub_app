@@ -3,484 +3,235 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta charset="UTF-8" />
-    <title>71SRM贺新春</title>
+    <title>贺新春</title>
     <style type="text/css">
-        /* Client-specific Styles */
-        #outlook a{padding:0;} /* Force Outlook to provide a "view in browser" button. */
-        body{width:100% !important;} .ReadMsgBody{width:100%;} .ExternalClass{width:100%;} /* Force Hotmail to display emails at full width */
-        body{-webkit-text-size-adjust:none;} /* Prevent Webkit platforms from changing default text sizes. */
-
-        /* Reset Styles */
-        body{margin:0; padding:0;}
-        img{border:0; height:auto; line-height:100%; outline:none; text-decoration:none;}
-        table td{border-collapse:collapse;}
-        #backgroundTable{height:100% !important; margin:0; padding:0; width:100% !important;}
-
-        /* Template Styles */
-
-        /* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: COMMON PAGE ELEMENTS /\/\/\/\/\/\/\/\/\/\ */
-
-        /**
-        *  Page
-        *  background color
-        * @tip Set the background color for your email. You may want to choose one that matches your company's branding.
-        * @theme page
+        /*
+          dr
+          详情的需求描述样式
         */
-        body, #backgroundTable{
-            /*@editable*/ background-color:#FAFAFA;
+        page{
+            background: #fff;
         }
-
-        /**
-        *  Page
-        *  email border
-        * @tip Set the border for your email.
-        */
-        #templateContainer{
-            /*@editable*/ border:0;
+        .project_detail{
+            width:84%;
+            overflow:hidden;
+            margin:auto;
+            margin-top:22rem;
+            padding:24rem 34rem;
+            box-shadow: 0rem 0rem 8rem 4rem #F4F6F8;
+            border-radius: 8rem;
+            margin-bottom: 33rem;
+            position: relative;
         }
-
-        /**
-        *  Page
-        *  heading 1
-        * @tip Set the styling for all first-level headings in your emails. These should be the largest of your headings.
-        * @style heading 1
-        */
-        h1, .h1{
-            /*@editable*/ color:#202020;
-            display:block;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:40px;
-            /*@editable*/ font-weight:bold;
-            /*@editable*/ line-height:100%;
-            margin-top:2%;
-            margin-right:0;
-            margin-bottom:1%;
-            margin-left:0;
-            /*@editable*/ text-align:left;
+        .project_detail_top{
+            border-bottom: 1px solid #DCDCDC;
         }
-
-        /**
-        *  Page
-        *  heading 2
-        * @tip Set the styling for all second-level headings in your emails.
-        * @style heading 2
-        */
-        h2, .h2{
-            /*@editable*/ color:#404040;
-            display:block;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:18px;
-            /*@editable*/ font-weight:bold;
-            /*@editable*/ line-height:100%;
-            margin-top:2%;
-            margin-right:0;
-            margin-bottom:1%;
-            margin-left:0;
-            /*@editable*/ text-align:left;
+        .project_detail_title{
+            font-size: 32rem;
+            color: #444444;
+            margin-bottom: 22rem;
+            font-weight: 500;
+            word-wrap:break-word;
+            word-break:break-all;
         }
-
-        /**
-        *  Page
-        *  heading 3
-        * @tip Set the styling for all third-level headings in your emails.
-        * @style heading 3
-        */
-        h3, .h3{
-            /*@editable*/ color:#606060;
-            display:block;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:16px;
-            /*@editable*/ font-weight:bold;
-            /*@editable*/ line-height:100%;
-            margin-top:2%;
-            margin-right:0;
-            margin-bottom:1%;
-            margin-left:0;
-            /*@editable*/ text-align:left;
+        .project_detail_tags{
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 10rem;
+            /* display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap； */
         }
-
-        /**
-        *  Page
-        *  heading 4
-        * @tip Set the styling for all fourth-level headings in your emails. These should be the smallest of your headings.
-        * @style heading 4
-        */
-        h4, .h4{
-            /*@editable*/ color:#808080;
-            display:block;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:14px;
-            /*@editable*/ font-weight:bold;
-            /*@editable*/ line-height:100%;
-            margin-top:2%;
-            margin-right:0;
-            margin-bottom:1%;
-            margin-left:0;
-            /*@editable*/ text-align:left;
+        .project_detail_tags .tag{
+            float: left;
+            border: 1px solid #DCDCDC;
+            border-radius: 100rem;
+            font-size: 26rem;
+            color: #808080;
+            padding: 7rem 20rem;
+            margin-right: 10rem;
+            margin-bottom: 20rem;
         }
-
-        /* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: PREHEADER /\/\/\/\/\/\/\/\/\/\ */
-
-        /**
-        *  Header
-        *  preheader style
-        * @tip Set the background color for your email's preheader area.
-        * @theme page
-        */
-        #templatePreheader{
-            /*@editable*/ background-color:#FAFAFA;
+        .project_detail_bot{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24rem;
         }
-
-        /**
-        *  Header
-        *  preheader text
-        * @tip Set the styling for your email's preheader text. Choose a size and color that is easy to read.
-        */
-        .preheaderContent div{
-            /*@editable*/ color:#707070;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:10px;
-            /*@editable*/ line-height:100%;
-            /*@editable*/ text-align:left;
+        .project_detail_address{
+            font-size: 26rem;
+            color:#444444;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
         }
-
-        /**
-        *  Header
-        *  preheader link
-        * @tip Set the styling for your email's preheader links. Choose a color that helps them stand out from your text.
-        */
-        .preheaderContent div a:link, .preheaderContent div a:visited, /* Yahoo! Mail Override */ .preheaderContent div a .yshortcuts /* Yahoo! Mail Override */{
-            /*@editable*/ color:#336699;
-            /*@editable*/ font-weight:normal;
-            /*@editable*/ text-decoration:underline;
+        .project_detail_address image{
+            width:24rem;
+            height:29rem;
         }
-
-        /**
-        *  Header
-        *  social bar style
-        * @tip Set the background color and border for your email's footer social bar.
-        */
-        #social div{
-            /*@editable*/ text-align:right;
+        .project_detail_salary{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            font-size: 38rem;
+            color:#66DBF9;
+            font-weight: 500;
         }
-
-        /* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: HEADER /\/\/\/\/\/\/\/\/\/\ */
-
-        /**
-        *  Header
-        *  header style
-        * @tip Set the background color and border for your email's header area.
-        * @theme header
-        */
-        #templateHeader{
-            /*@editable*/ background-color:#FFFFFF;
-            /*@editable*/ border-bottom:5px solid #505050;
+        .project_detail_salary .gray{
+            font-size: 26rem;
+            color:#B4B4B6;
         }
-
-        /**
-        *  Header
-        *  left header text
-        * @tip Set the styling for your email's header text. Choose a size and color that is easy to read.
-        */
-        .leftHeaderContent div{
-            /*@editable*/ color:#202020;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:32px;
-            /*@editable*/ font-weight:bold;
-            /*@editable*/ line-height:100%;
-            /*@editable*/ text-align:right;
-            /*@editable*/ vertical-align:middle;
+        .project_end{
+            position:absolute;
+            width:220rem;
+            height:70rem;
+            background:#111111;
+            font-size:28rem;
+            color:#FFFFFF;
+            line-height:65rem;
+            text-align:center;
+            opacity:0.7;
+            right:-55rem;
+            bottom:20rem;
+            transform:rotate(-45deg);
         }
-
-        /**
-        *  Header
-        *  right header text
-        * @tip Set the styling for your email's header text. Choose a size and color that is easy to read.
-        */
-        .rightHeaderContent div{
-            /*@editable*/ color:#202020;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:32px;
-            /*@editable*/ font-weight:bold;
-            /*@editable*/ line-height:100%;
-            /*@editable*/ text-align:left;
-            /*@editable*/ vertical-align:middle;
+        .project_describe{
+            width:84%;
+            overflow:hidden;
+            margin:auto;
+            padding:0rem 34rem;
         }
-
-        /**
-        *  Header
-        *  header link
-        * @tip Set the styling for your email's header links. Choose a color that helps them stand out from your text.
-        */
-        .leftHeaderContent div a:link, .leftHeaderContent div a:visited, .rightHeaderContent div a:link, .rightHeaderContent div a:visited{
-            /*@editable*/ color:#336699;
-            /*@editable*/ font-weight:normal;
-            /*@editable*/ text-decoration:underline;
+        .project_describe_title{
+            width: 100%;
+            font-size: 32rem;
+            color: #444444;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            font-weight: 500;
         }
-
-        #headerImage{
-            height:auto;
-            max-width:180px !important;
+        .project_describe_title .line{
+            width: 45rem;
+            height: 3rem;
+            background: #DCDCDC;
+            margin: 0 10rem;
         }
-
-        /* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: MAIN BODY /\/\/\/\/\/\/\/\/\/\ */
-
-        /**
-        *  Body
-        *  body style
-        * @tip Set the background color for your email's body area.
-        */
-        #templateContainer, .bodyContent{
-            /*@editable*/ background-color:#FDFDFD;
+        .project_content{
+            margin-top:18rem;
+            font-size: 26rem;
+            color: #808080;
         }
-
-        /**
-        *  Body
-        *  body text
-        * @tip Set the styling for your email's main content text. Choose a size and color that is easy to read.
-        * @theme main
-        */
-        .bodyContent div{
-            /*@editable*/ color:#505050;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:14px;
-            /*@editable*/ line-height:180%;
-            /*@editable*/ text-align:left;
+        .detail_info{
+            width:84%;
+            overflow:hidden;
+            margin:auto;
+            padding:0rem 34rem;
+            margin-top: 18rem;
+            margin-bottom: 200rem;
         }
-
-        /**
-        *  Body
-        *  body link
-        * @tip Set the styling for your email's main content links. Choose a color that helps them stand out from your text.
-        */
-        .bodyContent div a:link, .bodyContent div a:visited, /* Yahoo! Mail Override */ .bodyContent div a .yshortcuts /* Yahoo! Mail Override */{
-            /*@editable*/ color:#336699;
-            /*@editable*/ font-weight:normal;
-            /*@editable*/ text-decoration:underline;
+        .detail_info_time{
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            font-size: 26rem;
+            color: #B4B4B6;
+            margin-bottom: 38rem;
         }
-
-        .bodyContent img{
-            display:inline;
-            height:auto;
+        .detail_info_time .blue{
+            color: #235280;
+            margin-left: 10rem;
         }
-
-        /* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: FOOTER /\/\/\/\/\/\/\/\/\/\ */
-
-        /**
-        *  Footer
-        *  footer style
-        * @tip Set the background color and top border for your email's footer area.
-        * @theme footer
-        */
-        #templateFooter{
-            /*@editable*/ background-color:#FAFAFA;
-            /*@editable*/ border-top:3px solid #909090;
+        .detail_info_private{
+            margin-top: 26rem;
+            font-size: 26rem;
+            color: #444444;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
         }
-
-        /**
-        *  Footer
-        *  footer text
-        * @tip Set the styling for your email's footer text. Choose a size and color that is easy to read.
-        * @theme footer
-        */
-        .footerContent div{
-            /*@editable*/ color:#707070;
-            /*@editable*/ font-family:Arial;
-            /*@editable*/ font-size:11px;
-            /*@editable*/ line-height:125%;
-            /*@editable*/ text-align:left;
+        .detail_info_private image{
+            width: 52rem;
+            height:52rem;
+            border-radius: 50%;
+            margin-right: 10rem;
         }
-
-        /**
-        *  Footer
-        *  footer link
-        * @tip Set the styling for your email's footer links. Choose a color that helps them stand out from your text.
-        */
-        .footerContent div a:link, .footerContent div a:visited, /* Yahoo! Mail Override */ .footerContent div a .yshortcuts /* Yahoo! Mail Override */{
-            /*@editable*/ color:#336699;
-            /*@editable*/ font-weight:normal;
-            /*@editable*/ text-decoration:underline;
-        }
-
-        .footerContent img{
-            display:inline;
-        }
-
-        /**
-        *  Footer
-        *  social bar style
-        * @tip Set the background color and border for your email's footer social bar.
-        * @theme footer
-        */
-        #social{
-            /*@editable*/ background-color:#FFFFFF;
-            /*@editable*/ border:0;
-        }
-
-        /**
-        *  Footer
-        *  social bar style
-        * @tip Set the background color and border for your email's footer social bar.
-        */
-        #social div{
-            /*@editable*/ text-align:left;
-        }
-
-        /**
-        *  Footer
-        *  utility bar style
-        * @tip Set the background color and border for your email's footer utility bar.
-        * @theme footer
-        */
-        #utility{
-            /*@editable*/ background-color:#FAFAFA;
-            /*@editable*/ border-top:0;
-        }
-
-        /**
-        *  Footer
-        *  utility bar style
-        * @tip Set the background color and border for your email's footer utility bar.
-        */
-        #utility div{
-            /*@editable*/ text-align:left;
-        }
-
-        #monkeyRewards img{
-            max-width:170px !important;
+        .detail_info_private .interval{
+            width: 3rem;
+            height: 25rem;
+            background: #DCDCDC;
+            margin: 0 20rem;
         }
     </style>
 </head>
 <body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-<center>
-    <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="backgroundTable">
-        <tr>
-            <td align="center" valign="top">
-                <!-- // Begin Template Preheader \\ -->
-                <table border="0" cellpadding="10" cellspacing="0" width="600" id="templatePreheader">
-                    <tr>
-                        <td valign="top" class="preheaderContent">
+<div class="container">
+    <!-- dr  -->
+    <div>
+        <div class='project_detail'>
+            <div class='project_detail_top'>
+                <div class='project_detail_title ellipsis-2'>
+                    {{$demand->title}}
+                </div>
+                <div class='project_detail_tags'>
+                    <div class='tag'>{{$demand->project_begin_time}}开始</div>
+                    <div class='tag'>周期{{$demand->project_cycle['text']}}</div>
+                    <div class='tag'>{{$demand->industry['text']}}</div>
+                </div>
+            </div>
+            <div class='project_detail_bot'>
+                <div class='project_detail_address'>
+                    <image src='../../images/details_address@2x.png'></image>
+                    {{$demand->address['selProvince']  === '请选择' ? '' : $demand->address['selProvince'] }}{{$demand->address['selCity'] ? $demand->address['selCity'] : ''}}{{$demand->address['selDistrict'] ? $demand->address['selDistrict'] : ''}}
+                </div>
+                <div class='project_detail_salary'>{{$demand->salary}}~{{$demand->salary_upper}}<div class='gray'>元/{{$demand->salary_type === 0 ? '天':'月'}}</div></div>
+            </div>
+            @if ($demand.status>=3)
+                <div class='project_end'>已结束</div>
+            @endif
+        </div>
+        <!-- 具体描述 -->
+        <div class='project_describe'>
+            <div class='project_describe_title'>
+                <div class='line'></div>
+                具体描述
+                <div class='line'></div>
+            </div>
+            <div class='project_content'>
+                <text>{{$demand->description}}</text>
+            </div>
+        </div>
+        <!-- 招募信息有效期  -->
 
-                            <!-- // Begin Module: Standard Preheader \ -->
-                            <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                <tr>
-                                    <td valign="top">
+        <!--  -->
+        <div class='detail_info'>
+            <div class='detail_info_time'>
+                招募信息有效期
+                <div class='blue'>{{$demand->status >=3 ? '已结束' : $demand->expired_at}}</div>
+            </div>
+            <div class='project_describe_title'>
+                <div class='line'></div>
+                发布者信息
+                <div class='line'></div>
+            </div>
+            <div class='detail_info_private'>
+                <image src='{{$demand->publisher_avatar}}'></image>
+                {{ $demand->publisher_name }}
+                <div class='interval'></div>
+                {{ $demand->publisher_company }}
+                <div class='interval'></div>
+                {{ $demand->publisher_title ? $demand->publisher_title : ''}}
+            </div>
+        </div>
+    </div>
+</div>
 
-                                    </td>
-                                    <!-- *|IFNOT:ARCHIVE_PAGE|* -->
-                                    <td valign="top" width="170">
-                                        <div mc:edit="std_preheader_links">
-                                            <a href="*|ARCHIVE|*" target="_blank">如果无法显示，请点击这里</a>.
-                                        </div>
-                                    </td>
-                                    <!-- *|END:IF|* -->
-                                </tr>
-                            </table>
-                            <!-- // End Module: Standard Preheader \ -->
-
-                        </td>
-                    </tr>
-                </table>
-                <!-- // End Template Preheader \\ -->
-                <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateContainer">
-                    <tr>
-                        <td align="center" valign="top">
-                            <!-- // Begin Template Header \\ -->
-                            <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateHeader">
-                                <tr>
-                                    <td class="headerContent">
-
-                                        <!-- // Begin Module: Letterhead, Center Header Image \\ -->
-                                        <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                            <tr>
-                                                <td class="leftHeaderContent">
-                                                    <div mc:edit="header_content_left">
-                                                        Heading 1
-                                                    </div>
-                                                </td>
-                                                <td valign="middle" width="180">
-                                                    <img src="http://gallery.mailchimp.com/27aac8a65e64c994c4416d6b8/images/placeholder_180x100.gif" style="max-width:180px;" id="headerImage campaign-icon" mc:label="header_image" mc:edit="header_image" mc:allowtext />
-                                                </td>
-                                                <td class="rightHeaderContent">
-                                                    <div mc:edit="header_content_right">
-                                                        Heading 1
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <!-- // End Module: Letterhead, Center Header Image \\ -->
-
-                                    </td>
-                                </tr>
-                            </table>
-                            <!-- // End Template Header \\ -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="center" valign="top">
-                            <!-- // Begin Template Body \\ -->
-                            <table border="0" cellpadding="10" cellspacing="0" width="600" id="templateBody">
-                                <tr>
-                                    <td valign="top" class="bodyContent">
-
-                                        <!-- // Begin Module: Standard Content \\ -->
-                                        <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                            <tr>
-                                                <td valign="top">
-                                                    <div mc:edit="std_content00">
-                                                        <h2 class="h2">尊敬的71SRM用户</h2>
-                                                        <br />
-                                                        新春佳节渐近，在此提前预祝您新春愉快，万事如意！71SRM感谢您在过去一年中给予我们的信任和支持。<br /><br />
-                                                        71SRM团队新年放假时间为：1月27日至2月8日，2014年2月9日（农历正月初十）正式上班。<br /><br />
-                                                        放假期间客服响应会有所放缓，但是我们承诺在24小时内进行回复。如果遇到紧急问题的标题中标注“紧急”，此客服工单将自动优先级升级为“高”，仍然享受原响应速度。<br /><br />
-                                                        在新的一年里，我们会提供更稳定的产品、更专注的业务流程辅导、更简单操作体验、更满意的服务来帮助用户解决采购的实际问题，为用户和企业带来价值。<br />
-                                                        <br />
-
-                                                        －71SRM团队
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <!-- // End Module: Standard Content \\ -->
-
-                                    </td>
-                                </tr>
-                            </table>
-                            <!-- // End Template Body \\ -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="center" valign="top">
-                            <!-- // Begin Template Footer \\ -->
-                            <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateFooter">
-                                <tr>
-                                    <td valign="top" class="footerContent">
-
-                                        <!-- // Begin Module: Standard Footer \\ -->
-                                        <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                            <tr>
-                                                <td colspan="2" valign="middle" id="social">
-                                                    <div mc:edit="std_social">
-                                                        &nbsp;<a href="*|TWITTER:PROFILEURL|*">新浪微博</a> | <a href="*|FACEBOOK:PROFILEURL|*">Twitter</a> | <a href="*|FORWARD|*">博客</a>&nbsp;
-                                                    </div>
-                                                </td>
-                                            </tr>
-
-
-                                        </table>
-                                        <!-- // End Module: Standard Footer \\ -->
-
-                                    </td>
-                                </tr>
-                            </table>
-                            <!-- // End Template Footer \\ -->
-                        </td>
-                    </tr>
-                </table>
-                <br />
-            </td>
-        </tr>
-    </table>
-</center>
 </body>
 </html>

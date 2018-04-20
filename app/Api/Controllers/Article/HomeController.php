@@ -102,6 +102,7 @@ class HomeController extends Controller {
             }
             $item['group']= $group->toArray();
             $item['group']['is_joined'] = $is_joined;
+            $item['group']['subscribers'] = $group->getHotIndex();
             $list[] = $item;
         }
         $return['data'] = $list;
