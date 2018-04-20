@@ -386,10 +386,31 @@ class GroupController extends Controller
         } else {
             $query = $query->orderBy('id','desc');
         }
+        $group = Group::find($request->input('id'));
+        $page = $request->input('page',1);
         $members = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $members->toArray();
         $return['data'] = [];
+        if ($page == 1) {
+            $ownerMember = GroupMember::where('group_id',$request->input('id'))->where('user_id',$group->user_id)->first();
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$ownerMember->user_id)->first();
+            $return['data'][] = [
+                'id' => $ownerMember->id,
+                'user_id' => $ownerMember->user_id,
+                'uuid' => $ownerMember->user->uuid,
+                'user_name' => $ownerMember->user->name,
+                'user_avatar_url' => $ownerMember->user->avatar,
+                'audit_status' => $ownerMember->audit_status,
+                'description' => $ownerMember->user->description,
+                'is_expert'   => $ownerMember->user->is_expert,
+                'is_followed' => $attention?1:0,
+                "title" => $ownerMember->user->title,
+                "company" =>  $ownerMember->user->company,//公司
+                "created_at" => (string) $ownerMember->created_at
+            ];
+        }
         foreach ($members as $member) {
+            if ($member->user_id == $group->user_id) continue;
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$member->user_id)->first();
             $return['data'][] = [
                 'id' => $member->id,

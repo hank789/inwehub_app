@@ -106,7 +106,11 @@ class GroupController extends AdminController {
                 $group->user->notify(new GroupAuditResult($group->user_id,$group));
             }
             if ($oldUserId != $request->input('author_id')) {
-                GroupMember::create([
+
+                GroupMember::firstOrCreate([
+                    'user_id'=>$request->input('author_id'),
+                    'group_id'=>$group->id
+                ],[
                     'user_id'=>$request->input('author_id'),
                     'group_id'=>$group->id,
                     'audit_status'=>Group::AUDIT_STATUS_SUCCESS
