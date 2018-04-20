@@ -163,6 +163,9 @@ class SearchController extends Controller
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
+            $group = Group::find($submission->group_id);
+            $item['group'] = $group->toArray();
+            $item['category_name'] = $group->name;
             $data[] = $item;
         }
         $return = $submissions->toArray();
