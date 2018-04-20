@@ -5,6 +5,7 @@ use App\Models\Comment;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -148,43 +149,6 @@ class QuestionController extends Controller {
         }
         $return['data'] = $list;
         return self::createJsonData(true,$return);
-    }
-
-    public function info(Request $request){
-        $validateRules = [
-            'id' => 'required|integer'
-        ];
-        $this->validate($request,$validateRules);
-        $data = $request->all();
-        $user = $request->user();
-        $question = Question::find($data['id']);
-        $info = [
-            'id' => $question->id,
-            'user_id' => $question->user_id,
-            'user_name' => $question->user->name,
-            'user_avatar_url' => $question->user->getAvatarUrl(),
-            'description'  => $question->title,
-            'status' => $question->status,
-            'comments' => $question->comments,
-            'created_at' => (string)$question->created_at
-        ];
-        $comments_query = $question->comments()->where('status',1);
-        if (!$question->is_public && $user->id != $question->user_id){
-            $comments_query = $comments_query->where('user_id',$user->id);
-        }
-
-        $res_data = [];
-        $res_data['question'] = $info;
-        $res_data['comments_count'] = $comments_query->orderBy('created_at','desc')->count();
-
-        $res_data['images'] = [];
-        if(!$question->getMedia('weapp')->isEmpty()){
-            foreach($question->getMedia('weapp') as $image){
-                $res_data['images'][] = $image->getUrl();
-            }
-        }
-
-        return self::createJsonData(true,$res_data);
     }
 
     public function loadAnswer(Request $request){

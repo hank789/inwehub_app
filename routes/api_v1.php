@@ -456,9 +456,6 @@ Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespac
     Route::post('question/allList','QuestionController@allList');
     //问题回复列表
     Route::post('question/loadAnswer','QuestionController@loadAnswer');
-
-    //问题详情
-    Route::post('question/info','QuestionController@info');
     //我的提问列表
     Route::post('question/myList','QuestionController@myList');
     //回答

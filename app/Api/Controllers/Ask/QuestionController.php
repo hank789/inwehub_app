@@ -172,6 +172,7 @@ class QuestionController extends Controller
             'promise_answer_time' => $promise_answer_time,
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
+            'views' => $question->views,
             'created_at' => (string)$question->created_at
         ];
 
