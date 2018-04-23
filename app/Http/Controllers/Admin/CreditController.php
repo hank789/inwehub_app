@@ -83,13 +83,13 @@ class CreditController extends AdminController
                 'user_id' => $userId,
                 'change_money' => $request->input('money'),
                 'source_id'    => $user->id,
-                'source_type'  => get_class($user),
+                'source_type'  => $request->input('source_subject'),
                 'io'           => $money>0?1:-1,
                 'money_type'   => MoneyLog::MONEY_TYPE_SYSTEM_ADD,
                 'before_money' => $before_money
             ]);
             $userMoney->total_money = bcadd($userMoney->total_money, $money,2);
-            $user->notify(new MoneyLogNotify($userId,$moneyLog,null,$request->input('source_subject')));
+            $user->notify(new MoneyLogNotify($userId,$moneyLog));
         }
 
         return $this->success(route('admin.credit.index'),'充值成功');

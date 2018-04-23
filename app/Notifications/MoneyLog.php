@@ -23,19 +23,16 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
 
     protected $created_at;
 
-    protected $title;
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, MoneyLogModel $moneyLog, $created_at = null, $title='')
+    public function __construct($user_id, MoneyLogModel $moneyLog, $created_at = null)
     {
         $this->user_id = $user_id;
         $this->moneyLog = $moneyLog;
         $this->created_at = $created_at;
-        $this->title = $title;
     }
 
     /**
@@ -64,7 +61,7 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
     }
 
     protected function getTitle(){
-        $title = $this->title;
+        $title = '';
 
         switch($this->moneyLog->money_type){
             case MoneyLogModel::MONEY_TYPE_ANSWER:
@@ -90,6 +87,9 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
                 break;
             case MoneyLogModel::MONEY_TYPE_ASK_PAY_WALLET:
                 $title = '余额支付';
+                break;
+            case MoneyLogModel::MONEY_TYPE_SYSTEM_ADD:
+                $title = $this->moneyLog->source_type;
                 break;
         }
         return $title;

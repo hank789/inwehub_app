@@ -584,6 +584,9 @@ class ProfileController extends Controller
                 case MoneyLog::MONEY_TYPE_ASK_PAY_WALLET:
                     $title = '余额支付';
                     break;
+                case MoneyLog::MONEY_TYPE_SYSTEM_ADD:
+                    $title = $log->source_type;
+                    break;
             }
             $list[] = [
                 "id"=> $log->id,
