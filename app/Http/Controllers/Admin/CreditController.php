@@ -10,9 +10,12 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Models\Credit;
+use App\Models\Pay\MoneyLog;
+use App\Models\Pay\UserMoney;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Events\Frontend\System\Credit as CreditEvent;
+use App\Notifications\MoneyLog as MoneyLogNotify;
 
 class CreditController extends AdminController
 {
@@ -52,6 +55,7 @@ class CreditController extends AdminController
             'action' => 'required|in:reward_user,punish_user',
             'coins' => 'required|integer|min:0',
             'credits' => 'required|integer|min:0',
+            'money' => 'required|integer|min:0',
             'source_subject' => 'required'
         ];
         $request->flash();
@@ -65,11 +69,28 @@ class CreditController extends AdminController
         $action = $request->input('action');
         $coins = $request->input('coins');
         $credits = $request->input('credits');
+        $money = $request->input('money');
         if( $action == 'punish_user'){
             $credits = intval(-$credits);
             $coins   = intval(-$coins);
+            $money   = intval(-$money);
         }
         event(new CreditEvent($userId,$action,$coins,$credits,0,$request->input('source_subject')));
+        if ($money) {
+            $userMoney = UserMoney::find($userId);
+            $before_money = $userMoney->total_money;
+            $moneyLog = MoneyLog::create([
+                'user_id' => $userId,
+                'change_money' => $request->input('money'),
+                'source_id'    => $user->id,
+                'source_type'  => $request->input('source_subject'),
+                'io'           => $money>0?1:-1,
+                'money_type'   => MoneyLog::MONEY_TYPE_SYSTEM_ADD,
+                'before_money' => $before_money
+            ]);
+            $userMoney->total_money = bcadd($userMoney->total_money, $money,2);
+            $user->notify(new MoneyLogNotify($userId,$moneyLog));
+        }
 
         return $this->success(route('admin.credit.index'),'充值成功');
     }

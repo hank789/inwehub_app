@@ -2,9 +2,10 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Models\Comment;
-use App\Models\WeappQuestion\WeappQuestion;
+use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -22,7 +23,7 @@ class QuestionController extends Controller {
         $this->validate($request,$validateRules);
 
         $data = $request->all();
-        $question = WeappQuestion::create([
+        $question = Question::create([
             'user_id' => $request->user()->id,
             'title' => $data['description'],
             'is_public' => $data['is_public']?1:0,
@@ -49,7 +50,7 @@ class QuestionController extends Controller {
         $this->validate($request,$validateRules);
 
         $data = $request->all();
-        $question = WeappQuestion::find($data['id']);
+        $question = Question::find($data['id']);
         if ($question->user_id != $request->user()->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
@@ -72,7 +73,7 @@ class QuestionController extends Controller {
 
         $user = $request->user();
 
-        $query = WeappQuestion::where('user_id',$user->id)->where('status',1);
+        $query = Question::where('user_id',$user->id)->where('status',1);
 
         if($top_id){
             $query = $query->where('id','>',$top_id);
@@ -100,44 +101,54 @@ class QuestionController extends Controller {
     }
 
     public function allList(Request $request){
-
-    }
-
-    public function info(Request $request){
-        $validateRules = [
-            'id' => 'required|integer'
-        ];
-        $this->validate($request,$validateRules);
-        $data = $request->all();
-        $user = $request->user();
-        $question = WeappQuestion::find($data['id']);
-        $info = [
-            'id' => $question->id,
-            'user_id' => $question->user_id,
-            'user_name' => $question->user->name,
-            'user_avatar_url' => $question->user->getAvatarUrl(),
-            'description'  => $question->title,
-            'status' => $question->status,
-            'comments' => $question->comments,
-            'created_at' => (string)$question->created_at
-        ];
-        $comments_query = $question->comments()->where('status',1);
-        if (!$question->is_public && $user->id != $question->user_id){
-            $comments_query = $comments_query->where('user_id',$user->id);
+        $orderBy = $request->input('order_by',2);//1最新，2最热，3综合，
+        $query = Question::Where('question_type',2);
+        $queryOrderBy = 'questions.rate';
+        switch ($orderBy) {
+            case 1:
+                //最新
+                $queryOrderBy = 'questions.updated_at';
+                break;
+            case 2:
+                //最热
+                $queryOrderBy = 'questions.hot_rate';
+                break;
+            case 3:
+                //综合
+                $queryOrderBy = 'questions.rate';
+                break;
         }
-
-        $res_data = [];
-        $res_data['question'] = $info;
-        $res_data['comments_count'] = $comments_query->orderBy('created_at','desc')->count();
-
-        $res_data['images'] = [];
-        if(!$question->getMedia('weapp')->isEmpty()){
-            foreach($question->getMedia('weapp') as $image){
-                $res_data['images'][] = $image->getUrl();
+        $questions = $query->orderBy($queryOrderBy,'desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $questions->toArray();
+        $list = [];
+        foreach($questions as $question){
+            $item = [
+                'id' => $question->id,
+                'question_type' => $question->question_type,
+                'description'  => $question->title,
+                'tags' => $question->tags()->get()->toArray(),
+                'question_user_name' => $question->hide ? '匿名' : $question->user->name,
+                'question_user_avatar' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
+                'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0)
+            ];
+            if($question->question_type == 1){
+                $item['comment_number'] = 0;
+                $item['average_rate'] = 0;
+                $item['support_number'] = 0;
+                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+                if ($bestAnswer) {
+                    $item['comment_number'] = $bestAnswer->comments;
+                    $item['average_rate'] = $bestAnswer->getFeedbackRate();
+                    $item['support_number'] = $bestAnswer->supports;
+                }
+            } else {
+                $item['answer_number'] = $question->answers;
+                $item['follow_number'] = $question->followers;
             }
+            $list[] = $item;
         }
-
-        return self::createJsonData(true,$res_data);
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
     }
 
     public function loadAnswer(Request $request){
@@ -149,7 +160,7 @@ class QuestionController extends Controller {
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $question_id = $request->input('question_id',0);
-        $question = WeappQuestion::find($question_id);
+        $question = Question::find($question_id);
         $user = $request->user();
 
         $query = $question->comments()->where('status',1);

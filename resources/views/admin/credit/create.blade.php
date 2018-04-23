@@ -49,6 +49,12 @@
                                 <input type="text" name="credits" class="form-control " placeholder="要操作的成长值" value="{{ old('credits',0) }}">
                                 @if($errors->has('credits')) <p class="help-block">{{ $errors->first('credits') }}</p> @endif
                             </div>
+                            <div class="form-group @if($errors->has('credits')) has-error @endif">
+                                <label>账户金额</label>
+                                <span class="text-muted">(只能是正整数，0为不进行修改)</span>
+                                <input type="text" name="money" class="form-control " placeholder="要操作的钱包金额" value="{{ old('money',0) }}">
+                                @if($errors->has('money')) <p class="help-block">{{ $errors->first('money') }}</p> @endif
+                            </div>
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary">提交</button>

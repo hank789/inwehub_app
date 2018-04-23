@@ -447,23 +447,19 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('demand/detail','DemandController@detail')->middleware(['jwt.weappAuth']);
 });
 
-Route::group(['middleware' => ['jwt.auth','ban.user'], 'namespace'=>'Weapp'], function() {
+Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespace'=>'Weapp'], function() {
     //提问
-    Route::post('weapp/question/store','QuestionController@store');
+    Route::post('question/store','QuestionController@store');
     //添加提问图片
-    Route::post('weapp/question/add_image','QuestionController@addImage');
+    Route::post('question/add_image','QuestionController@addImage');
     //提问列表
-    Route::post('weapp/question/allList','QuestionController@allList');
+    Route::post('question/allList','QuestionController@allList');
     //问题回复列表
-    Route::post('weapp/question/loadAnswer','QuestionController@loadAnswer');
-
-
-    //问题详情
-    Route::post('weapp/question/info','QuestionController@info');
+    Route::post('question/loadAnswer','QuestionController@loadAnswer');
     //我的提问列表
-    Route::post('weapp/question/myList','QuestionController@myList');
+    Route::post('question/myList','QuestionController@myList');
     //回答
-    Route::post('weapp/answer/store','AnswerController@store');
+    Route::post('answer/store','AnswerController@store');
 
 });
 
