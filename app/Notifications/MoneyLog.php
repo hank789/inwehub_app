@@ -23,16 +23,19 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
 
     protected $created_at;
 
+    protected $title;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, MoneyLogModel $moneyLog, $created_at = null)
+    public function __construct($user_id, MoneyLogModel $moneyLog, $created_at = null, $title='')
     {
         $this->user_id = $user_id;
         $this->moneyLog = $moneyLog;
         $this->created_at = $created_at;
+        $this->title = $title;
     }
 
     /**
@@ -61,7 +64,7 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
     }
 
     protected function getTitle(){
-        $title = '';
+        $title = $this->title;
 
         switch($this->moneyLog->money_type){
             case MoneyLogModel::MONEY_TYPE_ANSWER:
