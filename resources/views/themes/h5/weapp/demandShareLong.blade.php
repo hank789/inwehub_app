@@ -1,237 +1,30 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta charset="UTF-8" />
-    <title>贺新春</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <title></title>
     <style type="text/css">
-        /*
-          dr
-          详情的需求描述样式
-        */
-        page{
-            background: #fff;
-        }
-        .project_detail{
-            width:84%;
-            overflow:hidden;
-            margin:auto;
-            margin-top:22rem;
-            padding:24rem 34rem;
-            box-shadow: 0rem 0rem 8rem 4rem #F4F6F8;
-            border-radius: 8rem;
-            margin-bottom: 33rem;
-            position: relative;
-        }
-        .project_detail_top{
-            border-bottom: 1px solid #DCDCDC;
-        }
-        .project_detail_title{
-            font-size: 32rem;
-            color: #444444;
-            margin-bottom: 22rem;
-            font-weight: 500;
-            word-wrap:break-word;
-            word-break:break-all;
-        }
-        .project_detail_tags{
-            width: 100%;
-            overflow: hidden;
-            margin-bottom: 10rem;
-            /* display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap； */
-        }
-        .project_detail_tags .tag{
-            float: left;
-            border: 1px solid #DCDCDC;
-            border-radius: 100rem;
-            font-size: 26rem;
-            color: #808080;
-            padding: 7rem 20rem;
-            margin-right: 10rem;
-            margin-bottom: 20rem;
-        }
-        .project_detail_bot{
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 24rem;
-        }
-        .project_detail_address{
-            font-size: 26rem;
-            color:#444444;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-        }
-        .project_detail_address image{
-            width:24rem;
-            height:29rem;
-        }
-        .project_detail_salary{
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            font-size: 38rem;
-            color:#66DBF9;
-            font-weight: 500;
-        }
-        .project_detail_salary .gray{
-            font-size: 26rem;
-            color:#B4B4B6;
-        }
-        .project_end{
-            position:absolute;
-            width:220rem;
-            height:70rem;
-            background:#111111;
-            font-size:28rem;
-            color:#FFFFFF;
-            line-height:65rem;
-            text-align:center;
-            opacity:0.7;
-            right:-55rem;
-            bottom:20rem;
-            transform:rotate(-45deg);
-        }
-        .project_describe{
-            width:84%;
-            overflow:hidden;
-            margin:auto;
-            padding:0rem 34rem;
-        }
-        .project_describe_title{
-            width: 100%;
-            font-size: 32rem;
-            color: #444444;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            font-weight: 500;
-        }
-        .project_describe_title .line{
-            width: 45rem;
-            height: 3rem;
-            background: #DCDCDC;
-            margin: 0 10rem;
-        }
-        .project_content{
-            margin-top:18rem;
-            font-size: 26rem;
-            color: #808080;
-        }
-        .detail_info{
-            width:84%;
-            overflow:hidden;
-            margin:auto;
-            padding:0rem 34rem;
-            margin-top: 18rem;
-            margin-bottom: 200rem;
-        }
-        .detail_info_time{
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            font-size: 26rem;
-            color: #B4B4B6;
-            margin-bottom: 38rem;
-        }
-        .detail_info_time .blue{
-            color: #235280;
-            margin-left: 10rem;
-        }
-        .detail_info_private{
-            margin-top: 26rem;
-            font-size: 26rem;
-            color: #444444;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-        }
-        .detail_info_private image{
-            width: 52rem;
-            height:52rem;
-            border-radius: 50%;
-            margin-right: 10rem;
-        }
-        .detail_info_private .interval{
-            width: 3rem;
-            height: 25rem;
-            background: #DCDCDC;
-            margin: 0 20rem;
-        }
+        body{font-family:PingFang-SC-Regular,sans-serif;padding:23px;margin:0}.component-card{position:relative;border-radius:23px;background:#f1f1f2;padding:16px 21px}.component-card:after{position:absolute;bottom:-13px;content:'';left:50%;margin-left:-12.5px;width:0;height:0;border-style:solid;border-width:13px 13px 0;border-color:#f1f1f2 transparent transparent}.component-card .title{font-family:PingFangSC-Medium,sans-serif;font-size:23px;line-height:32.5px}.component-card .labels{margin-top:16px}.component-card .labels .label{border-radius:72px;border:1px solid #dcdcdc;display:inline-block;padding:5px 16px;margin-top:3px;color:grey}.component-card .cardLine{position:relative;margin:20px 0;min-height:1px}.component-card .cardLine:after{position:absolute;right:0;bottom:0;left:0;height:2px;content:'';-webkit-transform:scaleY(.5);transform:scaleY(.5);background-color:#dcdcdc}.component-card .cardfooter{position:relative}.component-card .cardfooter .address{color:#444;font-size:18.5px}.component-card .cardfooter .address img{width:17.5px;height:21px;vertical-align:middle;margin-right:5px}.component-card .cardfooter .address span{vertical-align:middle}.component-card .cardfooter .price{position:absolute;right:0;top:0;vertical-align:middle}.component-card .cardfooter .price .number{vertical-align:inherit;color:#66dbf9;font-size:27.5px;font-family:PingFangSC-Medium,sans-serif}.component-card .cardfooter .price .unit{vertical-align:inherit;color:#b4b4b6;font-size:18.5px;margin-left:1.7px}.component-qrcode{margin-top:20px;text-align:center;position:relative}.component-qrcode .qrcode{width:144.7px;height:144.7px}.component-qrcode .center{position:absolute;left:50%;width:37.5px;top:50%;margin-top:-16.26px;margin-left:-18.75px}.component-qrcode-help{margin-top:10px;text-align:center;color:grey;font-size:17.5px}.component-qrcode-help img{width:17.5px;vertical-align:middle}.component-qrcode-help span{vertical-align:middle;margin-left:5px}.component-app-footer{margin-top:14.4px;color:#b4b4b6;font-size:14.5px;text-align:center}.component-app-footer span{position:relative}.component-app-footer span:before{position:absolute;width:23px;left:-35px;top:9px;height:2px;content:'';-webkit-transform:scaleY(.5);transform:scaleY(.5);background-color:#dcdcdc}.component-app-footer span:after{position:absolute;width:23px;right:-35px;top:9px;height:2px;content:'';-webkit-transform:scaleY(.5);transform:scaleY(.5);background-color:#dcdcdc}
     </style>
 </head>
-<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-<div class="container">
-    <!-- dr  -->
-    <div>
-        <div class='project_detail'>
-            <div class='project_detail_top'>
-                <div class='project_detail_title ellipsis-2'>
-                    {{$demand->title}}
-                </div>
-                <div class='project_detail_tags'>
-                    <div class='tag'>{{$demand->project_begin_time}}开始</div>
-                    <div class='tag'>周期{{$demand->project_cycle['text']}}</div>
-                    <div class='tag'>{{$demand->industry['text']}}</div>
-                </div>
-            </div>
-            <div class='project_detail_bot'>
-                <div class='project_detail_address'>
-                    <image src='../../images/details_address@2x.png'></image>
-                    {{$demand->address['selProvince']  === '请选择' ? '' : $demand->address['selProvince'] }}{{$demand->address['selCity'] ? $demand->address['selCity'] : ''}}{{$demand->address['selDistrict'] ? $demand->address['selDistrict'] : ''}}
-                </div>
-                <div class='project_detail_salary'>{{$demand->salary}}~{{$demand->salary_upper}}<div class='gray'>元/{{$demand->salary_type === 0 ? '天':'月'}}</div></div>
-            </div>
-            @if ($demand.status>=3)
-                <div class='project_end'>已结束</div>
-            @endif
-        </div>
-        <!-- 具体描述 -->
-        <div class='project_describe'>
-            <div class='project_describe_title'>
-                <div class='line'></div>
-                具体描述
-                <div class='line'></div>
-            </div>
-            <div class='project_content'>
-                <text>{{$demand->description}}</text>
-            </div>
-        </div>
-        <!-- 招募信息有效期  -->
-
-        <!--  -->
-        <div class='detail_info'>
-            <div class='detail_info_time'>
-                招募信息有效期
-                <div class='blue'>{{$demand->status >=3 ? '已结束' : $demand->expired_at}}</div>
-            </div>
-            <div class='project_describe_title'>
-                <div class='line'></div>
-                发布者信息
-                <div class='line'></div>
-            </div>
-            <div class='detail_info_private'>
-                <image src='{{$demand->publisher_avatar}}'></image>
-                {{ $demand->publisher_name }}
-                <div class='interval'></div>
-                {{ $demand->publisher_company }}
-                <div class='interval'></div>
-                {{ $demand->publisher_title ? $demand->publisher_title : ''}}
-            </div>
-        </div>
+<body>
+<div class="component-card">
+    <div class="title">{{ $demand['title'] }}</div>
+    <div class="labels">
+        <div class="label">{{$demand['project_begin_time']}}开始</div>
+        <div class="label">{{$demand['project_cycle']['text']}}</div>
+        <div class="label">{{$demand['industry']['text']}}</div>
     </div>
+    <div class="cardLine"></div>
+    <div class="cardfooter">
+        <div class="address"><img src="https://cdn.inwehub.com/weapp_demand/position@3x.png"><span>{{$demand['address']['selProvince']  === '请选择' ? '' : $demand['address']['selProvince'] }}{{$demand['address']['selCity'] ? $demand['address']['selCity'] : ''}}{{$demand['address']['selDistrict'] ? $demand['address']['selDistrict'] : ''}}</span></div>
+        <div class="price"><span class="number">{{$demand['salary']}}</span><span class="unit">元/{{$demand['salary_type'] == 0?'天':'月'}}</span></div>
+    </div>
+    <div class="cardTriangle"></div>
 </div>
-
+<div class="component-qrcode"><img class="qrcode" src="{{$demand['qrcodeUrl']}}"></div>
+<div class="component-qrcode-help"><img src="https://cdn.inwehub.com/weapp_demand/zhiwen@3x.png"><span>长按识别小程序，查看项目招募信息</span></div>
+<div class="component-app-footer"><span>项目招募助手</span></div>
 </body>
 </html>

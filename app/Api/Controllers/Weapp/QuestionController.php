@@ -17,8 +17,8 @@ class QuestionController extends Controller {
 
     public function store(Request $request){
         $validateRules = [
-            'description' => 'required|max:500',
-            'is_public'=> 'required'
+            'title' => 'required|max:500',
+            'hide'=> 'required'
         ];
         $this->validate($request,$validateRules);
 

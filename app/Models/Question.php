@@ -78,6 +78,9 @@ class Question extends Model
     protected $fillable = ['title', 'user_id','category_id','rate','hot_rate','question_type','description','tags','price','hide','status','device','data'];
 
 
+
+    //提问设备，1为IOS，2为安卓，3为网页，4为微信小程序
+
     protected $casts = [
         'data' => 'json'
     ];
