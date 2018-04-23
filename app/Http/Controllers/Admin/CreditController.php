@@ -89,6 +89,7 @@ class CreditController extends AdminController
                 'before_money' => $before_money
             ]);
             $userMoney->total_money = bcadd($userMoney->total_money, $money,2);
+            $userMoney->save();
             $user->notify(new MoneyLogNotify($userId,$moneyLog));
         }
 
