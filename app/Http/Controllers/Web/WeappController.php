@@ -2,6 +2,9 @@
 use App\Http\Controllers\Controller;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
+use App\Services\RateLimiter;
+use App\Third\Weapp\WeApp;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @author: wanghui
@@ -11,9 +14,25 @@ use App\Models\Weapp\Demand;
 
 class WeappController extends Controller
 {
-    public function getDemandShareLongInfo($id)
+    public function getDemandShareLongInfo($id,WeApp $wxxcx)
     {
         $demand = Demand::find($id);
+        $cacheKey = 'demand-qrcode';
+        $url = RateLimiter::instance()->hGet($cacheKey,$demand->id);
+        $page = 'pages/detail/detail';
+        $scene = 'demand_id='.$demand->id;
+        try {
+            if (!$url) {
+                $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+                $file_name = 'demand/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+                Storage::disk('oss')->put($file_name,$qrcode);
+                $url = Storage::disk('oss')->url($file_name);
+                RateLimiter::instance()->hSet($cacheKey,$demand->id,$url);
+            }
+        } catch (\Exception $e) {
+
+        }
+
         $demand_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
         $data = [
             'publisher_user_id'=>$demand_oauth->user_id,
@@ -34,7 +53,8 @@ class WeappController extends Controller
             'description' => $demand->description,
             'expired_at'  => $demand->expired_at,
             'views' => $demand->views,
-            'status' => $demand->status
+            'status' => $demand->status,
+            'qrcodeUrl' => $url
         ];
         return view('h5::weapp.demandShareLong')->with('demand',$data);
     }
