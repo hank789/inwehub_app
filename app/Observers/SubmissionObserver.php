@@ -13,6 +13,7 @@ use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\User;
 use App\Notifications\FollowedUserNewSubmission;
+use App\Notifications\NewSubmission;
 use App\Traits\UsernameMentions;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\Frontend\System\Credit as CreditEvent;
@@ -86,6 +87,20 @@ class SubmissionObserver implements ShouldQueue {
         //提到了人，还未去重
         $notified_uids = $this->handleSubmissionMentions($submission,$members);
         $notified_uids[$submission->user_id] = $submission->user_id;
+        //通知圈主
+        if ($submission->user_id != $group->user_id) {
+            $notified_uids[$group->user_id] = $group->user_id;
+            $group->user->notify(new NewSubmission($group->user_id,$submission));
+        }
+        //圈主发布的内容通知圈子成员
+        if ($submission->user_id == $group->user_id && $members) {
+            foreach ($members as $muid) {
+                if (isset($notified_uids[$muid])) continue;
+                $notified_uids[$muid] = $muid;
+                $mUser = User::find($muid);
+                $mUser->notify(new NewSubmission($muid,$submission));
+            }
+        }
         foreach ($attention_users as $attention_uid) {
             if (isset($notified_uids[$attention_uid])) continue;
             if ($members && !in_array($attention_uid,$members)) continue;
