@@ -17,7 +17,7 @@
     <div class="cardLine"></div>
     <div class="cardfooter">
         <div class="address"><img src="https://cdn.inwehub.com/weapp_demand/position@3x.png"><span>{{$demand['address']['selProvince']  === '请选择' ? '' : $demand['address']['selProvince'] }}{{$demand['address']['selCity'] ? $demand['address']['selCity'] : ''}}{{$demand['address']['selDistrict'] ? $demand['address']['selDistrict'] : ''}}</span></div>
-        <div class="price"><span class="number">{{$demand['salary']}}</span><span class="unit">元/{{$demand['salary_type'] == 0?'天':'月'}}</span></div>
+        <div class="price"><span class="number">{{$demand['salary'].($demand['salary_upper']>$demand['salary']?'~'.$demand['salary_upper']:'')}}</span><span class="unit">元/{{$demand['salary_type'] == 0?'天':'月'}}</span></div>
     </div>
 </div>
 <div class="bg-card">
