@@ -322,6 +322,30 @@ class DemandController extends controller {
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
+    public function reopen(Request $request,JWTAuth $JWTAuth) {
+        $validateRules = [
+            'id'   => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+        if(RateLimiter::instance()->increase('weapp_close_demand',$oauth->id,6,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        $demand = Demand::findOrFail($request->input('id'));
+        if ($demand->user_id != $user->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $demand->status = Demand::STATUS_PUBLISH;
+        $demand->expired_at = date('Y-m-d',strtotime('+7 days'));
+        $demand->save();
+        return self::createJsonData(true,['id'=>$demand->id]);
+    }
+
     public function getRooms(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer'
