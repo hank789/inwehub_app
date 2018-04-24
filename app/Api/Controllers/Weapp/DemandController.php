@@ -385,7 +385,7 @@ class DemandController extends controller {
         $demand = Demand::findOrFail($request->input('id'));
         if($demand->getMedia($collection)->isEmpty()){
             $snappy = App::make('snappy.image');
-            $snappy->setOption('width',3240);
+            $snappy->setOption('width',750);
             $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$demand->id);
             $demand->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
         }
