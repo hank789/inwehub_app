@@ -1,10 +1,16 @@
 <?php namespace App\Api\Controllers\Weapp;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Logic\TaskLogic;
 use App\Models\Comment;
+use App\Models\Credit;
 use App\Models\Question;
+use App\Models\Tag;
+use App\Models\UserTag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
 
 /**
@@ -21,24 +27,59 @@ class QuestionController extends Controller {
             'hide'=> 'required'
         ];
         $this->validate($request,$validateRules);
-
-        $data = $request->all();
-        $question = Question::create([
-            'user_id' => $request->user()->id,
-            'title' => $data['description'],
-            'is_public' => $data['is_public']?1:0,
-            'status'    => 1
-        ]);
+        $user = $request->user();
+        $data = [
+            'user_id' => $user->id,
+            'category_id' => 20,
+            'title' => $request->input('description'),
+            'question_type' => $request->input('question_type',2),
+            'price' => abs($request->input('price')),
+            'hide' => $request->input('hide')?1:0,
+            'status'    => 1,
+            'device'       => intval($request->input('device')),
+            'rate'          => firstRate(),
+            'data'          => []
+        ];
         $image_file = 'image_file';
         if($request->hasFile($image_file)){
             $file_0 = $request->file($image_file);
             $extension = strtolower($file_0->getClientOriginalExtension());
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
             if(in_array($extension, $extArray)){
-                $question->addMediaFromRequest($image_file)->setFileName(time().'_'.md5($file_0->getFilename()).'.'.$extension)->toMediaCollection('weapp');
+                $file_name = 'questions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+                Storage::disk('oss')->put($file_name,File::get($file_0));
+                $img_url = Storage::disk('oss')->url($file_name);
+                $data['data']['img'] = [$img_url];
             }
         }
-        \Log::info('test',$request->all());
+        $question = Question::create($data);
+
+        /*添加标签*/
+        $tagString = $request->input('tags');
+        Tag::multiSaveByIds($tagString,$question);
+        //记录动态
+        $this->doing($question->user_id,'free_question_submit',get_class($question),$question->id,$question->title,'');
+        $user->userData()->increment('questions');
+        UserTag::multiIncrement($user->id,$question->tags()->get(),'questions');
+        //匿名互动提问的不加分
+        //首次提问
+        if($user->userData->questions == 1){
+            if ($question->question_type == 1) {
+                $credit_key = Credit::KEY_FIRST_ASK;
+            } else {
+                $credit_key = Credit::KEY_FIRST_COMMUNITY_ASK;
+            }
+            TaskLogic::finishTask('newbie_ask',0,'newbie_ask',[$user->id]);
+        } else {
+            if ($question->question_type == 1) {
+                $credit_key = Credit::KEY_ASK;
+            } else {
+                $credit_key = Credit::KEY_COMMUNITY_ASK;
+            }
+        }
+        if ($question->question_type == 1 || ($question->question_type == 2 && $question->hide==0)) {
+            $this->credit($user->id,$credit_key,$question->id,$question->title);
+        }
         return self::createJsonData(true,['id'=>$question->id]);
     }
 
@@ -54,16 +95,21 @@ class QuestionController extends Controller {
         if ($question->user_id != $request->user()->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
+        $data = $question->data;
         $image_file = 'image_file';
         if($request->hasFile($image_file)){
             $file_0 = $request->file($image_file);
             $extension = strtolower($file_0->getClientOriginalExtension());
             $extArray = array('png', 'gif', 'jpeg', 'jpg');
             if(in_array($extension, $extArray)){
-                $question->addMediaFromRequest($image_file)->setFileName(time().'_'.md5($file_0->getFilename()).'.'.$extension)->toMediaCollection('weapp');
+                $file_name = 'questions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+                Storage::disk('oss')->put($file_name,File::get($file_0));
+                $img_url = Storage::disk('oss')->url($file_name);
+                $data['img'][] = $img_url;
             }
         }
-        \Log::info('test',$request->all());
+        $question->data = $data;
+        $question->save();
         return self::createJsonData(true,['id'=>$question->id]);
     }
 

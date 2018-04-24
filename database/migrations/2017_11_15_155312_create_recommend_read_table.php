@@ -19,7 +19,7 @@ class CreateRecommendReadTable extends Migration
             $table->unsignedInteger("source_id");
             $table->string("source_type");
             $table->text('data');
-            $table->tinyInteger('sort');                 //排序字段 ASC
+            $table->integer('sort');                 //排序字段 ASC
             $table->tinyInteger('audit_status')->nullable()->default(1)->index()->comment('审核状态 0-未审核 1-已审核 2-未通过');
             $table->timestamps();
             $table->unique(["source_id", "source_type"], 'recommend_read_source_id_type');
