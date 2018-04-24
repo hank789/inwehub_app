@@ -11,6 +11,7 @@ use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
+use App\Notifications\SubmissionRecommend;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -272,6 +273,9 @@ class GroupController extends Controller
         if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
         $submission->is_recommend = 1;
         $submission->save();
+        if ($user->id != $submission->user_id) {
+            $submission->user->notify(new SubmissionRecommend($submission->user_id,$submission));
+        }
         event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', [
             'text' => strip_tags($submission->title),
             'pretext' => '[链接]('.config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')',
