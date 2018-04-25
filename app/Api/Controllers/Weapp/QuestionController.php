@@ -88,16 +88,21 @@ class QuestionController extends Controller {
         return self::createJsonData(true,['id'=>$question->id]);
     }
 
-    public function addImage(Request $request){
+    public function addImage(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id' => 'required|integer',
             'image_file'=> 'required|image'
         ];
         $this->validate($request,$validateRules);
-
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
         $data = $request->all();
         $question = Question::find($data['id']);
-        if ($question->user_id != $request->user()->id) {
+        if ($question->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $data = $question->data;
