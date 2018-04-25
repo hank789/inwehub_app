@@ -3,7 +3,7 @@
 @section('seo_title')编辑回答 - {{ Setting()->get('website_name') }}>@endsection
 
 @section('css')
-    <link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
+    <link href="{{ asset('/static/css/quill/quill.snow.css')}}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -48,7 +48,7 @@
 
 @endsection
 @section('script')
-    <script src="//cdn.quilljs.com/1.0.0/quill.min.js" type="text/javascript"></script>
+    <script src="{{ asset('/static/js/quill/quill.min.js')}}" type="text/javascript"></script>
     <script type="text/javascript">
 
         /*回答编辑器初始化*/
