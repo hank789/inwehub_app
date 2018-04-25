@@ -2,7 +2,6 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Logic\TaskLogic;
-use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Question;
 use App\Models\Tag;
@@ -33,6 +32,7 @@ class QuestionController extends Controller {
         } else {
             throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
         }
+        \Log::info('data',$request->all());
         $data = [
             'user_id' => $user->id,
             'category_id' => 20,
