@@ -602,6 +602,7 @@ class QuestionController extends Controller
         foreach($attentions as $attention){
             if ($attention->source_id == $question->user_id) continue;
             $info = User::find($attention->source_id);
+            if (!$info) continue;
             $item = [];
             $item['id'] = $info->id;
             $item['name'] = $info->name;
