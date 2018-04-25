@@ -461,7 +461,9 @@ Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespac
     //我的提问列表
     Route::post('question/myList','QuestionController@myList')->middleware(['jwt.weappAuth']);
     //回答
-    Route::post('answer/store','AnswerController@store')->middleware(['jwt.weappAuth']);
+    Route::post('answer/store','QuestionController@answerStore')->middleware(['jwt.weappAuth']);
+    //回答列表
+    Route::post('answer/list','QuestionController@answerList')->middleware(['jwt.weappAuth']);
 
 });
 
