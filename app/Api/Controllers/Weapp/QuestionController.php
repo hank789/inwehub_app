@@ -36,7 +36,7 @@ class QuestionController extends Controller {
         $data = [
             'user_id' => $user->id,
             'category_id' => 20,
-            'title' => $request->input('description'),
+            'title' => $request->input('title'),
             'question_type' => $request->input('question_type',2),
             'price' => abs($request->input('price')),
             'hide' => $request->input('hide')?1:0,
