@@ -2,9 +2,10 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Logic\TaskLogic;
-use App\Models\Comment;
+use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Question;
+use App\Models\Support;
 use App\Models\Tag;
 use App\Models\UserTag;
 use Illuminate\Http\Request;
@@ -21,17 +22,23 @@ use Tymon\JWTAuth\JWTAuth;
 
 class QuestionController extends Controller {
 
-    public function store(Request $request){
+    public function store(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'title' => 'required|max:500',
             'hide'=> 'required'
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+        \Log::info('data',$request->all());
         $data = [
             'user_id' => $user->id,
             'category_id' => 20,
-            'title' => $request->input('description'),
+            'title' => $request->input('title'),
             'question_type' => $request->input('question_type',2),
             'price' => abs($request->input('price')),
             'hide' => $request->input('hide')?1:0,
@@ -83,16 +90,21 @@ class QuestionController extends Controller {
         return self::createJsonData(true,['id'=>$question->id]);
     }
 
-    public function addImage(Request $request){
+    public function addImage(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id' => 'required|integer',
             'image_file'=> 'required|image'
         ];
         $this->validate($request,$validateRules);
-
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
         $data = $request->all();
         $question = Question::find($data['id']);
-        if ($question->user_id != $request->user()->id) {
+        if ($question->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $data = $question->data;
@@ -237,4 +249,49 @@ class QuestionController extends Controller {
         return self::createJsonData(true,$list);
     }
 
+
+    //问题回答列表
+    public function answerList(Request $request,JWTAuth $JWTAuth){
+        $id = $request->input('question_id');
+        $question = Question::find($id);
+
+        if(empty($question)){
+            throw new ApiException(ApiException::ASK_QUESTION_NOT_EXIST);
+        }
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
+        $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $answers->toArray();
+        $return['data'] = [];
+        foreach ($answers as $answer) {
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
+
+            $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
+
+            $return['data'][] = [
+                'id' => $answer->id,
+                'user_id' => $answer->user_id,
+                'uuid' => $answer->user->uuid,
+                'user_name' => $answer->user->name,
+                'user_avatar_url' => $answer->user->avatar,
+                'title' => $answer->user->title,
+                'company' => $answer->user->company,
+                'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
+                'content' => $answer->getContentHtml(),
+                'promise_time' => $answer->promise_time,
+                'is_followed' => $attention?1:0,
+                'is_supported' => $support?1:0,
+                'support_number' => $answer->supports,
+                'view_number'    => $answer->views,
+                'comment_number' => $answer->comments,
+                'created_at' => (string)$answer->created_at
+            ];
+        }
+        return self::createJsonData(true,$return);
+    }
 }
