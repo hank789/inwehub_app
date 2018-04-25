@@ -21,13 +21,18 @@ use Tymon\JWTAuth\JWTAuth;
 
 class QuestionController extends Controller {
 
-    public function store(Request $request){
+    public function store(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'title' => 'required|max:500',
             'hide'=> 'required'
         ];
         $this->validate($request,$validateRules);
-        $user = $request->user();
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
         $data = [
             'user_id' => $user->id,
             'category_id' => 20,
