@@ -1,10 +1,8 @@
 <?php namespace App\Api\Controllers\Weapp;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
-use App\Models\Comment;
-use App\Models\WeappQuestion\WeappQuestion;
-use App\Services\RateLimiter;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -14,31 +12,21 @@ use Illuminate\Http\Request;
 
 class AnswerController extends Controller {
 
-    public function store(Request $request){
+    public function store(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
-            'description' => 'required|max:500',
-            'question_id'=> 'required'
+            'description' => 'required',
+            'question_id'=> 'required',
+            'device' => 'required'
         ];
         $this->validate($request,$validateRules);
-        if(RateLimiter::instance()->increase('weapp_answer',$request->user()->id,6,1)){
-            throw new ApiException(ApiException::VISIT_LIMIT);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
         }
-        $data = $request->all();
-
-        $question = WeappQuestion::find($data['question_id']);
-        $data = [
-            'user_id'     => $request->user()->id,
-            'content'     => $data['description'],
-            'source_id'   => $data['question_id'],
-            'source_type' => get_class($question),
-            'to_user_id'  => $question->user_id,
-            'status'      => 1,
-            'supports'    => 0,
-            'device'      => 4
-        ];
-        $comment = Comment::create($data);
-        $comment->source()->increment('comments');
-        return self::createJsonData(true,['id'=>$comment->id]);
+        $description = $request->input('description');
+        return $this->storeAnswer($user,$description,$request);
     }
 
 }
