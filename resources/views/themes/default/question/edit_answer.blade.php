@@ -3,7 +3,7 @@
 @section('seo_title')编辑回答 - {{ Setting()->get('website_name') }}>@endsection
 
 @section('css')
-    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
+    <link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
 @endsection
 
 @section('content')
