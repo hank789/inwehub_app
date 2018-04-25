@@ -2,8 +2,10 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Logic\TaskLogic;
+use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Question;
+use App\Models\Support;
 use App\Models\Tag;
 use App\Models\UserTag;
 use Illuminate\Http\Request;
