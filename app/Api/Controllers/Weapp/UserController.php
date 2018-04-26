@@ -46,6 +46,7 @@ class UserController extends controller {
         //ex:{"session_key":"sCKZIw/kW3Xy+3ykRmbLWQ==","expires_in":7200,"openid":"oW2D-0DjAQNvKiMqiDME5wpDdymE"}
         $userInfo = $wxxcx->getLoginInfo($code);
 
+        \Log::info('userinfo',$userInfo);
         if(RateLimiter::instance()->increase('weapp:getUserInfo',$userInfo['openid'],2,1)){
             sleep(1);
         }
