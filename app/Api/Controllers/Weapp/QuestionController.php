@@ -26,6 +26,12 @@ use Tymon\JWTAuth\JWTAuth;
 
 class QuestionController extends Controller {
 
+
+    protected function searchNotify($user,$searchWord,$typeName='',$searchResult=''){
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'.$searchResult));
+        RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
+        RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
+    }
     public function store(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'title' => 'required|max:500',
@@ -322,6 +328,7 @@ class QuestionController extends Controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $questions = Question::search($request->input('search_word'))->where('question_type',2)->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
