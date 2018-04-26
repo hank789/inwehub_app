@@ -30,6 +30,11 @@ class WeApp
 		SimpleCache::init(storage_path('app/weapp/'));
 	}
 
+	public function setConfig($appid,$secret) {
+        $this->appid = $appid;
+        $this->secret = $secret;
+    }
+
 	/**
 	 * @param $code
 	 * @return array sessionkey相关数组
