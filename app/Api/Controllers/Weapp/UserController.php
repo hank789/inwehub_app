@@ -76,7 +76,7 @@ class UserController extends controller {
                     'avatar'=>$return['avatarUrl'],
                     'access_token'=>$userInfo['session_key'],
                     'refresh_token'=>'',
-                    'expires_in'=>$userInfo['expires_in'],
+                    'expires_in'=>$userInfo['expires_in']??7200,
                     'full_info'=>$return,
                     'scope'=>'authorization_code',
                     'status' => 0
