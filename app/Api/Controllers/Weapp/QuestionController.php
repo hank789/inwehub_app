@@ -1,13 +1,17 @@
 <?php namespace App\Api\Controllers\Weapp;
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Logic\QuestionLogic;
 use App\Logic\TaskLogic;
 use App\Models\Attention;
 use App\Models\Credit;
+use App\Models\Feed\Feed;
 use App\Models\Question;
 use App\Models\Support;
 use App\Models\Tag;
 use App\Models\UserTag;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -34,7 +38,6 @@ class QuestionController extends Controller {
         } else {
             throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
         }
-        \Log::info('data',$request->all());
         $data = [
             'user_id' => $user->id,
             'category_id' => 20,
@@ -125,42 +128,23 @@ class QuestionController extends Controller {
         return self::createJsonData(true,['id'=>$question->id]);
     }
 
-    public function myList(Request $request){
-        $top_id = $request->input('top_id',0);
-        $bottom_id = $request->input('bottom_id',0);
-
-        $user = $request->user();
-
-        $query = Question::where('user_id',$user->id)->where('status',1);
-
-        if($top_id){
-            $query = $query->where('id','>',$top_id);
-        }elseif($bottom_id){
-            $query = $query->where('id','<',$bottom_id);
-        }else{
-            $query = $query->where('id','>',0);
-        }
-        $questions = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
-
-        $list = [];
-        foreach($questions as $question){
-            $list[] = [
-                'id' => $question->id,
-                'user_id' => $question->user_id,
-                'user_name' => $question->user->name,
-                'user_avatar_url' => $question->user->getAvatarUrl(),
-                'description'  => $question->title,
-                'status' => $question->status,
-                'comments' => $question->comments,
-                'created_at' => (string)$question->created_at
-            ];
-        }
-        return self::createJsonData(true,$list);
-    }
-
-    public function allList(Request $request){
+    public function allList(Request $request,JWTAuth $JWTAuth){
         $orderBy = $request->input('order_by',2);//1最新，2最热，3综合，
         $query = Question::Where('question_type',2);
+        $filter = $request->input('filter',0);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        switch ($filter){
+            case 1:
+                //我的提问
+                if ($oauth->user_id) {
+                    $user = $oauth->user;
+                } else {
+                    $user = new \stdClass();
+                    $user->id = 0;
+                }
+                $query = $query->where('user_id',$user->id);
+                break;
+        }
         $queryOrderBy = 'questions.rate';
         switch ($orderBy) {
             case 1:
@@ -249,6 +233,83 @@ class QuestionController extends Controller {
         return self::createJsonData(true,$list);
     }
 
+    public function follow(Request $request,JWTAuth $JWTAuth) {
+        $validateRules = [
+            'question_id' => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        $question_id = $request->input('question_id');
+        if ($oauth->user_id) {
+            $loginUser = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+        $source  = Question::findOrFail($question_id);
+        $subject = $source->title;
+        if (RateLimiter::instance()->increase('follow:question',$loginUser->id,10,5)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        /*再次关注相当于是取消关注*/
+        $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($source))->where('source_id','=',$question_id)->first();
+        if($attention){
+            $attention->delete();
+            $source->decrement('followers');
+            $fields = [];
+            $fields[] = [
+                'title' => '标题',
+                'value' => $source->title
+            ];
+            $fields[] = [
+                'title' => '地址',
+                'value' => route('ask.question.detail',['id'=>$source->id])
+            ];
+            event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了问题',$fields));
+            return self::createJsonData(true,['tip'=>'取消关注成功','type'=>'unfollow']);
+        }
+
+        $data = [
+            'user_id'     => $loginUser->id,
+            'source_id'   => $question_id,
+            'source_type' => get_class($source),
+        ];
+
+        $attention = Attention::create($data);
+
+        if($attention){
+            $source->increment('followers');
+            $fields = [];
+            $fields[] = [
+                'title' => '标题',
+                'value' => $source->title
+            ];
+            $fields[] = [
+                'title' => '地址',
+                'value' => route('ask.question.detail',['id'=>$source->id])
+            ];
+            event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']关注了问题',$fields));
+            //产生一条feed流
+            if ($source->question_type == 2) {
+                $feed_event = 'question_followed';
+                $feed_target = $source->id.'_'.$loginUser->id;
+                if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
+                    feed()
+                        ->causedBy($loginUser)
+                        ->performedOn($source)
+                        ->tags($source->tags()->pluck('tag_id')->toArray())
+                        ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
+                        ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
+                    $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
+                    if ($source->hide == 0) {
+                        $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
+                    }
+                    QuestionLogic::calculationQuestionRate($source->id);
+                }
+            }
+        }
+
+        return self::createJsonData(true,['tip'=>'关注成功','type'=>'follow']);
+    }
 
     //问题回答列表
     public function answerList(Request $request,JWTAuth $JWTAuth){

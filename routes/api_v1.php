@@ -458,12 +458,14 @@ Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespac
     Route::post('question/allList','QuestionController@allList')->middleware(['jwt.weappAuth']);
     //问题回复列表
     Route::post('question/loadAnswer','QuestionController@loadAnswer')->middleware(['jwt.weappAuth']);
-    //我的提问列表
-    Route::post('question/myList','QuestionController@myList')->middleware(['jwt.weappAuth']);
+    //关注问题
+    Route::post('question/follow','QuestionController@follow')->middleware(['jwt.weappAuth']);
     //回答
     Route::post('answer/store','AnswerController@store')->middleware(['jwt.weappAuth']);
     //回答列表
     Route::post('answer/list','QuestionController@answerList')->middleware(['jwt.weappAuth']);
+    //我的回答列表
+    Route::post('answer/myList','AnswerController@myList')->middleware(['jwt.weappAuth']);
 
 });
 
