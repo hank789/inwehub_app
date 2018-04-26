@@ -460,6 +460,8 @@ Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespac
     Route::post('question/loadAnswer','QuestionController@loadAnswer')->middleware(['jwt.weappAuth']);
     //关注问题
     Route::post('question/follow','QuestionController@follow')->middleware(['jwt.weappAuth']);
+    //问题详情
+    Route::post('question/info','QuestionController@info')->middleware(['jwt.weappAuth']);
     //搜索问题
     Route::post('question/search','QuestionController@search')->middleware(['jwt.weappAuth']);
     //回答
