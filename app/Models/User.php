@@ -163,6 +163,7 @@ class User extends Model implements AuthenticatableContract,
     const USER_SOURCE_WEAPP = 1;//用户来源:微信小程序自动注册
     const USER_SOURCE_WEIXIN_GZH = 2;//用户来源:微信公众号
     const USER_SOURCE_WEAPP_ASK = 3;//用户来源:微信小程序-推荐自动注册
+    const USER_SOURCE_WEB = 4;//用户来源:网站
 
     public static function boot()
     {
@@ -239,7 +240,12 @@ class User extends Model implements AuthenticatableContract,
             case self::USER_SOURCE_WEIXIN_GZH:
                 return '微信公众号';
             case self::USER_SOURCE_WEAPP:
-                return '微信小程序';
+                return '项目招募助手';
+            case self::USER_SOURCE_WEAPP_ASK:
+                return '精选推荐';
+            case self::USER_SOURCE_WEB:
+                return '官网';
+                break;
         }
         return 'APP';
     }
