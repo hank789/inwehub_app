@@ -88,26 +88,27 @@ class RateLimiter extends Singleton
     }
 
     public function sAdd($key,$value,$expire = 60) {
-        $this->client->sAdd($key,$value);
+        $this->client->sAdd('inwehub:'.$key,$value);
         if ($expire) {
-            $this->client->expire($key,$expire);
+            $this->client->expire('inwehub:'.$key,$expire);
         }
         return true;
     }
 
     public function sMembers($key) {
-        return $this->client->sMembers($key);
+        return $this->client->sMembers('inwehub:'.$key);
     }
 
     public function sRem($key,$value) {
-        return $this->client->sRem($key,$value);
+        return $this->client->sRem('inwehub:'.$key,$value);
     }
 
     public function sIsMember($key,$value){
-        return $this->client->sIsMember($key,$value);
+        return $this->client->sIsMember('inwehub:'.$key,$value);
     }
 
     public function sClear($key){
+        $key = 'inwehub:'.$key;
         $members = $this->sMembers($key);
         foreach ($members as $member) {
             $this->sRem($key,$member);
@@ -115,7 +116,7 @@ class RateLimiter extends Singleton
     }
 
     public function zAdd($key,$score,$value){
-        return $this->client->zAdd($key,$score,$value);
+        return $this->client->zAdd('inwehub:'.$key,$score,$value);
     }
 
     /**
@@ -144,7 +145,7 @@ class RateLimiter extends Singleton
      * </pre>
      */
     public function zRevrange($key,$start,$end){
-        return $this->client->zRevRange($key,$start,$end,true);
+        return $this->client->zRevRange('inwehub:'.$key,$start,$end,'WITHSCORES');
     }
 
 
@@ -168,6 +169,7 @@ class RateLimiter extends Singleton
      * @return bool
      */
     function lock_acquire($key,$max=1,$timeout=5){
+        $key = 'inwehub:'.$key;
         $count = $this->client->incr($key);
         $this->client->expire($key,$timeout);
         $max = $max + 1;
@@ -183,7 +185,7 @@ class RateLimiter extends Singleton
      * @param $key
      */
     function lock_release($key){
-        $this->client->del($key);
+        $this->client->del('inwehub:'.$key);
     }
 
     public static function instance(){
