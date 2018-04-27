@@ -37,6 +37,18 @@
                               <input type="text" name="name" class="form-control " placeholder="姓名" value="{{ old('name',$user->name) }}">
                               @if ($errors->has('name')) <p class="help-block">{{ $errors->first('name') }}</p> @endif
                           </div>
+                            <div class="form-group">
+                                <label for="name">用户标签</label>
+                                <div>
+                                <ul class="taglist-inline ib">
+                                    @foreach($user->userTags as $tagInfo)
+                                        @if ($tagInfo->tag)
+                                            <li class="tagPopup"><a class="tag" href="{{ route('ask.tag.index',['id'=>$tagInfo->tag->id]) }}">{{ $tagInfo->tag->name }}</a></li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                                </div>
+                            </div>
 
                             <div class="form-group">
                                 <label>头像</label>

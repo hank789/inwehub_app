@@ -6,6 +6,7 @@ use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Comment;
 use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Notice;
 use App\Models\Question;
 use App\Models\Submission;
@@ -108,13 +109,24 @@ class IndexController extends Controller {
                 ]
             ];
         }
+        //当前用户是否有圈子未读信息
+        $user_group_unread = 0;
+        if ($user) {
+            $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','asc')->get();
+            foreach ($groupMembers as $groupMember) {
+                $group = $groupMember->group;
+                $user_group_unread = RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?1:0;
+                if ($user_group_unread) break;
+            }
+        }
 
         $data = [
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
             'recommend_experts' => $cache_experts,
-            'hot_groups' => $hotGroups
+            'hot_groups' => $hotGroups,
+            'user_group_unread' => $user_group_unread
         ];
 
         return self::createJsonData(true,$data);
