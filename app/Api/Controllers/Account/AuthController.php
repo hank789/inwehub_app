@@ -444,7 +444,7 @@ class AuthController extends Controller
             $oauthData->user_id = $user->id;
             $oauthData->save();
             //登陆事件通知
-            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
+            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序-'.$oauthData->auth_type,$request->all()));
             if ($formId) {
                 RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
             }
@@ -463,7 +463,7 @@ class AuthController extends Controller
                 'gender' => 0,
                 'password' => time(),
                 'status' => 1,
-                'source' => User::USER_SOURCE_WEAPP,
+                'source' => $oauthData->auth_type == UserOauth::AUTH_TYPE_WEAPP?User::USER_SOURCE_WEAPP:User::USER_SOURCE_WEAPP_ASK,
                 'visit_ip' => $request->getClientIp()
             ]);
             $new_user->attachRole(2); //默认注册为普通用户角色
@@ -474,7 +474,7 @@ class AuthController extends Controller
             $oauthData->user_id = $new_user->id;
             $oauthData->save();
             //注册事件通知
-            event(new UserRegistered($user,$oauthData->id,'微信小程序'));
+            event(new UserRegistered($user,$oauthData->id,'微信小程序-'.$oauthData->auth_type));
             if ($formId) {
                 RateLimiter::instance()->sAdd('user_formId_'.$new_user->id,$formId,60*60*24*6);
             }
@@ -484,7 +484,7 @@ class AuthController extends Controller
         //如果此微信号已绑定用户
         if($oauthData->user_id && $user && $oauthData->user_id == $user->id){
             //登陆事件通知
-            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
+            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序-'.$oauthData->auth_type,$request->all()));
             if ($formId) {
                 RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
             }
@@ -496,7 +496,7 @@ class AuthController extends Controller
             $loginUser->mobile = $mobile;
             $loginUser->save();
             //登陆事件通知
-            event(new SystemNotify('用户登录: '.formatSlackUser($loginUser).';设备:微信小程序',$request->all()));
+            event(new SystemNotify('用户登录: '.formatSlackUser($loginUser).';设备:微信小程序-'.$oauthData->auth_type,$request->all()));
             if ($formId) {
                 RateLimiter::instance()->sAdd('user_formId_'.$loginUser->id,$formId,60*60*24*6);
             }
@@ -512,7 +512,7 @@ class AuthController extends Controller
             RoomUser::where('user_id',$oauthUserId)->update(['user_id'=>$user->id]);
             User::destroy($oauthUserId);
             //登陆事件通知
-            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序',$request->all()));
+            event(new SystemNotify('用户登录: '.formatSlackUser($user).';设备:微信小程序-'.$oauthData->auth_type,$request->all()));
             if ($formId) {
                 RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
             }

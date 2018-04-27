@@ -13,5 +13,14 @@ return [
     /**
      * 小程序Secret
      */
-    'secret' => env('WEAPP_SECRET','your AppSecret')
+    'secret' => env('WEAPP_SECRET','your AppSecret'),
+
+    /**
+     * 小程序APPID
+     */
+    'appid_ask' => env('WEAPP_ASK_APP_ID','your AppID'),
+    /**
+     * 小程序Secret
+     */
+    'secret_ask' => env('WEAPP_ASK_SECRET','your AppSecret'),
 ];

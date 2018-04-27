@@ -29,11 +29,24 @@ class UserController extends controller {
         //encryptedData 和 iv 在小程序端使用 wx.getUserInfo 获取
         $encryptedData = request('encryptedData', '');
         $iv = request('iv', '');
+        $oauthType = $request->input('oauthType',UserOauth::AUTH_TYPE_WEAPP);
+        switch ($oauthType) {
+            case UserOauth::AUTH_TYPE_WEAPP:
+                //项目招募助手-默认
+                $source = User::USER_SOURCE_WEAPP;
+                break;
+            case UserOauth::AUTH_TYPE_WEAPP_ASK:
+                //精选推荐
+                $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
+                $source = User::USER_SOURCE_WEAPP_ASK;
+                break;
+        }
 
         //根据 code 获取用户 session_key 等信息, 返回用户openid 和 session_key
         //ex:{"session_key":"sCKZIw/kW3Xy+3ykRmbLWQ==","expires_in":7200,"openid":"oW2D-0DjAQNvKiMqiDME5wpDdymE"}
         $userInfo = $wxxcx->getLoginInfo($code);
 
+        \Log::info('userinfo',$userInfo);
         if(RateLimiter::instance()->increase('weapp:getUserInfo',$userInfo['openid'],2,1)){
             sleep(1);
         }
@@ -42,21 +55,20 @@ class UserController extends controller {
         //ex:{\"openId\":\"oW2D-0DjAQNvKiMqiDME5wpDdymE\",\"nickName\":\"hank\",\"gender\":1,\"language\":\"zh_CN\",\"city\":\"Pudong New District\",\"province\":\"Shanghai\",\"country\":\"CN\",\"avatarUrl\":\"http://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKibUNMkQ0sVd8jUPHGXia2G78608O9qs9eGAd06jeI2ZRHiaH4DbxI9ppsucxbemxuPawrBh95Sd3PA/0\",\"watermark\":{\"timestamp\":1497602544,\"appid\":\"wx5f163b8ab1c05647\"}}
         $return = $wxxcx->getUserInfo($encryptedData, $iv);
 
-        $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEAPP)
+        $oauthData = UserOauth::where('auth_type',$oauthType)
             ->where('openid',$userInfo['openid'])->first();
         $user_id = 0;
 
         if (!$oauthData) {
             if (isset($return['unionId'])) {
-                $oauthData = UserOauth::whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])
-                    ->where('unionid',$return['unionId'])->first();
+                $oauthData = UserOauth::where('unionid',$return['unionId'])->first();
                 if ($oauthData) {
                     $user_id = $oauthData->user_id;
                 }
             }
             $oauthData = UserOauth::create(
                 [
-                    'auth_type'=>UserOauth::AUTH_TYPE_WEAPP,
+                    'auth_type'=>$oauthType,
                     'user_id'=> $user_id,
                     'openid'   => $userInfo['openid'],
                     'unionid'  => $return['unionId']??null,
@@ -64,7 +76,7 @@ class UserController extends controller {
                     'avatar'=>$return['avatarUrl'],
                     'access_token'=>$userInfo['session_key'],
                     'refresh_token'=>'',
-                    'expires_in'=>$userInfo['expires_in'],
+                    'expires_in'=>$userInfo['expires_in']??7200,
                     'full_info'=>$return,
                     'scope'=>'authorization_code',
                     'status' => 0
@@ -86,7 +98,7 @@ class UserController extends controller {
                 'gender' => $return['gender'],
                 'password' => time(),
                 'status' => 1,
-                'source' => User::USER_SOURCE_WEAPP,
+                'source' => $source,
             ]);
             $user_id = $new_user->id;
             $oauthData->user_id = $new_user->id;
@@ -115,7 +127,7 @@ class UserController extends controller {
             $info['mobile'] = $user->mobile;
             $info['email'] = $user->email;
         }
-        event(new SystemNotify('用户登录: '.$oauthData->user_id.'['.$oauthData->nickname.'];设备:小程序登陆'));
+        event(new SystemNotify('用户登录: '.$oauthData->user_id.'['.$oauthData->nickname.'];设备:小程序登陆-'.$oauthType));
         return self::createJsonData(true,['token'=>$token,'userInfo'=>$info]);
     }
 
@@ -124,13 +136,15 @@ class UserController extends controller {
         $oauth = $JWTAuth->parseToken()->toUser();
         $status = $oauth->status;
         if ($oauth->user_id) {
-            $demand_ids = Demand::where('user_id',$oauth->user_id)->get()->pluck('id')->toArray();
             $user = $oauth->user;
-            //获取未读消息数
-            $im_rooms = Room::where('source_type',Demand::class)->where(function ($query) use ($user,$demand_ids) {$query->where('user_id',$user->id)->orWhereIn('source_id',$demand_ids);})->get();
-            foreach ($im_rooms as $im_room) {
-                $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
-                $total_unread += $im_count;
+            if ($oauth->auth_type == UserOauth::AUTH_TYPE_WEAPP) {
+                $demand_ids = Demand::where('user_id',$oauth->user_id)->get()->pluck('id')->toArray();
+                //获取未读消息数
+                $im_rooms = Room::where('source_type',Demand::class)->where(function ($query) use ($user,$demand_ids) {$query->where('user_id',$user->id)->orWhereIn('source_id',$demand_ids);})->get();
+                foreach ($im_rooms as $im_room) {
+                    $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
+                    $total_unread += $im_count;
+                }
             }
             $info = [
                 'id'=>$oauth->user_id,
