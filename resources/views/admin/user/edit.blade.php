@@ -42,7 +42,7 @@
                                 <label>头像</label>
                                 <input type="file" name="avatar" />
                                 <div style="margin-top: 10px;">
-                                    <img src="{{ $user->getAvatarUrl() }}" width="100"/>
+                                    <img src="{{ $user->avatar }}" width="100"/>
                                 </div>
                             </div>
 

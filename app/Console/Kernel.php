@@ -23,6 +23,8 @@ class Kernel extends ConsoleKernel
         Commands\User\RefreshUserLoginToken::class,
         Commands\InitEs::class,
 
+        //定时任务
+        Commands\Crontab\CalcGroupHot::class,
         //阅读站
         Commands\Readhub\InitUser::class,
 
@@ -77,7 +79,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('pay:settlement')->daily()->at('00:10')->withoutOverlapping();
         $schedule->command('user:check:rg_code')->daily()->at('00:30');
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
-
+        $schedule->command('crontab:calc-group-hot')->hourly();
         //$schedule->command('scraper:wechat:author')->hourly();
     }
 

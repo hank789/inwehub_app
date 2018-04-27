@@ -114,6 +114,39 @@ class RateLimiter extends Singleton
         }
     }
 
+    public function zAdd($key,$score,$value){
+        return $this->client->zAdd($key,$score,$value);
+    }
+
+    /**
+     * Returns the elements of the sorted set stored at the specified key in the range [start, end]
+     * in reverse order. start and stop are interpretated as zero-based indices:
+     * 0 the first element,
+     * 1 the second ...
+     * -1 the last element,
+     * -2 the penultimate ...
+     *
+     * @param   string  $key
+     * @param   int     $start
+     * @param   int     $end
+     * @param   bool    $withscore
+     * @return  array   Array containing the values in specified range.
+     * @link    http://redis.io/commands/zrevrange
+     * @example
+     * <pre>
+     * $redis->zAdd('key', 0, 'val0');
+     * $redis->zAdd('key', 2, 'val2');
+     * $redis->zAdd('key', 10, 'val10');
+     * $redis->zRevRange('key', 0, -1); // array('val10', 'val2', 'val0')
+     *
+     * // with scores
+     * $redis->zRevRange('key', 0, -1, true); // array('val10' => 10, 'val2' => 2, 'val0' => 0)
+     * </pre>
+     */
+    public function zRevrange($key,$start,$end){
+        return $this->client->zRevRange($key,$start,$end,true);
+    }
+
 
     public function setVale($event, $target, $value,$expire = 60) {
         $key = $this->key($event, $target);
