@@ -108,7 +108,6 @@ class RateLimiter extends Singleton
     }
 
     public function sClear($key){
-        $key = 'inwehub:'.$key;
         $members = $this->sMembers($key);
         foreach ($members as $member) {
             $this->sRem($key,$member);
