@@ -156,7 +156,6 @@ class GroupController extends Controller
             ];
         }
         $return['subscribers'] = $group->getHotIndex();
-        RateLimiter::instance()->sAdd('group_read_users:'.$group->id,$user->id);
         return self::createJsonData(true,$return);
     }
 
