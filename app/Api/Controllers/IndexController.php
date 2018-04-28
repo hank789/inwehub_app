@@ -115,7 +115,7 @@ class IndexController extends Controller {
             $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','asc')->get();
             foreach ($groupMembers as $groupMember) {
                 $group = $groupMember->group;
-                $user_group_unread = RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?1:0;
+                $user_group_unread = RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?0:1;
                 if ($user_group_unread) break;
             }
         }
