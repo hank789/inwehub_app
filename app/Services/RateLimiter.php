@@ -88,23 +88,23 @@ class RateLimiter extends Singleton
     }
 
     public function sAdd($key,$value,$expire = 60) {
-        $this->client->sAdd($key,$value);
+        $this->client->sAdd('inwehub:'.$key,$value);
         if ($expire) {
-            $this->client->expire($key,$expire);
+            $this->client->expire('inwehub:'.$key,$expire);
         }
         return true;
     }
 
     public function sMembers($key) {
-        return $this->client->sMembers($key);
+        return $this->client->sMembers('inwehub:'.$key);
     }
 
     public function sRem($key,$value) {
-        return $this->client->sRem($key,$value);
+        return $this->client->sRem('inwehub:'.$key,$value);
     }
 
     public function sIsMember($key,$value){
-        return $this->client->sIsMember($key,$value);
+        return $this->client->sIsMember('inwehub:'.$key,$value);
     }
 
     public function sClear($key){
@@ -112,6 +112,39 @@ class RateLimiter extends Singleton
         foreach ($members as $member) {
             $this->sRem($key,$member);
         }
+    }
+
+    public function zAdd($key,$score,$value){
+        return $this->client->zAdd('inwehub:'.$key,$score,$value);
+    }
+
+    /**
+     * Returns the elements of the sorted set stored at the specified key in the range [start, end]
+     * in reverse order. start and stop are interpretated as zero-based indices:
+     * 0 the first element,
+     * 1 the second ...
+     * -1 the last element,
+     * -2 the penultimate ...
+     *
+     * @param   string  $key
+     * @param   int     $start
+     * @param   int     $end
+     * @param   bool    $withscore
+     * @return  array   Array containing the values in specified range.
+     * @link    http://redis.io/commands/zrevrange
+     * @example
+     * <pre>
+     * $redis->zAdd('key', 0, 'val0');
+     * $redis->zAdd('key', 2, 'val2');
+     * $redis->zAdd('key', 10, 'val10');
+     * $redis->zRevRange('key', 0, -1); // array('val10', 'val2', 'val0')
+     *
+     * // with scores
+     * $redis->zRevRange('key', 0, -1, true); // array('val10' => 10, 'val2' => 2, 'val0' => 0)
+     * </pre>
+     */
+    public function zRevrange($key,$start,$end){
+        return $this->client->zRevRange('inwehub:'.$key,$start,$end,'WITHSCORES');
     }
 
 
@@ -135,6 +168,7 @@ class RateLimiter extends Singleton
      * @return bool
      */
     function lock_acquire($key,$max=1,$timeout=5){
+        $key = 'inwehub:'.$key;
         $count = $this->client->incr($key);
         $this->client->expire($key,$timeout);
         $max = $max + 1;
@@ -150,7 +184,7 @@ class RateLimiter extends Singleton
      * @param $key
      */
     function lock_release($key){
-        $this->client->del($key);
+        $this->client->del('inwehub:'.$key);
     }
 
     public static function instance(){

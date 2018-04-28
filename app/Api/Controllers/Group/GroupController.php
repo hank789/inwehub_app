@@ -156,7 +156,6 @@ class GroupController extends Controller
             ];
         }
         $return['subscribers'] = $group->getHotIndex();
-        RateLimiter::instance()->sRem('group_read_users:'.$group->id,$user->id);
         return self::createJsonData(true,$return);
     }
 
@@ -212,7 +211,7 @@ class GroupController extends Controller
         if ($groupMember) {
             $groupMember->delete();
             if ($group->subscribers > 0) $group->decrement('subscribers');
-            event(new SystemNotify('用户'.formatSlackUser($user).'退出了圈子:'.$group->name, $group->toArray()));
+            event(new SystemNotify('用户'.formatSlackUser($user).'退出了圈子['.$group->name.']', []));
         }
         return self::createJsonData(true);
     }
@@ -454,7 +453,7 @@ class GroupController extends Controller
                 'articles'    => $group->articles,
                 'is_joined'   => 1,
                 'audit_status' => $group->audit_status,
-                'unread_count' => RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?1:0,
+                'unread_count' => RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?0:1,
                 'owner' => [
                     'id' => $group->user->id,
                     'uuid' => $group->user->uuid,

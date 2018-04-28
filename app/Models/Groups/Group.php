@@ -48,7 +48,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Group extends Model
 {
-    use SoftDeletes,BelongsToUserTrait;
+    use BelongsToUserTrait;
 
     protected $table = 'groups';
     protected $fillable = ['user_id','name','description','logo','public','audit_status','subscribers', 'articles','failed_reason'];

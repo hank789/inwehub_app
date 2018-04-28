@@ -5,11 +5,14 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Comment;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Notice;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\RecommendRead;
 use App\Models\User;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -84,12 +87,46 @@ class IndexController extends Controller {
 
         //轮播图
         $notices = Notice::orderBy('sort','desc')->take(4)->get()->toArray();
+        //当日热门圈子
+        $groupIds = RateLimiter::instance()->zRevrange('group-daily-hot-'.date('Ymd'),0,2);
+        $hotGroups = [];
+        foreach ($groupIds as $groupId => $hotScore) {
+            $group = Group::find($groupId);
+            $hotGroups[] = [
+                'id' => $groupId,
+                'user_id' => $group->user_id,
+                'name'    => $group->name,
+                'description' => $group->description,
+                'logo'    => $group->logo,
+                'public'  => $group->public,
+                'scores'  => $hotScore,
+                'owner'   => [
+                    'id' => $group->user_id,
+                    'uuid' => $group->user->uuid,
+                    'name' => $group->user->name,
+                    'is_expert' => $group->user->is_expert,
+                    'avatar' => $group->user->avatar
+                ]
+            ];
+        }
+        //当前用户是否有圈子未读信息
+        $user_group_unread = 0;
+        if ($user) {
+            $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','asc')->get();
+            foreach ($groupMembers as $groupMember) {
+                $group = $groupMember->group;
+                $user_group_unread = RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?0:1;
+                if ($user_group_unread) break;
+            }
+        }
 
         $data = [
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
-            'recommend_experts' => $cache_experts
+            'recommend_experts' => $cache_experts,
+            'hot_groups' => $hotGroups,
+            'user_group_unread' => $user_group_unread
         ];
 
         return self::createJsonData(true,$data);

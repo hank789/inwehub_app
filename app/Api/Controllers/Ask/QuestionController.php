@@ -1078,12 +1078,13 @@ class QuestionController extends Controller
     //推荐相关问题
     public function recommendUserQuestions(Request $request) {
         $user = $request->user();
+        $perPage = $request->input('perPage',5);
         $skillTags = $user->userSkillTag()->pluck('tag_id')->toArray();
         $attentionTags = $user->attentions()->where('source_type','App\Models\Tag')->get()->pluck('source_id')->toArray();
         $attentionTags = array_unique(array_merge($attentionTags,$skillTags));
-        $relatedQuestions = Question::correlationsPage($attentionTags,5,2,[$user->id]);
+        $relatedQuestions = Question::correlationsPage($attentionTags,$perPage,2,[$user->id]);
         if ($relatedQuestions->count() <= 0) {
-            $relatedQuestions = Question::recent(5,2,[$user->id]);
+            $relatedQuestions = Question::recent($perPage,2,[$user->id]);
         }
         $return = $relatedQuestions->toArray();
         $list = [];
@@ -1095,6 +1096,15 @@ class QuestionController extends Controller
             if ($attention_question) {
                 $is_followed_question = 1;
             }
+            $answer_uids = Answer::where('question_id',$relatedQuestion->id)->take(3)->pluck('user_id')->toArray();
+            $answer_users = [];
+            foreach ($answer_uids as $answer_uid) {
+                $answer_user = User::find($answer_uid);
+                $answer_users[] = [
+                    'uuid' => $answer_user->uuid,
+                    'avatar' => $answer_user->avatar
+                ];
+            }
             $list[$relatedQuestion->id] = [
                 'id' => $relatedQuestion->id,
                 'title' => $relatedQuestion->title,
@@ -1102,10 +1112,11 @@ class QuestionController extends Controller
                 'answer_number' => $relatedQuestion->answers,
                 'follow_number' => $relatedQuestion->followers,
                 'is_followed_question'   => $is_followed_question,
-                'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray()
+                'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray(),
+                'answer_users' => $answer_users
             ];
         }
-        if (count($list) < 5) {
+        if (count($list) < $perPage) {
             $relatedQuestions = Question::recent(40,2,[$user->id]);
             foreach ($relatedQuestions as $relatedQuestion) {
                 $is_answerd = Answer::where('user_id',$user->id)->where('question_id',$relatedQuestion->id)->first();
@@ -1115,6 +1126,15 @@ class QuestionController extends Controller
                 if ($attention_question) {
                     $is_followed_question = 1;
                 }
+                $answer_uids = Answer::where('question_id',$relatedQuestion->id)->take(3)->pluck('user_id')->toArray();
+                $answer_users = [];
+                foreach ($answer_uids as $answer_uid) {
+                    $answer_user = User::find($answer_uid);
+                    $answer_users[] = [
+                        'uuid' => $answer_user->uuid,
+                        'avatar' => $answer_user->avatar
+                    ];
+                }
                 $list[$relatedQuestion->id] = [
                     'id' => $relatedQuestion->id,
                     'title' => $relatedQuestion->title,
@@ -1122,9 +1142,10 @@ class QuestionController extends Controller
                     'answer_number' => $relatedQuestion->answers,
                     'follow_number' => $relatedQuestion->followers,
                     'is_followed_question'   => $is_followed_question,
-                    'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray()
+                    'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray(),
+                    'answer_users' => $answer_users
                 ];
-                if (count($list) >= 5) break;
+                if (count($list) >= $perPage) break;
             }
         }
         $return['data'] = array_values($list);

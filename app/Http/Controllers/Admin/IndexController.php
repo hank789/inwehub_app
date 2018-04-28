@@ -241,9 +241,8 @@ class IndexController extends AdminController
 
         $nowTime = Carbon::now();
 
-
         $questions = Question::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
-        $answers = Answer::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
+        $answers = Answer::where('status',Answer::ANSWER_STATUS_FINISH)->where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
         $feedbacks = Feedback::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
         $submissions = Submission::where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
         $shares = Credit::where('action','share_success')->where('created_at','>',$labelTimes[0])->where('created_at','<',$nowTime)->get();
