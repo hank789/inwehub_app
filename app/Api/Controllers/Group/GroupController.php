@@ -145,6 +145,9 @@ class GroupController extends Controller
             //私有圈子
             return self::createJsonData(true,$return);
         }
+        $room = Room::where('r_type',2)
+            ->where('source_id',$group->id)
+            ->where('source_type',get_class($group))->first();
         $members = $group->members()->where('audit_status',1)->take(6)->get();
         foreach ($members as $member) {
             if ($member->user_id == $group->user_id) continue;
@@ -158,6 +161,7 @@ class GroupController extends Controller
             ];
         }
         $return['subscribers'] = $group->getHotIndex();
+        $return['room_id'] = $room?$room->id:0;
         return self::createJsonData(true,$return);
     }
 
