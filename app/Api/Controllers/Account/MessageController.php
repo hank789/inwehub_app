@@ -75,7 +75,7 @@ class MessageController extends Controller
         $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$user->id)->first();
         $users = [];
         $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid];
-        $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid];
+        if ($roomUser) $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid];
         if ($messages['data']) {
             foreach ($messages['data'] as &$item) {
                 if (!isset($users[$item['user_id']])) {
@@ -89,11 +89,13 @@ class MessageController extends Controller
             }
             $messages['data'] = array_reverse($messages['data']);
         }
-
-        $messages['contact'] = [
-            'name' => $roomUser->user->name,
-            'id'   => $roomUser->user->id
-        ];
+        $messages['contact'] = [];
+        if ($roomUser) {
+            $messages['contact'] = [
+                'name' => $roomUser->user->name,
+                'id'   => $roomUser->user->id
+            ];
+        }
         $messages['room_id'] = $room_id;
         return self::createJsonData(true,$messages);
     }
