@@ -107,7 +107,7 @@ class MessageController extends Controller
             'text'    => 'required_without:img',
             'img'    => 'required_without:text',
             'room_id' => 'required|integer|min:1',
-            'contact_id' => 'required|integer|min:1',
+            'contact_id' => 'required|integer',
         ]);
 
         $room_id = $request->input('room_id');
