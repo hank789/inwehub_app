@@ -6,6 +6,7 @@ use App\Channels\PushChannel;
 use App\Channels\SlackChannel;
 use App\Channels\WeappNoticeChannel;
 use App\Channels\WechatNoticeChannel;
+use App\Models\Groups\Group;
 use App\Models\IM\Message;
 use App\Models\IM\Room;
 use App\Models\Notification as NotificationModel;
@@ -118,11 +119,23 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
 
     public function toPush($notifiable)
     {
-
+        $title = $this->message->user->name.'回复了你';
+        $object_id = $this->message->user->id;
+        $object_type = 'im_message';
+        if ($this->room_id) {
+            $room = Room::find($this->room_id);
+            switch ($room->source_type) {
+                case Group::class:
+                    $title = '您的圈子有新的回复';
+                    $object_id = $room->id;
+                    $object_type = 'im_group_message';
+                    break;
+            }
+        }
         return [
-            'title' => $this->message->user->name.'回复了你',
+            'title' => $title,
             'body'  => $this->message->data['text']?:'[图片]',
-            'payload' => ['object_type'=>'im_message','object_id'=>$this->message->user->id],
+            'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
         ];
     }
 
@@ -131,14 +144,25 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
         if (config('app.env') != 'production') {
             $template_id = 'j4x5vAnKHcDrBcsoDooTHfWCOc_UaJFjFAyIKOpuM2k';
         }
+        $target_url = config('app.mobile_url').'#/chat/'.$this->message->user->id;
+        $first = '您好，'.$this->message->user->name.'回复了您';
+        if ($this->room_id) {
+            $room = Room::find($this->room_id);
+            switch ($room->source_type) {
+                case Group::class:
+                    $target_url = config('app.mobile_url').'#/group/chat/'.$room->id;
+                    $first = '您的圈子有新的回复';
+                    break;
+            }
+        }
         return [
-            'first'    => '您好，'.$this->message->user->name.'回复了您',
+            'first'    => $first,
             'keyword1' => $this->message->user->name,
             'keyword2' => (string) $this->message->created_at,
             'keyword3' => $this->message->data['text']?:'[图片]',
             'remark'   => '请点击查看详情！',
             'template_id' => $template_id,
-            'target_url' => config('app.mobile_url').'#/chat/'.$this->message->user->id
+            'target_url' => $target_url
         ];
     }
 
@@ -211,6 +235,13 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                     $fields[] = [
                         'title' => '回复对象：找顾问助手',
                         'value' => $demand->title
+                    ];
+                    break;
+                case Group::class:
+                    $group = Group::find($room->source_id);
+                    $fields[] = [
+                        'title' => '回复对象：圈子',
+                        'value' => $group->name
                     ];
                     break;
             }
