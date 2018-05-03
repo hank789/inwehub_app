@@ -66,6 +66,8 @@ class GroupMemberApplyResult extends Notification implements ShouldQueue,ShouldB
             case GroupMember::AUDIT_STATUS_SUCCESS:
                 return '您的入圈申请已通过';
                 break;
+            default:
+                return '您已被圈主移出该群';
         }
     }
 

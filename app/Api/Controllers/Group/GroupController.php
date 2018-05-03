@@ -260,6 +260,25 @@ class GroupController extends Controller
         return self::createJsonData(true);
     }
 
+    //群主踢人功能
+    public function removeMember(Request $request) {
+        $this->validate($request,[
+            'id'=>'required|integer',
+            'user_id'=>'required|integer'
+        ]);
+        $group = Group::find($request->input('id'));
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $groupMember = GroupMember::where('user_id',$request->input('user_id'))->where('group_id',$group->id)->first();
+        if ($groupMember) {
+            $groupMember->delete();
+        }
+        return self::createJsonData(true);
+    }
+
     //圈子内容设为推荐
     public function setSubmissionRecommend(Request $request) {
         $this->validate($request,[

@@ -515,6 +515,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('openIm','GroupController@openIm');
     //关闭群聊
     Route::post('closeIm','GroupController@closeIm');
+    //移出圈子
+    Route::post('removeMember','GroupController@removeMember');
 });
 
 //圈子详情
