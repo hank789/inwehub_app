@@ -201,6 +201,7 @@ class MessageController extends Controller
                 if ($member->user_id == $user->id) continue;
                 $member->user->notify(new NewMessage($member->user_id,$message,$room_id));
             }
+            RateLimiter::instance()->sClear('group_im_users:'.$room->id);
         }
         $return = $message->toArray();
         $return['avatar'] = $user->avatar;
@@ -321,8 +322,15 @@ class MessageController extends Controller
                 }
                 break;
             case Group::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
                 $source = Group::find($room->source_id);
                 $contact = [];
+                //标记该用户已读圈子内聊天信息
+                RateLimiter::instance()->sAdd('group_im_users:'.$room->id,$user->id,0);
                 break;
         }
         $return['contact'] = $contact;
