@@ -207,6 +207,7 @@ class MessageController extends Controller
         ]);
         $user = $request->user();
         $contact_id = $request->input('contact_id');
+        $contact = User::find($contact_id);
         //私信
         $room = Room::where('user_id',$user->id)
             ->where('source_id',$contact_id)
@@ -245,7 +246,7 @@ class MessageController extends Controller
                 'room_id' => $room_id
             ]);
         }
-        return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id]);
+        return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id,'contact_name'=>$contact->name]);
     }
 
     public function getRoom(Request $request,JWTAuth $JWTAuth){
