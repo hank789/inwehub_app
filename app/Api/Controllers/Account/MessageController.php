@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
 use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\IM\Message;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
@@ -34,7 +35,6 @@ class MessageController extends Controller
         $room_id = $request->input('room_id');
         $room = Room::findOrFail($room_id);
         switch ($room->source_type) {
-            case Group::class:
             case User::class:
                 try {
                     $user = $JWTAuth->parseToken()->authenticate();
@@ -49,6 +49,18 @@ class MessageController extends Controller
                     throw new ApiException(ApiException::TOKEN_INVALID);
                 }
                 $user = $oauthUser->user;
+                break;
+            case Group::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                    $groupMember = GroupMember::where('group_id',$room->source_id)->where('user_id'.$user->id)
+                        ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+                    if (!$groupMember) {
+                        throw new ApiException(ApiException::BAD_REQUEST);
+                    }
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
                 break;
         }
 
@@ -99,7 +111,6 @@ class MessageController extends Controller
         $room_id = $request->input('room_id');
         $room = Room::findOrFail($room_id);
         switch ($room->source_type) {
-            case Group::class:
             case User::class:
                 try {
                     $user = $JWTAuth->parseToken()->authenticate();
@@ -116,6 +127,18 @@ class MessageController extends Controller
                 $user = $oauthUser->user;
                 if ($request->input('formId')) {
                     RateLimiter::instance()->sAdd('user_formId_'.$user->id,$request->input('formId'),60*60*24*6);
+                }
+                break;
+            case Group::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                    $groupMember = GroupMember::where('group_id',$room->source_id)->where('user_id'.$user->id)
+                        ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+                    if (!$groupMember) {
+                        throw new ApiException(ApiException::BAD_REQUEST);
+                    }
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
                 }
                 break;
         }

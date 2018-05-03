@@ -9,6 +9,7 @@ use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\IM\Room;
+use App\Models\IM\RoomUser;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
@@ -560,6 +561,13 @@ class GroupController extends Controller
                 'r_description' => $group->description,
                 'source_id' => $group->id,
                 'source_type' => get_class($group)
+            ]);
+            RoomUser::firstOrCreate([
+                'user_id' => $user->id,
+                'room_id' => $room->id
+            ],[
+                'user_id' => $user->id,
+                'room_id' => $room->id
             ]);
         } else {
             $room->status = Room::STATUS_OPEN;
