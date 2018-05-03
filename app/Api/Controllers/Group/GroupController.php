@@ -8,6 +8,7 @@ use App\Models\Collection;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
+use App\Models\IM\Room;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
@@ -535,6 +536,57 @@ class GroupController extends Controller
         }
         $return['data'] = $list;
         return self::createJsonData(true, $return);
+    }
+
+    //开启群聊
+    public function openIm(Request $request) {
+        $this->validate($request,[
+            'id'=>'required|integer'
+        ]);
+        $group = Group::find($request->input('id'));
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $room = Room::where('r_type',2)
+            ->where('source_id',$group->id)
+            ->where('source_type',get_class($group))->first();
+        if (!$room) {
+            $room = Room::create([
+                'user_id' => $user->id,
+                'r_type'  => 2,
+                'r_name'  => $group->name,
+                'r_description' => $group->description,
+                'source_id' => $group->id,
+                'source_type' => get_class($group)
+            ]);
+        } else {
+            $room->status = Room::STATUS_OPEN;
+            $room->save();
+        }
+        return self::createJsonData(true,['room_id'=>$room->id]);
+    }
+
+    //关闭群聊
+    public function closeIm(Request $request) {
+        $this->validate($request,[
+            'id'=>'required|integer'
+        ]);
+        $group = Group::find($request->input('id'));
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $room = Room::where('r_type',2)
+            ->where('source_id',$group->id)
+            ->where('source_type',get_class($group))->first();
+        if ($room) {
+            $room->status = Room::STATUS_CLOSED;
+            $room->save();
+        }
+        return self::createJsonData(true);
     }
 
 }

@@ -511,6 +511,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('joinReject','GroupController@joinReject');
     //退出圈子
     Route::post('quit','GroupController@quit');
+    //开启群聊
+    Route::post('openIm','GroupController@openIm');
+    //关闭群聊
+    Route::post('closeIm','GroupController@closeIm');
 });
 
 //圈子详情

@@ -43,7 +43,7 @@ class Room extends Model
     protected $table = 'im_room';
 
     protected $fillable = [
-        'r_type', 'user_id','source_id', 'source_type', 'r_name', 'r_description'
+        'r_type', 'user_id','source_id', 'source_type', 'r_name', 'r_description', 'status'
     ];
 
     /**
@@ -57,6 +57,11 @@ class Room extends Model
 
     const ROOM_TYPE_WHISPER = 1;//私聊
     const ROOM_TYPE_GROUP = 2;//群聊
+
+    const STATUS_OPEN = 1;//开启
+    const STATUS_CLOSED = 2;//关闭
+
+
 
     public function source()
     {

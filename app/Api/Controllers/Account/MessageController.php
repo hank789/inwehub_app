@@ -3,6 +3,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
+use App\Models\Groups\Group;
 use App\Models\IM\Message;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
@@ -33,6 +34,7 @@ class MessageController extends Controller
         $room_id = $request->input('room_id');
         $room = Room::findOrFail($room_id);
         switch ($room->source_type) {
+            case Group::class:
             case User::class:
                 try {
                     $user = $JWTAuth->parseToken()->authenticate();
@@ -97,6 +99,7 @@ class MessageController extends Controller
         $room_id = $request->input('room_id');
         $room = Room::findOrFail($room_id);
         switch ($room->source_type) {
+            case Group::class:
             case User::class:
                 try {
                     $user = $JWTAuth->parseToken()->authenticate();
@@ -155,17 +158,18 @@ class MessageController extends Controller
             'room_id' => $room_id,
             'message_id' => $message->id
         ]);
-
-        RoomUser::firstOrCreate([
-            'user_id' => $contact_id,
-            'room_id' => $room_id
-        ],[
-            'user_id' => $contact_id,
-            'room_id' => $room_id
-        ]);
-        // broadcast the message to the other person
-        $contact = User::find($contact_id);
-        $contact->notify(new NewMessage($contact_id,$message,$room_id));
+        if ($contact_id) {
+            RoomUser::firstOrCreate([
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ],[
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ]);
+            // broadcast the message to the other person
+            $contact = User::find($contact_id);
+            $contact->notify(new NewMessage($contact_id,$message,$room_id));
+        }
         $return = $message->toArray();
         $return['avatar'] = $user->avatar;
 
@@ -282,7 +286,10 @@ class MessageController extends Controller
                         'name'=>$room->user->name
                     ];
                 }
-
+                break;
+            case Group::class:
+                $source = Group::find($room->source_id);
+                $contact = [];
                 break;
         }
         $return['contact'] = $contact;
