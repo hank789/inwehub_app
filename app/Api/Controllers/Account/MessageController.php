@@ -136,11 +136,11 @@ class MessageController extends Controller
                     $user = $JWTAuth->parseToken()->authenticate();
                     $groupMember = GroupMember::where('group_id',$room->source_id)->where('user_id'.$user->id)
                         ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
-                    if (!$groupMember) {
-                        throw new ApiException(ApiException::BAD_REQUEST);
-                    }
                 } catch (\Exception $e) {
                     throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                if (!$groupMember) {
+                    throw new ApiException(ApiException::BAD_REQUEST);
                 }
                 break;
         }
