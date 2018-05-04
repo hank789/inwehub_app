@@ -11,6 +11,7 @@ use App\Models\IM\Message;
 use App\Models\IM\Room;
 use App\Models\Notification as NotificationModel;
 use App\Models\User;
+use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Services\RateLimiter;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -174,10 +175,18 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
         switch ($room->source_type) {
             case Demand::class:
                 $demand = Demand::find($room->source_id);
-                $formIds = RateLimiter::instance()->sMembers('user_formId_'.$notifiable->id);
+                $user = User::find($notifiable->id);
+                $userOauth = $user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                $formIds = RateLimiter::instance()->sMembers('user_oauth_formId_'.$userOauth->id);
                 if ($formIds) {
                     $form_id = $formIds[0];
-                    RateLimiter::instance()->sRem('user_formId_'.$notifiable->id,$form_id);
+                    RateLimiter::instance()->sRem('user_oauth_formId_'.$userOauth->id,$form_id);
+                } else {
+                    $formIds = RateLimiter::instance()->sMembers('user_formId_'.$notifiable->id);
+                    if ($formIds) {
+                        $form_id = $formIds[0];
+                        RateLimiter::instance()->sRem('user_formId_'.$notifiable->id,$form_id);
+                    }
                 }
                 $data = [
                     'keyword1' => [

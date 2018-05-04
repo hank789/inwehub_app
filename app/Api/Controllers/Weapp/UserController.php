@@ -249,4 +249,13 @@ class UserController extends controller {
         return self::createJsonData(true,$return);
     }
 
+    public function saveFormId(Request $request,JWTAuth $JWTAuth) {
+        $oauth = $JWTAuth->parseToken()->toUser();
+        $formId = $request->input('formId');
+        if ($formId) {
+            RateLimiter::instance()->sAdd('user_oauth_formId_'.$oauth->id,$formId,60*60*24*6);
+        }
+        return self::createJsonData(true);
+    }
+
 }

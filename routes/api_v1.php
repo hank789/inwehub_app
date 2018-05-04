@@ -427,6 +427,8 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('user/wxinfo','UserController@getWxUserInfo');
     //获取用户信息
     Route::post('user/info','UserController@getUserInfo')->middleware(['jwt.weappAuth']);
+    //存储表单提交的formId
+    Route::post('user/saveFormId','UserController@saveFormId')->middleware(['jwt.weappAuth']);
     //获取二维码
     Route::post('user/getQrCode','UserController@getQrCode');
     //获取需求分享图片

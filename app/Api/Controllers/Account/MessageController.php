@@ -128,7 +128,7 @@ class MessageController extends Controller
                 }
                 $user = $oauthUser->user;
                 if ($request->input('formId')) {
-                    RateLimiter::instance()->sAdd('user_formId_'.$user->id,$request->input('formId'),60*60*24*6);
+                    RateLimiter::instance()->sAdd('user_oauth_formId_'.$oauthUser->id,$request->input('formId'),60*60*24*6);
                 }
                 break;
             case Group::class:
