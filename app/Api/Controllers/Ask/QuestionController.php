@@ -223,26 +223,41 @@ class QuestionController extends Controller
         ];
         $this->validate($request,$validateRules);
         $question_id = $request->input('id');
-        $question = Question::find($question_id);
-        $relatedQuestions = Question::correlations($question->tags()->pluck('tag_id'));
+        $limit = $request->input('limit',2);
+        $currentQuestion = Question::find($question_id);
+        $relatedQuestions = Question::correlations($currentQuestion->tags()->pluck('tag_id'));
         if (!$relatedQuestions) {
             $relatedQuestions = Question::recent();
         }
         $list = [];
         $count = 0;
-        foreach ($relatedQuestions as $relatedQuestion) {
-            if ($count >= 1) break;
-            $bestAnswer = $relatedQuestion->answers()->orderBy('id','desc')->get()->last();
-            if (!$bestAnswer) continue;
-            $list[] = [
-                'id' => $relatedQuestion->id,
-                'user_id' => $bestAnswer->user_id,
-                'user_name' => $bestAnswer->user->name,
-                'user_avatar_url' => $bestAnswer->user->avatar,
-                'is_expert' => $bestAnswer->user->userData->authentication_status == 1 ? 1 : 0,
-                'title' => $relatedQuestion->title
+        foreach ($relatedQuestions as $question) {
+            $item = [
+                'id' => $question->id,
+                'question_type' => $question->question_type,
+                'description'  => $question->title,
+                'tags' => $question->tags()->get()->toArray(),
+                'question_user_name' => $question->hide ? '匿名' : $question->user->name,
+                'question_user_avatar' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
+                'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0)
             ];
+            if($question->question_type == 1){
+                $item['comment_number'] = 0;
+                $item['average_rate'] = 0;
+                $item['support_number'] = 0;
+                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
+                if ($bestAnswer) {
+                    $item['comment_number'] = $bestAnswer->comments;
+                    $item['average_rate'] = $bestAnswer->getFeedbackRate();
+                    $item['support_number'] = $bestAnswer->supports;
+                }
+            } else {
+                $item['answer_number'] = $question->answers;
+                $item['follow_number'] = $question->followers;
+            }
+            $list[] = $item;
             $count++;
+            if ($count >= $limit) break;
         }
         return self::createJsonData(true,$list);
     }
