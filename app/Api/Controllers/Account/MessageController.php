@@ -3,6 +3,8 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\IM\Message;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
@@ -48,6 +50,18 @@ class MessageController extends Controller
                 }
                 $user = $oauthUser->user;
                 break;
+            case Group::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                    $groupMember = GroupMember::where('group_id',$room->source_id)->where('user_id',$user->id)
+                        ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                if (!$groupMember) {
+                    throw new ApiException(ApiException::BAD_REQUEST);
+                }
+                break;
         }
 
         $messages = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room_id)
@@ -61,7 +75,7 @@ class MessageController extends Controller
         $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$user->id)->first();
         $users = [];
         $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid];
-        $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid];
+        if ($roomUser) $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid];
         if ($messages['data']) {
             foreach ($messages['data'] as &$item) {
                 if (!isset($users[$item['user_id']])) {
@@ -75,11 +89,13 @@ class MessageController extends Controller
             }
             $messages['data'] = array_reverse($messages['data']);
         }
-
-        $messages['contact'] = [
-            'name' => $roomUser->user->name,
-            'id'   => $roomUser->user->id
-        ];
+        $messages['contact'] = [];
+        if ($roomUser) {
+            $messages['contact'] = [
+                'name' => $roomUser->user->name,
+                'id'   => $roomUser->user->id
+            ];
+        }
         $messages['room_id'] = $room_id;
         return self::createJsonData(true,$messages);
     }
@@ -91,7 +107,7 @@ class MessageController extends Controller
             'text'    => 'required_without:img',
             'img'    => 'required_without:text',
             'room_id' => 'required|integer|min:1',
-            'contact_id' => 'required|integer|min:1',
+            'contact_id' => 'required|integer',
         ]);
 
         $room_id = $request->input('room_id');
@@ -112,7 +128,19 @@ class MessageController extends Controller
                 }
                 $user = $oauthUser->user;
                 if ($request->input('formId')) {
-                    RateLimiter::instance()->sAdd('user_formId_'.$user->id,$request->input('formId'),60*60*24*6);
+                    RateLimiter::instance()->sAdd('user_oauth_formId_'.$oauthUser->id,$request->input('formId'),60*60*24*6);
+                }
+                break;
+            case Group::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                    $groupMember = GroupMember::where('group_id',$room->source_id)->where('user_id',$user->id)
+                        ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                if (!$groupMember) {
+                    throw new ApiException(ApiException::BAD_REQUEST);
                 }
                 break;
         }
@@ -155,17 +183,26 @@ class MessageController extends Controller
             'room_id' => $room_id,
             'message_id' => $message->id
         ]);
-
-        RoomUser::firstOrCreate([
-            'user_id' => $contact_id,
-            'room_id' => $room_id
-        ],[
-            'user_id' => $contact_id,
-            'room_id' => $room_id
-        ]);
-        // broadcast the message to the other person
-        $contact = User::find($contact_id);
-        $contact->notify(new NewMessage($contact_id,$message,$room_id));
+        if ($contact_id) {
+            RoomUser::firstOrCreate([
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ],[
+                'user_id' => $contact_id,
+                'room_id' => $room_id
+            ]);
+            // broadcast the message to the other person
+            $contact = User::find($contact_id);
+            $contact->notify(new NewMessage($contact_id,$message,$room_id));
+        } elseif ($room->source_type == Group::class) {
+            $members = GroupMember::where('group_id',$room->source_id)
+                ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->get();
+            foreach ($members as $member) {
+                if ($member->user_id == $user->id) continue;
+                $member->user->notify(new NewMessage($member->user_id,$message,$room_id));
+            }
+            RateLimiter::instance()->sClear('group_im_users:'.$room->id);
+        }
         $return = $message->toArray();
         $return['avatar'] = $user->avatar;
 
@@ -178,6 +215,7 @@ class MessageController extends Controller
         ]);
         $user = $request->user();
         $contact_id = $request->input('contact_id');
+        $contact = User::find($contact_id);
         //私信
         $room = Room::where('user_id',$user->id)
             ->where('source_id',$contact_id)
@@ -216,7 +254,7 @@ class MessageController extends Controller
                 'room_id' => $room_id
             ]);
         }
-        return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id]);
+        return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id,'contact_name'=>$contact->name]);
     }
 
     public function getRoom(Request $request,JWTAuth $JWTAuth){
@@ -282,7 +320,17 @@ class MessageController extends Controller
                         'name'=>$room->user->name
                     ];
                 }
-
+                break;
+            case Group::class:
+                try {
+                    $user = $JWTAuth->parseToken()->authenticate();
+                } catch (\Exception $e) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
+                $source = Group::find($room->source_id);
+                $contact = [];
+                //标记该用户已读圈子内聊天信息
+                RateLimiter::instance()->sAdd('group_im_users:'.$room->id,$user->id,0);
                 break;
         }
         $return['contact'] = $contact;

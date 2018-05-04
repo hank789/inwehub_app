@@ -196,6 +196,9 @@ class DemandController extends controller {
         $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
+            if (empty($user->mobile)) {
+                throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+            }
         } else {
             throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
         }
@@ -228,7 +231,7 @@ class DemandController extends controller {
             'demand_id'=>$demand->id
         ]);
         if ($formId) {
-            RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+            RateLimiter::instance()->sAdd('user_oauth_formId_'.$oauth->id,$formId,60*60*24*6);
         }
 
         $file_name = 'demand/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
@@ -293,7 +296,7 @@ class DemandController extends controller {
             'description' => $request->input('description'),
         ]);
         if ($formId) {
-            RateLimiter::instance()->sAdd('user_formId_'.$user->id,$formId,60*60*24*6);
+            RateLimiter::instance()->sAdd('user_oauth_formId_'.$oauth->id,$formId,60*60*24*6);
         }
         return self::createJsonData(true,['id'=>$demand->id]);
     }

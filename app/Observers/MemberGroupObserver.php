@@ -47,4 +47,9 @@ class MemberGroupObserver implements ShouldQueue {
         $this->created($member);
     }
 
+    public function deleting(GroupMember $member) {
+        $member->audit_status = -1;
+        $member->user->notify(new GroupMemberApplyResult($member->user_id,$member));
+    }
+
 }

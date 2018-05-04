@@ -8,6 +8,8 @@ use App\Models\Collection;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
+use App\Models\IM\Room;
+use App\Models\IM\RoomUser;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
@@ -143,6 +145,9 @@ class GroupController extends Controller
             //私有圈子
             return self::createJsonData(true,$return);
         }
+        $room = Room::where('r_type',2)
+            ->where('source_id',$group->id)
+            ->where('source_type',get_class($group))->first();
         $members = $group->members()->where('audit_status',1)->take(6)->get();
         foreach ($members as $member) {
             if ($member->user_id == $group->user_id) continue;
@@ -156,6 +161,11 @@ class GroupController extends Controller
             ];
         }
         $return['subscribers'] = $group->getHotIndex();
+        $return['room_id'] = $room?$room->id:0;
+        $return['unread_group_im_messages'] = 0;
+        if ($room) {
+            $return['unread_group_im_messages'] = RateLimiter::instance()->sIsMember('group_im_users:'.$room->id,$user->id)?0:1;
+        }
         return self::createJsonData(true,$return);
     }
 
@@ -254,6 +264,25 @@ class GroupController extends Controller
         if ($groupMember) {
             $groupMember->audit_status = GroupMember::AUDIT_STATUS_REJECT;
             $groupMember->save();
+        }
+        return self::createJsonData(true);
+    }
+
+    //群主踢人功能
+    public function removeMember(Request $request) {
+        $this->validate($request,[
+            'id'=>'required|integer',
+            'user_id'=>'required|integer'
+        ]);
+        $group = Group::find($request->input('id'));
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $groupMember = GroupMember::where('user_id',$request->input('user_id'))->where('group_id',$group->id)->first();
+        if ($groupMember) {
+            $groupMember->delete();
         }
         return self::createJsonData(true);
     }
@@ -535,6 +564,64 @@ class GroupController extends Controller
         }
         $return['data'] = $list;
         return self::createJsonData(true, $return);
+    }
+
+    //开启群聊
+    public function openIm(Request $request) {
+        $this->validate($request,[
+            'id'=>'required|integer'
+        ]);
+        $group = Group::find($request->input('id'));
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $room = Room::where('r_type',2)
+            ->where('source_id',$group->id)
+            ->where('source_type',get_class($group))->first();
+        if (!$room) {
+            $room = Room::create([
+                'user_id' => $user->id,
+                'r_type'  => 2,
+                'r_name'  => $group->name,
+                'r_description' => $group->description,
+                'source_id' => $group->id,
+                'source_type' => get_class($group)
+            ]);
+            RoomUser::firstOrCreate([
+                'user_id' => $user->id,
+                'room_id' => $room->id
+            ],[
+                'user_id' => $user->id,
+                'room_id' => $room->id
+            ]);
+        } else {
+            $room->status = Room::STATUS_OPEN;
+            $room->save();
+        }
+        return self::createJsonData(true,['room_id'=>$room->id]);
+    }
+
+    //关闭群聊
+    public function closeIm(Request $request) {
+        $this->validate($request,[
+            'id'=>'required|integer'
+        ]);
+        $group = Group::find($request->input('id'));
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $room = Room::where('r_type',2)
+            ->where('source_id',$group->id)
+            ->where('source_type',get_class($group))->first();
+        if ($room) {
+            $room->status = Room::STATUS_CLOSED;
+            $room->save();
+        }
+        return self::createJsonData(true);
     }
 
 }
