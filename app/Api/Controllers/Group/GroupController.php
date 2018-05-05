@@ -147,7 +147,8 @@ class GroupController extends Controller
         }
         $room = Room::where('r_type',2)
             ->where('source_id',$group->id)
-            ->where('source_type',get_class($group))->first();
+            ->where('source_type',get_class($group))
+            ->where('status',Room::STATUS_OPEN)->first();
         $members = $group->members()->where('audit_status',1)->take(6)->get();
         foreach ($members as $member) {
             if ($member->user_id == $group->user_id) continue;

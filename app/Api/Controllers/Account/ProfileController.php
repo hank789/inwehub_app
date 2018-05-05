@@ -714,4 +714,9 @@ class ProfileController extends Controller
     }
 
 
+    //最近访客
+    public function recentVisitors(Request $request) {
+
+    }
+
 }

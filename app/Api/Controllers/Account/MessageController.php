@@ -112,6 +112,9 @@ class MessageController extends Controller
 
         $room_id = $request->input('room_id');
         $room = Room::findOrFail($room_id);
+        if ($room->status != Room::STATUS_OPEN) {
+            throw new ApiException(ApiException::IM_ROOM_CLOSED);
+        }
         switch ($room->source_type) {
             case User::class:
                 try {
