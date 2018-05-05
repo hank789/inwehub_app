@@ -128,7 +128,8 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             $room = Room::find($this->room_id);
             switch ($room->source_type) {
                 case Group::class:
-                    $title = '您的圈子有新的回复';
+                    $group = Group::find($room->source_id);
+                    $title = '圈子['.$group->name.']有新的回复';
                     $object_id = $room->id;
                     $object_type = 'im_group_message';
                     break;
@@ -153,7 +154,8 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
             switch ($room->source_type) {
                 case Group::class:
                     $target_url = config('app.mobile_url').'#/group/chat/'.$room->id;
-                    $first = '您的圈子有新的回复';
+                    $group = Group::find($room->source_id);
+                    $first = '圈子['.$group->name.']有新的回复';
                     break;
             }
         }

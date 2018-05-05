@@ -99,6 +99,7 @@ class ApiException extends Exception
     const ACTIVITY_DAILY_SIGN_REPEAT = 6002;
     const ACTIVITY_RANK_TIME_LIMIT = 6003;
     const ACTIVITY_USER_LEVEL_PROJECT_LIMIT = 6004;
+    const IM_ROOM_CLOSED = 6005;
 
 
     //文章模块
@@ -192,6 +193,7 @@ class ApiException extends Exception
         self::ACTIVITY_DAILY_SIGN_REPEAT => '重复签到',
         self::ACTIVITY_RANK_TIME_LIMIT => '时候未到，稍安勿躁~',
         self::ACTIVITY_USER_LEVEL_PROJECT_LIMIT => '需要等级L3才能查看',
+        self::IM_ROOM_CLOSED => '聊天室已关闭',
 
         //文章feed
         self::ARTICLE_URL_ALREADY_EXIST => '您提交的网址已经存在',
