@@ -239,6 +239,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                 'value' => $this->message->data['img']
             ];
         }
+        $notify = '用户'.$this->message->user_id.'['.$this->message->user->name.']回复了用户'.$this->user_id.'['.$current_user->name.']';
         if ($this->room_id) {
             $room = Room::find($this->room_id);
             switch ($room->source_type) {
@@ -255,6 +256,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                         'title' => '回复对象：圈子',
                         'value' => $group->name
                     ];
+                    $notify = '用户'.$this->message->user_id.'['.$this->message->user->name.']回复了圈子['.$group->name.']';
                     break;
             }
         }
@@ -264,7 +266,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                     'fields' => $fields
                 ]
             )
-            ->send('用户'.$this->message->user_id.'['.$this->message->user->name.']回复了用户'.$this->user_id.'['.$current_user->name.']');
+            ->send($notify);
     }
 
     public function broadcastOn(){
