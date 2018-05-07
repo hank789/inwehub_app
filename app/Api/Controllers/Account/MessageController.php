@@ -197,7 +197,7 @@ class MessageController extends Controller
             // broadcast the message to the other person
             $contact = User::find($contact_id);
             $contact->notify(new NewMessage($contact_id,$message,$room_id));
-        } elseif ($room->source_type == Group::class) {
+        } elseif ($room->source_type == Group::class && false) {
             $members = GroupMember::where('group_id',$room->source_id)
                 ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->get();
             foreach ($members as $member) {

@@ -131,6 +131,8 @@ class Submission extends Model {
             Support::where('supportable_id',$submission->id)
                 ->where('supportable_type','App\Models\Submission')
                 ->delete();
+            //删除推荐
+            RecommendRead::where('source_type','=',get_class($submission))->where('source_id','=',$submission->id)->delete();
             /*删除标签关联*/
             Taggable::where('taggable_type','=',get_class($submission))->where('taggable_id','=',$submission->id)->delete();
             /*删除动态*/
