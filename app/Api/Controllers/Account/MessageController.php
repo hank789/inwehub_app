@@ -197,7 +197,7 @@ class MessageController extends Controller
             ]);
             // broadcast the message to the other person
             $contact = User::find($contact_id);
-            if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$contact_id,120)) {
+            if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$contact_id,300)) {
                 $contact->notify(new NewMessage($contact_id,$message,$room_id));
             }
         } elseif ($room->source_type == Group::class) {
@@ -205,7 +205,7 @@ class MessageController extends Controller
                 ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->get();
             foreach ($members as $member) {
                 if ($member->user_id == $user->id) continue;
-                if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$member->user_id,120)) {
+                if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$member->user_id,300)) {
                     $notifyUser = $member->user;
                     $notifyUser->to_slack = false;
                     $notifyUser->notify(new NewMessage($member->user_id,$message,$room_id));
