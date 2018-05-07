@@ -63,6 +63,10 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                         $via[] = WeappNoticeChannel::class;
                         return $via;
                         break;
+                    case Group::class:
+                        $via[] = PushChannel::class;
+                        return $via;
+                        break;
                 }
             }
             $via[] = PushChannel::class;
