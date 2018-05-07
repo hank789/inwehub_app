@@ -84,6 +84,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //上传简历
     Route::post('profile/uploadResume','ProfileController@uploadResume');
 
+    //最近访客
+    Route::post('profile/recentVisitors','ProfileController@recentVisitors');
+
     //隐私详情
     Route::post('profile/privacy/info','ProfileController@privacyInfo');
     //隐私设置

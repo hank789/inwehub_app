@@ -716,7 +716,41 @@ class ProfileController extends Controller
 
     //最近访客
     public function recentVisitors(Request $request) {
-
+        $validateRules = [
+            'uuid' => 'required|min:10'
+        ];
+        $this->validate($request,$validateRules);
+        $uuid = $request->input('uuid');
+        $page = $request->input('page',1);
+        $user = User::where('uuid',$uuid)->first();
+        if (empty($user)) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $loginUser = $request->user();
+        if ($loginUser->userData->user_level < 4 && $page >= 2) {
+            throw new ApiException(ApiException::USER_LEVEL_LIMIT);
+        }
+        $doings = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $return = $doings->toArray();
+        $list = [];
+        foreach ($doings as $doing) {
+            $source = $doing->source;
+            $list[] = [
+                'id' => $doing->id,
+                'user_id' => $doing->source_id,
+                'uuid'    => $source->uuid,
+                'user_name' => $source->name,
+                'is_expert' => $source->is_expert,
+                'user_avatar_url' => $source->avatar,
+                'description'     => $source->description,
+                'visited_time'    => $doing->created_at
+            ];
+        }
+        $return['data'] = $list;
+        //人气
+        $hot = $doings->total();
+        $return['hot_number'] = $hot;
+        return self::createJsonData(true,$return);
     }
 
 }
