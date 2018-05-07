@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Account;
 
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
 use App\Models\Groups\Group;
@@ -196,15 +197,36 @@ class MessageController extends Controller
             ]);
             // broadcast the message to the other person
             $contact = User::find($contact_id);
-            $contact->notify(new NewMessage($contact_id,$message,$room_id));
-        } elseif ($room->source_type == Group::class && false) {
+            if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$contact_id,120)) {
+                $contact->notify(new NewMessage($contact_id,$message,$room_id));
+            }
+        } elseif ($room->source_type == Group::class) {
             $members = GroupMember::where('group_id',$room->source_id)
                 ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->get();
             foreach ($members as $member) {
                 if ($member->user_id == $user->id) continue;
-                $member->user->notify(new NewMessage($member->user_id,$message,$room_id));
+                if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$member->user_id,120)) {
+                    $notifyUser = $member->user;
+                    $notifyUser->to_slack = false;
+                    $notifyUser->notify(new NewMessage($member->user_id,$message,$room_id));
+                }
             }
             RateLimiter::instance()->sClear('group_im_users:'.$room->id);
+            $group = Group::find($room->source_id);
+            $fields = [];
+            if (isset($message->data['text']) && $message->data['text']) {
+                $fields[] = [
+                    'title' => '回复内容',
+                    'value' => $message->data['text']
+                ];
+            }
+            if (isset($message->data['img']) && $message->data['img']) {
+                $fields[] = [
+                    'title' => '回复图片',
+                    'value' => $message->data['img']
+                ];
+            }
+            event(new SystemNotify('用户'.$user->id.'['.$user->name.']回复了圈子['.$group->name.']',$fields));
         }
         $return = $message->toArray();
         $return['avatar'] = $user->avatar;

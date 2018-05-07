@@ -53,7 +53,11 @@ class RateLimiter extends Singleton
         $key = $this->key($event, $target);
 
         $limit = $this->client->incr($key);
-        if ($expire) $this->client->expire($key, $expire);
+        if ($expire) {
+            if ($this->client->ttl($key) <= 0) {
+                $this->client->expire($key, $expire);
+            }
+        }
 
         if ($limit > $times) {
             return self::STATUS_BAD;
