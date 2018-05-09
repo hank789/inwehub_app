@@ -53,8 +53,8 @@
                                             <td><input type="checkbox" value="{{ $demand->id }}" name="id[]"/></td>
                                             <td>{{ $demand->demand_id }}</td>
                                             <td>{{ $demand->demand->title }}</td>
-                                            <td>{{ $demand->user_id }}</td>
-                                            <td>{{ $demand->user->email }}</td>
+                                            <td>{{ $demand->userOauth->user_id }}</td>
+                                            <td>{{ $demand->userOauth->user->email }}</td>
                                             <td>{{ $demand->formatSubscribes() }}</td>
                                             <td>{{ $demand->updated_at }}</td>
                                             <td>
@@ -88,6 +88,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_weapp_user',"{{ route('admin.weapp.demand.index') }}");
+        set_active_menu('manage_weapp_user',"{{ route('admin.weapp.demand.subscribe') }}");
     </script>
 @endsection

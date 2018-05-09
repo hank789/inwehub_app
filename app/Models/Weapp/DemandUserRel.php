@@ -1,6 +1,5 @@
 <?php namespace App\Models\Weapp;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Relations\BelongsToUserTrait;
 
 
 /**
@@ -23,7 +22,6 @@ use App\Models\Relations\BelongsToUserTrait;
  */
 class DemandUserRel extends Model
 {
-    use BelongsToUserTrait;
     protected $table = 'demand_user_rel';
     protected $fillable = ['demand_id', 'user_oauth_id','subscribes'];
 
@@ -34,6 +32,10 @@ class DemandUserRel extends Model
     public function demand()
     {
         return $this->belongsTo('App\Models\Weapp\Demand');
+    }
+
+    public function userOauth() {
+        return $this->belongsTo('App\Models\UserOauth');
     }
 
     public function formatSubscribes() {
