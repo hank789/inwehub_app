@@ -30,4 +30,22 @@ class DemandUserRel extends Model
     protected $casts = [
         'subscribes' => 'json'
     ];
+
+    public function demand()
+    {
+        return $this->belongsTo('App\Models\Weapp\Demand');
+    }
+
+    public function formatSubscribes() {
+        $items = [
+            '未来有此类似的工作，请通知我',
+            '未来有此公司的新职位，请通知我',
+            '未来此发布者有新招募，请通知我'
+        ];
+        $subscribe = '';
+        foreach ($this->subscribes as $index) {
+            $subscribe = $subscribe .','. $items[$index];
+        }
+        return trim($subscribe,',');
+    }
 }

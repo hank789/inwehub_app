@@ -2,6 +2,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
+use App\Models\Weapp\DemandUserRel;
 use App\Services\RateLimiter;
 use App\Third\Weapp\WeApp;
 use Illuminate\Http\Request;
@@ -69,6 +70,19 @@ class DemandController extends AdminController {
         $ids = $request->input('ids');
         Demand::destroy($ids);
         return $this->success(route('admin.weapp.demand.index'),'删除成功');
+    }
+
+    public function subscribe(Request $request) {
+        $filter =  $request->all();
+
+        $query = DemandUserRel::whereNotNull('subscribes');
+
+        if(isset($filter['demand_id']) && $filter['demand_id'] > 0){
+            $query->where("demand_id","=",$filter['demand_id']);
+        }
+
+        $demands = $query->orderBy('updated_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+        return view('admin.weapp.demand.subscribe')->with('demands',$demands)->with('filter',$filter);
     }
 
 }

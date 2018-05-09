@@ -430,15 +430,6 @@ class DemandController extends controller {
             'items'=> 'required|array'
         ];
         $this->validate($request,$validateRules);
-        $items = [
-            '未来有此类似的工作，请通知我',
-            '未来有此公司的新职位，请通知我',
-            '未来此发布者有新招募，请通知我'
-        ];
-        $subscribe = '';
-        foreach ($request->input('items') as $index) {
-            $subscribe = $subscribe .','. $items[$index];
-        }
         $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
@@ -465,6 +456,10 @@ class DemandController extends controller {
             $oauth->save();
         }
         $demand = Demand::findOrFail($request->input('id'));
+        $rel = DemandUserRel::where('user_oauth_id',$oauth->id)->where('demand_id',$demand->id)->first();
+        $rel->subscribes = $request->input('items');
+        $rel->save();
+
         $fields = [];
         $fields[] = [
             'title'=>'姓名',
@@ -476,7 +471,7 @@ class DemandController extends controller {
         ];
         $fields[] = [
             'title'=>'订阅项',
-            'value'=>trim($subscribe,',')
+            'value'=>$rel->formatSubscribes()
         ];
         $fields[] = [
             'title'=>'需求ID',
@@ -486,9 +481,7 @@ class DemandController extends controller {
             'title'=>'需求标题',
             'value'=>$demand->title
         ];
-        $rel = DemandUserRel::where('user_oauth_id',$oauth->id)->where('demand_id',$demand->id)->first();
-        $rel->subscribes = $request->input('items');
-        $rel->save();
+
         event(new SystemNotify('用户'.$oauth->nickname.'订阅了需求',$fields));
         return self::createJsonData(true);
     }

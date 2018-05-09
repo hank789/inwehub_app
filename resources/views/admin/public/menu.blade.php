@@ -21,7 +21,7 @@
         <ul class="treeview-menu" id="manage_weapp_user">
             <li><a href="{{ route('admin.weapp.user.index') }}"><i class="fa fa-circle-o"></i> 用户管理</a></li>
             <li><a href="{{ route('admin.weapp.demand.index') }}"><i class="fa fa-circle-o"></i> 需求管理</a></li>
-
+            <li><a href="{{ route('admin.weapp.demand.subscribe') }}"><i class="fa fa-circle-o"></i> 订阅管理</a></li>
         </ul>
     </li>
 
