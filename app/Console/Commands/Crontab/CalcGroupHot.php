@@ -64,7 +64,7 @@ class CalcGroupHot extends Command
             $messages = 0;
             $room = Room::where('r_type',2)
                 ->where('source_id',$group->id)
-                ->where('source_type',get_class(Group::class))
+                ->where('source_type',Group::class)
                 ->where('status',Room::STATUS_OPEN)->first();
             if ($room) {
                 $messages = MessageRoom::where('room_id',$room->id)->whereBetween('created_at',[date('Y-m-d 00:00:00'),date('Y-m-d 23:59:59')])->count();
