@@ -1101,7 +1101,13 @@ if (!function_exists('getUrlTitle')) {
     function getUrlTitle($url) {
         try {
             $f = file_get_contents($url);
-            preg_match('/<title>(?<title>.*?)<\/title>/si', $f, $title);
+            if (str_contains($url,'mp.weixin.qq.com')) {
+                preg_match('/<h2 class="rich_media_title" id="activity-name">(?<h2>.*?)<\/h2>/si', $f, $title);
+                $title['title'] = $title['h2'];
+            } else {
+                preg_match('/<title>(?<title>.*?)<\/title>/si', $f, $title);
+            }
+
             $encode = mb_detect_encoding($title['title'], array('GB2312','GBK','UTF-8', 'CP936')); //得到字符串编码
             $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
             if ( $encode != 'CP936' && $encode != $file_charset) {
