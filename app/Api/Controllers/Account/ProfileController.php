@@ -202,10 +202,13 @@ class ProfileController extends Controller
         }
         $jwtToken = $JWTAuth->getToken();
         $loginUser = '';
+        $loginUserInfoCompletePercent = 0;
         if($jwtToken){
             try{
                 $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
                 $this->doing($loginUser->id,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,'查看简历');
+                $info_percent = $loginUser->getInfoCompletePercent(true);
+                $loginUserInfoCompletePercent = $info_percent['score'];
             } catch (\Exception $e){
 
             }
@@ -291,12 +294,12 @@ class ProfileController extends Controller
         $jobs = [];
         $edus = [];
 
-        if($info['is_job_info_public'] || $is_self){
+        if(($info['is_job_info_public'] && $loginUserInfoCompletePercent >= 90) || $is_self){
             $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
             $jobs = $jobs->toArray();
         }
 
-        if($info['is_project_info_public'] || $is_self){
+        if(($info['is_project_info_public'] && $loginUserInfoCompletePercent >= 90) || $is_self){
             $projects = $user->projects()->orderBy('begin_time','desc')->get();
 
             foreach($projects as &$project){
@@ -309,7 +312,7 @@ class ProfileController extends Controller
             $projects = $projects->toArray();
         }
 
-        if($info['is_edu_info_public'] || $is_self){
+        if(($info['is_edu_info_public'] && $loginUserInfoCompletePercent >= 90) || $is_self){
             $edus = $user->edus()->orderBy('begin_time','desc')->get();
             $edus = $edus->toArray();
         }

@@ -153,6 +153,7 @@ class ApiException extends Exception
         self::USER_REGISTRATION_CODE_EXPIRED => '您的邀请码已经过期，请重新获取有效邀请码',
         self::USER_WEAPP_NEED_REGISTER => '发布需求需要完成用户认证',
         self::USER_WEAPP_SALARY_INVALID => '薪资范围有误',
+        self::USER_LEVEL_LIMIT => '您的等级还不够',
 
 
         //问答模块
