@@ -79,7 +79,7 @@ class Group extends Model
         $messages = 0;
         $room = Room::where('r_type',2)
             ->where('source_id',$this->id)
-            ->where('source_type',get_class(Group::class))
+            ->where('source_type',Group::class)
             ->where('status',Room::STATUS_OPEN)->first();
         if ($room) {
             $messages = MessageRoom::where('room_id',$room->id)->count();
