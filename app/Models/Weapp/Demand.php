@@ -84,4 +84,8 @@ class Demand extends Model implements HasMedia
         return Room::where('source_id',$this->id)->where('source_type',Demand::class)->count();
     }
 
+    public function getSubscribeCount() {
+        return DemandUserRel::whereNotNull('subscribes')->count();
+    }
+
 }
