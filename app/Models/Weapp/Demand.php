@@ -85,7 +85,7 @@ class Demand extends Model implements HasMedia
     }
 
     public function getSubscribeCount() {
-        return DemandUserRel::whereNotNull('subscribes')->count();
+        return DemandUserRel::where('demand_id',$this->id)->whereNotNull('subscribes')->count();
     }
 
 }
