@@ -2,6 +2,8 @@
 
 namespace App\Models\Groups;
 
+use App\Models\IM\MessageRoom;
+use App\Models\IM\Room;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Submission;
 use Illuminate\Database\Eloquent\Model;
@@ -69,12 +71,20 @@ class Group extends Model
     }
 
     /**
-     * 人气：总人数+动态数+点赞数+评论数
+     * 人气：总人数+动态数+点赞数+评论数+群聊条数
      */
     public function getHotIndex(){
         $upvotes = Submission::where('group_id',$this->id)->sum('upvotes');
         $commnets = Submission::where('group_id',$this->id)->sum('comments_number');
-        return $this->subscribers + $this->articles + $upvotes + $commnets;
+        $messages = 0;
+        $room = Room::where('r_type',2)
+            ->where('source_id',$this->id)
+            ->where('source_type',get_class(Group::class))
+            ->where('status',Room::STATUS_OPEN)->first();
+        if ($room) {
+            $messages = MessageRoom::where('room_id',$room->id)->count();
+        }
+        return $this->subscribers + $this->articles + $upvotes + $commnets + $messages;
     }
 
 }
