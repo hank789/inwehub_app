@@ -16,6 +16,7 @@ use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Models\Weapp\DemandUserRel;
 use App\Services\RateLimiter;
+use App\Services\Registrar;
 use App\Third\Weapp\WeApp;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -419,6 +420,70 @@ class DemandController extends controller {
         $demand = Demand::find($request->input('id'));
         $url = $demand->getMedia($collection)->last()->getUrl();
         return self::createJsonData(true,['url'=>$url]);
+    }
+
+    public function subscribe(Request $request,JWTAuth $JWTAuth) {
+        $validateRules = [
+            'id'   => 'required|integer',
+            'name' => 'required',
+            'email'=> 'required|email',
+            'items'=> 'required|array'
+        ];
+        $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+            if (empty($user->email)) {
+                $user->email = $request->input('email');
+                $user->name = $request->input('name');
+                $user->save();
+            }
+        } else {
+            $registrar = new Registrar();
+            $user = $registrar->create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'mobile' => null,
+                'rc_uid' => 0,
+                'title'  => '',
+                'company' => '',
+                'gender' => 0,
+                'password' => time(),
+                'status' => 1,
+                'source' => User::USER_SOURCE_WEAPP,
+            ]);
+            $oauth->user_id = $user->id;
+            $oauth->save();
+        }
+        $demand = Demand::findOrFail($request->input('id'));
+        $rel = DemandUserRel::where('user_oauth_id',$oauth->id)->where('demand_id',$demand->id)->first();
+        $rel->subscribes = $request->input('items');
+        $rel->save();
+
+        $fields = [];
+        $fields[] = [
+            'title'=>'姓名',
+            'value'=>$request->input('name')
+        ];
+        $fields[] = [
+            'title'=>'邮箱',
+            'value'=>$request->input('email')
+        ];
+        $fields[] = [
+            'title'=>'订阅项',
+            'value'=>$rel->formatSubscribes()
+        ];
+        $fields[] = [
+            'title'=>'需求ID',
+            'value'=>$demand->id
+        ];
+        $fields[] = [
+            'title'=>'需求标题',
+            'value'=>$demand->title
+        ];
+
+        event(new SystemNotify('用户'.$oauth->nickname.'订阅了需求',$fields));
+        return self::createJsonData(true);
     }
 
 }

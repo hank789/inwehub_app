@@ -459,6 +459,9 @@ class QuestionController extends Controller
                     $credit_key = Credit::KEY_FIRST_ASK;
                 } else {
                     $credit_key = Credit::KEY_FIRST_COMMUNITY_ASK;
+                    if ($question->hide == 1) {
+                        $credit_key = Credit::KEY_FIRST_COMMUNITY_HIDE_ASK;
+                    }
                 }
                 TaskLogic::finishTask('newbie_ask',0,'newbie_ask',[$request->user()->id]);
             } else {
@@ -466,12 +469,13 @@ class QuestionController extends Controller
                     $credit_key = Credit::KEY_ASK;
                 } else {
                     $credit_key = Credit::KEY_COMMUNITY_ASK;
+                    if ($question->hide == 1) {
+                        $credit_key = Credit::KEY_COMMUNITY_HIDE_ASK;
+                    }
                 }
             }
             //匿名互动提问的不加分
-            if ($question->question_type == 1 || ($question->question_type == 2 && $question->hide==0)) {
-                $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
-            }
+            $this->credit($request->user()->id,$credit_key,$question->id,$question->title);
 
             //1元优惠使用红包
             if($price == 1){

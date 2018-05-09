@@ -70,7 +70,9 @@ class Credit extends Model
 
     //互动问答
     const KEY_FIRST_COMMUNITY_ASK = 'first_community_ask';
+    const KEY_FIRST_COMMUNITY_HIDE_ASK = 'first_community_hide_ask';
     const KEY_COMMUNITY_ASK = 'community_ask';
+    const KEY_COMMUNITY_HIDE_ASK = 'community_hide_ask';
     const KEY_FIRST_COMMUNITY_ANSWER = 'first_community_answer';
     const KEY_COMMUNITY_ANSWER = 'community_answer';
     const KEY_COMMUNITY_ASK_ANSWERED = 'community_ask_answered';
@@ -137,7 +139,9 @@ class Credit extends Model
         self::KEY_RATE_ANSWER_BAD => ['backend_label'=>'专业回答差评(2星以上)','notice_user'=>'评分成功'],
         //互动问答
         self::KEY_FIRST_COMMUNITY_ASK => ['backend_label'=>'完成首次互动提问','notice_user'=>'完成首次提问'],
+        self::KEY_FIRST_COMMUNITY_HIDE_ASK => ['backend_label'=>'完成首次匿名互动提问','notice_user'=>'完成首次提问'],
         self::KEY_COMMUNITY_ASK => ['backend_label'=>'互动提问','notice_user'=>'提问成功'],
+        self::KEY_COMMUNITY_HIDE_ASK => ['backend_label'=>'匿名互动提问','notice_user'=>'提问成功'],
         self::KEY_COMMUNITY_ASK_ANSWERED => ['backend_label'=>'互动问答被回答（提问者加分）','notice_user'=>'回答成功'],
         self::KEY_COMMUNITY_ASK_FOLLOWED => ['backend_label'=>'互动问答被关注（提问者加分）','notice_user'=>'关注成功'],
         self::KEY_FIRST_COMMUNITY_ANSWER => ['backend_label'=>'完成首次互助回答(回答者加分)','notice_user'=>'完成首次回答'],

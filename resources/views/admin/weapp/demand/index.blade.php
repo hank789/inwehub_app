@@ -59,6 +59,7 @@
                                         <th>公司</th>
                                         <th>浏览数</th>
                                         <th>咨询数</th>
+                                        <th>订阅数</th>
                                         <th>创建时间</th>
                                         <th>操作</th>
                                     </tr>
@@ -75,6 +76,7 @@
                                             <td>{{ $demand->user->company }}</td>
                                             <td>{{ $demand->views }}</td>
                                             <td>{{ $demand->getRoomCount() }}</td>
+                                            <td>{{ $demand->getSubscribeCount() }}</td>
                                             <td>{{ $demand->created_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >

@@ -59,6 +59,8 @@ class ApiException extends Exception
     const USER_WEAPP_NEED_REGISTER = 1121;
     const USER_WEAPP_SALARY_INVALID = 1122;
 
+    const USER_LEVEL_LIMIT = 1123;
+
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
     const ASK_ANSWER_PROMISE_TIME_INVALID = 3001;

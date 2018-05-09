@@ -321,6 +321,7 @@ Route::group(['prefix' => 'weapp','namespace'=>'Weapp'], function() {
     //需求管理
     Route::get('demand/index',['as'=>'admin.weapp.demand.index','uses'=>'DemandController@index']);
     Route::get('demand/detail',['as'=>'admin.weapp.demand.detail','uses'=>'DemandController@detail']);
+    Route::get('demand/subscribe',['as'=>'admin.weapp.demand.subscribe','uses'=>'DemandController@subscribe']);
     Route::delete('demand/destroy',['as'=>'admin.weapp.demand.destroy','uses'=>'DemandController@destroy']);
 
 });
