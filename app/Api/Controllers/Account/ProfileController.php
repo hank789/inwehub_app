@@ -802,7 +802,7 @@ class ProfileController extends Controller
             foreach ($addressBooks as $addressBook) {
                 $addressBook['is_app_user'] = 0;
                 foreach ($addressBook['detail']['phoneNumbers'] as $phoneItem) {
-                    $phoneUser = User::where('mobile',$phoneItem['value'])->first();
+                    $phoneUser = User::where('mobile',formatAddressBookPhone($phoneItem['value']))->first();
                     if ($phoneUser) {
                         $addressBook['is_app_user'] = 1;
                         $addressBook['app_user_name'] = $phoneUser->name;
