@@ -738,6 +738,7 @@ if( ! function_exists('get_credit_message')){
 
 if(! function_exists('timestamp_format')){
     function timestamp_format($date_time){
+        if (empty($date_time)) return '';
         $timestamp = \Carbon\Carbon::instance(new DateTime($date_time));
         $time_format_string = Setting()->get('date_format').' '.Setting()->get('time_format');
         if(Setting()->get('time_friendly')==1){

@@ -109,6 +109,7 @@ class NotificationController extends Controller
             $last_message = MessageRoom::where('room_id',$im_room->id)->orderBy('id','desc')->first();
             $contact = User::find($im_room->user_id==$user->id?$im_room->source_id:$im_room->user_id);
             if (!$contact) continue;
+            $created_at = $last_message?(string)$last_message->created_at:'';
             $item = [
                 'unread_count' => $im_count,
                 'avatar'       => $contact->avatar,
@@ -121,7 +122,8 @@ class NotificationController extends Controller
                     'text' => '',
                     'data'  => $last_message?$last_message->message->data:['text'=>'','img'=>''],
                     'read_at' => $last_message?$last_message->message->read_at:'',
-                    'created_at' => $last_message?(string)$last_message->created_at:''
+                    'created_time' => $created_at,
+                    'created_at' => timestamp_format($created_at)
                 ]
             ];
             if ($contact->id == $customer_id) {
@@ -150,14 +152,30 @@ class NotificationController extends Controller
             ];
         }
         usort($im_list,function ($a,$b) {
-            if ($a['last_message']['created_at'] == $b['last_message']['created_at']) return 0;
-            return ($a['last_message']['created_at'] < $b['last_message']['created_at'])? 1 : -1;
+            if ($a['last_message']['created_time'] == $b['last_message']['created_time']) return 0;
+            return ($a['last_message']['created_time'] < $b['last_message']['created_time'])? 1 : -1;
         });
         array_unshift($im_list,$customer_message);
         $last_task = $user->tasks()->where('status',0)->orderBy('priority','DESC')->latest()->first();
         $format_last_task = '';
         if ($last_task) {
             $format_last_task = TaskLogic::formatList([$last_task]);
+        }
+        $notice_last_message = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first();
+        if ($notice_last_message) {
+            $notice_last_message->created_at = timestamp_format($notice_last_message->created_at);
+        }
+        $task_last_message = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->first();
+        if ($task_last_message) {
+            $task_last_message->created_at = timestamp_format($task_last_message->created_at);
+        }
+        $readhub_last_message = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->first();
+        if ($readhub_last_message) {
+            $readhub_last_message->created_at = timestamp_format($readhub_last_message->created_at);
+        }
+        $money_last_message = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->first();
+        if ($money_last_message) {
+            $money_last_message->created_at = timestamp_format($money_last_message->created_at);
         }
         $data = [
             'todo_tasks' => $todo_task,
@@ -168,19 +186,19 @@ class NotificationController extends Controller
             ],
             'notice_message' => [
                 'unread_count' => $notice_unread_count,
-                'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first()
+                'last_message' => $notice_last_message
             ],
             'task_message'   => [
                 'unread_count' => $task_notice_unread_count,
-                'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->first()
+                'last_message' => $task_last_message
             ],
             'readhub_message' => [
                 'unread_count' => $readhub_unread_count,
-                'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->first(),
+                'last_message' => $readhub_last_message
             ],
             'money_message'   => [
                 'unread_count' => $money_unread_count,
-                'last_message' => $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->first(),
+                'last_message' => $money_last_message
             ],
             'im_messages' => $im_list
         ];
