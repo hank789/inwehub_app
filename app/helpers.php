@@ -1306,3 +1306,11 @@ if (!function_exists('strip_html_tags')) {
         return $data;
     }
 }
+
+if (!function_exists('formatAddressBookPhone')) {
+    function formatAddressBookPhone($phone) {
+        $phone = str_replace(' ','',$phone);
+        $phone = str_replace('+86','',$phone);
+        return $phone;
+    }
+}

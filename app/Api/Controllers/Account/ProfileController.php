@@ -770,9 +770,10 @@ class ProfileController extends Controller
         foreach ($contacts as $contact) {
             //{"id":2097,"rawId":null,"target":0,"displayName":"李柏林","name":null,"nickname":null,"phoneNumbers":[{"value":"13606268446","pref":false,"id":0,"type":"mobile"}],"emails":null,"addresses":null,"ims":null,"organizations":null,"birthday":null,"note":null,"photos":null,"categories":null,"urls":null}
             $addressBook = AddressBook::where('user_id',$user->id)->where('address_book_id',$contact['id'])->first();
+            $phone = formatAddressBookPhone($contact['phoneNumbers'][0]['value']);
             if ($addressBook) {
                 $addressBook->display_name = $contact['displayName'];
-                $addressBook->phone = $contact['phoneNumbers'][0]['value'];
+                $addressBook->phone = $phone;
                 $addressBook->detail = $contact;
                 $addressBook->save();
             } else {
@@ -780,7 +781,7 @@ class ProfileController extends Controller
                     'user_id' => $user->id,
                     'address_book_id' => $contact['id'],
                     'display_name' => $contact['displayName'],
-                    'phone'   => $contact['phoneNumbers'][0]['value'],
+                    'phone'   => $phone,
                     'detail'  => $contact,
                     'status'  => 1
                 ]);
