@@ -741,7 +741,8 @@ if(! function_exists('timestamp_format')){
         if (empty($date_time)) return '';
         $timestamp = \Carbon\Carbon::instance(new DateTime($date_time));
         $time_format_string = Setting()->get('date_format').' '.Setting()->get('time_format');
-        return $timestamp->diffInWeeks(\Carbon\Carbon::now()) >= 1 ? $timestamp->format($time_format_string) : $timestamp->diffForHumans();
+        return $timestamp->diffForHumans();
+        //return $timestamp->diffInWeeks(\Carbon\Carbon::now()) >= 1 ? $timestamp->format($time_format_string) : $timestamp->diffForHumans();
     }
 }
 
