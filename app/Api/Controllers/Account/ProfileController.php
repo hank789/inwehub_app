@@ -786,6 +786,7 @@ class ProfileController extends Controller
                 ]);
             }
         }
+        Cache::delete('user_address_book_list_'.$user->id);
         return self::createJsonData(true);
     }
 
