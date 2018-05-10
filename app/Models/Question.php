@@ -266,7 +266,7 @@ class Question extends Model
     }
 
     /*获取相关问题*/
-    public static function correlationsPage($tagIds,$pageSize=10,$questionType='',array $ignoreUsers=[])
+    public static function correlationsPage($tagIds,$pageSize=10,$questionType='',array $ignoreUsers=[], array $ignoreQuestions = [])
     {
         $query = self::whereHas('tags', function($query) use ($tagIds) {
             $query->whereIn('tag_id', $tagIds);
@@ -276,6 +276,9 @@ class Question extends Model
         }
         if ($ignoreUsers) {
             $query = $query->whereNotIn('user_id',$ignoreUsers);
+        }
+        if ($ignoreQuestions) {
+            $query = $query->whereNotIn('id',$ignoreQuestions);
         }
         return $query->simplePaginate($pageSize);
     }

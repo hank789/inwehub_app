@@ -225,7 +225,7 @@ class QuestionController extends Controller
         $question_id = $request->input('id');
         $limit = $request->input('limit',2);
         $currentQuestion = Question::find($question_id);
-        $relatedQuestions = Question::correlations($currentQuestion->tags()->pluck('tag_id'));
+        $relatedQuestions = Question::correlationsPage($currentQuestion->tags()->pluck('tag_id'),10,'',[],[$question_id]);
         if (!$relatedQuestions) {
             $relatedQuestions = Question::recent();
         }
