@@ -26,6 +26,7 @@ use App\Models\UserOauth;
 use App\Models\UserTag;
 use App\Services\City\CityData;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 
@@ -748,7 +749,7 @@ class ProfileController extends Controller
                 'is_expert' => $source->is_expert,
                 'user_avatar_url' => $source->avatar,
                 'description'     => $source->description,
-                'visited_time'    => $doing->created_at
+                'visited_time'    => timestamp_format($doing->created_at)
             ];
         }
         $return['data'] = $list;
