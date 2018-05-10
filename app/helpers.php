@@ -1174,7 +1174,7 @@ if (!function_exists('getDistanceByLatLng')) {
 if (!function_exists('distanceFormat')) {
     function distanceFormat($distance) {
         if (floatval($distance) <= 0) {
-            return $distance;
+            return '0.1m';
         }
         if ($distance < 1000) {
             return $distance.'m';

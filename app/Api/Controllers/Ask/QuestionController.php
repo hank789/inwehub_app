@@ -232,6 +232,7 @@ class QuestionController extends Controller
         $list = [];
         $count = 0;
         foreach ($relatedQuestions as $question) {
+            if ($question->id == $question_id) continue;
             $item = [
                 'id' => $question->id,
                 'question_type' => $question->question_type,
