@@ -773,7 +773,7 @@ class ProfileController extends Controller
             if ($addressBook) {
                 $addressBook->display_name = $contact['displayName'];
                 $addressBook->phone = $contact['phoneNumbers'][0]['value'];
-                $addressBook->detail = json_encode($contact);
+                $addressBook->detail = $contact;
                 $addressBook->save();
             } else {
                 AddressBook::create([
@@ -781,7 +781,7 @@ class ProfileController extends Controller
                     'address_book_id' => $contact['id'],
                     'display_name' => $contact['displayName'],
                     'phone'   => $contact['phoneNumbers'][0]['value'],
-                    'detail'  => json_encode($contact),
+                    'detail'  => $contact,
                     'status'  => 1
                 ]);
             }

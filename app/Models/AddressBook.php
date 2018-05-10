@@ -29,4 +29,8 @@ class AddressBook extends Model
     use BelongsToUserTrait;
     protected $table = 'address_book';
     protected $fillable = ['user_id','address_book_id','display_name','phone','detail','status'];
+
+    protected $casts = [
+        'detail' => 'json',
+    ];
 }
