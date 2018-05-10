@@ -163,19 +163,23 @@ class NotificationController extends Controller
         }
         $notice_last_message = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_NOTICE)->select('id','type','data','read_at','created_at')->first();
         if ($notice_last_message) {
-            $notice_last_message->created_at = timestamp_format($notice_last_message->created_at);
+            $notice_last_message = $notice_last_message->toArray();
+            $notice_last_message['created_at'] = timestamp_format($notice_last_message['created_at']);
         }
         $task_last_message = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_TASK)->select('id','type','data','read_at','created_at')->first();
         if ($task_last_message) {
-            $task_last_message->created_at = timestamp_format($task_last_message->created_at);
+            $task_last_message = $task_last_message->toArray();
+            $task_last_message['created_at'] = timestamp_format($task_last_message['created_at']);
         }
         $readhub_last_message = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_READ)->select('id','type','data','read_at','created_at')->first();
         if ($readhub_last_message) {
-            $readhub_last_message->created_at = timestamp_format($readhub_last_message->created_at);
+            $readhub_last_message = $readhub_last_message->toArray();
+            $readhub_last_message['created_at'] = timestamp_format($readhub_last_message['created_at']);
         }
         $money_last_message = $user->notifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->select('id','type','data','read_at','created_at')->first();
         if ($money_last_message) {
-            $money_last_message->created_at = timestamp_format($money_last_message->created_at);
+            $money_last_message = $money_last_message->toArray();
+            $money_last_message['created_at'] = timestamp_format($money_last_message['created_at']);
         }
         $data = [
             'todo_tasks' => $todo_task,
