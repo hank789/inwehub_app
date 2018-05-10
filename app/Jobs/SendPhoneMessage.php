@@ -65,6 +65,9 @@ class SendPhoneMessage implements ShouldQueue
                 $templateId = 'SMS_124425049';
                 //$params = ['name' => $code]
                 break;
+            case 'invite_address_book_user':
+                $templateId = 'SMS_134500006';
+                break;
             default:
                 $templateId = config('alidayu.verify_template_id');
                 break;

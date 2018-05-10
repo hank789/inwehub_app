@@ -81,7 +81,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/delSkillTag','ProfileController@delSkillTag');
     //保存用户通讯录
     Route::post('profile/saveAddressBook','ProfileController@saveAddressBook');
-
+    //获取用户通讯录列表
+    Route::post('profile/addressBookList','ProfileController@addressBookList');
+    //邀请通讯录好友注册
+    Route::post('profile/inviteAddressBookUser','ProfileController@inviteAddressBookUser');
 
     //上传简历
     Route::post('profile/uploadResume','ProfileController@uploadResume');

@@ -3,6 +3,7 @@
 use App\Cache\UserCache;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\SendPhoneMessage;
 use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
 use App\Models\AddressBook;
@@ -784,6 +785,70 @@ class ProfileController extends Controller
                 ]);
             }
         }
+        return self::createJsonData(true);
+    }
+
+    //用户通讯录列表
+    public function addressBookList(Request $request) {
+        $user = $request->user();
+        $cache = Cache::get('user_address_book_list_'.$user->id);
+        if (!$cache) {
+            $addressBooks = AddressBook::where('user_id',$user->id)->where('status',1)->get()->toArray();
+            $appUsers = [];
+            $notAppUsers = [];
+            foreach ($addressBooks as $addressBook) {
+                $addressBook['is_app_user'] = 0;
+                foreach ($addressBook['detail']['phoneNumbers'] as $phoneItem) {
+                    $phoneUser = User::where('mobile',$phoneItem['value'])->first();
+                    if ($phoneUser) {
+                        $addressBook['is_app_user'] = 1;
+                        $addressBook['app_user_name'] = $phoneUser->name;
+                        $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($phoneUser))->where('source_id','=',$phoneUser->id)->first();
+                        $addressBook['app_user_is_followed'] = 0;
+                        $addressBook['app_user_uuid'] = $phoneUser->uuid;
+                        if ($attention) {
+                            $addressBook['app_user_is_followed'] = 1;
+                            $attention2 = Attention::where("user_id",'=',$phoneUser->id)->where('source_type','=',get_class($phoneUser))->where('source_id','=',$user->id)->first();
+                            if ($attention2) {
+                                $addressBook['app_user_is_followed'] = 2;
+                            }
+                        }
+                        break;
+                    }
+                }
+                unset($addressBook['detail']);
+                unset($addressBook['address_book_id']);
+                unset($addressBook['phone']);
+                if ($addressBook['is_app_user']) {
+                    $appUsers[] = $addressBook;
+                } else {
+                    $notAppUsers[] = $addressBook;
+                }
+            }
+            $cache = [
+                'appUsers' => $appUsers,
+                'notAppUsers' => $notAppUsers
+            ];
+            Cache::put('user_address_book_list_'.$user->id,$cache,60*24);
+        }
+
+        return self::createJsonData(true,$cache);
+    }
+
+    public function inviteAddressBookUser(Request $request) {
+        $validateRules = [
+            'id' => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $addressBook = AddressBook::find($request->input('id'));
+        if (!$addressBook) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        if (RateLimiter::instance()->increase('send_invite_address_book_user_msg',$user->id,60*5)) {
+            throw new ApiException(ApiException::USER_INVITE_ADDRESSBOOK_USER_LIMIT);
+        }
+        dispatch((new SendPhoneMessage($addressBook->phone,['name' => $user->name],'invite_address_book_user')));
         return self::createJsonData(true);
     }
 
