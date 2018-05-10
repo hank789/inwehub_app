@@ -5,6 +5,7 @@ use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
+use App\Models\AddressBook;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Collection;
@@ -754,6 +755,36 @@ class ProfileController extends Controller
         $hot = $doings->total();
         $return['hot_number'] = $hot;
         return self::createJsonData(true,$return);
+    }
+
+    //保存用户通讯录
+    public function saveAddressBook(Request $request) {
+        $validateRules = [
+            'contacts' => 'required|array'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $contacts = $request->input('contacts');
+        foreach ($contacts as $contact) {
+            //{"id":2097,"rawId":null,"target":0,"displayName":"李柏林","name":null,"nickname":null,"phoneNumbers":[{"value":"13606268446","pref":false,"id":0,"type":"mobile"}],"emails":null,"addresses":null,"ims":null,"organizations":null,"birthday":null,"note":null,"photos":null,"categories":null,"urls":null}
+            $addressBook = AddressBook::where('user_id',$user->id)->where('address_book_id',$contact['id'])->first();
+            if ($addressBook) {
+                $addressBook->display_name = $contact['displayName'];
+                $addressBook->phone = $contact['phoneNumbers'][0]['value'];
+                $addressBook->detail = json_encode($contact);
+                $addressBook->save();
+            } else {
+                AddressBook::create([
+                    'user_id' => $user->id,
+                    'address_book_id' => $contact['id'],
+                    'display_name' => $contact['displayName'],
+                    'phone'   => $contact['phoneNumbers'][0]['value'],
+                    'detail'  => json_encode($contact),
+                    'status'  => 1
+                ]);
+            }
+        }
+        return self::createJsonData(true);
     }
 
 }

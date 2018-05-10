@@ -79,6 +79,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/addSkillTag','ProfileController@addSkillTag');
     //删除用户擅长标签
     Route::post('profile/delSkillTag','ProfileController@delSkillTag');
+    //保存用户通讯录
+    Route::post('profile/saveAddressBook','ProfileController@saveAddressBook');
 
 
     //上传简历
