@@ -790,6 +790,7 @@ class ProfileController extends Controller
             }
         }
         Cache::delete('user_address_book_list_'.$user->id);
+        Cache::put('user_sync_address_book_list_'.$user->id,1,60*24*3);
         return self::createJsonData(true);
     }
 
@@ -840,10 +841,13 @@ class ProfileController extends Controller
                 'notAppUsers' => $notAppUsers,
                 'refresh' => $refresh
             ];
-            Cache::put('user_address_book_list_'.$user->id,$cache,30);
+            Cache::put('user_address_book_list_'.$user->id, $cache,30);
+        }
+        if (!Cache::get('user_sync_address_book_list_'.$user->id)) {
+            $cache['refresh'] = 1;
         }
 
-        return self::createJsonData(true,$cache);
+        return self::createJsonData(true, $cache);
     }
 
     public function inviteAddressBookUser(Request $request) {
