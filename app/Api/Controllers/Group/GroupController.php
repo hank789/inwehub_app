@@ -149,7 +149,7 @@ class GroupController extends Controller
             ->where('source_id',$group->id)
             ->where('source_type',get_class($group))
             ->where('status',Room::STATUS_OPEN)->first();
-        $members = $group->members()->where('audit_status',1)->take(6)->get();
+        $members = $group->members()->where('audit_status',1)->take(6)->orderBy(DB::raw('RAND()'))->get();
         foreach ($members as $member) {
             if ($member->user_id == $group->user_id) continue;
             $return['members'][] = [
