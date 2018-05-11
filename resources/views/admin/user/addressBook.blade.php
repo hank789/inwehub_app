@@ -63,7 +63,7 @@
                                             <td>{{ $addressBook->user_id }}</td>
                                             <td>{{ $addressBook->user->name }}</td>
                                             <td>{{ $addressBook->created_at }}</td>
-                                            <td>{{ json_encode($addressBook->detail) }}</td>
+                                            <td>{{ json_encode($addressBook->detail,JSON_UNESCAPED_UNICODE) }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
