@@ -225,6 +225,7 @@ class QuestionController extends Controller
         $question_id = $request->input('id');
         $limit = $request->input('limit',2);
         $currentQuestion = Question::find($question_id);
+        if (empty($currentQuestion)) return self::createJsonData(true);
         $relatedQuestions = Question::correlationsPage($currentQuestion->tags()->pluck('tag_id'),10,'',[],[$question_id]);
         if ($relatedQuestions->count() <= 0) {
             $relatedQuestions = Question::recent();
