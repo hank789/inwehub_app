@@ -767,7 +767,6 @@ class ProfileController extends Controller
         $this->validate($request,$validateRules);
         $user = $request->user();
         $contacts = $request->input('contacts');
-        \Log::info('test',$contacts);
         foreach ($contacts as $contact) {
             //{"id":2097,"rawId":null,"target":0,"displayName":"李柏林","name":null,"nickname":null,"phoneNumbers":[{"value":"13606268446","pref":false,"id":0,"type":"mobile"}],"emails":null,"addresses":null,"ims":null,"organizations":null,"birthday":null,"note":null,"photos":null,"categories":null,"urls":null}
             if (empty($contact['phoneNumbers'])) continue;
@@ -855,7 +854,9 @@ class ProfileController extends Controller
         if (RateLimiter::instance()->increase('send_invite_address_book_user_msg',$addressBook->id,60*5)) {
             throw new ApiException(ApiException::USER_INVITE_ADDRESSBOOK_USER_LIMIT);
         }
-        dispatch((new SendPhoneMessage($addressBook->phone,['name' => $user->name],'invite_address_book_user')));
+        foreach ($addressBook->detail['phoneNumbers'] as $phoneItem) {
+            dispatch((new SendPhoneMessage(formatAddressBookPhone($phoneItem['value']),['name' => $user->name],'invite_address_book_user')));
+        }
         return self::createJsonData(true,[],ApiException::SUCCESS,'邀请成功');
     }
 
