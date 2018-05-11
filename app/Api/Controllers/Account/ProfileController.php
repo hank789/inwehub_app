@@ -806,6 +806,7 @@ class ProfileController extends Controller
                     if ($phoneUser) {
                         $addressBook['is_app_user'] = 1;
                         $addressBook['app_user_name'] = $phoneUser->name;
+                        $addressBook['app_user_avatar'] = $phoneUser->avatar;
                         $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($phoneUser))->where('source_id','=',$phoneUser->id)->first();
                         $addressBook['app_user_is_followed'] = 0;
                         $addressBook['app_user_uuid'] = $phoneUser->uuid;
