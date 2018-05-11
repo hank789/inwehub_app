@@ -742,15 +742,14 @@ class ProfileController extends Controller
         $return = $doings->toArray();
         $list = [];
         foreach ($doings as $doing) {
-            $source = $doing->source;
             $list[] = [
                 'id' => $doing->id,
-                'user_id' => $doing->source_id,
-                'uuid'    => $source->uuid,
-                'user_name' => $source->name,
-                'is_expert' => $source->is_expert,
-                'user_avatar_url' => $source->avatar,
-                'description'     => $source->description,
+                'user_id' => $doing->user_id,
+                'uuid'    => $doing->user->uuid,
+                'user_name' => $doing->user->name,
+                'is_expert' => $doing->user->is_expert,
+                'user_avatar_url' => $doing->user->avatar,
+                'description'     => $doing->user->description,
                 'visited_time'    => timestamp_format($doing->created_at)
             ];
         }
