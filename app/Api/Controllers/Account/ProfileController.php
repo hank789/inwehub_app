@@ -833,9 +833,12 @@ class ProfileController extends Controller
                     $notAppUsers[] = $addressBook;
                 }
             }
+            $refresh = 0;
+            if (empty($appUsers) && empty($notAppUsers)) $refresh = 1;
             $cache = [
                 'appUsers' => $appUsers,
-                'notAppUsers' => $notAppUsers
+                'notAppUsers' => $notAppUsers,
+                'refresh' => $refresh
             ];
             Cache::put('user_address_book_list_'.$user->id,$cache,30);
         }
