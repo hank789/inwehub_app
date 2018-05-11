@@ -854,7 +854,7 @@ class ProfileController extends Controller
             throw new ApiException(ApiException::USER_INVITE_ADDRESSBOOK_USER_LIMIT);
         }
         dispatch((new SendPhoneMessage($addressBook->phone,['name' => $user->name],'invite_address_book_user')));
-        return self::createJsonData(true);
+        return self::createJsonData(true,[],ApiException::SUCCESS,'邀请成功');
     }
 
 }
