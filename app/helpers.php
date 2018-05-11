@@ -1309,9 +1309,14 @@ if (!function_exists('strip_html_tags')) {
 
 if (!function_exists('formatAddressBookPhone')) {
     function formatAddressBookPhone($phone) {
-        $phone = str_replace(' ','',$phone);
         $phone = str_replace('+86','',$phone);
-        $phone = str_replace('-','',$phone);
-        return $phone;
+        $temp=array('1','2','3','4','5','6','7','8','9','0');
+        $str = '';
+        for($i=0;$i<strlen($phone);$i++) {
+            if (in_array($phone[$i], $temp)) {
+                $str .= $phone[$i];
+            }
+        }
+        return $str;
     }
 }
