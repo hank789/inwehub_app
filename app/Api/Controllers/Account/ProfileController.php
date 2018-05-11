@@ -767,6 +767,7 @@ class ProfileController extends Controller
         $this->validate($request,$validateRules);
         $user = $request->user();
         $contacts = $request->input('contacts');
+        \Log::info('test',$contacts);
         foreach ($contacts as $contact) {
             //{"id":2097,"rawId":null,"target":0,"displayName":"李柏林","name":null,"nickname":null,"phoneNumbers":[{"value":"13606268446","pref":false,"id":0,"type":"mobile"}],"emails":null,"addresses":null,"ims":null,"organizations":null,"birthday":null,"note":null,"photos":null,"categories":null,"urls":null}
             if (empty($contact['phoneNumbers'])) continue;
