@@ -794,6 +794,16 @@ class ProfileController extends Controller
         return self::createJsonData(true);
     }
 
+    public function needAddressBookRefresh(Request $request) {
+        $user = $request->user();
+        $refresh = 0;
+        if (!Cache::get('user_sync_address_book_list_'.$user->id)) {
+            $refresh = 1;
+        }
+        return self::createJsonData(true,['refresh'=>$refresh]);
+
+    }
+
     //用户通讯录列表
     public function addressBookList(Request $request) {
         $user = $request->user();
@@ -834,17 +844,11 @@ class ProfileController extends Controller
                     $notAppUsers[] = $addressBook;
                 }
             }
-            $refresh = 0;
-            if (empty($appUsers) && empty($notAppUsers)) $refresh = 1;
             $cache = [
                 'appUsers' => $appUsers,
                 'notAppUsers' => $notAppUsers,
-                'refresh' => $refresh
             ];
             Cache::put('user_address_book_list_'.$user->id, $cache,30);
-        }
-        if (!Cache::get('user_sync_address_book_list_'.$user->id)) {
-            $cache['refresh'] = 1;
         }
 
         return self::createJsonData(true, $cache);
