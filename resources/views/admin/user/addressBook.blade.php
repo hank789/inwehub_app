@@ -51,8 +51,8 @@
                                         <th>通讯录手机号</th>
                                         <th>通讯录所有者ID</th>
                                         <th>通讯录所有者姓名</th>
-                                        <th>创建时间</th>
                                         <th>原始信息</th>
+                                        <th>创建时间</th>
                                     </tr>
                                     @foreach($addressBooks as $addressBook)
                                         <tr>
@@ -62,8 +62,8 @@
                                             <td>{{ $addressBook->phone }}</td>
                                             <td>{{ $addressBook->user_id }}</td>
                                             <td>{{ $addressBook->user->name }}</td>
-                                            <td>{{ $addressBook->created_at }}</td>
                                             <td>{{ json_encode($addressBook->detail,JSON_UNESCAPED_UNICODE) }}</td>
+                                            <td>{{ $addressBook->created_at }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
