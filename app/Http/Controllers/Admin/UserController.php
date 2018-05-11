@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Cache\UserCache;
+use App\Models\AddressBook;
 use App\Models\Credit;
 use App\Models\Tag;
 use App\Models\User;
@@ -47,6 +48,27 @@ class UserController extends AdminController
             }
         }
         return view('admin.user.index')->with('users',$users)->with('filter',$filter);
+    }
+
+    public function addressBook(Request $request) {
+        $filter =  $request->all();
+
+        $query = AddressBook::query();
+
+        if(isset($filter['user_id']) && $filter['user_id'] > 0){
+            $query->where("user_id","=",$filter['user_id']);
+        }
+
+        if( isset($filter['phone']) && $filter['phone']){
+            $query->where('phone','=',$filter['phone']);
+        }
+
+        if( isset($filter['name']) && $filter['name']){
+            $query->where('display_name','=',$filter['name']);
+        }
+
+        $addressbooks = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+        return view('admin.user.addressBook')->with('addressBooks',$addressbooks)->with('filter',$filter);
     }
 
     public function exportUsers(Request $request){

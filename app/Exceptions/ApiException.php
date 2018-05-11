@@ -60,6 +60,7 @@ class ApiException extends Exception
     const USER_WEAPP_SALARY_INVALID = 1122;
 
     const USER_LEVEL_LIMIT = 1123;
+    const USER_INVITE_ADDRESSBOOK_USER_LIMIT = 1124;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -153,6 +154,8 @@ class ApiException extends Exception
         self::USER_REGISTRATION_CODE_EXPIRED => '您的邀请码已经过期，请重新获取有效邀请码',
         self::USER_WEAPP_NEED_REGISTER => '发布需求需要完成用户认证',
         self::USER_WEAPP_SALARY_INVALID => '薪资范围有误',
+        self::USER_LEVEL_LIMIT => '您的等级还不够',
+        self::USER_INVITE_ADDRESSBOOK_USER_LIMIT => '您的邀请太频繁了，请稍后再试',
 
 
         //问答模块

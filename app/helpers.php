@@ -740,11 +740,7 @@ if(! function_exists('timestamp_format')){
     function timestamp_format($date_time){
         $timestamp = \Carbon\Carbon::instance(new DateTime($date_time));
         $time_format_string = Setting()->get('date_format').' '.Setting()->get('time_format');
-        if(Setting()->get('time_friendly')==1){
-            return $timestamp->diffInWeeks(\Carbon\Carbon::now()) >= 1 ? $timestamp->format($time_format_string) : $timestamp->diffForHumans();
-        }
-        return $timestamp->format($time_format_string);
-
+        return $timestamp->diffInYears(\Carbon\Carbon::now()) >= 1 ? $timestamp->format($time_format_string) : $timestamp->diffForHumans();
     }
 }
 
@@ -1110,6 +1106,7 @@ if (!function_exists('getUrlTitle')) {
 
             $encode = mb_detect_encoding($title['title'], array('GB2312','GBK','UTF-8', 'CP936')); //得到字符串编码
             $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
+            $title['title'] = trim($title['title']);
             if ( $encode != 'CP936' && $encode != $file_charset) {
                 return iconv($encode, $file_charset, $title['title']);
             }
@@ -1174,7 +1171,7 @@ if (!function_exists('getDistanceByLatLng')) {
 if (!function_exists('distanceFormat')) {
     function distanceFormat($distance) {
         if (floatval($distance) <= 0) {
-            return $distance;
+            return '0.1m';
         }
         if ($distance < 1000) {
             return $distance.'m';
@@ -1308,5 +1305,19 @@ if (!function_exists('strip_html_tags')) {
         }
         $data=preg_replace($html, '', $str);
         return $data;
+    }
+}
+
+if (!function_exists('formatAddressBookPhone')) {
+    function formatAddressBookPhone($phone) {
+        $phone = str_replace('+86','',$phone);
+        $temp=array('1','2','3','4','5','6','7','8','9','0');
+        $str = '';
+        for($i=0;$i<strlen($phone);$i++) {
+            if (in_array($phone[$i], $temp)) {
+                $str .= $phone[$i];
+            }
+        }
+        return $str;
     }
 }

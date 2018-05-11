@@ -79,7 +79,14 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/addSkillTag','ProfileController@addSkillTag');
     //删除用户擅长标签
     Route::post('profile/delSkillTag','ProfileController@delSkillTag');
-
+    //保存用户通讯录
+    Route::post('profile/saveAddressBook','ProfileController@saveAddressBook');
+    //获取用户通讯录列表
+    Route::post('profile/addressBookList','ProfileController@addressBookList');
+    //是否需要重新获取通讯录
+    Route::post('profile/needAddressBookRefresh','ProfileController@needAddressBookRefresh');
+    //邀请通讯录好友注册
+    Route::post('profile/inviteAddressBookUser','ProfileController@inviteAddressBookUser');
 
     //上传简历
     Route::post('profile/uploadResume','ProfileController@uploadResume');

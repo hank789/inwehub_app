@@ -28,6 +28,9 @@ Route::resource('permission', 'PermissionController',['except' => ['show'],'as'=
 Route::resource('role', 'RoleController',['except' => ['show'],'as'=>'admin']);
 Route::post('role/permission',['as'=>'admin.role.permission','uses'=>'RoleController@permission']);
 
+//通讯录管理
+Route::get('user/addressBook',['as'=>'admin.user.addressBook','uses'=>'UserController@addressBook']);
+
 /*用户删除*/
 Route::post('user/destroy',['as'=>'admin.user.destroy','uses'=>'UserController@destroy']);
 /*用户审核*/

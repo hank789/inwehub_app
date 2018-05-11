@@ -3,8 +3,10 @@
 use App\Cache\UserCache;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\SendPhoneMessage;
 use App\Logic\TagsLogic;
 use App\Logic\WithdrawLogic;
+use App\Models\AddressBook;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Collection;
@@ -24,6 +26,7 @@ use App\Models\UserOauth;
 use App\Models\UserTag;
 use App\Services\City\CityData;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 
@@ -149,7 +152,7 @@ class ProfileController extends Controller
         if ($newbie_complete_userinfo_task) {
             $info['newbie_unfinish_tasks']['complete_userinfo'] = true;
         }
-        if ($user->attentions()->count()>0) {
+        if ($user->attentions()->count()>=2) {
             $info['newbie_unfinish_tasks']['show_guide'] = false;
         }
 
@@ -202,10 +205,15 @@ class ProfileController extends Controller
         }
         $jwtToken = $JWTAuth->getToken();
         $loginUser = '';
+        $loginUserInfoCompletePercent = 0;
         if($jwtToken){
             try{
                 $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
-                $this->doing($loginUser->id,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,'查看简历');
+                if ($loginUser->id != $user->id) {
+                    $this->doing($loginUser->id,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,'查看简历');
+                }
+                $info_percent = $loginUser->getInfoCompletePercent(true);
+                $loginUserInfoCompletePercent = $info_percent['score'];
             } catch (\Exception $e){
 
             }
@@ -291,12 +299,12 @@ class ProfileController extends Controller
         $jobs = [];
         $edus = [];
 
-        if($info['is_job_info_public'] || $is_self){
+        if(($info['is_job_info_public'] && $loginUserInfoCompletePercent >= 90) || $is_self){
             $jobs = $user->jobs()->orderBy('begin_time','desc')->get();
             $jobs = $jobs->toArray();
         }
 
-        if($info['is_project_info_public'] || $is_self){
+        if(($info['is_project_info_public'] && $loginUserInfoCompletePercent >= 90) || $is_self){
             $projects = $user->projects()->orderBy('begin_time','desc')->get();
 
             foreach($projects as &$project){
@@ -309,7 +317,7 @@ class ProfileController extends Controller
             $projects = $projects->toArray();
         }
 
-        if($info['is_edu_info_public'] || $is_self){
+        if(($info['is_edu_info_public'] && $loginUserInfoCompletePercent >= 90) || $is_self){
             $edus = $user->edus()->orderBy('begin_time','desc')->get();
             $edus = $edus->toArray();
         }
@@ -730,20 +738,19 @@ class ProfileController extends Controller
         if ($loginUser->userData->user_level < 4 && $page >= 2) {
             throw new ApiException(ApiException::USER_LEVEL_LIMIT);
         }
-        $doings = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $doings = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->where('user_id','!=',$user->id)->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $return = $doings->toArray();
         $list = [];
         foreach ($doings as $doing) {
-            $source = $doing->source;
             $list[] = [
                 'id' => $doing->id,
-                'user_id' => $doing->source_id,
-                'uuid'    => $source->uuid,
-                'user_name' => $source->name,
-                'is_expert' => $source->is_expert,
-                'user_avatar_url' => $source->avatar,
-                'description'     => $source->description,
-                'visited_time'    => $doing->created_at
+                'user_id' => $doing->user_id,
+                'uuid'    => $doing->user->uuid,
+                'user_name' => $doing->user->name,
+                'is_expert' => $doing->user->is_expert,
+                'user_avatar_url' => $doing->user->avatar,
+                'description'     => $doing->user->description,
+                'visited_time'    => timestamp_format($doing->created_at)
             ];
         }
         $return['data'] = $list;
@@ -751,6 +758,120 @@ class ProfileController extends Controller
         $hot = $doings->total();
         $return['hot_number'] = $hot;
         return self::createJsonData(true,$return);
+    }
+
+    //保存用户通讯录
+    public function saveAddressBook(Request $request) {
+        $validateRules = [
+            'contacts' => 'required|array'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $contacts = $request->input('contacts');
+        foreach ($contacts as $contact) {
+            //{"id":2097,"rawId":null,"target":0,"displayName":"李柏林","name":null,"nickname":null,"phoneNumbers":[{"value":"13606268446","pref":false,"id":0,"type":"mobile"}],"emails":null,"addresses":null,"ims":null,"organizations":null,"birthday":null,"note":null,"photos":null,"categories":null,"urls":null}
+            if (empty($contact['phoneNumbers'])) continue;
+            $addressBook = AddressBook::where('user_id',$user->id)->where('address_book_id',$contact['id'])->first();
+            $phone = formatAddressBookPhone($contact['phoneNumbers'][0]['value']);
+            $display_name = $contact['displayName']?:$phone;
+            if ($addressBook) {
+                $addressBook->display_name = $display_name;
+                $addressBook->phone = $phone;
+                $addressBook->detail = $contact;
+                $addressBook->save();
+            } else {
+                AddressBook::create([
+                    'user_id' => $user->id,
+                    'address_book_id' => $contact['id'],
+                    'display_name' => $display_name,
+                    'phone'   => $phone,
+                    'detail'  => $contact,
+                    'status'  => 1
+                ]);
+            }
+        }
+        Cache::delete('user_address_book_list_'.$user->id);
+        Cache::put('user_sync_address_book_list_'.$user->id,1,60*24*3);
+        return self::createJsonData(true);
+    }
+
+    public function needAddressBookRefresh(Request $request) {
+        $user = $request->user();
+        $refresh = 0;
+        if (!Cache::get('user_sync_address_book_list_'.$user->id)) {
+            $refresh = 1;
+        }
+        return self::createJsonData(true,['refresh'=>$refresh]);
+
+    }
+
+    //用户通讯录列表
+    public function addressBookList(Request $request) {
+        $user = $request->user();
+        $cache = Cache::get('user_address_book_list_'.$user->id);
+        if (!$cache) {
+            $addressBooks = AddressBook::where('user_id',$user->id)->where('status',1)->get()->toArray();
+            $appUsers = [];
+            $notAppUsers = [];
+            foreach ($addressBooks as $addressBook) {
+                $addressBook['is_app_user'] = 0;
+                foreach ($addressBook['detail']['phoneNumbers'] as $phoneItem) {
+                    $phoneUser = User::where('mobile',formatAddressBookPhone($phoneItem['value']))->first();
+                    if ($phoneUser) {
+                        //过滤掉自己
+                        if ($phoneUser->id == $user->id) continue;
+                        $addressBook['is_app_user'] = 1;
+                        $addressBook['app_user_name'] = $phoneUser->name;
+                        $addressBook['app_user_avatar'] = $phoneUser->avatar;
+                        $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($phoneUser))->where('source_id','=',$phoneUser->id)->first();
+                        $addressBook['app_user_is_followed'] = 0;
+                        $addressBook['app_user_uuid'] = $phoneUser->uuid;
+                        if ($attention) {
+                            $addressBook['app_user_is_followed'] = 1;
+                            $attention2 = Attention::where("user_id",'=',$phoneUser->id)->where('source_type','=',get_class($phoneUser))->where('source_id','=',$user->id)->first();
+                            if ($attention2) {
+                                $addressBook['app_user_is_followed'] = 2;
+                            }
+                        }
+                        break;
+                    }
+                }
+                unset($addressBook['detail']);
+                unset($addressBook['address_book_id']);
+                unset($addressBook['phone']);
+                if ($addressBook['is_app_user']) {
+                    $appUsers[] = $addressBook;
+                } else {
+                    $notAppUsers[] = $addressBook;
+                }
+            }
+            $cache = [
+                'appUsers' => $appUsers,
+                'notAppUsers' => $notAppUsers,
+            ];
+            Cache::put('user_address_book_list_'.$user->id, $cache,30);
+        }
+
+        return self::createJsonData(true, $cache);
+    }
+
+    public function inviteAddressBookUser(Request $request) {
+        $validateRules = [
+            'id' => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $addressBook = AddressBook::find($request->input('id'));
+        if (!$addressBook) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        if (RateLimiter::instance()->increase('send_invite_address_book_user_msg',$addressBook->id,60*5)) {
+            throw new ApiException(ApiException::USER_INVITE_ADDRESSBOOK_USER_LIMIT);
+        }
+        foreach ($addressBook->detail['phoneNumbers'] as $phoneItem) {
+            dispatch((new SendPhoneMessage(formatAddressBookPhone($phoneItem['value']),['name' => $user->name],'invite_address_book_user')));
+        }
+        return self::createJsonData(true,[],ApiException::SUCCESS,'邀请成功');
     }
 
 }

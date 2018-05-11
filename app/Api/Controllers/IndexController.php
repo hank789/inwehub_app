@@ -16,6 +16,7 @@ use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @author: wanghui
@@ -135,7 +136,21 @@ class IndexController extends Controller {
     //精选推荐
     public function recommendRead(Request $request) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
-        $reads = RecommendRead::where('audit_status',1)->orderBy('sort','desc')->simplePaginate($perPage);
+        $orderBy = $request->input('orderBy',1);
+        $query = RecommendRead::where('audit_status',1);
+        switch ($orderBy) {
+            case 1:
+                //热门
+                $query = $query->orderBy('sort','desc');
+                break;
+            case 2:
+                //随机
+                $count = $query->count();
+                $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
+                $query = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'));
+                break;
+        }
+        $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
             switch ($item['read_type']) {
