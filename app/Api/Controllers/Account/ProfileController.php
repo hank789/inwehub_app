@@ -769,6 +769,7 @@ class ProfileController extends Controller
         $contacts = $request->input('contacts');
         foreach ($contacts as $contact) {
             //{"id":2097,"rawId":null,"target":0,"displayName":"李柏林","name":null,"nickname":null,"phoneNumbers":[{"value":"13606268446","pref":false,"id":0,"type":"mobile"}],"emails":null,"addresses":null,"ims":null,"organizations":null,"birthday":null,"note":null,"photos":null,"categories":null,"urls":null}
+            if (empty($contact['phoneNumbers'])) continue;
             $addressBook = AddressBook::where('user_id',$user->id)->where('address_book_id',$contact['id'])->first();
             $phone = formatAddressBookPhone($contact['phoneNumbers'][0]['value']);
             if ($addressBook) {
@@ -833,7 +834,7 @@ class ProfileController extends Controller
                 'appUsers' => $appUsers,
                 'notAppUsers' => $notAppUsers
             ];
-            Cache::put('user_address_book_list_'.$user->id,$cache,60*24);
+            Cache::put('user_address_book_list_'.$user->id,$cache,30);
         }
 
         return self::createJsonData(true,$cache);
@@ -849,7 +850,7 @@ class ProfileController extends Controller
         if (!$addressBook) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        if (RateLimiter::instance()->increase('send_invite_address_book_user_msg',$user->id,60*5)) {
+        if (RateLimiter::instance()->increase('send_invite_address_book_user_msg',$addressBook->id,60*5)) {
             throw new ApiException(ApiException::USER_INVITE_ADDRESSBOOK_USER_LIMIT);
         }
         dispatch((new SendPhoneMessage($addressBook->phone,['name' => $user->name],'invite_address_book_user')));
