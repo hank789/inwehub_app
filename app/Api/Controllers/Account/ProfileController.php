@@ -773,8 +773,9 @@ class ProfileController extends Controller
             if (empty($contact['phoneNumbers'])) continue;
             $addressBook = AddressBook::where('user_id',$user->id)->where('address_book_id',$contact['id'])->first();
             $phone = formatAddressBookPhone($contact['phoneNumbers'][0]['value']);
+            $display_name = $contact['displayName']?:$phone;
             if ($addressBook) {
-                $addressBook->display_name = $contact['displayName'];
+                $addressBook->display_name = $display_name;
                 $addressBook->phone = $phone;
                 $addressBook->detail = $contact;
                 $addressBook->save();
@@ -782,7 +783,7 @@ class ProfileController extends Controller
                 AddressBook::create([
                     'user_id' => $user->id,
                     'address_book_id' => $contact['id'],
-                    'display_name' => $contact['displayName'],
+                    'display_name' => $display_name,
                     'phone'   => $phone,
                     'detail'  => $contact,
                     'status'  => 1

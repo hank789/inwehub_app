@@ -1311,6 +1311,7 @@ if (!function_exists('formatAddressBookPhone')) {
     function formatAddressBookPhone($phone) {
         $phone = str_replace(' ','',$phone);
         $phone = str_replace('+86','',$phone);
+        $phone = str_replace('-','',$phone);
         return $phone;
     }
 }
