@@ -1106,6 +1106,7 @@ if (!function_exists('getUrlTitle')) {
 
             $encode = mb_detect_encoding($title['title'], array('GB2312','GBK','UTF-8', 'CP936')); //得到字符串编码
             $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
+            $title['title'] = trim($title['title']);
             if ( $encode != 'CP936' && $encode != $file_charset) {
                 return iconv($encode, $file_charset, $title['title']);
             }
