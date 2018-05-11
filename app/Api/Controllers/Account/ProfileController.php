@@ -209,7 +209,9 @@ class ProfileController extends Controller
         if($jwtToken){
             try{
                 $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
-                $this->doing($loginUser->id,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,'查看简历');
+                if ($loginUser->id != $user->id) {
+                    $this->doing($loginUser->id,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,'查看简历');
+                }
                 $info_percent = $loginUser->getInfoCompletePercent(true);
                 $loginUserInfoCompletePercent = $info_percent['score'];
             } catch (\Exception $e){
@@ -736,7 +738,7 @@ class ProfileController extends Controller
         if ($loginUser->userData->user_level < 4 && $page >= 2) {
             throw new ApiException(ApiException::USER_LEVEL_LIMIT);
         }
-        $doings = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $doings = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->where('user_id','!=',$user->id)->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $return = $doings->toArray();
         $list = [];
         foreach ($doings as $doing) {
