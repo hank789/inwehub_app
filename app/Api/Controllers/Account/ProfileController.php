@@ -152,7 +152,7 @@ class ProfileController extends Controller
         if ($newbie_complete_userinfo_task) {
             $info['newbie_unfinish_tasks']['complete_userinfo'] = true;
         }
-        if ($user->attentions()->count()>0) {
+        if ($user->attentions()->count()>=2) {
             $info['newbie_unfinish_tasks']['show_guide'] = false;
         }
 
