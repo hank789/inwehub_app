@@ -182,7 +182,7 @@ class SubmissionController extends Controller {
             app('sentry')->captureException($exception);
             throw new ApiException(ApiException::ERROR);
         }
-
+        self::$needRefresh = true;
         return self::createJsonData(true,$submission->toArray());
     }
 
@@ -318,7 +318,7 @@ class SubmissionController extends Controller {
             Redis::connection()->hdel('voten:submission:url',$submission->data['url']);
         }
         $submission->delete();
-
+        self::$needRefresh = true;
         return self::createJsonData(true);
     }
 

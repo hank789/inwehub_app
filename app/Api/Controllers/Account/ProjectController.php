@@ -57,6 +57,7 @@ class ProjectController extends Controller {
         UserCache::delUserInfoCache($user->id);
         $percent = $user->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user->id,$percent);
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$project->id,'type'=>'project','account_info_complete_percent'=>$percent]);
     }
 
@@ -104,7 +105,7 @@ class ProjectController extends Controller {
             Tag::multiSaveByIds($tags,$project);
         }
         UserCache::delUserInfoCache($user->id);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$id,'type'=>'project']);
     }
 
@@ -136,7 +137,7 @@ class ProjectController extends Controller {
         }
         $project->delete();
         UserCache::delUserInfoCache($user->id);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$id,'type'=>'project','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 

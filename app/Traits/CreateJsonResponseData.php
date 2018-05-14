@@ -6,11 +6,14 @@ use App\Exceptions\ApiException;
 
 trait CreateJsonResponseData
 {
-    public static function createJsonData(bool $success,array $data=[],$code = ApiException::SUCCESS,$message='ok',$refresh=false)
+
+    public static $needRefresh = false;
+
+    public static function createJsonData(bool $success,array $data=[],$code = ApiException::SUCCESS,$message='ok')
     {
         $data = [
             'status'  => $success,
-            'needRefresh' => $refresh,
+            'needRefresh' => self::$needRefresh,
             'code'    => $code,
             'message' => $message,
             'data'    => $data,
@@ -18,4 +21,5 @@ trait CreateJsonResponseData
 
         return response()->json($data);
     }
+
 }

@@ -35,6 +35,7 @@ class TrainController extends Controller {
         UserCache::delUserInfoCache($user->id);
         $percent = $user->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user->id,$percent);
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$train->id,'type'=>'train','account_info_complete_percent'=>$percent]);
     }
 
@@ -62,7 +63,7 @@ class TrainController extends Controller {
         $train->update($update);
 
         UserCache::delUserInfoCache($user->id);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$id,'type'=>'train']);
     }
 
@@ -85,7 +86,7 @@ class TrainController extends Controller {
         }
         $train->delete();
         UserCache::delUserInfoCache($user->id);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$id,'type'=>'train','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 

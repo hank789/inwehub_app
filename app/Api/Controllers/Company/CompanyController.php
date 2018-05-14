@@ -83,7 +83,7 @@ class CompanyController extends Controller {
         if($industry_tags){
             Tag::multiSaveByIds($industry_tags,$company);
         }
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['tips'=>'企业用户申请成功']);
     }
 
@@ -291,6 +291,7 @@ class CompanyController extends Controller {
             ]);
         }
         event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.'申请了企业成员',$fields));
+        self::$needRefresh = true;
         return self::createJsonData(true,['tips'=>'申请成功，请耐心等待']);
     }
 
@@ -307,6 +308,7 @@ class CompanyController extends Controller {
         ];
 
         event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.'申请添加企业',$fields));
+        self::$needRefresh = true;
         return self::createJsonData(true,['tips'=>'申请成功，请耐心等待']);
     }
 }

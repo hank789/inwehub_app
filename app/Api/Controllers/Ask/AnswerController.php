@@ -39,6 +39,7 @@ class AnswerController extends Controller
         $loginUser = $request->user();
         $key = 'draft:answer:question:'.$request->get('question_id').':user:'.$loginUser->id;
         Cache::put($key,$request->get('description'));
+        self::$needRefresh = true;
         return self::createJsonData(true);
     }
 
@@ -189,6 +190,7 @@ class AnswerController extends Controller
     {
         $loginUser = $request->user();
         $this->validate($request,$this->validateRules);
+        self::$needRefresh = true;
         return $this->storeAnswer($loginUser,$request->input('description'),$request);
     }
 
@@ -221,6 +223,7 @@ class AnswerController extends Controller
         }
         $answer->content = $answerContent;
         $answer->save();
+        self::$needRefresh = true;
         return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id], ApiException::SUCCESS,'修改成功');
     }
 
@@ -353,6 +356,7 @@ class AnswerController extends Controller
         }
         QuestionLogic::calculationQuestionRate($answer->question_id);
         event(new \App\Events\Frontend\Answer\Feedback($feedback->id));
+        self::$needRefresh = true;
         return self::createJsonData(true,array_merge($request->all(),['feedback_type'=>$feedback_type]));
     }
 
@@ -444,6 +448,7 @@ class AnswerController extends Controller
         event(new PayForView($order));
         $this->doing($loginUser->id,Doing::ACTION_PAY_FOR_VIEW_ANSWER,get_class($answer),$answer->id,'付费围观答案','',0,$answer->user_id);
         $this->credit($answer->question->user_id,Credit::KEY_PAY_FOR_VIEW_ANSWER,$order->id,'问题被付费围观');
+        self::$needRefresh = true;
         return self::createJsonData(true,[
             'question_id' => $answer->question_id,
             'answer_id'   => $answer->id,
@@ -557,7 +562,7 @@ class AnswerController extends Controller
         $comment = Comment::create($data);
         /*问题、回答、文章评论数+1*/
         $source->increment('comments');
-
+        self::$needRefresh = true;
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }
 

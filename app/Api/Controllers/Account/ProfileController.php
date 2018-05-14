@@ -26,7 +26,6 @@ use App\Models\UserOauth;
 use App\Models\UserTag;
 use App\Services\City\CityData;
 use App\Services\RateLimiter;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Api\Controllers\Controller;
 
@@ -442,6 +441,7 @@ class ProfileController extends Controller
 
         $percent = $user->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user->id,$percent);
+        self::$needRefresh = true;
         return self::createJsonData(true,['account_info_complete_percent'=>$percent]);
     }
 
@@ -470,6 +470,7 @@ class ProfileController extends Controller
 
         UserTag::multiDetachByField($user->id,Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get(),'skills');
         UserTag::multiIncrement($user->id,$tags,'skills');
+        self::$needRefresh = true;
         return self::createJsonData(true);
     }
 
@@ -483,6 +484,7 @@ class ProfileController extends Controller
         $tagids = $request->input('tags');
         $tags = Tag::whereIn('id',$tagids)->get();
         UserTag::multiDetachByField($user->id,$tags,'skills');
+        self::$needRefresh = true;
         return self::createJsonData(true);
     }
 
@@ -523,6 +525,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $user->avatar = $user->getAvatarUrl();
         $user->save();
+        self::$needRefresh = true;
         return self::createJsonData(true,['user_avatar_url'=>$user->avatar,'account_info_complete_percent'=>$percent],ApiException::SUCCESS,'上传成功');
     }
 
@@ -792,6 +795,7 @@ class ProfileController extends Controller
         }
         Cache::delete('user_address_book_list_'.$user->id);
         Cache::put('user_sync_address_book_list_'.$user->id,1,60*24*3);
+        self::$needRefresh = true;
         return self::createJsonData(true);
     }
 

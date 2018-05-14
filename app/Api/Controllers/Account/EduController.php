@@ -41,7 +41,7 @@ class EduController extends Controller {
 
         $percent = $user->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user->id,$percent);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$edu->id,'type'=>'edu','account_info_complete_percent'=>$percent]);
     }
 
@@ -74,7 +74,7 @@ class EduController extends Controller {
 
         $edu->update($update);
         UserCache::delUserInfoCache($user->id);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$id,'type'=>'edu']);
     }
 
@@ -93,7 +93,7 @@ class EduController extends Controller {
         }
         $edu->delete();
         UserCache::delUserInfoCache($user->id);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$id,'type'=>'edu','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 
