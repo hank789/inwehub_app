@@ -312,7 +312,7 @@ class GroupController extends Controller
             ],
             [
                 'title' => '链接',
-                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')'
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
             ],
             [
                 'title' => '作者',
@@ -346,7 +346,7 @@ class GroupController extends Controller
             ],
             [
                 'title' => '链接',
-                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')'
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
             ],
             [
                 'title' => '作者',
