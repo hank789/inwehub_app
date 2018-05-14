@@ -65,7 +65,7 @@ class ExpertController extends Controller {
         $user->description = $request->input('description');
         $user->address_detail = $request->input('address_detail');
         $user->save();
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['status'=>1,'tips'=>'稍安勿躁，我们正在审核中!']);
     }
 

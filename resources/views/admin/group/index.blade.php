@@ -36,9 +36,10 @@
                                         <div class="col-xs-2">
                                             <select class="form-control" name="status">
                                                 <option value="-9">状态</option>
-                                                    <option value="0" @if( isset($filter['status']) && $filter['status']==0) selected @endif >未审核</option>
-                                                    <option value="1" @if( isset($filter['status']) && $filter['status']==1) selected @endif >已审核</option>
-                                                    <option value="2" @if( isset($filter['status']) && $filter['status']==2) selected @endif >已拒绝</option>
+                                                <option value="0" @if( isset($filter['status']) && $filter['status']==0) selected @endif >未审核</option>
+                                                <option value="1" @if( isset($filter['status']) && $filter['status']==1) selected @endif >已审核</option>
+                                                <option value="2" @if( isset($filter['status']) && $filter['status']==2) selected @endif >已拒绝</option>
+                                                <option value="3" @if( isset($filter['status']) && $filter['status']==3) selected @endif >系统圈子</option>
                                             </select>
                                         </div>
 
@@ -80,7 +81,7 @@
                                             <td>{{ $group->public?'公开':'私密' }}</td>
                                             <td>{{ $group->subscribers.'/'.$group->articles }}</td>
                                             <td>{{ $group->created_at }}</td>
-                                            <td><span class="label @if($group->audit_status===0) label-warning @elseif($group->audit_status===2) label-danger @elseif($group->audit_status===1) label-success @endif">{{ trans_authentication_status($group->audit_status) }}</span> </td>
+                                            <td><span class="label @if($group->audit_status===0) label-warning @elseif($group->audit_status===2) label-danger @elseif($group->audit_status===1) label-success @else label-success @endif">{{ trans_group_status($group->audit_status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.group.edit',['id'=>$group->id]) }}" data-toggle="tooltip" title="基本信息"><i class="fa fa-edit"></i></a>

@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Groups\Group;
 use App\Models\Notification as NotificationModel;
@@ -39,7 +40,7 @@ class GroupAuditResult extends Notification implements ShouldQueue,ShouldBroadca
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**
@@ -109,6 +110,16 @@ class GroupAuditResult extends Notification implements ShouldQueue,ShouldBroadca
             'template_id' => $template_id,
             'target_url' => config('app.mobile_url').'#/group/detail/'.$this->group->id
         ];
+    }
+
+    public function toSlack($notifiable){
+        return \Slack::to(config('slack.ask_activity_channel'))
+            ->attach(
+                [
+                    'fields' => []
+                ]
+            )
+            ->send('圈子['.$this->group->name.']:'.$this->getTitle());
     }
 
     public function broadcastOn(){

@@ -83,7 +83,6 @@ class CompanyController extends Controller {
         if($industry_tags){
             Tag::multiSaveByIds($industry_tags,$company);
         }
-
         return self::createJsonData(true,['tips'=>'企业用户申请成功']);
     }
 

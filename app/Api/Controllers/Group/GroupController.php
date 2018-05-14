@@ -67,7 +67,21 @@ class GroupController extends Controller
             'group_id'=>$group->id,
             'audit_status'=>Group::AUDIT_STATUS_SUCCESS
         ]);
-        event(new SystemNotify('用户'.formatSlackUser($user).'创建了圈子:'.$group->name, $group->toArray()));
+        $fields = [
+            [
+                'title' => '圈名',
+                'value' => $group->name
+            ],
+            [
+                'title' => '隐私',
+                'value' => $group->public?'公开':'隐私'
+            ],
+            [
+                'title' => '描述',
+                'value' => $group->description
+            ]
+        ];
+        event(new SystemNotify('@conan_wuhao 用户'.formatSlackUser($user).'创建了圈子:'.$group->name, $fields));
         return self::createJsonData(true,['id'=>$group->id]);
     }
 
@@ -305,15 +319,55 @@ class GroupController extends Controller
         if ($user->id != $submission->user_id) {
             $submission->user->notify(new SubmissionRecommend($submission->user_id,$submission));
         }
-        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', [
-            'text' => strip_tags($submission->title),
-            'pretext' => '[链接]('.config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')',
-            'author_name' => $user->name,
-            'author_link' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug,
-            'mrkdwn_in' => ['pretext'],
-            'color'     => 'good',
-            'fields' => []
-        ]));
+        $fields = [
+            [
+                'title' => '标题',
+                'value' => strip_tags($submission->title)
+            ],
+            [
+                'title' => '链接',
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+            ],
+            [
+                'title' => '作者',
+                'value' => $user->name
+            ]
+        ];
+        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', $fields));
+        return self::createJsonData(true);
+    }
+
+    public function cancelSubmissionRecommend(Request $request) {
+        $this->validate($request,[
+            'submission_id'=>'required|integer'
+        ]);
+        $submission = Submission::find($request->input('submission_id'));
+        $group = Group::find($submission->group_id);
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $submission->is_recommend = 0;
+        $submission->save();
+        if ($user->id != $submission->user_id) {
+            //$submission->user->notify(new SubmissionRecommend($submission->user_id,$submission));
+        }
+        $fields = [
+            [
+                'title' => '标题',
+                'value' => strip_tags($submission->title)
+            ],
+            [
+                'title' => '链接',
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+            ],
+            [
+                'title' => '作者',
+                'value' => $user->name
+            ]
+        ];
+        event(new SystemNotify('圈主'.formatSlackUser($user).'取消圈子['.$group->name.']分享为推荐', $fields));
         return self::createJsonData(true);
     }
 
@@ -326,9 +380,11 @@ class GroupController extends Controller
         $type = $request->input('type');
         $group = Group::find($request->input('id'));
         $user = $request->user();
-        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
-        if (!$groupMember && $user->id != $group->user_id) {
-            return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
+        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+            if (!$groupMember && $user->id != $group->user_id) {
+                return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
+            }
         }
 
         $query = Submission::where('group_id',$request->input('id'));
@@ -379,6 +435,7 @@ class GroupController extends Controller
                 'support_number' => $submission->upvotes,
                 'supporter_list' => $supporters,
                 'is_upvoted'     => $upvote ? 1 : 0,
+                'is_recommend'   => $submission->is_recommend,
                 'submission_type' => $submission->type,
                 'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
                 'group'    => null
@@ -578,6 +635,9 @@ class GroupController extends Controller
         }
         $user = $request->user();
         if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
         $room = Room::where('r_type',2)
             ->where('source_id',$group->id)
             ->where('source_type',get_class($group))->first();
@@ -625,4 +685,36 @@ class GroupController extends Controller
         return self::createJsonData(true);
     }
 
+    //获取反馈圈子
+    public function getHelpGroup(Request $request) {
+        $group = Group::where('name','帮助与反馈')->first();
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        $return = $group->toArray();
+        $return['is_joined'] = 1;
+        if ($user->id == $group->user_id) {
+            $return['is_joined'] = 3;
+        }
+
+        $return['owner']['id'] = $group->user->id;
+        $return['owner']['uuid'] = $group->user->uuid;
+        $return['owner']['name'] = $group->user->name;
+        $return['owner']['avatar'] = $group->user->avatar;
+        $return['owner']['description'] = $group->user->description;
+        $return['owner']['is_expert'] = $group->user->is_expert;
+        $return['members'] = [];
+        $room = Room::where('r_type',2)
+            ->where('source_id',$group->id)
+            ->where('source_type',get_class($group))
+            ->where('status',Room::STATUS_OPEN)->first();
+        $return['subscribers'] = $group->getHotIndex();
+        $return['room_id'] = $room?$room->id:0;
+        $return['unread_group_im_messages'] = 0;
+        if ($room) {
+            $return['unread_group_im_messages'] = RateLimiter::instance()->sIsMember('group_im_users:'.$room->id,$user->id)?0:1;
+        }
+        return self::createJsonData(true,$return);
+    }
 }

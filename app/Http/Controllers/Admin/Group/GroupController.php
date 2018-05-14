@@ -79,22 +79,24 @@ class GroupController extends AdminController {
                 'name'         => $request->input('name'),
                 'audit_status' => $request->input('audit_status'),
                 'description'  => $request->input('description'),
-                'public'       => $request->input('public'),
+                'public'       => $request->input('audit_status') == Group::AUDIT_STATUS_SYSTEM?0:$request->input('public'),
                 'user_id'      => $request->input('author_id'),
                 'logo'         => $img_url
             ]);
-            GroupMember::create([
-                'user_id'=>$request->input('author_id'),
-                'group_id'=>$group->id,
-                'audit_status'=>Group::AUDIT_STATUS_SUCCESS
-            ]);
+            if ($request->input('audit_status') != Group::AUDIT_STATUS_SYSTEM) {
+                GroupMember::create([
+                    'user_id'=>$request->input('author_id'),
+                    'group_id'=>$group->id,
+                    'audit_status'=>Group::AUDIT_STATUS_SUCCESS
+                ]);
+            }
         } else {
             $oldStatus = $group->audit_status;
             $oldUserId = $group->user_id;
             $group->audit_status = $request->input('audit_status');
             $group->name = $request->input('name');
             $group->description = $request->input('description');
-            $group->public = $request->input('public');
+            $group->public = $request->input('audit_status') == Group::AUDIT_STATUS_SYSTEM?0:$request->input('public');
             $group->user_id = $request->input('author_id');
             $group->failed_reason = $request->input('failed_reason');
 
@@ -106,15 +108,16 @@ class GroupController extends AdminController {
                 $group->user->notify(new GroupAuditResult($group->user_id,$group));
             }
             if ($oldUserId != $request->input('author_id')) {
-
-                GroupMember::firstOrCreate([
-                    'user_id'=>$request->input('author_id'),
-                    'group_id'=>$group->id
-                ],[
-                    'user_id'=>$request->input('author_id'),
-                    'group_id'=>$group->id,
-                    'audit_status'=>Group::AUDIT_STATUS_SUCCESS
-                ]);
+                if ($request->input('audit_status') != Group::AUDIT_STATUS_SYSTEM) {
+                    GroupMember::firstOrCreate([
+                        'user_id'=>$request->input('author_id'),
+                        'group_id'=>$group->id
+                    ],[
+                        'user_id'=>$request->input('author_id'),
+                        'group_id'=>$group->id,
+                        'audit_status'=>Group::AUDIT_STATUS_SUCCESS
+                    ]);
+                }
             }
         }
         return $this->success(route('admin.group.index'),'圈子操作成功');

@@ -68,14 +68,17 @@ class SubmissionController extends Controller {
             }
         }
         $group_id = $request->input('group_id',0);
-        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
-        if (!$groupMember) {
-            throw new ApiException(ApiException::BAD_REQUEST);
-        }
         $group = Group::find($group_id);
-        if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
-            throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+            if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+                throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+            }
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+            if (!$groupMember) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
         }
+
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
@@ -179,7 +182,7 @@ class SubmissionController extends Controller {
             app('sentry')->captureException($exception);
             throw new ApiException(ApiException::ERROR);
         }
-
+        self::$needRefresh = true;
         return self::createJsonData(true,$submission->toArray());
     }
 
@@ -315,7 +318,7 @@ class SubmissionController extends Controller {
             Redis::connection()->hdel('voten:submission:url',$submission->data['url']);
         }
         $submission->delete();
-
+        self::$needRefresh = true;
         return self::createJsonData(true);
     }
 

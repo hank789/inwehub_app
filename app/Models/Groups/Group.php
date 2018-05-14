@@ -59,6 +59,7 @@ class Group extends Model
     const AUDIT_STATUS_DRAFT = 0;
     const AUDIT_STATUS_SUCCESS = 1;
     const AUDIT_STATUS_REJECT = 2;
+    const AUDIT_STATUS_SYSTEM = 3;//系统圈子，不需要用户加入就可访问，默认为私有圈子
 
     public function members() {
         return $this->hasMany(GroupMember::class, 'group_id');

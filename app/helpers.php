@@ -81,6 +81,31 @@ if (! function_exists('trans_authentication_status')) {
 
 }
 
+if (! function_exists('trans_group_status')) {
+
+    function trans_group_status($status){
+        $map = [
+            0 => '待审核',
+            1 => '审核通过',
+            2 => '未通过',
+            3 => '系统圈子',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+
+}
+
 /*企业认证状态文字定义*/
 if (! function_exists('trans_company_apply_status')) {
 

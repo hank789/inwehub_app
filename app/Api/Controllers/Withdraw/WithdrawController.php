@@ -60,6 +60,7 @@ class WithdrawController extends Controller {
         WithdrawLogic::checkUserWithdrawLimit($user->id,$amount);
 
         event(new WithdrawCreate($user->id,$amount,isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1'));
+        self::$needRefresh = true;
         return self::createJsonData(true,['withdraw_channel'=>Setting()->get('withdraw_channel',Withdraw::WITHDRAW_CHANNEL_WX),'tips'=>'您的提现请求已受理']);
     }
 }

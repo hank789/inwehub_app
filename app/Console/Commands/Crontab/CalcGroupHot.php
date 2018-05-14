@@ -38,7 +38,7 @@ class CalcGroupHot extends Command
      */
     public function handle()
     {
-        $groups = Group::get();
+        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get();
         foreach ($groups as $group) {
             //当日圈子分享点赞数
             $submissionIds = Submission::where('group_id',$group->id)->pluck('id')->toArray();

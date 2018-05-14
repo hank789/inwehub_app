@@ -522,6 +522,7 @@ class QuestionController extends Controller
                 "waiting_second" => $waiting_second,
                 'create_time'=>(string)$question->created_at
             ];
+            self::$needRefresh = true;
             return self::createJsonData(true,$res_data,ApiException::SUCCESS,$message);
 
         }
@@ -767,7 +768,7 @@ class QuestionController extends Controller
         $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id);
         /*修改问题邀请表的回答状态*/
         QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_REJECTED]);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['question_id'=>$data['question_id'],'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at]);
     }
 

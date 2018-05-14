@@ -33,16 +33,18 @@ class BookmarksController extends Controller {
         $user = $request->user();
 
         $group = Group::find($submission->group_id);
-        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group_id)->first();
-        $is_joined = -1;
-        if ($groupMember) {
-            $is_joined = $groupMember->audit_status;
-        }
-        if ($user->id == $group->user_id) {
-            $is_joined = 3;
-        }
-        if (in_array($is_joined,[-1,0,2])) {
-            return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
+        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group_id)->first();
+            $is_joined = -1;
+            if ($groupMember) {
+                $is_joined = $groupMember->audit_status;
+            }
+            if ($user->id == $group->user_id) {
+                $is_joined = 3;
+            }
+            if (in_array($is_joined,[-1,0,2])) {
+                return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
+            }
         }
 
         /*不能多次收藏*/

@@ -55,7 +55,7 @@ class JobController extends Controller {
 
         $percent = $user->getInfoCompletePercent();
         $this->creditAccountInfoCompletePercent($user->id,$percent);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$job->id,'type'=>'job','account_info_complete_percent'=>$percent]);
     }
 
@@ -100,7 +100,7 @@ class JobController extends Controller {
         }
 
         UserCache::delUserInfoCache($user->id);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$id,'type'=>'job']);
     }
 
@@ -129,7 +129,7 @@ class JobController extends Controller {
         }
         $job->delete();
         UserCache::delUserInfoCache($user->id);
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$id,'type'=>'job','account_info_complete_percent'=>$user->getInfoCompletePercent()]);
     }
 

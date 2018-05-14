@@ -146,7 +146,7 @@ class ActivityController extends Controller {
         if($collect){
             $source->increment('collections');
         }
-
+        self::$needRefresh = true;
         return self::createJsonData(true,['tip'=>'报名成功']);
     }
 
@@ -267,7 +267,7 @@ class ActivityController extends Controller {
         $comment = Comment::create($data);
         /*问题、回答、文章评论数+1*/
         $comment->source()->increment('comments');
-
+        self::$needRefresh = true;
         return self::createJsonData(true,[
             'tips'=>'评论成功',
             'content' => $data['content'],
