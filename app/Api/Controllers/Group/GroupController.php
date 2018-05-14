@@ -305,15 +305,21 @@ class GroupController extends Controller
         if ($user->id != $submission->user_id) {
             $submission->user->notify(new SubmissionRecommend($submission->user_id,$submission));
         }
-        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', [
-            'text' => strip_tags($submission->title),
-            'pretext' => '[链接]('.config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')',
-            'author_name' => $user->name,
-            'author_link' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug,
-            'mrkdwn_in' => ['pretext'],
-            'color'     => 'good',
-            'fields' => []
-        ]));
+        $fields = [
+            [
+                'title' => '标题',
+                'value' => strip_tags($submission->title)
+            ],
+            [
+                'title' => '链接',
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')'
+            ],
+            [
+                'title' => '作者',
+                'value' => $user->name
+            ]
+        ];
+        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', $fields));
         return self::createJsonData(true);
     }
 
@@ -333,15 +339,21 @@ class GroupController extends Controller
         if ($user->id != $submission->user_id) {
             //$submission->user->notify(new SubmissionRecommend($submission->user_id,$submission));
         }
-        event(new SystemNotify('圈主'.formatSlackUser($user).'取消圈子['.$group->name.']分享为推荐', [
-            'text' => strip_tags($submission->title),
-            'pretext' => '[链接]('.config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')',
-            'author_name' => $user->name,
-            'author_link' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug,
-            'mrkdwn_in' => ['pretext'],
-            'color'     => 'good',
-            'fields' => []
-        ]));
+        $fields = [
+            [
+                'title' => '标题',
+                'value' => strip_tags($submission->title)
+            ],
+            [
+                'title' => '链接',
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')'
+            ],
+            [
+                'title' => '作者',
+                'value' => $user->name
+            ]
+        ];
+        event(new SystemNotify('圈主'.formatSlackUser($user).'取消圈子['.$group->name.']分享为推荐', $fields));
         return self::createJsonData(true);
     }
 
