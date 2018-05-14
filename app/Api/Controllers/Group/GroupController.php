@@ -633,7 +633,7 @@ class GroupController extends Controller
         }
         $user = $request->user();
         $return = $group->toArray();
-        $return['is_joined'] = 4;
+        $return['is_joined'] = 1;
 
         $return['owner']['id'] = $group->user->id;
         $return['owner']['uuid'] = $group->user->uuid;
