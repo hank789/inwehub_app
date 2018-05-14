@@ -317,6 +317,34 @@ class GroupController extends Controller
         return self::createJsonData(true);
     }
 
+    public function cancelSubmissionRecommend(Request $request) {
+        $this->validate($request,[
+            'submission_id'=>'required|integer'
+        ]);
+        $submission = Submission::find($request->input('submission_id'));
+        $group = Group::find($submission->group_id);
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $submission->is_recommend = 0;
+        $submission->save();
+        if ($user->id != $submission->user_id) {
+            //$submission->user->notify(new SubmissionRecommend($submission->user_id,$submission));
+        }
+        event(new SystemNotify('圈主'.formatSlackUser($user).'取消圈子['.$group->name.']分享为推荐', [
+            'text' => strip_tags($submission->title),
+            'pretext' => '[链接]('.config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug.')',
+            'author_name' => $user->name,
+            'author_link' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug,
+            'mrkdwn_in' => ['pretext'],
+            'color'     => 'good',
+            'fields' => []
+        ]));
+        return self::createJsonData(true);
+    }
+
     //圈子分享列表
     public function submissionList(Request $request) {
         $this->validate($request,[
