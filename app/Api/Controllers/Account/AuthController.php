@@ -168,6 +168,10 @@ class AuthController extends Controller
         if(RateLimiter::instance()->increase('userLogin',$credentials['mobile'],3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        if(RateLimiter::instance()->increase('userLoginCount',$credentials['mobile'],60,30)){
+            event(new SystemNotify('用户登录['.$credentials['mobile'].']60秒内尝试了30次以上'));
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
         if (isset($credentials['phoneCode']) && $credentials['phoneCode']) {
             //验证手机验证码
             $code_cache = Cache::get(SendPhoneMessage::getCacheKey('login',$credentials['mobile']));
@@ -616,6 +620,13 @@ class AuthController extends Controller
             'password' => 'required|min:6|max:64',
         ]);
         $mobile = $request->input('mobile');
+        if(RateLimiter::instance()->increase('userForgetPassword',$mobile,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        if(RateLimiter::instance()->increase('userForgetPasswordCount',$mobile,60,30)){
+            event(new SystemNotify('忘记密码['.$mobile.']60秒内尝试了30次以上'));
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
 
         $user = User::where('mobile',$mobile)->first();
         if(!$user){
