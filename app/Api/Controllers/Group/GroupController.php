@@ -635,6 +635,9 @@ class GroupController extends Controller
         }
         $user = $request->user();
         if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
         $room = Room::where('r_type',2)
             ->where('source_id',$group->id)
             ->where('source_type',get_class($group))->first();
