@@ -10,7 +10,7 @@ Route::post('home','IndexController@home')->middleware('jwt.auth');
 Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.auth');
 
 //精选推荐列表
-Route::post('recommendRead','IndexController@recommendRead')->middleware('jwt.auth');
+Route::post('recommendRead','IndexController@recommendRead');
 
 
 //登陆注册认证类
@@ -531,6 +531,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('closeIm','GroupController@closeIm');
     //移出圈子
     Route::post('removeMember','GroupController@removeMember');
+    //获取帮助圈子
+    Route::post('getHelpGroup','GroupController@getHelpGroup');
 });
 
 //圈子详情

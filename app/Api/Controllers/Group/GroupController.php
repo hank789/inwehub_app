@@ -625,4 +625,34 @@ class GroupController extends Controller
         return self::createJsonData(true);
     }
 
+    //获取反馈圈子
+    public function getHelpGroup(Request $request) {
+        $this->validate($request,['id'=>'required|integer']);
+        $group = Group::where('name','帮助与反馈')->first();
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        $return = $group->toArray();
+        $return['is_joined'] = 4;
+
+        $return['owner']['id'] = $group->user->id;
+        $return['owner']['uuid'] = $group->user->uuid;
+        $return['owner']['name'] = $group->user->name;
+        $return['owner']['avatar'] = $group->user->avatar;
+        $return['owner']['description'] = $group->user->description;
+        $return['owner']['is_expert'] = $group->user->is_expert;
+        $return['members'] = [];
+        $room = Room::where('r_type',2)
+            ->where('source_id',$group->id)
+            ->where('source_type',get_class($group))
+            ->where('status',Room::STATUS_OPEN)->first();
+        $return['subscribers'] = $group->getHotIndex();
+        $return['room_id'] = $room?$room->id:0;
+        $return['unread_group_im_messages'] = 0;
+        if ($room) {
+            $return['unread_group_im_messages'] = RateLimiter::instance()->sIsMember('group_im_users:'.$room->id,$user->id)?0:1;
+        }
+        return self::createJsonData(true,$return);
+    }
 }
