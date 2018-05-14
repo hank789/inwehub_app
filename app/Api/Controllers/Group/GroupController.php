@@ -627,7 +627,6 @@ class GroupController extends Controller
 
     //获取反馈圈子
     public function getHelpGroup(Request $request) {
-        $this->validate($request,['id'=>'required|integer']);
         $group = Group::where('name','帮助与反馈')->first();
         if (!$group) {
             throw new ApiException(ApiException::GROUP_NOT_EXIST);
