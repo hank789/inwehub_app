@@ -326,9 +326,11 @@ class GroupController extends Controller
         $type = $request->input('type');
         $group = Group::find($request->input('id'));
         $user = $request->user();
-        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
-        if (!$groupMember && $user->id != $group->user_id) {
-            return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
+        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+            if (!$groupMember && $user->id != $group->user_id) {
+                return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
+            }
         }
 
         $query = Submission::where('group_id',$request->input('id'));
@@ -634,6 +636,9 @@ class GroupController extends Controller
         $user = $request->user();
         $return = $group->toArray();
         $return['is_joined'] = 1;
+        if ($user->id == $group->user_id) {
+            $return['is_joined'] = 3;
+        }
 
         $return['owner']['id'] = $group->user->id;
         $return['owner']['uuid'] = $group->user->uuid;
