@@ -67,7 +67,7 @@ class GroupController extends Controller
             'group_id'=>$group->id,
             'audit_status'=>Group::AUDIT_STATUS_SUCCESS
         ]);
-        event(new SystemNotify('用户'.formatSlackUser($user).'创建了圈子:'.$group->name, $group->toArray()));
+        event(new SystemNotify('@conan_wuhao 用户'.formatSlackUser($user).'创建了圈子:'.$group->name, $group->toArray()));
         return self::createJsonData(true,['id'=>$group->id]);
     }
 
