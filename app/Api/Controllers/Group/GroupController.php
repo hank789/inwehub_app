@@ -371,6 +371,72 @@ class GroupController extends Controller
         return self::createJsonData(true);
     }
 
+    //置顶功能
+    public function setSubmissionTop(Request $request) {
+        $this->validate($request,[
+            'submission_id'=>'required|integer'
+        ]);
+        $submission = Submission::find($request->input('submission_id'));
+        $group = Group::find($submission->group_id);
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $max = Submission::max('top');
+        $submission->top = $max + 1;
+        $submission->save();
+
+        $fields = [
+            [
+                'title' => '标题',
+                'value' => strip_tags($submission->title)
+            ],
+            [
+                'title' => '链接',
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+            ],
+            [
+                'title' => '作者',
+                'value' => $user->name
+            ]
+        ];
+        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为置顶', $fields));
+        return self::createJsonData(true);
+    }
+
+    public function cancelSubmissionTop(Request $request) {
+        $this->validate($request,[
+            'submission_id'=>'required|integer'
+        ]);
+        $submission = Submission::find($request->input('submission_id'));
+        $group = Group::find($submission->group_id);
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $submission->top = 0;
+        $submission->save();
+
+        $fields = [
+            [
+                'title' => '标题',
+                'value' => strip_tags($submission->title)
+            ],
+            [
+                'title' => '链接',
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+            ],
+            [
+                'title' => '作者',
+                'value' => $user->name
+            ]
+        ];
+        event(new SystemNotify('圈主'.formatSlackUser($user).'取消圈子['.$group->name.']分享为置顶', $fields));
+        return self::createJsonData(true);
+    }
+
     //圈子分享列表
     public function submissionList(Request $request) {
         $this->validate($request,[
@@ -402,7 +468,7 @@ class GroupController extends Controller
                 break;
         }
 
-        $submissions = $query->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
 
         $return = $submissions->toArray();
         $list = [];
@@ -434,6 +500,7 @@ class GroupController extends Controller
                 'comment_number' => $submission->comments_number,
                 'support_number' => $submission->upvotes,
                 'supporter_list' => $supporters,
+                'top'            => $submission->top,
                 'is_upvoted'     => $upvote ? 1 : 0,
                 'is_recommend'   => $submission->is_recommend,
                 'submission_type' => $submission->type,

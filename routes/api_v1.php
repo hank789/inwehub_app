@@ -511,6 +511,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('setSubmissionRecommend','GroupController@setSubmissionRecommend');
     //取消推荐
     Route::post('cancelSubmissionRecommend','GroupController@cancelSubmissionRecommend');
+    //置顶
+    Route::post('setSubmissionTop','GroupController@setSubmissionTop');
+    //取消置顶
+    Route::post('cancelSubmissionTop','GroupController@cancelSubmissionTop');
     //圈子分享列表
     Route::post('submissionList','GroupController@submissionList');
     //随机推荐热门
