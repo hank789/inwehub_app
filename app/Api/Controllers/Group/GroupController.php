@@ -602,6 +602,7 @@ class GroupController extends Controller
         $return['data'] = [];
         foreach ($groupMembers as $groupMember) {
             $group = $groupMember->group;
+            if ($group->audit_status == Group::AUDIT_STATUS_REJECT && $group->user_id != $user->id) continue;
             $return['data'][] = [
                 'id' => $group->id,
                 'name' => $group->name,
