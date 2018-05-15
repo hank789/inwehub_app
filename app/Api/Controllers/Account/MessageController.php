@@ -209,7 +209,6 @@ class MessageController extends Controller
                     $notifyUser->notify(new NewMessage($member->user_id,$message,$room_id));
                 }
             }
-            RateLimiter::instance()->sClear('group_im_users:'.$room->id);
             $group = Group::find($room->source_id);
             $fields = [];
             if (isset($message->data['text']) && $message->data['text']) {
@@ -277,6 +276,16 @@ class MessageController extends Controller
                 'room_id' => $room_id
             ]);
         }
+        $last_msg_id = MessageRoom::where('room_id',$room->id)->max('message_id');
+        $roomUser = RoomUser::firstOrCreate([
+            'user_id' => $user->id,
+            'room_id' => $room->id
+        ],[
+            'user_id' => $user->id,
+            'room_id' => $room->id
+        ]);
+        $roomUser->last_msg_id = $last_msg_id;
+        $roomUser->save();
         return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id,'contact_name'=>$contact->name]);
     }
 
@@ -358,6 +367,16 @@ class MessageController extends Controller
         }
         $return['contact'] = $contact;
         $return['source'] = $source;
+        $last_msg_id = MessageRoom::where('room_id',$room->id)->max('message_id');
+        $roomUser = RoomUser::firstOrCreate([
+            'user_id' => $user->id,
+            'room_id' => $room->id
+        ],[
+            'user_id' => $user->id,
+            'room_id' => $room->id
+        ]);
+        $roomUser->last_msg_id = $last_msg_id;
+        $roomUser->save();
         return self::createJsonData(true,$return);
     }
 

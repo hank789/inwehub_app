@@ -8,6 +8,7 @@ use App\Models\Collection;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
 use App\Models\Submission;
@@ -180,7 +181,10 @@ class GroupController extends Controller
         $return['recommend_submission_numbers'] = Submission::where('group_id',$group->id)->where('is_recommend',1)->count();
         $return['unread_group_im_messages'] = 0;
         if ($room) {
-            $return['unread_group_im_messages'] = RateLimiter::instance()->sIsMember('group_im_users:'.$room->id,$user->id)?0:1;
+            $roomUser = RoomUser::where('user_id',$user->id)->where('room_id',$room->id)->first();
+            if ($roomUser) {
+                $return['unread_group_im_messages'] = MessageRoom::where('room_id',$room->id)->where('message_id','>',$roomUser->last_msg_id)->count();
+            }
         }
         return self::createJsonData(true,$return);
     }
