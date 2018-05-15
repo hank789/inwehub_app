@@ -139,6 +139,7 @@ class GroupController extends Controller
             $user->id = 0;
         }
         $return = $group->toArray();
+        $return['subscribers'] = $group->getHotIndex();
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
         $return['is_joined'] = -1;
         if ($groupMember) {
@@ -176,7 +177,6 @@ class GroupController extends Controller
                 'is_expert'   => $member->user->is_expert
             ];
         }
-        $return['subscribers'] = $group->getHotIndex();
         $return['room_id'] = $room?$room->id:0;
         $return['recommend_submission_numbers'] = Submission::where('group_id',$group->id)->where('is_recommend',1)->count();
         $return['unread_group_im_messages'] = 0;
