@@ -288,6 +288,7 @@ class SubmissionController extends Controller {
             }
         }
         $return['data']['img'] = $img;
+        $this->logUserViewTags($user->id,$submission->tags()->get());
         $this->doing($user->id,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,'查看动态');
         return self::createJsonData(true,$return);
     }

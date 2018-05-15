@@ -5,6 +5,7 @@ use App\Models\Collection;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
+use App\Models\UserTag;
 use Illuminate\Http\Request;
 
 /**
@@ -52,6 +53,7 @@ class BookmarksController extends Controller {
         if($userCollect){
             $userCollect->delete();
             $submission->decrement('collections');
+            UserTag::multiDecrement($user->id,$submission->tags()->get(),'articles');
             return self::createJsonData(true,['tip'=>'取消收藏成功','type'=>'unbookmarked'],ApiException::SUCCESS,'取消收藏成功');
         }
 
@@ -67,6 +69,7 @@ class BookmarksController extends Controller {
         if($collect){
             $submission->increment('collections');
         }
+        UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
         return self::createJsonData(true,['tip'=>'收藏成功', 'type'=>'bookmarked'],ApiException::SUCCESS,'收藏成功');
     }

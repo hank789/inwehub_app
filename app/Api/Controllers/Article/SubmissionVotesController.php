@@ -7,6 +7,7 @@ use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\User;
+use App\Models\UserTag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
@@ -160,6 +161,7 @@ class SubmissionVotesController extends Controller {
         $submission->rate = rateSubmission( $submission->upvotes, $submission->downvotes, $submission->created_at);
 
         $submission->save();
+        UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
 
         $voted = Redis::connection()->hget('voten:submission:upvote',$submission->id.'_'.$user->id);

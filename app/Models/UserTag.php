@@ -41,7 +41,7 @@ class UserTag extends Model
 {
     use BelongsToUserTrait;
     protected $table = 'user_tags';
-    protected $fillable = ['user_id', 'tag_id','questions','articles','answers','supports'];
+    protected $fillable = ['user_id', 'tag_id','questions','articles','answers','supports','views'];
     
 
     /*用户标签统计*/
@@ -60,6 +60,20 @@ class UserTag extends Model
             }
         }
     }
+
+    public static function multiDecrement($user_id,$tags,$field){
+        if(!$tags){
+            return false;
+        }
+        foreach( $tags as $tag ){
+            $userTag = self::where('user_id',$user_id)->where('tag_id',$tag->id)->first();
+            if($userTag && $userTag->$field > 0){
+                $userTag->decrement($field);
+            }
+        }
+    }
+
+
 
     public function tag(){
         return $this->belongsTo('App\Models\Tag');

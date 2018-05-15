@@ -67,7 +67,7 @@ class SupportController extends Controller
         if($support){
             $source->increment('supports');
             if($source_type=='answer'){
-                UserTag::multiIncrement($source->user_id,$source->question->tags()->get(),'supports');
+                UserTag::multiIncrement($source->user_id,$source->question->tags()->get(),'questions');
             }else if($source_type=='article'){
                 UserTag::multiIncrement($source->user_id,$source->tags()->get(),'supports');
             }

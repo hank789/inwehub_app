@@ -204,6 +204,7 @@ class QuestionController extends Controller
             if ($myAnswer) $my_answer_id = $myAnswer->id;
         }
         $this->doing($user->id,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,'查看问题');
+        $this->logUserViewTags($user->id,$question->tags()->get());
 
         return self::createJsonData(true,[
             'is_followed_question'=>$is_followed_question,

@@ -6,6 +6,7 @@ use App\Models\Doing;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
+use App\Models\UserTag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
@@ -67,6 +68,7 @@ class CommentController extends Controller {
         $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
 
         $comment = Comment::create($data);
+        UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }

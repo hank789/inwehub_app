@@ -67,6 +67,7 @@ class TagsController extends Controller {
         $data = $tag->toArray();
         $data['is_followed'] = $is_followed;
         $data['followed_users'] = $attentionUsers;
+        $this->logUserViewTags($loginUser->id,[$tag]);
         return self::createJsonData(true,$data);
     }
 

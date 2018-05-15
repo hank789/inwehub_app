@@ -20,6 +20,7 @@ use App\Models\QuestionInvitation;
 use App\Models\Support;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\UserTag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -172,7 +173,7 @@ class AnswerController extends Controller
         $answer->increment('views');
         QuestionLogic::calculationQuestionRate($question->id);
         $this->doing($user->id,Doing::ACTION_VIEW_ANSWER,get_class($answer),$answer->id,'查看回答');
-
+        $this->logUserViewTags($user->id,$question->tags()->get());
 
         return self::createJsonData(true,[
             'question'=>$question_data,
@@ -446,6 +447,8 @@ class AnswerController extends Controller
 
 
         event(new PayForView($order));
+        UserTag::multiIncrement($loginUser->id,$answer->question->tags()->get(),'questions');
+
         $this->doing($loginUser->id,Doing::ACTION_PAY_FOR_VIEW_ANSWER,get_class($answer),$answer->id,'付费围观答案','',0,$answer->user_id);
         $this->credit($answer->question->user_id,Credit::KEY_PAY_FOR_VIEW_ANSWER,$order->id,'问题被付费围观');
         self::$needRefresh = true;
@@ -562,6 +565,7 @@ class AnswerController extends Controller
         $comment = Comment::create($data);
         /*问题、回答、文章评论数+1*/
         $source->increment('comments');
+        UserTag::multiIncrement($user->id,$source->question->tags()->get(),'questions');
         self::$needRefresh = true;
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }
