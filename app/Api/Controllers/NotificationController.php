@@ -116,6 +116,7 @@ class NotificationController extends Controller
                 'avatar'       => $contact->avatar,
                 'name'         => $contact->name,
                 'room_id'      => $im_room->id,
+                'room_type'    => Room::ROOM_TYPE_WHISPER,
                 'contact_id'   => $contact->id,
                 'contact_uuid' => $contact->uuid,
                 'last_message' => [
@@ -140,6 +141,7 @@ class NotificationController extends Controller
                 'avatar'       => $customer_user->avatar,
                 'name'         => $customer_user->name,
                 'room_id'      => 0,
+                'room_type'    => Room::ROOM_TYPE_WHISPER,
                 'contact_id'   => $customer_user->id,
                 'contact_uuid' => $customer_user->uuid,
                 'last_message' => [
@@ -167,6 +169,7 @@ class NotificationController extends Controller
                     'avatar'       => $group->logo,
                     'name'         => $group->name,
                     'room_id'      => $room->id,
+                    'room_type'    => Room::ROOM_TYPE_GROUP,
                     'contact_id'   => 0,
                     'contact_uuid' => null,
                     'last_message' => [
