@@ -177,6 +177,7 @@ class GroupController extends Controller
         }
         $return['subscribers'] = $group->getHotIndex();
         $return['room_id'] = $room?$room->id:0;
+        $return['recommend_submission_numbers'] = Submission::where('group_id',$group->id)->where('is_recommend',1)->count();
         $return['unread_group_im_messages'] = 0;
         if ($room) {
             $return['unread_group_im_messages'] = RateLimiter::instance()->sIsMember('group_im_users:'.$room->id,$user->id)?0:1;
