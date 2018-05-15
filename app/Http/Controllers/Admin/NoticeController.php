@@ -30,7 +30,7 @@ class NoticeController extends AdminController
      */
     public function index(Request $request)
     {
-        $notices = Notice::orderBy('updated_at','DESC')->paginate(Config::get('inwehub.admin.page_size'));
+        $notices = Notice::orderBy('sort','DESC')->paginate(Config::get('inwehub.admin.page_size'));
         return view('admin.notice.index')->with('notices',$notices);
     }
 
