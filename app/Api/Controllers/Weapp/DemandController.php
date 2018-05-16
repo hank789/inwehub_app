@@ -336,6 +336,7 @@ class DemandController extends controller {
         if ($formId) {
             RateLimiter::instance()->sAdd('user_oauth_formId_'.$oauth->id,$formId,60*60*24*6);
         }
+        $demand->clearMediaCollection('images_big');
         return self::createJsonData(true,['id'=>$demand->id]);
     }
 
