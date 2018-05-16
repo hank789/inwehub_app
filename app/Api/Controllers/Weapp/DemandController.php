@@ -30,7 +30,7 @@ class DemandController extends controller {
 
     public function showList(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
-            'type'   => 'required|in:all,mine'
+            'type'   => 'required|in:all,mine,other'
         ];
         $this->validate($request,$validateRules);
         $oauth = $JWTAuth->parseToken()->toUser();
@@ -43,6 +43,7 @@ class DemandController extends controller {
         $type = $request->input('type');
         $data = [];
         $closedId = 0;
+        $authorName = '';
         switch ($type){
             case 'all':
                 $list = DemandUserRel::where('demand_user_rel.user_oauth_id',$oauth->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->select('demand_user_rel.*')->orderBy('status','ASC')->orderBy('demand.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
@@ -119,10 +120,44 @@ class DemandController extends controller {
                     ];
                 }
                 break;
+            case 'other':
+                $uid = $request->input('uid');
+                $author = User::find($uid);
+                $authorName = $author->name;
+                $list = Demand::where('user_id',$uid)->where('status',Demand::STATUS_PUBLISH)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+                foreach ($list as $demand) {
+                    $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $total_unread = 0;
+                    $total = 0;
+                    if ($closedId == 0 && $demand->status == Demand::STATUS_CLOSED) {
+                        $closedId = $demand->id;
+                    }
+                    $data[] = [
+                        'id'    => $demand->id,
+                        'title' => $demand->title,
+                        'publisher_name'=>$demand->user->name,
+                        'publisher_avatar'=>$demand_user_oauth->avatar,
+                        'publisher_title'=>$demand->user->title,
+                        'publisher_company'=>$demand->user->company,
+                        'address' => $demand->address,
+                        'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
+                        'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
+                        'salary' => salaryFormat($demand->salary),
+                        'salary_upper' => salaryFormat($demand->salary_upper?:$demand->salary),
+                        'salary_type' => $demand->salary_type,
+                        'status' => $demand->status,
+                        'view_number'  => $demand->views,
+                        'communicate_number' => $total,
+                        'unread_number' => $total_unread,
+                        'created_time'=>$demand->created_at->diffForHumans()
+                    ];
+                }
+                break;
         }
         $return = $list->toArray();
         $return['data'] = $data;
         $return['closedDemandId'] = $closedId;
+        $return['authorName'] = $authorName;
         return self::createJsonData(true,$return);
     }
 
@@ -149,6 +184,7 @@ class DemandController extends controller {
                 $im_count += MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
             }
         }
+        $processCount = Demand::where('user_id',$demand->user_id)->where('status',Demand::STATUS_PUBLISH)->count();
         $data = [
             'publisher_user_id'=>$demand_oauth->user_id,
             'publisher_name'=>$demand->user->name,
@@ -157,6 +193,7 @@ class DemandController extends controller {
             'publisher_company'=>$demand->user->company,
             'publisher_email'=>$demand->user->email,
             'publisher_phone' => $demand->user->mobile,
+            'publisher_demand_count' => $processCount,
             'is_author' => $is_author,
             'title' => $demand->title,
             'address' => $demand->address,
