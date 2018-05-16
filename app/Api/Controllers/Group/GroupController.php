@@ -505,7 +505,6 @@ class GroupController extends Controller
                 'comment_number' => $submission->comments_number,
                 'support_number' => $submission->upvotes,
                 'supporter_list' => $supporters,
-                'top'            => $submission->top,
                 'is_upvoted'     => $upvote ? 1 : 0,
                 'is_recommend'   => $submission->is_recommend,
                 'submission_type' => $submission->type,
@@ -516,7 +515,7 @@ class GroupController extends Controller
             $list[] = [
                 'id' => $submission->id,
                 'title' => $submission->user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'),
-                'top' => 0,
+                'top' => $submission->top,
                 'user'  => [
                     'id'    => $submission->user->id ,
                     'uuid'  => $submission->user->uuid,
