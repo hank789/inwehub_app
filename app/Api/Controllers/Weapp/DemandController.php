@@ -121,7 +121,7 @@ class DemandController extends controller {
                 break;
             case 'other':
                 $uid = $request->input('uid');
-                $list = Demand::where('user_id',$uid)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+                $list = Demand::where('user_id',$uid)->where('status',Demand::STATUS_PUBLISH)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $item) {
                     $demand = Demand::find($item->demand_id);
                     $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
@@ -181,6 +181,7 @@ class DemandController extends controller {
                 $im_count += MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
             }
         }
+        $processCount = Demand::where('user_id',$demand->user_id)->where('status',Demand::STATUS_PUBLISH)->count();
         $data = [
             'publisher_user_id'=>$demand_oauth->user_id,
             'publisher_name'=>$demand->user->name,
@@ -189,6 +190,7 @@ class DemandController extends controller {
             'publisher_company'=>$demand->user->company,
             'publisher_email'=>$demand->user->email,
             'publisher_phone' => $demand->user->mobile,
+            'publisher_demand_process_count' => $processCount,
             'is_author' => $is_author,
             'title' => $demand->title,
             'address' => $demand->address,
