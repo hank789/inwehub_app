@@ -125,8 +125,7 @@ class DemandController extends controller {
                 $author = User::find($uid);
                 $authorName = $author->name;
                 $list = Demand::where('user_id',$uid)->where('status',Demand::STATUS_PUBLISH)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
-                foreach ($list as $item) {
-                    $demand = Demand::find($item->demand_id);
+                foreach ($list as $demand) {
                     $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
                     $total_unread = 0;
                     $total = 0;
