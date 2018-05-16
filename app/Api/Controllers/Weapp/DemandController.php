@@ -30,7 +30,7 @@ class DemandController extends controller {
 
     public function showList(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
-            'type'   => 'required|in:all,mine'
+            'type'   => 'required|in:all,mine,other'
         ];
         $this->validate($request,$validateRules);
         $oauth = $JWTAuth->parseToken()->toUser();
@@ -114,6 +114,38 @@ class DemandController extends controller {
                         'status' => $demand->status,
                         'view_number'  => $demand->views,
                         'communicate_number' => $rooms->count(),
+                        'unread_number' => $total_unread,
+                        'created_time'=>$demand->created_at->diffForHumans()
+                    ];
+                }
+                break;
+            case 'other':
+                $uid = $request->input('uid');
+                $list = Demand::where('user_id',$uid)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+                foreach ($list as $item) {
+                    $demand = Demand::find($item->demand_id);
+                    $demand_user_oauth = $demand->user->userOauth->where('auth_type',UserOauth::AUTH_TYPE_WEAPP)->first();
+                    $total_unread = 0;
+                    $total = 0;
+                    if ($closedId == 0 && $demand->status == Demand::STATUS_CLOSED) {
+                        $closedId = $demand->id;
+                    }
+                    $data[] = [
+                        'id'    => $demand->id,
+                        'title' => $demand->title,
+                        'publisher_name'=>$demand->user->name,
+                        'publisher_avatar'=>$demand_user_oauth->avatar,
+                        'publisher_title'=>$demand->user->title,
+                        'publisher_company'=>$demand->user->company,
+                        'address' => $demand->address,
+                        'industry' => ['value'=>$demand->industry,'text'=>$demand->getIndustryName()],
+                        'project_cycle' => ['value'=>$demand->project_cycle,'text'=>trans_project_project_cycle($demand->project_cycle)],
+                        'salary' => salaryFormat($demand->salary),
+                        'salary_upper' => salaryFormat($demand->salary_upper?:$demand->salary),
+                        'salary_type' => $demand->salary_type,
+                        'status' => $demand->status,
+                        'view_number'  => $demand->views,
+                        'communicate_number' => $total,
                         'unread_number' => $total_unread,
                         'created_time'=>$demand->created_at->diffForHumans()
                     ];
