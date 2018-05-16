@@ -43,6 +43,7 @@ class DemandController extends controller {
         $type = $request->input('type');
         $data = [];
         $closedId = 0;
+        $authorName = '';
         switch ($type){
             case 'all':
                 $list = DemandUserRel::where('demand_user_rel.user_oauth_id',$oauth->id)->leftJoin('demand','demand_user_rel.demand_id','=','demand.id')->select('demand_user_rel.*')->orderBy('status','ASC')->orderBy('demand.id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
@@ -121,6 +122,8 @@ class DemandController extends controller {
                 break;
             case 'other':
                 $uid = $request->input('uid');
+                $author = User::find($uid);
+                $authorName = $author->name;
                 $list = Demand::where('user_id',$uid)->where('status',Demand::STATUS_PUBLISH)->orderBy('status','asc')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
                 foreach ($list as $item) {
                     $demand = Demand::find($item->demand_id);
@@ -155,6 +158,7 @@ class DemandController extends controller {
         $return = $list->toArray();
         $return['data'] = $data;
         $return['closedDemandId'] = $closedId;
+        $return['authorName'] = $authorName;
         return self::createJsonData(true,$return);
     }
 
