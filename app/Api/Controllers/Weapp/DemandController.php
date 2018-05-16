@@ -190,7 +190,7 @@ class DemandController extends controller {
             'publisher_company'=>$demand->user->company,
             'publisher_email'=>$demand->user->email,
             'publisher_phone' => $demand->user->mobile,
-            'publisher_demand_process_count' => $processCount,
+            'publisher_demand_count' => $processCount,
             'is_author' => $is_author,
             'title' => $demand->title,
             'address' => $demand->address,
