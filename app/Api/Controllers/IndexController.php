@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers;
 use App\Exceptions\ApiException;
 use App\Models\Activity\Coupon;
+use App\Models\AddressBook;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Authentication;
@@ -131,6 +132,13 @@ class IndexController extends Controller {
                 $new_message[] = [
                     'text'=>'您有'.$todo_task.'条待办事项！',
                     'link'=>'/task'
+                ];
+            }
+            $addressBookCount = AddressBook::where('user_id',$user->id)->where('status',1)->count();
+            if ($addressBookCount <= 0) {
+                $new_message[] = [
+                    'text'=>'来寻找你的通讯录好友！',
+                    'link'=>'/userGuide/stepthree/app'
                 ];
             }
         }
