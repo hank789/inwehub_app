@@ -75,7 +75,7 @@ class MessageController extends Controller
         }
         $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$user->id)->first();
         $users = [];
-        $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid];
+        $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid,'name'=>$user->name];
         if ($roomUser) $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid];
         if ($messages['data']) {
             foreach ($messages['data'] as &$item) {
