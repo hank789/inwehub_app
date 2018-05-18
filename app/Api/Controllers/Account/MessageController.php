@@ -81,10 +81,11 @@ class MessageController extends Controller
             foreach ($messages['data'] as &$item) {
                 if (!isset($users[$item['user_id']])) {
                     $contact = User::find($item['user_id']);
-                    $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid];
+                    $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid,'name'=>$contact->name];
                 }
                 $item['avatar'] = $users[$item['user_id']]['avatar'];
                 $item['uuid'] = $users[$item['user_id']]['uuid'];
+                $item['user_name'] = $users[$item['user_id']]['name'];
                 $item['data'] = json_decode($item['data'],true);
                 $item['created_at_timestamp'] = strtotime($item['created_at']);
             }
