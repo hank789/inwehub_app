@@ -119,13 +119,19 @@ class IndexController extends Controller {
                 $group = $groupMember->group;
                 $user_group_unread = RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?0:1;
                 if ($user_group_unread) {
-                    $new_message[] = '您的圈子有新动态！';
+                    $new_message[] = [
+                        'text'=>'您的圈子有新动态！',
+                        'link'=>'/group/my'
+                    ];
                     break;
                 }
             }
             $todo_task = $user->tasks()->where('status',0)->count();
             if ($todo_task > 0) {
-                $new_message[] = '您有未处理的待办事项！';
+                $new_message[] = [
+                    'text'=>'您有未处理的待办事项！',
+                    'link'=>'/task'
+                ];
             }
         }
 
