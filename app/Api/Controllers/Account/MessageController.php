@@ -176,7 +176,7 @@ class MessageController extends Controller
             'data' => $data,
         ]);
 
-        RoomUser::firstOrCreate([
+        $roomUser = RoomUser::firstOrCreate([
             'user_id' => $user->id,
             'room_id' => $room_id
         ],[
@@ -188,6 +188,9 @@ class MessageController extends Controller
             'room_id' => $room_id,
             'message_id' => $message->id
         ]);
+        $roomUser->last_msg_id = $message->id;
+        $roomUser->save();
+
         if ($contact_id) {
             RoomUser::firstOrCreate([
                 'user_id' => $contact_id,
@@ -206,7 +209,7 @@ class MessageController extends Controller
                 if ($member->user_id == $user->id) continue;
                 $notifyUser = $member->user;
                 $notifyUser->to_slack = false;
-                $notifyUser->to_push = (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$room->id.'-'.$member->user_id,300));
+                $notifyUser->to_push = (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$room->id.'-'.$member->user_id,30));
                 $notifyUser->notify(new NewMessage($member->user_id,$message,$room_id));
 
             }
