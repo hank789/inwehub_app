@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Groups\Group;
 use App\Models\RecommendRead;
 use App\Models\Submission;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -69,8 +70,6 @@ class SubmissionController extends AdminController
             $filePath = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
             Storage::disk('oss')->put($filePath,File::get($file));
             $img_url = Storage::disk('oss')->url($filePath);
-        } elseif (empty($submission->data['img'])) {
-            return $this->error(route('admin.operate.article.edit',['id'=>$id]),'请上传文章封面图片');
         }
         $author_id = $request->input('author_id',-1);
         if ($author_id != -1) {
@@ -83,6 +82,13 @@ class SubmissionController extends AdminController
         }
         $submission->data = $object_data;
         $submission->save();
+
+        $tagString = trim($request->input('tags'));
+        \Log::info('test',[$tagString]);
+
+        /*更新标签*/
+        $submission->tags()->detach();
+        Tag::multiSaveByIds($tagString,$submission);
 
         return $this->success(route('admin.operate.article.index'),'文章修改成功');
     }

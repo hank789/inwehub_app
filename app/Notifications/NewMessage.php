@@ -36,7 +36,7 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
      *
      * @return void
      */
-    public function __construct($user_id, Message $message,$room_id = 0)
+    public function __construct($user_id, Message $message,$room_id)
     {
         $this->user_id = $user_id;
         $this->message = $message;
@@ -64,7 +64,9 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                         return $via;
                         break;
                     case Group::class:
-                        $via[] = PushChannel::class;
+                        if ((isset($notifiable->to_push) && $notifiable->to_push) || !isset($notifiable->to_push)) {
+                            $via[] = PushChannel::class;
+                        }
                         return $via;
                         break;
                 }
@@ -274,14 +276,6 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     }
 
     public function broadcastOn(){
-        if ($this->room_id) {
-            $room = Room::find($this->room_id);
-            switch ($room->source_type) {
-                case Demand::class:
-                    return new PrivateChannel('room.'.$room->id.'.user.'.$this->user_id);
-                    break;
-            }
-        }
-        return ['notification.user.'.$this->user_id];
+        return new PrivateChannel('room.'.$this->room_id.'.user.'.$this->user_id);
     }
 }

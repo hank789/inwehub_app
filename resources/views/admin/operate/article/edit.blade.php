@@ -27,6 +27,7 @@
                     <form role="form" name="editForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.operate.article.update',['id'=>$submission->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" id="author_id" name="author_id" value="{{ $submission->author_id }}" />
+                        <input type="hidden" id="tags" name="tags" value="{{ $submission->tags->implode('id',',') }}" />
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
                             <div class="form-group">
@@ -37,6 +38,15 @@
                             <div class="form-group">
                                 <label>类型</label>
                                 <span>{{ $submission->type }}</span>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <select id="select_tags" name="select_tags" class="form-control" multiple="multiple" >
+                                        @foreach($submission->tags as $tag)
+                                            <option value="{{ $tag->id }}" selected="selected">{{ $tag->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="form-group @if ($errors->first('author_id')) has-error @endif">
@@ -74,6 +84,7 @@
 
 @section('script')
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
+    <script src="{{ asset('/js/global.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
         $(function(){

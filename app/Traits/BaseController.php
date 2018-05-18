@@ -118,6 +118,14 @@ trait BaseController {
         }
     }
 
+    protected function logUserViewTags($user_id,$tags) {
+        if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('log_user_view_tags',$user_id,30)){
+            if ($user_id > 0) {
+                UserTag::multiIncrement($user_id,$tags,'views');
+            }
+        }
+    }
+
 
     /**
      * 创建任务
@@ -394,6 +402,7 @@ trait BaseController {
 
 
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
+                UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'questions');
 
                 /*记录动态*/
                 $this->doing($answer->user_id,$doing_prefix.'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);

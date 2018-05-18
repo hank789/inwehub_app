@@ -95,7 +95,7 @@ class SendMessage implements ShouldQueue
             $to_user = User::find($contact_id);
             // broadcast the message to the other person
             $to_user->to_slack = false;
-            $to_user->notify(new NewMessage($contact_id,$message));
+            $to_user->notify(new NewMessage($contact_id,$message,$room_id));
         }
     }
 }

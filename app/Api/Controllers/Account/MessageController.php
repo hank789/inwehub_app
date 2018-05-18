@@ -75,16 +75,17 @@ class MessageController extends Controller
         }
         $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$user->id)->first();
         $users = [];
-        $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid];
-        if ($roomUser) $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid];
+        $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid,'name'=>$user->name];
+        if ($roomUser) $users[$roomUser->user->id] = ['avatar'=>$roomUser->user->avatar,'uuid'=>$roomUser->user->uuid,'name'=>$roomUser->user->name];
         if ($messages['data']) {
             foreach ($messages['data'] as &$item) {
                 if (!isset($users[$item['user_id']])) {
                     $contact = User::find($item['user_id']);
-                    $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid];
+                    $users[$contact->id] = ['avatar'=>$contact->avatar,'uuid'=>$contact->uuid,'name'=>$contact->name];
                 }
                 $item['avatar'] = $users[$item['user_id']]['avatar'];
                 $item['uuid'] = $users[$item['user_id']]['uuid'];
+                $item['user_name'] = $users[$item['user_id']]['name'];
                 $item['data'] = json_decode($item['data'],true);
                 $item['created_at_timestamp'] = strtotime($item['created_at']);
             }
@@ -203,13 +204,12 @@ class MessageController extends Controller
                 ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->get();
             foreach ($members as $member) {
                 if ($member->user_id == $user->id) continue;
-                if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$room->id.'-'.$member->user_id,300)) {
-                    $notifyUser = $member->user;
-                    $notifyUser->to_slack = false;
-                    $notifyUser->notify(new NewMessage($member->user_id,$message,$room_id));
-                }
+                $notifyUser = $member->user;
+                $notifyUser->to_slack = false;
+                $notifyUser->to_push = (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$room->id.'-'.$member->user_id,300));
+                $notifyUser->notify(new NewMessage($member->user_id,$message,$room_id));
+
             }
-            RateLimiter::instance()->sClear('group_im_users:'.$room->id);
             $group = Group::find($room->source_id);
             $fields = [];
             if (isset($message->data['text']) && $message->data['text']) {
@@ -277,6 +277,16 @@ class MessageController extends Controller
                 'room_id' => $room_id
             ]);
         }
+        $last_msg_id = MessageRoom::where('room_id',$room->id)->max('message_id');
+        $roomUser = RoomUser::firstOrCreate([
+            'user_id' => $user->id,
+            'room_id' => $room->id
+        ],[
+            'user_id' => $user->id,
+            'room_id' => $room->id
+        ]);
+        $roomUser->last_msg_id = $last_msg_id;
+        $roomUser->save();
         return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id,'contact_name'=>$contact->name]);
     }
 
@@ -358,6 +368,16 @@ class MessageController extends Controller
         }
         $return['contact'] = $contact;
         $return['source'] = $source;
+        $last_msg_id = MessageRoom::where('room_id',$room->id)->max('message_id');
+        $roomUser = RoomUser::firstOrCreate([
+            'user_id' => $user->id,
+            'room_id' => $room->id
+        ],[
+            'user_id' => $user->id,
+            'room_id' => $room->id
+        ]);
+        $roomUser->last_msg_id = $last_msg_id;
+        $roomUser->save();
         return self::createJsonData(true,$return);
     }
 

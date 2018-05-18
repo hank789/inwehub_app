@@ -8,6 +8,7 @@ use App\Models\Collection;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
+use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
 use App\Models\Submission;
@@ -138,6 +139,7 @@ class GroupController extends Controller
             $user->id = 0;
         }
         $return = $group->toArray();
+        $return['subscribers'] = $group->getHotIndex();
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
         $return['is_joined'] = -1;
         if ($groupMember) {
@@ -175,11 +177,14 @@ class GroupController extends Controller
                 'is_expert'   => $member->user->is_expert
             ];
         }
-        $return['subscribers'] = $group->getHotIndex();
         $return['room_id'] = $room?$room->id:0;
+        $return['recommend_submission_numbers'] = Submission::where('group_id',$group->id)->where('is_recommend',1)->count();
         $return['unread_group_im_messages'] = 0;
         if ($room) {
-            $return['unread_group_im_messages'] = RateLimiter::instance()->sIsMember('group_im_users:'.$room->id,$user->id)?0:1;
+            $roomUser = RoomUser::where('user_id',$user->id)->where('room_id',$room->id)->first();
+            if ($roomUser) {
+                $return['unread_group_im_messages'] = MessageRoom::where('room_id',$room->id)->where('message_id','>',$roomUser->last_msg_id)->count();
+            }
         }
         return self::createJsonData(true,$return);
     }
@@ -371,6 +376,72 @@ class GroupController extends Controller
         return self::createJsonData(true);
     }
 
+    //置顶功能
+    public function setSubmissionTop(Request $request) {
+        $this->validate($request,[
+            'submission_id'=>'required|integer'
+        ]);
+        $submission = Submission::find($request->input('submission_id'));
+        $group = Group::find($submission->group_id);
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $max = Submission::max('top');
+        $submission->top = $max + 1;
+        $submission->save();
+
+        $fields = [
+            [
+                'title' => '标题',
+                'value' => strip_tags($submission->title)
+            ],
+            [
+                'title' => '链接',
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+            ],
+            [
+                'title' => '作者',
+                'value' => $user->name
+            ]
+        ];
+        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为置顶', $fields));
+        return self::createJsonData(true);
+    }
+
+    public function cancelSubmissionTop(Request $request) {
+        $this->validate($request,[
+            'submission_id'=>'required|integer'
+        ]);
+        $submission = Submission::find($request->input('submission_id'));
+        $group = Group::find($submission->group_id);
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        if ($user->id != $group->user_id) throw new ApiException(ApiException::BAD_REQUEST);
+        $submission->top = 0;
+        $submission->save();
+
+        $fields = [
+            [
+                'title' => '标题',
+                'value' => strip_tags($submission->title)
+            ],
+            [
+                'title' => '链接',
+                'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+            ],
+            [
+                'title' => '作者',
+                'value' => $user->name
+            ]
+        ];
+        event(new SystemNotify('圈主'.formatSlackUser($user).'取消圈子['.$group->name.']分享为置顶', $fields));
+        return self::createJsonData(true);
+    }
+
     //圈子分享列表
     public function submissionList(Request $request) {
         $this->validate($request,[
@@ -402,7 +473,7 @@ class GroupController extends Controller
                 break;
         }
 
-        $submissions = $query->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
 
         $return = $submissions->toArray();
         $list = [];
@@ -444,7 +515,7 @@ class GroupController extends Controller
             $list[] = [
                 'id' => $submission->id,
                 'title' => $submission->user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'),
-                'top' => 0,
+                'top' => $submission->top,
                 'user'  => [
                     'id'    => $submission->user->id ,
                     'uuid'  => $submission->user->uuid,
@@ -530,6 +601,7 @@ class GroupController extends Controller
         $return['data'] = [];
         foreach ($groupMembers as $groupMember) {
             $group = $groupMember->group;
+            if ($group->audit_status == Group::AUDIT_STATUS_REJECT && $group->user_id != $user->id) continue;
             $return['data'][] = [
                 'id' => $group->id,
                 'name' => $group->name,

@@ -38,7 +38,7 @@ class RoomUser extends Model
     protected $table = 'im_room_user';
 
     protected $fillable = [
-        'room_id', 'user_id'
+        'room_id', 'user_id', 'last_msg_id'
     ];
 
     /**

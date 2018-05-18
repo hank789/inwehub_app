@@ -4,6 +4,8 @@ namespace App\Api\Controllers;
 
 use App\Exceptions\ApiException;
 use App\Logic\TaskLogic;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\IM\Conversation;
 use App\Models\IM\Message;
 use App\Models\IM\MessageRoom;
@@ -114,6 +116,7 @@ class NotificationController extends Controller
                 'avatar'       => $contact->avatar,
                 'name'         => $contact->name,
                 'room_id'      => $im_room->id,
+                'room_type'    => Room::ROOM_TYPE_WHISPER,
                 'contact_id'   => $contact->id,
                 'contact_uuid' => $contact->uuid,
                 'last_message' => [
@@ -138,6 +141,7 @@ class NotificationController extends Controller
                 'avatar'       => $customer_user->avatar,
                 'name'         => $customer_user->name,
                 'room_id'      => 0,
+                'room_type'    => Room::ROOM_TYPE_WHISPER,
                 'contact_id'   => $customer_user->id,
                 'contact_uuid' => $customer_user->uuid,
                 'last_message' => [
@@ -149,6 +153,42 @@ class NotificationController extends Controller
                 ]
             ];
         }
+        //用户群聊
+        $groupMembers = GroupMember::where('user_id',$user->id)
+            ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->get();
+        foreach ($groupMembers as $groupMember) {
+            $group = Group::find($groupMember->group_id);
+            $room = Room::where('r_type',Room::ROOM_TYPE_GROUP)
+                ->where('source_id',$group->id)
+                ->where('source_type',get_class($group))
+                ->where('status',Room::STATUS_OPEN)->first();
+            if ($room) {
+                $last_message = MessageRoom::where('room_id',$room->id)->orderBy('id','desc')->first();
+                $item = [
+                    'unread_count' => 0,
+                    'avatar'       => $group->logo,
+                    'name'         => $group->name,
+                    'room_id'      => $room->id,
+                    'room_type'    => Room::ROOM_TYPE_GROUP,
+                    'contact_id'   => 0,
+                    'contact_uuid' => null,
+                    'last_message' => [
+                        'id' => $last_message?$last_message->message_id:0,
+                        'text' => '',
+                        'data'  => $last_message?$last_message->message->data:['text'=>'','img'=>''],
+                        'read_at' => $last_message?$last_message->message->read_at:'',
+                        'created_at' => $last_message?(string)$last_message->created_at:''
+                    ]
+                ];
+                $roomUser = RoomUser::where('user_id',$user->id)->where('room_id',$room->id)->first();
+                if ($roomUser) {
+                    $item['unread_count'] = MessageRoom::where('room_id',$room->id)->where('message_id','>',$roomUser->last_msg_id)->count();
+                    $total_unread += $item['unread_count'];
+                }
+                $im_list[] = $item;
+            }
+        }
+
         usort($im_list,function ($a,$b) {
             if ($a['last_message']['created_at'] == $b['last_message']['created_at']) return 0;
             return ($a['last_message']['created_at'] < $b['last_message']['created_at'])? 1 : -1;

@@ -97,17 +97,7 @@ class SubmissionController extends Controller {
                 return self::createJsonData(false,['exist_url'=>$exist_submission_url],ApiException::ARTICLE_URL_ALREADY_EXIST,"您提交的网址已经存在");
             }
             try {
-                //$data = $this->linkSubmission($request);
-                $img = getUrlImg($request->url);
-                $img_url = '';
-                if ($img) {
-                    //保存图片
-                    $img_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-                    dispatch((new UploadFile($img_name,base64_encode(file_get_contents($img)))));
-                    //Storage::put($img_name, file_get_contents($img));
-                    $img_url = Storage::url($img_name);
-                }
-
+                $img_url = $this->uploadFile($request->input('photos'));
 
                 $data = [
                     'url'           => $request->url,
@@ -115,7 +105,7 @@ class SubmissionController extends Controller {
                     'description'   => null,
                     'type'          => 'link',
                     'embed'         => null,
-                    'img'           => $img_url,
+                    'img'           => $img_url['img']?$img_url['img'][0]:'',
                     'thumbnail'     => null,
                     'providerName'  => null,
                     'publishedTime' => null,
@@ -200,7 +190,15 @@ class SubmissionController extends Controller {
         ]);
 
         $title = $this->getTitle($request->url);
-        return self::createJsonData(true,['title'=>$title]);
+        $img = getUrlImg($request->url);
+        $img_url = '';
+        if ($img) {
+            //保存图片
+            $img_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+            dispatch((new UploadFile($img_name,base64_encode(file_get_contents($img)))));
+            $img_url = Storage::url($img_name);
+        }
+        return self::createJsonData(true,['title'=>$title,'img_url'=>$img_url]);
     }
 
     /**
@@ -290,6 +288,7 @@ class SubmissionController extends Controller {
             }
         }
         $return['data']['img'] = $img;
+        $this->logUserViewTags($user->id,$submission->tags()->get());
         $this->doing($user->id,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,'查看动态');
         return self::createJsonData(true,$return);
     }

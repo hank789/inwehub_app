@@ -204,8 +204,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/inviteAnswer','QuestionController@inviteAnswer');
     //邀请列表
     Route::post('question/inviterList','QuestionController@inviterList');
-    //相关问题
-    Route::post('question/relatedQuestion','QuestionController@relatedQuestion');
 
     //推荐用户问题
     Route::post('question/recommendUser','QuestionController@recommendUserQuestions');
@@ -237,6 +235,8 @@ Route::post('question/answerList','Ask\QuestionController@answerList');
 Route::post('answer/commentList','Ask\AnswerController@commentList');
 //问答社区
 Route::post('question/list','Ask\QuestionController@questionList');
+//相关问题
+Route::post('question/relatedQuestion','Ask\QuestionController@relatedQuestion');
 
 //任务模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], function() {
@@ -511,6 +511,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('setSubmissionRecommend','GroupController@setSubmissionRecommend');
     //取消推荐
     Route::post('cancelSubmissionRecommend','GroupController@cancelSubmissionRecommend');
+    //置顶
+    Route::post('setSubmissionTop','GroupController@setSubmissionTop');
+    //取消置顶
+    Route::post('cancelSubmissionTop','GroupController@cancelSubmissionTop');
     //圈子分享列表
     Route::post('submissionList','GroupController@submissionList');
     //随机推荐热门

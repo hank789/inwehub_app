@@ -172,6 +172,7 @@ class User extends Model implements AuthenticatableContract,
             UserData::where('user_id',$user->id)->delete();
             UserMoney::where('user_id',$user->id)->delete();
             RoleUser::where('user_id',$user->id)->delete();
+            Attention::where('source_id',$user->id)->where('source_type',get_class($user))->delete();
         });
     }
 

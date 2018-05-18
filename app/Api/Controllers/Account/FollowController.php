@@ -85,6 +85,7 @@ class FollowController extends Controller
                     'title' => '地址',
                     'value' => route('ask.question.detail',['id'=>$source->id])
                 ];
+                UserTag::multiDecrement($loginUser->id,$source->tags()->get(),'questions');
                 event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了问题',$fields));
             } elseif ($source_type == 'tag') {
                 $source->decrement('followers');
@@ -119,6 +120,7 @@ class FollowController extends Controller
                         'title' => '地址',
                         'value' => route('ask.question.detail',['id'=>$source->id])
                     ];
+                    UserTag::multiIncrement($loginUser->id,$source->tags()->get(),'questions');
                     event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']关注了问题',$fields));
                     //产生一条feed流
                     if ($source->question_type == 2) {
@@ -159,10 +161,20 @@ class FollowController extends Controller
                         $message = $loginUser->messages()->create([
                             'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
                         ]);
-                        $room_ids = RoomUser::select('room_id')->where('user_id',$loginUser->id)->get()->pluck('room_id')->toArray();
-                        $roomUser = RoomUser::where('user_id',$source->id)->whereIn('room_id',$room_ids)->first();
-                        if ($roomUser) {
-                            $room_id = $roomUser->room_id;
+                        $room = Room::where('user_id',$loginUser->id)
+                            ->where('source_id',$source->id)
+                            ->where('source_type',get_class($loginUser))
+                            ->where('r_type',Room::ROOM_TYPE_WHISPER)
+                            ->first();
+                        if (!$room) {
+                            $room = Room::where('user_id',$source->id)
+                                ->where('source_id',$loginUser->id)
+                                ->where('source_type',get_class($loginUser))
+                                ->where('r_type',Room::ROOM_TYPE_WHISPER)
+                                ->first();
+                        }
+                        if ($room) {
+                            $room_id = $room->id;
                         } else {
                             $room = Room::create([
                                 'user_id' => $loginUser->id,
@@ -395,7 +407,8 @@ class FollowController extends Controller
             $attention = Attention::create($data);
 
             $source->increment('followers');
-            
+            UserTag::multiIncrement($user->id,$source->tags()->get(),'questions');
+
             //产生一条feed流
             if ($source->question_type == 2) {
                 $feed_event = 'question_followed';

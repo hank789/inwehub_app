@@ -148,7 +148,7 @@ class UserEventListener implements ShouldQueue
             ->log($contact->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
         // broadcast the message to the other person
-        $event->user->notify((new NewMessage($event->user->id,$message))->delay(Carbon::now()->addMinutes(1)));
+        $event->user->notify((new NewMessage($event->user->id,$message,$room->id))->delay(Carbon::now()->addMinutes(1)));
 
         \Slack::send('新用户注册: '.formatSlackUser($event->user).'；设备：'.$event->from.$title);
     }

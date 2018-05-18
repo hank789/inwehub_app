@@ -6,6 +6,7 @@ use App\Models\Answer;
 use App\Models\Collection;
 use App\Models\Groups\Group;
 use App\Models\Question;
+use App\Models\UserTag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -32,9 +33,11 @@ class CollectionController extends Controller
 
         if($source_type === 'question'){
             $source  = Question::findOrFail($source_id);
+            $question = $source;
             $subject = $source->title;
         }else if($source_type === 'answer'){
             $source  = Answer::findOrFail($source_id);
+            $question = $source->question;
             $subject = '';
         }
         $user = $request->user();
@@ -48,6 +51,7 @@ class CollectionController extends Controller
         if($userCollect){
             $userCollect->delete();
             $source->decrement('collections');
+            UserTag::multiDecrement($user->id,$question->tags()->get(),'questions');
             return self::createJsonData(true,['tip'=>'取消收藏成功','type'=>'uncollect']);
         }
 
@@ -62,6 +66,7 @@ class CollectionController extends Controller
 
         if($collect){
             $source->increment('collections');
+            UserTag::multiIncrement($user->id,$question->tags()->get(),'questions');
         }
 
         return self::createJsonData(true,['tip'=>'收藏成功','type'=>'collect']);
