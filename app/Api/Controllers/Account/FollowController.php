@@ -161,10 +161,20 @@ class FollowController extends Controller
                         $message = $loginUser->messages()->create([
                             'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
                         ]);
-                        $room_ids = RoomUser::select('room_id')->where('user_id',$loginUser->id)->get()->pluck('room_id')->toArray();
-                        $roomUser = RoomUser::where('user_id',$source->id)->whereIn('room_id',$room_ids)->first();
-                        if ($roomUser) {
-                            $room_id = $roomUser->room_id;
+                        $room = Room::where('user_id',$loginUser->id)
+                            ->where('source_id',$source->id)
+                            ->where('source_type',get_class($loginUser))
+                            ->where('r_type',Room::ROOM_TYPE_WHISPER)
+                            ->first();
+                        if (!$room) {
+                            $room = Room::where('user_id',$source->id)
+                                ->where('source_id',$loginUser->id)
+                                ->where('source_type',get_class($loginUser))
+                                ->where('r_type',Room::ROOM_TYPE_WHISPER)
+                                ->first();
+                        }
+                        if ($room) {
+                            $room_id = $room->id;
                         } else {
                             $room = Room::create([
                                 'user_id' => $loginUser->id,

@@ -64,7 +64,9 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
                         return $via;
                         break;
                     case Group::class:
-                        $via[] = PushChannel::class;
+                        if ((isset($notifiable->to_push) && $notifiable->to_push) || !isset($notifiable->to_push)) {
+                            $via[] = PushChannel::class;
+                        }
                         return $via;
                         break;
                 }
