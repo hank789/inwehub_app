@@ -204,7 +204,7 @@ class MessageController extends Controller
                 ->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->get();
             foreach ($members as $member) {
                 if ($member->user_id == $user->id) continue;
-                if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$room->id.'-'.$member->user_id,300)) {
+                if (true || RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('user_chat',$room->id.'-'.$member->user_id,300)) {
                     $notifyUser = $member->user;
                     $notifyUser->to_slack = false;
                     $notifyUser->notify(new NewMessage($member->user_id,$message,$room_id));
