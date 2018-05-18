@@ -129,7 +129,7 @@ class IndexController extends Controller {
             $todo_task = $user->tasks()->where('status',0)->count();
             if ($todo_task > 0) {
                 $new_message[] = [
-                    'text'=>'您有未处理的待办事项！',
+                    'text'=>'您有'.$todo_task.'条待办事项！',
                     'link'=>'/task'
                 ];
             }
