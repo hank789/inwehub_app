@@ -274,6 +274,14 @@ class NewMessage extends Notification implements ShouldBroadcast,ShouldQueue
     }
 
     public function broadcastOn(){
+        if ($this->room_id) {
+            $room = Room::find($this->room_id);
+            switch ($room->source_type) {
+                case Group::class:
+                    return new PrivateChannel('room.'.$room->id);
+                    break;
+            }
+        }
         return new PrivateChannel('room.'.$this->room_id.'.user.'.$this->user_id);
     }
 }
