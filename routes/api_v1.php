@@ -204,8 +204,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/inviteAnswer','QuestionController@inviteAnswer');
     //邀请列表
     Route::post('question/inviterList','QuestionController@inviterList');
-    //相关问题
-    Route::post('question/relatedQuestion','QuestionController@relatedQuestion');
 
     //推荐用户问题
     Route::post('question/recommendUser','QuestionController@recommendUserQuestions');
@@ -237,6 +235,8 @@ Route::post('question/answerList','Ask\QuestionController@answerList');
 Route::post('answer/commentList','Ask\AnswerController@commentList');
 //问答社区
 Route::post('question/list','Ask\QuestionController@questionList');
+//相关问题
+Route::post('question/relatedQuestion','Ask\QuestionController@relatedQuestion');
 
 //任务模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], function() {
