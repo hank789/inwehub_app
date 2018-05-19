@@ -1123,8 +1123,8 @@ if (!function_exists('getUrlTitle')) {
         try {
             $f = file_get_contents($url);
             if (str_contains($url,'mp.weixin.qq.com')) {
-                preg_match('/<h2 class="rich_media_title" id="activity-name">(?<h2>.*?)<\/h2>/si', $f, $title);
-                $title['title'] = $title['h2'];
+                preg_match("/<span class='rich_media_title_ios'>(?<span>.*?)<\/span>/si", $f, $title);
+                $title['title'] = $title['span'];
             } else {
                 preg_match('/<title>(?<title>.*?)<\/title>/si', $f, $title);
             }
