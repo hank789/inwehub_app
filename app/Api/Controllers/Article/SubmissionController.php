@@ -191,7 +191,7 @@ class SubmissionController extends Controller {
         ]);
 
         $title = $this->getTitle($request->url);
-        $img_url = Cache::get('submission_url_img_'.$request->url);
+        $img_url = Cache::get('submission_url_img_'.$request->url,'');
         if (empty($img_url)) {
             $img = getUrlImg($request->url);
             if ($img) {
