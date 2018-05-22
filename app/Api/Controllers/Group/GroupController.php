@@ -83,6 +83,7 @@ class GroupController extends Controller
             ]
         ];
         event(new SystemNotify('@conan_wuhao 用户'.formatSlackUser($user).'创建了圈子:'.$group->name, $fields));
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$group->id]);
     }
 
@@ -122,6 +123,7 @@ class GroupController extends Controller
         $group->logo = $img_url;
         $group->save();
         if ($oldPublic != $request->input('public')) Submission::where('group_id',$group->id)->update(['public'=>$group->public]);
+        self::$needRefresh = true;
         return self::createJsonData(true,['id'=>$group->id]);
     }
 
@@ -226,6 +228,7 @@ class GroupController extends Controller
             $group->subscribers = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->count();
             $group->save();
         }
+        self::$needRefresh = true;
         return self::createJsonData(true,[],ApiException::SUCCESS,$audit_status==GroupMember::AUDIT_STATUS_SUCCESS?'加入圈子成功':'您的入圈申请已提交');
     }
 
@@ -243,6 +246,7 @@ class GroupController extends Controller
             if ($group->subscribers > 0) $group->decrement('subscribers');
             event(new SystemNotify('用户'.formatSlackUser($user).'退出了圈子['.$group->name.']', []));
         }
+        self::$needRefresh = true;
         return self::createJsonData(true);
     }
 
