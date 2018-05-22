@@ -231,7 +231,7 @@ class MessageController extends Controller
         }
         $return = $message->toArray();
         $return['avatar'] = $user->avatar;
-
+        self::$needRefresh = true;
         return self::createJsonData(true, $return);
     }
 
