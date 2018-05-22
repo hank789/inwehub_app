@@ -233,19 +233,21 @@ class SubmissionController extends Controller {
 
         $group = Group::find($submission->group_id);
         $return['group'] = $group->toArray();
-        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
-        $return['group']['is_joined'] = -1;
-        if ($groupMember) {
-            $return['group']['is_joined'] = $groupMember->audit_status;
-        }
-        if ($user->id == $group->user_id) {
-            $return['group']['is_joined'] = 3;
-        }
-        $return['group']['subscribers'] = $group->getHotIndex();
+        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+            $return['group']['is_joined'] = -1;
+            if ($groupMember) {
+                $return['group']['is_joined'] = $groupMember->audit_status;
+            }
+            if ($user->id == $group->user_id) {
+                $return['group']['is_joined'] = 3;
+            }
+            $return['group']['subscribers'] = $group->getHotIndex();
 
-        if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
-            //私有圈子
-            return self::createJsonData(true,$return);
+            if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
+                //私有圈子
+                return self::createJsonData(true,$return);
+            }
         }
 
         $submission->increment('views');
