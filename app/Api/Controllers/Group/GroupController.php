@@ -142,7 +142,7 @@ class GroupController extends Controller
         }
         $return = $group->toArray();
         $return['subscribers'] = $group->getHotIndex();
-        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+        if ($group->audit_status == Group::AUDIT_STATUS_SYSTEM) {
             $return['subscribers'] += User::count();
         }
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
