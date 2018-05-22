@@ -249,6 +249,8 @@ class SubmissionController extends Controller {
                 //私有圈子
                 return self::createJsonData(true,$return);
             }
+        } else {
+            $return['group']['subscribers'] = $group->getHotIndex() + User::count();
         }
 
         $submission->increment('views');
