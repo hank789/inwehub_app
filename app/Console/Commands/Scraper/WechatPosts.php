@@ -40,7 +40,7 @@ class WechatPosts extends Command {
      */
     public function handle()
     {
-        $path = env('SPIDER_PATH');
+        $path = config('app.spider_path');
         if($path){
             shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
         }
