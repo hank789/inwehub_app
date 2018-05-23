@@ -489,6 +489,7 @@ class DemandController extends controller {
                 'password' => time(),
                 'status' => 1,
                 'source' => User::USER_SOURCE_WEAPP,
+                'visit_ip' => $request->getClientIp()
             ]);
             $oauth->user_id = $user->id;
             $oauth->save();
