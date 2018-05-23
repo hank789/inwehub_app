@@ -52,17 +52,15 @@
                                         <th>标题</th>
                                         <th>公众号</th>
                                         <th>作者</th>
-                                        <th>链接</th>
                                         <th>分享Id</th>
                                         <th>时间</th>
                                     </tr>
                                     @foreach($articles as $article)
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $article->_id }}"/></td>
-                                            <td>{{ $article->title }}</td>
+                                            <td><a href="{{ $article->content_url }}" target="_blank">{{ $article->title }}</a></td>
                                             <td>{{ $article->withAuthor()->name }}</td>
                                             <td>{{ $article->author }}</td>
-                                            <td><a href="{{ $article->content_url }}" target="_blank">链接</a></td>
                                             <td>{{ $article->topic_id }}</td>
                                             <td>{{ timestamp_format($article->date_time) }}</td>
                                         </tr>
