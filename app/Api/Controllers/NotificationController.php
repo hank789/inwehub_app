@@ -72,10 +72,16 @@ class NotificationController extends Controller
             //全部已读
             $im_rooms = Room::where('source_type',User::class)->where(function ($query) use ($user) {$query->where('user_id',$user->id)->orWhere('source_id',$user->id);})->get();
             foreach ($im_rooms as $im_room) {
-                $unreads = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->select('im_messages.id')->get()->pluck('id')->toArray();
-                if ($unreads) {
-                    Message::whereIn('id',$unreads)->update(['read_at' => Carbon::now()]);
-                }
+                $last_msg_id = MessageRoom::where('room_id',$im_room->id)->max('message_id');
+                $roomUser = RoomUser::firstOrCreate([
+                    'user_id' => $user->id,
+                    'room_id' => $im_room->id
+                ],[
+                    'user_id' => $user->id,
+                    'room_id' => $im_room->id
+                ]);
+                $roomUser->last_msg_id = $last_msg_id;
+                $roomUser->save();
             }
         }
         $query->update(['read_at' => Carbon::now()]);
