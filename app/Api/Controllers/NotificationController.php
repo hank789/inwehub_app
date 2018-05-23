@@ -106,13 +106,11 @@ class NotificationController extends Controller
         $customer_message = [];
 
         foreach ($im_rooms as $im_room) {
-            $im_count = MessageRoom::leftJoin('im_messages','message_id','=','im_messages.id')->where('im_message_room.room_id', $im_room->id)->where('im_messages.user_id','!=',$user->id)->whereNull('im_messages.read_at')->count();
-            $total_unread += $im_count;
             $last_message = MessageRoom::where('room_id',$im_room->id)->orderBy('id','desc')->first();
             $contact = User::find($im_room->user_id==$user->id?$im_room->source_id:$im_room->user_id);
             if (!$contact) continue;
             $item = [
-                'unread_count' => $im_count,
+                'unread_count' => 0,
                 'avatar'       => $contact->avatar,
                 'name'         => $contact->name,
                 'room_id'      => $im_room->id,
@@ -127,6 +125,11 @@ class NotificationController extends Controller
                     'created_at' => $last_message?(string)$last_message->created_at:''
                 ]
             ];
+            $roomUser = RoomUser::where('user_id',$user->id)->where('room_id',$im_room->id)->first();
+            if ($roomUser) {
+                $item['unread_count'] = MessageRoom::where('room_id',$im_room->id)->where('message_id','>',$roomUser->last_msg_id)->count();
+                $total_unread += $item['unread_count'];
+            }
             if ($contact->id == $customer_id) {
                 $is_kefu_in = true;
                 $customer_message = $item;
