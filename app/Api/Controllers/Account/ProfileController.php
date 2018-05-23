@@ -272,7 +272,7 @@ class ProfileController extends Controller
             }
         }
 
-        $info['questions'] = $is_self?$user->userData->questions:$user->questions->where('hide',0)->count();
+        $info['questions'] = $is_self?$user->userData->questions:($user->questions->where('question_type',1)->where('is_recommend',1)->count() + $user->questions->where('question_type',2)->count());
         $info['answers'] = $user->userData->answers;
         $authSupport = Submission::where('author_id',$user->id)->sum('upvotes');
         $info['supports'] = $user->answers->sum('supports') + $user->submissions->sum('upvotes') + $authSupport;
@@ -288,7 +288,7 @@ class ProfileController extends Controller
         $info['followers'] = $user->followers()->count();
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
 
-        $info['submission_count'] = Submission::where('user_id',$user->id)->whereNull('deleted_at')->count();
+        $info['submission_count'] = Submission::where('user_id',$user->id)->where('public',1)->whereNull('deleted_at')->count();
         $info['comment_count'] = Comment::where('user_id',$user->id)->count();
         $info['feed_count'] = Feed::where('user_id',$user->id)->where('is_anonymous',0)->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER)->count();
         $info['article_count'] = Submission::where('author_id',$user->id)->where('type','link')->whereNull('deleted_at')->count();
