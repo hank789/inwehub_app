@@ -27,6 +27,8 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\CalcGroupHot::class,
         //阅读站
         Commands\Readhub\InitUser::class,
+        Commands\Scraper\WechatAuthor::class,
+        Commands\Scraper\WechatPosts::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
