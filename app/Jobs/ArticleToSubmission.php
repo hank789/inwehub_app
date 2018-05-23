@@ -94,7 +94,7 @@ class ArticleToSubmission implements ShouldQueue
             'group_id'      => $author->group_id,
             'public'        => $author->group->public,
             'rate'          => firstRate(),
-            'user_id'       => 504,
+            'user_id'       => config('app.env') != 'production'?1:504,
             'data'          => $data,
         ]);
         $article->topic_id = $submission->id;
