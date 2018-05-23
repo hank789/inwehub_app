@@ -23,13 +23,10 @@
                                     <form name="searchForm" action="{{ route('admin.scraper.wechat.article.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-2">
-                                            <input type="text" class="form-control" name="news_id" placeholder="新闻ID" value="{{ $filter['news_id'] or '' }}"/>
-                                        </div>
-                                        <div class="col-xs-2">
                                             <input type="text" class="form-control" name="user_id" placeholder="公众号ID" value="{{ $filter['author_id'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
-                                            <input type="text" class="form-control" name="topic_id" placeholder="话题ID" value="{{ $filter['topic_id'] or '' }}"/>
+                                            <input type="text" class="form-control" name="topic_id" placeholder="分享ID" value="{{ $filter['topic_id'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>

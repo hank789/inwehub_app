@@ -82,7 +82,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('user:check:rg_code')->daily()->at('00:30');
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
         $schedule->command('crontab:calc-group-hot')->hourly();
-        //$schedule->command('scraper:wechat:author')->hourly();
+        if (config('app.env') == 'production') {
+            $schedule->command('scraper:wechat:author')->twiceDaily();
+        }
     }
 
     /**
