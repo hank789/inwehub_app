@@ -45,7 +45,7 @@ class ArticleToSubmission implements ShouldQueue
     public function handle()
     {
         $article = WechatWenzhangInfo::find($this->id);
-        if ($article->topic_id > 0) return;
+        if ($article->topic_id > 0 || $article->status == 0) return;
         $author = WechatMpInfo::find($article->mp_id);
         if (!$author) return;
         if ($author->group_id <= 0) return;

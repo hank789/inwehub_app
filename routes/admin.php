@@ -64,6 +64,9 @@ Route::any('setting/credits',['as'=>'admin.setting.credits','uses'=>'SettingCont
 /*问答设置*/
 Route::any('setting/answer',['as'=>'admin.setting.answer','uses'=>'SettingController@answer']);
 
+//抓取设置
+Route::any('setting/scraper',['as'=>'admin.setting.scraper','uses'=>'SettingController@scraper']);
+
 /*关于我们设置*/
 Route::any('setting/aboutus',['as'=>'admin.setting.aboutus','uses'=>'SettingController@aboutus']);
 

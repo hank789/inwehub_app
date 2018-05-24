@@ -266,6 +266,23 @@ class SettingController extends AdminController
         return view('admin.setting.answer');
     }
 
+    public function scraper(Request $request){
+        $validateRules = [
+            'is_scraper_wechat_auto_publish' => 'required|between:0,1',
+        ];
+        if($request->isMethod('post')){
+            $this->validate($request,$validateRules);
+            $data = $request->except('_token');
+            unset($data['_token']);
+            foreach($data as $name=>$value){
+                Setting()->set($name,$value);
+            }
+            return $this->success(route('admin.setting.scraper'),'设置成功');
+        }
+
+        return view('admin.setting.scraper');
+    }
+
     public function aboutus(Request $request){
         $validateRules = [
             'about_us' => 'required'
