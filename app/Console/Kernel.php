@@ -27,6 +27,8 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\CalcGroupHot::class,
         //阅读站
         Commands\Readhub\InitUser::class,
+        Commands\Scraper\WechatAuthor::class,
+        Commands\Scraper\WechatPosts::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
@@ -80,7 +82,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('user:check:rg_code')->daily()->at('00:30');
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
         $schedule->command('crontab:calc-group-hot')->hourly();
-        //$schedule->command('scraper:wechat:author')->hourly();
+        if (config('app.env') == 'production') {
+            $schedule->command('scraper:wechat:author')->hourly();
+        }
     }
 
     /**

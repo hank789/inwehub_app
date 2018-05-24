@@ -70,9 +70,6 @@ class MessageController extends Controller
             ->orderBy('im_messages.id', 'desc')
             ->simplePaginate(Config::get('inwehub.api_data_page_size'))->toArray();
 
-        if ($messages['data']) {
-            Message::where('user_id','!=',$user->id)->whereIn('id',array_column($messages['data'],'id'))->update(['read_at' => Carbon::now()]);
-        }
         $roomUser = RoomUser::where('room_id',$room_id)->where('user_id','!=',$user->id)->first();
         $users = [];
         $users[$user->id] = ['avatar'=>$user->avatar,'uuid'=>$user->uuid,'name'=>$user->name];

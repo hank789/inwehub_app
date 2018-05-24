@@ -59,6 +59,8 @@ return [
 
     'readhub_url' => env('READHUB_URL', 'http://localhost'),
 
+    'spider_path' => env('SPIDER_PATH'),
+
 
     /*
     |--------------------------------------------------------------------------

@@ -1346,3 +1346,25 @@ if (!function_exists('formatAddressBookPhone')) {
         return $str;
     }
 }
+
+if (!function_exists('convertWechatLimitLinkToUnlimit')) {
+    function convertWechatLimitLinkToUnlimit($link, $gzh_id) {
+        $ch = curl_init();
+
+        $url=urlencode($link);
+
+        $account=urlencode($gzh_id);
+
+        $url = "http://api.shenjian.io/?appid=ade2cec5bc6305681b67ee08f351e93f&url={$url}&account={$account}";
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // 执行HTTP请求
+
+        curl_setopt($ch , CURLOPT_URL , $url);
+
+        $res = curl_exec($ch);
+
+        return json_decode($res,true);
+    }
+}
