@@ -1,6 +1,7 @@
 <?php namespace App\Console\Commands\Scraper;
 use App\Jobs\ArticleToSubmission;
 use App\Models\Scraper\WechatWenzhangInfo;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 /**
@@ -42,9 +43,15 @@ class WechatPosts extends Command {
         if($path){
             shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
             if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
-                $articles = WechatWenzhangInfo::where('topic_id',0)->where('status',1)->get();
+                $articles = WechatWenzhangInfo::where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-3 days')))->get();
+                $second = 0;
                 foreach ($articles as $article) {
-                    dispatch(new ArticleToSubmission($article->_id));
+                    if ($second > 0) {
+                        dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds($second));
+                    } else {
+                        dispatch(new ArticleToSubmission($article->_id));
+                    }
+                    $second += 30;
                 }
             }
         }

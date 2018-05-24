@@ -59,6 +59,7 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
+                                        <th>圈子ID</th>
                                         <th>圈主ID</th>
                                         <th>圈主姓名</th>
                                         <th>圈子名称</th>
@@ -73,6 +74,7 @@
                                     @foreach($groups as $group)
                                         <tr>
                                             <td><input type="checkbox" value="{{ $group->id }}" name="id[]"/></td>
+                                            <td>{{ $group->id }}</td>
                                             <td>{{ $group->user_id }}</td>
                                             <td>{{ $group->user->name }}</td>
                                             <td>{{ $group->name }}</td>
