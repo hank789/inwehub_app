@@ -50,6 +50,8 @@ class ArticleToSubmission implements ShouldQueue
         if (!$author) return;
         if ($author->group_id <= 0) return;
         $url = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
+        $article->content_url = $url;
+        $article->save();
         //检查url是否重复
         $exist_submission_id = Redis::connection()->hget('voten:submission:url',$url);
         if ($exist_submission_id){
@@ -64,7 +66,8 @@ class ArticleToSubmission implements ShouldQueue
             Storage::disk('oss')->put($file_name,file_get_contents($article->cover_url));
             $img_url = Storage::disk('oss')->url($file_name);
         }
-        //获取永久链接
+        $article->cover_url = $img_url;
+        $article->save();
 
         $data = [
             'url'           => $url,
