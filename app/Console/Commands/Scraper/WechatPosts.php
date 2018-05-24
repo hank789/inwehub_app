@@ -1,11 +1,7 @@
 <?php namespace App\Console\Commands\Scraper;
 use App\Jobs\ArticleToSubmission;
-use App\Models\Inwehub\Feeds;
-use App\Models\Inwehub\News;
 use App\Models\Scraper\WechatWenzhangInfo;
-use App\Services\WechatPostSpider;
 use Illuminate\Console\Command;
-use Goutte\Client;
 
 /**
  * @author: wanghui
@@ -47,7 +43,7 @@ class WechatPosts extends Command {
             shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
             $articles = WechatWenzhangInfo::where('topic_id',0)->get();
             foreach ($articles as $article) {
-                dispatch(new ArticleToSubmission($article->id));
+                dispatch(new ArticleToSubmission($article->_id));
             }
         }
     }
