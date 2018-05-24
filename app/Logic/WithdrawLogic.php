@@ -4,7 +4,6 @@ use App\Models\Pay\Withdraw;
 use App\Models\UserOauth;
 use App\Services\RateLimiter;
 use Payment\Client\Transfer;
-use Payment\Common\PayException;
 use Payment\Config;
 
 /**
@@ -65,8 +64,8 @@ class WithdrawLogic {
         ];
         try {
             $ret = Transfer::run($channel, $config, $data);
-        } catch (PayException $e) {
-            $withdraw->response_msg = $e->errorMessage();
+        } catch (\Exception $e) {
+            $withdraw->response_msg = $e->getMessage();
             $withdraw->status = Withdraw::WITHDRAW_STATUS_FAIL;
             $withdraw->save();
             return false;
