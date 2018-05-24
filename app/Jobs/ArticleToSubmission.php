@@ -49,7 +49,25 @@ class ArticleToSubmission implements ShouldQueue
         $author = WechatMpInfo::find($article->mp_id);
         if (!$author) return;
         if ($author->group_id <= 0) return;
-        $url = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
+        $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
+        if ($unlimitUrl['error_code'] != 0) {
+            $fileds = [
+                [
+                    'title' => '返回结果',
+                    'value' => json_encode($unlimitUrl, JSON_UNESCAPED_UNICODE)
+                ]
+            ];
+            //调用失败
+            \Slack::to(config('slack.ask_activity_channel'))
+                ->attach(
+                    [
+                        'fields' => $fileds
+                    ]
+                )
+                ->send('解析微信公众号永久链接失败');
+            return;
+        }
+        $url = $unlimitUrl['data']['article_origin_url'];
         $article->content_url = $url;
         $article->save();
         //检查url是否重复

@@ -1365,6 +1365,6 @@ if (!function_exists('convertWechatLimitLinkToUnlimit')) {
 
         $res = curl_exec($ch);
 
-        return json_decode($res);
+        return json_decode($res,true);
     }
 }
