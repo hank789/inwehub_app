@@ -16,6 +16,7 @@
                             <div class="col-xs-2">
                                 <div class="btn-group">
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.scraper.wechat.article.verify') }}','确认发布选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.scraper.wechat.article.destroy') }}','确认禁用选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-xs-10">
@@ -51,6 +52,7 @@
                                         <th>作者</th>
                                         <th>分享Id</th>
                                         <th>时间</th>
+                                        <th>状态</th>
                                     </tr>
                                     @foreach($articles as $article)
                                         <tr>
@@ -60,6 +62,7 @@
                                             <td>{{ $article->author }}</td>
                                             <td>{{ $article->topic_id }}</td>
                                             <td>{{ timestamp_format($article->date_time) }}</td>
+                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -71,6 +74,7 @@
                             <div class="col-sm-3">
                                 <div class="btn-group">
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.scraper.wechat.article.verify') }}','确认发布选中项？')"><i class="fa fa-check-square-o"></i></button>
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.scraper.wechat.article.destroy') }}','确认禁用选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
                             <div class="col-sm-9">

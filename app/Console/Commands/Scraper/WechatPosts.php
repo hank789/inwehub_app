@@ -41,9 +41,11 @@ class WechatPosts extends Command {
         $path = config('app.spider_path');
         if($path){
             shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
-            $articles = WechatWenzhangInfo::where('topic_id',0)->get();
-            foreach ($articles as $article) {
-                dispatch(new ArticleToSubmission($article->_id));
+            if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
+                $articles = WechatWenzhangInfo::where('topic_id',0)->where('status',1)->get();
+                foreach ($articles as $article) {
+                    dispatch(new ArticleToSubmission($article->_id));
+                }
             }
         }
     }
