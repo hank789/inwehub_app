@@ -49,8 +49,9 @@ class ArticleToSubmission implements ShouldQueue
         $author = WechatMpInfo::find($article->mp_id);
         if (!$author) return;
         if ($author->group_id <= 0) return;
+        $url = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
         //检查url是否重复
-        $exist_submission_id = Redis::connection()->hget('voten:submission:url',$article->content_url);
+        $exist_submission_id = Redis::connection()->hget('voten:submission:url',$url);
         if ($exist_submission_id){
             return;
         }
@@ -63,9 +64,10 @@ class ArticleToSubmission implements ShouldQueue
             Storage::disk('oss')->put($file_name,file_get_contents($article->cover_url));
             $img_url = Storage::disk('oss')->url($file_name);
         }
+        //获取永久链接
 
         $data = [
-            'url'           => $article->content_url,
+            'url'           => $url,
             'title'         => $article->title,
             'description'   => $article->description,
             'type'          => 'link',
@@ -74,9 +76,9 @@ class ArticleToSubmission implements ShouldQueue
             'thumbnail'     => null,
             'providerName'  => null,
             'publishedTime' => null,
-            'domain'        => domain($article->content_url),
+            'domain'        => domain($url),
         ];
-        Redis::connection()->hset('voten:submission:url',$article->content_url,1);
+        Redis::connection()->hset('voten:submission:url',$url,1);
 
 
         $data['current_address_name'] = '';
@@ -101,7 +103,7 @@ class ArticleToSubmission implements ShouldQueue
         $article->save();
         $author->group->increment('articles');
         RateLimiter::instance()->sClear('group_read_users:'.$author->group->id);
-        Redis::connection()->hset('voten:submission:url',$article->content_url, $submission->id);
+        Redis::connection()->hset('voten:submission:url',$url, $submission->id);
 
     }
 }
