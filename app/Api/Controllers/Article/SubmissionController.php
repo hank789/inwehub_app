@@ -138,6 +138,9 @@ class SubmissionController extends Controller {
 
             $data = $this->uploadFile($request->input('photos'));
         }
+        if ($request->input('pdf')) {
+            $data['pdf'] = $this->uploadPdf($request->input('pdf'));
+        }
 
         try {
             $data['current_address_name'] = $request->input('current_address_name');

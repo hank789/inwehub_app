@@ -502,6 +502,7 @@ class GroupController extends Controller
             $sourceData = [
                 'title'     => $submission->partHtmlTitle(),
                 'img'       => $img,
+                'pdf'       => $submission->data['pdf']??'',
                 'domain'    => $submission->data['domain']??'',
                 'tags'      => $submission->tags()->get()->toArray(),
                 'submission_id' => $submission->id,
