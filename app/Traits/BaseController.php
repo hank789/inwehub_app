@@ -254,7 +254,7 @@ trait BaseController {
         return $count;
     }
 
-    protected function uploadFile($photos,$dir='submissions'){
+    protected function uploadImgs($photos,$dir='submissions'){
         $list = [];
         if ($photos) {
             foreach ($photos as $base64) {
@@ -284,25 +284,26 @@ trait BaseController {
         return ['img'=>$list];
     }
 
-    protected function uploadPdf($base64Pdf,$dir='submissions'){
-        $url = explode(';',$base64Pdf);
-        if(count($url) <=1){
-            $parse_url = parse_url($base64Pdf);
-            //非本地地址，存储到本地
-            if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
-                $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.pdf';
-                dispatch((new UploadFile($file_name,base64_encode(file_get_contents($base64Pdf)))));
-                //Storage::disk('oss')->put($file_name,file_get_contents($base64));
+    protected function uploadFile($files,$dir='submissions'){
+        $list = [];
+        if ($files) {
+            foreach ($files as $file) {
+                $url = explode(';',$file['base64']);
+                if(count($url) <=1){
+                    continue;
+                }
+                $url_type = explode('/',$url[0]);
+                $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
+                dispatch((new UploadFile($file_name,(substr($url[1],6)))));
                 $img_url = Storage::disk('oss')->url($file_name);
-            } elseif(isset($parse_url['host'])) {
-                $img_url = $base64Pdf;
+                $list[] = [
+                    'name' => $file['name'],
+                    'type' => $url_type[1],
+                    'url' =>$img_url
+                ];
             }
-            return $img_url;
         }
-        $url_type = explode('/',$url[0]);
-        $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
-        dispatch((new UploadFile($file_name,(substr($url[1],6)))));
-        return Storage::disk('oss')->url($file_name);
+        return ['files'=>$list];
     }
 
 
