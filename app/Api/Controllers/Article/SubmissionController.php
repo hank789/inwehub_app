@@ -98,7 +98,7 @@ class SubmissionController extends Controller {
                 return self::createJsonData(false,['exist_url'=>$exist_submission_url],ApiException::ARTICLE_URL_ALREADY_EXIST,"您提交的网址已经存在");
             }
             try {
-                $img_url = $this->uploadFile($request->input('photos'));
+                $img_url = $this->uploadImgs($request->input('photos'));
 
                 $data = [
                     'url'           => $request->url,
@@ -136,7 +136,10 @@ class SubmissionController extends Controller {
                 'group_id' => 'required|integer'
             ]);
 
-            $data = $this->uploadFile($request->input('photos'));
+            $data = $this->uploadImgs($request->input('photos'));
+        }
+        if ($request->input('base64File')) {
+            $data['files'] = $this->uploadFile($request->input('files'));
         }
 
         try {

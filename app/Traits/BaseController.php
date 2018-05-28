@@ -254,7 +254,7 @@ trait BaseController {
         return $count;
     }
 
-    protected function uploadFile($photos,$dir='submissions'){
+    protected function uploadImgs($photos,$dir='submissions'){
         $list = [];
         if ($photos) {
             foreach ($photos as $base64) {
@@ -283,6 +283,30 @@ trait BaseController {
         }
         return ['img'=>$list];
     }
+
+    protected function uploadFile($files,$dir='submissions'){
+        $list = [];
+        if ($files) {
+            foreach ($files as $file) {
+                $url = explode(';',$file['base64']);
+                if(count($url) <=1){
+                    continue;
+                }
+                $url_type = explode('/',$url[0]);
+                $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
+                dispatch((new UploadFile($file_name,(substr($url[1],6)))));
+                $img_url = Storage::disk('oss')->url($file_name);
+                $list[] = [
+                    'name' => $file['name'],
+                    'type' => $url_type[1],
+                    'url' =>$img_url
+                ];
+            }
+        }
+        return ['files'=>$list];
+    }
+
+
 
 
     protected function storeAnswer(User $loginUser, $description, Request $request) {

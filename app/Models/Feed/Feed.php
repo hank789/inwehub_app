@@ -262,6 +262,7 @@ class Feed extends Model
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
                     'img'       => $submission->data['img'],
+                    'files'       => $submission->data['files']??'',
                     'domain'    => $this->data['domain'],
                     'tags'      => $submission->tags()->get()->toArray(),
                     'submission_id' => $this->source_id,
