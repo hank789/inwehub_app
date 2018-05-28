@@ -19,6 +19,7 @@ use App\Services\Registrar;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -286,6 +287,7 @@ class MessageController extends Controller
         ]);
         $roomUser->last_msg_id = $last_msg_id;
         $roomUser->save();
+        Cache::delete('user_notification_count_'.$user->id);
         return self::createJsonData(true,['room_id'=>$room_id,'contact_id'=>$contact_id,'contact_name'=>$contact->name]);
     }
 
@@ -377,6 +379,7 @@ class MessageController extends Controller
         ]);
         $roomUser->last_msg_id = $last_msg_id;
         $roomUser->save();
+        Cache::delete('user_notification_count_'.$user->id);
         return self::createJsonData(true,$return);
     }
 
