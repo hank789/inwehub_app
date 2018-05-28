@@ -6,8 +6,6 @@ use App\Exceptions\ApiException;
 use App\Logic\TaskLogic;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
-use App\Models\IM\Conversation;
-use App\Models\IM\Message;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
@@ -240,7 +238,7 @@ class NotificationController extends Controller
                 ],
                 'im_messages' => $im_list
             ];
-            Cache::put('user_notification_count_'.$user->id,3);
+            Cache::put('user_notification_count_'.$user->id,$data,3);
         }
 
 
