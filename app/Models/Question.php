@@ -166,6 +166,10 @@ class Question extends Model
             case 7:
                 $description = '已点评';
                 break;
+            case 8:
+                //退款并关闭
+                $description = '已关闭';
+                break;
         }
         return $description;
     }
