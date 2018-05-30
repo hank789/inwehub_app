@@ -92,7 +92,7 @@ class NewQuestionConfirm extends Notification implements ShouldBroadcast,ShouldQ
             $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
         }
         return [
-            'first'    => '您好，已有专家响应了您的专业问答任务',
+            'first'    => '您好，已有专家响应了您的问答任务',
             'keyword1' => $this->question->title,
             'keyword2' => $this->answer->user->name,
             'keyword3' => '',

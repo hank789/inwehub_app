@@ -129,10 +129,10 @@ class AnswerEventListener implements ShouldQueue
                         }
                         //产生一条feed流
                         if ($answer->question->question_type == 1) {
-                            $feed_question_title = '专业问答';
+                            $feed_question_title = '问答';
                             $feed_type = Feed::FEED_TYPE_ANSWER_PAY_QUESTION;
                         } else {
-                            $feed_question_title = '互动问答';
+                            $feed_question_title = '问答';
                             $feed_type = Feed::FEED_TYPE_ANSWER_FREE_QUESTION;
                         }
                         feed()

@@ -111,7 +111,7 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
     public function toWechatNotice($notifiable){
         switch ($this->question->question_type) {
             case 1:
-                $first = '您好，已有专家回答了您的专业问答任务';
+                $first = '您好，已有专家回答了您的问答任务';
                 $keyword2 = $this->answer->user->name;
                 $remark = '可点击详情查看回答内容';
                 $target_url = config('app.mobile_url').'#/ask/'.$this->question->id;

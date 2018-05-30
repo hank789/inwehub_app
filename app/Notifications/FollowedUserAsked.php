@@ -110,14 +110,14 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
         switch ($this->question->question_type) {
             case 1:
                 $keyword1 = $this->question->title;
-                $keyword2 = '专业问答任务邀请';
+                $keyword2 = '问答任务邀请';
                 $remark = '请立即前往确认回答';
                 $first = '您好，您有新的回答邀请';
                 $url = config('app.mobile_url').'#/answer/'.$this->question->id;
                 return null;
                 break;
             case 2:
-                $keyword2 = '互动问答';
+                $keyword2 = '问答';
                 $remark = '请点击前往参与回答';
                 $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
                 break;

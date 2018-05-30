@@ -74,7 +74,7 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
             'avatar' => $this->question->user->avatar,
             'title'  => $this->question->user->name.'采纳了你的回答',
             'body'   => $this->question->title,
-            'extra_body' => ''
+            'extra_body' => '悬赏金额稍后将会结算给您'
         ];
     }
 

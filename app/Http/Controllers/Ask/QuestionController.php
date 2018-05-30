@@ -335,9 +335,6 @@ class QuestionController extends Controller
         if(!$toUser){
             return $this->ajaxError(50005,'被邀请用户不存在');
         }
-        if ($question->question_type == 2) {
-            return $this->ajaxError(50005,'互动问答不能邀请用户回答');
-        }
 
         //是否设置了邀请者必须为专家
         if(Setting()->get('is_inviter_must_expert',1) == 1){

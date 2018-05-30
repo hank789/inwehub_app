@@ -63,6 +63,13 @@ class FixFeedGroup extends Command
                     }
                     break;
             }
+            if (str_contains($feed->data['feed_content'],'互动问答') || str_contains($feed->data['feed_content'],'专业问答')) {
+                $data = $feed->data;
+                $data['feed_content'] = str_replace('互动问答','问答',$data['feed_content']);
+                $data['feed_content'] = str_replace('专业问答','问答',$data['feed_content']);
+                $feed->data = $data;
+                $feed->save();
+            }
             if ($feed->feed_type == Feed::FEED_TYPE_FOLLOW_USER) {
                 $feed->delete();
             }

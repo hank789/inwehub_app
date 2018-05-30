@@ -75,7 +75,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
      */
     public function toArray($notifiable)
     {
-        $title = '专业问答任务邀请';
+        $title = '问答任务邀请';
         if ($this->from_user_id) {
             $from_user = User::find($this->from_user_id);
             $title = $from_user->name.'邀请您回答问题';
@@ -87,7 +87,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         switch ($this->question->question_type) {
             case 1:
                 $url = '/answer/'.$this->question->id;
-                $title = '专业问答任务邀请';
+                $title = '问答任务邀请';
                 if ($this->question->hide) {
                     $avatar = config('image.user_default_avatar');
                 }
@@ -133,7 +133,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         switch ($this->question->question_type) {
             case 1:
                 $keyword1 = $this->question->title;
-                $keyword2 = '专业问答任务邀请';
+                $keyword2 = '问答任务邀请';
                 $remark = '请立即前往确认回答';
                 $first = '您好，您有新的回答邀请';
                 $url = config('app.mobile_url').'#/answer/'.$this->question->id;
@@ -142,7 +142,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
                 $from_user = User::find($this->from_user_id);
                 $first = $from_user->name.'邀请您回答问题';
                 $keyword1 = $this->question->title;
-                $keyword2 = '互动问答邀请';
+                $keyword2 = '问答邀请';
                 $remark = '请点击前往参与回答';
                 $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
                 break;

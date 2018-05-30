@@ -114,14 +114,14 @@ class TaskLogic {
                     break;
                 case 'App\Models\Question':
                     $task_type = 1;
-                    $task_type_description = '专业问答';
+                    $task_type_description = '问答';
                     $question = Question::find($task->source_id);
                     switch ($question->question_type){
                         case 1:
-                            $task_type_description = '专业问答';
+                            $task_type_description = '问答';
                             break;
                         case 2:
-                            $task_type_description = '互动问答';
+                            $task_type_description = '问答';
                             break;
                     }
                     $object_id = $question->id;
@@ -144,7 +144,7 @@ class TaskLogic {
                     break;
                 case 'App\Models\Answer':
                     $task_type = 2;
-                    $task_type_description = '专业问答';
+                    $task_type_description = '问答';
                     $answer = Answer::find($task->source_id);
                     if (!$answer) continue;
                     $question = Question::find($answer->question_id);
@@ -156,7 +156,7 @@ class TaskLogic {
                             $user_name = $answer->user->name;
                             $user_avatar_url = $answer->user->avatar;
                             $priority = '中';
-                            $description = '用户'.$user_name.'回答了专业提问:'.$question->title;
+                            $description = '用户'.$user_name.'回答了提问:'.$question->title;
                             $status_description = '前往点评';
                             break;
                     }

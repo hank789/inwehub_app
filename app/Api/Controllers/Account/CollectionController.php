@@ -115,7 +115,7 @@ class CollectionController extends Controller
                     $item['user_name'] = $info->user->name;
                     $item['user_avatar_url'] = $info->user->avatar;
                     $item['is_expert'] = $info->user->userData->authentication_status == 1 ? 1 : 0;
-                    $item['title'] = ($info->question->question_type == 1 ? '专业问答|':'互动问答|').$info->question->title;
+                    $item['title'] = ('问答|').$info->question->title;
                     $item['description'] = $info->getContentText();
                     break;
                 case 'questions':

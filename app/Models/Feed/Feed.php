@@ -175,6 +175,20 @@ class Feed extends Model
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = Question::find($answer->question_id);
+                $is_pay_for_view = true;
+                if ($answer->adopted_at) {
+                    $is_pay_for_view = false;
+                    if (Auth::user()->id == $question->user_id) {
+                        $is_pay_for_view = true;
+                    }
+                    if (Auth::user()->id == $answer->user_id) {
+                        $is_pay_for_view = true;
+                    }
+                    $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
+                    if ($payOrder) {
+                        $is_pay_for_view = true;
+                    }
+                }
                 $is_followed_question = 0;
                 $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
                 if ($attention_question) {
@@ -182,12 +196,13 @@ class Feed extends Model
                 }
                 $data = [
                     'title'     => $question->title,
-                    'content'   => $answer->getContentText(),
+                    'content'   => str_limit($answer->getContentText(),120),
                     'comment_num' => $answer->comments,
                     'support_number' => $answer->supports,
                     'answer_number' => $question->answers,
                     'follow_question_num'  => $question->followers,
                     'is_followed_question' => $is_followed_question,
+                    'is_pay_for_view' => $is_pay_for_view,
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),

@@ -21,7 +21,7 @@ class QuestionLogic {
             ];
             $fields[] = [
                 'title' => '类型',
-                'value' => $question->question_type == 1 ? '专业问答':'互动问答'
+                'value' => '问答'
             ];
             if($other_fields){
                 $fields = array_merge($fields,$other_fields);

@@ -49,7 +49,7 @@ class QuestionObserver implements ShouldQueue {
         }
         //只有互动问答才产生一条feed流
         if ($question->question_type == 2) {
-            $feed_question_title = '互动问答';
+            $feed_question_title = '问答';
             $feed_type = Feed::FEED_TYPE_CREATE_FREE_QUESTION;
             feed()
                 ->causedBy($question->user)

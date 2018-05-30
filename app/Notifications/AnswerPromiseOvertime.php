@@ -89,7 +89,7 @@ class AnswerPromiseOvertime extends Notification implements ShouldBroadcast,Shou
     }
 
     public function toWechatNotice($notifiable){
-        $first = '您好，您有专业问答任务即将延期,请及时处理!';
+        $first = '您好，您有问答任务即将延期,请及时处理!';
         $keyword2 = date('Y-m-d H:i',strtotime($this->answer->promise_time));
         $remark = '可点击详情立即前往回答';
         $target_url = config('app.mobile_url').'#/answer/'.$this->question->id;
