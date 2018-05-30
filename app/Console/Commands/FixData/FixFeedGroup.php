@@ -96,6 +96,7 @@ class FixFeedGroup extends Command
                 Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE,
                 Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE,
                 Feed::FEED_TYPE_COMMENT_PAY_QUESTION,
+                Feed::FEED_TYPE_CREATE_PAY_QUESTION
             ])) {
                 $feed->delete();
             }
