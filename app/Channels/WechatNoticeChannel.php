@@ -23,7 +23,7 @@ class WechatNoticeChannel {
         // 将通知发送给 $notifiable 实例
         // 微信通知
         if ($message) {
-            event(new Notice($notifiable->id,$message['first'],$message['keyword1'],$message['keyword2'],$message['keyword3'],$message['remark'],$message['template_id'],$message['target_url'].'?inwe_source=wechatNotice'));
+            event(new Notice($notifiable->id,$message['first'],$message['keyword1'],$message['keyword2'],$message['keyword3'],$message['keyword4']??'',$message['remark'],$message['template_id'],$message['target_url'].'?inwe_source=wechatNotice'));
         }
     }
 

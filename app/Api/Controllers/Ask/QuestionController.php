@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\QuestionRefund;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
 use App\Logic\TaskLogic;
@@ -22,6 +23,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +36,7 @@ class QuestionController extends Controller
     protected $validateRules = [
         'order_id'    => 'required|integer',
         'description' => 'required|max:500',
-        'price'=> 'required|between:1,388',
+        'price'=> 'required|between:1,20000',
     ];
 
     /**
@@ -168,7 +170,7 @@ class QuestionController extends Controller
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,
-            'status_description' => $question->statusHumanDescription($user->id),
+            'status_description' => $question->statusFormatDescription($user->id),
             'promise_answer_time' => $promise_answer_time,
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
@@ -365,20 +367,6 @@ class QuestionController extends Controller
             }
         }
 
-
-        $category_id = 20;
-        $data = [
-            'user_id'      => $loginUser->id,
-            'category_id'      => $category_id,
-            'title'        => formatContentUrls(trim($request->input('description'))),
-            'question_type' => $request->input('question_type',1),
-            'price'        => $price,
-            'hide'         => intval($request->input('hide')),
-            'status'       => 1,
-            'device'       => intval($request->input('device')),
-            'rate'          => firstRate()
-        ];
-
         //查看支付订单是否成功
         $order = Order::find($request->input('order_id'));
         if(empty($order) && Setting()->get('need_pay_actual',1)){
@@ -390,6 +378,19 @@ class QuestionController extends Controller
             $toUser = User::where('uuid',$to_user_uuid)->firstOrFail();
             $this->checkAnswerUser($loginUser,$toUser->id);
         }
+
+        $category_id = 20;
+        $data = [
+            'user_id'      => $loginUser->id,
+            'category_id'      => $category_id,
+            'title'        => formatContentUrls(trim($request->input('description'))),
+            'question_type' => $to_user_uuid?1:2,
+            'price'        => $price,
+            'hide'         => intval($request->input('hide')),
+            'status'       => 1,
+            'device'       => intval($request->input('device')),
+            'rate'          => firstRate()
+        ];
 
         $data['data'] = $this->uploadImgs($request->input('photos'),'questions');
 
@@ -514,7 +515,8 @@ class QuestionController extends Controller
                 //专业问答非定向邀请的自动匹配一次
                 event(new AutoInvitation($question));
             }
-
+            //48小时候若未有回答则退款
+            $this->dispatch((new QuestionRefund($question->id))->delay(Carbon::now()->addHours(48)));
             $res_data = [
                 'id'=>$question->id,
                 'price'=> $price,

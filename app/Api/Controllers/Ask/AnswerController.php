@@ -21,7 +21,9 @@ use App\Models\Support;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
+use App\Notifications\AnswerAdopted;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -130,6 +132,7 @@ class AnswerController extends Controller
             'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
             'content' => ($is_self || $is_answer_author || $is_pay_for_view || $question->question_type == 2) ? $answer->content : '',
             'promise_time' => $answer->promise_time,
+            'adopted_time' => $answer->adopted_at,
             'is_followed' => $attention?1:0,
             'is_supported' => $support?1:0,
             'is_collected' => $collect?1:0,
@@ -438,11 +441,14 @@ class AnswerController extends Controller
         //进入结算中心
         if ($order1) {
             Settlement::payForViewSettlement($order1);
-        } else {
+        }
+        if ($order->actual_amount > 0) {
             Settlement::payForViewSettlement($order);
         }
         //生成一条点评任务
-        $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+        if ($answer->question->question_type == 1) {
+            $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+        }
         QuestionLogic::calculationQuestionRate($answer->question_id);
 
 
@@ -568,6 +574,34 @@ class AnswerController extends Controller
         UserTag::multiIncrement($user->id,$source->question->tags()->get(),'questions');
         self::$needRefresh = true;
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
+    }
+
+    //采纳最佳回答
+    public function adopt(Request $request) {
+        /*问题创建校验*/
+        $validateRules = [
+            'answer_id'    => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $answer  = Answer::find($request->input('answer_id'));
+        $question = $answer->question;
+        if ($user->id != $question->user_id || $answer->adopted_at>0 || $question->question_type == 1 ||$question->status == 8 || $question->status == 9) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $answer->adopted_at = Carbon::now();
+        $answer->save();
+        $question->status = 8;
+        $question->save();
+        UserTag::multiIncrement($user->id,$question->tags()->get(),'adoptions');
+        $this->finishTask(get_class($answer),$answer->id, Task::ACTION_TYPE_ADOPTED_ANSWER,[$user->id]);
+        //通知
+        $answer->user->notify(new AnswerAdopted($answer->user_id,$question,$answer));
+        //进入结算中心
+        Settlement::answerSettlement($answer);
+        Settlement::questionSettlement($question);
+        //进行结算
+        return self::createJsonData(true);
     }
 
 }

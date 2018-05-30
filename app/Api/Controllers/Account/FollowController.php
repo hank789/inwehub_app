@@ -148,13 +148,6 @@ class FollowController extends Controller
                     $feed_target = $source->id.'_'.$loginUser->id;
                     if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
                         $source->notify(new NewUserFollowing($source->id,$attention));
-                        feed()
-                            ->causedBy($loginUser)
-                            ->performedOn($source)
-                            ->withProperties([
-                                'follow_user_id' => $source->id
-                            ])
-                            ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
                         $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                         //产生一条私信
@@ -268,13 +261,6 @@ class FollowController extends Controller
                     'value' => $source->id.'['.$source->name.']'
                 ];
                 $source->notify(new NewUserFollowing($source->id,$attention,false));
-                feed()
-                    ->causedBy($user)
-                    ->performedOn($source)
-                    ->withProperties([
-                        'follow_user_id' => $source->id
-                    ])
-                    ->log($user->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
                 $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
                 //产生一条私信

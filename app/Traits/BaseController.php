@@ -481,9 +481,11 @@ trait BaseController {
                 }
 
                 event(new Answered($answer));
-                //进入结算中心
-                Settlement::answerSettlement($answer);
-                Settlement::questionSettlement($question);
+                if ($question->question_type == 1) {
+                    //进入结算中心
+                    Settlement::answerSettlement($answer);
+                    Settlement::questionSettlement($question);
+                }
                 QuestionLogic::calculationQuestionRate($answer->question_id);
                 return self::createJsonData(true,['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'create_time'=>(string)$answer->created_at],ApiException::SUCCESS,$message);
 

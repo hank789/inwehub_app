@@ -44,6 +44,7 @@ class Task extends Model
     const ACTION_TYPE_NEWBIE_ASK = 'newbie_ask';
     const ACTION_TYPE_NEWBIE_READHUB_COMMENT = 'newbie_readhub_comment';
     const ACTION_TYPE_NEWBIE_COMPLETE_USERINFO = 'newbie_complete_userinfo';
+    const ACTION_TYPE_ADOPTED_ANSWER = 'adopted_answer';
 
     public static $actionPriority = [
         self::ACTION_TYPE_ANSWER => ['name'=>'回答','priority'=>500],
@@ -52,6 +53,7 @@ class Task extends Model
         self::ACTION_TYPE_NEWBIE_ASK => ['name'=>'新手任务-提问','priority'=>590],
         self::ACTION_TYPE_NEWBIE_READHUB_COMMENT => ['name'=>'新手任务-回复','priority'=>580],
         self::ACTION_TYPE_NEWBIE_COMPLETE_USERINFO => ['name'=>'新手任务-完善个人信息','priority'=>600],
+        self::ACTION_TYPE_ADOPTED_ANSWER => ['name'=>'采纳最佳答案','priority'=>401]
     ];
 
 }

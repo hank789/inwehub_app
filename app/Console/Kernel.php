@@ -62,7 +62,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixFeedTags::class,
         Commands\User\GenUserInfoCompletePercent::class,
         Commands\FixData\InitGroup::class,
-        Commands\FixData\AddUserToGroup::class
+        Commands\FixData\AddUserToGroup::class,
+        Commands\FixData\FixFeedGroup::class
 
     ];
 

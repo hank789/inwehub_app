@@ -65,6 +65,8 @@ class SubmissionObserver implements ShouldQueue {
             feed()
                 ->causedBy($user)
                 ->performedOn($submission)
+                ->setGroup($submission->group_id)
+                ->setPublic($submission->public)
                 ->tags($submission->tags()->pluck('tag_id')->toArray())
                 ->withProperties([
                     'view_url'=>$submission->data['url']??'',

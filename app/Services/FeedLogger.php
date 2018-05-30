@@ -28,6 +28,10 @@ class FeedLogger
 
     protected $anonymous = 0;
 
+    protected $public = 1;
+
+    protected $groupId = 0;
+
     /** @var \Illuminate\Database\Eloquent\Model */
     protected $performedOn;
 
@@ -68,6 +72,17 @@ class FeedLogger
 
     public function anonymous($is_anonymous = 0){
         $this->anonymous = $is_anonymous;
+        return $this;
+    }
+
+
+    public function setPublic($is_public = 1) {
+        $this->public = $is_public;
+        return $this;
+    }
+
+    public function setGroup($groupId) {
+        $this->groupId = $groupId;
         return $this;
     }
 
@@ -139,6 +154,10 @@ class FeedLogger
         $activity->feed_type = $feedType;
 
         $activity->is_anonymous = $this->anonymous;
+
+        $activity->public = $this->public;
+
+        $activity->group_id = $this->groupId;
 
         if ($this->tagIds) {
             $activity->tags = '';

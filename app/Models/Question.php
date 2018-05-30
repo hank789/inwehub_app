@@ -81,6 +81,9 @@ class Question extends Model
 
     //提问设备，1为IOS，2为安卓，3为网页，4为微信小程序
 
+    //question_type，1为定向付费提问，2为悬赏问答
+
+
     protected $casts = [
         'data' => 'json'
     ];
@@ -139,6 +142,28 @@ class Question extends Model
         });
     }
 
+    public function statusFormatDescription($user_id) {
+        if ($this->status == 8) return '已采纳';
+        if ($this->status == 9) return '24小时内没有回答者，问题已关闭，资金会自动退回。';
+        $description = '';
+        //提问者
+        if ($this->user_id == $user_id) {
+            //悬赏还未结束
+            if ($this->created_at < date('Y-m-d H:i:s',strtotime('+96 hours'))) {
+                $description = '请于'.date('Y-m-d H:i',strtotime('+96 hours')).'前采纳最佳回答，悬赏会支付给该回答者。';
+            } else {
+                $description = '您的采纳已延期，请尽快采纳最佳回答。';
+            }
+        } else {
+            if ($this->created_at < date('Y-m-d H:i:s',strtotime('+96 hours'))) {
+                $description = '最佳回答将于'.date('Y-m-d H:i',strtotime('+96 hours')).'前采纳，悬赏会支付给该回答者。';
+            } else {
+                $description = '提问者正在采纳最佳回答，悬赏会支付给该回答者。';
+            }
+        }
+        return $description;
+    }
+
     public function statusHumanDescription($user_id){
         $description = '';
         switch ($this->status){
@@ -167,6 +192,10 @@ class Question extends Model
                 $description = '已点评';
                 break;
             case 8:
+                //已采纳
+                $description = '已采纳';
+                break;
+            case 9:
                 //退款并关闭
                 $description = '已关闭';
                 break;
