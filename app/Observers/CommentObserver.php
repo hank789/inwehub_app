@@ -120,18 +120,6 @@ class CommentObserver implements ShouldQueue {
                     $feed_type = Feed::FEED_TYPE_COMMENT_FREE_QUESTION;
                     $feed_url = '/askCommunity/interaction/'.$source->id;
                     $feed_answer_content = $source->getContentText();
-                    feed()
-                        ->causedBy($comment->user)
-                        ->performedOn($comment)
-                        ->tags($question->tags()->pluck('tag_id')->toArray())
-                        ->withProperties([
-                            'comment_content' => $comment->content,
-                            'answer_user_name' => $source->user->name,
-                            'question_title'   => $question->title,
-                            'answer_content'   => $feed_answer_content,
-                            'feed_url'         => $feed_url
-                        ])
-                        ->log($comment->user->name.'评论了'.$feed_question_title, $feed_type);
                 }
                 break;
             case 'App\Models\Submission':
@@ -150,25 +138,6 @@ class CommentObserver implements ShouldQueue {
                 if (!$group->public) {
                     //私密圈子的分享只通知圈子内的人
                     $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
-                }
-                if ($submission->type == 'link' && false) {
-                    //评论的feed不产生，全部在发布文章上聚合显示
-                    feed()
-                        ->causedBy($comment->user)
-                        ->performedOn($comment)
-                        ->tags($submission->tags()->pluck('tag_id')->toArray())
-                        ->withProperties([
-                            'comment_id'=>$comment->id,
-                            'category_id'=>$submission->category_id,
-                            'slug'=>$submission->slug,
-                            'submission_title'=>$submission->title,
-                            'type' => $submission->type,
-                            'domain'=>$submission->data['domain']??'',
-                            'img'=>$submission->data['img']??'',
-                            'submission_username' => $submission_user->name,
-                            'comment_content' => $comment->content
-                        ])
-                        ->log($comment->user->name.'评论了文章', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
                 }
                 $fields[] = [
                     'title' => '圈子',

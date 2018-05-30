@@ -65,12 +65,38 @@ class FixFeedGroup extends Command
             }
             if (str_contains($feed->data['feed_content'],'互动问答') || str_contains($feed->data['feed_content'],'专业问答')) {
                 $data = $feed->data;
+                if (in_array($feed->feed_type,[
+                    Feed::FEED_TYPE_FOLLOW_FREE_QUESTION,
+                    Feed::FEED_TYPE_UPVOTE_PAY_QUESTION,
+                    Feed::FEED_TYPE_UPVOTE_FREE_QUESTION
+                ])) {
+                    $data = ['feed_content'=>$feed->data['feed_content']];
+                }
+                if ($feed->feed_type == Feed::FEED_TYPE_CREATE_FREE_QUESTION) {
+                    $data = [
+                        'feed_content'=>$feed->data['feed_content'],
+                        'question_title' => $feed->data['question_title']
+                    ];
+                }
                 $data['feed_content'] = str_replace('互动问答','问答',$data['feed_content']);
                 $data['feed_content'] = str_replace('专业问答','问答',$data['feed_content']);
                 $feed->data = $data;
                 $feed->save();
             }
-            if ($feed->feed_type == Feed::FEED_TYPE_FOLLOW_USER) {
+            if ($feed->feed_type == Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE) {
+                $data = [
+                    'submission_title'=>$feed->data['submission_title'],
+                ];
+                $feed->data = $data;
+                $feed->save();
+            }
+            if (in_array($feed->feed_type,[
+                Feed::FEED_TYPE_FOLLOW_USER,
+                Feed::FEED_TYPE_COMMENT_FREE_QUESTION,
+                Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE,
+                Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE,
+                Feed::FEED_TYPE_COMMENT_PAY_QUESTION,
+            ])) {
                 $feed->delete();
             }
         }

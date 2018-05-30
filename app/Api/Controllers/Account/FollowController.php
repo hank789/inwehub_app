@@ -131,7 +131,6 @@ class FollowController extends Controller
                                 ->causedBy($loginUser)
                                 ->performedOn($source)
                                 ->tags($source->tags()->pluck('tag_id')->toArray())
-                                ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                                 ->log($loginUser->name.'关注了问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                             $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                             if ($source->hide == 0) {
@@ -404,7 +403,6 @@ class FollowController extends Controller
                         ->causedBy($user)
                         ->performedOn($source)
                         ->tags($source->tags()->pluck('tag_id')->toArray())
-                        ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
                         ->log($user->name.'关注了问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                     $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
                     if ($source->hide == 0) {

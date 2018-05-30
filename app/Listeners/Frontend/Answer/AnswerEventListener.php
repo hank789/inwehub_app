@@ -139,7 +139,7 @@ class AnswerEventListener implements ShouldQueue
                             ->causedBy($answer->user)
                             ->performedOn($answer)
                             ->tags($answer->question->tags()->pluck('tag_id')->toArray())
-                            ->withProperties(['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'question_title'=>$answer->question->title,'answer_content'=>$answer->getContentText()])
+                            ->withProperties(['question_title'=>$answer->question->title,'answer_content'=>$answer->getContentText()])
                             ->log($answer->user->name.'回答了'.$feed_question_title, $feed_type);
 
                 }

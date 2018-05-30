@@ -57,61 +57,8 @@ class NotifyInwehub implements ShouldQueue
         switch ($class){
             case 'NewComment':
                 return;
-                event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_COMMENT,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_COMMENT),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_COMMENT),$this->message['commnet_id'],''));
-                if (Redis::connection()->hget('user.'.$this->user_id.'.data', 'commentsCount') <= 2) {
-                    TaskLogic::finishTask('newbie_readhub_comment',0,'newbie_readhub_comment',[$this->user_id]);
-                }
-                //产生一条feed流
-                $comment = Comment::find($this->message['commnet_id']);
-                //同步评论
-                \App\Models\Comment::create(
-                    [
-                        'user_id'     => $comment->user_id,
-                        'content'     => $comment->body,
-                        'source_id'   => $comment->id,
-                        'source_type' => get_class($comment),
-                        'to_user_id'  => 0,
-                        'status'      => 1,
-                        'supports'    => 0
-                    ]);
-
-                $submission = Submission::find($comment->submission_id);
-                $submission_user = User::find($submission->user_id);
-                feed()
-                    ->causedBy($user)
-                    ->performedOn($comment)
-                    ->withProperties([
-                        'comment_id'=>$comment->id,
-                        'category_id'=>$submission->category_id,
-                        'slug'=>$submission->slug,
-                        'submission_title'=>$submission->title,
-                        'domain'=>$submission->data['domain']??'',
-                        'img'=>$submission->data['img']??'',
-                        'submission_username' => $submission_user->name,
-                        'comment_content' => $comment->body
-                    ])
-                    ->log($user->name.'评论了动态', Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE);
-                return;
                 break;
             case 'NewSubmission':
-                return;
-                event(new CreditEvent($this->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$this->message['submission_id'],''));
-                //产生一条feed流
-                $submission = Submission::find($this->message['submission_id']);
-                feed()
-                    ->causedBy($user)
-                    ->performedOn($submission)
-                    ->withProperties([
-                        'view_url'=>$submission->data['url']??'',
-                        'category_id'=>$submission->category_id,
-                        'slug'=>$submission->slug,
-                        'submission_title'=>$submission->title,
-                        'domain'=>$submission->data['domain']??'',
-                        'current_address_name' => $submission->data['current_address_name'],
-                        'current_address_longitude' => $submission->data['current_address_longitude'],
-                        'current_address_latitude'  => $submission->data['current_address_latitude'],
-                        'img'=>$submission->data['img']??''])
-                    ->log($user->name.'发布了动态', Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
                 return;
                 break;
             case 'NewSubmissionUpVote':

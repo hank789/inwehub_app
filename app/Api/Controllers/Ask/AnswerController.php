@@ -12,6 +12,7 @@ use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
+use App\Models\Feed\Feed;
 use App\Models\Feedback;
 use App\Models\Pay\Order;
 use App\Models\Pay\Settlement;
@@ -600,6 +601,12 @@ class AnswerController extends Controller
         //进入结算中心
         Settlement::answerSettlement($answer);
         Settlement::questionSettlement($question);
+        //feed
+        feed()
+            ->causedBy($user)
+            ->performedOn($answer)
+            ->tags($question->tags()->pluck('tag_id')->toArray())
+            ->log($user->name.'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
         //进行结算
         return self::createJsonData(true);
     }
