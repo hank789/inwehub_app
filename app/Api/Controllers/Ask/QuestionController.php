@@ -847,7 +847,7 @@ class QuestionController extends Controller
         $orderBy = $request->input('order_by',3);//1最新，2最热，3综合，
         $filter = $request->input('filter',1);//1悬赏大厅，2热门
         if ($filter == 1) {
-            $query = Question::where('question_type',1)->where('status','<=',6);
+            $query = Question::where('question_type',2)->where('status','<=',6);
         } else {
             $query = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);
         }
