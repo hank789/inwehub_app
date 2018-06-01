@@ -36,7 +36,7 @@ class QuestionController extends Controller
     protected $validateRules = [
         'order_id'    => 'required|integer',
         'description' => 'required|max:500',
-        'price'=> 'required|between:1,20000',
+        'price'=> 'required|between:5,20000',
     ];
 
     /**

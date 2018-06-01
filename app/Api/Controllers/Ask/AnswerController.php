@@ -167,7 +167,7 @@ class AnswerController extends Controller
             'price' => $question->price,
             'data'  => $question->data,
             'status' => $question->status,
-            'status_description' => $question->statusHumanDescription($user->id),
+            'status_description' => $question->statusFormatDescription($user->id),
             'promise_answer_time' => $answer->promise_time,
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
@@ -215,6 +215,9 @@ class AnswerController extends Controller
         $answer = Answer::where('id',$request->input('answer_id'))->where('user_id',$loginUser->id)->first();
         if (!$answer) {
             throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        if ($answer->question->status == 8) {
+            throw new ApiException(ApiException::ASK_ANSWER_ADOPTED_CANNOT_UPDATE);
         }
         $answerContent = $request->input('description');
 
