@@ -146,12 +146,16 @@ class Question extends Model
         if ($this->question_type == 1) {
             $question_invitation = QuestionInvitation::where('question_id','=',$this->id)->first();
             if ($this->status < 6) {
-                return '正在等待'.$question_invitation->user->name.'回答';
+                if ($this->user_id == $user_id) {
+                    return '正在等待'.$question_invitation->user->name.'回答';
+                } else {
+                    return '请于'.date('Y-m-d H:i',strtotime($this->created_at.' +48 hours')).'前回答，超时则提问失效。';
+                }
             }
             if ($this->status == 6) {
                 return '已回答';
             }
-            if ($this->status == 9) return '对方未响应你的提问，问题已被关闭，'.$this->price.'元已自动退回。';
+            if ($this->status == 9) return '对方未响应，问题已被关闭，'.$this->price.'元已自动退回。';
         }
         if ($this->status == 8) return '已采纳';
         if ($this->status == 9) return '24小时内没有回答者，问题已关闭，资金会自动退回。';
