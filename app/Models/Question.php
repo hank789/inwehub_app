@@ -143,6 +143,15 @@ class Question extends Model
     }
 
     public function statusFormatDescription($user_id) {
+        if ($this->question_type == 1) {
+            $question_invitation = QuestionInvitation::where('question_id','=',$this->id)->first();
+            if ($this->status < 6) {
+                return '正在等待'.$question_invitation->user->name.'回答';
+            }
+            if ($this->status == 6) {
+                return '已回答';
+            }
+        }
         if ($this->status == 8) return '已采纳';
         if ($this->status == 9) return '24小时内没有回答者，问题已关闭，资金会自动退回。';
         $description = '';

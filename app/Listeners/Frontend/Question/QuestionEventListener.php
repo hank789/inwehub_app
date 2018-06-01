@@ -1,6 +1,5 @@
 <?php namespace App\Listeners\Frontend\Question;
 use App\Events\Frontend\Question\AutoInvitation;
-use App\Events\Frontend\Question\AutoSecondInvitation;
 use App\Jobs\Question\AutoSecondInvation;
 use App\Logic\QuestionLogic;
 use App\Models\QuestionInvitation;
