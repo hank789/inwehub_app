@@ -29,9 +29,7 @@ class QuestionRefund implements ShouldQueue
      * @var int
      */
     public $tries = 1;
-
-    public $queue = 'withdraw';
-
+    
     public $questionId;
 
 
@@ -39,6 +37,7 @@ class QuestionRefund implements ShouldQueue
     public function __construct($questionId)
     {
         $this->questionId = $questionId;
+        $this->queue = 'withdraw';
     }
 
     /**
