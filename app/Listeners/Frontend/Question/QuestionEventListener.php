@@ -32,31 +32,34 @@ class QuestionEventListener implements ShouldQueue
         $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('answers','>=',1)->pluck('user_id')->toArray());
         $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('adoptions','>=',1)->pluck('user_id')->toArray());
         $userTags = array_unique($userTags);
-        $fields = [];
-        foreach($userTags as $uid){
-            if($uid == $question->user_id) continue;
-            $invitation = QuestionInvitation::where('user_id',$uid)->where('from_user_id',$question->user_id)->where('question_id',$question->id)->first();
-            if ($invitation) continue;
-            $invitation = QuestionInvitation::create([
-                'from_user_id'=> $question->user_id,
-                'question_id'=> $question->id,
-                'user_id'=> $uid,
-                'send_to'=> 'auto' //标示自动匹配
-            ]);
-            $user = User::find($uid);
-            $notifyLimit = RateLimiter::instance()->getValue('notify_user',$uid);
-            if ($notifyLimit) {
-                $user->notify((new NewQuestionInvitation($uid, $question,$question->user_id,$invitation->id,false))->delay(Carbon::now()->addMinutes($notifyLimit * 5)));
-            } else {
-                $user->notify(new NewQuestionInvitation($uid, $question,$question->user_id,$invitation->id,false));
+
+        if ($userTags) {
+            $fields = [];
+            foreach($userTags as $uid){
+                if($uid == $question->user_id) continue;
+                $invitation = QuestionInvitation::where('user_id',$uid)->where('from_user_id',$question->user_id)->where('question_id',$question->id)->first();
+                if ($invitation) continue;
+                $invitation = QuestionInvitation::create([
+                    'from_user_id'=> $question->user_id,
+                    'question_id'=> $question->id,
+                    'user_id'=> $uid,
+                    'send_to'=> 'auto' //标示自动匹配
+                ]);
+                $user = User::find($uid);
+                $notifyLimit = RateLimiter::instance()->getValue('notify_user',$uid);
+                if ($notifyLimit) {
+                    $user->notify((new NewQuestionInvitation($uid, $question,$question->user_id,$invitation->id,false))->delay(Carbon::now()->addMinutes($notifyLimit * 5)));
+                } else {
+                    $user->notify(new NewQuestionInvitation($uid, $question,$question->user_id,$invitation->id,false));
+                }
+                $fields[] = [
+                    'title' => '邀请回答者',
+                    'value' => $user->id.'['.$user->name.']'
+                ];
             }
-            $fields[] = [
-                'title' => '邀请回答者',
-                'value' => $user->id.'['.$user->name.']'
-            ];
+            QuestionLogic::slackMsg('[系统]自动邀请相关人员参与悬赏问题',$question,$fields);
         }
         dispatch((new AutoSecondInvation($question->id))->delay(Carbon::now()->addHours(3)));
-        QuestionLogic::slackMsg('[系统]自动邀请相关人员参与悬赏问题',$question,$fields);
     }
 
     /**
