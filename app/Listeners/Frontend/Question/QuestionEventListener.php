@@ -1,13 +1,13 @@
 <?php namespace App\Listeners\Frontend\Question;
 use App\Events\Frontend\Question\AutoInvitation;
+use App\Events\Frontend\Question\AutoSecondInvitation;
+use App\Jobs\Question\AutoSecondInvation;
 use App\Logic\QuestionLogic;
-use App\Logic\TaskLogic;
-use App\Models\Doing;
 use App\Models\QuestionInvitation;
-use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 
@@ -50,6 +50,7 @@ class QuestionEventListener implements ShouldQueue
                 'value' => $user->id.'['.$user->name.']'
             ];
         }
+        dispatch((new AutoSecondInvation($question->id))->delay(Carbon::now()->addHours(3)));
         QuestionLogic::slackMsg('[系统]自动邀请相关人员参与悬赏问题',$question,$fields);
     }
 
