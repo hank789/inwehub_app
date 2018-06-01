@@ -159,14 +159,14 @@ class Question extends Model
         //提问者
         if ($this->user_id == $user_id) {
             //悬赏还未结束
-            if ($this->created_at < date('Y-m-d H:i:s',strtotime('+96 hours'))) {
-                $description = '请于'.date('Y-m-d H:i',strtotime('+96 hours')).'前采纳最佳回答，悬赏会支付给该回答者。';
+            if (strtotime($this->created_at.' +96 hours') > time()) {
+                $description = '请于'.date('Y-m-d H:i',strtotime($this->created_at.' +96 hours')).'前采纳最佳回答，悬赏会支付给该回答者。';
             } else {
                 $description = '您的采纳已延期，请尽快采纳最佳回答。';
             }
         } else {
-            if ($this->created_at < date('Y-m-d H:i:s',strtotime('+96 hours'))) {
-                $description = '最佳回答将于'.date('Y-m-d H:i',strtotime('+96 hours')).'前采纳，悬赏会支付给该回答者。';
+            if (strtotime($this->created_at.' +96 hours') > time()) {
+                $description = '最佳回答将于'.date('Y-m-d H:i',strtotime($this->created_at.' +96 hours')).'前采纳，悬赏会支付给该回答者。';
             } else {
                 $description = '提问者正在采纳最佳回答，悬赏会支付给该回答者。';
             }
