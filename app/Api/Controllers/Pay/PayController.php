@@ -58,14 +58,14 @@ class PayController extends Controller {
                 if(Setting()->get('pay_method_weixin',1) != 1){
                     throw new ApiException(ApiException::PAYMENT_UNKNOWN_CHANNEL);
                 }
+                if (config('app.env') != 'production') {
+                    $need_pay_actual = false;
+                }
                 //是否绑定了微信
                 $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
                     ->where('user_id',$loginUser->id)->where('status',1)->orderBy('updated_at','desc')->first();
-                if(!$oauthData) {
+                if(!$oauthData && $need_pay_actual) {
                     throw new ApiException(ApiException::USER_WEIXIN_UNOAUTH);
-                }
-                if (config('app.env') != 'production') {
-                    $need_pay_actual = false;
                 }
 
                 $config = config('payment')['wechat_pub'];
