@@ -151,6 +151,7 @@ class Question extends Model
             if ($this->status == 6) {
                 return '已回答';
             }
+            if ($this->status == 9) return '对方未响应你的提问，问题已被关闭，'.$this->price.'元已自动退回。';
         }
         if ($this->status == 8) return '已采纳';
         if ($this->status == 9) return '24小时内没有回答者，问题已关闭，资金会自动退回。';
