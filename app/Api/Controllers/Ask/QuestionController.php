@@ -243,14 +243,13 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
                 'tags' => $question->tags()->get()->toArray(),
-                'question_user_name' => $question->hide ? '匿名' : $question->user->name,
-                'question_user_avatar' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
-                'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0)
+                'status' => $question->status
             ];
             if($question->question_type == 1){
                 $item['comment_number'] = 0;
                 $item['average_rate'] = 0;
                 $item['support_number'] = 0;
+                $item['status_description'] = $question->price.'元';
                 $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
                 if ($bestAnswer) {
                     $item['comment_number'] = $bestAnswer->comments;
@@ -260,6 +259,7 @@ class QuestionController extends Controller
             } else {
                 $item['answer_number'] = $question->answers;
                 $item['follow_number'] = $question->followers;
+                $item['status_description'] = $question->price.'元悬赏'.($question->status != 8 ? '中':'');
             }
             $list[] = $item;
             $count++;
