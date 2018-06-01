@@ -10,6 +10,7 @@ use App\Logic\QuestionLogic;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
 use App\Models\User;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -40,6 +41,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         $this->from_user_id = $from_user_id;
         $this->invitation_id = $invitation_id;
         $this->notifySlack = $notifySlack;
+        RateLimiter::instance()->increase('notify_user',$user_id,300);
     }
 
     /**

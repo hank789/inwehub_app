@@ -7,6 +7,7 @@ use App\Models\QuestionInvitation;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -44,7 +45,12 @@ class QuestionEventListener implements ShouldQueue
                 'send_to'=> 'auto' //标示自动匹配
             ]);
             $user = User::find($uid);
-            $user->notify(new NewQuestionInvitation($uid, $question,$question->user_id,$invitation->id,false));
+            $notifyLimit = RateLimiter::instance()->getValue('notify_user',$uid);
+            if ($notifyLimit) {
+                $user->notify((new NewQuestionInvitation($uid, $question,$question->user_id,$invitation->id,false))->delay(Carbon::now()->addMinutes($notifyLimit * 5)));
+            } else {
+                $user->notify(new NewQuestionInvitation($uid, $question,$question->user_id,$invitation->id,false));
+            }
             $fields[] = [
                 'title' => '邀请回答者',
                 'value' => $user->id.'['.$user->name.']'
