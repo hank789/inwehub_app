@@ -31,6 +31,7 @@ class QuestionEventListener implements ShouldQueue
         $userTags = UserTag::whereIn('tag_id',$tagIds)->where('skills','>=',1)->pluck('user_id')->toArray();
         $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('answers','>=',1)->pluck('user_id')->toArray());
         $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('adoptions','>=',1)->pluck('user_id')->toArray());
+        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('industries','>=',1)->pluck('user_id')->toArray());
         $userTags = array_unique($userTags);
 
         if ($userTags) {
@@ -58,8 +59,10 @@ class QuestionEventListener implements ShouldQueue
                 ];
             }
             QuestionLogic::slackMsg('[系统]自动邀请相关人员参与悬赏问题',$question,$fields);
+            dispatch((new AutoSecondInvation($question->id))->delay(Carbon::now()->addHours(3)));
+        } else {
+            dispatch((new AutoSecondInvation($question->id)));
         }
-        dispatch((new AutoSecondInvation($question->id))->delay(Carbon::now()->addHours(3)));
     }
 
     /**

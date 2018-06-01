@@ -57,6 +57,7 @@ class AutoSecondInvation implements ShouldQueue
         $tagIds = $question->tags()->pluck('tags.id')->toArray();
         $userTags = UserTag::whereIn('tag_id',$tagIds)->where('views','>=',1)->pluck('user_id')->toArray();
         $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('articles','>=',1)->pluck('user_id')->toArray());
+        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('supports','>=',1)->pluck('user_id')->toArray());
         $userTags = array_unique($userTags);
         if ($userTags) {
             $fields = [];
