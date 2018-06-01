@@ -367,6 +367,9 @@ class QuestionController extends Controller
                 if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
         }
+        if (empty($tagString) && empty($newTagString)) {
+            throw new ApiException(ApiException::ASK_TAGS_REQUIRED);
+        }
 
         //查看支付订单是否成功
         $order = Order::find($request->input('order_id'));

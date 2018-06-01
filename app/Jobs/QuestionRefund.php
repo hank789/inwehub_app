@@ -29,7 +29,7 @@ class QuestionRefund implements ShouldQueue
      * @var int
      */
     public $tries = 1;
-    
+
     public $questionId;
 
 

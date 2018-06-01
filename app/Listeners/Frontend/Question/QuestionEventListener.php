@@ -28,9 +28,9 @@ class QuestionEventListener implements ShouldQueue
     {
         $question = $event->question;
         $tagIds = $question->tags()->pluck('tags.id')->toArray();
-        $userTags = UserTag::whereIn('tag_id',$tagIds)->where('skills','>=','1')->pluck('user_id')->toArray();
-        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('answers','>=','1')->pluck('user_id')->toArray());
-        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('adoptions','>=','1')->pluck('user_id')->toArray());
+        $userTags = UserTag::whereIn('tag_id',$tagIds)->where('skills','>=',1)->pluck('user_id')->toArray();
+        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('answers','>=',1)->pluck('user_id')->toArray());
+        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('adoptions','>=',1)->pluck('user_id')->toArray());
         $userTags = array_unique($userTags);
         $fields = [];
         foreach($userTags as $uid){

@@ -80,6 +80,7 @@ class ApiException extends Exception
     const ASK_FEEDBACK_SELF_ANSWER = 3014;
     const TAGS_NAME_LENGTH_LIMIT = 3015;
     const ASK_ANSWER_ADOPTED_CANNOT_UPDATE = 3016;
+    const ASK_TAGS_REQUIRED = 3017;
 
     //支付模块响应码
     const PAYMENT_UNKNOWN_CHANNEL = 4004;
@@ -177,6 +178,7 @@ class ApiException extends Exception
         self::ASK_FEEDBACK_SELF_ANSWER => '您不能评价自己的回答',
         self::TAGS_NAME_LENGTH_LIMIT => '标签长度不能超过15个汉字',
         self::ASK_ANSWER_ADOPTED_CANNOT_UPDATE => '已经采纳的问题不能再修改',
+        self::ASK_TAGS_REQUIRED => '标签未选择',
 
         //支付模块
         self::PAYMENT_UNKNOWN_CHANNEL => '暂不支持该支付渠道',
