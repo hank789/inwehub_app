@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\Question\ConfirmOvertime;
 use App\Jobs\QuestionRefund;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
@@ -511,12 +512,15 @@ class QuestionController extends Controller
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
                 //通知
                 $toUser->notify(new NewQuestionInvitation($toUser->id,$question,$loginUser->id,$invitation->id));
-            }elseif ($question->question_type == 1){
-                //专业问答非定向邀请的自动匹配一次
-                event(new AutoInvitation($question));
+                //延时处理是否需要告警
+                dispatch((new ConfirmOvertime($question->id,$invitation->id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',60))));
             }
             //48小时候若未有回答则退款
             $this->dispatch((new QuestionRefund($question->id))->delay(Carbon::now()->addHours(48)));
+            //悬赏问答尝试邀请用户回答问题
+            if ($question->question_type == 2) {
+                event(new AutoInvitation($question));
+            }
             $res_data = [
                 'id'=>$question->id,
                 'price'=> $price,

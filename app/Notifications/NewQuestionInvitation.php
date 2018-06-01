@@ -50,7 +50,10 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class,SlackChannel::class];
+        $via = ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        if ($this->notifySlack) {
+            $via[] = SlackChannel::class;
+        }
     }
 
     /**
@@ -75,11 +78,19 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
      */
     public function toArray($notifiable)
     {
-        $title = '问答任务邀请';
+        $title = '悬赏问答邀请';
         if ($this->from_user_id) {
             $from_user = User::find($this->from_user_id);
-            $title = $from_user->name.'邀请您回答问题';
+            $title = $from_user->name.'邀请您参与悬赏问答';
             $avatar = $from_user->avatar;
+            if ($this->question->question_type == 1) {
+                if ($this->question->hide) {
+                    $avatar = config('image.user_default_avatar');
+                    $title = '付费问题咨询';
+                } else {
+                    $title = $from_user->name.'向您付费咨询问题';
+                }
+            }
         } else {
             $avatar = $this->question->user->avatar;
         }
@@ -87,10 +98,6 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         switch ($this->question->question_type) {
             case 1:
                 $url = '/answer/'.$this->question->id;
-                $title = '问答任务邀请';
-                if ($this->question->hide) {
-                    $avatar = config('image.user_default_avatar');
-                }
                 break;
             case 2:
                 $url = '/askCommunity/interaction/answers/'.$this->question->id;
@@ -102,16 +109,23 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
             'avatar' => $avatar,
             'title'  => $title,
             'body'   => $this->question->title,
-            'extra_body' => ''
+            'extra_body' => '金额:'.$this->question->price
         ];
     }
 
     public function toPush($notifiable)
     {
-        $title = '您有新的回答邀请';
+        $title = '您有新的悬赏问答邀请';
         if ($this->from_user_id) {
             $from_user = User::find($this->from_user_id);
-            $title = $from_user->name.'邀请您回答问题';
+            $title = $from_user->name.'邀请您参与悬赏问答';
+            if ($this->question->question_type == 1) {
+                if ($this->question->hide) {
+                    $title = '有人向您付费咨询问题';
+                } else {
+                    $title = $from_user->name.'向您付费咨询问题';
+                }
+            }
         }
         switch ($this->question->question_type) {
             case 1:
@@ -133,17 +147,20 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         switch ($this->question->question_type) {
             case 1:
                 $keyword1 = $this->question->title;
-                $keyword2 = '问答任务邀请';
+                $keyword2 = '付费咨询';
                 $remark = '请立即前往确认回答';
-                $first = '您好，您有新的回答邀请';
+                $first = '您好，有人向您付费咨询问题';
                 $url = config('app.mobile_url').'#/answer/'.$this->question->id;
                 break;
             case 2:
-                $from_user = User::find($this->from_user_id);
-                $first = $from_user->name.'邀请您回答问题';
+                $first = '您有新的悬赏问答邀请';
+                if ($this->from_user_id) {
+                    $from_user = User::find($this->from_user_id);
+                    $first = $from_user->name.'邀请您参与悬赏问答';
+                }
                 $keyword1 = $this->question->title;
-                $keyword2 = '问答邀请';
-                $remark = '请点击前往参与回答';
+                $keyword2 = '悬赏问答';
+                $remark = '悬赏金额'.$this->question->price.'元，点击前往参与回答';
                 $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
                 break;
             default:
@@ -174,10 +191,6 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
             }
             $user = User::find($this->user_id);
             QuestionLogic::slackMsg('用户'.$inviter.'邀请用户'.$this->user_id.'['.$user->name.']回答问题',$this->question);
-        }
-        if ($this->invitation_id && $this->question->question_type == 1) {
-            //延时处理是否需要告警专家
-            dispatch((new ConfirmOvertime($this->question->id,$this->invitation_id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',10))));
         }
     }
 

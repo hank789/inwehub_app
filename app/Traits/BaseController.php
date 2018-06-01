@@ -422,8 +422,6 @@ trait BaseController {
 
                 //任务变为已完成
                 $this->finishTask(get_class($question),$question->id,Task::ACTION_TYPE_ANSWER,[]);
-                if ($question_invitation) $this->finishTask(get_class($question_invitation),$question_invitation->id,Task::ACTION_TYPE_INVITE_ANSWER,[]);
-
 
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'answers');
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'questions');

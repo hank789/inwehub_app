@@ -1,8 +1,7 @@
 <?php namespace App\Listeners\Frontend\Question;
 use App\Events\Frontend\Question\AutoInvitation;
-use App\Events\Frontend\System\Push;
+use App\Logic\QuestionLogic;
 use App\Logic\TaskLogic;
-use App\Logic\WechatNotice;
 use App\Models\Doing;
 use App\Models\QuestionInvitation;
 use App\Models\Task;
@@ -29,36 +28,29 @@ class QuestionEventListener implements ShouldQueue
     {
         $question = $event->question;
         $tagIds = $question->tags()->pluck('tags.id')->toArray();
-        $userTags = UserTag::leftJoin('user_data','user_tags.user_id','=','user_data.user_id')->where('user_data.authentication_status',1)->whereIn('user_tags.tag_id',$tagIds)->where('user_tags.skills','>=','1')->pluck('user_tags.user_id')->toArray();
+        $userTags = UserTag::whereIn('tag_id',$tagIds)->where('skills','>=','1')->pluck('user_id')->toArray();
+        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('answers','>=','1')->pluck('user_id')->toArray());
+        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('adoptions','>=','1')->pluck('user_id')->toArray());
         $userTags = array_unique($userTags);
-        $doing_prefix = '';
-        if ($question->question_type == 2) {
-            $doing_prefix = 'free_';
-        }
+        $fields = [];
         foreach($userTags as $uid){
             if($uid == $question->user_id) continue;
-            $invitation = QuestionInvitation::firstOrCreate(['user_id'=>$uid,'from_user_id'=>$question->user_id,'question_id'=>$question->id],[
+            $invitation = QuestionInvitation::where('user_id',$uid)->where('from_user_id',$question->user_id)->where('question_id',$question->id)->first();
+            if ($invitation) continue;
+            $invitation = QuestionInvitation::create([
                 'from_user_id'=> $question->user_id,
                 'question_id'=> $question->id,
                 'user_id'=> $uid,
                 'send_to'=> 'auto' //标示自动匹配
             ]);
-
-            //已邀请
-            $question->invitedAnswer();
-            $last_doing = Doing::where('user_id',0)->where('source_id',$question->id)->where('source_type','App\Models\Question')->where('action',$doing_prefix.'question_process')->first();
-            //记录动态
-            $doing_obj = TaskLogic::doing($uid,$doing_prefix.'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
-            if($last_doing->created_at >= $doing_obj->created_at){
-                $doing_obj->created_at = date('Y-m-d H:i:s',strtotime($last_doing->created_at.' + '.rand(1,10).' seconds'));
-                $doing_obj->save();
-            }
-            //记录任务
-            TaskLogic::task($uid,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
-
             $user = User::find($uid);
-            $user->notify(new NewQuestionInvitation($uid, $question,0,$invitation->id));
+            $user->notify(new NewQuestionInvitation($uid, $question,$question->user_id,$invitation->id,false));
+            $fields[] = [
+                'title' => '邀请回答者',
+                'value' => $user->id.'['.$user->name.']'
+            ];
         }
+        QuestionLogic::slackMsg('[系统]自动邀请相关人员参与悬赏问题',$question,$fields);
     }
 
     /**
