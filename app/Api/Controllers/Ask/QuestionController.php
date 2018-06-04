@@ -180,7 +180,7 @@ class QuestionController extends Controller
         ];
 
 
-        $timeline = $is_self && $question->question_type == 1 ? $question->formatTimeline() : [];
+        $timeline = [];
 
         //feedback
         $feedback_data = [];
@@ -242,6 +242,7 @@ class QuestionController extends Controller
                 'id' => $question->id,
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
+                'price'      => $question->price,
                 'tags' => $question->tags()->get()->toArray(),
                 'status' => $question->status
             ];
@@ -880,6 +881,7 @@ class QuestionController extends Controller
             $item = [
                 'id' => $question->id,
                 'question_type' => $question->question_type,
+                'price'      => $question->price,
                 'description'  => $question->title,
                 'tags' => $question->tags()->get()->toArray(),
                 'status' => $question->status
