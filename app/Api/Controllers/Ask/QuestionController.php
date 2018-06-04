@@ -290,10 +290,14 @@ class QuestionController extends Controller
             $show_free_ask = true;
         }
         $tags['total_money'] = 0;
+        $tags['must_apple_pay'] = false;
 
         $user_money = UserMoney::find($user->id);
         if($user_money && $user->id != 79){
             $tags['total_money'] = $user_money->total_money;
+        }
+        if ($user->id == 79) {
+            $tags['must_apple_pay'] = true;
         }
 
         $tags['pay_items'] = [
