@@ -56,6 +56,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
         if ($this->notifySlack) {
             $via[] = SlackChannel::class;
         }
+        return $via;
     }
 
     /**

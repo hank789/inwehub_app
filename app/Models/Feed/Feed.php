@@ -59,7 +59,7 @@ use Laravel\Scout\Searchable;
  */
 class Feed extends Model
 {
-    use BelongsToUserTrait,SoftDeletes,Searchable;
+    use BelongsToUserTrait,SoftDeletes;
     protected $table = 'feeds';
 
     /**
