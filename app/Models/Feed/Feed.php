@@ -205,8 +205,8 @@ class Feed extends Model
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
                 //发布互动问题
-                $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
-                $question = Question::find($this->data['question_id']);
+                $url = '/askCommunity/interaction/answers/'.$this->source_id;
+                $question = Question::find($this->source_id);
                 switch ($search_type) {
                     case 1:
                     case 5:
