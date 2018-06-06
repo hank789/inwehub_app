@@ -303,7 +303,7 @@ trait BaseController {
                 ];
             }
         }
-        return ['files'=>$list];
+        return $list;
     }
 
 
