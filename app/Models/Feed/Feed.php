@@ -139,9 +139,9 @@ class Feed extends Model
         switch ($this->feed_type) {
             case self::FEED_TYPE_ANSWER_PAY_QUESTION:
                 //回答专业问题
-                $url = '/askCommunity/major/'.$this->data['question_id'];
-                $answer = Answer::find($this->data['answer_id']);
+                $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
+                $url = '/askCommunity/major/'.$answer->question_id;
                 $question = $answer->question;
                 $is_pay_for_view = false;
 
@@ -259,8 +259,8 @@ class Feed extends Model
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答
-                $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
-                $question = Question::find($this->data['question_id']);
+                $url = '/askCommunity/interaction/answers/'.$this->source_id;
+                $question = Question::find($this->source_id);
                 $data = [
                     'title' => $question->title,
                     'answer_number' => $question->answers,
