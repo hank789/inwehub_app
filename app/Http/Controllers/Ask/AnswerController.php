@@ -180,6 +180,9 @@ class AnswerController extends Controller
         if(($user->id !== $question->user_id) && !$user->isRole('admin')){
             abort(403);
         }
+        if ($answer->user_id == $question->user_id) {
+            abort(403);
+        }
 
         /*防止重复采纳*/
         if($answer->adopted_at>0){

@@ -592,7 +592,7 @@ class AnswerController extends Controller
         $user = $request->user();
         $answer  = Answer::find($request->input('answer_id'));
         $question = $answer->question;
-        if ($user->id != $question->user_id || $answer->adopted_at>0 || $question->question_type == 1 ||$question->status == 8 || $question->status == 9) {
+        if ($user->id != $question->user_id || $answer->adopted_at>0 || $answer->user_id == $question->user_id || $question->question_type == 1 ||$question->status == 8 || $question->status == 9) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $answer->adopted_at = Carbon::now();
