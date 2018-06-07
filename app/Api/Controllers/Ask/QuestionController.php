@@ -1088,14 +1088,29 @@ class QuestionController extends Controller
             $user = new \stdClass();
             $user->id = 0;
         }
-        $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $is_self = $user->id == $question->user_id;
+        $answers = $question->answers()->orderBy('adopted_at','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
         foreach ($answers as $answer) {
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
 
             $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
-
+            $is_answer_author = false;
+            $is_pay_for_view = false;
+            if ($answer->adopted_at > 0) {
+                //是否回答者
+                if ($answer->user_id == $user->id) {
+                    $is_answer_author = true;
+                }
+                //是否已经付过围观费
+                $payOrder = $answer->orders()->where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->first();
+                if ($payOrder) {
+                    $is_pay_for_view = true;
+                }
+            } else {
+                $is_pay_for_view = true;
+            }
             $return['data'][] = [
                 'id' => $answer->id,
                 'user_id' => $answer->user_id,
@@ -1105,7 +1120,7 @@ class QuestionController extends Controller
                 'title' => $answer->user->title,
                 'company' => $answer->user->company,
                 'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
-                'content' => $answer->getContentText(),
+                'content' => ($is_self || $is_answer_author || $is_pay_for_view)?$answer->getContentText():'',
                 'promise_time' => $answer->promise_time,
                 'is_followed' => $attention?1:0,
                 'is_supported' => $support?1:0,
