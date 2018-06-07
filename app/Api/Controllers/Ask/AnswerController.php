@@ -612,7 +612,6 @@ class AnswerController extends Controller
             ->performedOn($answer)
             ->tags($question->tags()->pluck('tag_id')->toArray())
             ->log($user->name.'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
-        //进行结算
         return self::createJsonData(true);
     }
 
