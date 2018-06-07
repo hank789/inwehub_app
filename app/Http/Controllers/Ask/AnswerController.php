@@ -195,8 +195,8 @@ class AnswerController extends Controller
             $answer->save();
             $question->status = 8;
             $question->save();
-            UserTag::multiIncrement($user->id,$question->tags()->get(),'adoptions');
-            $this->finishTask(get_class($answer),$answer->id, Task::ACTION_TYPE_ADOPTED_ANSWER,[$user->id]);
+            UserTag::multiIncrement($answer->user_id,$question->tags()->get(),'adoptions');
+            $this->finishTask(get_class($answer),$answer->id, Task::ACTION_TYPE_ADOPTED_ANSWER,[$question->user_id]);
             //通知
             $answer->user->notify(new AnswerAdopted($answer->user_id,$question,$answer));
             //进入结算中心
@@ -204,10 +204,10 @@ class AnswerController extends Controller
             Settlement::questionSettlement($question);
             //feed
             feed()
-                ->causedBy($user)
+                ->causedBy($question->user)
                 ->performedOn($answer)
                 ->tags($question->tags()->pluck('tag_id')->toArray())
-                ->log($user->name.'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
+                ->log($question->user->name.'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
 
             return $this->success(route('ask.question.detail',['question_id'=>$answer->question_id]),"回答采纳成功!".get_credit_message(Setting()->get('credits_adopted'),Setting()->get('coins_adopted')));
 

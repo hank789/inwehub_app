@@ -599,7 +599,7 @@ class AnswerController extends Controller
         $answer->save();
         $question->status = 8;
         $question->save();
-        UserTag::multiIncrement($user->id,$question->tags()->get(),'adoptions');
+        UserTag::multiIncrement($answer->user_id,$question->tags()->get(),'adoptions');
         $this->finishTask(get_class($answer),$answer->id, Task::ACTION_TYPE_ADOPTED_ANSWER,[$user->id]);
         //通知
         $answer->user->notify(new AnswerAdopted($answer->user_id,$question,$answer));
