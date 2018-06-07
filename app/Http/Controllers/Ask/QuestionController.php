@@ -51,10 +51,7 @@ class QuestionController extends Controller
         $question->increment('views');
 
         /*已解决问题*/
-        $bestAnswer = [];
-        if(in_array($question->status, [6,7])){
-            $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
-        }
+        $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
 
         if($request->input('sort','default') === 'created_at'){
             $answers = $question->answers()->whereNull('adopted_at')->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));

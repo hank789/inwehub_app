@@ -348,13 +348,6 @@ trait BaseController {
             if ($exit_answers){
                 throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ANSWERED);
             }
-            //已经采纳或结束的不能再回答
-            if ($question->status == 8) {
-                throw new ApiException(ApiException::ASK_QUESTION_ALREADY_ADOPTED);
-            }
-            if ($question->status == 9) {
-                throw new ApiException(ApiException::ASK_QUESTION_CLOSED);
-            }
         }
 
         $promise_time = $request->input('promise_time');
