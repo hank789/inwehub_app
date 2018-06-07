@@ -75,7 +75,7 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
                 $url = '/answer/'.$this->question->id;
                 break;
             case 2:
-                $url = '/askCommunity/interaction/answers/'.$this->question->id;
+                $url = '/ask/offer/answers/'.$this->question->id;
                 break;
         }
         return [
@@ -119,7 +119,7 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
             case 2:
                 $keyword2 = '问答';
                 $remark = '请点击前往参与回答';
-                $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
+                $url = config('app.mobile_url').'#/ask/offer/answers/'.$this->question->id;
                 break;
             default:
                 return null;

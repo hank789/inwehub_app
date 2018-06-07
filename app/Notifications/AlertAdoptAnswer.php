@@ -75,7 +75,7 @@ class AlertAdoptAnswer extends Notification implements ShouldBroadcast,ShouldQue
         $keyword1 = $this->question->title;
         $keyword2 = (string) $this->question->created_at;
         $remark = '请点击前往采纳最佳回答';
-        $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
+        $url = config('app.mobile_url').'#/ask/offer/answers/'.$this->question->id;
         $template_id = 'N_FF16jJUBq2iiER3rCK1oT-HwXyYoJ_oLJDPsP9uUM';
         if (config('app.env') != 'production') {
             $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';

@@ -67,7 +67,7 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
      */
     public function toArray($notifiable)
     {
-        $url = '/askCommunity/interaction/answers/'.$this->question->id;
+        $url = '/ask/offer/'.$this->answer->id;
         return [
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
@@ -100,7 +100,7 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
             'keyword4' => (string)$this->answer->created_at,
             'remark'   => '点击查看问题详情',
             'template_id' => $template_id,
-            'target_url' => config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id
+            'target_url' => config('app.mobile_url').'#/ask/offer/'.$this->answer->id
         ];
     }
 

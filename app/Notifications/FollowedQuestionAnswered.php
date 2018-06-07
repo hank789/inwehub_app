@@ -78,7 +78,7 @@ class FollowedQuestionAnswered extends Notification implements ShouldBroadcast,S
                 $title = '专家';
                 break;
             case 2:
-                $url = '/askCommunity/interaction/'.$this->answer->id;
+                $url = '/ask/offer/'.$this->answer->id;
                 $title = '用户';
                 break;
         }
@@ -121,7 +121,7 @@ class FollowedQuestionAnswered extends Notification implements ShouldBroadcast,S
                 $first = '您好，已有用户回答了您关注的问题';
                 $keyword2 = $this->answer->user->name;
                 $remark = '可点击查看回答内容并评论';
-                $target_url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
+                $target_url = config('app.mobile_url').'#/ask/offer/'.$this->answer->id;
                 break;
         }
         if (empty($first)) return null;

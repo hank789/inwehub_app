@@ -77,7 +77,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
                 $url = '/askCommunity/major/'.$this->question->id;
                 break;
             case 2:
-                $url = '/askCommunity/interaction/'.$this->answer->id;
+                $url = '/ask/offer/'.$this->answer->id;
                 break;
         }
         return [
@@ -117,7 +117,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
                 $url = config('app.mobile_url').'#/askCommunity/major/'.$this->question->id;
                 break;
             case 2:
-                $url = config('app.mobile_url').'#/askCommunity/interaction/'.$this->answer->id;
+                $url = config('app.mobile_url').'#/ask/offer/'.$this->answer->id;
                 break;
             default:
                 return null;

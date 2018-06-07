@@ -88,7 +88,7 @@ class AwakeUserQuestion extends Notification implements ShouldBroadcast,ShouldQu
                 $keyword1 = $this->question->title;
                 $keyword2 = '悬赏问答';
                 $remark = '悬赏金额'.$this->question->price.'元，点击前往参与回答';
-                $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
+                $url = config('app.mobile_url').'#/ask/offer/answers/'.$this->question->id;
                 break;
             default:
                 return null;
