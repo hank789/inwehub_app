@@ -104,6 +104,7 @@ class AnswerController extends Controller
         if ($payOrder) {
             $is_pay_for_view = true;
         }
+        if ($question->price <= 0) $is_pay_for_view = true;
         $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
 
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
@@ -131,7 +132,7 @@ class AnswerController extends Controller
             'title' => $answer->user->title,
             'company' => $answer->user->company,
             'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
-            'content' => ($is_self || $is_answer_author || $is_pay_for_view || $question->question_type == 2) ? $answer->content : '',
+            'content' => ($is_self || $is_answer_author || $is_pay_for_view) ? $answer->content : '',
             'promise_time' => $answer->promise_time,
             'adopted_time' => $answer->adopted_at,
             'is_best_answer' => $answer->adopted_at?true:false,
