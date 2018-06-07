@@ -134,6 +134,7 @@ class AnswerController extends Controller
             'content' => ($is_self || $is_answer_author || $is_pay_for_view || $question->question_type == 2) ? $answer->content : '',
             'promise_time' => $answer->promise_time,
             'adopted_time' => $answer->adopted_at,
+            'is_best_answer' => $answer->adopted_at?true:false,
             'is_followed' => $attention?1:0,
             'is_supported' => $support?1:0,
             'is_collected' => $collect?1:0,
