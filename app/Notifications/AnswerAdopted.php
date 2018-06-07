@@ -3,7 +3,9 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
+use App\Logic\QuestionLogic;
 use App\Models\Answer;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
@@ -42,7 +44,7 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**
@@ -102,6 +104,14 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
             'template_id' => $template_id,
             'target_url' => config('app.mobile_url').'#/ask/offer/'.$this->answer->id
         ];
+    }
+
+    public function toSlack($notifiable){
+        $fields[] = [
+            'title' => '回答内容',
+            'value' => $this->answer->getContentText()
+        ];
+        QuestionLogic::slackMsg('用户'.formatSlackUser($this->question->user).'采纳了'.formatSlackUser($this->answer->user).'的回答',$this->question,$fields);
     }
 
     public function broadcastOn(){
