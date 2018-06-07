@@ -184,8 +184,8 @@
                                     @if((Auth()->user()->id === $answer->user_id  || Auth()->user()->isRole('admin')) )
                                     <li><a href="{{ route('ask.answer.edit',['id'=>$answer->id]) }}" data-toggle="tooltip" data-placement="right" title="" data-original-title="继续完善回答内容"><i class="fa fa-edit"></i> 编辑</a></li>
                                     @endif
-                                    @if($question->status!==8 &&  ( Auth()->user()->id === $question->user_id || Auth()->user()->is('admin') ))
-                                            <li><a href="#" class="adopt-answer" data-toggle="modal" data-target="#adoptAnswer" data-answer_id="{{ $answer->id }}" data-answer_content="{{ str_limit($answer->content,200) }}"><i class="fa fa-check-square-o"></i> 采纳</a></li>
+                                    @if($question->status!==8 &&  ( Auth()->user()->id === $question->user_id || Auth()->user()->isRole('admin') ))
+                                            <li><a href="#" class="adopt-answer" data-toggle="modal" data-target="#adoptAnswer" data-answer_id="{{ $answer->id }}" data-answer_content="{{ str_limit($answer->getContentHtml(),200) }}"><i class="fa fa-check-square-o"></i> 采纳</a></li>
                                     @endif
                                 @endif
                                 <li class="pull-right">
