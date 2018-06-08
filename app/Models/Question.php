@@ -158,7 +158,7 @@ class Question extends Model
             if ($this->status == 9) return '对方未响应，问题已被关闭，'.$this->price.'元已自动退回。';
         }
         if ($this->status == 8) return '已采纳';
-        if ($this->status == 9) return '24小时内没有回答者，问题已关闭，资金会自动退回。';
+        if ($this->status == 9) return '24小时内没有回答者，问题已关闭，'.$this->price.'元将自动退回。';
         $description = '';
         //提问者
         if ($this->user_id == $user_id) {
@@ -174,6 +174,7 @@ class Question extends Model
             } else {
                 $description = '提问者正在采纳最佳回答，悬赏会支付给该回答者。';
             }
+            if ($this->answers <=0 ) $description = '正在等待回答者';
         }
         return $description;
     }
