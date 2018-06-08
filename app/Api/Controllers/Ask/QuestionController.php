@@ -138,7 +138,7 @@ class QuestionController extends Controller
                 'view_number'    => $bestAnswer->views,
                 'comment_number' => $bestAnswer->comments,
                 'average_rate'   => $bestAnswer->getFeedbackRate(),
-                'created_at' => (string)$bestAnswer->created_at,
+                'created_at' => $bestAnswer->created_at->diffForHumans(),
                 'supporter_list' => $supporters
             ];
             $promise_answer_time = $bestAnswer->promise_time;
@@ -176,7 +176,7 @@ class QuestionController extends Controller
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
             'views' => $question->views,
-            'created_at' => (string)$question->created_at
+            'created_at' => $question->created_at->diffForHumans()
         ];
 
 
@@ -904,7 +904,7 @@ class QuestionController extends Controller
             } else {
                 $item['answer_number'] = $question->answers;
                 $item['follow_number'] = $question->followers;
-                $item['status_description'] = $question->price.'元悬赏'.($question->status != 8 ? '中':'');
+                $item['status_description'] = $question->price.'元悬赏'.($question->status <= 7 ? '中':($question->status==8?',已采纳':',已关闭'));
             }
             $list[] = $item;
         }
@@ -1128,7 +1128,7 @@ class QuestionController extends Controller
                 'support_number' => $answer->supports,
                 'view_number'    => $answer->views,
                 'comment_number' => $answer->comments,
-                'created_at' => (string)$answer->created_at
+                'created_at' => $answer->created_at->diffForHumans()
             ];
         }
         return self::createJsonData(true,$return);
