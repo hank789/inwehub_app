@@ -421,10 +421,10 @@ class Question extends Model
         switch ($this->question_type) {
             case 1:
                 //专业回答
-                return '问答 | '.$this->title;
+                return '付费咨询 | '.$this->title;
                 break;
             case 2:
-                return '问答 | '.$this->title;
+                return '悬赏问答 | '.$this->title;
                 break;
         }
         return $this->title;
