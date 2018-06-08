@@ -65,6 +65,9 @@ class GroupAuditResult extends Notification implements ShouldQueue,ShouldBroadca
             case Group::AUDIT_STATUS_SUCCESS:
                 return '您的圈子审核已通过';
                 break;
+            case Group::AUDIT_STATUS_CLOSED:
+                return '您的圈子已被管理员关闭';
+                break;
         }
     }
 

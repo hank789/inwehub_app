@@ -89,6 +89,7 @@ if (! function_exists('trans_group_status')) {
             1 => '审核通过',
             2 => '未通过',
             3 => '系统圈子',
+            4 => '已关闭',
         ];
 
         if($status==='all'){
