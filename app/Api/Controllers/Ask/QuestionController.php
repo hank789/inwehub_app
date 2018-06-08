@@ -867,7 +867,7 @@ class QuestionController extends Controller
         switch ($orderBy) {
             case 1:
                 //最新
-                $queryOrderBy = 'questions.updated_at';
+                $queryOrderBy = 'questions.created_at';
                 break;
             case 2:
                 //最热
