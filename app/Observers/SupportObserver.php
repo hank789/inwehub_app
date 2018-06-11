@@ -53,10 +53,10 @@ class SupportObserver implements ShouldQueue {
 
                     $question = $source->question;
                     if ($question->question_type == 1) {
-                        $feed_question_title = '专业回答';
+                        $feed_question_title = '回答';
                         $feed_type = Feed::FEED_TYPE_UPVOTE_PAY_QUESTION;
                     } else {
-                        $feed_question_title = '互动回答';
+                        $feed_question_title = '回答';
                         $feed_type = Feed::FEED_TYPE_UPVOTE_FREE_QUESTION;
                     }
                     feed()
