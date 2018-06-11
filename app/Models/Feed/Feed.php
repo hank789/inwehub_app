@@ -242,7 +242,7 @@ class Feed extends Model
                 $group = Group::find($submission->group_id);
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
-                    'img'       => $submission->data['img'],
+                    'img'       => $submission->data['img']?:'',
                     'files'       => $submission->data['files']??'',
                     'domain'    => $submission->data['domain']??'',
                     'tags'      => $submission->tags()->get()->toArray(),
