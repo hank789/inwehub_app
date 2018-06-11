@@ -142,7 +142,7 @@ class Feed extends Model
                 //回答专业问题
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
-                $url = '/ask/offer/answers/'.$answer->question_id;
+                $url = '/ask/offer/'.$answer->id;
                 $question = $answer->question;
                 $is_pay_for_view = false;
 
@@ -163,6 +163,7 @@ class Feed extends Model
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
+                    'views' => $answer->views,
                     'is_pay_for_view' => $is_pay_for_view,
                     'status'     => $question->status,
                     'status_description' => $question->price.'元',
@@ -201,6 +202,7 @@ class Feed extends Model
                     'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
+                    'views'          => $answer->views,
                     'is_pay_for_view' => $is_pay_for_view,
                     'price'      => $question->price,
                     'status'     => $question->status,
@@ -229,6 +231,7 @@ class Feed extends Model
                     'question_title' => $question->title,
                     'answer_number' => $question->answers,
                     'follow_number' => $question->followers,
+                    'views'         => $question->views,
                     'question_id' => $question->id,
                     'price'      => $question->price,
                     'status'     => $question->status,
@@ -261,6 +264,7 @@ class Feed extends Model
                     'comment_url' => $comment_url,
                     'comment_number' => $submission->comments_number,
                     'support_number' => $submission->upvotes,
+                    'views'          => $submission->views,
                     'is_upvoted'     => $upvote ? 1 : 0,
                     'submission_type' => $submission->type,
                     //'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
@@ -278,6 +282,7 @@ class Feed extends Model
                 $data = [
                     'question_title' => $question->title,
                     'answer_number' => $question->answers,
+                    'views'         => $question->views,
                     'price'      => $question->price,
                     'status'     => $question->status,
                     'status_description' => $question->price.'元悬赏'.($question->status != 8 ? '中':''),
@@ -291,7 +296,7 @@ class Feed extends Model
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = $answer->question;
-                $url = '/ask/offer/answers/'.$answer->question_id;
+                $url = '/ask/offer/'.$answer->id;
                 $is_pay_for_view = false;
 
                 if (Auth::user()->id == $question->user_id) {
@@ -309,6 +314,7 @@ class Feed extends Model
                     'question_title' => $question->title,
                     'answer_content' => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
+                    'views'          => $answer->views,
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
                     'is_pay_for_view' => $is_pay_for_view,
@@ -349,6 +355,7 @@ class Feed extends Model
                     'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
+                    'views'          => $answer->views,
                     'is_pay_for_view' => $is_pay_for_view,
                     'price'      => $question->price,
                     'status'     => $question->status,
@@ -387,6 +394,7 @@ class Feed extends Model
                     'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
+                    'views'          => $answer->views,
                     'is_pay_for_view' => $is_pay_for_view,
                     'price'      => $question->price,
                     'status'     => $question->status,
