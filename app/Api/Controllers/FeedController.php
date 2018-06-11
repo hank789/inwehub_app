@@ -52,7 +52,7 @@ class FeedController extends Controller
                 ]);
                 $groupIds = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
                 if ($groupIds) {
-                    $query = $query->whereIn('group_id',$groupIds);
+                    $query = $query->orWhereIn('group_id',$groupIds);
                 }
                 break;
             case 3:

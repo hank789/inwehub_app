@@ -527,7 +527,7 @@ class QuestionController extends Controller
             $this->dispatch((new QuestionRefund($question->id))->delay(Carbon::now()->addHours(48)));
             //悬赏问答尝试邀请用户回答问题
             if ($question->question_type == 2) {
-                event(new AutoInvitation($question));
+                //event(new AutoInvitation($question));
             }
             $res_data = [
                 'id'=>$question->id,

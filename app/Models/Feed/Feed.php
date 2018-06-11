@@ -93,6 +93,7 @@ class Feed extends Model
     const FEED_TYPE_UPVOTE_FREE_QUESTION = 12;//赞了互动问答
     const FEED_TYPE_UPVOTE_READHUB_ARTICLE = 13;//赞了阅读文章
     const FEED_TYPE_ADOPT_ANSWER = 14;//采纳了回答
+    const FEED_TYPE_SUBMIT_READHUB_SHARE = 15;//发布阅读分享
 
 
 
@@ -236,6 +237,7 @@ class Feed extends Model
                     ->where('supportable_id',$submission->id)
                     ->where('supportable_type',Submission::class)
                     ->exists();
+                if ($submission->type == 'text') $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_SHARE;
                 $group = Group::find($submission->group_id);
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
