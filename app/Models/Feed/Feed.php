@@ -156,9 +156,10 @@ class Feed extends Model
                 if ($payOrder) {
                     $is_pay_for_view = true;
                 }
+                $answerContent = $answer->getContentText();
                 $data = [
                     'question_title' => $question->title,
-                    'answer_content' => str_limit($answer->getContentText(),$is_pay_for_view?120:20),
+                    'answer_content' => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
@@ -170,6 +171,9 @@ class Feed extends Model
                     'price'      => $question->price,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
+                if ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看回答内容]';
+                }
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
                 //回答互动问题
@@ -191,9 +195,10 @@ class Feed extends Model
                         $is_pay_for_view = true;
                     }
                 }
+                $answerContent = $answer->getContentText();
                 $data = [
                     'question_title'     => $question->title,
-                    'answer_content'   => str_limit($answer->getContentText(),$is_pay_for_view?120:20),
+                    'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
                     'is_pay_for_view' => $is_pay_for_view,
@@ -204,6 +209,9 @@ class Feed extends Model
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
+                if ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看回答内容]';
+                }
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
                 //发布互动问题
@@ -296,9 +304,10 @@ class Feed extends Model
                 if ($payOrder) {
                     $is_pay_for_view = true;
                 }
+                $answerContent = $answer->getContentText();
                 $data = [
                     'question_title' => $question->title,
-                    'answer_content' => str_limit($answer->getContentText(),$is_pay_for_view?120:20),
+                    'answer_content' => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
@@ -310,6 +319,9 @@ class Feed extends Model
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
+                if ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看回答内容]';
+                }
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
                 //赞了互动问答
@@ -331,9 +343,10 @@ class Feed extends Model
                         $is_pay_for_view = true;
                     }
                 }
+                $answerContent = $answer->getContentText();
                 $data = [
                     'question_title'     => $question->title,
-                    'answer_content'   => str_limit($answer->getContentText(),$is_pay_for_view?120:20),
+                    'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
                     'is_pay_for_view' => $is_pay_for_view,
@@ -344,6 +357,9 @@ class Feed extends Model
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
+                if ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看回答内容]';
+                }
                 break;
             case self::FEED_TYPE_ADOPT_ANSWER:
                 //采纳了互动回答
@@ -365,9 +381,10 @@ class Feed extends Model
                         $is_pay_for_view = true;
                     }
                 }
+                $answerContent = $answer->getContentText();
                 $data = [
                     'question_title'     => $question->title,
-                    'answer_content'   => str_limit($answer->getContentText(),$is_pay_for_view?120:20),
+                    'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
                     'is_pay_for_view' => $is_pay_for_view,
@@ -378,6 +395,9 @@ class Feed extends Model
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
+                if ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看回答内容]';
+                }
                 break;
         }
         return ['url'=>$url,'feed'=>$data];
