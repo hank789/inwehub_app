@@ -86,6 +86,7 @@ class FixFeedGroup extends Command
             if ($feed->feed_type == Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE) {
                 $data = [
                     'submission_title'=>$feed->data['submission_title'],
+                    'feed_content' => $feed->data['feed_content']
                 ];
                 $feed->data = $data;
                 $feed->save();
