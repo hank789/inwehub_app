@@ -150,7 +150,7 @@ class AnswerController extends Controller
 
         //feedback
         $feedback_data = [];
-        if($is_answer_author){
+        if($is_self){
             $feedback = $answer->feedbacks()->where('user_id',$user->id)->orderBy('id','desc')->first();
             if(!empty($feedback)){
                 $feedback_data = [
