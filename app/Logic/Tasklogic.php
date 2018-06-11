@@ -152,6 +152,7 @@ class TaskLogic {
                             $priority = '中';
                             $description = '用户'.$user_name.'回答了提问:'.$question->title;
                             $status_description = '前往点评';
+                            $object_id = $answer->id;
                             break;
                     }
                     break;
