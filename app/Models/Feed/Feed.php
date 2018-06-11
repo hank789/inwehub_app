@@ -258,6 +258,9 @@ class Feed extends Model
                     //'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
                     'group'    => $group?$group->toArray():[]
                 ];
+                if ($data['group']) {
+                    $data['group']['name'] = str_limit($data['group']['name'], 20);
+                }
                 $data['group']['subscribers'] = $group->getHotIndex();
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
