@@ -173,6 +173,8 @@ Route::Group(['namespace'=>'Ask','middleware'=>['auth','auth.admin']],function()
     /*问题建议*/
     Route::post('question/suggest',['as'=>'ask.question.suggest','uses'=>'QuestionController@suggest']);
 
+    //关闭问题
+    Route::get('question/close/{id}',['as'=>'ask.question.close','uses'=>'QuestionController@close'])->where(['id'=>'[0-9]+']);
 
 
     /*问题创建*/

@@ -45,6 +45,9 @@
                                 @if( !in_array($question->status, [4,6,7]) )
                                     <li><a href="#" data-toggle="modal" data-target="#inviteAnswer"><i class="fa fa-paper-plane-o" aria-hidden="true"></i> 邀请回答</a></li>
                                 @endif
+                                @if($question->status <= 6)
+                                    <li><a href="#" data-toggle="modal" data-target="#closeQuestion"><i class="fa fa-close" aria-hidden="true"></i> 关闭(资金退回)</a></li>
+                                @endif
                             @endif
                         </ul>
                     </div>
@@ -344,6 +347,26 @@
             </div>
         </div>
     </div>
+    <div class="modal" id="closeQuestion" tabindex="-1" role="dialog" aria-labelledby="closeQuestionLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="closeQuestionLabel">关闭问题</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fa fa-exclamation-circle"></i> 资金{{ $question->price }}元会退回提问者账户,确认关闭该问题？
+                    </div>
+                    <blockquote>{{ $question->title }}</blockquote>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" data-question_id="{{ $question->id }}" id="closeQuestionSubmit">关闭问题</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal" id="inviteAnswer" tabindex="-1" role="dialog" aria-labelledby="inviteAnswerLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -482,6 +505,11 @@
 
             $("#adoptAnswerSubmit").click(function(){
                 document.location = "/manager/answer/adopt/"+$(this).data('answer_id');
+            });
+
+            $("#closeQuestionSubmit").click(function(){
+                alert($(this).data('question_id'));
+                document.location = "/manager/question/close/"+$(this).data('question_id');
             });
 
             /*邀请回答模块逻辑处理*/

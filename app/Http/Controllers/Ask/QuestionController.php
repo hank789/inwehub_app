@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Ask;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
+use App\Logic\MoneyLogLogic;
 use App\Logic\WechatNotice;
+use App\Models\Pay\MoneyLog;
+use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Tag;
@@ -463,6 +466,31 @@ class QuestionController extends Controller
         }
 
         return response($invitedHtml);
+
+    }
+
+    public function close($id,Request $request) {
+        $question = Question::findOrFail($id);
+        $user = $request->user();
+
+        if(($user->id !== $question->user_id) && !$user->isRole('admin')){
+            abort(403);
+        }
+        //修改问题状态为已关闭
+        $question->status = 9;
+        $question->save();
+        $orders = $question->orders->where('status',Order::PAY_STATUS_SUCCESS)->all();
+        if ($orders) {
+            foreach ($orders as $order) {
+                //直接退款到余额
+                $order->status = Order::PAY_STATUS_REFUND;
+                $order->save();
+                if ($order->actual_amount > 0) {
+                    MoneyLogLogic::addMoney($order->user_id,$order->actual_amount,MoneyLog::MONEY_TYPE_QUESTION_REFUND,$order,0,0,true);
+                }
+            }
+        }
+        return $this->success(route('ask.question.detail',['question_id'=>$id]),"问题关闭成功!");
 
     }
 
