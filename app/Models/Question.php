@@ -174,7 +174,38 @@ class Question extends Model
             } else {
                 $description = '提问者正在采纳最佳回答，悬赏会支付给该回答者。';
             }
-            if ($this->answers <=0 ) $description = '正在等待回答者';
+            if ($this->answers <=0 ) $description = '正在等待回答者回答';
+        }
+        return $description;
+    }
+
+    public function statusShortTip($user_id) {
+        $description = '';
+        switch ($this->status){
+            case 0:
+                $description = '未发布';
+                break;
+            case 1:
+            case 2:
+            case 4:
+            case 5:
+            case 6:
+                $description = '悬赏中';
+                break;
+            case 3:
+                $description = '问题已关闭';
+                break;
+            case 7:
+                $description = '已点评';
+                break;
+            case 8:
+                //已采纳
+                $description = '已采纳';
+                break;
+            case 9:
+                //退款并关闭
+                $description = '已关闭';
+                break;
         }
         return $description;
     }

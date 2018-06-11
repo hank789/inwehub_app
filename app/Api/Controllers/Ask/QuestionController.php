@@ -172,6 +172,7 @@ class QuestionController extends Controller
             'price' => $question->price,
             'status' => $question->status,
             'status_description' => $question->statusFormatDescription($user->id),
+            'status_short_tip' => $question->statusShortTip($user->id),
             'promise_answer_time' => $promise_answer_time,
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
