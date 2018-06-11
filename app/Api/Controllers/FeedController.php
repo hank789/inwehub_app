@@ -134,7 +134,7 @@ class FeedController extends Controller
                 'feed'  => $sourceData['feed'],
                 'url'   => $sourceData['url'],
                 'feed_type'  => $feed->feed_type,
-                'created_at' => (string)$feed->created_at
+                'created_at' => $feed->created_at->diffForHumans()
             ];
         }
         $return['data'] = $data;

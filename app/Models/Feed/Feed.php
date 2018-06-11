@@ -142,7 +142,7 @@ class Feed extends Model
                 //回答专业问题
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
-                $url = '/askCommunity/major/'.$answer->question_id;
+                $url = '/ask/offer/answers/'.$answer->question_id;
                 $question = $answer->question;
                 $is_pay_for_view = false;
 
@@ -167,12 +167,13 @@ class Feed extends Model
                     'status_description' => $question->price.'元',
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
+                    'price'      => $question->price,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
                 //回答互动问题
-                $url = '/askCommunity/interaction/'.$this->source_id;
+                $url = '/ask/offer/'.$this->source_id;
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = Question::find($answer->question_id);
@@ -206,7 +207,7 @@ class Feed extends Model
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
                 //发布互动问题
-                $url = '/askCommunity/interaction/answers/'.$this->source_id;
+                $url = '/ask/offer/answers/'.$this->source_id;
                 $question = Question::find($this->source_id);
                 switch ($search_type) {
                     case 1:
@@ -217,7 +218,7 @@ class Feed extends Model
                         break;
                 }
                 $data = [
-                    'title' => $question->title,
+                    'question_title' => $question->title,
                     'answer_number' => $question->answers,
                     'follow_number' => $question->followers,
                     'question_id' => $question->id,
@@ -261,10 +262,10 @@ class Feed extends Model
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答
-                $url = '/askCommunity/interaction/answers/'.$this->source_id;
+                $url = '/ask/offer/answers/'.$this->source_id;
                 $question = Question::find($this->source_id);
                 $data = [
-                    'title' => $question->title,
+                    'question_title' => $question->title,
                     'answer_number' => $question->answers,
                     'price'      => $question->price,
                     'status'     => $question->status,
@@ -279,7 +280,7 @@ class Feed extends Model
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = $answer->question;
-                $url = '/askCommunity/major/'.$answer->question_id;
+                $url = '/ask/offer/answers/'.$answer->question_id;
                 $is_pay_for_view = false;
 
                 if (Auth::user()->id == $question->user_id) {
@@ -300,6 +301,7 @@ class Feed extends Model
                     'support_number' => $answer->supports,
                     'is_pay_for_view' => $is_pay_for_view,
                     'status'     => $question->status,
+                    'price'      => $question->price,
                     'status_description' => $question->price.'元',
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
@@ -311,7 +313,7 @@ class Feed extends Model
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = Question::find($answer->question_id);
-                $url = '/askCommunity/interaction/'.$answer->id;
+                $url = '/ask/offer/'.$answer->id;
                 $is_pay_for_view = true;
                 if ($answer->adopted_at) {
                     $is_pay_for_view = false;
@@ -342,7 +344,7 @@ class Feed extends Model
                 break;
             case self::FEED_TYPE_ADOPT_ANSWER:
                 //采纳了互动回答
-                $url = '/askCommunity/interaction/'.$this->source_id;
+                $url = '/ask/offer/'.$this->source_id;
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = Question::find($answer->question_id);
