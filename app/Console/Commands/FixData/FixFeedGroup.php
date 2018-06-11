@@ -84,12 +84,18 @@ class FixFeedGroup extends Command
                 $feed->save();
             }
             if ($feed->feed_type == Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE) {
-                $data = [
-                    'submission_title'=>$feed->data['submission_title'],
-                    'feed_content' => $feed->data['feed_content']
-                ];
-                $feed->data = $data;
-                $feed->save();
+                if (isset($feed->data['feed_content'])) {
+                    $data = [
+                        'submission_title'=>$feed->data['submission_title'],
+                        'feed_content' => $feed->data['feed_content']
+                    ];
+                    $feed->data = $data;
+                    $feed->save();
+                }
+                else {
+                    $feed->delete();
+                    continue;
+                }
             }
             if (in_array($feed->feed_type,[
                 Feed::FEED_TYPE_FOLLOW_USER,
