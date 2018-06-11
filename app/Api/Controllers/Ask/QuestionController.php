@@ -299,6 +299,10 @@ class QuestionController extends Controller
         if ($user->id == 79) {
             $tags['must_apple_pay'] = true;
         }
+        $tags['title'] = '悬赏提问';
+        if ($expert_uuid) {
+            $tags['title'] = '向'.$expert_user.'付费提问';
+        }
 
         $tags['pay_items'] = [
             [
