@@ -148,6 +148,20 @@ class AnswerController extends Controller
             'supporter_list' => $supporters
         ];
 
+        //feedback
+        $feedback_data = [];
+        if($is_answer_author){
+            $feedback = $answer->feedbacks()->where('user_id',$user->id)->orderBy('id','desc')->first();
+            if(!empty($feedback)){
+                $feedback_data = [
+                    'answer_id' => $feedback->source_id,
+                    'rate_star' => $feedback->star,
+                    'description' => $feedback->content,
+                    'create_time' => (string)$feedback->created_at
+                ];
+            }
+        }
+
 
         $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
         $currentUserAnswer = Answer::where('question_id',$question->id)->where('user_id',$user->id)->where('status',1)->first();
@@ -183,6 +197,7 @@ class AnswerController extends Controller
 
         return self::createJsonData(true,[
             'question'=>$question_data,
+            'feedback'=>$feedback_data,
             'answer'=>$answers_data]);
 
     }
