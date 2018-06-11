@@ -278,6 +278,7 @@ class QuestionController extends Controller
         $user = $request->user();
 
         $expert_uuid = $request->input('uuid');
+
         if($expert_uuid){
             $expert_user = User::where('uuid',$expert_uuid)->first();
             if ($expert_user) {
@@ -304,7 +305,7 @@ class QuestionController extends Controller
         }
         $tags['title'] = '悬赏提问';
         $tags['help_tips'] = '请输入问题描述';
-        if ($expert_user) {
+        if ($expert_uuid && $expert_user) {
             $tags['title'] = '向'.$expert_user->name.'付费提问';
             $tags['help_tips'] = '1.请精准输入问题详情，并等待专家回答，若超过48小时未被回答，费用自动退回\n 2.答案每被付费围观一次，你和回答者可从中获取分成： 28元提问，按3:7分成 58元提问，按5:5分成 88元提问，按7:3分成';
         }
