@@ -300,7 +300,7 @@ class QuestionController extends Controller
         if($user_money && $user->id != 79){
             $tags['total_money'] = $user_money->total_money;
         }
-        if ($user->id == 79) {
+        if ($user->id == 79 || $expert_uuid) {
             $tags['must_apple_pay'] = true;
         }
         $tags['title'] = '悬赏提问';
