@@ -74,7 +74,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
     {
         switch ($this->question->question_type) {
             case 1:
-                $url = '/askCommunity/major/'.$this->question->id;
+                $url = '/ask/offer/'.$this->answer->id;
                 break;
             case 2:
                 $url = '/ask/offer/'.$this->answer->id;
@@ -114,7 +114,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
     public function toWechatNotice($notifiable){
         switch ($this->question->question_type) {
             case 1:
-                $url = config('app.mobile_url').'#/askCommunity/major/'.$this->question->id;
+                $url = config('app.mobile_url').'#/ask/offer/'.$this->answer->id;
                 break;
             case 2:
                 $url = config('app.mobile_url').'#/ask/offer/'.$this->answer->id;

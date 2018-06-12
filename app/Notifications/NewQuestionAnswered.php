@@ -69,7 +69,7 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
     {
         switch ($this->question->question_type) {
             case 1:
-                $url = '/ask/'.$this->question->id;
+                $url = '/ask/offer/'.$this->answer->id;
                 $title = '专家';
                 break;
             case 2:
@@ -114,7 +114,7 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
                 $first = '您好，已有专家回答了您的问答任务';
                 $keyword2 = $this->answer->user->name;
                 $remark = '可点击详情查看回答内容';
-                $target_url = config('app.mobile_url').'#/ask/'.$this->question->id;
+                $target_url = config('app.mobile_url').'#/ask/offer/'.$this->answer->id;
                 break;
             case 2:
                 $first = '您好，您的提问有新的回答';

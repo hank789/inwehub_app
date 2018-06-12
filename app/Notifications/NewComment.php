@@ -79,7 +79,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                 $question = Question::find($source->question_id);
                 switch ($question->question_type){
                     case 1:
-                        $url = '/askCommunity/major/'.$source->question_id;
+                        $url = '/ask/offer/'.$source->id;
                         break;
                     case 2:
                         $url = '/ask/offer/'.$source->id;
@@ -145,7 +145,7 @@ class NewComment extends Notification implements ShouldBroadcast,ShouldQueue
                     case 1:
                         $first = '您好，有人回复了您的回答';
                         $remark = '请点击查看详情！';
-                        $target_url = config('app.mobile_url').'#/askCommunity/major/'.$source->question_id;
+                        $target_url = config('app.mobile_url').'#/ask/offer/'.$source->id;
                         break;
                     case 2:
                         $first = '您好，有人回复了您的回答';

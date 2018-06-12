@@ -100,10 +100,10 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
 
         switch ($this->question->question_type) {
             case 1:
-                $url = '/answer/'.$this->question->id;
+                $url = '/ask/offer/answers/'.$this->question->id;
                 break;
             case 2:
-                $url = '/askCommunity/interaction/answers/'.$this->question->id;
+                $url = '/ask/offer/answers/'.$this->question->id;
                 break;
         }
         return [
@@ -153,7 +153,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
                 $keyword2 = '付费咨询';
                 $remark = '请立即前往确认回答';
                 $first = '您好，有人向您付费咨询问题';
-                $url = config('app.mobile_url').'#/answer/'.$this->question->id;
+                $url = config('app.mobile_url').'#/ask/offer/answers/'.$this->question->id;
                 break;
             case 2:
                 $first = '您有新的悬赏问答邀请';
@@ -164,7 +164,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
                 $keyword1 = $this->question->title;
                 $keyword2 = '悬赏问答';
                 $remark = '悬赏金额'.$this->question->price.'元，点击前往参与回答';
-                $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$this->question->id;
+                $url = config('app.mobile_url').'#/ask/offer/answers/'.$this->question->id;
                 break;
             default:
                 return null;
