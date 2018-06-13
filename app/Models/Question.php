@@ -190,6 +190,7 @@ class Question extends Model
             case 4:
             case 5:
                 $description = '悬赏中';
+                if ($this->question_type == 1) $description = '待回答';
                 break;
             case 6:
                 $description = '悬赏中';
