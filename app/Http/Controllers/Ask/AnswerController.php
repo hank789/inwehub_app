@@ -210,7 +210,7 @@ class AnswerController extends Controller
                 ->causedBy($question->user)
                 ->performedOn($answer)
                 ->tags($question->tags()->pluck('tag_id')->toArray())
-                ->log($question->user->name.'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
+                ->log(($question->hide?'匿名':$question->user->name).'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
 
             return $this->success(route('ask.question.detail',['question_id'=>$answer->question_id]),"回答采纳成功!".get_credit_message(Setting()->get('credits_adopted'),Setting()->get('coins_adopted')));
 
