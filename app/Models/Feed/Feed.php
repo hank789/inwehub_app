@@ -247,9 +247,9 @@ class Feed extends Model
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
                 //发布文章
                 $submission = Submission::find($this->source_id);
+                if (!$submission) return null;
                 $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                 $url = $submission->data['url']??$comment_url;
-                if (!$submission) return null;
                 $upvote = Support::where('user_id',Auth::user()->id)
                     ->where('supportable_id',$submission->id)
                     ->where('supportable_type',Submission::class)
