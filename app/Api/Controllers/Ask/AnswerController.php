@@ -105,7 +105,11 @@ class AnswerController extends Controller
             $is_pay_for_view = true;
         }
         if ($question->price <= 0) $is_pay_for_view = true;
+        //未采纳前都可查看
         if ($question->status != 8 && $question->question_type == 2) $is_pay_for_view = true;
+        //已采纳但非最佳回答可查看
+        if ($question->status == 8 && empty($answer->adopted_at)) $is_pay_for_view = true;
+
         $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
 
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
