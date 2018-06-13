@@ -213,6 +213,7 @@ class QuestionController extends Controller
         return self::createJsonData(true,[
             'is_followed_question'=>$is_followed_question,
             'my_answer_id' => $my_answer_id,
+            'is_login' => $user->id ? true:false,
             'question'=>$question_data,
             'answers'=>$answers_data,
             'timeline'=>$timeline,
