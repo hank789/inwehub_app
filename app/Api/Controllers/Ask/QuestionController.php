@@ -262,7 +262,7 @@ class QuestionController extends Controller
             } else {
                 $item['answer_number'] = $question->answers;
                 $item['follow_number'] = $question->followers;
-                $item['status_description'] = $question->price.'元悬赏'.($question->status != 8 ? '中':'');
+                $item['status_description'] = $question->price?($question->price.'元悬赏'.($question->status != 8 ? '中':'')):'';
             }
             $list[] = $item;
             $count++;
