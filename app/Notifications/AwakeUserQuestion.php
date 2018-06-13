@@ -4,8 +4,6 @@ namespace App\Notifications;
 
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
-use App\Models\Answer;
-use App\Models\Notification as NotificationModel;
 use App\Models\Question;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -14,7 +12,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQueue
+class AwakeUserQuestion extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 
@@ -40,12 +38,7 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
      */
     public function via($notifiable)
     {
-        $via = ['database', 'broadcast'];
-        if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_my_user_new_activity']??true)){
-            $via[] = PushChannel::class;
-            $via[] = WechatNoticeChannel::class;
-        }
-        return $via;
+        return [PushChannel::class, WechatNoticeChannel::class];
     }
 
     /**
@@ -62,45 +55,20 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
                     ->line('Thank you for using our application!');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        switch ($this->question->question_type) {
-            case 1:
-                $url = '/ask/offer/answers/'.$this->question->id;
-                break;
-            case 2:
-                $url = '/ask/offer/answers/'.$this->question->id;
-                break;
-        }
-        return [
-            'url'    => $url,
-            'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
-            'avatar' => $this->question->user->avatar,
-            'title'  => '您关注的用户'.$this->question->user->name.'有了新的提问',
-            'body'   => $this->question->title,
-            'extra_body' => ''
-        ];
-    }
-
     public function toPush($notifiable)
     {
+        $title = '悬赏问答邀请';
         switch ($this->question->question_type) {
             case 1:
-                $object_type = 'pay_answer';
-                return null;
+                $object_type = 'pay_answer_awake';
                 break;
             case 2:
-                $object_type = 'free_answer';
+                $object_type = 'free_answer_awake';
                 break;
         }
+
         return [
-            'title' => '您关注的用户'.$this->question->user->name.'有了新的提问',
+            'title' => $title,
             'body'  => $this->question->title,
             'payload' => ['object_type'=>$object_type,'object_id'=>$this->question->id],
         ];
@@ -110,15 +78,16 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
         switch ($this->question->question_type) {
             case 1:
                 $keyword1 = $this->question->title;
-                $keyword2 = '问答任务邀请';
+                $keyword2 = '付费咨询';
                 $remark = '请立即前往确认回答';
-                $first = '您好，您有新的回答邀请';
-                $url = config('app.mobile_url').'#/ask/offer/answers/'.$this->question->id;
-                return null;
+                $first = '您好，有人向您付费咨询问题';
+                $url = config('app.mobile_url').'#/answer/'.$this->question->id;
                 break;
             case 2:
-                $keyword2 = '问答';
-                $remark = '请点击前往参与回答';
+                $first = '悬赏问答邀请';
+                $keyword1 = $this->question->title;
+                $keyword2 = '悬赏问答';
+                $remark = '悬赏金额'.$this->question->price.'元，点击前往参与回答';
                 $url = config('app.mobile_url').'#/ask/offer/answers/'.$this->question->id;
                 break;
             default:
@@ -129,17 +98,13 @@ class FollowedUserAsked extends Notification implements ShouldBroadcast,ShouldQu
             $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
         }
         return [
-            'first'    => '您关注的用户'.$this->question->user->name.'有了新的提问',
-            'keyword1' => $this->question->title,
+            'first'    => $first,
+            'keyword1' => $keyword1,
             'keyword2' => $keyword2,
             'keyword3' => '',
             'remark'   => $remark,
             'template_id' => $template_id,
             'target_url' => $url
         ];
-    }
-
-    public function broadcastOn(){
-        return ['notification.user.'.$this->user_id];
     }
 }

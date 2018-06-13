@@ -4,6 +4,8 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\Question\ConfirmOvertime;
+use App\Jobs\QuestionRefund;
 use App\Logic\PayQueryLogic;
 use App\Logic\TagsLogic;
 use App\Logic\TaskLogic;
@@ -22,6 +24,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +37,7 @@ class QuestionController extends Controller
     protected $validateRules = [
         'order_id'    => 'required|integer',
         'description' => 'required|max:500',
-        'price'=> 'required|between:1,388',
+        'price'=> 'required|integer|between:5,20000',
     ];
 
     /**
@@ -135,7 +138,7 @@ class QuestionController extends Controller
                 'view_number'    => $bestAnswer->views,
                 'comment_number' => $bestAnswer->comments,
                 'average_rate'   => $bestAnswer->getFeedbackRate(),
-                'created_at' => (string)$bestAnswer->created_at,
+                'created_at' => $bestAnswer->created_at->diffForHumans(),
                 'supporter_list' => $supporters
             ];
             $promise_answer_time = $bestAnswer->promise_time;
@@ -153,7 +156,7 @@ class QuestionController extends Controller
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
-            'uuid'    => $question->hide ? '':$question->user->uuid,
+            'uuid'    => $question->user->uuid,
             'question_type' => $question->question_type,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
             'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->getAvatarUrl(),
@@ -168,16 +171,17 @@ class QuestionController extends Controller
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,
-            'status_description' => $question->statusHumanDescription($user->id),
+            'status_description' => $question->statusFormatDescription($user->id),
+            'status_short_tip' => $question->statusShortTip($user->id),
             'promise_answer_time' => $promise_answer_time,
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
             'views' => $question->views,
-            'created_at' => (string)$question->created_at
+            'created_at' => $question->created_at->diffForHumans()
         ];
 
 
-        $timeline = $is_self && $question->question_type == 1 ? $question->formatTimeline() : [];
+        $timeline = [];
 
         //feedback
         $feedback_data = [];
@@ -209,6 +213,7 @@ class QuestionController extends Controller
         return self::createJsonData(true,[
             'is_followed_question'=>$is_followed_question,
             'my_answer_id' => $my_answer_id,
+            'is_login' => $user->id ? true:false,
             'question'=>$question_data,
             'answers'=>$answers_data,
             'timeline'=>$timeline,
@@ -239,15 +244,15 @@ class QuestionController extends Controller
                 'id' => $question->id,
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
+                'price'      => $question->price,
                 'tags' => $question->tags()->get()->toArray(),
-                'question_user_name' => $question->hide ? '匿名' : $question->user->name,
-                'question_user_avatar' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
-                'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0)
+                'status' => $question->status
             ];
             if($question->question_type == 1){
                 $item['comment_number'] = 0;
                 $item['average_rate'] = 0;
                 $item['support_number'] = 0;
+                $item['status_description'] = $question->price.'元';
                 $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
                 if ($bestAnswer) {
                     $item['comment_number'] = $bestAnswer->comments;
@@ -257,6 +262,7 @@ class QuestionController extends Controller
             } else {
                 $item['answer_number'] = $question->answers;
                 $item['follow_number'] = $question->followers;
+                $item['status_description'] = $question->price.'元悬赏'.($question->status != 8 ? '中':'');
             }
             $list[] = $item;
             $count++;
@@ -273,25 +279,31 @@ class QuestionController extends Controller
         $user = $request->user();
 
         $expert_uuid = $request->input('uuid');
+
         if($expert_uuid){
-            $expert_user = User::where('uuid',$expert_uuid)->firstOrFail();
-            $this->checkAnswerUser($user,$expert_user->id);
+            $expert_user = User::where('uuid',$expert_uuid)->first();
+            if ($expert_user) {
+                $this->checkAnswerUser($user,$expert_user->id);
+            }
         }
 
         $this->checkUserInfoPercent($user);
-        $tags = TagsLogic::loadTags(1,'');
+        $tags = [];
         $show_free_ask = false;
         $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->where('coupon_status',Coupon::COUPON_STATUS_PENDING)->first();
         if($coupon && $coupon->expire_at > date('Y-m-d H:i:s')){
             $show_free_ask = true;
         }
         $tags['total_money'] = 0;
+        $tags['must_apple_pay'] = false;
 
         $user_money = UserMoney::find($user->id);
         if($user_money && $user->id != 79){
             $tags['total_money'] = $user_money->total_money;
         }
-
+        if ($user->id == 79 || $expert_uuid) {
+            $tags['must_apple_pay'] = true;
+        }
         $tags['pay_items'] = [
             [
                 'value'=>60,
@@ -309,6 +321,17 @@ class QuestionController extends Controller
                 'default' => false
             ]
         ];
+        $tags['title'] = '悬赏提问';
+        $tags['help_tips'] = '请输入问题描述';
+        if ($expert_uuid && $expert_user) {
+            //定向提问
+            $tags['title'] = '向'.$expert_user->name.'付费提问';
+            $tags['help_tips'] = '1.请精准输入问题详情，并等待专家回答，若超过48小时未被回答，费用自动退回\n\n2.答案每被付费围观一次，你和回答者可从中获取分成：\n28元提问，按3:7分成\n60元提问，按5:5分成\n88元提问，按7:3分成';
+        } else {
+            $tags['pay_items'][0]['value'] = 10;
+        }
+
+
         if($show_free_ask){
             $tags['pay_items'][0]['default'] = false;
             $tags['pay_items'][] = [
@@ -364,20 +387,9 @@ class QuestionController extends Controller
                 if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
         }
-
-
-        $category_id = 20;
-        $data = [
-            'user_id'      => $loginUser->id,
-            'category_id'      => $category_id,
-            'title'        => formatContentUrls(trim($request->input('description'))),
-            'question_type' => $request->input('question_type',1),
-            'price'        => $price,
-            'hide'         => intval($request->input('hide')),
-            'status'       => 1,
-            'device'       => intval($request->input('device')),
-            'rate'          => firstRate()
-        ];
+        if (empty($tagString) && empty($newTagString)) {
+            throw new ApiException(ApiException::ASK_TAGS_REQUIRED);
+        }
 
         //查看支付订单是否成功
         $order = Order::find($request->input('order_id'));
@@ -390,6 +402,19 @@ class QuestionController extends Controller
             $toUser = User::where('uuid',$to_user_uuid)->firstOrFail();
             $this->checkAnswerUser($loginUser,$toUser->id);
         }
+
+        $category_id = 20;
+        $data = [
+            'user_id'      => $loginUser->id,
+            'category_id'      => $category_id,
+            'title'        => formatContentUrls(trim($request->input('description'))),
+            'question_type' => $to_user_uuid?1:2,
+            'price'        => $price,
+            'hide'         => intval($request->input('hide')),
+            'status'       => 1,
+            'device'       => intval($request->input('device')),
+            'rate'          => firstRate()
+        ];
 
         $data['data'] = $this->uploadImgs($request->input('photos'),'questions');
 
@@ -510,11 +535,15 @@ class QuestionController extends Controller
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
                 //通知
                 $toUser->notify(new NewQuestionInvitation($toUser->id,$question,$loginUser->id,$invitation->id));
-            }elseif ($question->question_type == 1){
-                //专业问答非定向邀请的自动匹配一次
-                event(new AutoInvitation($question));
+                //延时处理是否需要告警
+                dispatch((new ConfirmOvertime($question->id,$invitation->id))->delay(Carbon::now()->addMinutes(Setting()->get('alert_minute_expert_unconfirm_question',60))));
             }
-
+            //48小时候若未有回答则退款
+            $this->dispatch((new QuestionRefund($question->id))->delay(Carbon::now()->addHours(48)));
+            //悬赏问答尝试邀请用户回答问题
+            if ($question->question_type == 2) {
+                //event(new AutoInvitation($question));
+            }
             $res_data = [
                 'id'=>$question->id,
                 'price'=> $price,
@@ -523,7 +552,6 @@ class QuestionController extends Controller
                 "waiting_second" => $waiting_second,
                 'create_time'=>(string)$question->created_at
             ];
-            self::$needRefresh = true;
             return self::createJsonData(true,$res_data,ApiException::SUCCESS,$message);
 
         }
@@ -563,7 +591,7 @@ class QuestionController extends Controller
         ];
         $fields[] = [
             'title' => '类型',
-            'value' => $question->question_type == 1 ? '专业问答':'互动问答'
+            'value' => '问答'
         ];
         $url = route('ask.question.detail',['id'=>$question->id]);
         $fields[] = [
@@ -843,12 +871,17 @@ class QuestionController extends Controller
     //问答社区列表
     public function questionList(Request $request){
         $orderBy = $request->input('order_by',3);//1最新，2最热，3综合，
-        $query = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);
+        $filter = $request->input('filter',1);//1悬赏大厅，2热门
+        if ($filter == 1) {
+            $query = Question::where('question_type',2)->where('status','<=',6);
+        } else {
+            $query = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);
+        }
         $queryOrderBy = 'questions.rate';
         switch ($orderBy) {
             case 1:
                 //最新
-                $queryOrderBy = 'questions.updated_at';
+                $queryOrderBy = 'questions.created_at';
                 break;
             case 2:
                 //最热
@@ -866,16 +899,16 @@ class QuestionController extends Controller
             $item = [
                 'id' => $question->id,
                 'question_type' => $question->question_type,
+                'price'      => $question->price,
                 'description'  => $question->title,
                 'tags' => $question->tags()->get()->toArray(),
-                'question_user_name' => $question->hide ? '匿名' : $question->user->name,
-                'question_user_avatar' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
-                'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0)
+                'status' => $question->status
             ];
             if($question->question_type == 1){
                 $item['comment_number'] = 0;
                 $item['average_rate'] = 0;
                 $item['support_number'] = 0;
+                $item['status_description'] = $question->price.'元';
                 $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
                 if ($bestAnswer) {
                     $item['comment_number'] = $bestAnswer->comments;
@@ -885,6 +918,7 @@ class QuestionController extends Controller
             } else {
                 $item['answer_number'] = $question->answers;
                 $item['follow_number'] = $question->followers;
+                $item['status_description'] = $question->price.'元悬赏'.($question->status <= 7 ? '中':($question->status==8?',已采纳':',已关闭'));
             }
             $list[] = $item;
         }
@@ -1068,14 +1102,29 @@ class QuestionController extends Controller
             $user = new \stdClass();
             $user->id = 0;
         }
-        $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $is_self = $user->id == $question->user_id;
+        $answers = $question->answers()->orderBy('adopted_at','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
         foreach ($answers as $answer) {
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
 
             $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
-
+            $is_answer_author = false;
+            $is_pay_for_view = false;
+            if ($answer->adopted_at > 0) {
+                //是否回答者
+                if ($answer->user_id == $user->id) {
+                    $is_answer_author = true;
+                }
+                //是否已经付过围观费
+                $payOrder = $answer->orders()->where('user_id',$user->id)->where('status',Order::PAY_STATUS_SUCCESS)->where('return_param','view_answer')->first();
+                if ($payOrder) {
+                    $is_pay_for_view = true;
+                }
+            } else {
+                $is_pay_for_view = true;
+            }
             $return['data'][] = [
                 'id' => $answer->id,
                 'user_id' => $answer->user_id,
@@ -1085,14 +1134,15 @@ class QuestionController extends Controller
                 'title' => $answer->user->title,
                 'company' => $answer->user->company,
                 'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
-                'content' => $answer->getContentText(),
+                'is_best_answer' => $answer->adopted_at?true:false,
+                'content' => ($is_self || $is_answer_author || $is_pay_for_view)?$answer->getContentText():'',
                 'promise_time' => $answer->promise_time,
                 'is_followed' => $attention?1:0,
                 'is_supported' => $support?1:0,
                 'support_number' => $answer->supports,
                 'view_number'    => $answer->views,
                 'comment_number' => $answer->comments,
-                'created_at' => (string)$answer->created_at
+                'created_at' => $answer->created_at->diffForHumans()
             ];
         }
         return self::createJsonData(true,$return);

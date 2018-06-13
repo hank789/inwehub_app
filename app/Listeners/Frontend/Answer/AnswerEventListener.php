@@ -129,17 +129,17 @@ class AnswerEventListener implements ShouldQueue
                         }
                         //产生一条feed流
                         if ($answer->question->question_type == 1) {
-                            $feed_question_title = '专业问答';
+                            $feed_question_title = '问答';
                             $feed_type = Feed::FEED_TYPE_ANSWER_PAY_QUESTION;
                         } else {
-                            $feed_question_title = '互动问答';
+                            $feed_question_title = '问答';
                             $feed_type = Feed::FEED_TYPE_ANSWER_FREE_QUESTION;
                         }
                         feed()
                             ->causedBy($answer->user)
                             ->performedOn($answer)
                             ->tags($answer->question->tags()->pluck('tag_id')->toArray())
-                            ->withProperties(['question_id'=>$answer->question_id,'answer_id'=>$answer->id,'question_title'=>$answer->question->title,'answer_content'=>$answer->getContentText()])
+                            ->withProperties(['question_title'=>$answer->question->title,'answer_content'=>$answer->getContentText()])
                             ->log($answer->user->name.'回答了'.$feed_question_title, $feed_type);
 
                 }

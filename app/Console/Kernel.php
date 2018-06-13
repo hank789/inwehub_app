@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
 
         //定时任务
         Commands\Crontab\CalcGroupHot::class,
+        Commands\Crontab\AwakeUser::class,
         //阅读站
         Commands\Readhub\InitUser::class,
         Commands\Scraper\WechatAuthor::class,
@@ -62,7 +63,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixFeedTags::class,
         Commands\User\GenUserInfoCompletePercent::class,
         Commands\FixData\InitGroup::class,
-        Commands\FixData\AddUserToGroup::class
+        Commands\FixData\AddUserToGroup::class,
+        Commands\FixData\FixFeedGroup::class
 
     ];
 
@@ -85,6 +87,7 @@ class Kernel extends ConsoleKernel
         if (config('app.env') == 'production') {
             $schedule->command('scraper:wechat:author')->hourly();
         }
+        $schedule->command('crontab:awake-user')->twiceDaily(8,19);
     }
 
     /**

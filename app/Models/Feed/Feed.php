@@ -59,7 +59,7 @@ use Laravel\Scout\Searchable;
  */
 class Feed extends Model
 {
-    use BelongsToUserTrait,SoftDeletes,Searchable;
+    use BelongsToUserTrait,SoftDeletes;
     protected $table = 'feeds';
 
     /**
@@ -68,7 +68,7 @@ class Feed extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'user_id', 'top','tags', 'feed_type','source_id','source_type','data','audit_status', 'is_anonymous'
+        'user_id', 'user_id', 'group_id', 'public', 'top','tags', 'feed_type','source_id','source_type','data','audit_status', 'is_anonymous'
     ];
 
     protected $casts = [
@@ -92,6 +92,8 @@ class Feed extends Model
     const FEED_TYPE_UPVOTE_PAY_QUESTION = 11;//赞了专业问答
     const FEED_TYPE_UPVOTE_FREE_QUESTION = 12;//赞了互动问答
     const FEED_TYPE_UPVOTE_READHUB_ARTICLE = 13;//赞了阅读文章
+    const FEED_TYPE_ADOPT_ANSWER = 14;//采纳了回答
+    const FEED_TYPE_SUBMIT_READHUB_SHARE = 15;//发布阅读分享
 
 
 
@@ -138,65 +140,90 @@ class Feed extends Model
         switch ($this->feed_type) {
             case self::FEED_TYPE_ANSWER_PAY_QUESTION:
                 //回答专业问题
-                $url = '/askCommunity/major/'.$this->data['question_id'];
-                $answer = Answer::find($this->data['answer_id']);
+                $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
+                $url = '/ask/offer/'.$answer->id;
                 $question = $answer->question;
-                $supporters = [];
-                $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
-                if ($support_uids) {
-                    $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
-                }
                 $is_pay_for_view = false;
-                $is_self = Auth::user()->id == $question->user_id;
-                $is_answer_author = Auth::user()->id == $answer->user_id;
+
+                if (Auth::user()->id == $question->user_id) {
+                    $is_pay_for_view = true;
+                }
+                if (Auth::user()->id == $answer->user_id) {
+                    $is_pay_for_view = true;
+                }
                 $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
                 if ($payOrder) {
                     $is_pay_for_view = true;
                 }
+                $answerContent = $answer->getContentText();
                 $data = [
                     'question_title' => $question->title,
-                    'answer_content' => str_limit($answer->getContentText(),120),
+                    'answer_content' => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
                     'support_number' => $answer->supports,
-                    'supporter_list' => $supporters,
-                    'is_pay_for_view' => ($is_self || $is_answer_author || $is_pay_for_view),
-                    'question_price'  => $question->price,
-                    'answer_promise_time'    => Carbon::createFromTimestamp(strtotime('+120 seconds',strtotime($answer->promise_time)))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h',
-                    'answer_response_time'   => Carbon::createFromTimestamp(strtotime($answer->adopted_at))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h',
+                    'views' => $answer->views,
+                    'is_pay_for_view' => $is_pay_for_view,
+                    'status'     => $question->status,
+                    'status_description' => $question->price.'元',
                     'answer_id' => $answer->id,
+                    'question_id' => $question->id,
+                    'price'      => $question->price,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
+
+                if ($answer->adopted_at && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
+                }
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
                 //回答互动问题
-                $url = '/askCommunity/interaction/'.$this->source_id;
+                $url = '/ask/offer/'.$this->source_id;
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = Question::find($answer->question_id);
-                $is_followed_question = 0;
-                $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
-                if ($attention_question) {
-                    $is_followed_question = 1;
+                $is_pay_for_view = true;
+                if ($answer->adopted_at) {
+                    $is_pay_for_view = false;
+                    if (Auth::user()->id == $question->user_id) {
+                        $is_pay_for_view = true;
+                    }
+                    if (Auth::user()->id == $answer->user_id) {
+                        $is_pay_for_view = true;
+                    }
+                    $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
+                    if ($payOrder) {
+                        $is_pay_for_view = true;
+                    }
                 }
+                $answerContent = $answer->getContentText();
                 $data = [
-                    'title'     => $question->title,
-                    'content'   => $answer->getContentText(),
-                    'comment_num' => $answer->comments,
+                    'question_title'     => $question->title,
+                    'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
+                    'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
-                    'answer_number' => $question->answers,
-                    'follow_question_num'  => $question->followers,
-                    'is_followed_question' => $is_followed_question,
+                    'views'          => $answer->views,
+                    'is_pay_for_view' => $is_pay_for_view,
+                    'price'      => $question->price,
+                    'status'     => $question->status,
+                    'status_description' => $question->price.'元悬赏'.($question->status != 8 ? '中':''),
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
+                if ($answer->adopted_at && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
+                }
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
                 //发布互动问题
-                $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
-                $question = Question::find($this->data['question_id']);
+                $url = '/ask/offer/answers/'.$this->source_id;
+                $question = Question::find($this->source_id);
                 switch ($search_type) {
                     case 1:
                     case 5:
@@ -205,219 +232,191 @@ class Feed extends Model
                         }
                         break;
                 }
-                $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->distinct()->take(5)->pluck('user_id')->toArray();
-                $answer_users = [];
-                if ($answer_uids) {
-                    $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
-                }
-                $is_followed_question = 0;
-                $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
-                if ($attention_question) {
-                    $is_followed_question = 1;
-                }
                 $data = [
-                    'title' => $question->title,
-                    'answer_num' => $question->answers,
-                    'follow_num' => $question->followers,
-                    'answer_user_list' => $answer_users,
-                    'is_followed_question' => $is_followed_question,
+                    'question_title' => $question->title,
+                    'answer_number' => $question->answers,
+                    'follow_number' => $question->followers,
+                    'views'         => $question->views,
                     'question_id' => $question->id,
+                    'price'      => $question->price,
+                    'status'     => $question->status,
+                    'status_description' => $question->price.'元悬赏'.($question->status != 8 ? '中':''),
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
-                ];
-                break;
-            case self::FEED_TYPE_CREATE_PAY_QUESTION:
-                //发布专业问题
-                $url = '/answer/'.$this->data['question_id'];
-                $question = Question::find($this->data['question_id']);
-                switch ($search_type) {
-                    case 1:
-                    case 5:
-                        if ($question->hide) {
-                            return null;
-                        }
-                        break;
-                }
-                $data = [
-                    'title' => $question->title,
-                    'tags'  => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
                 //发布文章
-                $comment_url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
-                $url = $this->data['view_url']?:$comment_url;
                 $submission = Submission::find($this->source_id);
+                $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+                $url = $submission->data['url']??$comment_url;
                 if (!$submission) return null;
-                $support_uids = Support::where('supportable_id',$submission->id)
-                    ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
-                $supporters = [];
-                if ($support_uids) {
-                    $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
-                }
                 $upvote = Support::where('user_id',Auth::user()->id)
                     ->where('supportable_id',$submission->id)
                     ->where('supportable_type',Submission::class)
                     ->exists();
+                if ($submission->type == 'text') $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_SHARE;
                 $group = Group::find($submission->group_id);
                 $data = [
                     'title'     => $submission->partHtmlTitle(),
-                    'img'       => $submission->data['img'],
+                    'img'       => $submission->data['img']?:'',
                     'files'       => $submission->data['files']??'',
-                    'domain'    => $this->data['domain'],
+                    'domain'    => $submission->data['domain']??'',
                     'tags'      => $submission->tags()->get()->toArray(),
                     'submission_id' => $this->source_id,
-                    'current_address_name' => $this->data['current_address_name']??'',
-                    'current_address_longitude' => $this->data['current_address_longitude']??'',
-                    'current_address_latitude'  => $this->data['current_address_latitude']??'',
+                    'current_address_name' => $submission->data['current_address_name']??'',
+                    'current_address_longitude' => $submission->data['current_address_longitude']??'',
+                    'current_address_latitude'  => $submission->data['current_address_latitude']??'',
                     'comment_url' => $comment_url,
                     'comment_number' => $submission->comments_number,
                     'support_number' => $submission->upvotes,
-                    'supporter_list' => $supporters,
+                    'views'          => $submission->views,
                     'is_upvoted'     => $upvote ? 1 : 0,
                     'submission_type' => $submission->type,
-                    'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
+                    //'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
                     'group'    => $group?$group->toArray():[]
                 ];
+                if ($data['group']) {
+                    $data['group']['name'] = str_limit($data['group']['name'], 20);
+                }
                 $data['group']['subscribers'] = $group->getHotIndex();
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答
-                $url = '/askCommunity/interaction/answers/'.$this->data['question_id'];
-                $question = Question::find($this->data['question_id']);
-                $answer_uids = Answer::where('question_id',$question->id)->select('user_id')->distinct()->take(5)->pluck('user_id')->toArray();
-                $answer_users = [];
-                if ($answer_uids) {
-                    $answer_users = User::whereIn('id',$answer_uids)->select('uuid','name')->get()->toArray();
-                }
-                $attention = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
-
+                $url = '/ask/offer/answers/'.$this->source_id;
+                $question = Question::find($this->source_id);
                 $data = [
-                    'title' => $this->data['question_title'],
-                    'answer_num' => $question->answers,
-                    'follow_num' => $question->followers,
-                    'answer_user_list' => $answer_users,
-                    'is_followed_question' => $attention?1:0,
+                    'question_title' => $question->title,
+                    'answer_number' => $question->answers,
+                    'views'         => $question->views,
+                    'price'      => $question->price,
+                    'status'     => $question->status,
+                    'status_description' => $question->price.'元悬赏'.($question->status != 8 ? '中':''),
+                    'follow_number' => $question->followers,
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
                 break;
-            case self::FEED_TYPE_FOLLOW_USER:
-                //关注了用户
-                $follower_user = User::find($this->data['follow_user_id']);
-                $url = '/share/resume/'.$follower_user->uuid;
-                $data = [
-                    'follow_user_id'    =>    $follower_user->id,
-                    'follow_user_name'  =>    $follower_user->name,
-                    'follow_user_uuid'  =>    $follower_user->uuid,
-                    'follow_user_avatar'  =>    $follower_user->avatar,
-                    'follow_user_is_expert' => $follower_user->userData->authentication_status == 1 ? 1 : 0
-                ];
-                break;
-            case self::FEED_TYPE_COMMENT_PAY_QUESTION:
-                //评论了专业问答
-                $url = $this->data['feed_url'];
-                $data = $this->data;
-                break;
-            case self::FEED_TYPE_COMMENT_FREE_QUESTION:
-                //评论了互动问答
-                $url = $this->data['feed_url'];
-                $comment = Comment::find($this->source_id);
-                $answer = $comment->source;
-                $question = Question::find($answer->question_id);
-                $is_followed_question = 0;
-                $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
-                if ($attention_question) {
-                    $is_followed_question = 1;
-                }
-                $data = $this->data;
-                $data['answer_content'] = $answer->getContentText();
-                $data['comment_num'] = $answer->comments;
-                $data['support_number'] = $answer->supports;
-                $data['follow_question_num'] = $question->followers;
-                $data['question_answer_num'] = $question->answers;
-                $data['answer_id'] = $answer->id;
-                $data['is_followed_question'] = $is_followed_question;
-                $data['question_id'] = $question->id;
-                $data['tags'] = $question->tags()->select('tag_id','name')->get()->toArray();
-                break;
-            case self::FEED_TYPE_COMMENT_READHUB_ARTICLE:
-                //评论了文章
-                $url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'].'?comment='.$this->data['comment_id'];
-                $data = [
-                    'title'     => $this->data['submission_title'],
-                    'img'       => $this->data['img'],
-                    'domain'    => $this->data['domain'],
-                    'submission_type' => $this->data['type']??'link',
-                    'comment_content' => $this->data['comment_content'],
-                    'submission_username' => $this->data['submission_username']
-                ];
-                break;
             case self::FEED_TYPE_UPVOTE_PAY_QUESTION:
                 //赞了专业问答
-                $url = $this->data['feed_url'];
-                $data = $this->data;
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = $answer->question;
-                $supporters = [];
-                $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
-                if ($support_uids) {
-                    $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
-                }
+                $url = '/ask/offer/'.$answer->id;
                 $is_pay_for_view = false;
-                $is_self = Auth::user()->id == $answer->question->user_id;
-                $is_answer_author = Auth::user()->id == $answer->user_id;
+
+                if (Auth::user()->id == $question->user_id) {
+                    $is_pay_for_view = true;
+                }
+                if (Auth::user()->id == $answer->user_id) {
+                    $is_pay_for_view = true;
+                }
                 $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
                 if ($payOrder) {
                     $is_pay_for_view = true;
                 }
-                $data['answer_content'] = str_limit($answer->getContentText(),120);
-                $data['comment_number'] = $answer->comments;
-                $data['average_rate']   = $answer->getFeedbackRate();
-                $data['support_number'] = $answer->supports;
-                $data['supporter_list'] = $supporters;
-                $data['question_price'] = $question->price;
-                $data['answer_promise_time'] = Carbon::createFromTimestamp(strtotime('+120 seconds',strtotime($answer->promise_time)))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h';
-                $data['answer_response_time'] = Carbon::createFromTimestamp(strtotime($answer->adopted_at))->diffInHours(Carbon::createFromTimestamp(strtotime($answer->created_at))).'h';
-                $data['answer_id'] = $answer->id;
-                $data['is_pay_for_view'] = ($is_self || $is_answer_author || $is_pay_for_view);
-                $data['tags'] = $question->tags()->select('tag_id','name')->get()->toArray();
+                $answerContent = $answer->getContentText();
+                $data = [
+                    'question_title' => $question->title,
+                    'answer_content' => str_limit($answerContent,$is_pay_for_view?120:20),
+                    'comment_number' => $answer->comments,
+                    'views'          => $answer->views,
+                    'average_rate'   => $answer->getFeedbackRate(),
+                    'support_number' => $answer->supports,
+                    'is_pay_for_view' => $is_pay_for_view,
+                    'status'     => $question->status,
+                    'price'      => $question->price,
+                    'status_description' => $question->price.'元',
+                    'answer_id' => $answer->id,
+                    'question_id' => $question->id,
+                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
+                ];
+                if ($answer->adopted_at && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
+                }
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
                 //赞了互动问答
-                $url = $this->data['feed_url'];
-                $data = $this->data;
                 $answer = Answer::find($this->source_id);
                 if (empty($answer)) return false;
                 $question = Question::find($answer->question_id);
-                $is_followed_question = 0;
-                $attention_question = Attention::where("user_id",'=',Auth::user()->id)->where('source_type','=',get_class($question))->where('source_id','=',$question->id)->first();
-                if ($attention_question) {
-                    $is_followed_question = 1;
+                $url = '/ask/offer/'.$answer->id;
+                $is_pay_for_view = true;
+                if ($answer->adopted_at) {
+                    $is_pay_for_view = false;
+                    if (Auth::user()->id == $question->user_id) {
+                        $is_pay_for_view = true;
+                    }
+                    if (Auth::user()->id == $answer->user_id) {
+                        $is_pay_for_view = true;
+                    }
+                    $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
+                    if ($payOrder) {
+                        $is_pay_for_view = true;
+                    }
                 }
-                $data['answer_content'] = $answer->getContentText();
-                $data['comment_num'] = $answer->comments;
-                $data['support_number'] = $answer->supports;
-                $data['follow_question_num'] = $question->followers;
-                $data['question_answer_num'] = $question->answers;
-                $data['answer_id'] = $answer->id;
-                $data['is_followed_question'] = $is_followed_question;
-                $data['question_id'] = $question->id;
-                $data['tags'] = $question->tags()->select('tag_id','name')->get()->toArray();
-                break;
-            case self::FEED_TYPE_UPVOTE_READHUB_ARTICLE:
-                //赞了文章
-                $comment_url = '/c/'.$this->data['category_id'].'/'.$this->data['slug'];
-                $url = $this->data['view_url']?:$comment_url;
+                $answerContent = $answer->getContentText();
                 $data = [
-                    'submission_username' => $this->data['submission_username'],
-                    'title'     => $this->data['submission_title'],
-                    'img'       => $this->data['img'],
-                    'domain'    => $this->data['domain'],
-                    'submission_type' => $this->data['type']??'link',
-                    'submission_id' => $this->source_id,
-                    'comment_url' => $comment_url
+                    'question_title'     => $question->title,
+                    'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
+                    'comment_number' => $answer->comments,
+                    'support_number' => $answer->supports,
+                    'views'          => $answer->views,
+                    'is_pay_for_view' => $is_pay_for_view,
+                    'price'      => $question->price,
+                    'status'     => $question->status,
+                    'status_description' => $question->price.'元悬赏'.($question->status != 8 ? '中':''),
+                    'answer_id' => $answer->id,
+                    'question_id' => $question->id,
+                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
+                if ($answer->adopted_at && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
+                }
+                break;
+            case self::FEED_TYPE_ADOPT_ANSWER:
+                //采纳了互动回答
+                $url = '/ask/offer/'.$this->source_id;
+                $answer = Answer::find($this->source_id);
+                if (empty($answer)) return false;
+                $question = Question::find($answer->question_id);
+                $is_pay_for_view = true;
+                if ($answer->adopted_at) {
+                    $is_pay_for_view = false;
+                    if (Auth::user()->id == $question->user_id) {
+                        $is_pay_for_view = true;
+                    }
+                    if (Auth::user()->id == $answer->user_id) {
+                        $is_pay_for_view = true;
+                    }
+                    $payOrder = $answer->orders()->where('user_id',Auth::user()->id)->where('return_param','view_answer')->first();
+                    if ($payOrder) {
+                        $is_pay_for_view = true;
+                    }
+                }
+                $answerContent = $answer->getContentText();
+                $data = [
+                    'question_title'     => $question->title,
+                    'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
+                    'comment_number' => $answer->comments,
+                    'support_number' => $answer->supports,
+                    'views'          => $answer->views,
+                    'is_pay_for_view' => $is_pay_for_view,
+                    'price'      => $question->price,
+                    'status'     => $question->status,
+                    'status_description' => $question->price.'元悬赏'.($question->status != 8 ? '中':''),
+                    'answer_id' => $answer->id,
+                    'question_id' => $question->id,
+                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
+                ];
+                if ($answer->adopted_at && !$is_pay_for_view) {
+                    $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
+                }
                 break;
         }
         return ['url'=>$url,'feed'=>$data];

@@ -1,18 +1,27 @@
-<?php namespace App\Listeners\Frontend\Question;
-use App\Events\Frontend\Question\AutoInvitation;
-use App\Jobs\Question\AutoSecondInvation;
+<?php namespace App\Jobs\Question;
+
 use App\Logic\QuestionLogic;
+use App\Models\Answer;
+use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
-
-class QuestionEventListener implements ShouldQueue
+/**
+ * Class ConfirmOvertime
+ * @package App\Jobs\Question
+ */
+class AutoSecondInvation implements ShouldQueue
 {
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * 任务最大尝试次数
@@ -21,25 +30,43 @@ class QuestionEventListener implements ShouldQueue
      */
     public $tries = 1;
 
-    /**
-     * @param AutoInvitation $event
-     */
-    public function autoInvitation($event)
-    {
-        $question = $event->question;
-        $tagIds = $question->tags()->pluck('tags.id')->toArray();
-        $userTags = UserTag::whereIn('tag_id',$tagIds)->where('skills','>=',1)->pluck('user_id')->toArray();
-        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('answers','>=',1)->pluck('user_id')->toArray());
-        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('adoptions','>=',1)->pluck('user_id')->toArray());
-        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('industries','>=',1)->pluck('user_id')->toArray());
-        $userTags = array_unique($userTags);
+    protected $question_id;
 
+    public function __construct($question_id)
+    {
+        $this->question_id = $question_id;
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $question = Question::find($this->question_id);
+        if ($question->status >= 8 ) return;
+        if (Carbon::now()->diffInHours($question->created_at) >= 48) return;
+        if (Carbon::now()->hour >= 23) {
+            dispatch((new AutoSecondInvation($question->id))->delay(Carbon::tomorrow()->addHours(10)));
+            return;
+        } elseif (Carbon::now()->hour <= 4) {
+            dispatch((new AutoSecondInvation($question->id))->delay(Carbon::today()->addHours(10)));
+            return;
+        }
+        $tagIds = $question->tags()->pluck('tags.id')->toArray();
+        $userTags = UserTag::whereIn('tag_id',$tagIds)->where('views','>=',1)->pluck('user_id')->toArray();
+        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('articles','>=',1)->pluck('user_id')->toArray());
+        $userTags = array_merge($userTags,UserTag::whereIn('tag_id',$tagIds)->where('supports','>=',1)->pluck('user_id')->toArray());
+        $userTags = array_unique($userTags);
         if ($userTags) {
             $fields = [];
             foreach($userTags as $uid){
                 if($uid == $question->user_id) continue;
                 $invitation = QuestionInvitation::where('user_id',$uid)->where('from_user_id',$question->user_id)->where('question_id',$question->id)->first();
                 if ($invitation) continue;
+                $answer = Answer::where('question_id',$question->id)->where('user_id',$uid)->first();
+                if ($answer) continue;
                 $invitation = QuestionInvitation::create([
                     'from_user_id'=> $question->user_id,
                     'question_id'=> $question->id,
@@ -59,22 +86,6 @@ class QuestionEventListener implements ShouldQueue
                 ];
             }
             QuestionLogic::slackMsg('[系统]自动邀请相关人员参与悬赏问题',$question,$fields);
-            dispatch((new AutoSecondInvation($question->id))->delay(Carbon::now()->addHours(3)));
-        } else {
-            dispatch((new AutoSecondInvation($question->id)));
         }
-    }
-
-    /**
-     * Register the listeners for the subscriber.
-     *
-     * @param \Illuminate\Events\Dispatcher $events
-     */
-    public function subscribe($events)
-    {
-        $events->listen(
-            AutoInvitation::class,
-            'App\Listeners\Frontend\Question\QuestionEventListener@autoInvitation'
-        );
     }
 }

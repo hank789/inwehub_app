@@ -15,7 +15,7 @@ use App\Notifications\MoneyLog as MoneyLogNotify;
 
 class MoneyLogLogic {
 
-    public static function addMoney($user_id,$money,$money_type, $object_class, $fee=0, $is_settlement = 0){
+    public static function addMoney($user_id,$money,$money_type, $object_class, $fee=0, $is_settlement = 0, $notify = false){
         try{
             DB::beginTransaction();
             if($fee && $fee>$money){
@@ -102,7 +102,7 @@ class MoneyLogLogic {
                 }
             }
             DB::commit();
-            if ($is_settlement) {
+            if ($is_settlement || $notify) {
                 $user = User::find($user_id);
                 $settlement_count = RateLimiter::instance()->increaseBy('settlement_count_'.$user_id, date('Y-m-d'),1,3600*24*5);
                 $user->notify(new MoneyLogNotify($user_id,$moneyLog1,date('Y-m-d H:i:s',strtotime('+'.$settlement_count.' seconds'))));

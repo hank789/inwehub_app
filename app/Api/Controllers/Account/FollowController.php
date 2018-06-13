@@ -131,8 +131,7 @@ class FollowController extends Controller
                                 ->causedBy($loginUser)
                                 ->performedOn($source)
                                 ->tags($source->tags()->pluck('tag_id')->toArray())
-                                ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
-                                ->log($loginUser->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
+                                ->log($loginUser->name.'关注了问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                             $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                             if ($source->hide == 0) {
                                 $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source));
@@ -148,13 +147,6 @@ class FollowController extends Controller
                     $feed_target = $source->id.'_'.$loginUser->id;
                     if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase($feed_event,$feed_target,0)) {
                         $source->notify(new NewUserFollowing($source->id,$attention));
-                        feed()
-                            ->causedBy($loginUser)
-                            ->performedOn($source)
-                            ->withProperties([
-                                'follow_user_id' => $source->id
-                            ])
-                            ->log($loginUser->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
                         $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                         //产生一条私信
@@ -268,13 +260,6 @@ class FollowController extends Controller
                     'value' => $source->id.'['.$source->name.']'
                 ];
                 $source->notify(new NewUserFollowing($source->id,$attention,false));
-                feed()
-                    ->causedBy($user)
-                    ->performedOn($source)
-                    ->withProperties([
-                        'follow_user_id' => $source->id
-                    ])
-                    ->log($user->name.'关注了新的朋友', Feed::FEED_TYPE_FOLLOW_USER);
 
                 $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
                 //产生一条私信
@@ -418,8 +403,7 @@ class FollowController extends Controller
                         ->causedBy($user)
                         ->performedOn($source)
                         ->tags($source->tags()->pluck('tag_id')->toArray())
-                        ->withProperties(['question_id'=>$source->id,'question_title'=>$source->title])
-                        ->log($user->name.'关注了互动问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
+                        ->log($user->name.'关注了问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                     $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
                     if ($source->hide == 0) {
                         $this->credit($source->user_id,Credit::KEY_COMMUNITY_ASK_FOLLOWED,$attention->id,get_class($source),false);

@@ -247,10 +247,10 @@ class IndexController extends Controller {
                     $source = $comment->source;
                     $question = $source->question;
                     if ($question->question_type == 1) {
-                        $origin_title = '专业问答:'.$question->title;
+                        $origin_title = '问答:'.$question->title;
                         $comment_url = '/askCommunity/major/'.$source->question_id;
                     } else {
-                        $origin_title = '互动问答:'.$question->title;
+                        $origin_title = '问答:'.$question->title;
                         $comment_url = '/askCommunity/interaction/'.$source->id;
                     }
                     break;

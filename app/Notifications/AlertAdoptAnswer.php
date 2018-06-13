@@ -3,10 +3,11 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
-use App\Models\Answer;
-use App\Models\Notification as NotificationModel;
+use App\Logic\QuestionLogic;
 use App\Models\Question;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -14,24 +15,24 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NewQuestionConfirm extends Notification implements ShouldBroadcast,ShouldQueue
+class AlertAdoptAnswer extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 
     protected $question;
-    protected $answer;
     protected $user_id;
+    protected $notifySlack;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user_id, Question $question, Answer $answer)
+    public function __construct($user_id, Question $question, $notifySlack = true)
     {
         $this->user_id = $user_id;
         $this->question = $question;
-        $this->answer = $answer;
+        $this->notifySlack = $notifySlack;
     }
 
     /**
@@ -42,7 +43,7 @@ class NewQuestionConfirm extends Notification implements ShouldBroadcast,ShouldQ
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return [PushChannel::class, WechatNoticeChannel::class,SlackChannel::class];
     }
 
     /**
@@ -59,47 +60,42 @@ class NewQuestionConfirm extends Notification implements ShouldBroadcast,ShouldQ
                     ->line('Thank you for using our application!');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            'url'    => '/ask/'.$this->question->id,
-            'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
-            'avatar' => $this->answer->user->avatar,
-            'title'  => '专家'.$this->answer->user->name.'响应了你的问题',
-            'body'   => $this->question->title,
-            'extra_body' => '截止时间：'.$this->answer->promise_time
-        ];
-    }
-
     public function toPush($notifiable)
     {
+        $title = '快来采纳最佳回答吧';
         return [
-            'title' => '您的提问专家已响应,点击查看',
+            'title' => $title,
             'body'  => $this->question->title,
-            'payload' => ['object_type'=>'question_answer_confirmed','object_id'=>$this->question->id],
+            'payload' => ['object_type'=>'free_answer','object_id'=>$this->question->id],
         ];
     }
 
     public function toWechatNotice($notifiable){
-        $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+        $first = '快来采纳最佳回答吧';
+        $keyword1 = $this->question->title;
+        $keyword2 = (string) $this->question->created_at;
+        $remark = '请点击前往采纳最佳回答';
+        $url = config('app.mobile_url').'#/ask/offer/answers/'.$this->question->id;
+        $template_id = 'N_FF16jJUBq2iiER3rCK1oT-HwXyYoJ_oLJDPsP9uUM';
         if (config('app.env') != 'production') {
-            $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
+            $template_id = 'EdchssuL5CWldA1eVfvtXHo737mqiH5dWLtUN7Ynwtg';
         }
         return [
-            'first'    => '您好，已有专家响应了您的问答任务',
-            'keyword1' => $this->question->title,
-            'keyword2' => $this->answer->user->name,
-            'keyword3' => '',
-            'remark'   => '可点击详情查看处理进度',
+            'first'    => $first,
+            'keyword1' => $keyword1,
+            'keyword2' => $keyword2,
+            'keyword3' => $this->question->answers,
+            'remark'   => $remark,
             'template_id' => $template_id,
-            'target_url' => config('app.mobile_url').'#/ask/'.$this->question->id
+            'target_url' => $url
         ];
+    }
+
+    public function toSlack($notifiable){
+        if ($this->notifySlack) {
+            $user = User::find($this->user_id);
+            QuestionLogic::slackMsg('通知用户'.$this->user_id.'['.$user->name.']采纳最佳回答',$this->question);
+        }
     }
 
     public function broadcastOn(){

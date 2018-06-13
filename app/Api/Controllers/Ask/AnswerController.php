@@ -12,6 +12,7 @@ use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
+use App\Models\Feed\Feed;
 use App\Models\Feedback;
 use App\Models\Pay\Order;
 use App\Models\Pay\Settlement;
@@ -21,7 +22,9 @@ use App\Models\Support;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
+use App\Notifications\AnswerAdopted;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -101,6 +104,12 @@ class AnswerController extends Controller
         if ($payOrder) {
             $is_pay_for_view = true;
         }
+        if ($question->price <= 0) $is_pay_for_view = true;
+        //未采纳前都可查看
+        if ($question->status != 8 && $question->question_type == 2) $is_pay_for_view = true;
+        //已采纳但非最佳回答可查看
+        if ($question->status == 8 && empty($answer->adopted_at)) $is_pay_for_view = true;
+
         $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
 
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
@@ -128,8 +137,10 @@ class AnswerController extends Controller
             'title' => $answer->user->title,
             'company' => $answer->user->company,
             'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
-            'content' => ($is_self || $is_answer_author || $is_pay_for_view || $question->question_type == 2) ? $answer->content : '',
+            'content' => ($is_self || $is_answer_author || $is_pay_for_view) ? $answer->content : '',
             'promise_time' => $answer->promise_time,
+            'adopted_time' => $answer->adopted_at,
+            'is_best_answer' => $answer->adopted_at?true:false,
             'is_followed' => $attention?1:0,
             'is_supported' => $support?1:0,
             'is_collected' => $collect?1:0,
@@ -142,13 +153,25 @@ class AnswerController extends Controller
             'supporter_list' => $supporters
         ];
 
+        //feedback
+        $feedback_data = [];
+        $feedback = $answer->feedbacks()->where('user_id',$user->id)->orderBy('id','desc')->first();
+        if(!empty($feedback)){
+            $feedback_data = [
+                'answer_id' => $feedback->source_id,
+                'rate_star' => $feedback->star,
+                'description' => $feedback->content,
+                'create_time' => (string)$feedback->created_at
+            ];
+        }
+
 
         $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
         $currentUserAnswer = Answer::where('question_id',$question->id)->where('user_id',$user->id)->where('status',1)->first();
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
-            'uuid' => $question->hide ? '' : $question->user->uuid,
+            'uuid' => $question->user->uuid,
             'question_type' => $question->question_type,
             'user_name' => $question->hide ? '匿名' : $question->user->name,
             'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
@@ -163,7 +186,8 @@ class AnswerController extends Controller
             'price' => $question->price,
             'data'  => $question->data,
             'status' => $question->status,
-            'status_description' => $question->statusHumanDescription($user->id),
+            'status_description' => $question->statusFormatDescription($user->id),
+            'status_short_tip' => $question->statusShortTip($user->id),
             'promise_answer_time' => $answer->promise_time,
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
@@ -177,6 +201,7 @@ class AnswerController extends Controller
 
         return self::createJsonData(true,[
             'question'=>$question_data,
+            'feedback'=>$feedback_data,
             'answer'=>$answers_data]);
 
     }
@@ -211,6 +236,9 @@ class AnswerController extends Controller
         $answer = Answer::where('id',$request->input('answer_id'))->where('user_id',$loginUser->id)->first();
         if (!$answer) {
             throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        if ($answer->question->status == 8) {
+            throw new ApiException(ApiException::ASK_ANSWER_ADOPTED_CANNOT_UPDATE);
         }
         $answerContent = $request->input('description');
 
@@ -438,11 +466,14 @@ class AnswerController extends Controller
         //进入结算中心
         if ($order1) {
             Settlement::payForViewSettlement($order1);
-        } else {
+        }
+        if ($order->actual_amount > 0) {
             Settlement::payForViewSettlement($order);
         }
         //生成一条点评任务
-        $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+        if ($answer->question->question_type == 1) {
+            $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+        }
         QuestionLogic::calculationQuestionRate($answer->question_id);
 
 
@@ -568,6 +599,39 @@ class AnswerController extends Controller
         UserTag::multiIncrement($user->id,$source->question->tags()->get(),'questions');
         self::$needRefresh = true;
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
+    }
+
+    //采纳最佳回答
+    public function adopt(Request $request) {
+        /*问题创建校验*/
+        $validateRules = [
+            'answer_id'    => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $answer  = Answer::find($request->input('answer_id'));
+        $question = $answer->question;
+        if ($user->id != $question->user_id || $answer->adopted_at>0 || $answer->user_id == $question->user_id || $question->question_type == 1 ||$question->status == 8 || $question->status == 9) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $answer->adopted_at = Carbon::now();
+        $answer->save();
+        $question->status = 8;
+        $question->save();
+        UserTag::multiIncrement($answer->user_id,$question->tags()->get(),'adoptions');
+        $this->finishTask(get_class($answer),$answer->id, Task::ACTION_TYPE_ADOPTED_ANSWER,[$user->id]);
+        //通知
+        $answer->user->notify(new AnswerAdopted($answer->user_id,$question,$answer));
+        //进入结算中心
+        Settlement::answerSettlement($answer);
+        Settlement::questionSettlement($question);
+        //feed
+        feed()
+            ->causedBy($user)
+            ->performedOn($answer)
+            ->tags($question->tags()->pluck('tag_id')->toArray())
+            ->log($user->name.'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
+        return self::createJsonData(true);
     }
 
 }

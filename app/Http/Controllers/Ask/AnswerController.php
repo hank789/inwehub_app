@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Ask;
 
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Feed\Feed;
+use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Setting;
+use App\Models\Task;
 use App\Models\UserTag;
+use App\Notifications\AnswerAdopted;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -170,8 +174,13 @@ class AnswerController extends Controller
     public function adopt($id,Request $request)
     {
         $answer = Answer::findOrFail($id);
+        $question = $answer->question;
+        $user = $request->user();
 
-        if(($request->user()->id !== $answer->question->user_id) && !$request->user()->isRole('admin')  ){
+        if(($user->id !== $question->user_id) && !$user->isRole('admin')){
+            abort(403);
+        }
+        if ($answer->user_id == $question->user_id) {
             abort(403);
         }
 
@@ -180,38 +189,33 @@ class AnswerController extends Controller
             return $this->error(route('ask.question.detail',['question_id'=>$answer->question_id]),'该回答已被采纳，不能重复采纳');
         }
 
+        if ($question->status == 8 || $question->status == 9) {
+            return $this->error(route('ask.question.detail',['question_id'=>$answer->question_id]),'该提问已有最佳答案，不能重复采纳');
+        }
 
-        DB::beginTransaction();
         try{
-
             $answer->adopted_at = Carbon::now();
             $answer->save();
-
-            if($answer->question->status != 7){
-                $answer->question->status = 6;
-                $answer->question->save();
-            }
-
-            $answer->user->userData->increment('adoptions');
-
-            /*悬赏处理*/
-            $this->credit($answer->user_id,'answer_adopted',($answer->question->price+Setting()->get('coins_adopted',0)),Setting()->get('credits_adopted'),$answer->question->id,$answer->question->title);
-
-            UserTag::multiIncrement($request->user()->id,$answer->question->tags()->get(),'adoptions');
-            $this->notify($request->user()->id,$answer->user_id,'adopt_answer',$answer->question_title,$answer->question_id);
-            DB::commit();
-            /*发送邮件通知*/
-            /*if($answer->user->allowedEmailNotify('adopt_answer')){
-                $emailSubject = '您对于问题「'.$answer->question_title.'」的回答被采纳了！';
-                $emailContent = "您对于问题「".$answer->question_title."」的回答被采纳了！<br /> 点击此链接查看详情  →  ".route('ask.question.detail',['question_id'=>$answer->question_id]);
-                $this->sendEmail($answer->user->email,$emailSubject,$emailContent);
-            }*/
+            $question->status = 8;
+            $question->save();
+            UserTag::multiIncrement($answer->user_id,$question->tags()->get(),'adoptions');
+            $this->finishTask(get_class($answer),$answer->id, Task::ACTION_TYPE_ADOPTED_ANSWER,[$question->user_id]);
+            //通知
+            $answer->user->notify(new AnswerAdopted($answer->user_id,$question,$answer));
+            //进入结算中心
+            Settlement::answerSettlement($answer);
+            Settlement::questionSettlement($question);
+            //feed
+            feed()
+                ->causedBy($question->user)
+                ->performedOn($answer)
+                ->tags($question->tags()->pluck('tag_id')->toArray())
+                ->log($question->user->name.'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
 
             return $this->success(route('ask.question.detail',['question_id'=>$answer->question_id]),"回答采纳成功!".get_credit_message(Setting()->get('credits_adopted'),Setting()->get('coins_adopted')));
 
         }catch (\Exception $e) {
             echo $e->getMessage();
-            DB::rollBack();
         }
         return $this->error(route('ask.question.detail',['question_id'=>$answer->question_id]),"回答采纳失败，请稍后再试！");
 

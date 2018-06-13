@@ -114,14 +114,14 @@ class TaskLogic {
                     break;
                 case 'App\Models\Question':
                     $task_type = 1;
-                    $task_type_description = '专业问答';
+                    $task_type_description = '问答';
                     $question = Question::find($task->source_id);
                     switch ($question->question_type){
                         case 1:
-                            $task_type_description = '专业问答';
+                            $task_type_description = '问答';
                             break;
                         case 2:
-                            $task_type_description = '互动问答';
+                            $task_type_description = '问答';
                             break;
                     }
                     $object_id = $question->id;
@@ -131,20 +131,14 @@ class TaskLogic {
                             //已分配待确认
                             $user_name = $question->hide ? '匿名' : $question->user->name;
                             $user_avatar_url = $question->hide ? config('image.user_default_avatar') : $question->user->avatar;
-                            $description = '用户'.$user_name.'发起了专业提问:'.$question->title;
-                            $answer = Answer::where('question_id',$object_id)->where('user_id',$task->user_id)->get()->last();
-                            if($answer && $answer->status == 3){
-                                $status_description = '前往回答问题';
-                                $deadline = $answer->promise_time;
-                            }else{
-                                $status_description = '前往确认回答';
-                            }
+                            $description = '用户'.$user_name.'向您付费咨询问题:'.$question->title;
+                            $status_description = '前往回答问题';
                             break;
                     }
                     break;
                 case 'App\Models\Answer':
                     $task_type = 2;
-                    $task_type_description = '专业问答';
+                    $task_type_description = '问答';
                     $answer = Answer::find($task->source_id);
                     if (!$answer) continue;
                     $question = Question::find($answer->question_id);
@@ -156,8 +150,9 @@ class TaskLogic {
                             $user_name = $answer->user->name;
                             $user_avatar_url = $answer->user->avatar;
                             $priority = '中';
-                            $description = '用户'.$user_name.'回答了专业提问:'.$question->title;
+                            $description = '用户'.$user_name.'回答了提问:'.$question->title;
                             $status_description = '前往点评';
+                            $object_id = $answer->id;
                             break;
                     }
                     break;

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Ask;
 use App\Events\Frontend\System\Push;
 use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
+use App\Logic\MoneyLogLogic;
 use App\Logic\WechatNotice;
+use App\Models\Pay\MoneyLog;
+use App\Models\Pay\Order;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
 use App\Models\Tag;
@@ -51,10 +54,7 @@ class QuestionController extends Controller
         $question->increment('views');
 
         /*已解决问题*/
-        $bestAnswer = [];
-        if(in_array($question->status, [6,7])){
-            $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
-        }
+        $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
 
         if($request->input('sort','default') === 'created_at'){
             $answers = $question->answers()->whereNull('adopted_at')->orderBy('created_at','DESC')->paginate(Config::get('api_data_page_size'));
@@ -335,9 +335,6 @@ class QuestionController extends Controller
         if(!$toUser){
             return $this->ajaxError(50005,'被邀请用户不存在');
         }
-        if ($question->question_type == 2) {
-            return $this->ajaxError(50005,'互动问答不能邀请用户回答');
-        }
 
         //是否设置了邀请者必须为专家
         if(Setting()->get('is_inviter_must_expert',1) == 1){
@@ -469,6 +466,31 @@ class QuestionController extends Controller
         }
 
         return response($invitedHtml);
+
+    }
+
+    public function close($id,Request $request) {
+        $question = Question::findOrFail($id);
+        $user = $request->user();
+
+        if(($user->id !== $question->user_id) && !$user->isRole('admin')){
+            abort(403);
+        }
+        //修改问题状态为已关闭
+        $question->status = 9;
+        $question->save();
+        $orders = $question->orders->where('status',Order::PAY_STATUS_SUCCESS)->all();
+        if ($orders) {
+            foreach ($orders as $order) {
+                //直接退款到余额
+                $order->status = Order::PAY_STATUS_REFUND;
+                $order->save();
+                if ($order->actual_amount > 0) {
+                    MoneyLogLogic::addMoney($order->user_id,$order->actual_amount,MoneyLog::MONEY_TYPE_QUESTION_REFUND,$order,0,0,true);
+                }
+            }
+        }
+        return $this->success(route('ask.question.detail',['question_id'=>$id]),"问题关闭成功!");
 
     }
 

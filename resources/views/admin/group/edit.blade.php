@@ -90,6 +90,9 @@
                                         <input type="radio" name="audit_status" value="2" @if($group->audit_status===2) checked @endif /> 审核失败
                                     </label>
                                     <label>
+                                        <input type="radio" name="audit_status" value="4" @if($group->audit_status===4) checked @endif /> 已关闭
+                                    </label>
+                                    <label>
                                         <input type="radio" name="audit_status" value="3" @if($group->audit_status===3) checked @endif /> 系统圈子(权限为隐私)
                                     </label>
                                 </div>

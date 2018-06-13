@@ -153,7 +153,10 @@ class Settlement extends Model {
                 $answer_user_per = 0.3;
                 break;
             default:
-                return;
+                //按5：5分成
+                $question_user_per = 0.5;
+                $answer_user_per = 0.5;
+                break;
         }
         $answer_user_money = bcmul($order->actual_amount, $answer_user_per,2);
         $question_user_money = bcmul($order->actual_amount, $question_user_per,2);

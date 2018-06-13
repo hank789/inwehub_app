@@ -37,6 +37,7 @@ class WechatEventListener implements ShouldQueue
                 "keyword1"   => str_limit($event->keyword1,100),
                 "keyword2"   => $event->keyword2,
                 "keyword3"   => $event->keyword3,
+                "keyword4"   => $event->keyword4,
                 "remark" => $event->remark
             ];
             try {

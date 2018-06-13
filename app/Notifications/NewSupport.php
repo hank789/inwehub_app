@@ -74,10 +74,10 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 $question = Question::find($source->question_id);
                 switch ($question->question_type){
                     case 1:
-                        $url = '/askCommunity/major/'.$source->question_id;
+                        $url = '/ask/offer/'.$source->id;
                         break;
                     case 2:
-                        $url = '/askCommunity/interaction/'.$source->id;
+                        $url = '/ask/offer/'.$source->id;
                         break;
                 }
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_TASK;

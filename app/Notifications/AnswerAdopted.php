@@ -3,7 +3,9 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Channels\SlackChannel;
 use App\Channels\WechatNoticeChannel;
+use App\Logic\QuestionLogic;
 use App\Models\Answer;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
@@ -14,7 +16,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class FollowedUserAnswered extends Notification implements ShouldBroadcast,ShouldQueue
+class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
 {
     use Queueable,InteractsWithSockets;
 
@@ -42,12 +44,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
      */
     public function via($notifiable)
     {
-        $via = ['database', 'broadcast'];
-        if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_my_user_new_activity']??true)){
-            $via[] = PushChannel::class;
-            $via[] = WechatNoticeChannel::class;
-        }
-        return $via;
+        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**
@@ -72,73 +69,49 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
      */
     public function toArray($notifiable)
     {
-        switch ($this->question->question_type) {
-            case 1:
-                $url = '/ask/offer/'.$this->answer->id;
-                break;
-            case 2:
-                $url = '/ask/offer/'.$this->answer->id;
-                break;
-        }
+        $url = '/ask/offer/'.$this->answer->id;
         return [
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
-            'avatar' => $this->answer->user->avatar,
-            'title'  => '您关注的用户'.$this->answer->user->name.'有了新的回答',
+            'avatar' => $this->question->user->avatar,
+            'title'  => $this->question->user->name.'采纳了你的回答',
             'body'   => $this->question->title,
-            'extra_body' => ''
+            'extra_body' => '悬赏金额稍后将会结算给您'
         ];
     }
 
     public function toPush($notifiable)
     {
-        switch ($this->question->question_type) {
-            case 1:
-                $object_id = $this->question->id;
-                $object_type = 'pay_question_answered_askCommunity';
-                break;
-            case 2:
-                $object_id = $this->answer->id;
-                $object_type = 'free_question_answered';
-                break;
-            default:
-                return null;
-        }
         return [
-            'title' => '您关注的用户'.$this->answer->user->name.'有了新的回答',
+            'title' => $this->question->user->name.'采纳了你的回答',
             'body'  => $this->question->title,
-            'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
+            'payload' => ['object_type'=>'free_answer','object_id'=>$this->question->id],
         ];
     }
 
     public function toWechatNotice($notifiable){
-        switch ($this->question->question_type) {
-            case 1:
-                $url = config('app.mobile_url').'#/ask/offer/'.$this->answer->id;
-                break;
-            case 2:
-                $url = config('app.mobile_url').'#/ask/offer/'.$this->answer->id;
-                break;
-            default:
-                return null;
-        }
-        if (empty($first)) return null;
-        $keyword2 = $this->answer->user->name;
-        $remark = '可点击查看回答内容并评论';
-
-        $template_id = 'AvK_7zJ8OXAdg29iGPuyddHurGRjXFAQnEzk7zoYmCQ';
+        $template_id = '3jVbJizJM9Mjlk5hjaoGCh2kvN6Qn7QD7-DttMDM74Q';
         if (config('app.env') != 'production') {
             $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
         }
         return [
-            'first'    => '您关注的用户'.$this->answer->user->name.'有了新的回答',
+            'first'    => $this->question->user->name.'采纳了你的回答',
             'keyword1' => $this->question->title,
-            'keyword2' => $keyword2,
-            'keyword3' => '',
-            'remark'   => $remark,
+            'keyword2' => $this->question->user->name,
+            'keyword3' => $this->answer->getContentText(),
+            'keyword4' => (string)$this->answer->created_at,
+            'remark'   => '点击查看问题详情',
             'template_id' => $template_id,
-            'target_url' => $url
+            'target_url' => config('app.mobile_url').'#/ask/offer/'.$this->answer->id
         ];
+    }
+
+    public function toSlack($notifiable){
+        $fields[] = [
+            'title' => '回答内容',
+            'value' => $this->answer->getContentText()
+        ];
+        QuestionLogic::slackMsg('用户'.formatSlackUser($this->question->user).'采纳了'.formatSlackUser($this->answer->user).'的回答',$this->question,$fields);
     }
 
     public function broadcastOn(){

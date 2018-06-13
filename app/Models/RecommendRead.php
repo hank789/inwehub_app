@@ -63,15 +63,15 @@ class RecommendRead extends Model
             case self::READ_TYPE_SUBMISSION:
                 return '发现分享';
             case self::READ_TYPE_PAY_QUESTION:
-                return '专业问答';
+                return '问答';
             case self::READ_TYPE_FREE_QUESTION:
-                return '互动问答';
+                return '问答';
             case self::READ_TYPE_ACTIVITY:
                 return '活动';
             case self::READ_TYPE_PROJECT_OPPORTUNITY:
                 return '项目机遇';
             case self::READ_TYPE_FREE_QUESTION_ANSWER:
-                return '互动问答回复';
+                return '问答回复';
         }
         return '';
     }

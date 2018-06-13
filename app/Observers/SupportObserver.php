@@ -53,26 +53,16 @@ class SupportObserver implements ShouldQueue {
 
                     $question = $source->question;
                     if ($question->question_type == 1) {
-                        $feed_question_title = '专业回答';
+                        $feed_question_title = '回答';
                         $feed_type = Feed::FEED_TYPE_UPVOTE_PAY_QUESTION;
-                        $feed_url = '/askCommunity/major/'.$source->question_id;
-                        $feed_answer_content = '';
                     } else {
-                        $feed_question_title = '互动回答';
+                        $feed_question_title = '回答';
                         $feed_type = Feed::FEED_TYPE_UPVOTE_FREE_QUESTION;
-                        $feed_url = '/askCommunity/interaction/'.$source->id;
-                        $feed_answer_content = $source->getContentText();
                     }
                     feed()
                         ->causedBy($support->user)
                         ->performedOn($source)
                         ->tags($question->tags()->pluck('tag_id')->toArray())
-                        ->withProperties([
-                            'answer_user_name' => $source->user->name,
-                            'question_title'   => $question->title,
-                            'answer_content'   => $feed_answer_content,
-                            'feed_url'         => $feed_url
-                        ])
                         ->log($support->user->name.'赞了'.$feed_question_title, $feed_type);
 
 

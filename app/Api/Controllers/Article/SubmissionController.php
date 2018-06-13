@@ -138,7 +138,7 @@ class SubmissionController extends Controller {
 
             $data = $this->uploadImgs($request->input('photos'));
         }
-        if ($request->input('base64File')) {
+        if ($request->input('files')) {
             $data['files'] = $this->uploadFile($request->input('files'));
         }
 

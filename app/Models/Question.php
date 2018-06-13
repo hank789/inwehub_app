@@ -81,6 +81,9 @@ class Question extends Model
 
     //提问设备，1为IOS，2为安卓，3为网页，4为微信小程序
 
+    //question_type，1为定向付费提问，2为悬赏问答
+
+
     protected $casts = [
         'data' => 'json'
     ];
@@ -139,6 +142,78 @@ class Question extends Model
         });
     }
 
+    public function statusFormatDescription($user_id) {
+        if ($this->question_type == 1) {
+            $question_invitation = QuestionInvitation::where('question_id','=',$this->id)->first();
+            if ($this->status < 6) {
+                if ($this->user_id == $user_id) {
+                    return '正在等待'.$question_invitation->user->name.'回答';
+                } else {
+                    return '请于'.date('Y-m-d H:i',strtotime($this->created_at.' +48 hours')).'前回答，超时则提问失效。';
+                }
+            }
+            if ($this->status == 6) {
+                return '已回答';
+            }
+            if ($this->status == 9) return '对方未响应，问题已被关闭，'.$this->price.'元已自动退回。';
+        }
+        if ($this->status == 8) return '已采纳';
+        if ($this->status == 9) return '24小时内没有回答者，问题已关闭，'.$this->price.'元将自动退回。';
+        $description = '';
+        //提问者
+        if ($this->user_id == $user_id) {
+            //悬赏还未结束
+            if (strtotime($this->created_at.' +96 hours') > time()) {
+                $description = '请于'.date('Y-m-d H:i',strtotime($this->created_at.' +96 hours')).'前采纳最佳回答，悬赏会支付给该回答者。';
+            } else {
+                $description = '您的采纳已延期，请尽快采纳最佳回答。';
+            }
+        } else {
+            if (strtotime($this->created_at.' +96 hours') > time()) {
+                $description = '最佳回答将于'.date('Y-m-d H:i',strtotime($this->created_at.' +96 hours')).'前采纳，悬赏会支付给该回答者。';
+            } else {
+                $description = '提问者正在采纳最佳回答，悬赏会支付给该回答者。';
+            }
+            if ($this->answers <=0 ) $description = '正在等待回答者回答';
+        }
+        return $description;
+    }
+
+    public function statusShortTip($user_id) {
+        $description = '';
+        switch ($this->status){
+            case 0:
+                $description = '未发布';
+                break;
+            case 1:
+            case 2:
+            case 4:
+            case 5:
+                $description = '悬赏中';
+                if ($this->question_type == 1) $description = '待回答';
+                break;
+            case 6:
+                $description = '悬赏中';
+                if ($this->question_type == 1) $description = '待点评';
+                break;
+            case 3:
+                $description = '问题已关闭';
+                break;
+            case 7:
+                $description = '已点评';
+                break;
+            case 8:
+                //已采纳
+                $description = '已采纳';
+                break;
+            case 9:
+                //退款并关闭
+                $description = '已关闭';
+                break;
+        }
+        return $description;
+    }
+
     public function statusHumanDescription($user_id){
         $description = '';
         switch ($this->status){
@@ -165,6 +240,14 @@ class Question extends Model
                 break;
             case 7:
                 $description = '已点评';
+                break;
+            case 8:
+                //已采纳
+                $description = '已采纳';
+                break;
+            case 9:
+                //退款并关闭
+                $description = '已关闭';
                 break;
         }
         return $description;
@@ -250,7 +333,7 @@ class Question extends Model
     //已回答
     public function answered()
     {
-        if($this->status != 7){
+        if($this->status < 6){
             $this->status = 6;
             return $this->save();
         }
@@ -374,10 +457,10 @@ class Question extends Model
         switch ($this->question_type) {
             case 1:
                 //专业回答
-                return '专业问答 | '.$this->title;
+                return '付费咨询 | '.$this->title;
                 break;
             case 2:
-                return '互动问答 | '.$this->title;
+                return '悬赏问答 | '.$this->title;
                 break;
         }
         return $this->title;

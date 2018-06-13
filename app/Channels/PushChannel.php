@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Events\Frontend\System\Push;
+use App\Services\RateLimiter;
 use Illuminate\Notifications\Notification;
 
 class PushChannel {
@@ -21,6 +22,7 @@ class PushChannel {
     {
         $message = $notification->toPush($notifiable);
         if ($message) {
+            RateLimiter::instance()->increase('push_notify_user_'.date('Ymd'),$notifiable->id,3600*24);
             // 将通知发送给 $notifiable 实例
             event(new Push($notifiable->id,$message['title'],$message['body'],$message['payload']));
         }

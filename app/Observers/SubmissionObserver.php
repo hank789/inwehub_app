@@ -60,24 +60,17 @@ class SubmissionObserver implements ShouldQueue {
         event(new CreditEvent($submission->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$submission->id,'动态分享'));
         $group = Group::find($submission->group_id);
         $members = [];
-        if ($group->public) {
-            //公开圈子的内容产生一条feed流
-            feed()
-                ->causedBy($user)
-                ->performedOn($submission)
-                ->tags($submission->tags()->pluck('tag_id')->toArray())
-                ->withProperties([
-                    'view_url'=>$submission->data['url']??'',
-                    'category_id'=>$submission->category_id,
-                    'slug'=>$submission->slug,
-                    'submission_title'=>$submission->title,
-                    'domain'=>$submission->data['domain']??'',
-                    'current_address_name' => $submission->data['current_address_name'],
-                    'current_address_longitude' => $submission->data['current_address_longitude'],
-                    'current_address_latitude'  => $submission->data['current_address_latitude'],
-                    'img'=>$submission->data['img']??''])
-                ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
-        } else {
+        feed()
+            ->causedBy($user)
+            ->performedOn($submission)
+            ->setGroup($submission->group_id)
+            ->setPublic($submission->public)
+            ->tags($submission->tags()->pluck('tag_id')->toArray())
+            ->withProperties([
+                'submission_title'=>$submission->title
+            ])
+            ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+        if (!$group->public) {
             //私密圈子的分享只通知圈子内的人
             $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
         }

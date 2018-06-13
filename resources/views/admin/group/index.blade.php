@@ -40,6 +40,7 @@
                                                 <option value="1" @if( isset($filter['status']) && $filter['status']==1) selected @endif >已审核</option>
                                                 <option value="2" @if( isset($filter['status']) && $filter['status']==2) selected @endif >已拒绝</option>
                                                 <option value="3" @if( isset($filter['status']) && $filter['status']==3) selected @endif >系统圈子</option>
+                                                <option value="4" @if( isset($filter['status']) && $filter['status']==4) selected @endif >已关闭</option>
                                             </select>
                                         </div>
 
