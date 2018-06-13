@@ -272,7 +272,7 @@ class ProfileController extends Controller
             }
         }
 
-        $info['questions'] = $is_self?$user->userData->questions:($user->questions->where('question_type',1)->where('is_recommend',1)->count() + $user->questions->where('question_type',2)->count());
+        $info['questions'] = $is_self?$user->userData->questions:($user->questions->where('question_type',1)->where('is_recommend',1)->where('hide',0)->count() + $user->questions->where('question_type',2)->where('hide',0)->count());
         $info['answers'] = $user->userData->answers;
         $authSupport = Submission::where('author_id',$user->id)->sum('upvotes');
         $info['supports'] = $user->answers->sum('supports') + $user->submissions->sum('upvotes') + $authSupport;
