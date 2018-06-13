@@ -158,7 +158,7 @@ class Feed extends Model
                 }
                 $answerContent = $answer->getContentText();
                 $data = [
-                    'question_title' => $question->title,
+                    'question_title' => str_limit($question->title,120),
                     'answer_content' => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'average_rate'   => $answer->getFeedbackRate(),
@@ -201,7 +201,7 @@ class Feed extends Model
                 }
                 $answerContent = $answer->getContentText();
                 $data = [
-                    'question_title'     => $question->title,
+                    'question_title'     => str_limit($question->title,120),
                     'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
@@ -233,7 +233,7 @@ class Feed extends Model
                         break;
                 }
                 $data = [
-                    'question_title' => $question->title,
+                    'question_title' => str_limit($question->title,120),
                     'answer_number' => $question->answers,
                     'follow_number' => $question->followers,
                     'views'         => $question->views,
@@ -257,7 +257,7 @@ class Feed extends Model
                 if ($submission->type == 'text') $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_SHARE;
                 $group = Group::find($submission->group_id);
                 $data = [
-                    'title'     => $submission->partHtmlTitle(),
+                    'title'     => str_limit($submission->partHtmlTitle(),120),
                     'img'       => $submission->data['img']?:'',
                     'files'       => $submission->data['files']??'',
                     'domain'    => $submission->data['domain']??'',
@@ -285,7 +285,7 @@ class Feed extends Model
                 $url = '/ask/offer/answers/'.$this->source_id;
                 $question = Question::find($this->source_id);
                 $data = [
-                    'question_title' => $question->title,
+                    'question_title' => str_limit($question->title,120),
                     'answer_number' => $question->answers,
                     'views'         => $question->views,
                     'price'      => $question->price,
@@ -316,7 +316,7 @@ class Feed extends Model
                 }
                 $answerContent = $answer->getContentText();
                 $data = [
-                    'question_title' => $question->title,
+                    'question_title' => str_limit($question->title,120),
                     'answer_content' => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'views'          => $answer->views,
@@ -358,7 +358,7 @@ class Feed extends Model
                 }
                 $answerContent = $answer->getContentText();
                 $data = [
-                    'question_title'     => $question->title,
+                    'question_title'     => str_limit($question->title,120),
                     'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,
@@ -399,7 +399,7 @@ class Feed extends Model
                 }
                 $answerContent = $answer->getContentText();
                 $data = [
-                    'question_title'     => $question->title,
+                    'question_title'     => str_limit($question->title,120),
                     'answer_content'   => str_limit($answerContent,$is_pay_for_view?120:20),
                     'comment_number' => $answer->comments,
                     'support_number' => $answer->supports,

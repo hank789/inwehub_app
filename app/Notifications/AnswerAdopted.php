@@ -74,7 +74,7 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
             'avatar' => $this->question->user->avatar,
-            'title'  => $this->question->user->name.'采纳了你的回答',
+            'title'  => ($this->question->hide?'匿名':$this->question->user->name).'采纳了你的回答',
             'body'   => $this->question->title,
             'extra_body' => '悬赏金额稍后将会结算给您'
         ];
@@ -83,7 +83,7 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
     public function toPush($notifiable)
     {
         return [
-            'title' => $this->question->user->name.'采纳了你的回答',
+            'title' => ($this->question->hide?'匿名':$this->question->user->name).'采纳了你的回答',
             'body'  => $this->question->title,
             'payload' => ['object_type'=>'free_answer','object_id'=>$this->question->id],
         ];
@@ -95,9 +95,9 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
             $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
         }
         return [
-            'first'    => $this->question->user->name.'采纳了你的回答',
+            'first'    => ($this->question->hide?'匿名':$this->question->user->name).'采纳了你的回答',
             'keyword1' => $this->question->title,
-            'keyword2' => $this->question->user->name,
+            'keyword2' => ($this->question->hide?'匿名':$this->question->user->name),
             'keyword3' => $this->answer->getContentText(),
             'keyword4' => (string)$this->answer->created_at,
             'remark'   => '点击查看问题详情',
