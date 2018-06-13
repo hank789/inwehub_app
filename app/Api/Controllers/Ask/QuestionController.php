@@ -288,7 +288,7 @@ class QuestionController extends Controller
         }
 
         $this->checkUserInfoPercent($user);
-        $tags = TagsLogic::loadTags(1,'');
+        $tags = [];
         $show_free_ask = false;
         $coupon = Coupon::where('user_id',$user->id)->where('coupon_type',Coupon::COUPON_TYPE_FIRST_ASK)->where('coupon_status',Coupon::COUPON_STATUS_PENDING)->first();
         if($coupon && $coupon->expire_at > date('Y-m-d H:i:s')){
