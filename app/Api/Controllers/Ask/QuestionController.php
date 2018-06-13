@@ -304,13 +304,6 @@ class QuestionController extends Controller
         if ($user->id == 79 || $expert_uuid) {
             $tags['must_apple_pay'] = true;
         }
-        $tags['title'] = '悬赏提问';
-        $tags['help_tips'] = '请输入问题描述';
-        if ($expert_uuid && $expert_user) {
-            $tags['title'] = '向'.$expert_user->name.'付费提问';
-            $tags['help_tips'] = '1.请精准输入问题详情，并等待专家回答，若超过48小时未被回答，费用自动退回\n\n2.答案每被付费围观一次，你和回答者可从中获取分成：\n28元提问，按3:7分成\n60元提问，按5:5分成\n88元提问，按7:3分成';
-        }
-
         $tags['pay_items'] = [
             [
                 'value'=>60,
@@ -328,6 +321,17 @@ class QuestionController extends Controller
                 'default' => false
             ]
         ];
+        $tags['title'] = '悬赏提问';
+        $tags['help_tips'] = '请输入问题描述';
+        if ($expert_uuid && $expert_user) {
+            //定向提问
+            $tags['title'] = '向'.$expert_user->name.'付费提问';
+            $tags['help_tips'] = '1.请精准输入问题详情，并等待专家回答，若超过48小时未被回答，费用自动退回\n\n2.答案每被付费围观一次，你和回答者可从中获取分成：\n28元提问，按3:7分成\n60元提问，按5:5分成\n88元提问，按7:3分成';
+        } else {
+            $tags['pay_items'][0]['value'] = 10;
+        }
+
+
         if($show_free_ask){
             $tags['pay_items'][0]['default'] = false;
             $tags['pay_items'][] = [
