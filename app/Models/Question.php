@@ -333,7 +333,7 @@ class Question extends Model
     //已回答
     public function answered()
     {
-        if($this->status != 7){
+        if($this->status < 6){
             $this->status = 6;
             return $this->save();
         }
