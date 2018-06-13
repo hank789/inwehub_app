@@ -548,7 +548,6 @@ class QuestionController extends Controller
                 "waiting_second" => $waiting_second,
                 'create_time'=>(string)$question->created_at
             ];
-            self::$needRefresh = true;
             return self::createJsonData(true,$res_data,ApiException::SUCCESS,$message);
 
         }
