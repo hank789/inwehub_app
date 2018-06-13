@@ -172,10 +172,11 @@ class Feed extends Model
                     'price'      => $question->price,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
-                if (empty($answerContent)) {
-                    $data['answer_content'] = '[图片]';
-                } elseif ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+
+                if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
                 }
                 break;
             case self::FEED_TYPE_ANSWER_FREE_QUESTION:
@@ -213,10 +214,10 @@ class Feed extends Model
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
-                if (empty($answerContent)) {
-                    $data['answer_content'] = '[图片]';
-                } elseif ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
                 }
                 break;
             case self::FEED_TYPE_CREATE_FREE_QUESTION:
@@ -329,10 +330,10 @@ class Feed extends Model
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
                 ];
-                if (empty($answerContent)) {
-                    $data['answer_content'] = '[图片]';
-                } elseif ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
                 }
                 break;
             case self::FEED_TYPE_UPVOTE_FREE_QUESTION:
@@ -370,10 +371,10 @@ class Feed extends Model
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
-                if (empty($answerContent)) {
-                    $data['answer_content'] = '[图片]';
-                } elseif ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
                 }
                 break;
             case self::FEED_TYPE_ADOPT_ANSWER:
@@ -411,10 +412,10 @@ class Feed extends Model
                     'question_id' => $question->id,
                     'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
                 ];
-                if (empty($answerContent)) {
-                    $data['answer_content'] = '[图片]';
-                } elseif ($data['answer_content'] == $answerContent && !$is_pay_for_view) {
+                if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
+                } elseif (empty($answerContent)) {
+                    $data['answer_content'] = '[图片]';
                 }
                 break;
         }
