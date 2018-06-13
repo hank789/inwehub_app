@@ -73,7 +73,7 @@ class AnswerAdopted extends Notification implements ShouldBroadcast,ShouldQueue
         return [
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
-            'avatar' => $this->question->user->avatar,
+            'avatar' => $this->question->hide?config('image.user_default_avatar'):$this->question->user->avatar,
             'title'  => ($this->question->hide?'匿名':$this->question->user->name).'采纳了你的回答',
             'body'   => $this->question->title,
             'extra_body' => '悬赏金额稍后将会结算给您'

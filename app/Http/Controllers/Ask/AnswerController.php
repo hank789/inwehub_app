@@ -209,6 +209,7 @@ class AnswerController extends Controller
             feed()
                 ->causedBy($question->user)
                 ->performedOn($answer)
+                ->anonymous($question->hide)
                 ->tags($question->tags()->pluck('tag_id')->toArray())
                 ->log(($question->hide?'匿名':$question->user->name).'采纳了'.$answer->user->name.'的回答', Feed::FEED_TYPE_ADOPT_ANSWER);
 
