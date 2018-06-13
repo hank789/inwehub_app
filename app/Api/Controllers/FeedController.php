@@ -46,7 +46,8 @@ class FeedController extends Controller
                     Feed::FEED_TYPE_COMMENT_PAY_QUESTION,
                     Feed::FEED_TYPE_COMMENT_FREE_QUESTION,
                     Feed::FEED_TYPE_UPVOTE_PAY_QUESTION,
-                    Feed::FEED_TYPE_UPVOTE_FREE_QUESTION
+                    Feed::FEED_TYPE_UPVOTE_FREE_QUESTION,
+                    Feed::FEED_TYPE_ADOPT_ANSWER,
                 ]);
                 $groupIds = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
                 if ($groupIds) {
@@ -64,7 +65,8 @@ class FeedController extends Controller
                     Feed::FEED_TYPE_COMMENT_PAY_QUESTION,
                     Feed::FEED_TYPE_COMMENT_FREE_QUESTION,
                     Feed::FEED_TYPE_UPVOTE_PAY_QUESTION,
-                    Feed::FEED_TYPE_UPVOTE_FREE_QUESTION
+                    Feed::FEED_TYPE_UPVOTE_FREE_QUESTION,
+                    Feed::FEED_TYPE_ADOPT_ANSWER
                 ]);
                 break;
             case 4:
