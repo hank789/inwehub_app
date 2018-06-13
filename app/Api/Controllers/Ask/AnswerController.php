@@ -155,16 +155,14 @@ class AnswerController extends Controller
 
         //feedback
         $feedback_data = [];
-        if($is_self){
-            $feedback = $answer->feedbacks()->where('user_id',$user->id)->orderBy('id','desc')->first();
-            if(!empty($feedback)){
-                $feedback_data = [
-                    'answer_id' => $feedback->source_id,
-                    'rate_star' => $feedback->star,
-                    'description' => $feedback->content,
-                    'create_time' => (string)$feedback->created_at
-                ];
-            }
+        $feedback = $answer->feedbacks()->where('user_id',$user->id)->orderBy('id','desc')->first();
+        if(!empty($feedback)){
+            $feedback_data = [
+                'answer_id' => $feedback->source_id,
+                'rate_star' => $feedback->star,
+                'description' => $feedback->content,
+                'create_time' => (string)$feedback->created_at
+            ];
         }
 
 
