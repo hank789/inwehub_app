@@ -134,6 +134,7 @@ class Question extends Model
             Collection::where('source_type','=',get_class($question))->where('source_id','=',$question->id)->delete();
             //删除动态
             Feed::where('source_type','=',get_class($question))->where('source_id','=',$question->id)->delete();
+            Task::where('source_type','=',get_class($question))->where('source_id','=',$question->id)->delete();
 
             if(Setting()->get('xunsearch_open',0) == 1) {
                 App::offsetGet('search')->delete($question);
@@ -147,7 +148,7 @@ class Question extends Model
             $question_invitation = QuestionInvitation::where('question_id','=',$this->id)->first();
             if ($this->status < 6) {
                 if ($this->user_id == $user_id) {
-                    return '正在等待'.$question_invitation->user->name.'回答';
+                    return '正在等待'.($question_invitation?$question_invitation->user->name:'').'回答';
                 } else {
                     return '请于'.date('Y-m-d H:i',strtotime($this->created_at.' +48 hours')).'前回答，超时则提问失效。';
                 }
