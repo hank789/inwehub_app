@@ -1103,7 +1103,7 @@ class QuestionController extends Controller
             $user->id = 0;
         }
         $is_self = $user->id == $question->user_id;
-        $answers = $question->answers()->orderBy('adopted_at','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $answers = $question->answers()->orderBy('adopted_at','DESC')->orderBy('supports','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $answers->toArray();
         $return['data'] = [];
         foreach ($answers as $answer) {

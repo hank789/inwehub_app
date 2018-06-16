@@ -138,6 +138,7 @@ class TaskLogic {
                             $user_avatar_url = config('image.user_default_avatar');
                             $description = $question->title;
                             $status_description = '前往采纳最佳回答';
+                            $deadline = date('Y-m-d H:i:s',strtotime($question->created_at.' +96 hours'));
                             break;
                     }
                     break;
