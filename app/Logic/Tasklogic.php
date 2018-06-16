@@ -134,6 +134,12 @@ class TaskLogic {
                             $description = '用户'.$user_name.'向您付费咨询问题:'.$question->title;
                             $status_description = '前往回答问题';
                             break;
+                        case Task::ACTION_TYPE_ADOPTED_ANSWER:
+                            $user_avatar_url = config('image.user_default_avatar');
+                            $description = $question->title;
+                            $status_description = '前往采纳最佳回答';
+                            $deadline = date('Y-m-d H:i:s',strtotime($question->created_at.' +96 hours'));
+                            break;
                     }
                     break;
                 case 'App\Models\Answer':
