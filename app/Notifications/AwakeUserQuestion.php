@@ -38,7 +38,7 @@ class AwakeUserQuestion extends Notification implements ShouldBroadcast,ShouldQu
      */
     public function via($notifiable)
     {
-        return [PushChannel::class, WechatNoticeChannel::class];
+        return [PushChannel::class];
     }
 
     /**
