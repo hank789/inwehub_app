@@ -49,25 +49,30 @@ class ArticleToSubmission implements ShouldQueue
         $author = WechatMpInfo::find($article->mp_id);
         if (!$author) return;
         if ($author->group_id <= 0) return;
-        $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
-        if ($unlimitUrl['error_code'] != 0) {
-            $fileds = [
-                [
-                    'title' => '返回结果',
-                    'value' => json_encode($unlimitUrl, JSON_UNESCAPED_UNICODE)
-                ]
-            ];
-            //调用失败
-            \Slack::to(config('slack.ask_activity_channel'))
-                ->attach(
+        if (str_contains($article->content_url,'wechat_redirect')) {
+            $url = $article->content_url;
+        } else {
+            $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
+            if ($unlimitUrl['error_code'] != 0) {
+                $fileds = [
                     [
-                        'fields' => $fileds
+                        'title' => '返回结果',
+                        'value' => json_encode($unlimitUrl, JSON_UNESCAPED_UNICODE)
                     ]
-                )
-                ->send('解析微信公众号永久链接失败');
-            return;
+                ];
+                //调用失败
+                \Slack::to(config('slack.ask_activity_channel'))
+                    ->attach(
+                        [
+                            'fields' => $fileds
+                        ]
+                    )
+                    ->send('解析微信公众号永久链接失败');
+                return;
+            }
+            $url = $unlimitUrl['data']['article_origin_url'];
         }
-        $url = $unlimitUrl['data']['article_origin_url'];
+
         $article->content_url = $url;
         $article->save();
         //检查url是否重复
