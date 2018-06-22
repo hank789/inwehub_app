@@ -8,6 +8,7 @@ use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -67,7 +68,10 @@ class ArticleToSubmission implements ShouldQueue
                             'fields' => $fileds
                         ]
                     )
-                    ->send('解析微信公众号永久链接失败');
+                    ->send('解析微信公众号永久链接失败，稍后会继续尝试');
+                if ($unlimitUrl['error_code'] == 114) {
+                    dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds(60));
+                }
                 return;
             }
             $url = $unlimitUrl['data']['article_origin_url'];
