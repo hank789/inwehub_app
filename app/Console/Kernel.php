@@ -87,7 +87,7 @@ class Kernel extends ConsoleKernel
         if (config('app.env') == 'production') {
             $schedule->command('scraper:wechat:author')->hourly();
         }
-        $schedule->command('crontab:awake-user')->twiceDaily(8,19);
+        $schedule->command('crontab:awake-user')->twiceDaily(9,19);
     }
 
     /**
