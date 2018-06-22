@@ -24,7 +24,7 @@ class PushChannel {
         if ($message) {
             RateLimiter::instance()->increase('push_notify_user_'.date('Ymd'),$notifiable->id,3600*24);
             // 将通知发送给 $notifiable 实例
-            event(new Push($notifiable->id,$message['title'],$message['body'],$message['payload']));
+            event(new Push($notifiable->id,$message['title'],strip_tags($message['body']),$message['payload']));
         }
     }
 

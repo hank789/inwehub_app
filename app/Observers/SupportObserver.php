@@ -38,6 +38,25 @@ class SupportObserver implements ShouldQueue {
         $notified = [];
         if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('upvote:'.get_class($source),$source->id.'_'.$support->user_id,0)) {
             switch ($support->supportable_type) {
+                case 'App\Models\Comment':
+                    $title = '评论';
+                    $answer = $source->source;
+                    $fields[] = [
+                        'title' => '评论内容',
+                        'value' => $source->content,
+                        'short' => false
+                    ];
+                    $fields[] = [
+                        'title' => '回答内容',
+                        'value' => $answer->getContentText(),
+                        'short' => false
+                    ];
+                    $fields[] = [
+                        'title' => '问题地址',
+                        'value' => route('ask.question.detail',['id'=>$answer->question_id]),
+                        'short' => false
+                    ];
+                    break;
                 case 'App\Models\Answer':
                     $title = '回答';
                     $fields[] = [

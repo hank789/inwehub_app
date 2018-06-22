@@ -126,38 +126,45 @@ class Settlement extends Model {
             $settlement_date = date('Y-m-d',strtotime(date('Y-m-1').' +2 month -1 day'));
         }
         $answer = $order->answer()->first();
-        switch ($answer->question->price) {
-            case 1:
-                //首问1元，查看收入全部给回答者
-                $question_user_per = 0;
-                $answer_user_per = 1;
-                break;
-            case 28:
-                //按3：7分成
-                $question_user_per = 0.3;
-                $answer_user_per = 0.7;
-                break;
-            case 60:
-                //按5：5分成
-                $question_user_per = 0.5;
-                $answer_user_per = 0.5;
-                break;
-            case 88:
-                //按7：3分成
-                $question_user_per = 0.7;
-                $answer_user_per = 0.3;
-                break;
-            case 188:
-                //按7：3分成
-                $question_user_per = 0.7;
-                $answer_user_per = 0.3;
-                break;
-            default:
-                //按5：5分成
-                $question_user_per = 0.5;
-                $answer_user_per = 0.5;
-                break;
+        if ($answer->question->question_type == 1) {
+            switch ($answer->question->price) {
+                case 1:
+                    //首问1元，查看收入全部给回答者
+                    $question_user_per = 0;
+                    $answer_user_per = 1;
+                    break;
+                case 28:
+                    //按3：7分成
+                    $question_user_per = 0.3;
+                    $answer_user_per = 0.7;
+                    break;
+                case 60:
+                    //按5：5分成
+                    $question_user_per = 0.5;
+                    $answer_user_per = 0.5;
+                    break;
+                case 88:
+                    //按7：3分成
+                    $question_user_per = 0.7;
+                    $answer_user_per = 0.3;
+                    break;
+                case 188:
+                    //按7：3分成
+                    $question_user_per = 0.7;
+                    $answer_user_per = 0.3;
+                    break;
+                default:
+                    //按5：5分成
+                    $question_user_per = 0.5;
+                    $answer_user_per = 0.5;
+                    break;
+            }
+        } else {
+            //按5：5分成
+            $question_user_per = 0.5;
+            $answer_user_per = 0.5;
         }
+
         $answer_user_money = bcmul($order->actual_amount, $answer_user_per,2);
         $question_user_money = bcmul($order->actual_amount, $question_user_per,2);
 

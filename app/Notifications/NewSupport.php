@@ -3,6 +3,8 @@
 namespace App\Notifications;
 
 use App\Channels\PushChannel;
+use App\Models\Answer;
+use App\Models\Comment;
 use App\Models\Notification as NotificationModel;
 use App\Models\Question;
 use App\Models\Support;
@@ -92,6 +94,14 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 $body = $source->formatTitle();
                 $url = '/c/'.$source->category_id.'/'.$source->slug;
                 break;
+            case 'App\Models\Comment':
+                $answer = $source->source;
+                $url = '/ask/offer/'.$answer->id;
+                $notification_type = NotificationModel::NOTIFICATION_TYPE_TASK;
+                $title = $this->support->user->name.'赞了您的评论';
+                $avatar = $this->support->user->avatar;
+                $body = $source->content;
+                break;
             default:
                 return;
         }
@@ -132,6 +142,13 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 $title = $this->support->user->name.'赞了您的'.($source->type == 'link' ? '文章':'分享');
                 $body = $source->formatTitle();
                 $object_id = '/c/'.$source->category_id.'/'.$source->slug;
+                break;
+            case 'App\Models\Comment':
+                $answer = $source->source;
+                $object_type = 'free_answer_new_support';
+                $object_id = $answer->id;
+                $title = $this->support->user->name.'赞了您的评论';
+                $body = $source->content;
                 break;
             default:
                 return null;

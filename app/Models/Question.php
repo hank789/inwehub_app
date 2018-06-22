@@ -354,7 +354,7 @@ class Question extends Model
     {
         $query = self::whereHas('tags', function($query) use ($tagIds) {
             $query->whereIn('tag_id', $tagIds)->whereNotIn('status',[2,3,4,5,9]);
-        })->orderBy('created_at','DESC');
+        })->orderBy('answers','ASC');
         if ($questionType) {
             $query = $query->where('question_type',$questionType);
         }
@@ -418,7 +418,7 @@ class Question extends Model
     /*最近热门问题*/
     public static function recent($pageSize=10,$questionType='',array $ignoreUsers=[])
     {
-        $query = self::whereNotIn('status',[2,3,4,5,9])->orderBy('answers','ASC')->orderBy('created_at','DESC');
+        $query = self::whereNotIn('status',[2,3,4,5,9])->orderBy('answers','ASC')->orderBy('answers','ASC');
         if ($questionType) {
             $query = $query->where('question_type',$questionType);
         }

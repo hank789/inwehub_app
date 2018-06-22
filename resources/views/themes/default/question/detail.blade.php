@@ -508,7 +508,6 @@
             });
 
             $("#closeQuestionSubmit").click(function(){
-                alert($(this).data('question_id'));
                 document.location = "/manager/question/close/"+$(this).data('question_id');
             });
 

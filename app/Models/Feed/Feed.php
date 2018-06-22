@@ -256,6 +256,7 @@ class Feed extends Model
                     ->exists();
                 if ($submission->type == 'text') $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_SHARE;
                 $group = Group::find($submission->group_id);
+                $current_address_name = $submission->data['current_address_name']??'';
                 $data = [
                     'title'     => str_limit($submission->partHtmlTitle(),120),
                     'img'       => $submission->data['img']?:'',
@@ -263,7 +264,7 @@ class Feed extends Model
                     'domain'    => $submission->data['domain']??'',
                     'tags'      => $submission->tags()->get()->toArray(),
                     'submission_id' => $this->source_id,
-                    'current_address_name' => $submission->data['current_address_name']??'',
+                    'current_address_name' => str_limit($current_address_name,34),
                     'current_address_longitude' => $submission->data['current_address_longitude']??'',
                     'current_address_latitude'  => $submission->data['current_address_latitude']??'',
                     'comment_url' => $comment_url,

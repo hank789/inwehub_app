@@ -637,7 +637,22 @@ class GroupController extends Controller
     //推荐圈子
     public function recommend(Request $request) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
-        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers','desc')->simplePaginate($perPage);
+        $type = $request->input('type',1);
+        $query = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers','desc');
+        switch ($type) {
+            case 1:
+                //全部圈子
+                break;
+            case 2:
+                //公开圈子
+                $query->where('public',1);
+                break;
+            case 3:
+                //私密圈子
+                $query->where('public',0);
+                break;
+        }
+        $groups = $query->simplePaginate($perPage);
         $return = $groups->toArray();
         $return['data'] = [];
         $user = $request->user();
