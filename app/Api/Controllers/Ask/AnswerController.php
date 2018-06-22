@@ -560,8 +560,24 @@ class AnswerController extends Controller
             ->where('parent_id', 0)
             ->orderBy($orderBy == 1 ?'created_at':'supports','desc')
             ->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $comments->toArray();
+        foreach ($return['data'] as &$item) {
+            $this->checkCommentIsSupported($user, $item);
+        }
 
-        return self::createJsonData(true,  $comments->toArray());
+        return self::createJsonData(true,  $return);
+    }
+
+    protected function checkCommentIsSupported($user, &$comment) {
+        $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',Comment::class)->where('supportable_id','=',$comment->id)->first();
+        $comment['is_supported'] = $support?1:0;
+        if ($comment['children']) {
+            foreach ($comment['children'] as &$children) {
+                $this->checkCommentIsSupported($user, $children);
+            }
+        } else {
+            return;
+        }
     }
 
     //问答留言
