@@ -534,6 +534,7 @@ class AnswerController extends Controller
         $data = $request->all();
 
         $source  = Answer::find($data['answer_id']);
+        $orderBy = $request->input('order_by',1);
         if (!$source) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
@@ -557,7 +558,7 @@ class AnswerController extends Controller
 
         $comments = $source->comments()
             ->where('parent_id', 0)
-            ->orderBy('created_at','desc')
+            ->orderBy($orderBy == 1 ?'created_at':'supports','desc')
             ->simplePaginate(Config::get('inwehub.api_data_page_size'));
 
         return self::createJsonData(true,  $comments->toArray());
