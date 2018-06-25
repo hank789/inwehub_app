@@ -636,7 +636,7 @@ class AnswerController extends Controller
         $question->status = 8;
         $question->save();
         UserTag::multiIncrement($answer->user_id,$question->tags()->get(),'adoptions');
-        $this->finishTask(get_class($answer),$answer->id, Task::ACTION_TYPE_ADOPTED_ANSWER,[$user->id]);
+        $this->finishTask(get_class($question),$question->id, Task::ACTION_TYPE_ADOPTED_ANSWER,[$user->id]);
         //通知
         $answer->user->notify(new AnswerAdopted($answer->user_id,$question,$answer));
         //进入结算中心
