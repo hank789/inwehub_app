@@ -196,8 +196,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
     Route::post('question/store','QuestionController@store');
     //查看点评
     Route::post('answer/feedbackInfo','AnswerController@feedbackInfo');
-    //问题详情
-    //Route::post('question/info','QuestionController@info');
+    //获取问题分享图
+    Route::post('question/getShareImage','QuestionController@getShareImage');
     //付费围观
     Route::post('answer/payforview','AnswerController@payForView');
     //专业问答-热门问答
