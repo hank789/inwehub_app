@@ -16,7 +16,7 @@ return array(
         'timeout' => false,
         'options' => array(
             'encoding' => 'utf-8',
-            'quality'  => 100
+            'quality'  => 50
         ),
         'env'     => array(),
     ),
