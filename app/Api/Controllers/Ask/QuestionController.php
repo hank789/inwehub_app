@@ -1239,7 +1239,7 @@ class QuestionController extends Controller
         $user = $request->user();
         $url = RateLimiter::instance()->hGet('question-shareImage',$question->id.'-'.$user->id);
 
-        if(!$url){
+        if(!$url || true){
             $snappy = App::make('snappy.image');
             $snappy->setOption('width',1125);
             $image = $snappy->getOutput(config('app.url').'/service/getQuestionShareImage/'.$question->id.'/'.$user->id);
