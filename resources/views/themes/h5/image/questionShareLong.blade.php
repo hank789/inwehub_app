@@ -18,7 +18,7 @@
 </div>
 <!-- userinfor -->
 <div style="text-align: center;margin-top: -35px;">
-    <div style="width:198px;text-align: center;margin: 0 auto;">
+    <div style="width:206px;text-align: center;margin: 0 auto;">
         <img style="width:198px;height:198px;border: 4px solid rgba(168,223,247,1);border-radius: 50%;" src="{{ $data['user_avatar'] }}" alt="">
     </div>
     <div style="font-size:51px;color:#fff; margin-bottom: 96px;"><p style="line-height:30px;"><span>{{ $data['username'] }} </span>邀您回答悬赏问题</p></div>
