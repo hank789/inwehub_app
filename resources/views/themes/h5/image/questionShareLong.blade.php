@@ -18,8 +18,7 @@
 </div>
 <!-- userinfor -->
 <div style="text-align: center;margin-top: -35px;">
-    <div style="width:198px;height:198px;border: 4px solid rgba(168,223,247,1);border-radius: 50%;text-align: center;margin: 0 auto; background: url({{ $data['user_avatar'] }})">
-    </div>
+    <div style="width:198px;height:198px;border: 4px solid rgba(168,223,247,1);border-radius: 50%;text-align: center;margin: 0 auto; background: url({{ $data['user_avatar'] }});background-size: cover;background-repeat: no-repeat;"></div>
     <div style="font-size:51px;color:#fff; margin-bottom: 96px;"><p style="line-height:30px;"><span>{{ $data['username'] }} </span>邀您回答悬赏问题</p></div>
     <div style="width:90px;height:3px;background: rgba(168,223,247,1);margin: 0 auto;"></div>
     <p style="font-size:36px;color:rgba(255,255,255,1);line-height:50px;">来自 <span>{{ $data['question_username'] }}</span> 的提问</p>
