@@ -29,6 +29,7 @@ class ServiceController extends Controller
             'price' => $question->price,
             'question_title' => $question->title,
             'question_username' => $question->hide?'匿名':$question->user->name,
+            'qrcode' => config('app.mobile_url').'#/ask/offer/answers/'.$question->id,
             'tags' => $question->tags()->get()->toArray()
         ];
         return view('h5::image.questionShareLong')->with('data',$data);
