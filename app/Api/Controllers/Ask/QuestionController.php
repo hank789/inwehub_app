@@ -24,10 +24,13 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionInvitation;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
 
 class QuestionController extends Controller
@@ -1224,6 +1227,28 @@ class QuestionController extends Controller
         $return['data'] = array_values($list);
         $return['user_skill_tags'] = $skillTags;
         return self::createJsonData(true,$return);
+    }
+
+    //生成悬赏问答长图
+    public function getShareImage(Request $request) {
+        $validateRules = [
+            'id'   => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
+        $question = Question::findOrFail($request->input('id'));
+        $user = $request->user();
+        $url = RateLimiter::instance()->hGet('question-shareImage',$question->id.'-'.$user->id);
+
+        if(!$url){
+            $snappy = App::make('snappy.image');
+            $snappy->setOption('width',1125);
+            $image = $snappy->getOutput(config('app.url').'/service/getQuestionShareImage/'.$question->id.'/'.$user->id);
+            $file_name = 'question/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+            Storage::disk('oss')->put($file_name,$image);
+            $url = Storage::disk('oss')->url($file_name);
+            RateLimiter::instance()->hSet('question-shareImage',$question->id.'-'.$user->id, $url);
+        }
+        return self::createJsonData(true,['url'=>$url]);
     }
 
     protected function checkUserInfoPercent($user){

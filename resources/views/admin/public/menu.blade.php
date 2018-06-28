@@ -115,6 +115,16 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-clock-o"></i> <span>数据统计</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_data">
+            <li><a href="{{ route('admin.data.views') }}"><i class="fa fa-circle-o"></i> 浏览统计</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-coffee"></i> <span>即时通讯</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
