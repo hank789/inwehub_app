@@ -319,6 +319,11 @@ Route::group(['prefix' => 'im','namespace'=>'IM'], function() {
 
 });
 
+//数据统计
+Route::group(['prefix' => 'data'], function() {
+    Route::get('views',['as'=>'admin.data.views','uses'=>'DataController@views']);
+});
+
 //找顾问助手管理
 Route::group(['prefix' => 'weapp','namespace'=>'Weapp'], function() {
     Route::get('user/index',['as'=>'admin.weapp.user.index','uses'=>'UserController@index']);
