@@ -49,56 +49,56 @@ class DataController extends AdminController
                 $endTime = $labelTimes[$i].' 23:59:59';
                 //文章阅读数
                 $data[$i]['article']['views'] = Doing::where('action',Doing::ACTION_VIEW_SUBMISSION)
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->count();
                 $data[$i]['article']['users'] = Doing::select('user_id')->where('action',Doing::ACTION_VIEW_SUBMISSION)
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->distinct()
-                    ->count();
+                    ->get()->count();
                 //精选阅读数
                 $data[$i]['recommend']['views'] = Doing::where('action',Doing::ACTION_VIEW_SUBMISSION)
                     ->whereIn('source_id',$recommendIds)
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->count();
                 $data[$i]['recommend']['users'] = Doing::select('user_id')->where('action',Doing::ACTION_VIEW_SUBMISSION)
                     ->whereIn('source_id',$recommendIds)
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->distinct()
-                    ->count();
+                    ->get()->count();
                 //问题浏览数
                 $data[$i]['question']['views'] = Doing::whereIn('action',[Doing::ACTION_VIEW_PAY_QUESTION,Doing::ACTION_VIEW_FREE_QUESTION])
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->count();
                 $data[$i]['question']['users'] = Doing::select('user_id')->whereIn('action',[Doing::ACTION_VIEW_PAY_QUESTION,Doing::ACTION_VIEW_FREE_QUESTION])
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->distinct()
-                    ->count();
+                    ->get()->count();
                 //回答浏览数
                 $data[$i]['answer']['views'] = Doing::where('action',Doing::ACTION_VIEW_ANSWER)
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->count();
                 $data[$i]['answer']['users'] = Doing::select('user_id')->where('action',Doing::ACTION_VIEW_ANSWER)
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->distinct()
-                    ->count();
+                    ->get()->count();
                 //名片浏览数
                 $data[$i]['resume']['views'] = Doing::where('action',Doing::ACTION_VIEW_RESUME)
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->count();
                 $data[$i]['resume']['users'] = Doing::select('user_id')->where('action',Doing::ACTION_VIEW_RESUME)
-                    ->where('created_at','>',$startTime)
-                    ->where('created_at','<',$endTime)
+                    ->where('created_at','>=',$startTime)
+                    ->where('created_at','<=',$endTime)
                     ->distinct()
-                    ->count();
+                    ->get()->count();
             }
             Cache::put('admin-data-cache-views',$data,30);
         }

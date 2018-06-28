@@ -60,16 +60,16 @@
                                     @foreach($data as $i=>$item)
                                         <tr>
                                             <td>{{ $labelTimes[$i] }}</td>
-                                            <td>{{ $item['article']['views'] }}</td>
                                             <td>{{ $item['article']['users'] }}</td>
-                                            <td>{{ $item['recommend']['views'] }}</td>
+                                            <td>{{ $item['article']['views'] }}</td>
                                             <td>{{ $item['recommend']['users'] }}</td>
-                                            <td>{{ $item['question']['views'] }}</td>
+                                            <td>{{ $item['recommend']['views'] }}</td>
                                             <td>{{ $item['question']['users'] }}</td>
-                                            <td>{{ $item['answer']['views'] }}</td>
+                                            <td>{{ $item['question']['views'] }}</td>
                                             <td>{{ $item['answer']['users'] }}</td>
-                                            <td>{{ $item['resume']['views'] }}</td>
+                                            <td>{{ $item['answer']['views'] }}</td>
                                             <td>{{ $item['resume']['users'] }}</td>
+                                            <td>{{ $item['resume']['views'] }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
