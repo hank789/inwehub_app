@@ -35,8 +35,8 @@ class DataController extends AdminController
             $labelTimes[$j] = date('Y-m-d',strtotime($dateRange[0].' +'.$j.' days'));
             $j++;
         }
-
-        $data = Cache::get('admin-data-cache-views');
+        $cacheKey = 'admin-data-cache-views-'.$filter['date_range'];
+        $data = Cache::get($cacheKey);
         if (!$data) {
             $recommendIds = RecommendRead::where('source_type',Submission::class)
                 ->where('audit_status',1)
@@ -100,7 +100,7 @@ class DataController extends AdminController
                     ->distinct()
                     ->get()->count();
             }
-            Cache::put('admin-data-cache-views',$data,30);
+            Cache::put($cacheKey,$data,30);
         }
 
 
