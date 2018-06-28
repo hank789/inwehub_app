@@ -26,8 +26,9 @@
 <!-- text -->
 <div style="padding: 0 47px 0 50px; ">
     <div style="padding:30px 66px 90px 63px;background: #fff;border-radius: 12px; width: 900px; margin: 0 auto; font-size: 42px;color:#808080;">
+        <div style="white-space:pre-wrap;word-wrap:break-word">
         {{ $data['question_title'] }}
-
+        </div>
         <div style="font-size: 36px; margin-top: 90px;">
             @foreach($data['tags'] as $tag)
                 <span style="height: 63px; line-height: 63px; display: inline-block;padding: 0 24px; text-align: center;border:1px solid rgba(219,219,219,1);border-radius: 150px; ">{{ $tag['name'] }}</span>
