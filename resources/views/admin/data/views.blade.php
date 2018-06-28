@@ -19,7 +19,7 @@
 
                             <div class="col-xs-12">
                                 <div class="row">
-                                    <form name="searchForm" action="{{ route('admin.user.index') }}" method="GET">
+                                    <form name="searchForm" action="{{ route('admin.data.views') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <div class="col-xs-3 hidden-xs">
                                             <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
