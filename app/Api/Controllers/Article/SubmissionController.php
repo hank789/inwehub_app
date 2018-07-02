@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
+use App\Logic\QuillLogic;
 use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
@@ -80,6 +81,21 @@ class SubmissionController extends Controller {
             }
         }
 
+        if ($request->type == 'article') {
+            $this->validate($request, [
+                'title' => 'required|between:1,6000',
+                'description' => 'required',
+                'group_id' => 'required|integer'
+            ]);
+            $description = QuillLogic::parseImages($request->input('description'));
+            if ($description === false){
+                $description = $request->input('description');
+            }
+            $data = [
+                'description'   => $description
+            ];
+        }
+
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
@@ -102,11 +118,11 @@ class SubmissionController extends Controller {
 
                 $data = [
                     'url'           => $request->url,
-                    'title'         => $request->title,
+                    'title'         => Cache::get('submission_url_title_'.$request->url,''),
                     'description'   => null,
                     'type'          => 'link',
                     'embed'         => null,
-                    'img'           => $img_url['img']?$img_url['img'][0]:'',
+                    'img'           => ($img_url['img']?$img_url['img'][0]:'')?:Cache::get('submission_url_img_'.$request->url,''),
                     'thumbnail'     => null,
                     'providerName'  => null,
                     'publishedTime' => null,
@@ -132,7 +148,6 @@ class SubmissionController extends Controller {
         if ($request->type == 'text') {
             $this->validate($request, [
                 'title' => 'required|between:1,6000',
-                'type'  => 'required|in:link,text',
                 'group_id' => 'required|integer'
             ]);
 
@@ -195,6 +210,7 @@ class SubmissionController extends Controller {
 
         $title = $this->getTitle($request->url);
         $img_url = Cache::get('submission_url_img_'.$request->url,'');
+        Cache::put('submission_url_title_'.$request->url,$title,60);
         if (empty($img_url)) {
             $img = getUrlImg($request->url);
             if ($img) {

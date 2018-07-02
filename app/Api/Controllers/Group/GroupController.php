@@ -501,6 +501,7 @@ class GroupController extends Controller
             $img = $submission->data['img']??'';
             $sourceData = [
                 'title'     => $submission->partHtmlTitle(),
+                'article_title' => $submission->data['title']??'',
                 'img'       => $img,
                 'files'       => $submission->data['files']??'',
                 'domain'    => $submission->data['domain']??'',
@@ -519,6 +520,11 @@ class GroupController extends Controller
                 'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
                 'group'    => null
             ];
+            $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE;
+            if ($submission->type == 'text') $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_SHARE;
+            if ($submission->type == 'link') {
+                $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_LINK;
+            }
 
             $list[] = [
                 'id' => $submission->id,
@@ -533,7 +539,7 @@ class GroupController extends Controller
                 ],
                 'feed'  => $sourceData,
                 'url'   => $url,
-                'feed_type'  => Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE,
+                'feed_type'  => $feed_type,
                 'created_at' => (string)$submission->created_at
             ];
 
