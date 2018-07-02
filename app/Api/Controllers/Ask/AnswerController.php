@@ -306,7 +306,7 @@ class AnswerController extends Controller
                 'user_id' => $question->user_id,
                 'user_name' => $question->hide ? '匿名' : $question->user->name,
                 'user_avatar_url' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
-                'description'  => $question->title,
+                'description'  => $question->getFormatTitle(),
                 'hide' => $question->hide,
                 'price' => $question->price,
                 'status' => $question->status,
