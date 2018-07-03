@@ -63,7 +63,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>管理问题ID</label>
+                                <label>关联问题ID</label>
                                 <input type="text" name="related_question" class="form-control "  placeholder="关联问题ID" value="{{ old('related_question',$submission->data['related_question']??'' ) }}">
                             </div>
 
