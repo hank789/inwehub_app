@@ -36,73 +36,11 @@ class FixFeedGroup extends Command
     {
         $feeds = Feed::get();
         foreach ($feeds as $feed) {
-            switch ($feed->source_type) {
-                case 'App\Models\Question':
-                    continue;
-                    break;
-                case 'App\Models\Answer':
-                    continue;
-                    break;
-                case 'App\Models\Submission':
-                case 'App\Models\Readhub\Submission':
-                    $source = Submission::find($feed->source_id);
-                    if (!$source) {
-                        $feed->delete();
-                        continue;
-                    }
-                    $feed->group_id = $source->group_id;
-                    $feed->public = $source->public;
-                    $feed->save();
-                    break;
-                case 'App\Models\Readhub\Comment':
-                case 'App\Models\Comment':
-                    $comment = Comment::find($feed->source_id);
-                    if (!$comment) {
-                        $feed->delete();
-                        continue;
-                    }
-                    break;
-            }
-            if (str_contains($feed->data['feed_content'],'互动问答') || str_contains($feed->data['feed_content'],'专业问答') || str_contains($feed->data['feed_content'],'互动回答') || str_contains($feed->data['feed_content'],'专业回答')) {
+            if (str_contains($feed->data['feed_content'],'发布了文章')) {
                 $data = $feed->data;
-                if (in_array($feed->feed_type,[
-                    Feed::FEED_TYPE_FOLLOW_FREE_QUESTION,
-                    Feed::FEED_TYPE_UPVOTE_PAY_QUESTION,
-                    Feed::FEED_TYPE_UPVOTE_FREE_QUESTION
-                ])) {
-                    $data = ['feed_content'=>$feed->data['feed_content']];
-                }
-                if ($feed->feed_type == Feed::FEED_TYPE_CREATE_FREE_QUESTION) {
-                    $data = [
-                        'feed_content'=>$feed->data['feed_content'],
-                        'question_title' => $feed->data['question_title']
-                    ];
-                }
-                $data['feed_content'] = str_replace('互动问答','问答',$data['feed_content']);
-                $data['feed_content'] = str_replace('专业问答','问答',$data['feed_content']);
-                $data['feed_content'] = str_replace('互动回答','回答',$data['feed_content']);
-                $data['feed_content'] = str_replace('专业回答','回答',$data['feed_content']);
-
+                $data['feed_content'] = str_replace('发布了文章','发布了分享',$data['feed_content']);
                 $feed->data = $data;
                 $feed->save();
-            }
-            if ($feed->feed_type == Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE) {
-                $data = [
-                    'submission_title'=>$feed->data['submission_title'],
-                    'feed_content' => $feed->data['feed_content']
-                ];
-                $feed->data = $data;
-                $feed->save();
-            }
-            if (in_array($feed->feed_type,[
-                Feed::FEED_TYPE_FOLLOW_USER,
-                Feed::FEED_TYPE_COMMENT_FREE_QUESTION,
-                Feed::FEED_TYPE_UPVOTE_READHUB_ARTICLE,
-                Feed::FEED_TYPE_COMMENT_READHUB_ARTICLE,
-                Feed::FEED_TYPE_COMMENT_PAY_QUESTION,
-                Feed::FEED_TYPE_CREATE_PAY_QUESTION
-            ])) {
-                $feed->delete();
             }
         }
     }
