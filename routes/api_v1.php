@@ -552,6 +552,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('list','HomeController@feed');
     //存储文章
     Route::post('store','SubmissionController@store');
+    //更新文章
+    Route::post('update','SubmissionController@update');
     //推荐文章到app
     Route::post('recommend-app-submission','SubmissionController@recommendSubmission');
 

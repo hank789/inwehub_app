@@ -3,12 +3,14 @@ use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
 use App\Logic\QuillLogic;
+use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Doing;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
+use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
@@ -32,15 +34,6 @@ class SubmissionController extends Controller {
 
     use SubmitSubmission;
 
-    /**
-     * Stores the submitted submission into database. There are 3 types of submissions:
-     * 1.text, 2.link and 3.img. 4.gif Different actions are required for different
-     * types. After storing the submission, redirects to the submission page.
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Support\Collection
-     */
     public function store(Request $request)
     {
         $user = $request->user();
@@ -195,6 +188,49 @@ class SubmissionController extends Controller {
         return self::createJsonData(true,$submission->toArray());
     }
 
+    public function update(Request $request) {
+        $this->validate($request, [
+            'id' => 'required|integer',
+            'title' => 'required|between:1,6000',
+            'description' => 'required',
+            'group_id' => 'required|integer'
+        ]);
+        $submission = Submission::findOrFail($request->id);
+        $user = $request->user();
+        if ($submission->user_id != $user->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        if ($submission->type != 'article') {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $group_id = $request->input('group_id',0);
+        $group = Group::find($group_id);
+        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+            if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+                throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+            }
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+            if (!$groupMember) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        }
+
+        $description = QuillLogic::parseImages($request->input('description'));
+        if ($description === false){
+            $description = $request->input('description');
+        }
+        $object_data = $submission->data;
+        $object_data['description'] = $description;
+        $submission->title = $request->input('title');
+        $submission->group_id = $request->input('group_id');
+        $submission->data = $object_data;
+        $submission->save();
+
+        self::$needRefresh = true;
+        return self::createJsonData(true);
+    }
+
+
     /**
      * Fetches the title from an external URL.
      *
@@ -317,6 +353,31 @@ class SubmissionController extends Controller {
             }
         }
         $return['data']['img'] = $img;
+        if (isset($return['data']['related_question']) && $return['data']['related_question']) {
+            $related_question = Question::find($return['data']['related_question']);
+            $answer_uids = Answer::where('question_id',$related_question->id)->take(3)->pluck('user_id')->toArray();
+            $answer_users = [];
+            foreach ($answer_uids as $answer_uid) {
+                $answer_user = User::find($answer_uid);
+                $answer_users[] = [
+                    'uuid' => $answer_user->uuid,
+                    'avatar' => $answer_user->avatar
+                ];
+            }
+            $return['related_question'] = [
+                'id' => $related_question->id,
+                'question_type' => $related_question->question_type,
+                'price'      => $related_question->price,
+                'description'  => $related_question->title,
+                'tags' => $related_question->tags()->get()->toArray(),
+                'status' => $related_question->status,
+                'status_description' => $related_question->price.'元',
+                'follow_number' => $related_question->followers,
+                'answer_number' => $related_question->answers,
+                'answer_users'  => $answer_user
+            ];
+        }
+
         $this->logUserViewTags($user->id,$submission->tags()->get());
         $this->doing($user->id,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,'查看动态');
         return self::createJsonData(true,$return);
