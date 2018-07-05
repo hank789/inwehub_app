@@ -84,8 +84,10 @@ class SubmissionController extends Controller {
             if ($description === false){
                 $description = $request->input('description');
             }
+            $img_url = $this->uploadImgs($request->input('photos'));
             $data = [
-                'description'   => $description
+                'description'   => $description,
+                'img'           => $img_url
             ];
         }
 
