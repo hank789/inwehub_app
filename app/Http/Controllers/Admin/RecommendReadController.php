@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Readhub\Submission;
 use App\Models\RecommendRead;
+use App\Models\Tag;
+use App\Models\UserTag;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Config;
@@ -35,6 +37,17 @@ class RecommendReadController extends AdminController
             $word = str_replace('"','',json_encode($filter['word']));
             $word = str_replace("\\",'_',$word);
             $query->where('data','like', '%'.$word.'%');
+        }
+
+        if( isset($filter['tags']) && $filter['tags'] ){
+            $tagIds = explode(',',$filter['tags']);
+            $tags = Tag::whereIn('id',$tagIds)->get();
+            $filter['tags'] = $tags;
+            $query->whereHas('tags', function($query) use ($tagIds) {
+                $query->whereIn('tag_id', $tagIds);
+            });
+        } elseif (isset($filter['withoutTags']) && $filter['withoutTags']) {
+            $query->doesntHave('tags');
         }
 
         $recommendations = $query->orderBy('sort','desc')->orderBy('updated_at','desc')->paginate(20);
@@ -115,6 +128,21 @@ class RecommendReadController extends AdminController
         RecommendRead::whereIn('id',$ids)->update(['audit_status'=>0]);
 
         return $this->success(route('admin.operate.recommendRead.index'),'取消推荐成功');
+    }
+
+    public function changeTags(Request $request) {
+        $ids = $request->input('rids','');
+        $tagsId = $request->input('tagIds',0);
+        \Log::info('test',[$ids]);
+        \Log::info('test1',[$tagsId]);
+        if($ids){
+            $idArray = explode(",",$ids);
+            foreach ($idArray as $id) {
+                $recommendation = RecommendRead::find($id);
+                Tag::multiSaveByIds($tagsId,$recommendation);
+            }
+        }
+        return $this->success(route('admin.operate.recommendRead.index'),'标签修改成功');
     }
 
     /**

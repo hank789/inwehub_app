@@ -2,6 +2,11 @@
 
 @section('title')精选推荐@endsection
 
+@section('css')
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
+@endsection
+
 @section('content')
     <section class="content-header">
         <h1>精选推荐</h1>
@@ -16,6 +21,7 @@
                                 <div class="btn-group">
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.operate.recommendRead.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消推荐选中项" onclick="confirm_submit('item_form','{{  route('admin.operate.recommendRead.cancel_verify') }}','确认取消推荐选中项？')"><i class="fa fa-lock"></i></button>
+                                    <button class="btn btn-default btn-sm" title="移动标签"  data-toggle="modal" data-target="#change_tags_modal" ><i data-toggle="tooltip" title="移动标签" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除推荐" onclick="confirm_submit('item_form','{{  route('admin.operate.recommendRead.destroy',['id'=>0]) }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
@@ -23,8 +29,23 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.operate.recommendRead.index') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <div class="col-xs-4">
+                                        <input type="hidden" id="tags" name="tags" value="" />
+                                        <div class="col-xs-2">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
+                                        </div>
+                                        <div class="col-xs-4">
+                                            <select id="select_tags" name="select_tags" class="form-control" multiple="multiple" >
+                                                @if (isset($filter['tags']))
+                                                    @foreach( $filter['tags'] as $tag)
+                                                        <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <div>
+                                                <label><input type="checkbox" name="withoutTags" value="1" @if ( $filter['withoutTags']??0) checked @endif >无标签</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
                                         </div>
                                         <div class="col-xs-1">
                                             <button type="submit" class="btn btn-primary">搜索</button>
@@ -46,6 +67,7 @@
                                         <th>封面图片</th>
                                         <th>排序</th>
                                         <th>类型</th>
+                                        <th>标签</th>
                                         <th>审核状态</th>
                                         <th>更新时间</th>
                                         <th>操作</th>
@@ -66,6 +88,11 @@
                                             </td>
                                             <td>{{ $item->sort }}</td>
                                             <td>{{ $item->getReadTypeName() }}</td>
+                                            <td>
+                                                @foreach($item->tags as $tagInfo)
+                                                    {{ $tagInfo->name.',' }}
+                                                @endforeach
+                                            </td>
                                             <td><span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
                                             <td>{{ $item->updated_at }}</td>
                                             <td>
@@ -86,11 +113,113 @@
             </div>
         </div>
     </section>
-
+    <div class="modal fade" id="change_tags_modal" tabindex="-1"  role="dialog" aria-labelledby="change_tags_modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">赋予标签</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" name="categoryForm" id="change_tags_from" method="POST" action="{{ route('admin.operate.recommendRead.changeTags') }}">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="tagIds" id="tagIds" />
+                        <input type="hidden" name="rids" id="rids" />
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label for="select_tags_id" class="control-label">将选中项目移动到:</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" ></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="change_tags_submit">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.operate.recommendRead.index') }}");
+        $("#select_tags").select2({
+            theme:'bootstrap',
+            placeholder: "标签",
+            ajax: {
+                url: '/manager/ajax/loadTags',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        word: params.term,
+                        type: 5
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength:2,
+            tags:false
+        });
+
+        $("#select_tags").change(function(){
+            $("#tags").val($("#select_tags").val());
+        });
+
+        $("#select_tags_id").select2({
+            theme:'bootstrap',
+            placeholder: "标签",
+            ajax: {
+                url: '/manager/ajax/loadTags',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        word: params.term,
+                        type: 5
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength:2,
+            tags:false
+        });
+
+        $("#select_tags_id").change(function(){
+            $("#tagIds").val($("#select_tags_id").val());
+        });
+
+        $("#change_tags_submit").click(function(){
+            var ids = new Array();
+            $("#item_form input[name='ids[]']:checkbox").each(function(i){
+                if(true == $(this).is(':checked')){
+                    ids.push($(this).val());
+                }
+            });
+
+            if( ids.length > 0 ){
+                $("#change_tags_from input[name='rids']").val(ids.join(","));
+                $("#change_tags_from").submit();
+            }else{
+                alert("您没有选中任何内容");
+            }
+        });
     </script>
 @endsection
