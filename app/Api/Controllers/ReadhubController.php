@@ -47,6 +47,8 @@ class ReadhubController extends Controller
                 'id' => $submission->id,
                 'type' => $submission->type,
                 'title' => $submission->formatTitle(),
+                'description' => isset($submission->data['description'])?str_limit($submission->data['description'],200):'',
+                'slug' => $submission->slug,
                 'img'   => $submission->data['img']??'',
                 'files' => $submission->data['files']??'',
                 'submission_url' => $submission->data['url']??$comment_url,
