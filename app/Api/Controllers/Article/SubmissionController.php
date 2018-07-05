@@ -87,7 +87,7 @@ class SubmissionController extends Controller {
             $img_url = $this->uploadImgs($request->input('photos'));
             $data = [
                 'description'   => $description,
-                'img'           => $img_url
+                'img'           => $img_url['img']?$img_url['img'][0]:''
             ];
         }
 
