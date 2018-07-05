@@ -192,12 +192,12 @@ class SubmissionController extends Controller {
 
     public function update(Request $request) {
         $this->validate($request, [
-            'id' => 'required|integer',
+            'slug' => 'required',
             'title' => 'required|between:1,6000',
             'description' => 'required',
             'group_id' => 'required|integer'
         ]);
-        $submission = Submission::findOrFail($request->id);
+        $submission = Submission::where('slug',$request->slug)->first();
         $user = $request->user();
         if ($submission->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
@@ -221,8 +221,11 @@ class SubmissionController extends Controller {
         if ($description === false){
             $description = $request->input('description');
         }
+        $img_url = $this->uploadImgs($request->input('photos'));
         $object_data = $submission->data;
         $object_data['description'] = $description;
+        $object_data['img'] = $img_url['img']?$img_url['img'][0]:'';
+
         $submission->title = $request->input('title');
         $submission->group_id = $request->input('group_id');
         $submission->data = $object_data;
