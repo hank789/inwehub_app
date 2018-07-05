@@ -373,7 +373,7 @@ class SubmissionController extends Controller {
                 'id' => $related_question->id,
                 'question_type' => $related_question->question_type,
                 'price'      => $related_question->price,
-                'description'  => $related_question->title,
+                'title'  => $related_question->title,
                 'tags' => $related_question->tags()->get()->toArray(),
                 'status' => $related_question->status,
                 'status_description' => $related_question->price.'元',
