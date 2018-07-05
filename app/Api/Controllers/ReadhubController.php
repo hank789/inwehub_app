@@ -3,6 +3,7 @@
 namespace App\Api\Controllers;
 
 use App\Exceptions\ApiException;
+use App\Logic\QuillLogic;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
@@ -47,7 +48,7 @@ class ReadhubController extends Controller
                 'id' => $submission->id,
                 'type' => $submission->type,
                 'title' => $submission->formatTitle(),
-                'description' => isset($submission->data['description'])?str_limit($submission->data['description'],200):'',
+                'description' => isset($submission->data['description'])?str_limit(QuillLogic::parseText($submission->data['description']),200):'',
                 'slug' => $submission->slug,
                 'img'   => $submission->data['img']??'',
                 'files' => $submission->data['files']??'',
@@ -58,7 +59,9 @@ class ReadhubController extends Controller
                 'created_at'     => (string) $submission->created_at
             ];
         }
-        return self::createJsonData(true,$list);
+        $return = $submissions->toArray();
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
     }
 
 }
