@@ -358,6 +358,7 @@ class SubmissionController extends Controller {
             }
         }
         $return['data']['img'] = $img;
+        $return['related_question'] = null;
         if (isset($return['data']['related_question']) && $return['data']['related_question']) {
             $related_question = Question::find($return['data']['related_question']);
             $answer_uids = Answer::where('question_id',$related_question->id)->take(3)->pluck('user_id')->toArray();
