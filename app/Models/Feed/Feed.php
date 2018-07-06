@@ -250,7 +250,8 @@ class Feed extends Model
                 $submission = Submission::find($this->source_id);
                 if (!$submission) return null;
                 $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-                $url = $submission->data['url']??$comment_url;
+                //$url = $submission->data['url']??$comment_url;
+                $url = $comment_url;
                 $upvote = Support::where('user_id',Auth::user()->id)
                     ->where('supportable_id',$submission->id)
                     ->where('supportable_type',Submission::class)
