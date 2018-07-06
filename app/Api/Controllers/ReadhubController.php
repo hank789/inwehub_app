@@ -18,6 +18,7 @@ class ReadhubController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $uuid = $request->input('uuid');
+        $type = $request->input('type','all');
         $loginUser = $request->user();
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
@@ -31,6 +32,9 @@ class ReadhubController extends Controller
         $query = Submission::where('user_id',$user->id);
         if ($user->id != $loginUser->id) {
             $query = $query->where('public',1);
+        }
+        if ($type != 'all') {
+            $query = $query->where('type',$type);
         }
 
         if($top_id){

@@ -402,7 +402,8 @@ if (! function_exists('trans_common_status')) {
             0 => '待审核',
             1 => '已审核',
            -1 => '已禁止',
-            2 => '已结束'
+            2 => '已结束',
+            3 => '待抓取'
         ];
 
         if($status==='all'){

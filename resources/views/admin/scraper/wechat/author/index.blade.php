@@ -58,6 +58,20 @@
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
+                                    @foreach($pending as $author)
+                                        <tr>
+                                            <td><input type="checkbox" name="id[]" value="{{ $author->_id }}"/></td>
+                                            <td>{{ $author->_id }}</td>
+                                            <td>{{ $author->name }}</td>
+                                            <td>{{ $author->wx_hao }}</td>
+                                            <td>{{ '' }}</td>
+                                            <td>{{ timestamp_format($author->create_at) }}</td>
+                                            <td><span class="label label-danger">待抓取</span> </td>
+                                            <td>
+
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                     @foreach($authors as $author)
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $author->_id }}"/></td>
