@@ -380,7 +380,7 @@ class SubmissionController extends Controller {
                 'status_description' => $related_question->price.'元',
                 'follow_number' => $related_question->followers,
                 'answer_number' => $related_question->answers,
-                'answer_users'  => $answer_user
+                'answer_users'  => $answer_users
             ];
         }
 
