@@ -500,7 +500,7 @@ class GroupController extends Controller
                 ->exists();
             $img = $submission->data['img']??'';
             $sourceData = [
-                'title'     => $submission->partHtmlTitle(),
+                'title'     => strip_tags($submission->title),
                 'article_title' => $submission->data['title']??'',
                 'img'       => $img,
                 'files'       => $submission->data['files']??'',
@@ -528,7 +528,7 @@ class GroupController extends Controller
 
             $list[] = [
                 'id' => $submission->id,
-                'title' => $submission->user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'),
+                'title' => $submission->user->name.'发布了'.($submission->type == 'article' ? '文章':'分享'),
                 'top' => $submission->top,
                 'user'  => [
                     'id'    => $submission->user->id ,
