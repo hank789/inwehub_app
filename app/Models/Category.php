@@ -85,11 +85,11 @@ class Category extends Model
 
     /**
      * 获取用户问题
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\belongsToMany
      */
     public function tags()
     {
-        return $this->hasMany('App\Models\Tag','category_id');
+        return $this->belongsToMany('App\Models\Tag','tag_category_rel');
     }
 
     /**

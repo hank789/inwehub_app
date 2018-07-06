@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Groups\Group;
+use App\Models\Question;
 use App\Models\RecommendRead;
 use App\Models\Submission;
 use App\Models\Tag;
@@ -64,6 +65,10 @@ class SubmissionController extends AdminController
             return $this->error(route('admin.operate.article.index'),'文章不存在，请核实');
         }
         $img_url = '';
+        $related_question = $request->input('related_question',0);
+        if ($related_question) {
+            Question::findOrFail($related_question);
+        }
         if($request->hasFile('img_url')){
             $file = $request->file('img_url');
             $extension = strtolower($file->getClientOriginalExtension());
@@ -79,6 +84,9 @@ class SubmissionController extends AdminController
         $object_data = $submission->data;
         if ($img_url) {
             $object_data['img'] = $img_url;
+        }
+        if ($related_question) {
+            $object_data['related_question'] = $related_question;
         }
         $submission->data = $object_data;
         $submission->save();

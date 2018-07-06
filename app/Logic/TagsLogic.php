@@ -1,6 +1,7 @@
 <?php namespace App\Logic;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\TagCategoryRel;
 use App\Models\Taggable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +45,10 @@ class TagsLogic {
                 $category_name = Category::where('slug','like','question_%')->get()->pluck('slug')->toArray();
                 $loadDefaultTags = true;
                 break;
+            case 6:
+                //领域
+                $category_name = Category::where('slug','region')->get()->pluck('slug')->toArray();
+                break;
             case 'all':
                 $category_name = Category::where('slug','like','question_%')->get()->pluck('slug')->toArray();
                 $loadDefaultTags = true;
@@ -79,11 +84,11 @@ class TagsLogic {
             if ($loadDefaultTags) {
                 $question_c[] = 0;
             }
-            $tagQuery = Tag::whereIn('category_id',$question_c);
+            $tagQuery = TagCategoryRel::whereIn('category_id',$question_c)->leftJoin('tags','tag_id','=','tags.id');
             if (trim($word)) {
                 $tagQuery = $tagQuery->where('name','like','%'.$word.'%');
             }
-            $tags2 = $tagQuery->get();
+            $tags2 = $tagQuery->select('tags.*')->get();
 
             foreach ($tags2 as $tag) {
                 $tags[] = [

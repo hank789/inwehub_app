@@ -64,7 +64,8 @@ class Kernel extends ConsoleKernel
         Commands\User\GenUserInfoCompletePercent::class,
         Commands\FixData\InitGroup::class,
         Commands\FixData\AddUserToGroup::class,
-        Commands\FixData\FixFeedGroup::class
+        Commands\FixData\FixFeedGroup::class,
+        Commands\FixData\AddTags::class
 
     ];
 
@@ -85,7 +86,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
         $schedule->command('crontab:calc-group-hot')->hourly();
         if (config('app.env') == 'production') {
-            $schedule->command('scraper:wechat:author')->hourly();
+            //$schedule->command('scraper:wechat:author')->hourly();
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
     }

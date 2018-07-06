@@ -94,6 +94,7 @@ class Feed extends Model
     const FEED_TYPE_UPVOTE_READHUB_ARTICLE = 13;//赞了阅读文章
     const FEED_TYPE_ADOPT_ANSWER = 14;//采纳了回答
     const FEED_TYPE_SUBMIT_READHUB_SHARE = 15;//发布阅读分享
+    const FEED_TYPE_SUBMIT_READHUB_LINK = 16;//发布链接分享
 
 
 
@@ -249,17 +250,18 @@ class Feed extends Model
                 $submission = Submission::find($this->source_id);
                 if (!$submission) return null;
                 $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-                $url = $submission->data['url']??$comment_url;
+                //$url = $submission->data['url']??$comment_url;
+                $url = $comment_url;
                 $upvote = Support::where('user_id',Auth::user()->id)
                     ->where('supportable_id',$submission->id)
                     ->where('supportable_type',Submission::class)
                     ->exists();
-                if ($submission->type == 'text') $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_SHARE;
+
                 $group = Group::find($submission->group_id);
                 $current_address_name = $submission->data['current_address_name']??'';
                 $data = [
-                    'title'     => str_limit($submission->partHtmlTitle(),120),
-                    'img'       => $submission->data['img']?:'',
+                    'title'     => str_limit(strip_tags($submission->title),120),
+                    'img'       => $submission->data['img']??'',
                     'files'       => $submission->data['files']??'',
                     'domain'    => $submission->data['domain']??'',
                     'tags'      => $submission->tags()->get()->toArray(),
@@ -280,6 +282,11 @@ class Feed extends Model
                     $data['group']['name'] = str_limit($data['group']['name'], 20);
                 }
                 $data['group']['subscribers'] = $group->getHotIndex();
+                if ($submission->type == 'text') $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_SHARE;
+                if ($submission->type == 'link') {
+                    $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_LINK;
+                    $data['article_title'] = $submission->data['title'];
+                }
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答

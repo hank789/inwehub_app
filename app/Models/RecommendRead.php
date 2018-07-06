@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -42,6 +43,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RecommendRead extends Model
 {
+    use MorphManyTagsTrait;
     protected $table = 'recommend_read';
     protected $fillable = ['read_type','audit_status','data','source_type','source_id','sort'];
 

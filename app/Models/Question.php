@@ -159,6 +159,7 @@ class Question extends Model
             if ($this->status == 9) return '对方未响应，问题已被关闭，'.$this->price.'元已自动退回。';
         }
         if ($this->status == 8) return '已采纳';
+        if ($this->status == 7) return '已点评';
         if ($this->status == 9) return '24小时内没有回答者，问题已关闭，'.$this->price.'元将自动退回。';
         $description = '';
         //提问者

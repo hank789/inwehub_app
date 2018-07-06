@@ -2,6 +2,8 @@
 
 @section('css')
     <link href="{{ asset('/static/js/summernote/summernote.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
 @endsection
 
 @section('title')
@@ -40,9 +42,15 @@
 
                             <div class="form-group">
                                 <label>分类</label>
-                                <select name="category_id" class="form-control">
+                                <select id="category_id" name="category_id[]" class="form-control" multiple="multiple" >
                                     <option value="0">选择分类</option>
-                                    @include('admin.category.option',['type'=>'tags','select_id'=>$tag->category_id,'root'=>false])
+                                    @foreach(load_categories('tags',false) as $category)
+                                        @if(in_array($category->id,$tag_categories))
+                                            <option value="{{ $category->id }}" selected >{{ $category->name }}</option>
+                                        @else
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -75,9 +83,11 @@
 @section('script')
     <script src="{{ asset('/static/js/summernote/summernote.min.js') }}"></script>
     <script src="{{ asset('/static/js/summernote/lang/summernote-zh-CN.min.js') }}"></script>
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         $(function(){
             set_active_menu('manage_content',"{{ route('admin.tag.index') }}");
+            $('#category_id').select2();
             $('#tag_editor').summernote({
                 lang: 'zh-CN',
                 height: 300,

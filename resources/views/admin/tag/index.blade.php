@@ -69,8 +69,8 @@
                                                 @endif
                                             </td>
                                             <td><a href="{{ route('ask.tag.index',['name'=>$tag->name,'source_type'=>'questions']) }}" target="_blank">{{ $tag->name }}</a></td>
-                                            <td>@if($tag->category){{ $tag->category->name }} @else 无 @endif</td>
-                                            <td width="50%">{{ $tag->summary }}</td>
+                                            <td>{{ implode(',',$tag->categories->pluck('name')->toArray()) }}</td>
+                                            <td width="30%">{{ $tag->summary }}</td>
                                             <td>{{ $tag->followers }}</td>
                                             <td>{{ timestamp_format($tag->created_at) }}</td>
                                             <td>

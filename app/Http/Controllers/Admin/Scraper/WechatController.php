@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Jobs\ArticleToSubmission;
-use App\Models\Scraper\Feeds;
-use App\Models\Scraper\News;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -31,6 +29,7 @@ class WechatController extends AdminController
     {
         $filter =  $request->all();
 
+        $list = WechatMpList::all();
         $query = WechatMpInfo::query();
 
         /*问题标题过滤*/
@@ -45,7 +44,7 @@ class WechatController extends AdminController
 
 
         $authors = $query->orderBy('create_time','desc')->paginate(20);
-        return view("admin.scraper.wechat.author.index")->with('authors',$authors)->with('filter',$filter);
+        return view("admin.scraper.wechat.author.index")->with('authors',$authors)->with('filter',$filter)->with('pending',$list);
     }
 
     /**
@@ -86,7 +85,7 @@ class WechatController extends AdminController
     {
         $articleIds = $request->input('id');
         WechatMpInfo::whereIn('_id',$articleIds)->update(['status'=>1]);
-        Artisan::queue('scraper:wechat:author');
+        //Artisan::queue('scraper:wechat:author');
         return $this->success(route('admin.scraper.wechat.author.index'),'审核成功,正在抓取文章数据,请稍候');
     }
 
@@ -104,7 +103,7 @@ class WechatController extends AdminController
     }
 
     public function sync(Request $request){
-        Artisan::queue('scraper:wechat:author');
+        //Artisan::queue('scraper:wechat:author');
         return $this->success(route('admin.scraper.wechat.author.index'),'正在抓取文章数据,请稍候');
     }
 
@@ -158,7 +157,7 @@ class WechatController extends AdminController
 
         if($news){
             $message = '发布成功!请稍等片刻,正在为您抓取公众号信息 ';
-            Artisan::queue('scraper:wechat:author');
+            //Artisan::queue('scraper:wechat:author');
             return $this->success(route('admin.scraper.wechat.author.index'),$message);
         }
 

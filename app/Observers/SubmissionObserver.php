@@ -69,7 +69,7 @@ class SubmissionObserver implements ShouldQueue {
             ->withProperties([
                 'submission_title'=>$submission->title
             ])
-            ->log($user->name.'发布了'.($submission->type == 'link' ? '文章':'分享'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+            ->log($user->name.'发布了'.($submission->type == 'article' ? '文章':'分享'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
         if (!$group->public) {
             //私密圈子的分享只通知圈子内的人
             $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();

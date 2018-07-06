@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Logic\TagsLogic;
 use App\Models\Tag;
+use App\Models\TagCategoryRel;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -84,7 +85,14 @@ class TagController extends AdminController
             $img_url = Storage::disk('oss')->url($filePath);
             $data['logo'] = $img_url;
         }
-        Tag::create($data);
+        $tag = Tag::create($data);
+        foreach ($request->input('category_id') as $category_id) {
+            if ($category_id<=0) continue;
+            TagCategoryRel::create([
+                'tag_id' => $tag->id,
+                'category_id' => $category_id
+            ]);
+        }
         TagsLogic::delCache();
         return $this->success(route('admin.tag.index'),'标签创建成功');
     }
@@ -112,7 +120,8 @@ class TagController extends AdminController
         if(!$tag){
            abort(404);
         }
-        return view('admin.tag.edit')->with('tag',$tag);
+        $categories = $tag->categories->pluck('id')->toArray();
+        return view('admin.tag.edit')->with('tag',$tag)->with('tag_categories',$categories);
     }
 
     /**
@@ -131,8 +140,8 @@ class TagController extends AdminController
         }
         $this->validateRules['name'] = 'required|max:128|unique:tags,name,'.$id;
         $this->validate($request,$this->validateRules);
+        $oldCid = $tag->category_id;
         $tag->name = $request->input('name');
-        $tag->category_id = $request->input('category_id');
         $tag->summary = $request->input('summary');
         $tag->description = $request->input('description');
         if($request->hasFile('logo')){
@@ -142,9 +151,16 @@ class TagController extends AdminController
             Storage::disk('oss')->put($filePath,File::get($file));
             $img_url = Storage::disk('oss')->url($filePath);
             $tag->logo = $img_url;
-
         }
         $tag->save();
+        TagCategoryRel::where('tag_id',$tag->id)->delete();
+        foreach ($request->input('category_id') as $category_id) {
+            if ($category_id<=0) continue;
+            TagCategoryRel::create([
+                'tag_id' => $tag->id,
+                'category_id' => $category_id
+            ]);
+        }
         TagsLogic::delCache();
         return $this->success(route('admin.tag.index'),'标签修改成功');
     }
@@ -152,9 +168,19 @@ class TagController extends AdminController
     /*修改分类*/
     public function changeCategories(Request $request){
         $ids = $request->input('ids','');
-        $categoryId = $request->input('category_id',0);
+        $categoryIds = $request->input('category_id',0);
         if($ids){
-            Tag::whereIn('id',explode(",",$ids))->update(['category_id'=>$categoryId]);
+            $idArray = explode(",",$ids);
+            TagCategoryRel::whereIn('tag_id',$idArray)->delete();
+            foreach ($idArray as $id) {
+                foreach ($categoryIds as $categoryId) {
+                    if ($categoryId<=0) continue;
+                    TagCategoryRel::create([
+                        'tag_id' => $id,
+                        'category_id' => $categoryId
+                    ]);
+                }
+            }
         }
         return $this->success(route('admin.tag.index'),'分类修改成功');
     }

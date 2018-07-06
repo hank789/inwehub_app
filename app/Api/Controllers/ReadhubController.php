@@ -3,6 +3,7 @@
 namespace App\Api\Controllers;
 
 use App\Exceptions\ApiException;
+use App\Logic\QuillLogic;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
@@ -17,6 +18,7 @@ class ReadhubController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $uuid = $request->input('uuid');
+        $type = $request->input('type','all');
         $loginUser = $request->user();
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
@@ -30,6 +32,11 @@ class ReadhubController extends Controller
         $query = Submission::where('user_id',$user->id);
         if ($user->id != $loginUser->id) {
             $query = $query->where('public',1);
+        }
+        if ($type != 'all') {
+            if (in_array($type,['link','text','article'])) {
+                $query = $query->where('type',$type);
+            }
         }
 
         if($top_id){
@@ -47,6 +54,8 @@ class ReadhubController extends Controller
                 'id' => $submission->id,
                 'type' => $submission->type,
                 'title' => $submission->formatTitle(),
+                'description' => isset($submission->data['description'])?str_limit(QuillLogic::parseText($submission->data['description']),200):'',
+                'slug' => $submission->slug,
                 'img'   => $submission->data['img']??'',
                 'files' => $submission->data['files']??'',
                 'submission_url' => $submission->data['url']??$comment_url,
@@ -56,7 +65,9 @@ class ReadhubController extends Controller
                 'created_at'     => (string) $submission->created_at
             ];
         }
-        return self::createJsonData(true,$list);
+        $return = $submissions->toArray();
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
     }
 
 }

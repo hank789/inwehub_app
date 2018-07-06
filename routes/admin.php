@@ -195,6 +195,7 @@ Route::post('recommendRead/destroy',['as'=>'admin.operate.recommendRead.destroy'
 Route::get('recommendRead/index',['as'=>'admin.operate.recommendRead.index','uses'=>'RecommendReadController@index']);
 Route::get('recommendRead/edit/{id}',['as'=>'admin.operate.recommendRead.edit','uses'=>'RecommendReadController@edit'])->where(['id'=>'[0-9]+']);
 Route::put('recommendRead/update/{id}',['as'=>'admin.operate.recommendRead.update','uses'=>'RecommendReadController@update'])->where(['id'=>'[0-9]+']);
+Route::post('recommendRead/changeTags',['as'=>'admin.operate.recommendRead.changeTags','uses'=>'RecommendReadController@changeTags']);
 
 
 /*刷新首页专家推荐*/
