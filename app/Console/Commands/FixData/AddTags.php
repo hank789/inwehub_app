@@ -6,6 +6,7 @@
  */
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\TagCategoryRel;
 use Illuminate\Console\Command;
 
 class AddTags extends Command
@@ -92,6 +93,13 @@ class AddTags extends Command
             'name'          => '信息化新技术',
             'category_id'   => $category->id
         ]);
+        $tags = Tag::all();
+        foreach ($tags as $tag) {
+            TagCategoryRel::create([
+                'tag_id' => $tag->id,
+                'category_id' => $tag->category_id
+            ]);
+        }
     }
 
 }

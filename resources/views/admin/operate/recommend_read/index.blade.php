@@ -160,7 +160,7 @@
                 data: function (params) {
                     return {
                         word: params.term,
-                        type: 5
+                        type: 6
                     };
                 },
                 processResults: function (data) {
@@ -188,7 +188,7 @@
                 data: function (params) {
                     return {
                         word: params.term,
-                        type: 5
+                        type: 6
                     };
                 },
                 processResults: function (data) {

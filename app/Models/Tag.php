@@ -39,7 +39,7 @@ class Tag extends Model
 {
     use BelongsToCategoryTrait;
     protected $table = 'tags';
-    protected $fillable = ['name', 'logo', 'description','category_id','followers'];
+    protected $fillable = ['name', 'logo', 'description','followers'];
 
 
     public static function boot()
@@ -65,6 +65,11 @@ class Tag extends Model
             }
             Taggable::where('tag_id',$tag->id)->delete();
         });
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany('App\Models\Category','tag_category_rel');
     }
 
     /**通过字符串添加标签
