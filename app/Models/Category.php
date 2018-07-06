@@ -58,8 +58,8 @@ class Category extends Model
         static::deleting(function($category){
             $category->questions()->update(['category_id'=>0]);
             $category->articles()->update(['category_id'=>0]);
-            $category->tags()->update(['category_id'=>0]);
             $category->experts()->update(['category_id'=>0]);
+            TagCategoryRel::where('category_id',$category->id)->delete();
         });
     }
 

@@ -82,6 +82,7 @@ class ArticleToSubmission implements ShouldQueue
         //检查url是否重复
         $exist_submission_id = Redis::connection()->hget('voten:submission:url',$url);
         if ($exist_submission_id){
+            $article->delete();
             return;
         }
 
