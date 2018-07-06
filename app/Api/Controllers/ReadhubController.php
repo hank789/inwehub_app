@@ -34,7 +34,9 @@ class ReadhubController extends Controller
             $query = $query->where('public',1);
         }
         if ($type != 'all') {
-            $query = $query->where('type',$type);
+            if (in_array($type,['link','text','article'])) {
+                $query = $query->where('type',$type);
+            }
         }
 
         if($top_id){

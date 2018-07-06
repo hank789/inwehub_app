@@ -13,13 +13,13 @@
                 <div class="box">
                     <div class="box-header">
                         <div class="row">
-                            <div class="col-xs-2">
+                            <div class="col-xs-4">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.scraper.wechat.author.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建公众号"><i class="fa fa-plus"></i></a>
+                                    <a href="{{ route('admin.scraper.wechat.author.create') }}" class="btn btn-default btn-sm"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.scraper.wechat.author.destroy') }}','确认不再抓取选中项的数据？')"><i class="fa fa-lock"></i></button>
                                 </div>
                             </div>
-                            <div class="col-xs-10">
+                            <div class="col-xs-8">
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.scraper.wechat.author.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
