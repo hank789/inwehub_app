@@ -260,7 +260,7 @@ class Feed extends Model
                 $group = Group::find($submission->group_id);
                 $current_address_name = $submission->data['current_address_name']??'';
                 $data = [
-                    'title'     => str_limit($submission->partHtmlTitle(),120),
+                    'title'     => str_limit(strip_tags($submission->title),120),
                     'img'       => $submission->data['img']??'',
                     'files'       => $submission->data['files']??'',
                     'domain'    => $submission->data['domain']??'',
