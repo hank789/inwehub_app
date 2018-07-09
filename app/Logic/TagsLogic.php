@@ -84,7 +84,7 @@ class TagsLogic {
             if ($loadDefaultTags) {
                 $question_c[] = 0;
             }
-            $tagQuery = TagCategoryRel::whereIn('category_id',$question_c)->leftJoin('tags','tag_id','=','tags.id');
+            $tagQuery = TagCategoryRel::whereIn('tag_category_rel.category_id',$question_c)->leftJoin('tags','tag_id','=','tags.id');
             if (trim($word)) {
                 $tagQuery = $tagQuery->where('name','like','%'.$word.'%');
             }
