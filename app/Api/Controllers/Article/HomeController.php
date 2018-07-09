@@ -115,7 +115,7 @@ class HomeController extends Controller {
         if (!$search_user) throw new ApiException(ApiException::BAD_REQUEST);
         $submissions = (new Submission())->newQuery();
         $submissions = $submissions->where('author_id',$search_user->id)
-            ->where('type','link')
+            ->whereIn('type',['link','article'])
             ->orderBy('rate', 'desc')
             ->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $submissions->toArray();
