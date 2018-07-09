@@ -303,6 +303,10 @@ class User extends Model implements AuthenticatableContract,
         return $this->userTag()->where('skills','>',0);
     }
 
+    public function userRegionTag(){
+        return $this->userTag()->where('region','>',0);
+    }
+
     public function userOauth(){
         return $this->hasMany('App\Models\UserOauth');
     }
