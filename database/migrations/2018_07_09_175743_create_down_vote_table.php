@@ -16,7 +16,7 @@ class CreateDownVoteTable extends Migration
         Schema::create('downvotes', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->nullable();
-            $table->integer('refer_user_id')->unsigned()->index()->default(0)->after('user_id');
+            $table->integer('refer_user_id')->unsigned()->index()->default(0);
             $table->morphs('source');
             $table->timestamps();
         });
