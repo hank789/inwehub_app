@@ -472,9 +472,8 @@ class AnswerController extends Controller
             Settlement::payForViewSettlement($order);
         }
         //生成一条点评任务
-        if ($answer->question->question_type == 1) {
-            $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
-        }
+        $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
+
         QuestionLogic::calculationQuestionRate($answer->question_id);
 
 
