@@ -587,6 +587,8 @@ Route::post('article/detail-by-slug','Article\SubmissionController@getBySlug');
 Route::post('article/comments','Article\CommentController@index');
 //点赞
 Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
+//踩
+Route::post('downvote/{source_type}',['uses'=>'DownVoteController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
 //附近位置
 Route::post('location/nearbySearch',['uses'=>'LocationController@nearbySearch'])->middleware('jwt.auth');
 //附近的人

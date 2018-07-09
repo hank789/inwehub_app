@@ -145,6 +145,7 @@ class AnswerController extends Controller
             'is_supported' => $support?1:0,
             'is_collected' => $collect?1:0,
             'support_number' => $answer->supports,
+            'downvote_number'=> $answer->downvotes,
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
             'collect_num' => $answer->collections,

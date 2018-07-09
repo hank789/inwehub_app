@@ -233,21 +233,6 @@ class SubmissionVotesController extends Controller {
 
         $submission->save();
 
-        $voted = Redis::connection()->hget('voten:submission:downvote',$submission->id.'_'.$user->id);
-        if (!$voted) {
-            $fields = [];
-            $fields[] = [
-                'title' => '文章标题',
-                'value' => $submission->title
-            ];
-            $fields[] = [
-                'title' => '文章地址',
-                'value' => config('app.readhub_url').'/c/'.$submission->category_id.'/'.$submission->slug
-            ];
-            event(new SystemNotify('用户'.$user->id.'['.$user->name.']踩了文章',$fields));
-            Redis::connection()->hset('voten:submission:downvote',$submission->id.'_'.$user->id,1);
-        }
-
         return self::createJsonData(true,['tip'=>'踩成功','type'=>'downvote'],ApiException::SUCCESS,'踩成功');
     }
 
