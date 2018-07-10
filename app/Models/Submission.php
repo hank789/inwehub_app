@@ -174,4 +174,9 @@ class Submission extends Model {
         return $this->belongsTo('App\Models\Groups\Group');
     }
 
+    public function getSupportRateDesc() {
+        if ($this->upvotes <= 0 && $this->downvotes <=0) return '暂无，快来表个态';
+        return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%的人觉得赞';
+    }
+
 }

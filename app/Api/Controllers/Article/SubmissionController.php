@@ -342,6 +342,7 @@ class SubmissionController extends Controller {
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
         $return['supporter_list'] = $supporters;
+        $return['support_description'] = $submission->getSupportRateDesc();
         $return['tags'] = $submission->tags()->get()->toArray();
         $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;
         $return['bookmarks'] = Collection::where('source_id',$submission->id)
