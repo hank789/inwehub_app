@@ -177,13 +177,15 @@ class FollowController extends Controller
                             ]);
                             $room_id = $room->id;
                         }
-                        RoomUser::firstOrCreate([
+                        $roomUser = RoomUser::firstOrCreate([
                             'user_id' => $loginUser->id,
                             'room_id' => $room_id
                         ],[
                             'user_id' => $loginUser->id,
                             'room_id' => $room_id
                         ]);
+                        $roomUser->last_msg_id = $message->id;
+                        $roomUser->save();
 
                         MessageRoom::create([
                             'room_id' => $room_id,
