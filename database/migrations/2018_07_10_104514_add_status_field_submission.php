@@ -14,7 +14,7 @@ class AddStatusFieldSubmission extends Migration
     public function up()
     {
         Schema::table('submissions', function (Blueprint $table) {
-            $table->integer('status')->unsigned()->after('user_id')->default(1);
+            $table->integer('status')->unsigned()->index()->after('user_id')->default(1);
         });
     }
 
