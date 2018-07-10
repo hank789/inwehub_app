@@ -167,6 +167,7 @@ class SubmissionController extends Controller {
                 'group_id'      => $request->input('group_id'),
                 'public'        => $group->public,
                 'rate'          => firstRate(),
+                'status'        => $request->input('draft',0)?0:1,
                 'user_id'       => $user->id,
                 'data'          => $data,
             ]);
@@ -228,6 +229,7 @@ class SubmissionController extends Controller {
 
         $submission->title = $request->input('title');
         $submission->group_id = $request->input('group_id');
+        $submission->status = $request->input('draft',0)?0:1;
         $submission->data = $object_data;
         $submission->save();
 

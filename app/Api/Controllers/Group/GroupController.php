@@ -465,7 +465,7 @@ class GroupController extends Controller
             }
         }
 
-        $query = Submission::where('group_id',$request->input('id'));
+        $query = Submission::where('group_id',$request->input('id'))->where('status',1);
         switch ($type) {
             case 1:
                 //全部
@@ -695,7 +695,7 @@ class GroupController extends Controller
 
     //随机推荐圈子内容
     public function hotRecommend(Request $request){
-        $submissions = Submission::where('public',1)->where('upvotes','>',1)->orderBy(DB::raw('RAND()'))->take(5)->get();
+        $submissions = Submission::where('public',1)->where('status',1)->where('upvotes','>',1)->orderBy(DB::raw('RAND()'))->take(5)->get();
         $return = $submissions->toArray();
         $list = [];
         $user = $request->user();
