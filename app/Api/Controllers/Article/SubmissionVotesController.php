@@ -165,13 +165,6 @@ class SubmissionVotesController extends Controller {
         $submission->save();
         UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
-
-        $voted = Redis::connection()->hget('voten:submission:upvote',$submission->id.'_'.$user->id);
-        if (!$voted) {
-            dispatch((new NotifyInwehub($user->id,'NewSubmissionUpVote',['submission_id'=>$submission->id]))->onQueue('inwehub:default'));
-            Redis::connection()->hset('voten:submission:upvote',$submission->id.'_'.$user->id,1);
-        }
-
         return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote'],ApiException::SUCCESS,'点赞成功');
     }
 
