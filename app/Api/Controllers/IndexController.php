@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -158,10 +159,22 @@ class IndexController extends Controller {
     }
 
     //精选推荐
-    public function recommendRead(Request $request) {
+    public function recommendRead(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $orderBy = $request->input('orderBy',1);
         $query = RecommendRead::where('audit_status',1);
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+            $tags = $user->userRegionTag()->pluck('tag_id');
+            if ($tags) {
+                $query = $query->whereHas('tags', function($query) use ($tags) {
+                    $query->whereIn('tag_id', $tags);
+                });
+            }
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         switch ($orderBy) {
             case 1:
                 //热门
