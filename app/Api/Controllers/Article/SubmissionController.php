@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -172,6 +173,7 @@ class SubmissionController extends Controller {
                 'data'          => $data,
             ]);
             $group->increment('articles');
+            GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
             RateLimiter::instance()->sClear('group_read_users:'.$group->id);
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
