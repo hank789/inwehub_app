@@ -1071,8 +1071,11 @@ if (!function_exists('getUrlImg')) {
             preg_match_all($pattern,$f,$matchContent);
             if(isset($matchContent[1][0])){
                 $temp=$matchContent[1][0];
-                if (stripos($temp,'http') !== 0) {
+                if (stripos($temp,'//') === 0) {
                     $temp = 'http:'.$temp;
+                } elseif (stripos($temp,'http') !== 0) {
+                    $urls = parse_url($url);
+                    $temp = $urls['scheme'].'://'.$urls['host'].$temp;
                 }
             }else{
                 $temp='';
