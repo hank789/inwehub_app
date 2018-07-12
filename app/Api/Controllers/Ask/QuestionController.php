@@ -904,6 +904,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'question_user_avatar' => $question->hide?config('image.user_default_avatar'):$question->user->avatar,
                 'question_user_is_expert' => $question->hide?0:$question->user->is_expert,
+                'question_user_name' => $question->hide?'匿名':$question->user->name,
                 'price'      => $question->price,
                 'description'  => $question->title,
                 'tags' => $question->tags()->get()->toArray(),
