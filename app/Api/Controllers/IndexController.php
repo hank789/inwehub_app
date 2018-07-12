@@ -166,7 +166,7 @@ class IndexController extends Controller {
         try {
             $user = $JWTAuth->parseToken()->authenticate();
             \Log::info('user',[$user]);
-            $tags = $user->userRegionTag()->pluck('tag_id');
+            $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
             \Log::info('tags',[$tags]);
             if ($tags) {
                 $query = $query->whereHas('tags', function($query) use ($tags) {
