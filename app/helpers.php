@@ -1067,14 +1067,16 @@ if (!function_exists('getUrlImg')) {
                 $temp='';
             }
         } else {
-            $pattern="/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.png]))[\'|\"].*?[\/]?>/";
+            $pattern="/<[link|LINK].*?href=[\'|\"](.*?(?:[\.ico|\.jpg|\.png]))[\'|\"].*?[\/]?>/";
             preg_match_all($pattern,$f,$matchContent);
             if(isset($matchContent[1][0])){
                 $temp=$matchContent[1][0];
+                if (stripos($temp,'http') !== 0) {
+                    $temp = 'http:'.$temp;
+                }
             }else{
                 $temp='';
             }
-            $temp='';
         }
         return $temp;
     }
