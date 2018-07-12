@@ -165,9 +165,7 @@ class IndexController extends Controller {
         $query = RecommendRead::where('audit_status',1);
         try {
             $user = $JWTAuth->parseToken()->authenticate();
-            \Log::info('user',[$user]);
             $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
-            \Log::info('tags',[$tags]);
             if ($tags) {
                 $query = $query->whereHas('tags', function($query) use ($tags) {
                     $query->whereIn('tag_id', $tags);
@@ -191,7 +189,6 @@ class IndexController extends Controller {
         }
         $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
-        \Log::info('result',$result);
         foreach ($result['data'] as &$item) {
             switch ($item['read_type']) {
                 case RecommendRead::READ_TYPE_SUBMISSION:
@@ -233,7 +230,6 @@ class IndexController extends Controller {
                     break;
             }
         }
-        \Log::info('result1',$result);
         return self::createJsonData(true, $result);
     }
 
