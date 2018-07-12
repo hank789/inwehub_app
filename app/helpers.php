@@ -1056,7 +1056,7 @@ if (!function_exists('saveImgToCdn')){
 
 if (!function_exists('getUrlImg')) {
     function getUrlImg($url) {
-        $f = file_get_contents($url);
+        $f = file_get_contents_curl($url);
         if (str_contains($url,'mp.weixin.qq.com')) {
             //微信的文章
             $pattern = '/var msg_cdn_url = "(.*?)";/s';
@@ -1125,7 +1125,7 @@ if (!function_exists('getRequestIpAddress')) {
 if (!function_exists('getUrlTitle')) {
     function getUrlTitle($url) {
         try {
-            $f = file_get_contents($url);
+            $f = file_get_contents_curl($url);
             if (str_contains($url,'mp.weixin.qq.com')) {
                 preg_match('/<h2 class="rich_media_title" id="activity-name">(?<h2>.*?)<\/h2>/si', $f, $title);
                 $title['title'] = $title['h2'];
@@ -1146,6 +1146,28 @@ if (!function_exists('getUrlTitle')) {
         } catch (Exception $e) {
             return '';
         }
+    }
+}
+
+if (!function_exists('file_get_contents_curl')) {
+    function file_get_contents_curl($url, $timeout = '10')
+    {
+        $ch = curl_init();
+        $headers = [];
+        $headers[] = 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6';
+        $headers[] = 'Cache-Control: no-cache';
+        $headers[] = 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0';
+        curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+        curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+
+        $data = curl_exec($ch);
+        curl_close($ch);
+
+        return $data;
     }
 }
 
