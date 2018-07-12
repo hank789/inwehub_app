@@ -101,7 +101,7 @@ class SubmissionObserver implements ShouldQueue {
             if (isset($notified_uids[$attention_uid])) continue;
             if ($members && !in_array($attention_uid,$members)) continue;
             $attention_user = User::find($attention_uid);
-            $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
+            if ($attention_user) $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
         }
 
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
