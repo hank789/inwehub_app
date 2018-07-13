@@ -74,6 +74,7 @@ class ProfileController extends Controller
         $info['industry_tags'] = TagsLogic::formatTags($user->industryTags());
         if(empty($info['industry_tags'])) $info['industry_tags'] = '';
         $info['skill_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get());
+        $info['region_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userRegionTag()->pluck('tag_id'))->get());
         $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
         $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
         $info['is_company'] = $user->userData->is_company;
@@ -470,6 +471,23 @@ class ProfileController extends Controller
 
         UserTag::multiDetachByField($user->id,Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get(),'skills');
         UserTag::multiIncrement($user->id,$tags,'skills');
+        self::$needRefresh = true;
+        return self::createJsonData(true);
+    }
+
+    //添加用户领域标签
+    public function updateRegionTag(Request $request) {
+        $user = $request->user();
+        if(RateLimiter::instance()->increase('user:add:region:tags',$user->id,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
+        $tagids = $request->input('tags');
+
+        $tags = Tag::whereIn('id',$tagids)->get();
+
+        UserTag::multiDetachByField($user->id,Tag::whereIn('id',$user->userRegionTag()->pluck('tag_id'))->get(),'region');
+        UserTag::multiIncrement($user->id,$tags,'region');
         self::$needRefresh = true;
         return self::createJsonData(true);
     }

@@ -58,6 +58,7 @@ class ReadhubController extends Controller
                 'slug' => $submission->slug,
                 'img'   => $submission->data['img']??'',
                 'files' => $submission->data['files']??'',
+                'status'=> $submission->status,
                 'submission_url' => $submission->data['url']??$comment_url,
                 'comment_url'    => $comment_url,
                 'domain'         => $submission->data['domain']??'',

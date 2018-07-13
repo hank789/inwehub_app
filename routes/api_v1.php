@@ -79,6 +79,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('profile/addSkillTag','ProfileController@addSkillTag');
     //删除用户擅长标签
     Route::post('profile/delSkillTag','ProfileController@delSkillTag');
+    //更新用户领域标签
+    Route::post('profile/updateRegionTag','ProfileController@updateRegionTag');
+
     //保存用户通讯录
     Route::post('profile/saveAddressBook','ProfileController@saveAddressBook');
     //获取用户通讯录列表
@@ -573,6 +576,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
 
     //赞文章
     Route::post('upvote-submission','SubmissionVotesController@upVote');
+    //踩文章
+    Route::post('downvote-submission','SubmissionVotesController@downVote');
     //他的专栏
     Route::post('user','HomeController@userArticle');
 });
@@ -582,6 +587,8 @@ Route::post('article/detail-by-slug','Article\SubmissionController@getBySlug');
 Route::post('article/comments','Article\CommentController@index');
 //点赞
 Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
+//踩
+Route::post('downvote/{source_type}',['uses'=>'DownVoteController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
 //附近位置
 Route::post('location/nearbySearch',['uses'=>'LocationController@nearbySearch'])->middleware('jwt.auth');
 //附近的人

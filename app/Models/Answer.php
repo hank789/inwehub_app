@@ -126,4 +126,14 @@ class Answer extends Model
         return 0;
     }
 
+    public function getSupportRate() {
+        if ($this->supports <= 0) return 0;
+        return (bcdiv($this->supports,$this->supports + $this->downvotes,2) * 100).'%';
+    }
+
+    public function getSupportRateDesc() {
+        if ($this->supports <= 0 && $this->downvotes <=0) return '暂无，快来表个态';
+        return (bcdiv($this->supports,$this->supports + $this->downvotes,2) * 100).'%的人觉得赞';
+    }
+
 }

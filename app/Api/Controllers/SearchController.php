@@ -136,7 +136,7 @@ class SearchController extends Controller
             if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
         }
 
-        $query = Submission::search($request->input('search_word'));
+        $query = Submission::search($request->input('search_word'))->where('status',1);
         if ($userPrivateGroups) {
             $query = $query->Where(function ($query) use ($userPrivateGroups) {
                 $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);

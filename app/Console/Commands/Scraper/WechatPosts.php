@@ -51,7 +51,7 @@ class WechatPosts extends Command {
                     } else {
                         dispatch(new ArticleToSubmission($article->_id));
                     }
-                    $second += 30;
+                    $second += 300;
                 }
             }
         }

@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -167,10 +168,12 @@ class SubmissionController extends Controller {
                 'group_id'      => $request->input('group_id'),
                 'public'        => $group->public,
                 'rate'          => firstRate(),
+                'status'        => $request->input('draft',0)?0:1,
                 'user_id'       => $user->id,
                 'data'          => $data,
             ]);
             $group->increment('articles');
+            GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
             RateLimiter::instance()->sClear('group_read_users:'.$group->id);
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
@@ -228,6 +231,7 @@ class SubmissionController extends Controller {
 
         $submission->title = $request->input('title');
         $submission->group_id = $request->input('group_id');
+        $submission->status = $request->input('draft',0)?0:1;
         $submission->data = $object_data;
         $submission->save();
 
@@ -256,7 +260,7 @@ class SubmissionController extends Controller {
             $img = getUrlImg($request->url);
             if ($img) {
                 //保存图片
-                $img_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+                $img_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
                 dispatch((new UploadFile($img_name,base64_encode(file_get_contents($img)))));
                 $img_url = Storage::url($img_name);
                 Cache::put('submission_url_img_'.$request->url,$img_url,60);
@@ -340,6 +344,7 @@ class SubmissionController extends Controller {
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
         $return['supporter_list'] = $supporters;
+        $return['support_description'] = $submission->getSupportRateDesc();
         $return['tags'] = $submission->tags()->get()->toArray();
         $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;
         $return['bookmarks'] = Collection::where('source_id',$submission->id)

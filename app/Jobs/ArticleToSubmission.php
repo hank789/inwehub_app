@@ -119,7 +119,7 @@ class ArticleToSubmission implements ShouldQueue
         $category = Category::where('slug','channel_xwdt')->first();
 
         $submission = Submission::create([
-            'title'         => formatContentUrls($article->title),
+            'title'         => formatContentUrls($article->description),
             'slug'          => $this->slug($article->title),
             'type'          => 'link',
             'category_name' => $category->name,

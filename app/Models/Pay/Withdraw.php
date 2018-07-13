@@ -76,7 +76,7 @@ class Withdraw extends Model {
                 break;
             case self::WITHDRAW_CHANNEL_WX_PUB:
                 $user_oauth = UserOauth::where('user_id',$this->user_id)->where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)->where('status',1)->orderBy('updated_at','desc')->first();
-                return $user_oauth->nickname;
+                return $user_oauth?$user_oauth->nickname:'';
                 break;
         }
     }

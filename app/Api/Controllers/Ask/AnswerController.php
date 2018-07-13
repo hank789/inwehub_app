@@ -145,6 +145,8 @@ class AnswerController extends Controller
             'is_supported' => $support?1:0,
             'is_collected' => $collect?1:0,
             'support_number' => $answer->supports,
+            'downvote_number'=> $answer->downvotes,
+            'support_description'=> $answer->getSupportRateDesc(),
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
             'collect_num' => $answer->collections,
@@ -474,6 +476,7 @@ class AnswerController extends Controller
         if ($answer->question->question_type == 1) {
             $this->task($loginUser->id,get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK);
         }
+
         QuestionLogic::calculationQuestionRate($answer->question_id);
 
 

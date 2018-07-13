@@ -17,6 +17,7 @@ use App\Notifications\NewSubmission;
 use App\Traits\UsernameMentions;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\Frontend\System\Credit as CreditEvent;
+use Illuminate\Support\Facades\Redis;
 
 class SubmissionObserver implements ShouldQueue {
 
@@ -36,7 +37,8 @@ class SubmissionObserver implements ShouldQueue {
      */
     public function created(Submission $submission)
     {
-
+        if ($submission->status == 0) return;
+        if (Redis::connection()->hget('voten:submission:publish',$submission->id)) return;
         $slackFields = [];
         foreach ($submission->data as $field=>$value){
             if ($value){
@@ -60,6 +62,7 @@ class SubmissionObserver implements ShouldQueue {
         event(new CreditEvent($submission->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$submission->id,'动态分享'));
         $group = Group::find($submission->group_id);
         $members = [];
+        Redis::connection()->hset('voten:submission:publish',$submission->id, $submission->id);
         feed()
             ->causedBy($user)
             ->performedOn($submission)
@@ -98,7 +101,7 @@ class SubmissionObserver implements ShouldQueue {
             if (isset($notified_uids[$attention_uid])) continue;
             if ($members && !in_array($attention_uid,$members)) continue;
             $attention_user = User::find($attention_uid);
-            $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
+            if ($attention_user) $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
         }
 
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
@@ -115,6 +118,10 @@ class SubmissionObserver implements ShouldQueue {
                     'fields' => $slackFields
                 ]
             )->send('用户'.formatSlackUser($user).'在圈子['.$group->name.']提交了新分享');
+    }
+
+    public function updated(Submission $submission){
+        if ($submission->status == 1) $this->created($submission);
     }
 
 
