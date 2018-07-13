@@ -37,6 +37,8 @@ class ReadhubController extends Controller
             if (in_array($type,['link','text','article'])) {
                 $query = $query->where('type',$type);
             }
+        } else {
+            $query = $query->where('status',1);
         }
 
         if($top_id){
