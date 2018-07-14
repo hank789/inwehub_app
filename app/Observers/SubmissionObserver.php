@@ -121,7 +121,7 @@ class SubmissionObserver implements ShouldQueue {
     }
 
     public function updated(Submission $submission){
-        if ($submission->status == 1) $this->created($submission);
+        if ($submission->status == 1 && $submission->created_at >= '2018-07-14 13:20:00') $this->created($submission);
     }
 
 
