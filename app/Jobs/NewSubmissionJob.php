@@ -1,27 +1,29 @@
-<?php namespace App\Observers;
-/**
- * @author: wanghui
- * @date: 2017/4/20 下午4:23
- * @email: wanghui@yonglibao.com
- */
+<?php
 
+namespace App\Jobs;
+
+use App\Models\Submission;
+use App\Models\User;
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use App\Events\Frontend\System\Credit as CreditEvent;
 use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
-use App\Models\Submission;
-use App\Models\User;
 use App\Notifications\FollowedUserNewSubmission;
 use App\Notifications\NewSubmission;
 use App\Traits\UsernameMentions;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Events\Frontend\System\Credit as CreditEvent;
-use Illuminate\Support\Facades\Redis;
 
-class SubmissionObserver implements ShouldQueue {
 
-    use UsernameMentions;
+class NewSubmissionJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UsernameMentions;
+
     /**
      * 任务最大尝试次数
      *
@@ -29,16 +31,29 @@ class SubmissionObserver implements ShouldQueue {
      */
     public $tries = 1;
 
+    public $id;
+
+
     /**
-     * 监听问题创建的事件。
+     * Create a new job instance.
      *
-     * @param  Submission  $submission
      * @return void
      */
-    public function created(Submission $submission)
+    public function __construct($id)
     {
+        $this->id = $id;
+
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $submission = Submission::find($this->id);
         if ($submission->status == 0) return;
-        if (Redis::connection()->hget('voten:submission:publish',$submission->id)) return;
         $slackFields = [];
         foreach ($submission->data as $field=>$value){
             if ($value){
@@ -62,7 +77,6 @@ class SubmissionObserver implements ShouldQueue {
         event(new CreditEvent($submission->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$submission->id,'动态分享'));
         $group = Group::find($submission->group_id);
         $members = [];
-        Redis::connection()->hset('voten:submission:publish',$submission->id, $submission->id);
         feed()
             ->causedBy($user)
             ->performedOn($submission)
@@ -119,11 +133,4 @@ class SubmissionObserver implements ShouldQueue {
                 ]
             )->send('用户'.formatSlackUser($user).'在圈子['.$group->name.']提交了新分享');
     }
-
-    public function updated(Submission $submission){
-        if ($submission->status == 1 && $submission->created_at >= '2018-07-14 13:20:00') $this->created($submission);
-    }
-
-
-
 }

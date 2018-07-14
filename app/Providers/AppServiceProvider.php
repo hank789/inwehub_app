@@ -25,7 +25,6 @@ use App\Observers\CouponObserver;
 use App\Observers\DownvoteObserver;
 use App\Observers\MemberGroupObserver;
 use App\Observers\QuestionObserver;
-use App\Observers\SubmissionObserver;
 use App\Observers\SupportObserver;
 use App\Observers\UserEduObserver;
 use App\Observers\UserJobObserver;
@@ -98,7 +97,6 @@ class AppServiceProvider extends ServiceProvider
         Collection::observe(CollectObserver::class);
         Comment::observe(CommentObserver::class);
         Support::observe(SupportObserver::class);
-        Submission::observe(SubmissionObserver::class);
         Coupon::observe(CouponObserver::class);
         GroupMember::observe(MemberGroupObserver::class);
         DownVote::observe(DownvoteObserver::class);

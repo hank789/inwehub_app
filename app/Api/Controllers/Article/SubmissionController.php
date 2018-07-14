@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
 use App\Exceptions\ApiException;
+use App\Jobs\NewSubmissionJob;
 use App\Jobs\UploadFile;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
@@ -184,6 +185,9 @@ class SubmissionController extends Controller {
                 Tag::multiAddByName($newTagString,$submission);
             }
             UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
+            if ($submission->status == 1) {
+                $this->dispatch(new NewSubmissionJob($submission->id));
+            }
 
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);
@@ -219,6 +223,7 @@ class SubmissionController extends Controller {
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
         }
+        $oldStatus = $submission->status;
 
         $description = QuillLogic::parseImages($request->input('description'));
         if ($description === false){
@@ -234,6 +239,9 @@ class SubmissionController extends Controller {
         $submission->status = $request->input('draft',0)?0:1;
         $submission->data = $object_data;
         $submission->save();
+        if ($oldStatus == 0 && $submission->status == 1) {
+            $this->dispatch(new NewSubmissionJob($submission->id));
+        }
 
         self::$needRefresh = true;
         return self::createJsonData(true);
