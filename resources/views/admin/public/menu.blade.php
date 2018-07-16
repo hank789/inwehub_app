@@ -212,6 +212,8 @@
             <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu" id="manage_scraper">
+            <li><a href="{{ route('admin.scraper.feeds.index') }}"><i class="fa fa-circle-o"></i> RSS数据源</a></li>
+            <li><a href="{{ route('admin.scraper.news.index') }}"><i class="fa fa-circle-o"></i> RSS文章管理</a></li>
             <li><a href="{{ route('admin.scraper.wechat.author.index') }}"><i class="fa fa-circle-o"></i> 微信公众号管理</a></li>
             <li><a href="{{ route('admin.scraper.wechat.article.index') }}"><i class="fa fa-circle-o"></i> 微信公众号文章管理</a></li>
         </ul>

@@ -265,12 +265,8 @@ class SubmissionController extends Controller {
         $img_url = Cache::get('submission_url_img_'.$request->url,'');
         Cache::put('submission_url_title_'.$request->url,$title,60);
         if (empty($img_url)) {
-            $img = getUrlImg($request->url);
-            if ($img) {
-                //保存图片
-                $img_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
-                dispatch((new UploadFile($img_name,base64_encode(file_get_contents($img)))));
-                $img_url = Storage::url($img_name);
+            $img_url = getUrlImg($request->url);
+            if ($img_url) {
                 Cache::put('submission_url_img_'.$request->url,$img_url,60);
             }
         }

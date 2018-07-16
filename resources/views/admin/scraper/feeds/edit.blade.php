@@ -22,10 +22,12 @@
                                 @if($errors->has('name')) <p class="help-block">{{ $errors->first('name') }}</p> @endif
                             </div>
 
-                            <div class="form-group">
-                                <label for="description">描述：</label>
-                                <input id="description" type="text" name="description"  class="form-control input-lg" placeholder="" value="{{ old('description',$feeds->description) }}" />
+                            <div class="form-group @if($errors->has('group_id')) has-error @endif ">
+                                <label for="wx_hao">圈子id:</label>
+                                <input id="group_id" type="text" name="group_id"  class="form-control input-lg" placeholder="该公众号文章所属的圈子id" value="{{ old('group_id',$feeds->group_id) }}" />
+                                @if($errors->has('group_id')) <p class="help-block">{{ $errors->first('group_id') }}</p> @endif
                             </div>
+
                             <div class="form-group">
                                 <label for="source_type">源类型：</label>
                                 <div class="radio">
@@ -53,6 +55,6 @@
 @endsection
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_inwehub',"{{ route('admin.scraper.feeds.index') }}");
+        set_active_menu('manage_scraper',"{{ route('admin.scraper.feeds.index') }}");
     </script>
 @endsection

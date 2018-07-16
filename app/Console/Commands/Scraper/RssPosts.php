@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands\Scraper;
 
-use App\Models\Inwehub\Feeds;
-use App\Models\Inwehub\News;
+use App\Jobs\ArticleToSubmission;
+use App\Models\Scraper\Feeds;
+use App\Models\Scraper\WechatWenzhangInfo;
+use Carbon\Carbon;
 use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Exception\ClientException;
-use Carbon\Carbon;
 use PHPHtmlParser\Dom;
 
 use Illuminate\Console\Command;
@@ -69,11 +69,6 @@ class RssPosts extends Command
 
                 $topic = $lists[$index];
 
-                $data = [
-                    'user_id'  => $topic->user_id,
-                    'topic_id' => $topic->id,
-                ];
-
                 foreach ($xml->channel->item as $key => $value) {
                     $image_url    = '';
                     $author       = '';
@@ -120,18 +115,20 @@ class RssPosts extends Command
                     if (!$guid) {
                         $guid = $value->link;
                     }
-                    $article = News::firstOrCreate(['content_url' => $value->link]);
-
-                    $article->update([
+                    if (empty($image_url)) {
+                        $image_url = getUrlImg($value->link);
+                    }
+                    WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link],[
                         'content_url'           => $value->link,
                         'title'          => $value->title,
                         'author'    => $author,
                         'site_name'      => $topic->name,
                         'topic_id'       => 0,
+                        'mp_id'          => $topic->group_id,
                         'mobile_url'     => '',
                         'date_time'   => new DateTime($value->pubDate),
                         'source_type' => 2,
-                        'description' => substr(strip_tags($value->description),0,200),
+                        'description' => str_limit(strip_tags($value->description),200),
                         'cover_url'   => $image_url,
                         'status'         => 1
                     ]);
@@ -149,6 +146,15 @@ class RssPosts extends Command
         // Force the pool of requests to complete.
         $promise->wait();
 
-        $this->comment(PHP_EOL.Inspiring::quote().PHP_EOL);
+        $articles = WechatWenzhangInfo::where('source_type',2)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
+        $second = 0;
+        foreach ($articles as $article) {
+            if ($second > 0) {
+                dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds($second));
+            } else {
+                dispatch(new ArticleToSubmission($article->_id));
+            }
+            $second += 300;
+        }
     }
 }

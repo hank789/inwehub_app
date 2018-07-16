@@ -367,7 +367,7 @@ Route::group(['prefix' => 'scraper','namespace'=>'Scraper'],function(){
     Route::post('news/destroy',['as'=>'admin.scraper.news.destroy','uses'=>'NewsController@destroy']);
     Route::post('news/verify',['as'=>'admin.scraper.news.verify','uses'=>'NewsController@verify']);
 
-    Route::resource('news', 'NewsController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
+    Route::resource('news', 'NewsController',['only' => ['index','edit'],'as'=>'admin.scraper']);
 
     /*数据源管理*/
     Route::get('feeds/create',['as'=>'admin.scraper.feeds.create','uses'=>'FeedsController@create']);
@@ -379,7 +379,7 @@ Route::group(['prefix' => 'scraper','namespace'=>'Scraper'],function(){
     Route::post('feeds/verify',['as'=>'admin.scraper.feeds.verify','uses'=>'FeedsController@verify']);
 
 
-    Route::resource('feeds', 'FeedsController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
+    Route::resource('feeds', 'FeedsController',['only' => ['index','edit'],'as'=>'admin.scraper']);
     /*微信公众号*/
     Route::get('wechat/author/create',['as'=>'admin.scraper.wechat.author.create','uses'=>'WechatController@createAuthor']);
     Route::post('wechat/author/store',['as'=>'admin.scraper.wechat.author.store','uses'=>'WechatController@storeAuthor']);

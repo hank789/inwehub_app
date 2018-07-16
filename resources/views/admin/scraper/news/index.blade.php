@@ -15,7 +15,6 @@
                         <div class="row">
                             <div class="col-xs-2">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.scraper.news.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新新闻"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.scraper.news.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.scraper.news.destroy') }}','确认禁用选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
@@ -95,7 +94,6 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.scraper.news.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新新闻"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.scraper.news.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.scraper.news.destroy') }}','确认禁用选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
@@ -119,6 +117,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_inwehub',"{{ route('admin.scraper.news.index') }}");
+        set_active_menu('manage_scraper',"{{ route('admin.scraper.news.index') }}");
     </script>
 @endsection

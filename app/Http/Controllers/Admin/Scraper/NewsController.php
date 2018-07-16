@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Models\Inwehub\News;
+use App\Models\Scraper\WechatWenzhangInfo;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 
 class NewsController extends AdminController
 {
@@ -29,7 +27,7 @@ class NewsController extends AdminController
     {
         $filter =  $request->all();
 
-        $query = News::query();
+        $query = WechatWenzhangInfo::query();
 
         /*话题过滤*/
         if( isset($filter['topic_id']) &&  $filter['topic_id'] > 0 ){
@@ -57,14 +55,14 @@ class NewsController extends AdminController
 
 
         $articles = $query->where('source_type',2)->orderBy('date_time','desc')->paginate(20);
-        return view("admin.inwehub.news.index")->with('news',$articles)->with('filter',$filter);
+        return view("admin.scraper.news.index")->with('news',$articles)->with('filter',$filter);
     }
 
 
 
     public function create()
     {
-        return view("admin.inwehub.news.create");
+        return view("admin.scraper.news.create");
     }
 
     /**
@@ -75,8 +73,6 @@ class NewsController extends AdminController
      */
     public function store(Request $request)
     {
-        $loginUser = $request->user();
-
         $request->flash();
         $this->validateRules['content_url'] = 'required|max:255|unique:inwehub.news_info';
 
@@ -85,7 +81,6 @@ class NewsController extends AdminController
         $data = [
             'title'        => trim($request->input('title')),
             'content_url'           =>$request->input('content_url'),
-            'mobile_url'   => $request->input('mobile_url')?:'',
             'author'  => $request->input('author'),
             'site_name'    => $request->input('site_name'),
             'description'  => $request->input('description')?:'',
@@ -96,7 +91,7 @@ class NewsController extends AdminController
         ];
 
 
-        $news = News::create($data);
+        $news = WechatWenzhangInfo::create($data);
 
         /*判断新闻是否添加成功*/
         if($news){
@@ -104,7 +99,7 @@ class NewsController extends AdminController
             return $this->success(route('admin.inwehub.news.index',['id'=>$news->_id]),$message);
         }
 
-        return  $this->error("话题发布失败，请稍后再试",route('admin.inwehub.news.index'));
+        return  $this->error("话题发布失败，请稍后再试",route('admin.scraper.news.index'));
 
     }
 
@@ -115,13 +110,13 @@ class NewsController extends AdminController
      */
     public function edit($id,Request $request)
     {
-        $news = News::find($id);
+        $news = WechatWenzhangInfo::find($id);
 
         if(!$news){
             abort(404);
         }
 
-        return view("admin.inwehub.news.edit")->with(compact('news'));
+        return view("admin.scraper.news.edit")->with(compact('news'));
 
     }
 
@@ -135,7 +130,7 @@ class NewsController extends AdminController
     public function update(Request $request)
     {
         $article_id = $request->input('id');
-        $article = News::find($article_id);
+        $article = WechatWenzhangInfo::find($article_id);
         if(!$article){
             abort(404);
         }
@@ -147,13 +142,12 @@ class NewsController extends AdminController
         $article->title = trim($request->input('title'));
         $article->content_url = trim($request->input('content_url'));
         $article->site_name = trim($request->input('site_name'));
-        $article->mobile_url = trim($request->input('mobile_url'))?:'';
         $article->author = trim($request->input('author'));
         $article->description = trim($request->input('description'))?:'';
 
         $article->save();
 
-        return $this->success(route('admin.inwehub.news.index'),"新闻编辑成功");
+        return $this->success(route('admin.scraper.news.index'),"新闻编辑成功");
 
     }
 
@@ -162,8 +156,8 @@ class NewsController extends AdminController
     public function verify(Request $request)
     {
         $articleIds = $request->input('id');
-        News::whereIn('_id',$articleIds)->update(['status'=>1]);
-        return $this->success(route('admin.inwehub.news.index'),'审核成功');
+        WechatWenzhangInfo::whereIn('_id',$articleIds)->update(['status'=>1]);
+        return $this->success(route('admin.scraper.news.index'),'审核成功');
 
     }
 
@@ -176,7 +170,7 @@ class NewsController extends AdminController
      */
     public function destroy(Request $request)
     {
-        News::whereIn('_id',$request->input('id'))->update(['status'=>0]);
-        return $this->success(route('admin.inwehub.news.index'),'禁用成功');
+        WechatWenzhangInfo::whereIn('_id',$request->input('id'))->update(['status'=>0]);
+        return $this->success(route('admin.scraper.news.index'),'禁用成功');
     }
 }

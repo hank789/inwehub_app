@@ -4,18 +4,16 @@
  * @date: 2017/4/13 下午8:36
  * @email: wanghui@yonglibao.com
  */
-use App\Models\Inwehub\Feeds;
-use App\Models\Inwehub\News;
+
+use App\Models\Scraper\Feeds;
+use App\Models\Scraper\WechatWenzhangInfo;
 use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Exception\ClientException;
-use Carbon\Carbon;
 use PHPHtmlParser\Dom;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Inspiring;
 
 class AtomPosts extends Command
 {
@@ -71,11 +69,6 @@ class AtomPosts extends Command
 
                 $topic = $lists[$index];
 
-                $data = [
-                    'user_id'  => $topic->user_id,
-                    'topic_id' => $topic->id,
-                ];
-
                 foreach ($xml->entry as $key => $value) {
                     $image_url   = '';
                     $author_name = '';
@@ -111,8 +104,6 @@ class AtomPosts extends Command
                         $author_link = $value->author->uri;
                     }
 
-                    $article = News::firstOrCreate(['content_url' => $value->link->attributes()->href]);
-
                     $published_at = new DateTime();
                     if (strlen((string)$value->published) > 0) {
                         $published_at = new DateTime($value->published);
@@ -120,16 +111,21 @@ class AtomPosts extends Command
                         $published_at = new DateTime($value->updated);
                     }
 
-                    $article->update([
+                    if (empty($image_url)) {
+                        $image_url = getUrlImg($value->link->attributes()->href);
+                    }
+
+                    WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link->attributes()->href],[
                         'content_url'           => $value->link->attributes()->href,
                         'title'          => $value->title,
                         'author'    => $author_name,
                         'site_name'      => $topic->name,
                         'topic_id'       => 0,
+                        'mp_id'          => $topic->group_id,
                         'mobile_url'    => '',
                         'date_time'   => $published_at,
                         'source_type' => 2,
-                        'description' => substr(strip_tags($value->summary),0,200),
+                        'description' => str_limit(strip_tags($value->summary),200),
                         'cover_url'   => $image_url,
                         'status'         => 1
                     ]);
@@ -146,7 +142,5 @@ class AtomPosts extends Command
 
         // Force the pool of requests to complete.
         $promise->wait();
-
-        $this->comment(PHP_EOL.Inspiring::quote().PHP_EOL);
     }
 }
