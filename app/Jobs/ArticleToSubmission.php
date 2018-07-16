@@ -142,6 +142,7 @@ class ArticleToSubmission implements ShouldQueue
         $article->topic_id = $submission->id;
         $article->save();
         $author->group->increment('articles');
+        $this->dispatch(new NewSubmissionJob($submission->id));
         RateLimiter::instance()->sClear('group_read_users:'.$author->group->id);
         Redis::connection()->hset('voten:submission:url',$url, $submission->id);
 
