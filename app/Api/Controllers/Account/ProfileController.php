@@ -488,6 +488,12 @@ class ProfileController extends Controller
 
         UserTag::multiDetachByField($user->id,Tag::whereIn('id',$user->userRegionTag()->pluck('tag_id'))->get(),'region');
         UserTag::multiIncrement($user->id,$tags,'region');
+        $fields = [];
+        $fields[] = [
+            'title'=>'标签',
+            'value'=>implode(',',array_column($tags->toArray(),'name'))
+        ];
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']添加了领域标签',$fields));
         self::$needRefresh = true;
         return self::createJsonData(true);
     }
