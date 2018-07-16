@@ -123,7 +123,7 @@ class AtomPosts extends Command
                         'author'    => $author_name,
                         'site_name'      => $topic->name,
                         'topic_id'       => 0,
-                        'mp_id'          => $topic->group_id,
+                        'mp_id'          => $topic->id,
                         'mobile_url'    => '',
                         'date_time'   => $published_at,
                         'source_type' => 2,

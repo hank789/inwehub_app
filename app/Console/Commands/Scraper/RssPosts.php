@@ -124,7 +124,7 @@ class RssPosts extends Command
                         'author'    => $author,
                         'site_name'      => $topic->name,
                         'topic_id'       => 0,
-                        'mp_id'          => $topic->group_id,
+                        'mp_id'          => $topic->id,
                         'mobile_url'     => '',
                         'date_time'   => new DateTime($value->pubDate),
                         'source_type' => 2,
