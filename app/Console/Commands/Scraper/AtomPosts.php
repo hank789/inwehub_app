@@ -5,8 +5,10 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Jobs\ArticleToSubmission;
 use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatWenzhangInfo;
+use Carbon\Carbon;
 use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -142,5 +144,16 @@ class AtomPosts extends Command
 
         // Force the pool of requests to complete.
         $promise->wait();
+
+        $articles = WechatWenzhangInfo::where('source_type',2)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
+        $second = 0;
+        foreach ($articles as $article) {
+            if ($second > 0) {
+                dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds($second));
+            } else {
+                dispatch(new ArticleToSubmission($article->_id));
+            }
+            $second += 300;
+        }
     }
 }
