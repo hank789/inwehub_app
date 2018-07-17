@@ -19,7 +19,7 @@ class WechatWenzhangInfo extends Model {
 
     protected $primaryKey = '_id';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = ['title','content_url','topic_id','mp_id','author','site_name','mobile_url','date_time','source_type','description','cover_url','status'];
 
