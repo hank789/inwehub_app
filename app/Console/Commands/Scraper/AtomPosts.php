@@ -11,9 +11,6 @@ use App\Models\Scraper\WechatWenzhangInfo;
 use App\Third\RssFeed;
 use Carbon\Carbon;
 use DateTime;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request;
 use PHPHtmlParser\Dom;
 
 use Illuminate\Console\Command;

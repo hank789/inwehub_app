@@ -1059,6 +1059,7 @@ if (!function_exists('getUrlImg')) {
         $f = file_get_contents_curl($url);
         $temp = '';
         $img_url = '';
+        $useCache = false;
         if (str_contains($url,'mp.weixin.qq.com')) {
             //微信的文章
             $pattern = '/var msg_cdn_url = "(.*?)";/s';
@@ -1067,21 +1068,27 @@ if (!function_exists('getUrlImg')) {
                 $temp = $matches[1][0];
             }
         } else {
-            $temp = Cache::get('domain_url_img_'.domain($url),'');
-            if (empty($temp)) {
-                $pattern="/<[link|LINK].*?href=[\'|\"](.*?(?:[\.ico|\.jpg|\.png]))[\'|\"].*?[\/]?>/";
-                preg_match_all($pattern,$f,$matchContent);
-                if(isset($matchContent[1][0])){
-                    $temp=$matchContent[1][0];
-                    if (stripos($temp,'//') === 0) {
-                        $temp = 'http:'.$temp;
-                    } elseif (stripos($temp,'http') !== 0) {
-                        $urls = parse_url($url);
-                        $temp = $urls['scheme'].'://'.$urls['host'].$temp;
-                    }
-                }
+            preg_match_all('/<[\s]*meta[\s]*(name|property)="?(og:image)"?[\s]*content="?([^>"]*)"?[\s]*[\/]?[\s]*>/si', $f, $match);
+            if (isset($match[3][0]) && false) {
+                $temp = $match[3][0];
             } else {
-                return $temp;
+                $temp = Cache::get('domain_url_img_'.domain($url),'');
+                if (empty($temp) || true) {
+                    $pattern='/<link.+href="?(\S+\.ico)\??"?.+>/i';
+                    preg_match_all($pattern,$f,$matchContent);
+                    if(isset($matchContent[1][0])){
+                        $temp=$matchContent[1][0];
+                        if (stripos($temp,'//') === 0) {
+                            $temp = 'http:'.$temp;
+                        } elseif (stripos($temp,'http') !== 0) {
+                            $urls = parse_url($url);
+                            $temp = $urls['scheme'].'://'.$urls['host'].$temp;
+                        }
+                        $useCache = true;
+                    }
+                } else {
+                    return $temp;
+                }
             }
         }
         if ($temp) {
@@ -1090,7 +1097,7 @@ if (!function_exists('getUrlImg')) {
             dispatch((new \App\Jobs\UploadFile($img_name,base64_encode(file_get_contents($temp)))));
             $img_url = Storage::url($img_name);
             //非微信文章
-            if (!str_contains($url,'mp.weixin.qq.com')) {
+            if ($useCache) {
                 Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
             }
         }
