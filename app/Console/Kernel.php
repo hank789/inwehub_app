@@ -89,8 +89,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('crontab:calc-group-hot')->hourly();
         if (config('app.env') == 'production') {
             //$schedule->command('scraper:wechat:author')->hourly();
-            $schedule->command('scraper:atom')->cron('0 9,16,21 * * *');
-            $schedule->command('scraper:rss')->cron('30 7,13,19 * * *');
+            $schedule->command('scraper:atom')->cron('0 8,16,20 * * *');
+            $schedule->command('scraper:rss')->cron('30 7,13,19,21 * * *');
 
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
