@@ -145,7 +145,7 @@ class RssFeed
 	 * @return \SimpleXMLElement
 	 * @throws \Exception
 	 */
-	private static function loadXml($url, $user, $pass)
+	public static function loadXml($url, $user, $pass)
 	{
 		$e = self::$cacheExpire;
 		$cacheFile = self::$cacheDir . '/feed.' . md5(serialize(func_get_args())) . '.xml';
@@ -164,8 +164,9 @@ class RssFeed
 		} else {
 			throw new \Exception('Cannot load feed.');
 		}
-
-		return new \SimpleXMLElement($data, LIBXML_NOWARNING | LIBXML_NOERROR);
+        $invalid_characters = '/[^\x9\xa\x20-\xD7FF\xE000-\xFFFD]/';
+        $data = preg_replace($invalid_characters, '', $data );
+		return simplexml_load_string($data,'SimpleXMLElement');
 	}
 
 
@@ -177,7 +178,7 @@ class RssFeed
 	 * @return string|false
 	 * @throws \Exception
 	 */
-	private static function httpRequest($url, $user, $pass)
+	public static function httpRequest($url, $user, $pass)
 	{
 		if (extension_loaded('curl')) {
 			$curl = curl_init();
@@ -193,9 +194,8 @@ class RssFeed
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
 			}
 			$result = curl_exec($curl);
-			return curl_errno($curl) === 0 && curl_getinfo($curl, CURLINFO_HTTP_CODE) === 200
-				? $result
-				: false;
+            curl_close($curl);
+			return $result;
 
 		} elseif ($user === null && $pass === null) {
 			return file_get_contents($url);

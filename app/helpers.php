@@ -1417,6 +1417,7 @@ if (!function_exists('convertWechatLimitLinkToUnlimit')) {
         curl_setopt($ch , CURLOPT_URL , $url);
 
         $res = curl_exec($ch);
+        curl_close($ch);
 
         return json_decode($res,true);
     }
