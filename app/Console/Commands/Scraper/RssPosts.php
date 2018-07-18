@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Scraper;
 
+use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\ArticleToSubmission;
 use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -48,7 +49,13 @@ class RssPosts extends Command
         foreach ($lists as $key => $topic) {
             $source_link = $topic->source_link;
             $this->info($source_link);
-            $xml = RssFeed::loadRss($source_link);
+            try {
+                $xml = RssFeed::loadRss($source_link);
+            } catch (\Exception $e) {
+                app('sentry')->captureException($e);
+                event(new SystemNotify('RSS抓取失败：'.$topic->source_link));
+                continue;
+            }
             foreach ($xml->channel->item as $key => $value) {
                 $image_url    = '';
                 $author       = '';
