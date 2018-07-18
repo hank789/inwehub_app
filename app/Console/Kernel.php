@@ -30,6 +30,8 @@ class Kernel extends ConsoleKernel
         Commands\Readhub\InitUser::class,
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
+        Commands\Scraper\RssPosts::class,
+        Commands\Scraper\AtomPosts::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
@@ -87,6 +89,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('crontab:calc-group-hot')->hourly();
         if (config('app.env') == 'production') {
             //$schedule->command('scraper:wechat:author')->hourly();
+            $schedule->command('scraper:atom')->cron('0 8,16,20 * * *');
+            $schedule->command('scraper:rss')->cron('30 7,13,19,21 * * *');
+
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
     }

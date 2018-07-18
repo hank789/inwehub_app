@@ -35,10 +35,6 @@
                                 <label for="content_url">网站url：</label>
                                 <input id="content_url" type="text" name="content_url"  class="form-control input-lg" placeholder="" value="{{ old('content_url',$news->content_url) }}" />
                             </div>
-                            <div class="form-group">
-                                <label for="mobile_url">手机端url：</label>
-                                <input id="mobile_url" type="text" name="mobile_url"  class="form-control input-lg" placeholder="默认与网站url一致" value="{{ old('mobile_url',$news->mobile_url) }}" />
-                            </div>
 
                             <div class="form-group">
                                 <label for="editor">摘要：</label>
@@ -60,6 +56,6 @@
 @endsection
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_inwehub',"{{ route('admin.scraper.news.index') }}");
+        set_active_menu('manage_scraper',"{{ route('admin.scraper.news.index') }}");
     </script>
 @endsection

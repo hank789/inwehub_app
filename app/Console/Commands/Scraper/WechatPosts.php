@@ -43,7 +43,7 @@ class WechatPosts extends Command {
         if($path){
             shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
             if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
-                $articles = WechatWenzhangInfo::where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
+                $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
                 $second = 0;
                 foreach ($articles as $article) {
                     if ($second > 0) {

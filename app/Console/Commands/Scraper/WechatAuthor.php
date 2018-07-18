@@ -43,7 +43,6 @@ class WechatAuthor extends Command {
         $path = config('app.spider_path');
         if($path){
             shell_exec('cd '.$path.' && python auto_add_mp.py >> /tmp/auto_add_mp.log');
-            $this->call('scraper:wechat:posts');
         }
     }
 }

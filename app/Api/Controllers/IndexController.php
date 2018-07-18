@@ -196,6 +196,7 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_SUBMISSION:
                     // '发现分享';
                     $object = Submission::find($item['source_id']);
+                    $item['type_description'] = '发现分享';
                     $item['data']['comment_number'] = $object->comments_number;
                     $item['data']['support_number'] = $object->upvotes;
                     $item['data']['view_number'] = $object->views;
@@ -204,7 +205,7 @@ class IndexController extends Controller {
                     // '专业问答';
                     $object = Question::find($item['source_id']);
                     $bestAnswer = $object->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
-
+                    $item['type_description'] = $object->price.'元问答';
                     $item['data']['price'] = $object->price;
                     $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
                     $item['data']['view_number'] = $bestAnswer->views;
@@ -213,6 +214,7 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_FREE_QUESTION:
                     // '互动问答';
                     $object = Question::find($item['source_id']);
+                    $item['type_description'] = $object->price.'元悬赏'.($object->status <= 7 ? '中':($object->status==8?',已采纳':',已关闭'));
                     $item['data']['answer_number'] = $object->answers;
                     $item['data']['follower_number'] = $object->followers;
                     $item['data']['view_number'] = $object->views;
@@ -226,6 +228,7 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER:
                     // '互动问答回复';
                     $object = Answer::find($item['source_id']);
+                    $item['type_description'] = $object->question->price.'元问答';
                     $item['data']['comment_number'] = $object->comments;
                     $item['data']['support_number'] = $object->supports;
                     $item['data']['view_number'] = $object->views;

@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Models\Inwehub\Feeds;
-use App\Models\Inwehub\News;
+use App\Models\Scraper\Feeds;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use Illuminate\Support\Facades\Artisan;
 
 class FeedsController extends AdminController
@@ -16,7 +13,7 @@ class FeedsController extends AdminController
     /*新闻创建校验*/
     protected $validateRules = [
         'name'        => 'required|max:255',
-        'description' => 'required|max:255',
+        'group_id'    => 'required|integer|min:1',
         'source_type' => 'required|max:255|in:1,2',
         'source_link' => 'required|max:255',
     ];
@@ -44,14 +41,14 @@ class FeedsController extends AdminController
 
 
         $articles = $query->orderBy('created_at','desc')->paginate(20);
-        return view("admin.inwehub.feeds.index")->with('feeds',$articles)->with('filter',$filter);
+        return view("admin.scraper.feeds.index")->with('feeds',$articles)->with('filter',$filter);
     }
 
 
 
     public function create()
     {
-        return view("admin.inwehub.feeds.create");
+        return view("admin.scraper.feeds.create");
     }
 
     /**
@@ -62,36 +59,28 @@ class FeedsController extends AdminController
      */
     public function store(Request $request)
     {
-        $loginUser = $request->user();
-
         $request->flash();
 
-        $this->validateRules['name'] = 'required|max:255|unique:inwehub.feeds';
+        $this->validateRules['name'] = 'required|max:255|unique:scraper_feeds';
 
         $this->validate($request,$this->validateRules);
-
-        $source_type = $request->input('source_type');
-
-
         $data = [
-            'user_id'      => $loginUser->id,
             'name'        => trim($request->input('name')),
-            'description'  =>$request->input('description'),
+            'group_id'  =>$request->input('group_id'),
             'source_type' => $request->input('source_type'),
             'source_link'   => $request->input('source_link'),
             'status'       => 0,
         ];
-
 
         $news = Feeds::create($data);
 
         /*判断新闻是否添加成功*/
         if($news){
             $message = '发布成功! ';
-            return $this->success(route('admin.inwehub.feeds.index'),$message);
+            return $this->success(route('admin.scraper.feeds.index'),$message);
         }
 
-        return  $this->error("发布失败，请稍后再试",route('admin.inwehub.feeds.index'));
+        return  $this->error("发布失败，请稍后再试",route('admin.scraper.feeds.index'));
 
     }
 
@@ -108,7 +97,7 @@ class FeedsController extends AdminController
             abort(404);
         }
 
-        return view("admin.inwehub.feeds.edit")->with(compact('feeds'));
+        return view("admin.scraper.feeds.edit")->with(compact('feeds'));
 
     }
 
@@ -132,13 +121,13 @@ class FeedsController extends AdminController
         $this->validate($request,$this->validateRules);
 
         $feed->name = trim($request->input('name'));
-        $feed->description = trim($request->input('description'));
+        $feed->group_id = trim($request->input('group_id'));
         $feed->source_link = trim($request->input('source_link'));
         $feed->source_type = $request->input('source_type');
 
         $feed->save();
 
-        return $this->success(route('admin.inwehub.feeds.index'),"编辑成功");
+        return $this->success(route('admin.scraper.feeds.index'),"编辑成功");
 
     }
 
@@ -150,7 +139,7 @@ class FeedsController extends AdminController
     public function destroy(Request $request)
     {
         Feeds::whereIn('id',$request->input('id'))->update(['status'=>0]);
-        return $this->success(route('admin.inwehub.feeds.index'),'禁用成功');
+        return $this->success(route('admin.scraper.feeds.index'),'禁用成功');
     }
 
     /*审核*/
@@ -158,10 +147,7 @@ class FeedsController extends AdminController
     {
         $articleIds = $request->input('id');
         Feeds::whereIn('id',$articleIds)->update(['status'=>1]);
-        Artisan::queue('scraper:rss');
-        Artisan::queue('scraper:atom');
-
-        return $this->success(route('admin.inwehub.feeds.index'),'审核成功,正在执行数据抓取,请稍后');
+        return $this->success(route('admin.scraper.feeds.index'),'审核成功,稍后会自动抓取数据');
 
     }
 
@@ -176,7 +162,7 @@ class FeedsController extends AdminController
                 Artisan::queue('scraper:atom',['id'=>$id]);
                 break;
         }
-        return $this->success(route('admin.inwehub.feeds.index'),"正在抓取数据,稍等片刻");
+        return $this->success(route('admin.scraper.feeds.index'),"正在抓取数据,稍等片刻");
 
     }
 

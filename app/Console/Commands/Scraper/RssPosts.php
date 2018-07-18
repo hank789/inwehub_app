@@ -2,18 +2,14 @@
 
 namespace App\Console\Commands\Scraper;
 
-use App\Models\Inwehub\Feeds;
-use App\Models\Inwehub\News;
-use DateTime;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Exception\ClientException;
+use App\Jobs\ArticleToSubmission;
+use App\Models\Scraper\Feeds;
+use App\Models\Scraper\WechatWenzhangInfo;
+use App\Third\RssFeed;
 use Carbon\Carbon;
+use DateTime;
 use PHPHtmlParser\Dom;
-
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Inspiring;
 
 class RssPosts extends Command
 {
@@ -49,106 +45,85 @@ class RssPosts extends Command
             ->get();
 
         if($lists->count()<=0) return;
-        $client = new Client();
+        foreach ($lists as $key => $topic) {
+            $source_link = $topic->source_link;
+            $this->info($source_link);
+            $xml = RssFeed::loadRss($source_link);
+            foreach ($xml->channel->item as $key => $value) {
+                $image_url    = '';
+                $author       = '';
+                $article_tags = [];
 
-        $requests = function ($lists) {
-            foreach ($lists as $key => $topic) {
-                $source_link = $topic->source_link;
-                $this->info($source_link);
-                yield new Request('GET', $source_link);
-            }
-        };
+                $dom = new Dom();
+                $dom->load($value->description);
 
-        $pool = new Pool($client, $requests($lists), [
-            'concurrency' => 10,
-            'fulfilled' => function ($response, $index) use ($lists) {
-                // this is delivered each successful response
-                $body = mb_convert_encoding($response->getBody()->getContents(), "UTF-8");
-
-                $xml = simplexml_load_string( $body );
-
-                $topic = $lists[$index];
-
-                $data = [
-                    'user_id'  => $topic->user_id,
-                    'topic_id' => $topic->id,
-                ];
-
-                foreach ($xml->channel->item as $key => $value) {
-                    $image_url    = '';
-                    $author       = '';
-                    $article_tags = [];
-
-                    $dom = new Dom();
-                    $dom->load($value->description);
-
-                    $author = $value->author;
-                    if (strlen($author) === 0) {
-                        $author = $value->children('dc', true)->creator;
-                    }
-
-                    $img_tags = $dom->find('img');
-                    foreach ($img_tags as $img) {
-                        $image_url = $img->getAttribute('src');
-                        // 如果图片链接为空，则跳过下方的处理
-                        if (strlen($image_url) === 0) {
-                            continue;
-                        }
-                        // 省略嵌入式资源处理
-                        if (0 === strpos($image_url, '//')) {
-                            $image_url = 'http:' . $image_url;
-                        }
-                        // 判断是否为 .jpg、.jpeg、.png、.bmp 类型的图片，如果不是则跳过
-                        if (strpos($image_url, '.jpg')  > 0 ||
-                            strpos($image_url, '.jpeg') > 0 ||
-                            strpos($image_url, '.png')  > 0 ||
-                            strpos($image_url, '.bmp')  > 0) {
-                            break;
-                        } else {
-                            $image_url = '';
-                        }
-                    }
-                    // 获取文章的标签
-                    /*$category_tags = $value->category;
-                    foreach ($category_tags as $category) {
-                        array_push($article_tags, new ArticleTag(['name' => ((string) $category)]));
-                        // 创建标签，如果存在则会被忽略掉
-                        Tag::firstOrCreate(['name' => ((string) $category)]);
-                    }*/
-
-                    $guid = $value->guid;
-                    if (!$guid) {
-                        $guid = $value->link;
-                    }
-                    $article = News::firstOrCreate(['content_url' => $value->link]);
-
-                    $article->update([
-                        'content_url'           => $value->link,
-                        'title'          => $value->title,
-                        'author'    => $author,
-                        'site_name'      => $topic->name,
-                        'topic_id'       => 0,
-                        'mobile_url'     => '',
-                        'date_time'   => new DateTime($value->pubDate),
-                        'source_type' => 2,
-                        'description' => substr(strip_tags($value->description),0,200),
-                        'cover_url'   => $image_url,
-                        'status'         => 1
-                    ]);
+                $author = $value->author;
+                if (strlen($author) === 0) {
+                    $author = $value->children('dc', true)->creator;
                 }
-            },
-            'rejected' => function ($reason, $index) {
-                // this is delivered each failed request
-                $this->error("rejected reason: " . $reason );
-            },
-        ]);
 
-        // Initiate the transfers and create a promise
-        $promise = $pool->promise();
+                $img_tags = $dom->find('img');
+                foreach ($img_tags as $img) {
+                    $image_url = $img->getAttribute('src');
+                    // 如果图片链接为空，则跳过下方的处理
+                    if (strlen($image_url) === 0) {
+                        continue;
+                    }
+                    // 省略嵌入式资源处理
+                    if (0 === strpos($image_url, '//')) {
+                        $image_url = 'http:' . $image_url;
+                    }
+                    // 判断是否为 .jpg、.jpeg、.png、.bmp 类型的图片，如果不是则跳过
+                    if (strpos($image_url, '.jpg')  > 0 ||
+                        strpos($image_url, '.jpeg') > 0 ||
+                        strpos($image_url, '.png')  > 0 ||
+                        strpos($image_url, '.bmp')  > 0) {
+                        break;
+                    } else {
+                        $image_url = '';
+                    }
+                }
+                // 获取文章的标签
+                /*$category_tags = $value->category;
+                foreach ($category_tags as $category) {
+                    array_push($article_tags, new ArticleTag(['name' => ((string) $category)]));
+                    // 创建标签，如果存在则会被忽略掉
+                    Tag::firstOrCreate(['name' => ((string) $category)]);
+                }*/
 
-        // Force the pool of requests to complete.
-        $promise->wait();
+                $guid = $value->guid;
+                if (!$guid) {
+                    $guid = $value->link;
+                }
+                if (empty($image_url)) {
+                    $image_url = getUrlImg($value->link);
+                }
+                WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link],[
+                    'content_url'           => $value->link,
+                    'title'          => $value->title,
+                    'author'    => $author,
+                    'site_name'      => $topic->name,
+                    'topic_id'       => 0,
+                    'mp_id'          => $topic->id,
+                    'mobile_url'     => '',
+                    'date_time'   => new DateTime($value->pubDate),
+                    'source_type' => 2,
+                    'description' => str_limit(strip_tags($value->description),300),
+                    'cover_url'   => $image_url,
+                    'status'         => 1
+                ]);
+            }
+        }
 
-        $this->comment(PHP_EOL.Inspiring::quote().PHP_EOL);
+        $articles = WechatWenzhangInfo::where('source_type',2)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
+        $second = 0;
+        foreach ($articles as $article) {
+            if ($second > 0) {
+                dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds($second));
+            } else {
+                dispatch(new ArticleToSubmission($article->_id));
+            }
+            $second += 300;
+        }
     }
 }

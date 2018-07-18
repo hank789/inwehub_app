@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Category;
+use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
@@ -47,34 +48,42 @@ class ArticleToSubmission implements ShouldQueue
     {
         $article = WechatWenzhangInfo::find($this->id);
         if ($article->topic_id > 0 || $article->status == 0) return;
-        $author = WechatMpInfo::find($article->mp_id);
+        if ($article->source_type == 1) {
+            $author = WechatMpInfo::find($article->mp_id);
+        } else {
+            $author = Feeds::find($article->mp_id);
+        }
         if (!$author) return;
         if ($author->group_id <= 0) return;
-        if (str_contains($article->content_url,'wechat_redirect')) {
-            $url = $article->content_url;
-        } else {
-            $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
-            if ($unlimitUrl['error_code'] != 0) {
-                $fileds = [
-                    [
-                        'title' => '返回结果',
-                        'value' => json_encode($unlimitUrl, JSON_UNESCAPED_UNICODE)
-                    ]
-                ];
-                //调用失败
-                \Slack::to(config('slack.ask_activity_channel'))
-                    ->attach(
+        if ($article->source_type == 1) {
+            if (str_contains($article->content_url,'wechat_redirect')) {
+                $url = $article->content_url;
+            } else {
+                $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
+                if ($unlimitUrl['error_code'] != 0) {
+                    $fileds = [
                         [
-                            'fields' => $fileds
+                            'title' => '返回结果',
+                            'value' => json_encode($unlimitUrl, JSON_UNESCAPED_UNICODE)
                         ]
-                    )
-                    ->send('解析微信公众号永久链接失败，稍后会继续尝试');
-                if ($unlimitUrl['error_code'] == 114) {
-                    dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds(60));
+                    ];
+                    //调用失败
+                    \Slack::to(config('slack.ask_activity_channel'))
+                        ->attach(
+                            [
+                                'fields' => $fileds
+                            ]
+                        )
+                        ->send('解析微信公众号永久链接失败，稍后会继续尝试');
+                    if ($unlimitUrl['error_code'] == 114) {
+                        dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds(60));
+                    }
+                    return;
                 }
-                return;
+                $url = $unlimitUrl['data']['article_origin_url'];
             }
-            $url = $unlimitUrl['data']['article_origin_url'];
+        } else {
+            $url = $article->content_url;
         }
 
         $article->content_url = $url;
@@ -133,6 +142,7 @@ class ArticleToSubmission implements ShouldQueue
         $article->topic_id = $submission->id;
         $article->save();
         $author->group->increment('articles');
+        dispatch(new NewSubmissionJob($submission->id));
         RateLimiter::instance()->sClear('group_read_users:'.$author->group->id);
         Redis::connection()->hset('voten:submission:url',$url, $submission->id);
 
