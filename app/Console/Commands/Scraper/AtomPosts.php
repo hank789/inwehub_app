@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\ArticleToSubmission;
 use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -52,7 +53,14 @@ class AtomPosts extends Command
         foreach ($lists as $key => $topic) {
             $source_link = $topic->source_link;
             $this->info($source_link);
-            $xml = RssFeed::loadAtom($source_link);
+            try {
+                $xml = RssFeed::loadAtom($source_link);
+            } catch (\Exception $e) {
+                app('sentry')->captureException($e);
+                event(new SystemNotify('RSS抓取失败：'.$topic->source_link));
+                continue;
+            }
+
             foreach ($xml->entry as $key => $value) {
                 $image_url   = '';
                 $author_name = '';
