@@ -147,10 +147,7 @@ class FeedsController extends AdminController
     {
         $articleIds = $request->input('id');
         Feeds::whereIn('id',$articleIds)->update(['status'=>1]);
-        Artisan::queue('scraper:rss');
-        Artisan::queue('scraper:atom');
-
-        return $this->success(route('admin.scraper.feeds.index'),'审核成功,正在执行数据抓取,请稍后');
+        return $this->success(route('admin.scraper.feeds.index'),'审核成功,稍后会自动抓取数据');
 
     }
 
