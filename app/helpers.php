@@ -1069,11 +1069,11 @@ if (!function_exists('getUrlImg')) {
             }
         } else {
             preg_match_all('/<[\s]*meta[\s]*(name|property)="?(og:image)"?[\s]*content="?([^>"]*)"?[\s]*[\/]?[\s]*>/si', $f, $match);
-            if (isset($match[3][0]) && false) {
+            if (isset($match[3][0])) {
                 $temp = $match[3][0];
             } else {
                 $temp = Cache::get('domain_url_img_'.domain($url),'');
-                if (empty($temp) || true) {
+                if (empty($temp)) {
                     $pattern='/<link.+href="?(\S+\.ico)\??"?.+>/i';
                     preg_match_all($pattern,$f,$matchContent);
                     if(isset($matchContent[1][0])){
