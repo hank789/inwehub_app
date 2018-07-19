@@ -1191,7 +1191,9 @@ if (!function_exists('file_get_contents_curl')) {
 
         $data = curl_exec($ch);
         curl_close($ch);
-
+        if (empty($data)) {
+            $data = file_get_contents($url);
+        }
         return $data;
     }
 }
