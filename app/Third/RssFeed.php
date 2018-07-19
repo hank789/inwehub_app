@@ -194,7 +194,6 @@ class RssFeed
 				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
 			}
 			$result = curl_exec($curl);
-            curl_close($curl);
 			return $result;
 
 		} elseif ($user === null && $pass === null) {
