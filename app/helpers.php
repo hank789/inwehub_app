@@ -1071,6 +1071,9 @@ if (!function_exists('getUrlImg')) {
             preg_match_all('/<[\s]*meta[\s]*(name|property)="?(og:image)"?[\s]*content="?([^>"]*)"?[\s]*[\/]?[\s]*>/si', $f, $match);
             if (isset($match[3][0])) {
                 $temp = $match[3][0];
+                if (stripos($temp,'//') === 0) {
+                    $temp = 'http:'.$temp;
+                }
             } else {
                 $temp = Cache::get('domain_url_img_'.domain($url),'');
                 if (empty($temp)) {
