@@ -195,6 +195,9 @@ class RssFeed
 			}
 			$result = curl_exec($curl);
             curl_close($curl);
+            if (empty($result)) {
+                $result = file_get_contents($url);
+            }
 			return $result;
 
 		} elseif ($user === null && $pass === null) {
