@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers;
 use App\Exceptions\ApiException;
+use App\Logic\QuillLogic;
 use App\Models\Activity\Coupon;
 use App\Models\AddressBook;
 use App\Models\Answer;
@@ -200,6 +201,23 @@ class IndexController extends Controller {
                     $item['data']['comment_number'] = $object->comments_number;
                     $item['data']['support_number'] = $object->upvotes;
                     $item['data']['view_number'] = $object->views;
+                    $item['data']['support_rate'] = $object->getSupportRate();
+                    $item['data']['body'] = '';
+                    $item['data']['url'] = '';
+                    $item['data']['domain'] = '';
+                    $item['data']['article_title'] = '';
+                    if ($object->type == 'link') {
+                        $item['data']['domain'] = $object->data['domain'];
+                        $item['data']['body'] = $object->title;
+                        $item['data']['article_title'] = $object->data['title'];
+                        $item['data']['url'] = $object->data['url'];
+                    } elseif($object->type == 'text') {
+                        $item['data']['body'] = str_limit($object->title, 300);
+                    } elseif($object->type == 'article') {
+                        $item['data']['body'] = str_limit(QuillLogic::parseText($object->data['description']), 300);
+                    } else {
+                        $item['data']['body'] = str_limit($object->title, 300);
+                    }
                     break;
                 case RecommendRead::READ_TYPE_PAY_QUESTION:
                     // '专业问答';
@@ -209,7 +227,10 @@ class IndexController extends Controller {
                     $item['data']['price'] = $object->price;
                     $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
                     $item['data']['view_number'] = $bestAnswer->views;
+                    $item['data']['comment_number'] = $bestAnswer->comments;
                     $item['data']['support_number'] = $bestAnswer->supports;
+                    $item['data']['support_rate'] = $bestAnswer->getSupportRate();
+                    $item['data']['feedback_rate'] = $bestAnswer->getFeedbackAverage();
                     break;
                 case RecommendRead::READ_TYPE_FREE_QUESTION:
                     // '互动问答';
@@ -232,6 +253,8 @@ class IndexController extends Controller {
                     $item['data']['comment_number'] = $object->comments;
                     $item['data']['support_number'] = $object->supports;
                     $item['data']['view_number'] = $object->views;
+                    $item['data']['support_rate'] = $object->getSupportRate();
+                    $item['data']['feedback_rate'] = $object->getFeedbackAverage();
                     break;
             }
         }
