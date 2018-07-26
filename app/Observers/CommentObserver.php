@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Logic\QuillLogic;
 use App\Logic\TaskLogic;
 use App\Models\Comment;
 use App\Models\Credit;
@@ -163,7 +164,7 @@ class CommentObserver implements ShouldQueue {
                         } else {
                             $fields[] = [
                                 'title' => $field,
-                                'value' => $value
+                                'value' => $field=='description'?QuillLogic::parseText($value):$value
                             ];
                         }
                     }

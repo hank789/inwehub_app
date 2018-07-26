@@ -120,7 +120,7 @@ class AuthenticationController extends AdminController
             $user->notify(new AuthenticationUpdated($authentication));
         }
 
-        return $this->success(route('admin.authentication.index'),'行家认证信息修改成功');
+        return $this->success(url()->previous(),'行家认证信息修改成功');
 
 
     }

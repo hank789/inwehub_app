@@ -128,6 +128,6 @@ class CommentController extends AdminController
     public function destroy(Request $request)
     {
         Comment::destroy($request->input('id'));
-        return $this->success(route('admin.comment.index'),'评论删除成功');
+        return $this->success(url()->previous(),'评论删除成功');
     }
 }

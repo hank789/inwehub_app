@@ -98,7 +98,7 @@ class SubmissionController extends AdminController
         $submission->tags()->detach();
         Tag::multiSaveByIds($tagString,$submission);
 
-        return $this->success(route('admin.operate.article.index'),'文章修改成功');
+        return $this->success(url()->previous(),'文章修改成功');
     }
 
 
@@ -133,7 +133,7 @@ class SubmissionController extends AdminController
                 ],$oldData)
             ]);
         }
-        return $this->success(route('admin.operate.article.index'),'设为精选成功');
+        return $this->success(url()->previous(),'设为精选成功');
 
     }
 
@@ -146,6 +146,6 @@ class SubmissionController extends AdminController
     {
         $ids = $request->input('ids');
         Submission::whereIn('id',$ids)->delete();
-        return $this->success(route('admin.operate.article.index'),'删除成功');
+        return $this->success(url()->previous(),'删除成功');
     }
 }

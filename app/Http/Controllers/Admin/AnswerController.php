@@ -108,7 +108,7 @@ class AnswerController extends AdminController
                 ]
             ]);
         }
-        return $this->success(route('admin.answer.index'),'设为精选成功');
+        return $this->success(url()->previous(),'设为精选成功');
 
     }
 
@@ -125,6 +125,6 @@ class AnswerController extends AdminController
             if ($answer->question->question_type == 1) return $this->error(route('admin.answer.index'),'专业问答不能删除');
             $answer->delete();
         }
-        return $this->success(route('admin.answer.index'),'回答删除成功');
+        return $this->success(url()->previous(),'回答删除成功');
     }
 }
