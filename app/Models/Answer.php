@@ -126,8 +126,17 @@ class Answer extends Model
         return 0;
     }
 
+    public function getFeedbackAverage(){
+        $good = $this->feedbacks()->sum('star');
+        $all = $this->feedbacks()->count();
+        if ($all) {
+            return bcdiv($good,$all,1).'分';
+        }
+        return '暂无评分';
+    }
+
     public function getSupportRate() {
-        if ($this->supports <= 0) return 0;
+        if ($this->supports <= 0) return '0%';
         return (bcdiv($this->supports,$this->supports + $this->downvotes,2) * 100).'%';
     }
 

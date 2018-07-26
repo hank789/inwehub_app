@@ -115,7 +115,7 @@ class QuestionController extends AdminController
                 ]
             ]);
         }
-        return $this->success(route('admin.question.index'),'设为精选成功');
+        return $this->success(url()->previous(),'设为精选成功');
 
     }
 
@@ -124,7 +124,7 @@ class QuestionController extends AdminController
     {
         $questionIds = $request->input('id');
         Question::where('status','>=',6)->whereIn('id',$questionIds)->update(['is_recommend'=>1]);
-        return $this->success(route('admin.question.index'),'设为推荐成功');
+        return $this->success(url()->previous(),'设为推荐成功');
 
     }
 
@@ -133,7 +133,7 @@ class QuestionController extends AdminController
     {
         $questionIds = $request->input('id');
         Question::whereIn('id',$questionIds)->update(['is_recommend'=>0]);
-        return $this->success(route('admin.question.index'),'取消推荐成功');
+        return $this->success(url()->previous(),'取消推荐成功');
 
     }
 
@@ -143,7 +143,7 @@ class QuestionController extends AdminController
     {
         $questionIds = $request->input('id');
         Question::where('status','>=',6)->whereIn('id',$questionIds)->update(['is_hot'=>1]);
-        return $this->success(route('admin.question.index'),'设为热门成功');
+        return $this->success(url()->previous(),'设为热门成功');
 
     }
 
@@ -152,14 +152,14 @@ class QuestionController extends AdminController
     {
         $questionIds = $request->input('id');
         Question::whereIn('id',$questionIds)->update(['is_hot'=>0]);
-        return $this->success(route('admin.question.index'),'取消热门成功');
+        return $this->success(url()->previous(),'取消热门成功');
 
     }
 
 
     /*修改分类*/
     public function changeCategories(Request $request){
-        return $this->success(route('admin.question.index'),'分类修改成功');
+        return $this->success(url()->previous(),'分类修改成功');
     }
 
     /**
@@ -172,6 +172,6 @@ class QuestionController extends AdminController
     {
         $questionIds = $request->input('id');
         Question::destroy($questionIds);
-        return $this->success(route('admin.question.index'),'问题删除成功');
+        return $this->success(url()->previous(),'问题删除成功');
     }
 }

@@ -640,6 +640,47 @@ class GroupController extends Controller
         return self::createJsonData(true,$return);
     }
 
+
+    public function getHotGroup(Request $request) {
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+        $days = $request->input('days',1);
+        $groups = [];
+        if ($days == 1) {
+            $groups = RateLimiter::instance()->zRevrange('group-daily-hot-'.date('Ymd'),0,$perPage-1);
+        } else {
+            for ($i=0;$i<$days;$i++) {
+                $groupIds = RateLimiter::instance()->zRevrange('group-daily-hot-'.date('Ymd',strtotime('-'.$i.' days')),0,-1);
+                foreach ($groupIds as $groupId => $hotScore) {
+                    if (!isset($groups[$groupId])) $groups[$groupId] = 0;
+                    $groups[$groupId] += $hotScore;
+                }
+            }
+            arsort($groups);
+        }
+        $hotGroups = [];
+        foreach ($groups as $groupId => $hotScore) {
+            $group = Group::find($groupId);
+            $hotGroups[] = [
+                'id' => $groupId,
+                'user_id' => $group->user_id,
+                'name'    => $group->name,
+                'description' => $group->description,
+                'logo'    => $group->logo,
+                'public'  => $group->public,
+                'scores'  => $hotScore,
+                'owner'   => [
+                    'id' => $group->user_id,
+                    'uuid' => $group->user->uuid,
+                    'name' => $group->user->name,
+                    'is_expert' => $group->user->is_expert,
+                    'avatar' => $group->user->avatar
+                ]
+            ];
+            if (count($hotGroups) >= $perPage) break;
+        }
+        return self::createJsonData(true,$hotGroups);
+    }
+
     //推荐圈子
     public function recommend(Request $request) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));

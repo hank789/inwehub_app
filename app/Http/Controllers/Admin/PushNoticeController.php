@@ -139,6 +139,6 @@ class PushNoticeController extends AdminController
     public function destroy(Request $request)
     {
         PushNotice::where('status','!=', PushNotice::PUSH_STATUS_SEND)->whereIn('id',$request->input('ids'))->delete();
-        return $this->success(route('admin.operate.pushNotice.index'),'推送删除成功');
+        return $this->success(url()->previous(),'推送删除成功');
     }
 }

@@ -162,7 +162,7 @@ class TagController extends AdminController
             ]);
         }
         TagsLogic::delCache();
-        return $this->success(route('admin.tag.index'),'标签修改成功');
+        return $this->success(url()->previous(),'标签修改成功');
     }
 
     /*修改分类*/
@@ -182,7 +182,7 @@ class TagController extends AdminController
                 }
             }
         }
-        return $this->success(route('admin.tag.index'),'分类修改成功');
+        return $this->success(url()->previous(),'分类修改成功');
     }
 
 
@@ -197,7 +197,7 @@ class TagController extends AdminController
     {
         $tagIds = $request->input('id');
         Tag::destroy($tagIds);
-        return $this->success(route('admin.tag.index'),'标签删除成功');
+        return $this->success(url()->previous(),'标签删除成功');
     }
 
 }

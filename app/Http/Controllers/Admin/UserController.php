@@ -266,7 +266,7 @@ class UserController extends AdminController
             UserTag::multiIncrement($user->id,$tags,'skills');
         }
 
-        return $this->success(route('admin.user.index'),'用户修改成功');
+        return $this->success(url()->previous(),'用户修改成功');
     }
 
     /*用户审核*/
@@ -287,7 +287,7 @@ class UserController extends AdminController
         //User::destroy($userIds);
         User::whereIn('id',$userIds)->update(['status'=>-1]);
 
-        return $this->success(route('admin.user.index'),'用户禁用成功');
+        return $this->success(url()->previous(),'用户禁用成功');
 
     }
 

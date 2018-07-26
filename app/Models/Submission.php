@@ -179,4 +179,9 @@ class Submission extends Model {
         return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%的人觉得赞';
     }
 
+    public function getSupportRate() {
+        if ($this->upvotes <= 0) return '0%';
+        return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%';
+    }
+
 }

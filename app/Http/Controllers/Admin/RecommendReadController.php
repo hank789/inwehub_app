@@ -113,21 +113,21 @@ class RecommendReadController extends AdminController
         $recommendation->data = $object_data;
         $recommendation->save();
 
-        return $this->success(route('admin.operate.recommendRead.index'),'推荐修改成功');
+        return $this->success(url()->previous(),'推荐修改成功');
     }
 
     public function verify(Request $request) {
         $ids = $request->input('ids');
         RecommendRead::whereIn('id',$ids)->update(['audit_status'=>1]);
 
-        return $this->success(route('admin.operate.recommendRead.index'),'审核成功');
+        return $this->success(url()->previous(),'审核成功');
     }
 
     public function cancelVerify(Request $request) {
         $ids = $request->input('ids');
         RecommendRead::whereIn('id',$ids)->update(['audit_status'=>0]);
 
-        return $this->success(route('admin.operate.recommendRead.index'),'取消推荐成功');
+        return $this->success(url()->previous(),'取消推荐成功');
     }
 
     public function changeTags(Request $request) {
@@ -142,7 +142,7 @@ class RecommendReadController extends AdminController
                 Tag::multiSaveByIds($tagsId,$recommendation);
             }
         }
-        return $this->success(route('admin.operate.recommendRead.index'),'标签修改成功');
+        return $this->success(url()->previous(),'标签修改成功');
     }
 
     /**
@@ -154,6 +154,6 @@ class RecommendReadController extends AdminController
     public function destroy(Request $request)
     {
         RecommendRead::destroy($request->input('ids'));
-        return $this->success(route('admin.operate.recommendRead.index'),'推荐删除成功');
+        return $this->success(url()->previous(),'推荐删除成功');
     }
 }

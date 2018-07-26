@@ -135,7 +135,7 @@ class NoticeController extends AdminController
         $notice->sort = $request->input('sort');
         $notice->status = $request->input('status');
         $notice->save();
-        return $this->success(route('admin.notice.index'),'公告修改成功');
+        return $this->success(url()->previous(),'公告修改成功');
     }
 
     /**
@@ -147,6 +147,6 @@ class NoticeController extends AdminController
     public function destroy(Request $request)
     {
         Notice::destroy($request->input('ids'));
-        return $this->success(route('admin.notice.index'),'公告删除成功');
+        return $this->success(url()->previous(),'公告删除成功');
     }
 }

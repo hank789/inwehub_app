@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Logic\QuillLogic;
 use App\Models\Submission;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -67,7 +68,7 @@ class NewSubmissionJob implements ShouldQueue
                 } else {
                     $slackFields[] = [
                         'title' => $field,
-                        'value' => $value
+                        'value' => $field=='description'?QuillLogic::parseText($value):$value
                     ];
                 }
             }

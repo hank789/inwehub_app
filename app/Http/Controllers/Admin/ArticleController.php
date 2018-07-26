@@ -122,7 +122,7 @@ class ArticleController extends AdminController
                 ]
             ]);
         }
-        return $this->success(route('admin.article.index'),'设为精选成功');
+        return $this->success(url()->previous(),'设为精选成功');
 
     }
 
@@ -147,6 +147,6 @@ class ArticleController extends AdminController
     {
         $ids = $request->input('id');
         Article::whereIn('id',$ids)->delete();
-        return $this->success(route('admin.article.index'),'活动删除成功');
+        return $this->success(url()->previous(),'活动删除成功');
     }
 }

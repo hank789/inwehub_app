@@ -524,6 +524,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('submissionList','GroupController@submissionList');
     //随机推荐热门
     Route::post('hotRecommend','GroupController@hotRecommend');
+    //热门圈子
+    Route::post('getHotGroup','GroupController@getHotGroup');
     //圈子成员列表
     Route::post('members','GroupController@members');
     //审核通过圈子成员
