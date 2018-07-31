@@ -4,7 +4,7 @@
  * @date: 2017/4/20 下午4:23
  * @email: wanghui@yonglibao.com
  */
-use App\Models\Support;
+use App\Models\DownVote;
 use App\Services\RateLimiter;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -20,16 +20,16 @@ class DownvoteObserver implements ShouldQueue {
     /**
      * 监听点赞事件。
      *
-     * @param  Support  $support
+     * @param  DownVote  $support
      * @return void
      */
-    public function created(Support $support)
+    public function created(DownVote $downVote)
     {
-        $source = $support->source;
+        $source = $downVote->source;
         $fields = [];
         $title = '';
-        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('downvote:'.get_class($source),$source->id.'_'.$support->user_id,0)) {
-            switch ($support->supportable_type) {
+        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('downvote:'.get_class($source),$source->id.'_'.$downVote->user_id,0)) {
+            switch ($downVote->source_type) {
                 case 'App\Models\Comment':
                     $title = '评论';
                     $answer = $source->source;
@@ -104,7 +104,7 @@ class DownvoteObserver implements ShouldQueue {
                         'color'  => 'good',
                         'fields' => $fields
                     ]
-                )->send('用户'.$support->user->id.'['.$support->user->name.']踩了'.$title);
+                )->send('用户'.$downVote->user->id.'['.$downVote->user->name.']踩了'.$title);
         }
         return;
     }
