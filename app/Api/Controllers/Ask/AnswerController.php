@@ -12,6 +12,7 @@ use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
+use App\Models\DownVote;
 use App\Models\Feed\Feed;
 use App\Models\Feedback;
 use App\Models\Pay\Order;
@@ -114,6 +115,10 @@ class AnswerController extends Controller
 
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
 
+        $downvote = DownVote::where('user_id',$user->id)
+            ->where('source_id',$answer->id)
+            ->where('source_type',Answer::class)
+            ->exists();
         $collect = Collection::where('user_id',$user->id)->where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->first();
 
         $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
@@ -143,6 +148,7 @@ class AnswerController extends Controller
             'is_best_answer' => $answer->adopted_at?true:false,
             'is_followed' => $attention?1:0,
             'is_supported' => $support?1:0,
+            'is_downvoted' => $downvote ? 1 : 0,
             'is_collected' => $collect?1:0,
             'support_number' => $answer->supports,
             'downvote_number'=> $answer->downvotes,
