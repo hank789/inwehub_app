@@ -153,6 +153,7 @@ class AnswerController extends Controller
             'support_number' => $answer->supports,
             'downvote_number'=> $answer->downvotes,
             'support_description'=> $answer->getSupportRateDesc(),
+            'support_percent' => $answer->getSupportPercent(),
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
             'collect_num' => $answer->collections,
