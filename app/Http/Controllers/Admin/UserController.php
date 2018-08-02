@@ -86,7 +86,7 @@ class UserController extends AdminController
             $query->where('display_name','=',$filter['name']);
         }
         $cellData = [];
-        $cellData[] = ['系统ID','通讯录ID','姓名','手机','通讯录所有者ID','通讯录所有者姓名','原始信息'];
+        $cellData[] = ['系统ID','通讯录ID','姓名','手机','通讯录所有者ID','通讯录所有者姓名'];
         $page = 1;
         $addressbooks = $query->orderBy('created_at','desc')->simplePaginate(100,['*'],'page',$page);
         while ($addressbooks->count() > 0) {
@@ -97,8 +97,7 @@ class UserController extends AdminController
                     $user->display_name,
                     $user->phone,
                     $user->user_id,
-                    $user->user->name,
-                    json_encode($user->detail,JSON_UNESCAPED_UNICODE)
+                    $user->user->name
                 ];
             }
             $page ++;
