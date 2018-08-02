@@ -85,20 +85,24 @@ class UserController extends AdminController
         if( isset($filter['name']) && $filter['name']){
             $query->where('display_name','=',$filter['name']);
         }
-
-        $addressbooks = $query->orderBy('created_at','desc')->get();
         $cellData = [];
         $cellData[] = ['系统ID','通讯录ID','姓名','手机','通讯录所有者ID','通讯录所有者姓名','原始信息'];
-        foreach ($addressbooks as $user) {
-            $cellData[] = [
-                $user->id,
-                $user->address_book_id,
-                $user->display_name,
-                $user->phone,
-                $user->user_id,
-                $user->user->name,
-                json_encode($user->detail,JSON_UNESCAPED_UNICODE)
-            ];
+        $page = 1;
+        $addressbooks = $query->orderBy('created_at','desc')->simplePaginate(100,['*'],'page',$page);
+        while ($addressbooks->count() > 0) {
+            foreach ($addressbooks as $user) {
+                $cellData[] = [
+                    $user->id,
+                    $user->address_book_id,
+                    $user->display_name,
+                    $user->phone,
+                    $user->user_id,
+                    $user->user->name,
+                    json_encode($user->detail,JSON_UNESCAPED_UNICODE)
+                ];
+            }
+            $page ++;
+            $addressbooks = $query->orderBy('created_at','desc')->simplePaginate(100,['*'],'page',$page);
         }
         Excel::create('users',function($excel) use ($cellData){
             $excel->sheet('score', function($sheet) use ($cellData){
