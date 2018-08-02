@@ -189,4 +189,31 @@ class Submission extends Model {
         return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%';
     }
 
+    //计算排名积分
+    public function calculationRate(){
+        $startTime = 1498665600; // strtotime('2017-06-29')
+        $created = strtotime($this->created_at);
+        $timeDiff = $created - $startTime;
+        $views = $this->views;
+        $supports = $this->upvotes;
+        $z = $views + $this->collections * 1.5 + $supports * 2 + $this->comments_number * 2 + 1;
+        $x = $supports - $this->downvotes;
+
+        if ($x > 0) {
+            $y = 1;
+        } elseif ($x == 0) {
+            $y = 0;
+        } else {
+            $y = -1;
+        }
+        $rate =  (log10($z) * $y) + ($timeDiff / 90000);
+        $this->rate = $rate;
+        $this->save();
+        $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
+        if ($recommendRead) {
+            $recommendRead->rate = $this->rate + $recommendRead->getRateWeight();
+            $recommendRead->save();
+        }
+    }
+
 }

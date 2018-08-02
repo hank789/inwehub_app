@@ -323,6 +323,7 @@ class SubmissionController extends Controller {
         }
 
         $submission->increment('views');
+        $this->calculationSubmissionRate($submission->id);
 
         $upvote = Support::where('user_id',$user->id)
             ->where('supportable_id',$submission->id)

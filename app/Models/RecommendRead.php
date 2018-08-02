@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Relations\MorphManyTagsTrait;
+use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -45,7 +46,7 @@ class RecommendRead extends Model
 {
     use MorphManyTagsTrait;
     protected $table = 'recommend_read';
-    protected $fillable = ['read_type','audit_status','data','source_type','source_id','sort'];
+    protected $fillable = ['read_type','audit_status','data','source_type','source_id','sort', 'rate', 'tips'];
 
     protected $casts = [
         'data' => 'json'
@@ -96,6 +97,11 @@ class RecommendRead extends Model
     public function source()
     {
         return $this->morphTo();
+    }
+
+    public function getRateWeight() {
+        $weight = RateLimiter::instance()->hGet('recommend-rate-weight',$this->id);
+        return $weight?:0;
     }
 
 }

@@ -624,6 +624,7 @@ class AnswerController extends Controller
         /*问题、回答、文章评论数+1*/
         $source->increment('comments');
         UserTag::multiIncrement($user->id,$source->question->tags()->get(),'questions');
+        QuestionLogic::calculationQuestionRate($source->question_id);
         self::$needRefresh = true;
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }

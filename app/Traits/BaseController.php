@@ -8,6 +8,7 @@ use App\Events\Frontend\Answer\Answered;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\SaveActivity;
+use App\Jobs\UpdateSubmissionRate;
 use App\Jobs\UploadFile;
 use App\Logic\QuestionLogic;
 use App\Logic\QuillLogic;
@@ -53,6 +54,15 @@ trait BaseController {
     protected function credit($user_id,$action,$source_id = 0 ,$source_subject = null, $toSlack = true)
     {
         event(new CreditEvent($user_id,$action,Setting()->get('coins_'.$action),Setting()->get('credits_'.$action),$source_id,$source_subject,$toSlack));
+    }
+
+    protected function calculationSubmissionRate($submissionId){
+        $event = 'calculation:submission:rate';
+        $limit = RateLimiter::instance()->getValue($event,$submissionId);
+        if (!$limit) {
+            RateLimiter::instance()->increase($event,$submissionId,300,1);
+            dispatch(new UpdateSubmissionRate($submissionId))->delay(Carbon::now()->addMinutes(5));
+        }
     }
 
 

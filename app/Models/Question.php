@@ -497,6 +497,11 @@ class Question extends Model
             $this->hot_rate = $this->followers + $answers + $supports + 1;
         }
         $this->save();
+        $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Question::class)->first();
+        if ($recommendRead) {
+            $recommendRead->rate = $this->rate + $recommendRead->getRateWeight();
+            $recommendRead->save();
+        }
     }
 
 

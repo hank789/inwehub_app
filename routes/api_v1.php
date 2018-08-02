@@ -6,7 +6,7 @@
  */
 
 //app首页
-Route::post('home','IndexController@home')->middleware('jwt.auth');
+Route::post('home','IndexController@home');
 Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.auth');
 
 //精选推荐列表

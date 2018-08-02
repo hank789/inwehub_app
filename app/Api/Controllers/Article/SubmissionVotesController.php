@@ -159,10 +159,7 @@ class SubmissionVotesController extends Controller {
         $this->updateUserUpVotesRecords(
             $user->id, $submission->user_id, $previous_vote, $request->submission_id
         );
-
-        $submission->rate = rateSubmission( $submission->upvotes, $submission->downvotes, $submission->created_at);
-
-        $submission->save();
+        $this->calculationSubmissionRate($submission->id);
         UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
         return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote'],ApiException::SUCCESS,'点赞成功');
@@ -221,10 +218,7 @@ class SubmissionVotesController extends Controller {
         $this->updateUserUpVotesRecords(
             $user->id, $submission->user_id, $previous_vote, $request->submission_id
         );
-
-        $submission->rate = rateSubmission( $submission->upvotes, $submission->downvotes, $submission->created_at);
-
-        $submission->save();
+        $this->calculationSubmissionRate($submission->id);
 
         return self::createJsonData(true,['tip'=>'踩成功','type'=>'downvote'],ApiException::SUCCESS,'踩成功');
     }

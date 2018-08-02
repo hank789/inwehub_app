@@ -64,12 +64,13 @@
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>ID</th>
                                         <th>标题</th>
+                                        <th>标签语</th>
                                         <th>封面图片</th>
-                                        <th>排序</th>
+                                        <th>热度</th>
+                                        <th>热度加权</th>
                                         <th>类型</th>
                                         <th>标签</th>
                                         <th>审核状态</th>
-                                        <th>更新时间</th>
                                         <th>操作</th>
                                     </tr>
                                     @foreach($recommendations as $item)
@@ -77,6 +78,7 @@
                                             <td><input type="checkbox" value="{{ $item->id }}" name="ids[]"/></td>
                                             <td>{{ $item->id }}</td>
                                             <td><a href="{{ $item->getWebUrl() }}" target="_blank">{{ $item->data['title'] }}</a></td>
+                                            <td>{{ $item->tips }}</td>
                                             <td>
                                                 @if ($item->data['img'] && is_array($item->data['img']))
                                                     @foreach($item->data['img'] as $img)
@@ -86,7 +88,8 @@
                                                     <img width="100" height="100" src="{{ $item->data['img'] ??'' }}">
                                                 @endif
                                             </td>
-                                            <td>{{ $item->sort }}</td>
+                                            <td>{{ $item->rate }}</td>
+                                            <td>{{ $item->getRateWeight() }}</td>
                                             <td>{{ $item->getReadTypeName() }}</td>
                                             <td>
                                                 @foreach($item->tags as $tagInfo)

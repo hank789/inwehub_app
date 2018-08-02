@@ -28,8 +28,13 @@ use Tymon\JWTAuth\JWTAuth;
  */
 
 class IndexController extends Controller {
-    public function home(Request $request){
-        $user = $request->user();
+    public function home(Request $request, JWTAuth $JWTAuth){
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $expire_at = '';
 
         $show_invitation_coupon = false;
@@ -163,33 +168,43 @@ class IndexController extends Controller {
     public function recommendRead(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $orderBy = $request->input('orderBy',1);
+        $recommendType = $request->input('recommendType',2);
         $query = RecommendRead::where('audit_status',1);
         try {
             $user = $JWTAuth->parseToken()->authenticate();
-            $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
-            if ($tags) {
-                $query = $query->where(function ($query) use ($tags) {
-                    $query->whereHas('tags',function($query) use ($tags) {
-                        $query->whereIn('tag_id', $tags);
-                    })->orDoesntHave('tags');
-                });
+            //按领域推荐
+            if ($recommendType == 2) {
+                $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
+                if ($tags) {
+                    $query = $query->where(function ($query) use ($tags) {
+                        $query->whereHas('tags',function($query) use ($tags) {
+                            $query->whereIn('tag_id', $tags);
+                        })->orDoesntHave('tags');
+                    });
+                }
             }
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
         }
-        switch ($orderBy) {
-            case 1:
-                //热门
-                $query = $query->orderBy('sort','desc');
-                break;
-            case 2:
-                //随机
-                $count = $query->count();
-                $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
-                $query = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'));
-                break;
+        //实时热点
+        if ($recommendType == 3) {
+            $query = $query->orderBy('rate','desc');
+        } else {
+            switch ($orderBy) {
+                case 1:
+                    //热门
+                    $query = $query->orderBy('sort','desc');
+                    break;
+                case 2:
+                    //随机
+                    $count = $query->count();
+                    $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
+                    $query = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'));
+                    break;
+            }
         }
+
         $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
@@ -197,7 +212,7 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_SUBMISSION:
                     // '发现分享';
                     $object = Submission::find($item['source_id']);
-                    $item['type_description'] = '发现分享';
+                    $item['type_description'] = '';
                     $item['data']['comment_number'] = $object->comments_number;
                     $item['data']['support_number'] = $object->upvotes;
                     $item['data']['view_number'] = $object->views;
@@ -223,7 +238,7 @@ class IndexController extends Controller {
                     // '专业问答';
                     $object = Question::find($item['source_id']);
                     $bestAnswer = $object->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
-                    $item['type_description'] = $object->price.'元问答';
+                    $item['type_description'] = '问';
                     $item['data']['price'] = $object->price;
                     $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
                     $item['data']['view_number'] = $bestAnswer->views;
@@ -235,7 +250,7 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_FREE_QUESTION:
                     // '互动问答';
                     $object = Question::find($item['source_id']);
-                    $item['type_description'] = $object->price.'元悬赏'.($object->status <= 7 ? '中':($object->status==8?',已采纳':',已关闭'));
+                    $item['type_description'] = '问';
                     $item['data']['answer_number'] = $object->answers;
                     $item['data']['follower_number'] = $object->followers;
                     $item['data']['view_number'] = $object->views;
@@ -249,7 +264,7 @@ class IndexController extends Controller {
                 case RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER:
                     // '互动问答回复';
                     $object = Answer::find($item['source_id']);
-                    $item['type_description'] = $object->question->price.'元问答';
+                    $item['type_description'] = '问';
                     $item['data']['comment_number'] = $object->comments;
                     $item['data']['support_number'] = $object->supports;
                     $item['data']['view_number'] = $object->views;

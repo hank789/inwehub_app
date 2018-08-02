@@ -50,6 +50,7 @@ class BookmarksController extends Controller {
 
         /*不能多次收藏*/
         $userCollect = $user->isCollected(get_class($submission),$submission->id);
+        $this->calculationSubmissionRate($submission->id);
         if($userCollect){
             $userCollect->delete();
             $submission->decrement('collections');
