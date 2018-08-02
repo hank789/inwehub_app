@@ -104,4 +104,8 @@ class RecommendRead extends Model
         return $weight?:0;
     }
 
+    public function setRateWeight($value) {
+        return RateLimiter::instance()->hSet('recommend-rate-weight',$this->id,$value);
+    }
+
 }

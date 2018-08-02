@@ -641,9 +641,15 @@ class GroupController extends Controller
     }
 
 
-    public function getHotGroup(Request $request) {
+    public function getHotGroup(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $days = $request->input('days',1);
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $groups = [];
         if ($days == 1) {
             $groups = RateLimiter::instance()->zRevrange('group-daily-hot-'.date('Ymd'),0,$perPage-1);

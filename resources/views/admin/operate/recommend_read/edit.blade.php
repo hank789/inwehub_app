@@ -31,6 +31,11 @@
                             </div>
 
                             <div class="form-group">
+                                <label>标签语</label>
+                                <input type="text" name="tips" class="form-control "  placeholder="标签语" value="{{ old('tips',$recommendation->tips) }}">
+                            </div>
+
+                            <div class="form-group">
                                 <label>类型</label>
                                 <span>{{ $recommendation->getReadTypeName() }}</span>
                             </div>
@@ -49,8 +54,13 @@
                             </div>
 
                             <div class="form-group">
-                                <label>排序</label>
-                                <input type="text" name="recommend_sort" class="form-control "  placeholder="请输入整数，大的排前面" value="{{ old('recommend_sort',$recommendation->sort ? : $recommendation->id ) }}">
+                                <label>当前热度</label>
+                                <span>{{ $recommendation->rate }}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>加权热度</label>
+                                <input type="text" name="weight_rate" class="form-control "  placeholder="调整热度用" value="{{ old('weight_rate',$recommendation->getRateWeight()) }}">
                             </div>
 
                             <div class="form-group">

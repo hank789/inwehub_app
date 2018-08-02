@@ -14,8 +14,8 @@ class AddRateFiledRecommend extends Migration
     public function up()
     {
         Schema::table('recommend_read', function (Blueprint $table) {
-            $table->float('rate')->index()->nullable();
-            $table->string('tips')->nullable();
+            $table->float('rate')->index()->default(0)->after('sort');
+            $table->string('tips')->nullable()->after('sort');
         });
     }
 

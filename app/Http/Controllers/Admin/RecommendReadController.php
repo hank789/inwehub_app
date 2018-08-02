@@ -89,7 +89,7 @@ class RecommendReadController extends AdminController
         $validateRules = [
             'title'   => 'required',
             'recommend_status' => 'required|integer',
-            'recommend_sort'   => 'required|integer',
+            'weight_rate' => 'required|integer'
         ];
         $this->validate($request,$validateRules);
         $img_url = '';
@@ -102,14 +102,17 @@ class RecommendReadController extends AdminController
         } elseif (empty($recommendation->data['img'])) {
             return $this->error(route('admin.operate.recommendRead.edit',['id'=>$id]),'请上传封面图片');
         }
+        $oldRate = $recommendation->getRateWeight();
 
-        $recommendation->sort = $request->input('recommend_sort');
+        $recommendation->tips = $request->input('tips');
         $recommendation->audit_status = $request->input('recommend_status');
+        $recommendation->setRateWeight($request->input('weight_rate',0));
         $object_data = $recommendation->data;
         if ($img_url) {
             $object_data['img'] = $img_url;
         }
         $object_data['title'] = $request->input('title');
+        $recommendation->rate = $recommendation->getRateWeight() - $oldRate + $recommendation->rate;
         $recommendation->data = $object_data;
         $recommendation->save();
 
@@ -133,8 +136,6 @@ class RecommendReadController extends AdminController
     public function changeTags(Request $request) {
         $ids = $request->input('rids','');
         $tagsId = $request->input('tagIds',0);
-        \Log::info('test',[$ids]);
-        \Log::info('test1',[$tagsId]);
         if($ids){
             $idArray = explode(",",$ids);
             foreach ($idArray as $id) {
