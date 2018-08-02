@@ -470,23 +470,18 @@ class Question extends Model
 
     //计算排名积分
     public function calculationRate(){
-        $startTime = 1498665600; // strtotime('2017-06-29')
-        $created = strtotime($this->created_at);
-        $timeDiff = $created - $startTime;
         $views = $this->answers()->sum('views') + $this->views;
         $answers = $this->answers;
         $supports = $this->answers()->sum('supports');
-        $z = $views * 2 + $answers * 10 + $this->followers * 10 + $supports * 10 + $this->collections * 10 + 1;
-        if ($this->question_type == 1) {
-            $bestAnswer = $this->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
-            if ($bestAnswer) {
-                $stars = $bestAnswer->feedbacks()->sum('star');
-                $z += $stars;
-            }
+        $downvotes = $this->answers()->sum('downvotes');
+        $bestAnswer = $this->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
+        $stars = 0;
+        if ($bestAnswer) {
+            $stars = $bestAnswer->feedbacks()->sum('star');
         }
         $y = $this->answers()->sum('pay_for_views') + 1;
 
-        $rate =  (log10($z) * $y) + ($timeDiff / 172800);
+        $rate =  hotRate($views,$answers,$supports-$downvotes,$stars+$this->followers+$this->collections+$y,$this->created_at,$this->updated_at);
         $this->rate = $rate;
         //计算热门排名
         if ($this->question_type == 1) {

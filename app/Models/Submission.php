@@ -191,20 +191,11 @@ class Submission extends Model {
 
     //计算排名积分
     public function calculationRate(){
-        $startTime = 1498665600; // strtotime('2017-06-29')
-        $created = strtotime($this->created_at);
-        $timeDiff = $created - $startTime;
-        $views = $this->views;
-        $supports = $this->upvotes;
-        $z = $views * 2 + $this->collections * 10 + $supports * 10 + $this->comments_number * 5 + 1;
-        $x = $supports - $this->downvotes;
-
-        if ($x >= 0) {
-            $y = 1;
-        } else {
-            $y = -1;
-        }
-        $rate =  (log10($z) * $y) + ($timeDiff / 172800);
+        $shareNumber = Doing::where('action',Doing::ACTION_SHARE_SUBMISSION_SUCCESS)
+            ->where('source_id',$this->id)
+            ->where('source_type',Submission::class)
+            ->count();
+        $rate =  hotRate($this->views,$this->comments_number+1, $this->upvotes-$this->downvotes,$this->collections + $shareNumber,$this->created_at,$this->updated_at);
         $this->rate = $rate;
         $this->save();
         $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
