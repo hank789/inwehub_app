@@ -174,13 +174,20 @@ class IndexController extends Controller {
             $user = $JWTAuth->parseToken()->authenticate();
             //按领域推荐
             if ($recommendType == 2) {
-                $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
-                if ($tags) {
-                    $query = $query->where(function ($query) use ($tags) {
-                        $query->whereHas('tags',function($query) use ($tags) {
-                            $query->whereIn('tag_id', $tags);
-                        })->orDoesntHave('tags');
+                $filterTag = $request->input('tagFilter','');
+                if ($filterTag) {
+                    $query = $query->whereHas('tags',function($query) use ($filterTag) {
+                        $query->where('tag_id', $filterTag);
                     });
+                } else {
+                    $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
+                    if ($tags) {
+                        $query = $query->where(function ($query) use ($tags) {
+                            $query->whereHas('tags',function($query) use ($tags) {
+                                $query->whereIn('tag_id', $tags);
+                            })->orDoesntHave('tags');
+                        });
+                    }
                 }
             }
         } catch (\Exception $e) {
