@@ -74,7 +74,6 @@ class UserController extends AdminController
     public function exportAddressBook(Request $request){
         $filter = $request->all();
         $query = AddressBook::query();
-
         if(isset($filter['user_id']) && $filter['user_id'] > 0){
             $query->where("user_id","=",$filter['user_id']);
         }
