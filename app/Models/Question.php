@@ -473,10 +473,10 @@ class Question extends Model
         $startTime = 1498665600; // strtotime('2017-06-29')
         $created = strtotime($this->created_at);
         $timeDiff = $created - $startTime;
-        $views = $this->answers()->sum('views');
+        $views = $this->answers()->sum('views') + $this->views;
         $answers = $this->answers;
         $supports = $this->answers()->sum('supports');
-        $z = $views + $answers * 2 + $this->followers * 1.5 + $supports + 1;
+        $z = $views * 2 + $answers * 10 + $this->followers * 10 + $supports * 10 + $this->collections * 10 + 1;
         if ($this->question_type == 1) {
             $bestAnswer = $this->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
             if ($bestAnswer) {
@@ -486,7 +486,7 @@ class Question extends Model
         }
         $y = $this->answers()->sum('pay_for_views') + 1;
 
-        $rate =  (log10($z) * $y) + ($timeDiff / 90000);
+        $rate =  (log10($z) * $y) + ($timeDiff / 172800);
         $this->rate = $rate;
         //计算热门排名
         if ($this->question_type == 1) {

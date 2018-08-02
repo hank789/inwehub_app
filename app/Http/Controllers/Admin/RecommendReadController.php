@@ -89,6 +89,7 @@ class RecommendReadController extends AdminController
         $validateRules = [
             'title'   => 'required',
             'recommend_status' => 'required|integer',
+            'recommend_sort'   => 'required|integer',
             'weight_rate' => 'required|integer'
         ];
         $this->validate($request,$validateRules);
@@ -104,6 +105,7 @@ class RecommendReadController extends AdminController
         }
         $oldRate = $recommendation->getRateWeight();
 
+        $recommendation->sort = $request->input('recommend_sort');
         $recommendation->tips = $request->input('tips');
         $recommendation->audit_status = $request->input('recommend_status');
         $recommendation->setRateWeight($request->input('weight_rate',0));

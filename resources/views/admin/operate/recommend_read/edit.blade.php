@@ -54,8 +54,13 @@
                             </div>
 
                             <div class="form-group">
-                                <label>当前热度</label>
-                                <span>{{ $recommendation->rate }}</span>
+                                <label>排序</label>
+                                <input type="text" name="recommend_sort" class="form-control "  placeholder="请输入整数，大的排前面" value="{{ old('recommend_sort',$recommendation->sort ? : $recommendation->id ) }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>真实热度</label>
+                                <span>{{ $recommendation->rate - $recommendation->getRateWeight() }}</span>
                             </div>
 
                             <div class="form-group">

@@ -196,17 +196,15 @@ class Submission extends Model {
         $timeDiff = $created - $startTime;
         $views = $this->views;
         $supports = $this->upvotes;
-        $z = $views + $this->collections * 1.5 + $supports * 2 + $this->comments_number * 2 + 1;
+        $z = $views * 2 + $this->collections * 10 + $supports * 10 + $this->comments_number * 5 + 1;
         $x = $supports - $this->downvotes;
 
-        if ($x > 0) {
+        if ($x >= 0) {
             $y = 1;
-        } elseif ($x == 0) {
-            $y = 0;
         } else {
             $y = -1;
         }
-        $rate =  (log10($z) * $y) + ($timeDiff / 90000);
+        $rate =  (log10($z) * $y) + ($timeDiff / 172800);
         $this->rate = $rate;
         $this->save();
         $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();

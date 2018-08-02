@@ -67,7 +67,7 @@
                                         <th>标签语</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
-                                        <th>热度加权</th>
+                                        <th>排序</th>
                                         <th>类型</th>
                                         <th>标签</th>
                                         <th>审核状态</th>
@@ -89,7 +89,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ $item->rate }}</td>
-                                            <td>{{ $item->getRateWeight() }}</td>
+                                            <td>{{ $item->sort }}</td>
                                             <td>{{ $item->getReadTypeName() }}</td>
                                             <td>
                                                 @foreach($item->tags as $tagInfo)
