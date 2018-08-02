@@ -39,7 +39,7 @@ class IndexController extends Controller {
 
         $show_invitation_coupon = false;
         $show_ad = false;
-        if($user){
+        if($user->id){
             //检查活动时间
             $ac_first_ask_begin_time = Setting()->get('ac_first_ask_begin_time');
             $ac_first_ask_end_time = Setting()->get('ac_first_ask_end_time');
@@ -121,7 +121,7 @@ class IndexController extends Controller {
         //当前用户是否有圈子未读信息
         $user_group_unread = 0;
         $new_message = [];
-        if ($user) {
+        if ($user->id) {
             $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','asc')->get();
             foreach ($groupMembers as $groupMember) {
                 $group = $groupMember->group;
