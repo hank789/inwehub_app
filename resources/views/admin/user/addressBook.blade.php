@@ -17,7 +17,12 @@
                 <div class="box">
                     <div class="box-header">
                         <div class="row">
-                            <div class="col-xs-12">
+                            <div class="col-xs-2">
+                                <div class="btn-group">
+                                    <a href="{{ route('admin.user.addressBook.export') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="导出用户"><i class="fa fa-file-excel-o"></i></a>
+                                </div>
+                            </div>
+                            <div class="col-xs-10">
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.user.addressBook') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
