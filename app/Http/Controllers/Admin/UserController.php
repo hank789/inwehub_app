@@ -71,6 +71,45 @@ class UserController extends AdminController
         return view('admin.user.addressBook')->with('addressBooks',$addressbooks)->with('filter',$filter);
     }
 
+    public function exportAddressBook(Request $request){
+        $filter = $request->all();
+        $query = AddressBook::query();
+        if(isset($filter['user_id']) && $filter['user_id'] > 0){
+            $query->where("user_id","=",$filter['user_id']);
+        }
+
+        if( isset($filter['phone']) && $filter['phone']){
+            $query->where('phone','=',$filter['phone']);
+        }
+
+        if( isset($filter['name']) && $filter['name']){
+            $query->where('display_name','=',$filter['name']);
+        }
+        $cellData = [];
+        $cellData[] = ['系统ID','通讯录ID','姓名','手机','通讯录所有者ID','通讯录所有者姓名'];
+        $page = 1;
+        $addressbooks = $query->orderBy('created_at','desc')->simplePaginate(100,['*'],'page',$page);
+        while ($addressbooks->count() > 0) {
+            foreach ($addressbooks as $user) {
+                $cellData[] = [
+                    $user->id,
+                    $user->address_book_id,
+                    $user->display_name,
+                    $user->phone,
+                    $user->user_id,
+                    $user->user->name
+                ];
+            }
+            $page ++;
+            $addressbooks = $query->orderBy('created_at','desc')->simplePaginate(100,['*'],'page',$page);
+        }
+        Excel::create('users',function($excel) use ($cellData){
+            $excel->sheet('score', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->export('xlsx');
+    }
+
     public function exportUsers(Request $request){
         $filter = $request->all();
         $query = $this->getUserQuery($request);
