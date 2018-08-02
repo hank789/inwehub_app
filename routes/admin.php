@@ -47,6 +47,9 @@ Route::post('user/item/destroy',['as'=>'admin.user.item.destroy','uses'=>'UserCo
 Route::get('user/resume/info',['as'=>'admin.user.resume.info','uses'=>'UserController@resumeInfo']);
 //导出用户
 Route::get('user/export',['as'=>'admin.user.export','uses'=>'UserController@exportUsers']);
+//导出通讯录
+Route::get('addressBook/export',['as'=>'admin.user.addressBook.export','uses'=>'UserController@exportAddressBook']);
+
 
 /*认证管理*/
 Route::post('authentication/destroy',['as'=>'admin.authentication.destroy','uses'=>'AuthenticationController@destroy']);
