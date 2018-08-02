@@ -103,13 +103,11 @@ class UserController extends AdminController
             $page ++;
             $addressbooks = $query->orderBy('created_at','desc')->simplePaginate(100,['*'],'page',$page);
         }
-        $result = Excel::create('users',function($excel) use ($cellData){
+        Excel::create('users',function($excel) use ($cellData){
             $excel->sheet('score', function($sheet) use ($cellData){
                 $sheet->rows($cellData);
             });
-        })->store('xlsx', false, true);
-        $path = $result['full'];
-        return response()->file($path);
+        })->export('xlsx');
     }
 
     public function exportUsers(Request $request){
