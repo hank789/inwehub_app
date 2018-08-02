@@ -19,7 +19,7 @@
                         <div class="row">
                             <div class="col-xs-2">
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.user.addressBook.export') }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="导出用户"><i class="fa fa-file-excel-o"></i></a>
+                                    <a href="{{ route('admin.user.addressBook.export', $filter) }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="导出用户"><i class="fa fa-file-excel-o"></i></a>
                                 </div>
                             </div>
                             <div class="col-xs-10">
