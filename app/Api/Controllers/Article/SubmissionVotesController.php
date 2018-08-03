@@ -140,7 +140,8 @@ class SubmissionVotesController extends Controller {
             $previous_vote = 'upvote';
             $support->delete();
             $submission->decrement('upvotes');
-            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'cancel_upvote'],ApiException::SUCCESS,'取消点赞成功');
+            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'cancel_upvote','support_description'=>$submission->getSupportRateDesc(),
+                'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'取消点赞成功');
         }
 
         $data = [
@@ -200,7 +201,8 @@ class SubmissionVotesController extends Controller {
             $previous_vote = 'downvote';
             $downvote->delete();
             $submission->decrement('downvotes');
-            return self::createJsonData(true,['tip'=>'取消踩成功','type'=>'cancel_downvote'],ApiException::SUCCESS,'取消踩成功');
+            return self::createJsonData(true,['tip'=>'取消踩成功','type'=>'cancel_downvote','support_description'=>$submission->getSupportRateDesc(),
+                'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'取消踩成功');
         }
 
         $data = [
