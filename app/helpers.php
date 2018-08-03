@@ -1240,6 +1240,8 @@ if (!function_exists('rateSubmission')) {
 if (!function_exists('hotRate')) {
     /**
      * http://www.ruanyifeng.com/blog/2012/03/ranking_algorithm_stack_overflow.html
+     * https://www.biaodianfu.com/stackoverflow-ranking-algorithm.html
+     * http://meta.stackoverflow.com/questions/11602/what-formula-should-be-used-to-determine-hot-questions
      * @param $Qviews
      * @param $Qanswers
      * @param $Qscore

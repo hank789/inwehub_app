@@ -194,23 +194,20 @@ class IndexController extends Controller {
             $user = new \stdClass();
             $user->id = 0;
         }
-        //实时热点
-        if ($recommendType == 3) {
-            $query = $query->orderBy('rate','desc');
-        } else {
-            switch ($orderBy) {
-                case 1:
-                    //热门
-                    $query = $query->orderBy('sort','desc');
-                    break;
-                case 2:
-                    //随机
-                    $count = $query->count();
-                    $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
-                    $query = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'));
-                    break;
-            }
+
+        switch ($orderBy) {
+            case 1:
+                //热门
+                $query = $query->orderBy('rate','desc');
+                break;
+            case 2:
+                //随机
+                $count = $query->count();
+                $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
+                $query = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'));
+                break;
         }
+
 
         $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
