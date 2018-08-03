@@ -52,7 +52,8 @@ class SupportController extends Controller
         if($support){
             $support->delete();
             $source->decrement('supports');
-            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'unsupport']);
+            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'unsupport','support_description'=>$source->getSupportRateDesc(),
+                'support_percent'=>$source->getSupportPercent()]);
         }
 
         $data = [
@@ -73,7 +74,8 @@ class SupportController extends Controller
             }
         }
 
-        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'support']);
+        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'support','support_description'=>$source->getSupportRateDesc(),
+            'support_percent'=>$source->getSupportPercent()]);
     }
 
 }

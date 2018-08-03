@@ -51,7 +51,9 @@ class DownVoteController extends Controller
         if($downvote){
             $downvote->delete();
             $source->decrement('downvotes');
-            return self::createJsonData(true,['tip'=>'取消踩成功','type'=>'cancel_downvote'],ApiException::SUCCESS,'取消踩成功');
+            return self::createJsonData(true,['tip'=>'取消踩成功','type'=>'cancel_downvote',
+                'support_description'=>$source->getSupportRateDesc(),
+                'support_percent'=>$source->getSupportPercent()],ApiException::SUCCESS,'取消踩成功');
         }
 
         $data = [
@@ -66,7 +68,8 @@ class DownVoteController extends Controller
         if($downvote){
             $source->increment('downvotes');
         }
-        return self::createJsonData(true,['tip'=>'踩成功','type'=>'downvote'],ApiException::SUCCESS,'踩成功');
+        return self::createJsonData(true,['tip'=>'踩成功','type'=>'downvote','support_description'=>$source->getSupportRateDesc(),
+            'support_percent'=>$source->getSupportPercent()],ApiException::SUCCESS,'踩成功');
     }
 
 }

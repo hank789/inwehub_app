@@ -162,7 +162,8 @@ class SubmissionVotesController extends Controller {
         $this->calculationSubmissionRate($submission->id);
         UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
-        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote'],ApiException::SUCCESS,'点赞成功');
+        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote','support_description'=>$submission->getSupportRateDesc(),
+            'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'点赞成功');
     }
 
     public function downVote(Request $request)
@@ -220,7 +221,8 @@ class SubmissionVotesController extends Controller {
         );
         $this->calculationSubmissionRate($submission->id);
 
-        return self::createJsonData(true,['tip'=>'踩成功','type'=>'downvote'],ApiException::SUCCESS,'踩成功');
+        return self::createJsonData(true,['tip'=>'踩成功','type'=>'downvote','support_description'=>$submission->getSupportRateDesc(),
+            'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'踩成功');
     }
 
 }
