@@ -198,7 +198,7 @@ class IndexController extends Controller {
         switch ($orderBy) {
             case 1:
                 //热门
-                $query = $query->orderBy('rate','desc');
+                $query = $query->orderBy('rate','desc')->orderBy('sort','desc');
                 break;
             case 2:
                 //随机
@@ -212,6 +212,7 @@ class IndexController extends Controller {
         $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
+            $item['data']['title'] = strip_tags($item['data']['title']);
             switch ($item['read_type']) {
                 case RecommendRead::READ_TYPE_SUBMISSION:
                     // '发现分享';
