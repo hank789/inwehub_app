@@ -167,9 +167,22 @@ class IndexController extends Controller {
 
     public function getNextRecommendRead(Request $request) {
         $this->validate($request, [
-            'recommend_id' => 'required',
+            'source_id' => 'required|integer',
+            'source_type' => 'required|integer',
         ]);
-        $recommend = RecommendRead::find($request->input('recommend_id'));
+        $source_type = $request->input('source_type',1);
+        $source_id = $request->input('source_id');
+        $recommend = null;
+        switch ($source_type) {
+            case 1:
+                //文章
+                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Submission::class)->first();
+                break;
+            case 2:
+                //问答
+                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Question::class)->first();
+                break;
+        }
         if (!$recommend) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
