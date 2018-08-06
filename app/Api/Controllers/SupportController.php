@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Article;
 use App\Models\Comment;
+use App\Models\DownVote;
 use App\Models\Support;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
@@ -44,6 +45,11 @@ class SupportController extends Controller
 
         if (RateLimiter::instance()->increase('support:'.$source_type,$loginUser->id,10,5)){
             throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        //已经踩过，不能点赞
+        $downvote = DownVote::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($source))->where('source_id','=',$source_id)->first();
+        if ($downvote) {
+            throw new ApiException(ApiException::USER_SUPPORT_ALREADY_DOWNVOTE);
         }
 
 

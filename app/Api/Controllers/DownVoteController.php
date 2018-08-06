@@ -7,6 +7,7 @@ use App\Models\Answer;
 use App\Models\Article;
 use App\Models\Comment;
 use App\Models\DownVote;
+use App\Models\Support;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
@@ -45,6 +46,10 @@ class DownVoteController extends Controller
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
+        $support = Support::where("user_id",'=',$loginUser->id)->where('supportable_type','=',get_class($source))->where('supportable_id','=',$source_id)->first();
+        if ($support) {
+            throw new ApiException(ApiException::USER_DOWNVOTE_ALREADY_SUPPORT);
+        }
 
         /*再次踩相当于是取消踩*/
         $downvote = DownVote::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($source))->where('source_id','=',$source_id)->first();

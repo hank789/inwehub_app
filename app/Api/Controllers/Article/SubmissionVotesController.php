@@ -133,6 +133,12 @@ class SubmissionVotesController extends Controller {
             }
         }
 
+        //已经踩过，不能点赞
+        $downvote = DownVote::where("user_id",'=',$user->id)->where('source_type','=',get_class($submission))->where('source_id','=',$submission->id)->first();
+        if ($downvote) {
+            throw new ApiException(ApiException::USER_SUPPORT_ALREADY_DOWNVOTE);
+        }
+
         $previous_vote = null;
         /*再次点赞相当于是取消点赞*/
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($submission))->where('supportable_id','=',$submission->id)->first();
@@ -192,6 +198,11 @@ class SubmissionVotesController extends Controller {
             if (in_array($is_joined,[-1,0,2])) {
                 return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
             }
+        }
+
+        $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($submission))->where('supportable_id','=',$submission->id)->first();
+        if ($support) {
+            throw new ApiException(ApiException::USER_DOWNVOTE_ALREADY_SUPPORT);
         }
 
         $previous_vote = null;
