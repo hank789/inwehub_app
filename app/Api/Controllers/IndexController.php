@@ -211,15 +211,15 @@ class IndexController extends Controller {
                 $item['data']['article_title'] = '';
                 if ($object->type == 'link') {
                     $item['data']['domain'] = $object->data['domain'];
-                    $item['data']['body'] = $object->title;
-                    $item['data']['article_title'] = $object->data['title'];
+                    $item['data']['body'] = strip_tags($object->title);
+                    $item['data']['article_title'] = strip_tags($object->data['title']);
                     $item['data']['url'] = $object->data['url'];
                 } elseif($object->type == 'text') {
-                    $item['data']['body'] = str_limit($object->title, 300);
+                    $item['data']['body'] = str_limit(strip_tags($object->title), 300);
                 } elseif($object->type == 'article') {
                     $item['data']['body'] = str_limit(QuillLogic::parseText($object->data['description']), 300);
                 } else {
-                    $item['data']['body'] = str_limit($object->title, 300);
+                    $item['data']['body'] = str_limit(strip_tags($object->title), 300);
                 }
                 break;
             case RecommendRead::READ_TYPE_PAY_QUESTION:
