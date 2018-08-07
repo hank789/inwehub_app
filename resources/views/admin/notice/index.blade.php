@@ -29,7 +29,8 @@
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>公告标题</th>
-                                        <th>URL</th>
+                                        <th>移动端URL</th>
+                                        <th>网站URL</th>
                                         <th>图片</th>
                                         <th>排序</th>
                                         <th>状态</th>
@@ -40,7 +41,8 @@
                                         <tr>
                                             <td><input type="checkbox" value="{{ $notice->id }}" name="ids[]"/></td>
                                             <td>{{ $notice->subject }}</td>
-                                            <td>{{ $notice->url }}</td>
+                                            <td>{{ $notice->url[0] }}</td>
+                                            <td>{{ $notice->url[1]??'' }}</td>
                                             <td><img width="100" height="100" src="{{ $notice->img_url }}"></td>
                                             <td>{{ $notice->sort }}</td>
                                             <td>{{ trans_common_status($notice->status) }}</td>

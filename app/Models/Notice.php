@@ -29,4 +29,9 @@ class Notice extends Model
 {
     protected $table = 'notices';
     protected $fillable = ['subject', 'url','status','img_url','sort'];
+
+    public function getUrlAttribute($value) {
+        return explode(',',$value);
+    }
+
 }

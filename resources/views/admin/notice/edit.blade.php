@@ -29,8 +29,12 @@
                                 <input type="text" name="subject" class="form-control "  placeholder="公告标题" value="{{ old('subject',$notice->subject) }}">
                             </div>
                             <div class="form-group">
-                                <label>公告链接地址</label>
-                                <input type="text" name="url" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url',$notice->url) }}">
+                                <label>移动端链接地址</label>
+                                <input type="text" name="url_mobile" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url',$notice->url[0]) }}">
+                            </div>
+                            <div class="form-group">
+                                <label>网站链接地址</label>
+                                <input type="text" name="url_www" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('url',$notice->url[1]??'') }}">
                             </div>
                             <div class="form-group">
                                 <label>封面图片</label>
