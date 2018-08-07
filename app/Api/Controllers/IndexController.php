@@ -200,6 +200,12 @@ class IndexController extends Controller {
             case RecommendRead::READ_TYPE_SUBMISSION:
                 // '发现分享';
                 $object = Submission::find($item['source_id']);
+                if (empty($item['data']['img'])) {
+                    $item['data']['img'] = '';
+                }
+                if (is_array($item['data']['img'])) {
+                    $item['data']['img'] = $item['data']['img'][0];
+                }
                 $item['type_description'] = '';
                 $item['data']['comment_number'] = $object->comments_number;
                 $item['data']['support_number'] = $object->upvotes;
