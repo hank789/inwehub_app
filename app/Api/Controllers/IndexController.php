@@ -97,8 +97,8 @@ class IndexController extends Controller {
         //轮播图
         $notices = Notice::where('status',1)->orderBy('sort','desc')->take(5)->get()->toArray();
         foreach ($notices as &$notice) {
-            $notice['url'] = $notice['url'][0]??'';
             $notice['url_www'] = $notice['url'][1]??'';
+            $notice['url'] = $notice['url'][0]??'';
         }
         //当日热门圈子
         $groupIds = RateLimiter::instance()->zRevrange('group-daily-hot-'.date('Ymd'),0,2);
