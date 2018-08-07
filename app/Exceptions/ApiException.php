@@ -61,6 +61,8 @@ class ApiException extends Exception
 
     const USER_LEVEL_LIMIT = 1123;
     const USER_INVITE_ADDRESSBOOK_USER_LIMIT = 1124;
+    const USER_SUPPORT_ALREADY_DOWNVOTE = 1125;
+    const USER_DOWNVOTE_ALREADY_SUPPORT = 1126;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -160,6 +162,8 @@ class ApiException extends Exception
         self::USER_WEAPP_SALARY_INVALID => '薪资范围有误',
         self::USER_LEVEL_LIMIT => '您的等级还不够',
         self::USER_INVITE_ADDRESSBOOK_USER_LIMIT => '您的邀请太频繁了，请稍后再试',
+        self::USER_SUPPORT_ALREADY_DOWNVOTE => '已经踩过的不能进行点赞',
+        self::USER_DOWNVOTE_ALREADY_SUPPORT => '已经点赞过的不能进行踩',
 
 
         //问答模块

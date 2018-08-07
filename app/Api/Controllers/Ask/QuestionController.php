@@ -7,6 +7,7 @@ use App\Exceptions\ApiException;
 use App\Jobs\Question\ConfirmOvertime;
 use App\Jobs\QuestionRefund;
 use App\Logic\PayQueryLogic;
+use App\Logic\QuestionLogic;
 use App\Logic\TagsLogic;
 use App\Logic\TaskLogic;
 use App\Models\Activity\Coupon;
@@ -212,7 +213,7 @@ class QuestionController extends Controller
         }
         $this->doing($user->id,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,'查看问题');
         $this->logUserViewTags($user->id,$question->tags()->get());
-
+        QuestionLogic::calculationQuestionRate($question->id);
         return self::createJsonData(true,[
             'is_followed_question'=>$is_followed_question,
             'my_answer_id' => $my_answer_id,

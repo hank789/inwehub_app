@@ -69,6 +69,7 @@ class CommentController extends Controller {
 
         $comment = Comment::create($data);
         UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
+        $this->calculationSubmissionRate($submission->id);
 
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }

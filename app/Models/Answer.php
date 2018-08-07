@@ -145,4 +145,9 @@ class Answer extends Model
         return (bcdiv($this->supports,$this->supports + $this->downvotes,2) * 100).'%的人觉得赞';
     }
 
+    public function getSupportPercent() {
+        if ($this->supports <= 0) return '0';
+        return (bcdiv($this->supports,$this->supports + $this->downvotes,2) * 100);
+    }
+
 }

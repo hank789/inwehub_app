@@ -12,6 +12,7 @@ use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Doing;
+use App\Models\DownVote;
 use App\Models\Feed\Feed;
 use App\Models\Feedback;
 use App\Models\Pay\Order;
@@ -114,6 +115,10 @@ class AnswerController extends Controller
 
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
 
+        $downvote = DownVote::where('user_id',$user->id)
+            ->where('source_id',$answer->id)
+            ->where('source_type',Answer::class)
+            ->exists();
         $collect = Collection::where('user_id',$user->id)->where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->first();
 
         $support_uids = Support::where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->take(20)->pluck('user_id');
@@ -143,10 +148,12 @@ class AnswerController extends Controller
             'is_best_answer' => $answer->adopted_at?true:false,
             'is_followed' => $attention?1:0,
             'is_supported' => $support?1:0,
+            'is_downvoted' => $downvote ? 1 : 0,
             'is_collected' => $collect?1:0,
             'support_number' => $answer->supports,
             'downvote_number'=> $answer->downvotes,
             'support_description'=> $answer->getSupportRateDesc(),
+            'support_percent' => $answer->getSupportPercent(),
             'view_number'    => $answer->views,
             'comment_number' => $answer->comments,
             'collect_num' => $answer->collections,
@@ -617,6 +624,7 @@ class AnswerController extends Controller
         /*问题、回答、文章评论数+1*/
         $source->increment('comments');
         UserTag::multiIncrement($user->id,$source->question->tags()->get(),'questions');
+        QuestionLogic::calculationQuestionRate($source->question_id);
         self::$needRefresh = true;
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }

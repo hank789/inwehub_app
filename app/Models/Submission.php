@@ -179,9 +179,30 @@ class Submission extends Model {
         return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%的人觉得赞';
     }
 
+    public function getSupportPercent() {
+        if ($this->upvotes <= 0) return '0';
+        return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100);
+    }
+
     public function getSupportRate() {
         if ($this->upvotes <= 0) return '0%';
         return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%';
+    }
+
+    //计算排名积分
+    public function calculationRate(){
+        $shareNumber = Doing::where('action',Doing::ACTION_SHARE_SUBMISSION_SUCCESS)
+            ->where('source_id',$this->id)
+            ->where('source_type',Submission::class)
+            ->count();
+        $rate =  hotRate($this->views,$this->comments_number+1, $this->upvotes-$this->downvotes,$this->collections + $shareNumber,$this->created_at,$this->updated_at);
+        $this->rate = $rate;
+        $this->save();
+        $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
+        if ($recommendRead) {
+            $recommendRead->rate = $this->rate + $recommendRead->getRateWeight();
+            $recommendRead->save();
+        }
     }
 
 }

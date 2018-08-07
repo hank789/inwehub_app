@@ -85,6 +85,7 @@ class FollowController extends Controller
                     'title' => '地址',
                     'value' => route('ask.question.detail',['id'=>$source->id])
                 ];
+                QuestionLogic::calculationQuestionRate($source->id);
                 UserTag::multiDecrement($loginUser->id,$source->tags()->get(),'questions');
                 event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了问题',$fields));
             } elseif ($source_type == 'tag') {
@@ -121,6 +122,7 @@ class FollowController extends Controller
                         'value' => route('ask.question.detail',['id'=>$source->id])
                     ];
                     UserTag::multiIncrement($loginUser->id,$source->tags()->get(),'questions');
+                    QuestionLogic::calculationQuestionRate($source->id);
                     event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']关注了问题',$fields));
                     //产生一条feed流
                     if ($source->question_type == 2) {

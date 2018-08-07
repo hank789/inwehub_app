@@ -133,6 +133,12 @@ class SubmissionVotesController extends Controller {
             }
         }
 
+        //已经踩过，不能点赞
+        $downvote = DownVote::where("user_id",'=',$user->id)->where('source_type','=',get_class($submission))->where('source_id','=',$submission->id)->first();
+        if ($downvote) {
+            throw new ApiException(ApiException::USER_SUPPORT_ALREADY_DOWNVOTE);
+        }
+
         $previous_vote = null;
         /*再次点赞相当于是取消点赞*/
         $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($submission))->where('supportable_id','=',$submission->id)->first();
@@ -140,7 +146,8 @@ class SubmissionVotesController extends Controller {
             $previous_vote = 'upvote';
             $support->delete();
             $submission->decrement('upvotes');
-            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'cancel_upvote'],ApiException::SUCCESS,'取消点赞成功');
+            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'cancel_upvote','support_description'=>$submission->getSupportRateDesc(),
+                'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'取消点赞成功');
         }
 
         $data = [
@@ -159,13 +166,11 @@ class SubmissionVotesController extends Controller {
         $this->updateUserUpVotesRecords(
             $user->id, $submission->user_id, $previous_vote, $request->submission_id
         );
-
-        $submission->rate = rateSubmission( $submission->upvotes, $submission->downvotes, $submission->created_at);
-
-        $submission->save();
+        $this->calculationSubmissionRate($submission->id);
         UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
 
-        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote'],ApiException::SUCCESS,'点赞成功');
+        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'upvote','support_description'=>$submission->getSupportRateDesc(),
+            'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'点赞成功');
     }
 
     public function downVote(Request $request)
@@ -195,6 +200,11 @@ class SubmissionVotesController extends Controller {
             }
         }
 
+        $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($submission))->where('supportable_id','=',$submission->id)->first();
+        if ($support) {
+            throw new ApiException(ApiException::USER_DOWNVOTE_ALREADY_SUPPORT);
+        }
+
         $previous_vote = null;
         /*再次踩相当于是取消踩*/
         $downvote = DownVote::where("user_id",'=',$user->id)->where('source_type','=',get_class($submission))->where('source_id','=',$submission->id)->first();
@@ -202,7 +212,8 @@ class SubmissionVotesController extends Controller {
             $previous_vote = 'downvote';
             $downvote->delete();
             $submission->decrement('downvotes');
-            return self::createJsonData(true,['tip'=>'取消踩成功','type'=>'cancel_downvote'],ApiException::SUCCESS,'取消踩成功');
+            return self::createJsonData(true,['tip'=>'取消踩成功','type'=>'cancel_downvote','support_description'=>$submission->getSupportRateDesc(),
+                'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'取消踩成功');
         }
 
         $data = [
@@ -221,12 +232,10 @@ class SubmissionVotesController extends Controller {
         $this->updateUserUpVotesRecords(
             $user->id, $submission->user_id, $previous_vote, $request->submission_id
         );
+        $this->calculationSubmissionRate($submission->id);
 
-        $submission->rate = rateSubmission( $submission->upvotes, $submission->downvotes, $submission->created_at);
-
-        $submission->save();
-
-        return self::createJsonData(true,['tip'=>'踩成功','type'=>'downvote'],ApiException::SUCCESS,'踩成功');
+        return self::createJsonData(true,['tip'=>'踩成功','type'=>'downvote','support_description'=>$submission->getSupportRateDesc(),
+            'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'踩成功');
     }
 
 }

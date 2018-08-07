@@ -1237,6 +1237,34 @@ if (!function_exists('rateSubmission')) {
     }
 }
 
+if (!function_exists('hotRate')) {
+    /**
+     * http://www.ruanyifeng.com/blog/2012/03/ranking_algorithm_stack_overflow.html
+     * https://www.biaodianfu.com/stackoverflow-ranking-algorithm.html
+     * http://meta.stackoverflow.com/questions/11602/what-formula-should-be-used-to-determine-hot-questions
+     * @param $Qviews
+     * @param $Qanswers
+     * @param $Qscore
+     * @param $Ascores
+     * @param $date_ask
+     * @param $date_active
+     * @return float|int
+     */
+    function hotRate($Qviews, $Qanswers, $Qscore, $Ascores, $date_ask, $date_active)
+    {
+        $Qage = (time() - strtotime(gmdate("Y-m-d H:i:s",strtotime($date_ask)))) / 3600;
+        $Qage = round($Qage, 1);
+
+        $Qupdated = (time() - strtotime(gmdate("Y-m-d H:i:s",strtotime($date_active)))) / 3600;
+        $Qupdated = round($Qupdated, 1);
+
+        $dividend = (log10($Qviews)*4) + (($Qanswers * $Qscore)/5) + $Ascores;
+        $divisor = pow((($Qage + 1) - ($Qage - $Qupdated)/2), 1.5);
+
+        return $dividend/$divisor;
+    }
+}
+
 if (!function_exists('getDistanceByLatLng')) {
     function getDistanceByLatLng($lng1,$lat1,$lng2,$lat2){//根据经纬度计算距离 单位为米
         //将角度转为狐度

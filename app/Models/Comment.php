@@ -128,4 +128,12 @@ class Comment extends Model
         return $this->belongsTo(self::class, 'parent_id');
     }
 
+    public function getSupportRateDesc() {
+        return $this->supports;
+    }
+
+    public function getSupportPercent() {
+        return $this->supports;
+    }
+
 }

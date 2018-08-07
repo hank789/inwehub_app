@@ -28,13 +28,18 @@ use Tymon\JWTAuth\JWTAuth;
  */
 
 class IndexController extends Controller {
-    public function home(Request $request){
-        $user = $request->user();
+    public function home(Request $request, JWTAuth $JWTAuth){
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
         $expire_at = '';
 
         $show_invitation_coupon = false;
         $show_ad = false;
-        if($user){
+        if($user->id){
             //检查活动时间
             $ac_first_ask_begin_time = Setting()->get('ac_first_ask_begin_time');
             $ac_first_ask_end_time = Setting()->get('ac_first_ask_end_time');
@@ -116,7 +121,7 @@ class IndexController extends Controller {
         //当前用户是否有圈子未读信息
         $user_group_unread = 0;
         $new_message = [];
-        if ($user) {
+        if ($user->id) {
             $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','asc')->get();
             foreach ($groupMembers as $groupMember) {
                 $group = $groupMember->group;
@@ -159,29 +164,146 @@ class IndexController extends Controller {
         return self::createJsonData(true,$data);
     }
 
+
+    public function getNextRecommendRead(Request $request) {
+        $this->validate($request, [
+            'source_id' => 'required|integer',
+            'source_type' => 'required|integer',
+        ]);
+        $source_type = $request->input('source_type',1);
+        $source_id = $request->input('source_id');
+        $recommend = null;
+        switch ($source_type) {
+            case 1:
+                //文章
+                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Submission::class)->first();
+                break;
+            case 2:
+                //问答
+                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Question::class)->first();
+                break;
+        }
+        if (!$recommend) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $next = RecommendRead::where('rate','<=',$recommend->rate)->orderBy('rate','desc')->first();
+        if ($next) {
+            $item = $this->formatRecommendReadItem($next->toArray());
+            return self::createJsonData(true,$item);
+        }
+        return self::createJsonData(true);
+    }
+
+    protected function formatRecommendReadItem($item) {
+        $item['data']['title'] = strip_tags($item['data']['title']);
+        switch ($item['read_type']) {
+            case RecommendRead::READ_TYPE_SUBMISSION:
+                // '发现分享';
+                $object = Submission::find($item['source_id']);
+                if (empty($item['data']['img'])) {
+                    $item['data']['img'] = '';
+                }
+                if (is_array($item['data']['img'])) {
+                    $item['data']['img'] = $item['data']['img'][0];
+                }
+                $item['type_description'] = '';
+                $item['data']['comment_number'] = $object->comments_number;
+                $item['data']['support_number'] = $object->upvotes;
+                $item['data']['view_number'] = $object->views;
+                $item['data']['support_rate'] = $object->getSupportRate();
+                $item['data']['body'] = '';
+                $item['data']['url'] = '';
+                $item['data']['domain'] = '';
+                $item['data']['article_title'] = '';
+                if ($object->type == 'link') {
+                    $item['data']['domain'] = $object->data['domain'];
+                    $item['data']['body'] = strip_tags($object->title);
+                    $item['data']['article_title'] = strip_tags($object->data['title']);
+                    $item['data']['url'] = $object->data['url'];
+                } elseif($object->type == 'text') {
+                    $item['data']['body'] = str_limit(strip_tags($object->title), 300);
+                } elseif($object->type == 'article') {
+                    $item['data']['body'] = str_limit(QuillLogic::parseText($object->data['description']), 300);
+                } else {
+                    $item['data']['body'] = str_limit(strip_tags($object->title), 300);
+                }
+                break;
+            case RecommendRead::READ_TYPE_PAY_QUESTION:
+                // '专业问答';
+                $object = Question::find($item['source_id']);
+                $bestAnswer = $object->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
+                $item['type_description'] = '问';
+                $item['data']['price'] = $object->price;
+                $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
+                $item['data']['view_number'] = $bestAnswer->views;
+                $item['data']['comment_number'] = $bestAnswer->comments;
+                $item['data']['support_number'] = $bestAnswer->supports;
+                $item['data']['support_rate'] = $bestAnswer->getSupportRate();
+                $item['data']['feedback_rate'] = $bestAnswer->getFeedbackAverage();
+                break;
+            case RecommendRead::READ_TYPE_FREE_QUESTION:
+                // '互动问答';
+                $object = Question::find($item['source_id']);
+                $item['type_description'] = '问';
+                $item['data']['answer_number'] = $object->answers;
+                $item['data']['follower_number'] = $object->followers;
+                $item['data']['view_number'] = $object->views;
+                break;
+            case RecommendRead::READ_TYPE_ACTIVITY:
+                // '活动';
+                break;
+            case RecommendRead::READ_TYPE_PROJECT_OPPORTUNITY:
+                // '项目机遇';
+                break;
+            case RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER:
+                // '互动问答回复';
+                $object = Answer::find($item['source_id']);
+                $item['type_description'] = '问';
+                $item['data']['comment_number'] = $object->comments;
+                $item['data']['support_number'] = $object->supports;
+                $item['data']['view_number'] = $object->views;
+                $item['data']['support_rate'] = $object->getSupportRate();
+                $item['data']['feedback_rate'] = $object->getFeedbackAverage();
+                break;
+        }
+        return $item;
+    }
+
     //精选推荐
     public function recommendRead(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $orderBy = $request->input('orderBy',1);
+        $recommendType = $request->input('recommendType',2);
         $query = RecommendRead::where('audit_status',1);
         try {
             $user = $JWTAuth->parseToken()->authenticate();
-            $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
-            if ($tags) {
-                $query = $query->where(function ($query) use ($tags) {
-                    $query->whereHas('tags',function($query) use ($tags) {
-                        $query->whereIn('tag_id', $tags);
-                    })->orDoesntHave('tags');
-                });
+            //按领域推荐
+            if ($recommendType == 2) {
+                $filterTag = $request->input('tagFilter','');
+                if ($filterTag) {
+                    $query = $query->whereHas('tags',function($query) use ($filterTag) {
+                        $query->where('tag_id', $filterTag);
+                    });
+                } else {
+                    $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
+                    if ($tags) {
+                        $query = $query->where(function ($query) use ($tags) {
+                            $query->whereHas('tags',function($query) use ($tags) {
+                                $query->whereIn('tag_id', $tags);
+                            })->orDoesntHave('tags');
+                        });
+                    }
+                }
             }
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
         }
+
         switch ($orderBy) {
             case 1:
                 //热门
-                $query = $query->orderBy('sort','desc');
+                $query = $query->orderBy('rate','desc')->orderBy('sort','desc');
                 break;
             case 2:
                 //随机
@@ -190,73 +312,12 @@ class IndexController extends Controller {
                 $query = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'));
                 break;
         }
+
+
         $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
-            switch ($item['read_type']) {
-                case RecommendRead::READ_TYPE_SUBMISSION:
-                    // '发现分享';
-                    $object = Submission::find($item['source_id']);
-                    $item['type_description'] = '发现分享';
-                    $item['data']['comment_number'] = $object->comments_number;
-                    $item['data']['support_number'] = $object->upvotes;
-                    $item['data']['view_number'] = $object->views;
-                    $item['data']['support_rate'] = $object->getSupportRate();
-                    $item['data']['body'] = '';
-                    $item['data']['url'] = '';
-                    $item['data']['domain'] = '';
-                    $item['data']['article_title'] = '';
-                    if ($object->type == 'link') {
-                        $item['data']['domain'] = $object->data['domain'];
-                        $item['data']['body'] = $object->title;
-                        $item['data']['article_title'] = $object->data['title'];
-                        $item['data']['url'] = $object->data['url'];
-                    } elseif($object->type == 'text') {
-                        $item['data']['body'] = str_limit($object->title, 300);
-                    } elseif($object->type == 'article') {
-                        $item['data']['body'] = str_limit(QuillLogic::parseText($object->data['description']), 300);
-                    } else {
-                        $item['data']['body'] = str_limit($object->title, 300);
-                    }
-                    break;
-                case RecommendRead::READ_TYPE_PAY_QUESTION:
-                    // '专业问答';
-                    $object = Question::find($item['source_id']);
-                    $bestAnswer = $object->answers()->where('adopted_at','>',0)->orderBy('id','desc')->get()->last();
-                    $item['type_description'] = $object->price.'元问答';
-                    $item['data']['price'] = $object->price;
-                    $item['data']['average_rate'] = $bestAnswer->getFeedbackRate();
-                    $item['data']['view_number'] = $bestAnswer->views;
-                    $item['data']['comment_number'] = $bestAnswer->comments;
-                    $item['data']['support_number'] = $bestAnswer->supports;
-                    $item['data']['support_rate'] = $bestAnswer->getSupportRate();
-                    $item['data']['feedback_rate'] = $bestAnswer->getFeedbackAverage();
-                    break;
-                case RecommendRead::READ_TYPE_FREE_QUESTION:
-                    // '互动问答';
-                    $object = Question::find($item['source_id']);
-                    $item['type_description'] = $object->price.'元悬赏'.($object->status <= 7 ? '中':($object->status==8?',已采纳':',已关闭'));
-                    $item['data']['answer_number'] = $object->answers;
-                    $item['data']['follower_number'] = $object->followers;
-                    $item['data']['view_number'] = $object->views;
-                    break;
-                case RecommendRead::READ_TYPE_ACTIVITY:
-                    // '活动';
-                    break;
-                case RecommendRead::READ_TYPE_PROJECT_OPPORTUNITY:
-                    // '项目机遇';
-                    break;
-                case RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER:
-                    // '互动问答回复';
-                    $object = Answer::find($item['source_id']);
-                    $item['type_description'] = $object->question->price.'元问答';
-                    $item['data']['comment_number'] = $object->comments;
-                    $item['data']['support_number'] = $object->supports;
-                    $item['data']['view_number'] = $object->views;
-                    $item['data']['support_rate'] = $object->getSupportRate();
-                    $item['data']['feedback_rate'] = $object->getFeedbackAverage();
-                    break;
-            }
+            $item = $this->formatRecommendReadItem($item);
         }
         return self::createJsonData(true, $result);
     }

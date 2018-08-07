@@ -16,6 +16,7 @@
         "h4cc/wkhtmltoimage-amd64": "^0.12.4",
         "intervention/image": "^2.3",
         "jacobcyl/ali-oss-storage": "dev-master",
+        "jaeger/querylist": "^4.0",
         "laravel/framework": "5.5.*",
         "laravel/scout": "^4.0",
         "laravel/tinker": "~1.0",
@@ -84,7 +85,7 @@
     "repositories": [
         {
             "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
+            "url": "https://packagist.laravel-china.org"
         },
         {
             "type": "vcs",

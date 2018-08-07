@@ -50,8 +50,8 @@ class QuestionLogic {
         $event = 'calculation:question:rate';
         $limit = RateLimiter::instance()->getValue($event,$questionId);
         if (!$limit) {
-            RateLimiter::instance()->increase($event,$questionId,600,1);
-            dispatch(new UpdateQuestionRate($questionId))->delay(Carbon::now()->addMinutes(10));
+            RateLimiter::instance()->increase($event,$questionId,300,1);
+            dispatch(new UpdateQuestionRate($questionId))->delay(Carbon::now()->addMinutes(5));
         }
     }
 

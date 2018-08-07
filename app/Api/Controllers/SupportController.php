@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Models\Answer;
 use App\Models\Article;
 use App\Models\Comment;
+use App\Models\DownVote;
 use App\Models\Support;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
@@ -45,6 +46,11 @@ class SupportController extends Controller
         if (RateLimiter::instance()->increase('support:'.$source_type,$loginUser->id,10,5)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        //已经踩过，不能点赞
+        $downvote = DownVote::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($source))->where('source_id','=',$source_id)->first();
+        if ($downvote) {
+            throw new ApiException(ApiException::USER_SUPPORT_ALREADY_DOWNVOTE);
+        }
 
 
         /*再次点赞相当于是取消点赞*/
@@ -52,7 +58,8 @@ class SupportController extends Controller
         if($support){
             $support->delete();
             $source->decrement('supports');
-            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'unsupport']);
+            return self::createJsonData(true,['tip'=>'取消点赞成功','type'=>'unsupport','support_description'=>$source->getSupportRateDesc(),
+                'support_percent'=>$source->getSupportPercent()]);
         }
 
         $data = [
@@ -73,7 +80,8 @@ class SupportController extends Controller
             }
         }
 
-        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'support']);
+        return self::createJsonData(true,['tip'=>'点赞成功','type'=>'support','support_description'=>$source->getSupportRateDesc(),
+            'support_percent'=>$source->getSupportPercent()]);
     }
 
 }

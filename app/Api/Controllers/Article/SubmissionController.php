@@ -9,6 +9,7 @@ use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Doing;
+use App\Models\DownVote;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Question;
@@ -322,10 +323,15 @@ class SubmissionController extends Controller {
         }
 
         $submission->increment('views');
+        $this->calculationSubmissionRate($submission->id);
 
         $upvote = Support::where('user_id',$user->id)
             ->where('supportable_id',$submission->id)
             ->where('supportable_type',Submission::class)
+            ->exists();
+        $downvote = DownVote::where('user_id',$user->id)
+            ->where('source_id',$submission->id)
+            ->where('source_type',Submission::class)
             ->exists();
         $bookmark = Collection::where('user_id',$user->id)
             ->where('source_id',$submission->id)
@@ -346,9 +352,11 @@ class SubmissionController extends Controller {
         $attention_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
         $return['is_followed_author'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
+        $return['is_downvoted'] = $downvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
         $return['supporter_list'] = $supporters;
         $return['support_description'] = $submission->getSupportRateDesc();
+        $return['support_percent'] = $submission->getSupportPercent();
         $return['tags'] = $submission->tags()->get()->toArray();
         $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;
         $return['bookmarks'] = Collection::where('source_id',$submission->id)
