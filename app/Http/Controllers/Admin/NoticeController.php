@@ -17,7 +17,8 @@ class NoticeController extends AdminController
     /*权限验证规则*/
     protected $validateRules = [
         'subject' => 'required|max:255',
-        'url' => 'required|max:255',
+        'url_mobile' => 'required|max:255',
+        'url_www' => 'required|max:255',
         'img_url' => 'required',
         'sort' => 'required'
     ];
@@ -73,6 +74,8 @@ class NoticeController extends AdminController
             return $this->error(route('admin.notice.create'),'请上传封面图片');
         }
         $data = $request->all();
+        $img = $data['url_mobile'].','.$data['url_www'];
+        $data['url'] = $img;
         $data['img_url'] = $img_url;
         Notice::create($data);
         return $this->success(route('admin.notice.index'),'公告添加成功');
@@ -129,8 +132,9 @@ class NoticeController extends AdminController
             Storage::disk('oss')->put($filePath,File::get($file));
             $img_url = Storage::disk('oss')->url($filePath);
         }
+        $img = $request->input('url_mobile').','.$request->input('url_www');
         $notice->subject = $request->input('subject');
-        $notice->url = $request->input('url');
+        $notice->url = $img;
         if ($img_url) $notice->img_url = $img_url;
         $notice->sort = $request->input('sort');
         $notice->status = $request->input('status');
