@@ -59,7 +59,7 @@
                                         <tr>
                                             <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
                                             <td>{{ $submission->id }}</td>
-                                            <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ strip_tags($submission->title) }}</a></td>
+                                            <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
                                             <td>
                                                 @if ($submission->data['img'] && is_array($submission->data['img']))
                                                     @foreach($submission->data['img'] as $img)
@@ -83,6 +83,8 @@
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.operate.article.verify_recommend') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></a>
+                                                    <a class="btn btn-default btn-sm" data-toggle="tooltip" title="删除文章" onclick="confirm_submit('item_form','{{  route('admin.operate.article.destroy') }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -92,7 +94,20 @@
                             </form>
                         </div>
                         <div class="box-footer clearfix">
-                            {!! str_replace('/?', '?', $submissions->appends($filter)->render()) !!}
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <div class="btn-group">
+                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.operate.article.verify_recommend') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
+                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除文章" onclick="confirm_submit('item_form','{{  route('admin.operate.article.destroy') }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="text-right">
+                                        <span class="total-num">共 {{ $submissions->total() }} 条数据</span>
+                                        {!! str_replace('/?', '?', $submissions->appends($filter)->render()) !!}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                 </div>
             </div>

@@ -1143,6 +1143,7 @@ class QuestionController extends Controller
                 'is_expert' => $answer->user->userData->authentication_status == 1 ? 1 : 0,
                 'is_best_answer' => $answer->adopted_at?true:false,
                 'content' => ($is_self || $is_answer_author || $is_pay_for_view)?$answer->getContentText():'',
+                'content_html' => ($is_self || $is_answer_author || $is_pay_for_view)?$answer->getContentHtml():'',
                 'promise_time' => $answer->promise_time,
                 'is_followed' => $attention?1:0,
                 'is_supported' => $support?1:0,

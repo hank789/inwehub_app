@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Third\Quill;
 
 /**
- * Parse Quill generated deltas to the requested format
+ * Parse Quill generated deltas into the requested format
  *
  * @author Dean Blackborough <dean@g3d-development.com>
  * @copyright Dean Blackborough
@@ -11,11 +12,6 @@ namespace App\Third\Quill;
  */
 class Render
 {
-    /**
-     * @var \App\Third\Quill\Renderer\Render
-     */
-    private $renderer;
-
     /**
      * @var \App\Third\Quill\Parser\Parse
      */
@@ -27,75 +23,88 @@ class Render
     private $format;
 
     /**
-     * Renderer constructor.
+     * Renderer constructor, pass in the $quill_json string and set the requested output format
      *
-     * @param string $deltas Deltas json string
+     * @param string $quill_json
+     * @param string $format Requested output format
      *
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
-    public function __construct($deltas, $format='HTML')
+    public function __construct(string $quill_json, string $format = Options::FORMAT_HTML)
     {
         switch ($format) {
-            case 'HTML':
-                $this->parser = new \App\Third\Quill\Parser\Html();
+            case Options::FORMAT_GITHUB_MARKDOWN:
+                $this->parser = new Parser\GithubMarkdown();
                 break;
-            case 'TEXT':
-                $this->parser = new \App\Third\Quill\Parser\Text();
+            case Options::FORMAT_HTML:
+                $this->parser = new Parser\Html();
+                break;
+            case Options::FORMAT_MARKDOWN:
+                $this->parser = new Parser\Markdown();
+                break;
+            case Options::FORMAT_TEXT:
+                $this->parser = new Parser\Text();
                 break;
             default:
-                throw new \Exception('No renderer found for ' . $format);
+                throw new \InvalidArgumentException(
+                    'Requested $format not supported, formats supported, ' .
+                    implode(
+                        ', ',
+                        [Options::FORMAT_HTML, OPTIONS::FORMAT_MARKDOWN]
+                    )
+                );
                 break;
         }
 
         $this->format = $format;
 
-        if ($this->parser->load($deltas) === false) {
-            throw new \Exception('Failed to load deltas json');
+        try {
+            $this->parser->load($quill_json);
+        } catch (\InvalidArgumentException $e) {
+            throw new \InvalidArgumentException($e->getMessage());
         }
     }
 
     /**
-     * Set a new attribute option
+     * Pass the content array to the renderer and return the generated output
      *
-     * @param string $option Attribute option to replace
-     * @param mixed $value New Attribute option value
-     *
-     * @return boolean
-     * @throws \Exception
-     */
-    public function setAttributeOption($option, $value)
-    {
-        if (is_a($this->parser, '\App\Third\Quill\Parser\Parse') === true) {
-            return $this->parser->setAttributeOption($option, $value);
-        } else {
-            throw new \Exception('Parser not instantiated, can only set options after instantiating object');
-        }
-    }
-
-    /**
-     * Pass content array to renderer and return output
+     * @param boolean Optionally trim the output
      *
      * @return string
+     * @throws \InvalidArgumentException
      * @throws \Exception
      */
-    public function render()
+    public function render(bool $trim = false): string
     {
-        if ($this->parser->parse() !== true) {
-            throw new \Exception('Failed to parse delta');
-        }
+        if ($this->parser->parse() === true) {
+            switch ($this->format) {
+                case Options::FORMAT_GITHUB_MARKDOWN:
+                    $renderer = new Renderer\GithubMarkdown();
+                    break;
+                case Options::FORMAT_HTML:
+                    $renderer = new Renderer\Html();
+                    break;
+                case Options::FORMAT_MARKDOWN:
+                    $renderer = new Renderer\Markdown();
+                    break;
+                case Options::FORMAT_TEXT:
+                    $renderer = new Renderer\Text();
+                    break;
+                default:
+                    // Shouldn't be possible to get here
+                    throw new \InvalidArgumentException(
+                        'Requested $format not supported, formats supported, ' .
+                        implode(
+                            ', ',
+                            [Options::FORMAT_HTML, OPTIONS::FORMAT_MARKDOWN]
+                        )
+                    );
+                    break;
+            }
 
-        switch ($this->format) {
-            case 'HTML':
-                $this->renderer = new \App\Third\Quill\Renderer\Html($this->parser->content());
-                break;
-            case 'TEXT':
-                $this->renderer = new \App\Third\Quill\Renderer\Text($this->parser->content());
-                break;
-            default:
-                throw new \Exception('No parser found for ' . $this->format);
-                break;
+            return $renderer->load($this->parser->deltas())->render($trim);
+        } else {
+            throw new \Exception('Failed to parse the supplied $quill_json array');
         }
-
-        return $this->renderer->render();
     }
 }

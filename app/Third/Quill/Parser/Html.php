@@ -1,526 +1,348 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Third\Quill\Parser;
 
-use \Exception;
+use App\Third\Quill\Delta\Html\Bold;
+use App\Third\Quill\Delta\Html\Compound;
+use App\Third\Quill\Delta\Html\CompoundImage;
+use App\Third\Quill\Delta\Html\Delta;
+use App\Third\Quill\Delta\Html\Header;
+use App\Third\Quill\Delta\Html\Image;
+use App\Third\Quill\Delta\Html\Insert;
+use App\Third\Quill\Delta\Html\Italic;
+use App\Third\Quill\Delta\Html\Link;
+use App\Third\Quill\Delta\Html\ListItem;
+use App\Third\Quill\Delta\Html\Strike;
+use App\Third\Quill\Delta\Html\SubScript;
+use App\Third\Quill\Delta\Html\SuperScript;
+use App\Third\Quill\Delta\Html\Underline;
+use App\Third\Quill\Delta\Html\Video;
+use App\Third\Quill\Interfaces\ParserAttributeInterface;
+use App\Third\Quill\Interfaces\ParserSplitInterface;
+use App\Third\Quill\Options;
 
 /**
- * Parser for HTML, parses the deltas to generate a content array for  deltas into a html redy array
+ * HTML parser, parses the deltas, create an array of HTMl Delta objects which
+ * will be passed to the HTML renderer
  *
  * @author Dean Blackborough <dean@g3d-development.com>
  * @copyright Dean Blackborough
  * @license https://github.com/deanblackborough/php-quill-renderer/blob/master/LICENSE
  */
-class Html extends Parse
+class Html extends Parse implements ParserSplitInterface, ParserAttributeInterface
 {
     /**
-     * Renderer constructor.
+     * Deltas array after parsing, array of Delta objects
      *
-     * @param array $options Options data array, if empty default options are used
-     * @param string $block_element
+     * @var Delta[]
      */
-    public function __construct(array $options = array(), $block_element = null)
+    protected $deltas;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
     {
-        parent::__construct($options, $block_element);
+        parent::__construct();
+
+        $this->class_delta_bold = Bold::class;
+        $this->class_delta_header = Header::class;
+        $this->class_delta_image = Image::class;
+        $this->class_delta_insert = Insert::class;
+        $this->class_delta_italic = Italic::class;
+        $this->class_delta_link = Link::class;
+        $this->class_delta_strike = Strike::class;
+        $this->class_delta_video = Video::class;
     }
 
     /**
-     * Default block element attribute
-     */
-    protected function defaultBlockElementOption()
-    {
-        return array(
-            'tag' => 'p',
-            'type' => 'block'
-        );
-    }
-
-    /**
-     * Default attribute options for the HTML renderer/parser
+     * Split insert by new lines and optionally set whether or not the close()
+     * method needs to called on the Delta
      *
-     * @return array
-     */
-    protected function defaultAttributeOptions()
-    {
-        return array(
-            'bold' => array(
-                'tag' => 'strong',
-                'type' => 'inline',
-            ),
-            'header' => array(
-                '1' => array(
-                    'tag' => 'h1',
-                    'type' => 'block',
-                    'assign' => 'previous'
-                ),
-                '2' => array(
-                    'tag' => 'h2',
-                    'type' => 'block',
-                    'assign' => 'previous'
-                ),
-                '3' => array(
-                    'tag' => 'h3',
-                    'type' => 'block',
-                    'assign' => 'previous'
-                ),
-                '4' => array(
-                    'tag' => 'h4',
-                    'type' => 'block',
-                    'assign' => 'previous'
-                ),
-                '5' => array(
-                    'tag' => 'h5',
-                    'type' => 'block',
-                    'assign' => 'previous'
-                ),
-                '6' => array(
-                    'tag' => 'h6',
-                    'type' => 'block',
-                    'assign' => 'previous'
-                ),
-                '7' => array(
-                    'tag' => 'h7',
-                    'type' => 'block',
-                    'assign' => 'previous'
-                )
-            ),
-            'italic' => array(
-                'tag' => 'em',
-                'type' => 'inline'
-            ),
-            'link' => array(
-                'tag' => 'a',
-                'type' => 'inline',
-                'attributes' => array(
-                    'href' => null
-                )
-            ),
-            'script' => array(
-                'sub' => array(
-                    'type' => 'inline',
-                    'tag' => 'sub'
-                ),
-                'super' => array(
-                    'type' => 'inline',
-                    'tag' => 'sup'
-                )
-            ),
-            'strike' => array(
-                'tag' => 's',
-                'type' => 'inline'
-            ),
-            'underline' => array(
-                'tag' => 'u',
-                'type' => 'inline'
-            ),
-        );
-    }
-
-    /**
-     * Get the tag(s) and attributes/values that have been defined for the quill attribute.
+     * @param string $insert An insert string
      *
-     * @param string $attribute
-     * @param string $value
-     *
-     * @return array|false
+     * @return array array of inserts, two indexes, insert and close
      */
-    private function getTagAndAttributes($attribute, $value)
+    public function splitInsertsOnNewLines($insert): array
     {
-        switch ($attribute)
-        {
-            case 'bold':
-            case 'italic':
-            case 'strike':
-            case 'underline':
-                return $this->options['attributes'][$attribute];
-                break;
+        $inserts = [];
 
-            case 'header':
-            case 'script':
-                return $this->options['attributes'][$attribute][$value];
-                break;
+        if (preg_match("/[\n]{2,}/", $insert) !== 0) {
+            $splits = (preg_split("/[\n]{2,}/", $insert));
+            $i = 0;
+            foreach (preg_split("/[\n]{2,}/", $insert) as $match) {
 
-            case 'link':
-                $result = $this->options['attributes'][$attribute];
-                $result['attributes']['href'] = $value;
-                return $result;
-                break;
+                $close = false;
 
-            default:
-                // Do nothing, valid already set to false
-                return false;
-                break;
-        }
-    }
+                $sub_inserts = $this->splitInsertsOnNewLine($match);
 
-    /**
-     * Check to see if the last item in the content array is a closed block element
-     *
-     * @return void
-     */
-    private function lastItemClosed()
-    {
-        $last_item = count($this->content) - 1;
-        $assigned_tags = $this->content[$last_item]['tags'];
-        $block = false;
+                if (count($sub_inserts) > 0) {
+                    if (count($sub_inserts) === 1) {
+                        if ($i === 0 || $i !== count($splits) - 1) {
+                            $close = true;
+                        }
 
-        if (count($assigned_tags) > 0) {
-            foreach ($assigned_tags as $assigned_tag) {
-                // Block element check
-                if ($assigned_tag['close'] !== null && $assigned_tag['type'] === 'block') {
-                    $block = true;
-                    continue;
+                        $inserts[] = [
+                            'insert' => $sub_inserts[0]['insert'],
+                            'close' => $close,
+                            'new_line' => false,
+                            'pre_new_line' => false
+                        ];
+                    } else {
+                        foreach ($sub_inserts as $sub_insert) {
+                            $inserts[] = [
+                                'insert' => $sub_insert['insert'],
+                                'close' => $sub_insert['close'],
+                                'new_line' => $sub_insert['new_line'],
+                                'pre_new_line' => $sub_insert['pre_new_line']
+                            ];
+                        }
+                    }
                 }
+
+                $i++;
+            }
+        } else {
+            $sub_inserts = $this->splitInsertsOnNewLine($insert);
+            foreach ($sub_inserts as $sub_insert) {
+                $inserts[] = [
+                    'insert' => $sub_insert['insert'],
+                    'close' => $sub_insert['close'],
+                    'new_line' => $sub_insert['new_line'],
+                    'pre_new_line' => $sub_insert['pre_new_line']
+                ];
             }
         }
 
-        if ($block === false) {
-            $this->content[$last_item]['tags'] = array();
-            foreach ($assigned_tags as $assigned_tag) {
-                $this->content[$last_item]['tags'][] = $assigned_tag;
-            }
-            $this->content[$last_item]['tags'][] = array(
-                'open' => null,
-                'close' => '</' . $this->options['block']['tag'] . '>',
-                'type' => 'block'
-            );
-        }
+        return $inserts;
     }
 
     /**
-     * Split the inserts if multiple newlines are found and generate a new insert
+     * Split insert by new line and optionally set whether or not the close()
+     * and newLine() methods needs to be called on the Delta
      *
-     * @return void
+     * @param string $insert An insert string
+     *
+     * @return array array of inserts, three indexes, insert, close and new_line
      */
-    private function splitDeltas()
+    public function splitInsertsOnNewLine($insert): array
     {
-        $deltas = $this->deltas['ops'];
-        $this->deltas = array();
+        $inserts = [];
 
-        foreach ($deltas as $delta) {
-            if (array_key_exists('insert', $delta) === true &&
-                //array_key_exists('attributes', $delta) === false && @todo Why did I add this?
-                is_array($delta['insert']) === false &&
-                preg_match("/[\n]{2,}/", $delta['insert']) !== 0) {
+        if (preg_match("/[\n]{1}/", rtrim($insert, "\n")) !== 0) {
+            $matches = preg_split("/[\n]{1}/", rtrim($insert, "\n"));
+            $i = 0;
 
-                foreach (explode("\n\n", $delta['insert']) as $k => $match) {
-                    $new_delta = [
-                        'insert' => str_replace("\n", '', $match),
-                        'break' => true
+            foreach ($matches as $match) {
+                if (strlen(trim($match)) > 0) {
+                    $sub_insert = str_replace("\n", '', $match);
+                    $new_line = true;
+                    $pre_new_line = false;
+                    if ($i === (count($matches) - 1)) {
+                        $new_line = false;
+                    }
+                    if ($i === 1 && count($inserts) === 0) {
+                        $pre_new_line = true;
+                    }
+                    $inserts[] = [
+                        'insert' => $sub_insert,
+                        'close' => false,
+                        'new_line' => $new_line,
+                        'pre_new_line' => $pre_new_line
                     ];
-
-                    $this->deltas[] = $new_delta;
                 }
+                $i++;
+            }
+        } else {
+            $inserts[] = [
+                'insert' => str_replace("\n", '', $insert),
+                'close' => false,
+                'new_line' => false,
+                'pre_new_line' => false
+            ];
+        }
+
+        return $inserts;
+    }
+
+    /**
+     * Quill list assign the relevant Delta class and set up the data, needs to
+     * modify/remove previous Deltas
+     *
+     * @param array $quill
+     *
+     * @return void
+     */
+    public function attributeList(array $quill)
+    {
+        if (in_array($quill['attributes'][OPTIONS::ATTRIBUTE_LIST], array('ordered', 'bullet')) === true) {
+            $insert = $this->deltas[count($this->deltas) - 1]->getInsert();
+            $attributes = $this->deltas[count($this->deltas) - 1]->getAttributes();
+
+            unset($this->deltas[count($this->deltas) - 1]);
+
+            if (count($attributes) === 0) {
+                $this->deltas[] = new ListItem($insert, $quill['attributes']);
             } else {
-                if (array_key_exists('insert', $delta) === true) {
-                    $delta['insert'] = str_replace("\n", '', $delta['insert']);
+                $delta = new ListItem("", $quill['attributes']);
+
+                foreach ($attributes as $attribute_name => $value) {
+                    switch ($attribute_name) {
+                        case Options::ATTRIBUTE_BOLD:
+                            $delta->addChild(new Bold($insert));
+                            break;
+
+                        case Options::ATTRIBUTE_ITALIC:
+                            $delta->addChild(new Italic($insert));
+                            break;
+
+                        case Options::ATTRIBUTE_LINK:
+                            $delta->addChild(new Link($insert, $attributes));
+                            break;
+
+                        case Options::ATTRIBUTE_SCRIPT:
+                            if ($attributes[OPTIONS::ATTRIBUTE_SCRIPT] === Options::ATTRIBUTE_SCRIPT_SUB) {
+                                $delta->addChild(new SubScript($insert));
+                            }
+                            if ($attributes[OPTIONS::ATTRIBUTE_SCRIPT] === Options::ATTRIBUTE_SCRIPT_SUPER) {
+                                $delta->addChild(new SuperScript($insert));
+                            }
+                            break;
+
+                        case Options::ATTRIBUTE_STRIKE:
+                            $delta->addChild(new Strike($insert));
+                            break;
+
+                        case Options::ATTRIBUTE_UNDERLINE:
+                            $delta->addChild(new Underline($insert));
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
                 $this->deltas[] = $delta;
             }
-        }
-    }
 
-    /**
-     * Assign the relevant HTML tags based upon the defined quill attribute
-     *
-     * @return void
-     */
-    private function assignTags()
-    {
-        $i = 0;
+            $this->deltas = array_values($this->deltas);
 
-        foreach ($this->deltas as $insert) {
+            $current_index = count($this->deltas) - 1;
 
-            $this->content[$i] = array(
-                'content' => null,
-                'tags' => array(),
-            );
-
-            if (array_key_exists('break', $insert) === true) {
-                $this->content[$i]['break'] = true;
-            }
-
-            $tags = array();
-            $has_tags = false;
-
-            if (array_key_exists('attributes', $insert) === true && is_array($insert['attributes']) === true) {
-                foreach ($insert['attributes'] as $attribute => $value) {
-                    if ($this->isAttributeValid($attribute, $value) === true) {
-                        $tag = $this->getTagAndAttributes($attribute, $value);
-                        if ($tag !== false) {
-                            $tags[] = $tag;
-                        }
-                    }
-                }
-            }
-
-            if (count($tags) > 0) {
-                $has_tags = true; // Set bool so we don't need to check array size again
-            }
-
-            if ($has_tags === true) {
-                foreach ($tags as $tag) {
-                    if (array_key_exists('assign', $tag) === false) {
-                        $assign_tag_to_current_element = true;
-                    } else {
-                        $assign_tag_to_current_element = false;
-                    }
-
-                    $open = '<' . $tag['tag'];
-                    if (array_key_exists('attributes', $tag) === true) {
-                        $open .= ' ';
-                        foreach ($tag['attributes'] as $attribute => $value) {
-                            $open .= $attribute . '="' . $value . '"';
-                        }
-                    }
-                    $open .= '>';
-
-                    if ($assign_tag_to_current_element === true) {
-                        $tag_counter = $i;
-                    } else {
-                        $tag_counter = $i - 1;
-                    }
-
-                    $this->content[$tag_counter]['tags'][] = array(
-                        'open' => $open,
-                        'close' => '</' . $tag['tag'] . '>',
-                        'type' => $tag['type']
-                    );
-                }
-            }
-
-            if (array_key_exists('insert', $insert) === true) {
-                if (is_array($insert['insert']) === false && strlen(trim($insert['insert'])) > 0) {
-                    $this->content[$i]['content'] = $insert['insert'];
+            for ($i = $current_index - 1; $i >= 0; $i--) {
+                $this_delta = $this->deltas[$i];
+                if (
+                    $this_delta->displayType() === Delta::DISPLAY_BLOCK ||
+                    $this_delta->newLine() === true ||
+                    $this_delta->close() === true
+                ) {
+                    break;
                 } else {
-                    if (is_array($insert['insert']) === true &&
-                        array_key_exists('image', $insert['insert']) === true) {
-                        $this->content[$i]['content'] = [ 'image' => $insert['insert']['image'] ];
-                    }
+                    $this->deltas[$current_index]->addChild($this->deltas[$i]);
+                    unset($this->deltas[$i]);
                 }
             }
 
-            $i++;
-        }
-    }
+            $this->deltas = array_values($this->deltas);
+            $current_index = count($this->deltas) - 1;
+            $previous_index = $current_index -1;
 
-    /**
-     * Open paragraphs
-     *
-     * @return void
-     */
-    private function openParagraphs()
-    {
-        $open_paragraph = false;
-        $opened_at = null;
-
-        foreach ($this->content as $i => $content) {
-
-            if (count($content['tags']) === 0 && $open_paragraph === false) {
-                $open_paragraph = true;
-
-                $content['tags'][] = array(
-                    'open' => '<' . $this->options['block']['tag'] . '>',
-                    'close' => null,
-                    'type' => 'block'
-                );
-
-                $this->content[$i]['tags'] = $content['tags'];
-            }
-        }
-    }
-
-    /**
-     * Convert breaks into new paragraphs
-     *
-     * @return void
-     */
-    private function convertBreaks()
-    {
-        foreach ($this->content as $i => $content) {
-            if (array_key_exists('break', $content) === true) {
-                foreach ($content['tags'] as $tag) {
-
-                    if (count($content['tags']) === 1) {
-                        if ($tag['open'] === null && $tag['close'] === '</' . $this->options['block']['tag'] . '>') {
-                            $this->content[$i]['tags'][0]['open'] = '<' . $this->options['block']['tag'] . '>';
-                        }
-                        if ($tag['open'] === '<' . $this->options['block']['tag'] . '>' && $tag['close'] === null) {
-                            $this->content[$i]['tags'][0]['close'] = '</' . $this->options['block']['tag'] . '>';
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Loops through the deltas object and generate the contents array
-     *
-     * @todo Not keen on the close and remove methods, need to go through logic and try to remove need for them
-     *
-     * @return boolean
-     */
-    public function parse()
-    {
-        if ($this->json_valid === true && array_key_exists('ops', $this->deltas) === true) {
-
-            $this->splitDeltas();
-
-            $this->assignTags();
-
-            $this->removeEmptyElements();
-
-            $this->openParagraphs();
-
-            $this->closeOpenParagraphs();
-
-            $this->lastItemClosed();
-
-            $this->convertBreaks();
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function content()
-    {
-        return $this->content;
-    }
-
-    /**
-     * Remove empty elements from the contents array, occurs when a tag is assigned to any earlier element
-     *
-     * @return void
-     */
-    private function removeEmptyElements()
-    {
-        $existing_content = $this->content;
-        $this->content = array();
-        foreach ($existing_content as $content) {
-            if (is_array($content['content']) === true || strlen($content['content']) !== 0) {
-                $this->content[] = $content;
-            }
-        }
-    }
-
-    /**
-     * Check to see if there are any open paragraphs followed by a block element
-     *
-     * @return void
-     */
-    private function closeOpenParagraphs()
-    {
-        $open_paragraph = false;
-        $opened_at = null;
-
-        foreach ($this->content as $i => $content) {
-            if (array_key_exists('tags', $content) === true && count($content['tags']) === 1 &&
-                $content['tags'][0]['open'] === '<p>' && $content['tags'][0]['close'] === null) {
-
-                $open_paragraph = true;
-                $opened_at = $i;
-            }
-
-            if ($open_paragraph === true && $i !== $opened_at) {
-                if (array_key_exists('tags', $content) === true) {
-                    foreach ($content['tags'] as $tags) {
-                        if ($tags['type'] == 'block') {
-                            $open_paragraph = false;
-                            $this->content[$i-1]['tags'][] = array(
-                                'open' => null,
-                                'close' => '</' . $this->options['block']['tag'] . '>',
-                                'type' => 'block'
-                            );
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Set all the attribute options for the parser/renderer
-     *
-     * @param array $options
-     *
-     * @return void
-     */
-    public function setAttributeOptions(array $options)
-    {
-        $this->options['attributes'] = $options;
-    }
-
-    /**
-     * Set the block element for the parser/renderer
-     *
-     * @param array $options Block element options
-     *
-     * @return void
-     */
-    public function setBlockOptions(array $options)
-    {
-        $this->options['block'] = $options;
-    }
-
-    /**
-     * Validate the option request and set the value
-     *
-     * @param string $option Attribute option to replace
-     * @param mixed $value New Attribute option value
-     *
-     * @return true
-     * @throws \Exception
-     */
-    private function validateAndSetAttributeOption($option, $value)
-    {
-        if (is_array($value) === true &&
-            array_key_exists('tag', $value) === true &&
-            array_key_exists('type', $value) === true &&
-            in_array($value['type'], array('inline', 'block')) === true) {
-
-            $this->options['attributes'][$option] = $value;
-
-            return true;
-        } else if (is_string($value) === true) {
-            $this->options['attributes'][$option]['tag'] = $value;
-
-            return true;
-        } else {
-            if (is_array($value) === true) {
-                throw new \Exception('setAttributeOption() value should be an array with two indexes, tag and type');
+            if ($previous_index < 0) {
+                $this->deltas[$current_index]->setFirstChild();
+                $this->deltas[$current_index]->setLastChild();
             } else {
-                throw new \Exception('setAttributeOption() value should be an array with two indexes, tag and type');
+                if ($this->deltas[$previous_index]->isChild() === true) {
+                    $this->deltas[$current_index]->setLastChild();
+                    $this->deltas[$previous_index]->setLastChild(false);
+                } else {
+                    $this->deltas[$current_index]->setFirstChild();
+                    $this->deltas[$current_index]->setLastChild();
+                }
             }
         }
     }
 
     /**
-     * Set a new attribute option
+     * Script Quill attribute, assign the relevant Delta class and set up
+     * the data, script could be sub or super
      *
-     * @param string $option Attribute option to replace
-     * @param mixed $value New Attribute option value
+     * @param array $quill
      *
-     * @return boolean
-     * @throws \Exception
+     * @return void
      */
-    public function setAttributeOption($option, $value)
+    public function attributeScript(array $quill)
     {
-        switch ($option) {
-            case 'bold':
-            case 'italic':
-            case 'script':
-            case 'strike':
-            case 'underline':
-                return $this->validateAndSetAttributeOption($option, $value);
-                break;
-            case 'header':
-            case 'link':
-                return false;
-                break;
+        if ($quill['attributes'][OPTIONS::ATTRIBUTE_SCRIPT] === Options::ATTRIBUTE_SCRIPT_SUB) {
+            $this->deltas[] = new SubScript($quill['insert'], $quill['attributes']);
+        }
+        if ($quill['attributes'][OPTIONS::ATTRIBUTE_SCRIPT] === Options::ATTRIBUTE_SCRIPT_SUPER) {
+            $this->deltas[] = new SuperScript($quill['insert'], $quill['attributes']);
+        }
+    }
 
+    /**
+     * Underline Quill attribute, assign the relevant Delta class and set up
+     * the data
+     *
+     * @param array $quill
+     *
+     * @return void
+     */
+    public function attributeUnderline(array $quill)
+    {
+        if ($quill['attributes'][OPTIONS::ATTRIBUTE_UNDERLINE] === true) {
+            $this->deltas[] = new Underline($quill['insert'], $quill['attributes']);
+        }
+    }
+
+    /**
+     * Multiple attributes set, handle accordingly
+     *
+     * @param array $quill
+     *
+     * @return void
+     */
+    public function compoundInsert(array $quill)
+    {
+        if (count($quill['attributes']) > 0) {
+            if (is_array($quill['insert']) === false) {
+                $delta = new Compound($quill['insert']);
+            } else {
+                $delta = new CompoundImage($quill['insert']['image']);
+            }
+            foreach ($quill['attributes'] as $attribute => $value) {
+                $delta->setAttribute($attribute, $value);
+            }
+
+            $this->deltas[] = $delta;
+        }
+    }
+
+    /**
+     * Extended Quill insert, insert will need to be split before creation
+     * of Deltas
+     *
+     * @param array $quill
+     *
+     * @return void
+     */
+    public function extendedInsert(array $quill)
+    {
+        $inserts = $this->splitInsertsOnNewLines($quill['insert']);
+
+        foreach ($inserts as $insert) {
+            $delta = new Insert($insert['insert']);
+            if ($insert['close'] === true) {
+                $delta->setClose();
+            }
+            if ($insert['new_line'] === true) {
+                $delta->setNewLine();
+            }
+            if (array_key_exists('pre_new_line', $insert) === true && $insert['pre_new_line'] === true) {
+                $delta->setPreNewLine();
+            }
+
+            $this->deltas[] = $delta;
         }
     }
 }
