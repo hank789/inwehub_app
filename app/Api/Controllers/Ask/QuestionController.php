@@ -143,6 +143,7 @@ class QuestionController extends Controller
                 'comment_number' => $bestAnswer->comments,
                 'average_rate'   => $bestAnswer->getFeedbackRate(),
                 'created_at' => $bestAnswer->created_at->diffForHumans(),
+                'created_time' => $bestAnswer->created_at,
                 'supporter_list' => $supporters
             ];
             $promise_answer_time = $bestAnswer->promise_time;
@@ -181,7 +182,8 @@ class QuestionController extends Controller
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
             'views' => $question->views,
-            'created_at' => $question->created_at->diffForHumans()
+            'created_at' => $question->created_at->diffForHumans(),
+            'created_time' => $question->created_at
         ];
 
 
@@ -909,7 +911,8 @@ class QuestionController extends Controller
                 'price'      => $question->price,
                 'description'  => $question->title,
                 'tags' => $question->tags()->get()->toArray(),
-                'status' => $question->status
+                'status' => $question->status,
+                'created_time' => $question->created_at
             ];
             if($question->question_type == 1){
                 $item['comment_number'] = 0;
