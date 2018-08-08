@@ -12,11 +12,11 @@ try {
 }
 
 
-/*$parser = new \DBlackborough\Quill\Parser\Html();
+/*$parser = new \App\Third\Quill\Parser\Html();
 $parser->load($deltas);
 $parser->parse();
 
 var_dump($parser->content());
 
-$renderer = new \DBlackborough\Quill\Renderer\Html($parser->content());
+$renderer = new \App\Third\Quill\Renderer\Html($parser->content());
 echo $renderer->render();*/

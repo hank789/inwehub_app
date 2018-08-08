@@ -23,7 +23,7 @@ use App\Third\Quill\Options;
  * @copyright Dean Blackborough
  * @license https://github.com/deanblackborough/php-quill-renderer/blob/master/LICENSE
  */
-class Text extends Parse implements ParserAttributeInterface
+class Markdown extends Parse implements ParserAttributeInterface
 {
     /**
      * Deltas array after parsing, array of Delta objects
@@ -217,47 +217,6 @@ class Text extends Parse implements ParserAttributeInterface
             } else {
                 $this->deltas[] = new Insert($quill['insert']);
             }
-        }
-    }
-
-    /**
-     * Split the inserts if multiple newlines are found and generate a new insert
-     *
-     * @return void
-     */
-    private function splitDeltas()
-    {
-        $this->quill_json = $this->quill_json['ops'];
-        foreach ($this->quill_json as $delta) {
-            if (array_key_exists('insert', $delta) === true &&
-                //array_key_exists('attributes', $delta) === false && @todo Why did I add this?
-                is_array($delta['insert']) === false &&
-                preg_match("/[\n]{2,}/", $delta['insert']) !== 0) {
-                foreach (explode("\n\n", $delta['insert']) as $k => $match) {
-                    $new_delta = [
-                        'insert' => str_replace("\n", '', $match),
-                        'break' => true
-                    ];
-                    $this->deltas[] = $new_delta;
-                }
-            } else {
-                if (array_key_exists('insert', $delta) === true) {
-                    $delta['insert'] = str_replace("\n", '', $delta['insert']);
-                }
-                $this->deltas[] = $delta;
-            }
-        }
-    }
-
-    public function parse(): bool {
-        if (
-            $this->valid === true &&
-            array_key_exists('ops', $this->quill_json) === true
-        ){
-            $this->splitDeltas();
-            return true;
-        } else {
-            return false;
         }
     }
 }
