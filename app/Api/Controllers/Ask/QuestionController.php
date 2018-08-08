@@ -912,7 +912,7 @@ class QuestionController extends Controller
                 'description'  => $question->title,
                 'tags' => $question->tags()->get()->toArray(),
                 'status' => $question->status,
-                'created_time' => $question->created_at
+                'created_at' => $question->created_at->diffForHumans(),
             ];
             if($question->question_type == 1){
                 $item['comment_number'] = 0;
