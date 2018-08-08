@@ -264,6 +264,8 @@ class QuestionController extends Controller
                     $item['comment_number'] = $bestAnswer->comments;
                     $item['average_rate'] = $bestAnswer->getFeedbackRate();
                     $item['support_number'] = $bestAnswer->supports;
+                    $item['feedback_rate'] = $bestAnswer->getFeedbackAverage();
+                    $item['support_rate'] = $bestAnswer->getSupportRate();
                 }
             } else {
                 $item['answer_number'] = $question->answers;
