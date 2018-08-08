@@ -146,7 +146,7 @@ class SubmissionController extends AdminController
     {
         $ids = $request->input('ids');
         if ($ids) {
-            Submission::whereIn('id',$ids)->delete();
+            Submission::destroy($ids);
         }
         return $this->success(url()->previous(),'删除成功');
     }
