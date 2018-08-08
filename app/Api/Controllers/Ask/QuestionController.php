@@ -15,6 +15,7 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Doing;
+use App\Models\DownVote;
 use App\Models\Pay\Order;
 use App\Models\Pay\UserMoney;
 use App\Models\Question;
@@ -1122,6 +1123,8 @@ class QuestionController extends Controller
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
 
             $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
+            $downvote = DownVote::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->first();
+
             $is_answer_author = false;
             $is_pay_for_view = false;
             if ($answer->adopted_at > 0) {
@@ -1152,6 +1155,7 @@ class QuestionController extends Controller
                 'promise_time' => $answer->promise_time,
                 'is_followed' => $attention?1:0,
                 'is_supported' => $support?1:0,
+                'is_downvoted' => $downvote?1:0,
                 'support_number' => $answer->supports,
                 'downvote_number' => $answer->downvotes,
                 'view_number'    => $answer->views,
