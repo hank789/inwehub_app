@@ -34,7 +34,7 @@ class SubmissionController extends AdminController
             $query->where('title','like', '%'.$filter['word'].'%');
         }
 
-        $submissions = $query->orderBy('id','desc')->paginate(20);
+        $submissions = $query->orderBy('id','desc')->paginate(10);
         return view("admin.operate.article.index")->with('submissions',$submissions)->with('filter',$filter);
     }
 
@@ -106,7 +106,7 @@ class SubmissionController extends AdminController
     /*文章推荐精选审核*/
     public function verifyRecommend(Request $request)
     {
-        $articleIds = $request->input('ids');
+        $articleIds = $request->input('ids',[]);
         foreach ($articleIds as $articleId) {
             $article = Submission::find($articleId);
             $group = Group::find($article->group_id);
@@ -145,7 +145,9 @@ class SubmissionController extends AdminController
     public function destroy(Request $request)
     {
         $ids = $request->input('ids');
-        Submission::whereIn('id',$ids)->delete();
+        if ($ids) {
+            Submission::whereIn('id',$ids)->delete();
+        }
         return $this->success(url()->previous(),'删除成功');
     }
 }
