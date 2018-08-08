@@ -1153,6 +1153,7 @@ class QuestionController extends Controller
                 'is_followed' => $attention?1:0,
                 'is_supported' => $support?1:0,
                 'support_number' => $answer->supports,
+                'downvote_number' => $answer->downvotes,
                 'view_number'    => $answer->views,
                 'comment_number' => $answer->comments,
                 'created_at' => $answer->created_at->diffForHumans()
