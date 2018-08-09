@@ -123,11 +123,13 @@ class WechatController extends AdminController
         $validateRules = [
             'id'      => 'required',
             'group_id'   => 'required|integer',
+            'user_id'   => 'required|integer|min:1',
             'audit_status' => 'required|integer'
         ];
         $this->validate($request,$validateRules);
         $author = WechatMpInfo::find($request->input('id'));
         $author->group_id = $request->input('group_id');
+        $author->user_id = $request->input('user_id',504);
         $author->status = $request->input('audit_status');
         $author->save();
         return $this->success(route('admin.scraper.wechat.author.index'),'修改成功');

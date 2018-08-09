@@ -55,6 +55,7 @@ class ArticleToSubmission implements ShouldQueue
         }
         if (!$author) return;
         if ($author->group_id <= 0) return;
+        $user_id = $author->user_id;
         if ($article->source_type == 1) {
             if (str_contains($article->content_url,'wechat_redirect')) {
                 $url = $article->content_url;
@@ -136,7 +137,7 @@ class ArticleToSubmission implements ShouldQueue
             'group_id'      => $author->group_id,
             'public'        => $author->group->public,
             'rate'          => firstRate(),
-            'user_id'       => config('app.env') != 'production'?1:504,
+            'user_id'       => $user_id>0?$user_id:504,
             'data'          => $data,
         ]);
         $article->topic_id = $submission->id;

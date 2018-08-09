@@ -15,6 +15,7 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Credit;
 use App\Models\Doing;
+use App\Models\DownVote;
 use App\Models\Pay\Order;
 use App\Models\Pay\UserMoney;
 use App\Models\Question;
@@ -143,6 +144,7 @@ class QuestionController extends Controller
                 'comment_number' => $bestAnswer->comments,
                 'average_rate'   => $bestAnswer->getFeedbackRate(),
                 'created_at' => $bestAnswer->created_at->diffForHumans(),
+                'created_time' => $bestAnswer->created_at,
                 'supporter_list' => $supporters
             ];
             $promise_answer_time = $bestAnswer->promise_time;
@@ -181,7 +183,8 @@ class QuestionController extends Controller
             'question_answer_num' => $question->answers,
             'question_follow_num' => $question->followers,
             'views' => $question->views,
-            'created_at' => $question->created_at->diffForHumans()
+            'created_at' => $question->created_at->diffForHumans(),
+            'created_time' => $question->created_at
         ];
 
 
@@ -262,6 +265,8 @@ class QuestionController extends Controller
                     $item['comment_number'] = $bestAnswer->comments;
                     $item['average_rate'] = $bestAnswer->getFeedbackRate();
                     $item['support_number'] = $bestAnswer->supports;
+                    $item['feedback_rate'] = $bestAnswer->getFeedbackAverage();
+                    $item['support_rate'] = $bestAnswer->getSupportRate();
                 }
             } else {
                 $item['answer_number'] = $question->answers;
@@ -909,7 +914,8 @@ class QuestionController extends Controller
                 'price'      => $question->price,
                 'description'  => $question->title,
                 'tags' => $question->tags()->get()->toArray(),
-                'status' => $question->status
+                'status' => $question->status,
+                'created_at' => $question->created_at->diffForHumans(),
             ];
             if($question->question_type == 1){
                 $item['comment_number'] = 0;
@@ -1117,6 +1123,8 @@ class QuestionController extends Controller
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer->user))->where('source_id','=',$answer->user_id)->first();
 
             $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',get_class($answer))->where('supportable_id','=',$answer->id)->first();
+            $downvote = DownVote::where("user_id",'=',$user->id)->where('source_type','=',get_class($answer))->where('source_id','=',$answer->id)->first();
+
             $is_answer_author = false;
             $is_pay_for_view = false;
             if ($answer->adopted_at > 0) {
@@ -1147,7 +1155,9 @@ class QuestionController extends Controller
                 'promise_time' => $answer->promise_time,
                 'is_followed' => $attention?1:0,
                 'is_supported' => $support?1:0,
+                'is_downvoted' => $downvote?1:0,
                 'support_number' => $answer->supports,
+                'downvote_number' => $answer->downvotes,
                 'view_number'    => $answer->views,
                 'comment_number' => $answer->comments,
                 'created_at' => $answer->created_at->diffForHumans()
