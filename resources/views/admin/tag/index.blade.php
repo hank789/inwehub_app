@@ -56,7 +56,7 @@
                                         <th>名称</th>
                                         <th>分类</th>
                                         <th>简介</th>
-                                        <th>粉丝数</th>
+                                        <th>关联数</th>
                                         <th>创建时间</th>
                                         <th>操作</th>
                                     </tr>
@@ -71,7 +71,7 @@
                                             <td><a href="{{ route('ask.tag.index',['name'=>$tag->name,'source_type'=>'questions']) }}" target="_blank">{{ $tag->name }}</a></td>
                                             <td>{{ implode(',',$tag->categories->pluck('name')->toArray()) }}</td>
                                             <td width="30%">{{ $tag->summary }}</td>
-                                            <td>{{ $tag->followers }}</td>
+                                            <td>{{ $tag->countMorph() }}</td>
                                             <td>{{ timestamp_format($tag->created_at) }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
