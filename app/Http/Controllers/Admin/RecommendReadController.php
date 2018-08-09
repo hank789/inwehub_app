@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Readhub\Submission;
 use App\Models\RecommendRead;
+use App\Models\Submission;
 use App\Models\Tag;
-use App\Models\UserTag;
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 
 class RecommendReadController extends AdminController
@@ -123,6 +119,22 @@ class RecommendReadController extends AdminController
 
     public function verify(Request $request) {
         $ids = $request->input('ids');
+        foreach ($ids as $id) {
+            $recommendation = RecommendRead::find($id);
+            switch ($recommendation->source_type) {
+                case Submission::class:
+                    if ($recommendation->data['domain'] == 'mp.weixin.qq.com') {
+                        $info = getWechatArticleInfo($recommendation->data['url']);
+                        if ($info['error_code'] == 0) {
+                            $submission = Submission::find($recommendation->source_id);
+                            $submission->views += $info['data']['article_view_count'];
+                            $submission->upvotes += $info['data']['article_agree_count'];
+                            $submission->calculationRate();
+                        }
+                    }
+                    break;
+            }
+        }
         RecommendRead::whereIn('id',$ids)->update(['audit_status'=>1]);
 
         return $this->success(url()->previous(),'审核成功');
