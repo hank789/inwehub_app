@@ -479,9 +479,10 @@ class Question extends Model
         if ($bestAnswer) {
             $stars = $bestAnswer->feedbacks()->sum('star');
         }
+        $commentSupports = $this->comments()->sum('supports');
         $y = $this->answers()->sum('pay_for_views') + 1;
 
-        $rate =  hotRate($views,$answers,$supports-$downvotes,$stars+$this->followers+$this->collections+$y,$this->created_at,$this->updated_at);
+        $rate =  hotRate($views,$answers,$supports-$downvotes,$commentSupports + $stars+$this->followers+$this->collections+$y,$this->created_at,$this->updated_at);
         $this->rate = $rate;
         //计算热门排名
         if ($this->question_type == 1) {

@@ -1455,3 +1455,29 @@ if (!function_exists('convertWechatLimitLinkToUnlimit')) {
         return json_decode($res,true);
     }
 }
+
+if (!function_exists('getWechatArticleInfo')) {
+    function getWechatArticleInfo($link) {
+        $ch = curl_init();
+
+        $url=urlencode($link);
+
+        $url = "https://api.shenjian.io/?appid=25d11b844873dba7c0e2e205add34a27&url={$url}";
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept-Encoding:gzip'));
+
+        curl_setopt($ch, CURLOPT_ENCODING, "gzip");
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        // 执行HTTP请求
+
+        curl_setopt($ch , CURLOPT_URL , $url);
+
+        $res = curl_exec($ch);
+
+        curl_close($ch);
+        return json_decode($res,true);
+    }
+}
+
