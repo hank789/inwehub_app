@@ -266,5 +266,9 @@ class Tag extends Model
                         ->orderBy('followers','desc')->take($pageSize)->get();
     }
 
+    public function countMorph() {
+        return Taggable::where('tag_id',$this->id)->count();
+    }
+
 
 }
