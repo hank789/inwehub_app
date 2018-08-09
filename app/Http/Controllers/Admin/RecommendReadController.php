@@ -46,7 +46,7 @@ class RecommendReadController extends AdminController
             $query->doesntHave('tags');
         }
 
-        $recommendations = $query->orderBy('sort','desc')->orderBy('updated_at','desc')->paginate(20);
+        $recommendations = $query->orderBy('updated_at','desc')->paginate(20);
         return view("admin.operate.recommend_read.index")->with('recommendations',$recommendations)->with('filter',$filter);
     }
 
