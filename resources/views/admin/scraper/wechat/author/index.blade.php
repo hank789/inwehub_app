@@ -54,6 +54,7 @@
                                         <th>公众号名称</th>
                                         <th>微信号</th>
                                         <th>圈子</th>
+                                        <th>文章发布者</th>
                                         <th>时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
@@ -64,6 +65,7 @@
                                             <td>{{ $author->_id }}</td>
                                             <td>{{ $author->name }}</td>
                                             <td>{{ $author->wx_hao }}</td>
+                                            <td>{{ '' }}</td>
                                             <td>{{ '' }}</td>
                                             <td>{{ timestamp_format($author->create_at) }}</td>
                                             <td><span class="label label-danger">待抓取</span> </td>
@@ -79,6 +81,7 @@
                                             <td>{{ $author->name }}</td>
                                             <td>{{ $author->wx_hao }}</td>
                                             <td>{{ $author->group?$author->group->name:'' }}</td>
+                                            <td>{{ $author->user?$author->user->name:'' }}</td>
                                             <td>{{ timestamp_format($author->create_time) }}</td>
                                             <td><span class="label @if($author->status===0) label-danger  @else label-success @endif">{{ trans_common_status($author->status) }}</span> </td>
                                             <td>

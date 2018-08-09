@@ -14,6 +14,7 @@ class FeedsController extends AdminController
     protected $validateRules = [
         'name'        => 'required|max:255',
         'group_id'    => 'required|integer|min:1',
+        'user_id'     => 'required|integer|min:1',
         'source_type' => 'required|max:255|in:1,2',
         'source_link' => 'required|max:255',
     ];
@@ -67,6 +68,7 @@ class FeedsController extends AdminController
         $data = [
             'name'        => trim($request->input('name')),
             'group_id'  =>$request->input('group_id'),
+            'user_id'   => $request->input('user_id',504),
             'source_type' => $request->input('source_type'),
             'source_link'   => $request->input('source_link'),
             'status'       => 0,
@@ -122,6 +124,7 @@ class FeedsController extends AdminController
 
         $feed->name = trim($request->input('name'));
         $feed->group_id = trim($request->input('group_id'));
+        $feed->user_id = $request->input('user_id',504);
         $feed->source_link = trim($request->input('source_link'));
         $feed->source_type = $request->input('source_type');
 

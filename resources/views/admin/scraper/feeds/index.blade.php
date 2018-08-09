@@ -52,6 +52,7 @@
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>站点</th>
                                         <th>圈子</th>
+                                        <th>文章发布者</th>
                                         <th>源地址</th>
                                         <th>时间</th>
                                         <th>状态</th>
@@ -62,6 +63,7 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
                                             <td><a href="{{ route('admin.scraper.feeds.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->name }}</a></td>
                                             <td>{{ $article->group?$article->group->name:'' }}</td>
+                                            <td>{{ $article->user?$article->user->name:'' }}</td>
                                             <td>{{ $article->source_link }}</td>
                                             <td>{{ timestamp_format($article->created_at) }}</td>
                                             <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>

@@ -27,6 +27,12 @@
                                 @if($errors->has('group_id')) <p class="help-block">{{ $errors->first('group_id') }}</p> @endif
                             </div>
 
+                            <div class="form-group @if($errors->has('user_id')) has-error @endif ">
+                                <label for="wx_hao">文章发布者id:</label>
+                                <input id="user_id" type="text" name="user_id"  class="form-control input-lg" placeholder="该公众号文章指派的发布者" value="{{ old('user_id',$author->user_id) }}" />
+                                @if($errors->has('user_id')) <p class="help-block">{{ $errors->first('user_id') }}</p> @endif
+                            </div>
+
                             <div class="form-group @if ($errors->first('audit_status')) has-error @endif">
                                 <label>审核状态</label>
                                 <div class="radio">

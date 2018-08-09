@@ -1,5 +1,6 @@
 <?php namespace App\Models\Scraper;
 
+use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 /**
  * @author: wanghui
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class WechatMpInfo extends Model {
+    use BelongsToUserTrait;
 
     protected $table = 'scraper_wechat_mp_info';
     /**
@@ -25,7 +27,7 @@ class WechatMpInfo extends Model {
 
     public $timestamps = false;
 
-    protected $fillable = ['status','logo_url','qr_url','group_id'];
+    protected $fillable = ['status','logo_url','qr_url','group_id','user_id'];
 
 
     public function group() {
