@@ -25,8 +25,13 @@
                                             <div class="col-xs-2">
                                                 <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                             </div>
-                                            <div class="col-xs-4">
+                                            <div class="col-xs-2">
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <div>
+                                                    <label><input type="checkbox" name="sortByRate" value="1" @if ( $filter['sortByRate']??0) checked @endif >热度排序</label>
+                                                </div>
                                             </div>
                                             <div class="col-xs-1">
                                                 <button type="submit" class="btn btn-primary">搜索</button>
@@ -46,6 +51,7 @@
                                         <th>ID</th>
                                         <th>标题</th>
                                         <th>封面图片</th>
+                                        <th>热度</th>
                                         <th>类型</th>
                                         <th>浏览数</th>
                                         <th>圈子</th>
@@ -69,6 +75,7 @@
                                                     <img width="100" height="100" src="{{ $submission->data['img'] ??'' }}">
                                                 @endif
                                             </td>
+                                            <td>{{ $submission->rate }}</td>
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->views }}</td>
                                             <td>{{ $submission->group->name }}</td>

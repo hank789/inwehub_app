@@ -44,7 +44,8 @@
                                         </div>
                                         <div class="col-xs-2">
                                             <div>
-                                                <label><input type="checkbox" name="withoutTags" value="1" @if ( $filter['withoutTags']??0) checked @endif >无标签</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="checkbox" name="withoutTags" value="1" @if ( $filter['withoutTags']??0) checked @endif >无标签</label>
+                                                <label><input type="checkbox" name="sortByRate" value="1" @if ( $filter['sortByRate']??0) checked @endif >热度排序</label>
                                             </div>
                                         </div>
                                         <div class="col-xs-1">

@@ -45,6 +45,9 @@ class RecommendReadController extends AdminController
         } elseif (isset($filter['withoutTags']) && $filter['withoutTags']) {
             $query->doesntHave('tags');
         }
+        if (isset($filter['sortByRate']) && $filter['sortByRate']) {
+            $query->orderBy('rate','desc');
+        }
 
         $recommendations = $query->orderBy('created_at','desc')->paginate(20);
         return view("admin.operate.recommend_read.index")->with('recommendations',$recommendations)->with('filter',$filter);
