@@ -89,7 +89,7 @@ class RecommendReadController extends AdminController
             'title'   => 'required',
             'recommend_status' => 'required|integer',
             'recommend_sort'   => 'required|integer',
-            'weight_rate' => 'required|float'
+            'weight_rate' => 'required|numeric'
         ];
         $this->validate($request,$validateRules);
         $img_url = '';
@@ -117,7 +117,7 @@ class RecommendReadController extends AdminController
         $recommendation->data = $object_data;
         $recommendation->save();
 
-        return $this->success(url()->previous(),'推荐修改成功');
+        return $this->success(route('admin.operate.recommendRead.index'),'推荐修改成功');
     }
 
     public function verify(Request $request) {
