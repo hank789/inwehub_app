@@ -33,6 +33,9 @@ class SubmissionController extends AdminController
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('title','like', '%'.$filter['word'].'%');
         }
+        if (isset($filter['sortByRate']) && $filter['sortByRate']) {
+            $query->orderBy('rate','desc');
+        }
 
         $submissions = $query->orderBy('id','desc')->paginate(20);
         return view("admin.operate.article.index")->with('submissions',$submissions)->with('filter',$filter);
