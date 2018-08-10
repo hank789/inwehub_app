@@ -71,6 +71,7 @@
                                         <th>类型</th>
                                         <th>标签</th>
                                         <th>审核状态</th>
+                                        <th>创建时间</th>
                                         <th>操作</th>
                                     </tr>
                                     @foreach($recommendations as $item)
@@ -97,7 +98,7 @@
                                                 @endforeach
                                             </td>
                                             <td><span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
-                                            <td>{{ $item->updated_at }}</td>
+                                            <td>{{ $item->created_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.operate.recommendRead.edit',['id'=>$item->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
