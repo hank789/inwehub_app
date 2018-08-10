@@ -14,7 +14,7 @@ class AddRateFieldQuestions extends Migration
     public function up()
     {
         Schema::table('questions', function (Blueprint $table) {
-            $table->float('rate')->index()->after('category_id')->default(0);
+            $table->float('rate',8,4)->index()->after('category_id')->default(0);
         });
     }
 

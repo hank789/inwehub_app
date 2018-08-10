@@ -1257,7 +1257,12 @@ if (!function_exists('hotRate')) {
 
         $Qupdated = (time() - strtotime(gmdate("Y-m-d H:i:s",strtotime($date_active)))) / 3600;
         $Qupdated = round($Qupdated, 1);
-
+        if ($Qanswers<=0 && $Qscore!=0) {
+            $Qanswers = 1;
+        }
+        if ($Qanswers!=0 && $Qscore==0) {
+            $Qscore = 1;
+        }
         $dividend = (log10($Qviews)*4) + (($Qanswers * $Qscore)/5) + $Ascores;
         $divisor = pow((($Qage + 1) - ($Qage - $Qupdated)/2), 1.5);
 

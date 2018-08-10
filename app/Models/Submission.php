@@ -196,7 +196,7 @@ class Submission extends Model {
             ->where('source_type',Submission::class)
             ->count();
         $commentSupports = $this->comments()->sum('supports');
-        $rate =  hotRate($this->views,$this->comments_number+1, $this->upvotes-$this->downvotes,$commentSupports + $this->collections + $shareNumber,$this->created_at,$this->updated_at);
+        $rate =  hotRate($this->views,$this->comments_number, $this->upvotes-$this->downvotes,$commentSupports + $this->collections + $shareNumber,$this->created_at,$this->updated_at);
         $this->rate = $rate;
         $this->save();
         $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
