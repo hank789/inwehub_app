@@ -86,7 +86,7 @@ class RecommendReadController extends AdminController
             'title'   => 'required',
             'recommend_status' => 'required|integer',
             'recommend_sort'   => 'required|integer',
-            'weight_rate' => 'required|integer'
+            'weight_rate' => 'required|float'
         ];
         $this->validate($request,$validateRules);
         $img_url = '';

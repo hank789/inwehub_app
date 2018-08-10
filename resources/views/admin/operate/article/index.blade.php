@@ -56,7 +56,7 @@
                                         <th>操作</th>
                                     </tr>
                                     @foreach($submissions as $submission)
-                                        <tr>
+                                        <tr id="submission_{{ $submission->id }}">
                                             <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
                                             <td>{{ $submission->id }}</td>
                                             <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
@@ -83,8 +83,8 @@
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
-                                                    <a class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.operate.article.verify_recommend') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn btn-default btn-sm" data-toggle="tooltip" title="删除文章" onclick="confirm_submit('item_form','{{  route('admin.operate.article.destroy') }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-setfav" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}"><i class="fa fa-heart"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -119,5 +119,33 @@
 @section('script')
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+        $(function(){
+            $(".btn-delete").click(function(){
+                if(!confirm('确认删除该文章？')){
+                    return false;
+                }
+                $(this).button('loading');
+                var follow_btn = $(this);
+                var source_id = $(this).data('source_id');
+
+                $.post('/admin/submission/destroy',{ids: source_id},function(msg){
+                    follow_btn.removeClass('disabled');
+                    follow_btn.removeAttr('disabled');
+                    $("#submission_" + source_id).css('display','none');
+                });
+            });
+            $(".btn-setfav").click(function(){
+                if(!confirm('确认将该文章设为精选推荐项？')){
+                    return false;
+                }
+                $(this).button('loading');
+                var follow_btn = $(this);
+                var source_id = $(this).data('source_id');
+
+                $.post('/admin/submission/verify_recommend',{ids: [source_id]},function(msg){
+                    follow_btn.html('已为精选');
+                });
+            });
+        });
     </script>
 @endsection
