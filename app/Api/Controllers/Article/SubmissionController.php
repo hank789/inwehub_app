@@ -103,7 +103,7 @@ class SubmissionController extends Controller {
 
             //检查url是否重复
             $exist_submission_id = Redis::connection()->hget('voten:submission:url',$request->url);
-            if ($exist_submission_id){
+            if ($exist_submission_id && false){
                 $exist_submission = Submission::find($exist_submission_id);
                 if (!$exist_submission) {
                     throw new ApiException(ApiException::ARTICLE_URL_ALREADY_EXIST);
