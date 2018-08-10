@@ -190,7 +190,7 @@ class IndexController extends Controller {
         if (!$recommend) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        $next = RecommendRead::where('rate','<=',$recommend->rate)->orderBy('rate','desc')->first();
+        $next = RecommendRead::where('rate','<=',$recommend->rate)->where('id','!=',$recommend->id)->orderBy('rate','desc')->first();
         if ($next) {
             $item = $this->formatRecommendReadItem($next->toArray());
             return self::createJsonData(true,$item);
