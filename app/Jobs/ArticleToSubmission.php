@@ -85,6 +85,17 @@ class ArticleToSubmission implements ShouldQueue
             }
         } else {
             $url = $article->content_url;
+            $keywords = Setting()->get('rss_keywords','');
+            if ($keywords) {
+                $keywords = explode(',',$keywords);
+                foreach ($keywords as $keyword) {
+                    if (stripos($article->title,$keyword)===false || stripos($article->description,$keyword)==false) {
+                        $article->status = -1;
+                        $article->save();
+                        return;
+                    }
+                }
+            }
         }
 
         $article->content_url = $url;
@@ -127,9 +138,12 @@ class ArticleToSubmission implements ShouldQueue
         $data['current_address_latitude'] = '';
         $data['mentions'] = [];
         $category = Category::where('slug','channel_xwdt')->first();
-
+        $title = $article->description;
+        if ($article->source_type != 1) {
+            $title = str_limit($article->description,300);
+        }
         $submission = Submission::create([
-            'title'         => formatContentUrls($article->description),
+            'title'         => formatContentUrls($title),
             'slug'          => $this->slug($article->title),
             'type'          => 'link',
             'category_name' => $category->name,

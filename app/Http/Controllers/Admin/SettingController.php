@@ -268,7 +268,7 @@ class SettingController extends AdminController
 
     public function scraper(Request $request){
         $validateRules = [
-            'is_scraper_wechat_auto_publish' => 'required|between:0,1',
+            'is_scraper_wechat_auto_publish' => 'required|between:0,1'
         ];
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);

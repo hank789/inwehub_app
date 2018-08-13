@@ -117,7 +117,7 @@ class AtomPosts extends Command
                     'mobile_url'    => '',
                     'date_time'   => $published_at,
                     'source_type' => 2,
-                    'description' => str_limit(strip_tags($value->summary),300),
+                    'description' => strip_tags($value->summary),
                     'cover_url'   => $image_url,
                     'status'         => 1
                 ]);

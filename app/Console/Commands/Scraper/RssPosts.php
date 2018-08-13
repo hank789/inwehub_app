@@ -115,7 +115,7 @@ class RssPosts extends Command
                     'mobile_url'     => '',
                     'date_time'   => new DateTime($value->pubDate),
                     'source_type' => 2,
-                    'description' => str_limit(strip_tags($value->description),300),
+                    'description' => strip_tags($value->description),
                     'cover_url'   => $image_url,
                     'status'         => 1
                 ]);
