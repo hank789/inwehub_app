@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Question;
 use App\Models\RecommendRead;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -108,6 +109,8 @@ class QuestionController extends AdminController
                 'source_type' => get_class($question),
                 'sort' => 0,
                 'audit_status' => 0,
+                'created_at' => $question->created_at,
+                'updated_at' => Carbon::now(),
                 'read_type' => $question->question_type == 1 ? RecommendRead::READ_TYPE_PAY_QUESTION : RecommendRead::READ_TYPE_FREE_QUESTION,
                 'data' => [
                     'title' => $question->title,

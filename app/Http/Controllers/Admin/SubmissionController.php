@@ -7,6 +7,7 @@ use App\Models\Question;
 use App\Models\RecommendRead;
 use App\Models\Submission;
 use App\Models\Tag;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -125,6 +126,8 @@ class SubmissionController extends AdminController
                 'sort' => 0,
                 'audit_status' => 0,
                 'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
+                'created_at' => $article->created_at,
+                'updated_at' => Carbon::now(),
                 'data' => array_merge([
                     'title' => $article->title,
                     'img'   => $article->data['img'],
