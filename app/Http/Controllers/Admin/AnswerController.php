@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Answer;
 use App\Models\RecommendRead;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -101,6 +102,8 @@ class AnswerController extends AdminController
                 'source_type' => get_class($answer),
                 'sort' => 0,
                 'audit_status' => 0,
+                'created_at' => $answer->created_at,
+                'updated_at' => Carbon::now(),
                 'read_type' => RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER,
                 'data' => [
                     'title' => $answer->question->title,

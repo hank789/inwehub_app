@@ -27,7 +27,6 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\CalcGroupHot::class,
         Commands\Crontab\AwakeUser::class,
         //阅读站
-        Commands\Readhub\InitUser::class,
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
         Commands\Scraper\RssPosts::class,
@@ -37,37 +36,27 @@ class Kernel extends ConsoleKernel
         Commands\Activity\SendSms124425049::class,
 
         //修复数据用
-        Commands\FixData\ReadhubNotification::class,
         Commands\User\NewbieTask::class,
-        Commands\FixData\FollowerNotification::class,
         Commands\FixData\FixCollect::class,
-        Commands\FixData\MoneyLogNotification::class,
         Commands\User\GenRcCode::class,
-        Commands\Readhub\SyncComment::class,
         Commands\User\CdnUserAvatar::class,
-        Commands\Readhub\MigrateData::class,
         Commands\FixData\FixSubmissionSuport::class,
-        Commands\FixData\FixSubmissionIds::class,
         Commands\FixData\CompanyData::class,
         Commands\FixData\AnswerFeedbackTask::class,
         Commands\FixData\FixTaskPriority::class,
-        Commands\FixData\FixImData::class,
-        Commands\FixData\NewUserFollowingNotification::class,
         Commands\FixData\AddPayForViewDoing::class,
         Commands\FixData\FixCredits::class,
         Commands\User\AddDefaultUserTag::class,
-        Commands\FixData\FixTags::class,
         Commands\FixData\FixUserLevel::class,
         Commands\FixData\FixQuestionRate::class,
-        Commands\FixData\DeleteUselessTags::class,
         Commands\User\GenGeohash::class,
         Commands\FixData\FixSupportAddRefer::class,
         Commands\FixData\FixFeedTags::class,
         Commands\User\GenUserInfoCompletePercent::class,
-        Commands\FixData\InitGroup::class,
         Commands\FixData\AddUserToGroup::class,
         Commands\FixData\FixFeedGroup::class,
-        Commands\FixData\AddTags::class
+        Commands\FixData\AddTags::class,
+        Commands\FixData\FixRecommendDate::class,
 
     ];
 
