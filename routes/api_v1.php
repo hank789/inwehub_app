@@ -551,6 +551,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
 Route::post('group/detail','Group\GroupController@detail');
 //热门圈子
 Route::post('group/getHotGroup','Group\GroupController@getHotGroup');
+Route::post('group/getGroups','Group\GroupController@getGroups');
 
 //文章
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','prefix' => 'article'], function() {
@@ -586,6 +587,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
 });
 //文章详情
 Route::post('article/detail-by-slug','Article\SubmissionController@getBySlug');
+Route::post('article/thirdApiStore','Article\SubmissionController@thirdApiStore');
+
 //文章回复列表
 Route::post('article/comments','Article\CommentController@index');
 //点赞
