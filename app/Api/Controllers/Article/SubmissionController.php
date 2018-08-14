@@ -260,6 +260,9 @@ class SubmissionController extends Controller {
         if (RateLimiter::instance()->increase('submission:store',$user->id,5)) {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
+        if (!$user->isRole('operatormanager')) {
+            return self::createJsonData(false);
+        }
 
         $category = Category::find($request->input('category_id',0));
         if (!$category) {
@@ -334,7 +337,7 @@ class SubmissionController extends Controller {
             $data['current_address_longitude'] = $request->input('current_address_longitude');
             $data['current_address_latitude'] = $request->input('current_address_latitude');
             $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
-
+            $operator_id = $request->input('user_id');
             $submission = Submission::create([
                 'title'         => formatContentUrls($title),
                 'slug'          => $this->slug($url_title),
@@ -345,7 +348,7 @@ class SubmissionController extends Controller {
                 'public'        => $group->public,
                 'rate'          => firstRate(),
                 'status'        => 1,
-                'user_id'       => $user->id,
+                'user_id'       => $operator_id?:$user->id,
                 'data'          => $data,
             ]);
             $group->increment('articles');

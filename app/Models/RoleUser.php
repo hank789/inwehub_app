@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use App\Models\Relations\BelongsToUserTrait;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RoleUser extends Model
 {
+    use BelongsToUserTrait;
     protected $table = 'role_user';
 
     protected $fillable = ['role_id','user_id','created_at','updated_at'];

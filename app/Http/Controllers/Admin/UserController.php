@@ -305,7 +305,7 @@ class UserController extends AdminController
             UserTag::multiIncrement($user->id,$tags,'skills');
         }
 
-        return $this->success(url()->previous(),'用户修改成功');
+        return $this->success(route('admin.user.index'),'用户修改成功');
     }
 
     /*用户审核*/
