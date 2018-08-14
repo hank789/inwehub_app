@@ -50,6 +50,7 @@
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>ID</th>
                                         <th>标题</th>
+                                        <th>外链</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
                                         <th>类型</th>
@@ -66,6 +67,7 @@
                                             <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
                                             <td>{{ $submission->id }}</td>
                                             <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
+                                            <td><a href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" target="_blank">打开外链</a></td>
                                             <td>
                                                 @if ($submission->data['img'] && is_array($submission->data['img']))
                                                     @foreach($submission->data['img'] as $img)
