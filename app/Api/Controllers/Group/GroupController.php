@@ -640,6 +640,26 @@ class GroupController extends Controller
         return self::createJsonData(true,$return);
     }
 
+    public function getGroups(Request $request) {
+        $uid = $request->input('token');
+        if (!$uid) {
+            return self::createJsonData(false);
+        }
+        $user = User::where('uuid',$uid)->first();
+        if (!$user) {
+            return self::createJsonData(false);
+        }
+        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get();
+        $return = [];
+        foreach ($groups as $group) {
+            $return[] = [
+                'id' => $group->id,
+                'name'=>$group->name
+            ];
+        }
+        return self::createJsonData(true,$return);
+    }
+
 
     public function getHotGroup(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));

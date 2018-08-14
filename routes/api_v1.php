@@ -551,6 +551,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
 Route::post('group/detail','Group\GroupController@detail');
 //热门圈子
 Route::post('group/getHotGroup','Group\GroupController@getHotGroup');
+Route::post('group/getGroups','Group\GroupController@getGroups');
 
 //文章
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','prefix' => 'article'], function() {

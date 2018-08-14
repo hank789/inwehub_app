@@ -287,8 +287,7 @@ class SubmissionController extends Controller {
         $title = $request->input('title');
         if ($request->type == 'link') {
             $this->validate($request, [
-                'url'   => 'required|url',
-                'title' => 'required|between:1,6000'
+                'url'   => 'required|url'
             ]);
             try {
                 $url_title = $this->getTitle($url);
@@ -300,6 +299,7 @@ class SubmissionController extends Controller {
                         Cache::put('submission_url_img_'.$url,$img_url,60);
                     }
                 }
+                if (empty($title)) $title = $url_title;
                 $data = [
                     'url'           => $url,
                     'title'         => $url_title,
