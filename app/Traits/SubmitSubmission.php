@@ -26,6 +26,9 @@ trait SubmitSubmission
         if(empty($slug)) {
             $slug = app('pinyin')->abbr($title);
         }
+        if (empty($slug)) {
+            $slug = 1;
+        }
         if (strlen($slug) > 50) {
             $slug = substr($slug,0,50);
         }
