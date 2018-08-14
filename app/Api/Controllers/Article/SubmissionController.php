@@ -248,6 +248,135 @@ class SubmissionController extends Controller {
         return self::createJsonData(true);
     }
 
+    public function thirdApiStore($token, $url, $title = '', Request $request) {
+        $uid = RateLimiter::instance()->hGet('user_token',$token);
+        if (!$uid) {
+            return self::createJsonData(false);
+        }
+        if (count(parse_url($url))<=1) {
+            return self::createJsonData(false);
+        }
+        $user = User::find($uid);
+        if (RateLimiter::instance()->increase('submission:store',$user->id,5)) {
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
+        $category = Category::find($request->input('category_id',0));
+        if (!$category) {
+            if ($request->type == 'link') {
+                $category = Category::where('slug','channel_xwdt')->first();
+            } else {
+                $category = Category::where('slug','channel_gddj')->first();
+            }
+        }
+
+        $tagString = $request->input('tags');
+        $newTagString = $request->input('new_tags');
+        if ($newTagString) {
+            if (is_array($newTagString)) {
+                foreach ($newTagString as $s) {
+                    if (strlen($s) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                }
+            } else {
+                if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+            }
+        }
+        $group_id = $request->input('group_id',1);
+        $group = Group::find($group_id);
+        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+            if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+                throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+            }
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+            if (!$groupMember) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        }
+
+        if ($request->type == 'link' || true) {
+
+            try {
+                $url_title = $this->getTitle($url);
+                $img_url = Cache::get('submission_url_img_'.$url,'');
+                Cache::put('submission_url_title_'.$url,$url_title,60);
+                if (empty($img_url)) {
+                    $img_url = getUrlImg($url);
+                    if ($img_url) {
+                        Cache::put('submission_url_img_'.$url,$img_url,60);
+                    }
+                }
+                $data = [
+                    'url'           => $url,
+                    'title'         => $url_title,
+                    'description'   => null,
+                    'type'          => 'link',
+                    'embed'         => null,
+                    'img'           => $img_url,
+                    'thumbnail'     => null,
+                    'providerName'  => null,
+                    'publishedTime' => null,
+                    'domain'        => domain($url),
+                ];
+                Redis::connection()->hset('voten:submission:url',$url,1);
+            } catch (\Exception $e) {
+                $data = [
+                    'url'           => $url,
+                    'title'         => $title,
+                    'description'   => null,
+                    'type'          => 'link',
+                    'embed'         => null,
+                    'img'           => null,
+                    'thumbnail'     => null,
+                    'providerName'  => null,
+                    'publishedTime' => null,
+                    'domain'        => domain($url),
+                ];
+            }
+        }
+
+        try {
+            $data['current_address_name'] = $request->input('current_address_name');
+            $data['current_address_longitude'] = $request->input('current_address_longitude');
+            $data['current_address_latitude'] = $request->input('current_address_latitude');
+            $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
+
+            $submission = Submission::create([
+                'title'         => formatContentUrls($title),
+                'slug'          => $this->slug($url_title),
+                'type'          => 'link',
+                'category_name' => $category->name,
+                'category_id'   => $category->id,
+                'group_id'      => $group_id,
+                'public'        => $group->public,
+                'rate'          => firstRate(),
+                'status'        => 1,
+                'user_id'       => $user->id,
+                'data'          => $data,
+            ]);
+            $group->increment('articles');
+            GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
+            RateLimiter::instance()->sClear('group_read_users:'.$group->id);
+            if ($request->type == 'link'||true) {
+                Redis::connection()->hset('voten:submission:url',$url, $submission->id);
+            }
+            /*添加标签*/
+            Tag::multiSaveByIds($tagString,$submission);
+            if ($newTagString) {
+                Tag::multiAddByName($newTagString,$submission);
+            }
+            UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
+            if ($submission->status == 1) {
+                $this->dispatch(new NewSubmissionJob($submission->id));
+            }
+
+        } catch (\Exception $exception) {
+            app('sentry')->captureException($exception);
+            throw new ApiException(ApiException::ERROR);
+        }
+        self::$needRefresh = true;
+        return self::createJsonData(true,$submission->toArray());
+    }
+
 
     /**
      * Fetches the title from an external URL.

@@ -586,6 +586,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
 });
 //文章详情
 Route::post('article/detail-by-slug','Article\SubmissionController@getBySlug');
+Route::get('article/thirdApiStore/{token}/{url}/{title}','Article\SubmissionController@thirdApiStore');
+
 //文章回复列表
 Route::post('article/comments','Article\CommentController@index');
 //点赞
