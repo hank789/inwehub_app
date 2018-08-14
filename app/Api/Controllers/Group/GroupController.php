@@ -649,6 +649,9 @@ class GroupController extends Controller
         if (!$user) {
             return self::createJsonData(false);
         }
+        if (!$user->isRole('operatormanager')) {
+            return self::createJsonData(false);
+        }
         $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get();
         $return = [];
         foreach ($groups as $group) {

@@ -10,6 +10,9 @@ use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\AppVersion;
 use App\Models\LoginRecord;
+use App\Models\Role;
+use App\Models\RoleUser;
+use App\Models\User;
 use App\Models\UserData;
 use App\Models\UserDevice;
 use App\Services\GeoHash;
@@ -37,6 +40,30 @@ class SystemController extends Controller {
         ];
         event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$request->input('title'),$fields));
         return self::createJsonData(true);
+    }
+
+    public function getOperators(Request $request) {
+        $uid = $request->input('token');
+        if (!$uid) {
+            return self::createJsonData(false);
+        }
+        $user = User::where('uuid',$uid)->first();
+        if (!$user) {
+            return self::createJsonData(false);
+        }
+        if (!$user->isRole('operatormanager')) {
+            return self::createJsonData(false);
+        }
+        $role = Role::where('slug','operatorrobot')->first();
+        $roleUsers = RoleUser::where('role_id',$role->id)->get();
+        $return = [];
+        foreach ($roleUsers as $roleUser) {
+            $return[] = [
+                'id' => $roleUser->user_id,
+                'name'=>$roleUser->user->name
+            ];
+        }
+        return self::createJsonData(true,$return);
     }
 
     public function applySkillTag(Request $request)

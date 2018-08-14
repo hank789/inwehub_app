@@ -13,6 +13,8 @@ Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.a
 Route::post('recommendRead','IndexController@recommendRead');
 Route::post('recommendRead/getNext','IndexController@getNextRecommendRead');
 
+Route::post('system/getOperators','SystemController@getOperators');
+
 
 //登陆注册认证类
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
