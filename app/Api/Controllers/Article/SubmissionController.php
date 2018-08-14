@@ -248,15 +248,15 @@ class SubmissionController extends Controller {
         return self::createJsonData(true);
     }
 
-    public function thirdApiStore($token, $url, $title = '', Request $request) {
-        $uid = RateLimiter::instance()->hGet('user_token',$token);
+    public function thirdApiStore(Request $request) {
+        $uid = $request->input('token');
         if (!$uid) {
             return self::createJsonData(false);
         }
-        if (count(parse_url($url))<=1) {
+        $user = User::where('uuid',$uid)->first();
+        if (!$user) {
             return self::createJsonData(false);
         }
-        $user = User::find($uid);
         if (RateLimiter::instance()->increase('submission:store',$user->id,5)) {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
@@ -292,9 +292,13 @@ class SubmissionController extends Controller {
                 throw new ApiException(ApiException::BAD_REQUEST);
             }
         }
-
-        if ($request->type == 'link' || true) {
-
+        $url = $request->input('url');
+        $title = $request->input('title');
+        if ($request->type == 'link') {
+            $this->validate($request, [
+                'url'   => 'required|url',
+                'title' => 'required|between:1,6000'
+            ]);
             try {
                 $url_title = $this->getTitle($url);
                 $img_url = Cache::get('submission_url_img_'.$url,'');
