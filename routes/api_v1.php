@@ -12,6 +12,7 @@ Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.a
 //精选推荐列表
 Route::post('recommendRead','IndexController@recommendRead');
 Route::post('recommendRead/getNext','IndexController@getNextRecommendRead');
+Route::post('getRelatedRecommend','IndexController@getRelatedRecommend');
 
 Route::post('system/getOperators','SystemController@getOperators');
 

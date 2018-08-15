@@ -273,6 +273,37 @@ class IndexController extends Controller {
         return $item;
     }
 
+    public function getRelatedRecommend(Request $request, JWTAuth $JWTAuth) {
+        $this->validate($request, [
+            'source_id' => 'required|integer',
+            'source_type' => 'required|integer',
+        ]);
+        $source_type = $request->input('source_type',1);
+        $source_id = $request->input('source_id');
+        $perPage = $request->input('perPage',4);
+        $recommend = null;
+        switch ($source_type) {
+            case 1:
+                //文章
+                $object = Submission::find($source_id);
+
+                break;
+            case 2:
+                //问答
+                $object = Question::find($source_id);
+                break;
+        }
+        $query = RecommendRead::where('audit_status',1);
+        $count = $query->count();
+        $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
+        $reads = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
+        $result = $reads->toArray();
+        foreach ($result['data'] as &$item) {
+            $item = $this->formatRecommendReadItem($item);
+        }
+        return self::createJsonData(true, $result);
+    }
+
     //精选推荐
     public function recommendRead(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
