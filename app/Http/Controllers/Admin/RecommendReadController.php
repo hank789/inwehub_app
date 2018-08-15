@@ -116,6 +116,21 @@ class RecommendReadController extends AdminController
         $recommendation->rate = $recommendation->getRateWeight() - $oldRate + $recommendation->rate;
         $recommendation->data = $object_data;
         $recommendation->save();
+        if ($recommendation->audit_status == 1) {
+            switch ($recommendation->source_type) {
+                case Submission::class:
+                    if ($recommendation->data['domain'] == 'mp.weixin.qq.com') {
+                        $info = getWechatArticleInfo($recommendation->data['url']);
+                        if ($info['error_code'] == 0) {
+                            $submission = Submission::find($recommendation->source_id);
+                            $submission->views += $info['data']['article_view_count'];
+                            $submission->upvotes += $info['data']['article_agree_count'];
+                            $submission->calculationRate();
+                        }
+                    }
+                    break;
+            }
+        }
 
         return $this->success(route('admin.operate.recommendRead.index'),'推荐修改成功');
     }

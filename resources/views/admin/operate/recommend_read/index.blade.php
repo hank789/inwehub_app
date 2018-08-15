@@ -164,7 +164,6 @@
             $(this).button('loading');
             var follow_btn = $(this);
             var source_id = $(this).data('source_id');
-            alert(source_id);
             $.post('/admin/recommendRead/verify',{ids: [source_id]},function(msg){
                 follow_btn.html('已审核');
             });
