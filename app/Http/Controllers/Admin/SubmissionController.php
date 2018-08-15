@@ -92,6 +92,7 @@ class SubmissionController extends AdminController
         if ($related_question) {
             $object_data['related_question'] = $related_question;
         }
+        $submission->title = $request->input('title');
         $submission->data = $object_data;
         $submission->save();
 
@@ -103,6 +104,17 @@ class SubmissionController extends AdminController
         Tag::multiSaveByIds($tagString,$submission);
 
         return $this->success(url()->previous(),'文章修改成功');
+    }
+
+    public function setSupportType(Request $request) {
+        $this->validate($request, [
+            'id' => 'required',
+            'support_type' => 'required|in:1,2,3,4',
+        ]);
+        $submission = Submission::find($request->input('id'));
+        $submission->support_type = $request->input('support_type');
+        $submission->save();
+        return true;
     }
 
 

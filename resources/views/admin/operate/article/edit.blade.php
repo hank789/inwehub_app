@@ -32,7 +32,7 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>标题</label>
-                                <span>{{ $submission->title }}</span>
+                                <input type="text" name="title" class="form-control "  placeholder="标题" value="{{ old('title',$submission->title ) }}">
                             </div>
 
                             <div class="form-group">

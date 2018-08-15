@@ -56,10 +56,10 @@
                                         <th>类型</th>
                                         <th>浏览数</th>
                                         <th>圈子</th>
-                                        <th>私密圈子</th>
+                                        <th>点赞类型</th>
                                         <th>发布者</th>
                                         <th>专栏作者</th>
-                                        <th>更新时间</th>
+                                        <th>创建时间</th>
                                         <th>操作</th>
                                     </tr>
                                     @foreach($submissions as $submission)
@@ -67,7 +67,7 @@
                                             <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
                                             <td>{{ $submission->id }}</td>
                                             <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
-                                            <td><a href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" target="_blank">打开外链</a></td>
+                                            <td><a href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" target="_blank">外链</a></td>
                                             <td>
                                                 @if ($submission->data['img'] && is_array($submission->data['img']))
                                                     @foreach($submission->data['img'] as $img)
@@ -81,14 +81,21 @@
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->views }}</td>
                                             <td>{{ $submission->group->name }}</td>
-                                            <td>{{ $submission->public?'公开':'私密' }}</td>
+                                            <td>
+                                                <select onchange="setSupportType({{ $submission->id }},this)">
+                                                    <option value="1" @if($submission->support_type == 1) selected @endif> 赞|踩</option>
+                                                    <option value="2" @if($submission->support_type == 2) selected @endif> 看好|不看好</option>
+                                                    <option value="3" @if($submission->support_type == 3) selected @endif> 支持|反对</option>
+                                                    <option value="4" @if($submission->support_type == 4) selected @endif> 意外|不意外</option>
+                                                </select>
+                                            </td>
                                             <td>{{ $submission->owner->name }}</td>
                                             <td>
                                                 @if ($submission->author_id)
                                                     <span><img style="width: 30px;height: 30px;" src="{{ $submission->author->avatar }}" class="img-flag" />{{ $submission->author->name }}</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $submission->updated_at }}</td>
+                                            <td>{{ $submission->created_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
@@ -128,6 +135,11 @@
 @section('script')
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+        function setSupportType(id,obj) {
+            $.post('/admin/submission/setSupportType',{id: id, support_type: obj.value},function(msg){
+
+            });
+        }
         $(function(){
             $(".btn-delete").click(function(){
                 if(!confirm('确认删除该文章？')){
