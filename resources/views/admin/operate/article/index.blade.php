@@ -12,13 +12,7 @@
                 <div class="box">
                         <div class="box-header">
                             <div class="row">
-                                <div class="col-xs-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.operate.article.verify_recommend') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
-                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除文章" onclick="confirm_submit('item_form','{{  route('admin.operate.article.destroy') }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
-                                    </div>
-                                </div>
-                                <div class="col-xs-9">
+                                <div class="col-xs-12">
                                     <div class="row">
                                         <form name="searchForm" action="{{ route('admin.operate.article.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -47,7 +41,7 @@
                                 <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
-                                        <th><input type="checkbox" class="checkbox-toggle"/></th>
+                                        <th>操作</th>
                                         <th>ID</th>
                                         <th>标题</th>
                                         <th>封面图片</th>
@@ -58,11 +52,17 @@
                                         <th>点赞类型</th>
                                         <th>发布者</th>
                                         <th>创建时间</th>
-                                        <th>操作</th>
                                     </tr>
                                     @foreach($submissions as $submission)
                                         <tr id="submission_{{ $submission->id }}">
-                                            <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
+                                            <td>
+                                                <div class="btn-group-xs" >
+                                                    <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-link"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-setfav" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}"><i class="fa fa-heart"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
+                                                </div>
+                                            </td>
                                             <td>{{ $submission->id }}</td>
                                             <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
                                             <td>
@@ -88,14 +88,6 @@
                                             </td>
                                             <td>{{ $submission->owner->name }}</td>
                                             <td>{{ $submission->created_at }}</td>
-                                            <td>
-                                                <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-link"></i></a>
-                                                    <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
-                                                    <a class="btn btn-default btn-sm btn-setfav" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
-                                                </div>
-                                            </td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -104,13 +96,7 @@
                         </div>
                         <div class="box-footer clearfix">
                             <div class="row">
-                                <div class="col-xs-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.operate.article.verify_recommend') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
-                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除文章" onclick="confirm_submit('item_form','{{  route('admin.operate.article.destroy') }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
-                                    </div>
-                                </div>
-                                <div class="col-sm-9">
+                                <div class="col-sm-12">
                                     <div class="text-right">
                                         <span class="total-num">共 {{ $submissions->total() }} 条数据</span>
                                         {!! str_replace('/?', '?', $submissions->appends($filter)->render()) !!}
