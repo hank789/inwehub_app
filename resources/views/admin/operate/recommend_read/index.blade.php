@@ -103,6 +103,8 @@
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.operate.recommendRead.edit',['id'=>$item->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-setVerify" data-toggle="tooltip" title="通过审核" data-source_id = "{{ $item->id }}"><i class="fa fa-check-square-o"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-cancelVerify" data-toggle="tooltip" title="取消审核" data-source_id = "{{ $item->id }}"><i class="fa fa-lock"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -155,6 +157,30 @@
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.operate.recommendRead.index') }}");
+        $(".btn-setVerify").click(function(){
+            if(!confirm('确认审核通过该文章？')){
+                return false;
+            }
+            $(this).button('loading');
+            var follow_btn = $(this);
+            var source_id = $(this).data('source_id');
+            alert(source_id);
+            $.post('/admin/recommendRead/verify',{ids: [source_id]},function(msg){
+                follow_btn.html('已审核');
+            });
+        });
+        $(".btn-cancelVerify").click(function(){
+            if(!confirm('确认取消该文章的精选推荐？')){
+                return false;
+            }
+            $(this).button('loading');
+            var follow_btn = $(this);
+            var source_id = $(this).data('source_id');
+
+            $.post('/admin/recommendRead/cancel_verify',{ids: [source_id]},function(msg){
+                follow_btn.html('已取消');
+            });
+        });
         $("#select_tags").select2({
             theme:'bootstrap',
             placeholder: "标签",
