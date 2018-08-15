@@ -114,7 +114,7 @@ class SubmissionController extends AdminController
         $submission = Submission::find($request->input('id'));
         $submission->support_type = $request->input('support_type');
         $submission->save();
-        return true;
+        return $this->success(url()->previous(),'成功');
     }
 
 
