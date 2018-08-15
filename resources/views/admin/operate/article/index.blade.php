@@ -50,7 +50,6 @@
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>ID</th>
                                         <th>标题</th>
-                                        <th>外链</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
                                         <th>类型</th>
@@ -58,7 +57,6 @@
                                         <th>圈子</th>
                                         <th>点赞类型</th>
                                         <th>发布者</th>
-                                        <th>专栏作者</th>
                                         <th>创建时间</th>
                                         <th>操作</th>
                                     </tr>
@@ -67,7 +65,6 @@
                                             <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
                                             <td>{{ $submission->id }}</td>
                                             <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
-                                            <td><a href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" target="_blank">外链</a></td>
                                             <td>
                                                 @if ($submission->data['img'] && is_array($submission->data['img']))
                                                     @foreach($submission->data['img'] as $img)
@@ -90,14 +87,10 @@
                                                 </select>
                                             </td>
                                             <td>{{ $submission->owner->name }}</td>
-                                            <td>
-                                                @if ($submission->author_id)
-                                                    <span><img style="width: 30px;height: 30px;" src="{{ $submission->author->avatar }}" class="img-flag" />{{ $submission->author->name }}</span>
-                                                @endif
-                                            </td>
                                             <td>{{ $submission->created_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
+                                                    <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-link"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
                                                     <a class="btn btn-default btn-sm btn-setfav" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}"><i class="fa fa-heart"></i></a>
                                                     <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
