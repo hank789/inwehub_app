@@ -402,6 +402,21 @@ class SubmissionController extends Controller {
         return self::createJsonData(true,['title'=>$title,'img_url'=>$img_url]);
     }
 
+
+    public function setSupportType(Request $request) {
+        $this->validate($request, [
+            'submission_id' => 'required',
+            'support_type' => 'required|in:1,2,3,4',
+        ]);
+        $submission = Submission::find($request->input('submission_id'));
+        if (!$submission) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $submission->support_type = $request->input('support_type');
+        $submission->save();
+        return self::createJsonData(true);
+    }
+
     /**
      * Returns the submission.
      *
@@ -482,7 +497,8 @@ class SubmissionController extends Controller {
         $return['is_downvoted'] = $downvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
         $return['supporter_list'] = $supporters;
-        $return['support_description'] = $submission->getSupportRateDesc();
+        $return['support_description'] = $downvote?$submission->getDownvoteRateDesc():$submission->getSupportRateDesc($upvote);
+        $return += $submission->getSupportTypeTip();
         $return['support_percent'] = $submission->getSupportPercent();
         $return['tags'] = $submission->tags()->get()->toArray();
         $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;

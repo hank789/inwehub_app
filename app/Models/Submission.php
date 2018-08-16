@@ -106,7 +106,7 @@ class Submission extends Model {
      */
     protected $fillable = [
         'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate','group_id',
-        'upvotes', 'downvotes', 'user_id', 'views', 'data', 'approved_at','public','is_recommend',
+        'upvotes', 'downvotes', 'user_id', 'views', 'data', 'approved_at','public','is_recommend', 'support_type',
         'deleted_at', 'comments_number', 'status'
     ];
 
@@ -154,6 +154,14 @@ class Submission extends Model {
         return strip_tags($this->title,'<a><span>');
     }
 
+    public function isRecommendRead() {
+        $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
+        if ($recommendRead) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * A submission is owned by a user.
      *
@@ -174,9 +182,42 @@ class Submission extends Model {
         return $this->belongsTo('App\Models\Groups\Group');
     }
 
-    public function getSupportRateDesc() {
+    public function getSupportRateDesc($isSupported = true) {
         if ($this->upvotes <= 0 && $this->downvotes <=0) return '暂无，快来表个态';
-        return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%的人觉得赞';
+        $rate = (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%';
+        switch ($this->support_type) {
+            case 1:
+                return '有'.$rate.'的人'.($isSupported?'与您一样':'').'点赞';
+                break;
+            case 2:
+                return '有'.$rate.'的人'.($isSupported?'与您一样':'').'看好';
+                break;
+            case 3:
+                return '有'.$rate.'的人'.($isSupported?'与您一样':'').'支持';
+                break;
+            case 4:
+                return '有'.$rate.'的人'.($isSupported?'与您一样':'').'意外';
+                break;
+        }
+    }
+
+    public function getDownvoteRateDesc() {
+        if ($this->upvotes <= 0 && $this->downvotes <=0) return '暂无，快来表个态';
+        $rate = (bcdiv($this->downvotes,$this->upvotes + $this->downvotes,2) * 100).'%';
+        switch ($this->support_type) {
+            case 1:
+                return '有'.$rate.'的人与您一样点踩';
+                break;
+            case 2:
+                return '有'.$rate.'的人与您一样不看好';
+                break;
+            case 3:
+                return '有'.$rate.'的人与您一样反对';
+                break;
+            case 4:
+                return '有'.$rate.'的人与您一样不意外';
+                break;
+        }
     }
 
     public function getSupportPercent() {
@@ -187,6 +228,35 @@ class Submission extends Model {
     public function getSupportRate() {
         if ($this->upvotes <= 0) return '0%';
         return (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%';
+    }
+
+    public function getSupportTypeTip() {
+        switch ($this->support_type) {
+            case 1:
+                return [
+                    'support_tip' => '赞',
+                    'downvote_tip' => '踩'
+                ];
+                break;
+            case 2:
+                return [
+                    'support_tip' => '我看好',
+                    'downvote_tip' => '我不看好'
+                ];
+                break;
+            case 3:
+                return [
+                    'support_tip' => '我支持',
+                    'downvote_tip' => '我反对'
+                ];
+                break;
+            case 4:
+                return [
+                    'support_tip' => '意外',
+                    'downvote_tip' => '不意外'
+                ];
+                break;
+        }
     }
 
     //计算排名积分

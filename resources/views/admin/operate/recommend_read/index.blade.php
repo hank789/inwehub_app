@@ -64,6 +64,7 @@
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>ID</th>
+                                        <th>操作</th>
                                         <th>标题</th>
                                         <th>标签语</th>
                                         <th>封面图片</th>
@@ -73,12 +74,18 @@
                                         <th>标签</th>
                                         <th>审核状态</th>
                                         <th>创建时间</th>
-                                        <th>操作</th>
                                     </tr>
                                     @foreach($recommendations as $item)
                                         <tr>
                                             <td><input type="checkbox" value="{{ $item->id }}" name="ids[]"/></td>
                                             <td>{{ $item->id }}</td>
+                                            <td>
+                                                <div class="btn-group-xs" >
+                                                    <a class="btn btn-default" href="{{ route('admin.operate.recommendRead.edit',['id'=>$item->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-setVerify" data-toggle="tooltip" title="通过审核" data-source_id = "{{ $item->id }}"><i class="fa fa-check-square-o"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-cancelVerify" data-toggle="tooltip" title="取消审核" data-source_id = "{{ $item->id }}"><i class="fa fa-lock"></i></a>
+                                                </div>
+                                            </td>
                                             <td><a href="{{ $item->getWebUrl() }}" target="_blank">{{ $item->data['title'] }}</a></td>
                                             <td>{{ $item->tips }}</td>
                                             <td>
@@ -100,11 +107,6 @@
                                             </td>
                                             <td><span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
                                             <td>{{ $item->created_at }}</td>
-                                            <td>
-                                                <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.operate.recommendRead.edit',['id'=>$item->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
-                                                </div>
-                                            </td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -135,7 +137,11 @@
                                 <label for="select_tags_id" class="control-label">将选中项目移动到:</label>
                                 <div class="row">
                                     <div class="col-sm-10">
-                                        <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" ></select>
+                                        <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
+                                            @foreach($tags as $tag)
+                                                <option value="{{ $tag['id'] }}">{{ $tag['text'] }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -155,6 +161,29 @@
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.operate.recommendRead.index') }}");
+        $(".btn-setVerify").click(function(){
+            if(!confirm('确认审核通过该文章？')){
+                return false;
+            }
+            $(this).button('loading');
+            var follow_btn = $(this);
+            var source_id = $(this).data('source_id');
+            $.post('/admin/recommendRead/verify',{ids: [source_id]},function(msg){
+                follow_btn.html('已审核');
+            });
+        });
+        $(".btn-cancelVerify").click(function(){
+            if(!confirm('确认取消该文章的精选推荐？')){
+                return false;
+            }
+            $(this).button('loading');
+            var follow_btn = $(this);
+            var source_id = $(this).data('source_id');
+
+            $.post('/admin/recommendRead/cancel_verify',{ids: [source_id]},function(msg){
+                follow_btn.html('已取消');
+            });
+        });
         $("#select_tags").select2({
             theme:'bootstrap',
             placeholder: "标签",
@@ -185,26 +214,7 @@
 
         $("#select_tags_id").select2({
             theme:'bootstrap',
-            placeholder: "标签",
-            ajax: {
-                url: '/manager/ajax/loadTags',
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        word: params.term,
-                        type: 6
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength:2,
-            tags:false
+            placeholder: "标签"
         });
 
         $("#select_tags_id").change(function(){

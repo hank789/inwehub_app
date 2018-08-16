@@ -12,6 +12,7 @@ Route::post('comment/myList','IndexController@myCommentList')->middleware('jwt.a
 //精选推荐列表
 Route::post('recommendRead','IndexController@recommendRead');
 Route::post('recommendRead/getNext','IndexController@getNextRecommendRead');
+Route::post('getRelatedRecommend','IndexController@getRelatedRecommend');
 
 Route::post('system/getOperators','SystemController@getOperators');
 
@@ -563,6 +564,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('store','SubmissionController@store');
     //更新文章
     Route::post('update','SubmissionController@update');
+    //设置点赞类型
+    Route::post('setSupportType','SubmissionController@setSupportType');
     //推荐文章到app
     Route::post('recommend-app-submission','SubmissionController@recommendSubmission');
 

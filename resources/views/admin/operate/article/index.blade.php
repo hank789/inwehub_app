@@ -1,7 +1,10 @@
 @extends('admin/public/layout')
 
 @section('title')发现分享@endsection
-
+@section('css')
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
+@endsection
 @section('content')
     <section class="content-header">
         <h1>发现分享</h1>
@@ -12,13 +15,7 @@
                 <div class="box">
                         <div class="box-header">
                             <div class="row">
-                                <div class="col-xs-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.operate.article.verify_recommend') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
-                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除文章" onclick="confirm_submit('item_form','{{  route('admin.operate.article.destroy') }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
-                                    </div>
-                                </div>
-                                <div class="col-xs-9">
+                                <div class="col-xs-12">
                                     <div class="row">
                                         <form name="searchForm" action="{{ route('admin.operate.article.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -47,27 +44,40 @@
                                 <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
-                                        <th><input type="checkbox" class="checkbox-toggle"/></th>
+                                        <th>操作</th>
                                         <th>ID</th>
+                                        <th>点赞类型</th>
                                         <th>标题</th>
-                                        <th>外链</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
                                         <th>类型</th>
                                         <th>浏览数</th>
                                         <th>圈子</th>
-                                        <th>私密圈子</th>
                                         <th>发布者</th>
-                                        <th>专栏作者</th>
-                                        <th>更新时间</th>
-                                        <th>操作</th>
+                                        <th>创建时间</th>
                                     </tr>
                                     @foreach($submissions as $submission)
                                         <tr id="submission_{{ $submission->id }}">
-                                            <td><input type="checkbox" value="{{ $submission->id }}" name="ids[]"/></td>
+                                            <td>
+                                                <div class="btn-group-xs" >
+                                                    <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-link"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
+                                                    @if (!$submission->isRecommendRead())
+                                                        <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $submission->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}"><i class="fa fa-heart"></i></a>
+                                                    @endif
+                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
+                                                </div>
+                                            </td>
                                             <td>{{ $submission->id }}</td>
+                                            <td>
+                                                <select onchange="setSupportType({{ $submission->id }},this)">
+                                                    <option value="1" @if($submission->support_type == 1) selected @endif> 赞|踩</option>
+                                                    <option value="2" @if($submission->support_type == 2) selected @endif> 看好|不看好</option>
+                                                    <option value="3" @if($submission->support_type == 3) selected @endif> 支持|反对</option>
+                                                    <option value="4" @if($submission->support_type == 4) selected @endif> 意外|不意外</option>
+                                                </select>
+                                            </td>
                                             <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
-                                            <td><a href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" target="_blank">打开外链</a></td>
                                             <td>
                                                 @if ($submission->data['img'] && is_array($submission->data['img']))
                                                     @foreach($submission->data['img'] as $img)
@@ -81,21 +91,8 @@
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->views }}</td>
                                             <td>{{ $submission->group->name }}</td>
-                                            <td>{{ $submission->public?'公开':'私密' }}</td>
                                             <td>{{ $submission->owner->name }}</td>
-                                            <td>
-                                                @if ($submission->author_id)
-                                                    <span><img style="width: 30px;height: 30px;" src="{{ $submission->author->avatar }}" class="img-flag" />{{ $submission->author->name }}</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $submission->updated_at }}</td>
-                                            <td>
-                                                <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
-                                                    <a class="btn btn-default btn-sm btn-setfav" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}"><i class="fa fa-heart"></i></a>
-                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
-                                                </div>
-                                            </td>
+                                            <td>{{ $submission->created_at }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -104,13 +101,7 @@
                         </div>
                         <div class="box-footer clearfix">
                             <div class="row">
-                                <div class="col-xs-3">
-                                    <div class="btn-group">
-                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="设为精选" onclick="confirm_submit('item_form','{{  route('admin.operate.article.verify_recommend') }}','确认将选中项设为精选推荐项？')"><i class="fa fa-heart"></i></button>
-                                        <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除文章" onclick="confirm_submit('item_form','{{  route('admin.operate.article.destroy') }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
-                                    </div>
-                                </div>
-                                <div class="col-sm-9">
+                                <div class="col-sm-12">
                                     <div class="text-right">
                                         <span class="total-num">共 {{ $submissions->total() }} 条数据</span>
                                         {!! str_replace('/?', '?', $submissions->appends($filter)->render()) !!}
@@ -121,14 +112,68 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="set_fav_modal" tabindex="-1"  role="dialog" aria-labelledby="set_fav_modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">设为精选</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="tagIds" id="tagIds" />
+                        <input type="hidden" name="id" id="id" />
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label>标题:</label>
+                                <input type="text" name="title" id="title" class="form-control"  placeholder="标题" value="">
+                            </div>
+                            <div class="form-group">
+                                <label>标签语</label>
+                                <input type="text" name="tips" id="tips" class="form-control"  placeholder="标签语" value="">
+                            </div>
+                            <div class="form-group">
+                                <label for="select_tags_id" class="control-label">标签:</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
+                                            @foreach($tags as $tag)
+                                                <option value="{{ $tag['id'] }}">{{ $tag['text'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="set_fav_submit">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
 @endsection
 
 @section('script')
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+        function setSupportType(id,obj) {
+            $.post('/admin/submission/setSupportType',{id: id, support_type: obj.value},function(msg){
+
+            });
+        }
         $(function(){
+            $("#select_tags_id").select2({
+                theme:'bootstrap',
+                placeholder: "标签"
+            });
+
+            $("#select_tags_id").change(function(){
+                $("#tagIds").val($("#select_tags_id").val());
+            });
             $(".btn-delete").click(function(){
                 if(!confirm('确认删除该文章？')){
                     return false;
@@ -144,16 +189,18 @@
                 });
             });
             $(".btn-setfav").click(function(){
-                if(!confirm('确认将该文章设为精选推荐项？')){
-                    return false;
-                }
-                $(this).button('loading');
-                var follow_btn = $(this);
                 var source_id = $(this).data('source_id');
+                $("#id").val(source_id);
+                $("#title").val($(this).data('title'));
+                $('#set_fav_modal').modal('show');
+            });
+            $("#set_fav_submit").click(function(){
+                var id = $("#id").val();
+                $.post('/admin/submission/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
 
-                $.post('/admin/submission/verify_recommend',{ids: [source_id]},function(msg){
-                    follow_btn.html('已为精选');
                 });
+                $('#submission_setfav_' + id).css('display','none');
+                $('#set_fav_modal').modal('hide');
             });
         });
     </script>

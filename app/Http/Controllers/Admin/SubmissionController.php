@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Logic\TagsLogic;
 use App\Models\Groups\Group;
 use App\Models\Question;
 use App\Models\RecommendRead;
@@ -39,7 +40,9 @@ class SubmissionController extends AdminController
         }
 
         $submissions = $query->orderBy('id','desc')->paginate(20);
-        return view("admin.operate.article.index")->with('submissions',$submissions)->with('filter',$filter);
+        $data = TagsLogic::loadTags(6,'','id');
+        $tags = $data['tags'];
+        return view("admin.operate.article.index")->with('submissions',$submissions)->with('filter',$filter)->with('tags',$tags);
     }
 
     /**
@@ -92,6 +95,7 @@ class SubmissionController extends AdminController
         if ($related_question) {
             $object_data['related_question'] = $related_question;
         }
+        $submission->title = $request->input('title');
         $submission->data = $object_data;
         $submission->save();
 
@@ -105,39 +109,65 @@ class SubmissionController extends AdminController
         return $this->success(url()->previous(),'文章修改成功');
     }
 
+    public function setSupportType(Request $request) {
+        $this->validate($request, [
+            'id' => 'required',
+            'support_type' => 'required|in:1,2,3,4',
+        ]);
+        $submission = Submission::find($request->input('id'));
+        $submission->support_type = $request->input('support_type');
+        $submission->save();
+        return $this->success(url()->previous(),'成功');
+    }
+
 
 
     /*文章推荐精选审核*/
     public function verifyRecommend(Request $request)
     {
-        $articleIds = $request->input('ids',[]);
-        foreach ($articleIds as $articleId) {
-            $article = Submission::find($articleId);
-            $group = Group::find($article->group_id);
-            if (!$group->public) return $this->error(route('admin.operate.article.index'),'私有圈子里的文章不能设为推荐');
-            $oldData = $article->data;
-            unset($oldData['description']);
-            RecommendRead::firstOrCreate([
-                'source_id' => $articleId,
-                'source_type' => get_class($article)
-            ],[
-                'source_id' => $articleId,
-                'source_type' => get_class($article),
-                'sort' => 0,
-                'audit_status' => 0,
-                'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
-                'created_at' => $article->created_at,
-                'updated_at' => Carbon::now(),
-                'data' => array_merge([
-                    'title' => $article->title,
-                    'img'   => $article->data['img'],
-                    'category_id' => $article->category_id,
-                    'category_name' => $article->category_name,
-                    'type' => $article->type,
-                    'slug' => $article->slug,
-                    'group_id' => $article->group_id
-                ],$oldData)
-            ]);
+        $articleId = $request->input('id');
+        $title = $request->input('title');
+        $tagsId = $request->input('tagIds',0);
+        $article = Submission::find($articleId);
+        $group = Group::find($article->group_id);
+        if (!$group->public) return $this->error(route('admin.operate.article.index'),'私有圈子里的文章不能设为推荐');
+        $oldData = $article->data;
+        unset($oldData['description']);
+        $recommend = RecommendRead::firstOrCreate([
+            'source_id' => $articleId,
+            'source_type' => get_class($article)
+        ],[
+            'source_id' => $articleId,
+            'source_type' => get_class($article),
+            'tips' => $request->input('tips'),
+            'sort' => 0,
+            'audit_status' => 0,
+            'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
+            'created_at' => $article->created_at,
+            'updated_at' => Carbon::now(),
+            'data' => array_merge([
+                'title' => $title?:$article->title,
+                'img'   => $article->data['img'],
+                'category_id' => $article->category_id,
+                'category_name' => $article->category_name,
+                'type' => $article->type,
+                'slug' => $article->slug,
+                'group_id' => $article->group_id
+            ],$oldData)
+        ]);
+        if ($recommend->audit_status == 0) {
+            $recommend->audit_status = 1;
+            $recommend->sort = $recommend->id;
+            $recommend->save();
+            Tag::multiSaveByIds($tagsId,$recommend);
+            if (isset($recommend->data['domain']) && $recommend->data['domain'] == 'mp.weixin.qq.com') {
+                $info = getWechatArticleInfo($recommend->data['url']);
+                if ($info['error_code'] == 0) {
+                    $article->views += $info['data']['article_view_count'];
+                    $article->upvotes += $info['data']['article_agree_count'];
+                    $article->calculationRate();
+                }
+            }
         }
         return $this->success(url()->previous(),'设为精选成功');
 
