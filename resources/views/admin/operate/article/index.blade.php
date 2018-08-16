@@ -197,9 +197,10 @@
             $("#set_fav_submit").click(function(){
                 var id = $("#id").val();
                 $.post('/admin/submission/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
-                    $('#submission_setfav_' + id).css('display','none');
-                    $('#set_fav_modal').modal('hide');
+
                 });
+                $('#submission_setfav_' + id).css('display','none');
+                $('#set_fav_modal').modal('hide');
             });
         });
     </script>
