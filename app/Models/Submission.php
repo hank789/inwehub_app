@@ -154,6 +154,14 @@ class Submission extends Model {
         return strip_tags($this->title,'<a><span>');
     }
 
+    public function isRecommendRead() {
+        $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
+        if ($recommendRead) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * A submission is owned by a user.
      *

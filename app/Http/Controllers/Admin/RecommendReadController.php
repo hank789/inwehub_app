@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Logic\TagsLogic;
 use App\Models\RecommendRead;
 use App\Models\Submission;
 use App\Models\Tag;
@@ -48,9 +49,10 @@ class RecommendReadController extends AdminController
         if (isset($filter['sortByRate']) && $filter['sortByRate']) {
             $query->orderBy('rate','desc');
         }
-
+        $data = TagsLogic::loadTags(6,'','id');
+        $tags = $data['tags'];
         $recommendations = $query->orderBy('created_at','desc')->paginate(20);
-        return view("admin.operate.recommend_read.index")->with('recommendations',$recommendations)->with('filter',$filter);
+        return view("admin.operate.recommend_read.index")->with('recommendations',$recommendations)->with('filter',$filter)->with('tags',$tags);
     }
 
 

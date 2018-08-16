@@ -137,7 +137,11 @@
                                 <label for="select_tags_id" class="control-label">将选中项目移动到:</label>
                                 <div class="row">
                                     <div class="col-sm-10">
-                                        <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" ></select>
+                                        <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
+                                            @foreach($tags as $tag)
+                                                <option value="{{ $tag['id'] }}">{{ $tag['text'] }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -210,26 +214,7 @@
 
         $("#select_tags_id").select2({
             theme:'bootstrap',
-            placeholder: "标签",
-            ajax: {
-                url: '/manager/ajax/loadTags',
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        word: params.term,
-                        type: 6
-                    };
-                },
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength:2,
-            tags:false
+            placeholder: "标签"
         });
 
         $("#select_tags_id").change(function(){
