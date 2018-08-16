@@ -182,21 +182,21 @@ class Submission extends Model {
         return $this->belongsTo('App\Models\Groups\Group');
     }
 
-    public function getSupportRateDesc() {
+    public function getSupportRateDesc($isSupported = true) {
         if ($this->upvotes <= 0 && $this->downvotes <=0) return '暂无，快来表个态';
         $rate = (bcdiv($this->upvotes,$this->upvotes + $this->downvotes,2) * 100).'%';
         switch ($this->support_type) {
             case 1:
-                return '有'.$rate.'的人与您一样点赞';
+                return '有'.$rate.'的人'.($isSupported?'与您一样':'').'点赞';
                 break;
             case 2:
-                return '有'.$rate.'的人与您一样看好';
+                return '有'.$rate.'的人'.($isSupported?'与您一样':'').'看好';
                 break;
             case 3:
-                return '有'.$rate.'的人与您一样支持';
+                return '有'.$rate.'的人'.($isSupported?'与您一样':'').'支持';
                 break;
             case 4:
-                return '有'.$rate.'的人与您一样意外';
+                return '有'.$rate.'的人'.($isSupported?'与您一样':'').'意外';
                 break;
         }
     }

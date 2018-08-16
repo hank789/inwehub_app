@@ -497,7 +497,7 @@ class SubmissionController extends Controller {
         $return['is_downvoted'] = $downvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
         $return['supporter_list'] = $supporters;
-        $return['support_description'] = $downvote?$submission->getDownvoteRateDesc():$submission->getSupportRateDesc();
+        $return['support_description'] = $downvote?$submission->getDownvoteRateDesc():$submission->getSupportRateDesc($upvote);
         $return += $submission->getSupportTypeTip();
         $return['support_percent'] = $submission->getSupportPercent();
         $return['tags'] = $submission->tags()->get()->toArray();
