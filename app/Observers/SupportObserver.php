@@ -6,9 +6,11 @@
  */
 
 use App\Events\Frontend\System\Credit;
+use App\Models\Answer;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
+use App\Models\Submission;
 use App\Models\Support;
 use App\Notifications\NewSupport;
 use App\Services\RateLimiter;
@@ -40,22 +42,34 @@ class SupportObserver implements ShouldQueue {
             switch ($support->supportable_type) {
                 case 'App\Models\Comment':
                     $title = '评论';
-                    $answer = $source->source;
+                    $comment_source = $source->source;
                     $fields[] = [
                         'title' => '评论内容',
                         'value' => $source->content,
                         'short' => false
                     ];
-                    $fields[] = [
-                        'title' => '回答内容',
-                        'value' => $answer->getContentText(),
-                        'short' => false
-                    ];
-                    $fields[] = [
-                        'title' => '问题地址',
-                        'value' => route('ask.question.detail',['id'=>$answer->question_id]),
-                        'short' => false
-                    ];
+                    switch (get_class($comment_source)) {
+                        case Answer::class:
+                            $fields[] = [
+                                'title' => '回答内容',
+                                'value' => $comment_source->getContentText(),
+                                'short' => false
+                            ];
+                            $fields[] = [
+                                'title' => '问题地址',
+                                'value' => route('ask.question.detail',['id'=>$comment_source->question_id]),
+                                'short' => false
+                            ];
+                            break;
+                        case Submission::class:
+                            $fields[] = [
+                                'title' => '文章内容',
+                                'value' => $comment_source->title,
+                                'short' => false
+                            ];
+                            break;
+                    }
+
                     break;
                 case 'App\Models\Answer':
                     $title = '回答';
