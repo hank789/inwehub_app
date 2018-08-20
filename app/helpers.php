@@ -1486,3 +1486,15 @@ if (!function_exists('getWechatArticleInfo')) {
     }
 }
 
+
+if (!function_exists('getWechatUrlBodyText')) {
+    function getWechatUrlBodyText($url) {
+        $html = file_get_contents_curl($url);
+        $parse = parse_url($url);
+        if ($parse['host'] == 'mp.weixin.qq.com') {
+            preg_match_all("/id=\"js_content\">(.*)<script/iUs",$html,$content,PREG_PATTERN_ORDER);
+            return strip_tags($content[1][0]);
+        }
+        return $html;
+    }
+}

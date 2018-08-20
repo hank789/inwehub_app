@@ -132,6 +132,7 @@ class RecommendReadController extends AdminController
                     }
                     break;
             }
+            $recommendation->setKeywordTags();
         }
 
         return $this->success(route('admin.operate.recommendRead.index'),'推荐修改成功');
@@ -154,6 +155,7 @@ class RecommendReadController extends AdminController
                     }
                     break;
             }
+            $recommendation->setKeywordTags();
         }
         RecommendRead::whereIn('id',$ids)->update(['audit_status'=>1]);
 

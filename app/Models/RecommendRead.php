@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Models\Relations\MorphManyTagsTrait;
+use App\Services\BosonNLPService;
 use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
+use QL\QueryList;
 
 /**
  * App\Models\Recommendation
@@ -106,6 +108,13 @@ class RecommendRead extends Model
 
     public function setRateWeight($value) {
         return RateLimiter::instance()->hSet('recommend-rate-weight',$this->id,$value);
+    }
+
+    //设置关键词标签
+    public function setKeywordTags() {
+        $source = $this->source;
+        $tags = $source->tags()->pluck('tag_id')->toArray();
+        Tag::multiAddByIds($tags,$this);
     }
 
 }

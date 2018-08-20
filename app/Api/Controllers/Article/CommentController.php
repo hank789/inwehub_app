@@ -94,8 +94,10 @@ class CommentController extends Controller {
             ->where('parent_id', 0)
             ->orderBy('created_at', 'desc')
             ->simplePaginate(20);
+        $return = $comments->toArray();
+        $return['total'] = $submission->comments_number;
 
-        return self::createJsonData(true,$comments->toArray());
+        return self::createJsonData(true,$return);
     }
 
     /**

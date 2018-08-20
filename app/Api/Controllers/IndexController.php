@@ -282,21 +282,36 @@ class IndexController extends Controller {
         $source_id = $request->input('source_id');
         $perPage = $request->input('perPage',4);
         $recommend = null;
+        $tags = null;
+        $query = RecommendRead::where('audit_status',1);
         switch ($source_type) {
             case 1:
                 //文章
-                $object = Submission::find($source_id);
-
+                $recommend = RecommendRead::where('source_id',$source_id,'source_type',Submission::class)->first();
+                $source = Submission::find($source_id);
                 break;
             case 2:
                 //问答
-                $object = Question::find($source_id);
+                $recommend = RecommendRead::where('source_id',$source_id,'source_type',Question::class)->first();
+                $source = Question::find($source_id);
                 break;
         }
-        $query = RecommendRead::where('audit_status',1);
-        $count = $query->count();
-        $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
-        $reads = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
+        if ($recommend) {
+            $tags = $recommend->tags()->pluck('tag_id')->toArray();
+            $query = $query->where('id','!=',$recommend->id);
+        } else {
+            $tags = $source->tags()->pluck('tag_id')->toArray();
+        }
+        if ($tags) {
+            $query = $query->whereHas('tags',function($query) use ($tags) {
+                $query->whereIn('tag_id', $tags);
+            });
+            $reads = $query->orderBy('rate','desc')->simplePaginate($perPage);
+        } else {
+            $count = $query->count();
+            $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
+            $reads = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
+        }
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
             $item = $this->formatRecommendReadItem($item);

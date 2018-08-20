@@ -14,6 +14,7 @@
         "fabpot/goutte": "^3.2",
         "flc/alidayu": "^2.0",
         "h4cc/wkhtmltoimage-amd64": "^0.12.4",
+        "hexianghui/bosonnlp-sdk": "^1.0",
         "intervention/image": "^2.3",
         "jacobcyl/ali-oss-storage": "dev-master",
         "jaeger/querylist": "^4.0",
