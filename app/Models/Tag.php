@@ -57,6 +57,7 @@ class Tag extends Model
             /*删除关注*/
             Attention::where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->delete();
             $tag->userTags()->delete();
+            TagCategoryRel::where('tag_id',$tag->id)->delete();
             /*删除用户标签*/
             UserTag::where('tag_id','=',$tag->id)->delete();
             Taggable::where('tag_id',$tag->id)->delete();
