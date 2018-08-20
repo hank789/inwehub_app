@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Relations\BelongsToCategoryTrait;
+use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
@@ -65,6 +66,7 @@ class Tag extends Model
                 App::offsetGet('search')->delete($tag);
             }
             Taggable::where('tag_id',$tag->id)->delete();
+            RateLimiter::instance()->hSet('ignore_tags',$tag->name,$tag->id);
         });
     }
 
