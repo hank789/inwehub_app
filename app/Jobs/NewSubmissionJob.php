@@ -55,6 +55,7 @@ class NewSubmissionJob implements ShouldQueue
     {
         $submission = Submission::find($this->id);
         if ($submission->status == 0) return;
+        $submission->setKeywordTags();
         $slackFields = [];
         foreach ($submission->data as $field=>$value){
             if ($value){
