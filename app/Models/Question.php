@@ -503,18 +503,25 @@ class Question extends Model
 
     //设置关键词标签
     public function setKeywordTags() {
-        $keywords = array_column(BosonNLPService::instance()->keywords($this->title,10),1);
-        $tags = [];
-        foreach ($keywords as $keyword) {
-            //如果含有中文，则至少2个中文字符
-            if (preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 6) {
-                $tags[] = $keyword;
-            } elseif (!preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 2) {
-                //如果不含有中文，则至少2个字符
-                $tags[] = $keyword;
+        try {
+            if (config('app.env') != 'production') {
+                return;
             }
+            $keywords = array_column(BosonNLPService::instance()->keywords($this->title,10),1);
+            $tags = [];
+            foreach ($keywords as $keyword) {
+                //如果含有中文，则至少2个中文字符
+                if (preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 6) {
+                    $tags[] = $keyword;
+                } elseif (!preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 2) {
+                    //如果不含有中文，则至少2个字符
+                    $tags[] = $keyword;
+                }
+            }
+            Tag::multiAddByName($tags,$this);
+        } catch (\Exception $e) {
+            app('sentry')->captureException($e);
         }
-        Tag::multiAddByName($tags,$this);
     }
 
 
