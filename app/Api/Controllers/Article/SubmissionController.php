@@ -185,7 +185,6 @@ class SubmissionController extends Controller {
             if ($newTagString) {
                 Tag::multiAddByName($newTagString,$submission);
             }
-            $submission->setKeywordTags();
             UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
             if ($submission->status == 1) {
                 $this->dispatch(new NewSubmissionJob($submission->id));
@@ -363,7 +362,6 @@ class SubmissionController extends Controller {
             if ($newTagString) {
                 Tag::multiAddByName($newTagString,$submission);
             }
-            $submission->setKeywordTags();
             UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
             if ($submission->status == 1) {
                 $this->dispatch(new NewSubmissionJob($submission->id));
