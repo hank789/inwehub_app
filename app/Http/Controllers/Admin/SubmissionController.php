@@ -168,6 +168,7 @@ class SubmissionController extends AdminController
                     $article->calculationRate();
                 }
             }
+            $recommend->setKeywordTags();
         }
         return $this->success(url()->previous(),'设为精选成功');
 

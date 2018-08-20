@@ -55,6 +55,8 @@ return [
         'client_secret' => env('OAUTH_WEIXINWEB_SECRET'),
         'redirect' => env('OAUTH_WEIXINWEB_REDIRECT'),
     ],
-
+    'boson' => [
+        'api_key' => env('BOSON_NLP_KEY')
+    ]
 
 ];

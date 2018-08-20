@@ -26,9 +26,11 @@ use App\Models\UserDevice;
 use App\Models\UserInfo\JobInfo;
 use App\Models\UserRegistrationCode;
 use App\Models\UserTag;
+use App\Services\BosonNLPService;
 use App\Services\City\CityData;
 use App\Third\Weapp\Wxxcx;
 use Carbon\Carbon;
+use HeXiangHui\BosonNLP\BosonNLP;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Inspiring;
 use Getui;
@@ -39,6 +41,7 @@ use Payment\Client\Charge;
 use Payment\Common\PayException;
 use Payment\Config;
 use Illuminate\Support\Facades\DB;
+use QL\QueryList;
 use Ramsey\Uuid\Uuid;
 
 class Test extends Command
@@ -64,7 +67,7 @@ class Test extends Command
      */
     public function handle()
     {
-        echo Storage::disk('oss')->url('media/239/user_origin_7.jpg');
+        $result = BosonNLPService::instance()->keywords('');
         return;
         foreach($userTags as $uid){
             $toUser = User::find($uid);
