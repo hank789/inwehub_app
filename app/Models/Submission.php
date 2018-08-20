@@ -10,6 +10,7 @@ use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\BosonNLPService;
+use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use PhpParser\Node\Stmt\TryCatch;
@@ -304,6 +305,9 @@ class Submission extends Model {
             }
             $tags = [];
             foreach ($keywords as $keyword) {
+                if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
+                    continue;
+                }
                 //如果含有中文，则至少2个中文字符
                 if (preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 6) {
                     $tags[] = $keyword;

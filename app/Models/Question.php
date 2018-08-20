@@ -12,6 +12,7 @@ use App\Models\Relations\MorphManyDoingsTrait;
 use App\Models\Relations\MorphManyOrdersTrait;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\BosonNLPService;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
@@ -510,6 +511,9 @@ class Question extends Model
             $keywords = array_column(BosonNLPService::instance()->keywords($this->title,10),1);
             $tags = [];
             foreach ($keywords as $keyword) {
+                if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
+                    continue;
+                }
                 //如果含有中文，则至少2个中文字符
                 if (preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 6) {
                     $tags[] = $keyword;
