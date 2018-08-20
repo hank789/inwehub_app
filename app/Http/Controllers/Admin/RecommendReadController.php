@@ -177,6 +177,7 @@ class RecommendReadController extends AdminController
             foreach ($idArray as $id) {
                 $recommendation = RecommendRead::find($id);
                 Tag::multiSaveByIds($tagsId,$recommendation);
+                $recommendation->setKeywordTags();
             }
         }
         return $this->success(url()->previous(),'标签修改成功');
