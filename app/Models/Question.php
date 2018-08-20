@@ -520,7 +520,8 @@ class Question extends Model
             }
             Tag::multiAddByName($tags,$this);
         } catch (\Exception $e) {
-            app('sentry')->captureException($e);
+            \Log::info('setKeywordTagsError',$this->toArray());
+            app('sentry')->captureException($e,$this->toArray());
         }
     }
 
