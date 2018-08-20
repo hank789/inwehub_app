@@ -113,51 +113,8 @@ class RecommendRead extends Model
     //设置关键词标签
     public function setKeywordTags() {
         $source = $this->source;
-        switch ($this->read_type) {
-            case self::READ_TYPE_SUBMISSION:
-                if (isset($source->data['domain']) && $source->data['domain'] == 'mp.weixin.qq.com') {
-                    $content = getWechatUrlBodyText($source->data['url']);
-                    $keywords = array_column(BosonNLPService::instance()->keywords($content,15),1);
-                } elseif ($source->type == 'article') {
-                    $keywords = array_column(BosonNLPService::instance()->keywords($source->title.'。'.$source->data['description'],15),1);
-                } elseif ($source->type == 'text') {
-                    $keywords = array_column(BosonNLPService::instance()->keywords($source->title,15),1);
-                } else {
-                    $ql = QueryList::get($source->data['url']);
-                    $metas = $ql->find('meta[name=keywords]')->content;
-                    if ($metas) {
-                        $keywords = explode(',',$metas);
-                    } else {
-                        $description = $ql->find('meta[name=description]')->content;
-                        $keywords = array_column(BosonNLPService::instance()->keywords($source->title.'。'.$description,15),1);
-                    }
-                }
-                break;
-            case self::READ_TYPE_PAY_QUESTION:
-            case self::READ_TYPE_FREE_QUESTION:
-                $keywords = array_column(BosonNLPService::instance()->keywords($source->title,10),1);
-                break;
-            case self::READ_TYPE_FREE_QUESTION_ANSWER:
-                $keywords = array_column(BosonNLPService::instance()->keywords($this->data['title'],10),1);
-                break;
-            case self::READ_TYPE_ACTIVITY:
-                return;
-                break;
-            case self::READ_TYPE_PROJECT_OPPORTUNITY:
-                return;
-                break;
-        }
-        $tags = [];
-        foreach ($keywords as $keyword) {
-            //如果含有中文，则至少2个中文字符
-            if (preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 6) {
-                $tags[] = $keyword;
-            } elseif (!preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 2) {
-                //如果不含有中文，则至少2个字符
-                $tags[] = $keyword;
-            }
-        }
-        Tag::multiAddByName($tags,$this);
+        $tags = $source->tags()->pluck('tag_id')->toArray();
+        Tag::multiAddByIds($tags,$this);
     }
 
 }

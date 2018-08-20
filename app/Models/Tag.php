@@ -135,6 +135,30 @@ class Tag extends Model
         return $tagIds;
     }
 
+    public static function multiAddByIds($tags,$taggable)
+    {
+        if (!is_array($tags)) {
+            $tags = array_unique(explode(",",$tags));
+        } else {
+            $tags = array_unique($tags);
+        }
+
+        foreach($tags as $tag_id){
+
+            if(!trim($tag_id)){
+                continue;
+            }
+
+            $tag = self::find($tag_id);
+
+            if(!$taggable->tags->contains($tag->id))
+            {
+                $taggable->tags()->attach($tag->id);
+            }
+        }
+        return $tags;
+    }
+
     public static function addByName(array $names){
         $tags = array_unique($names);
         $tagIds = [];

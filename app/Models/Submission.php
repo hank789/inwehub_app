@@ -9,8 +9,10 @@ use App\Models\Feed\Feed;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
 use App\Models\Relations\MorphManyTagsTrait;
+use App\Services\BosonNLPService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use QL\QueryList;
 
 /**
  * App\Models\Submission
@@ -274,6 +276,38 @@ class Submission extends Model {
             $recommendRead->rate = $this->rate + $recommendRead->getRateWeight();
             $recommendRead->save();
         }
+    }
+
+    //设置关键词标签
+    public function setKeywordTags() {
+        if (isset($this->data['domain']) && $this->data['domain'] == 'mp.weixin.qq.com') {
+            $content = getWechatUrlBodyText($this->data['url']);
+            $keywords = array_column(BosonNLPService::instance()->keywords($content,15),1);
+        } elseif ($this->type == 'article') {
+            $keywords = array_column(BosonNLPService::instance()->keywords($this->title.'。'.$this->data['description'],15),1);
+        } elseif ($this->type == 'text') {
+            $keywords = array_column(BosonNLPService::instance()->keywords($this->title,15),1);
+        } else {
+            $ql = QueryList::get($this->data['url']);
+            $metas = $ql->find('meta[name=keywords]')->content;
+            if ($metas) {
+                $keywords = explode(',',$metas);
+            } else {
+                $description = $ql->find('meta[name=description]')->content;
+                $keywords = array_column(BosonNLPService::instance()->keywords($this->title.'。'.$description,15),1);
+            }
+        }
+        $tags = [];
+        foreach ($keywords as $keyword) {
+            //如果含有中文，则至少2个中文字符
+            if (preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 6) {
+                $tags[] = $keyword;
+            } elseif (!preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 2) {
+                //如果不含有中文，则至少2个字符
+                $tags[] = $keyword;
+            }
+        }
+        Tag::multiAddByName($tags,$this);
     }
 
 }

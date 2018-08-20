@@ -11,6 +11,7 @@ use App\Models\Relations\MorphManyCommentsTrait;
 use App\Models\Relations\MorphManyDoingsTrait;
 use App\Models\Relations\MorphManyOrdersTrait;
 use App\Models\Relations\MorphManyTagsTrait;
+use App\Services\BosonNLPService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
@@ -498,6 +499,22 @@ class Question extends Model
             $recommendRead->rate = $this->rate + $recommendRead->getRateWeight();
             $recommendRead->save();
         }
+    }
+
+    //设置关键词标签
+    public function setKeywordTags() {
+        $keywords = array_column(BosonNLPService::instance()->keywords($this->title,10),1);
+        $tags = [];
+        foreach ($keywords as $keyword) {
+            //如果含有中文，则至少2个中文字符
+            if (preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 6) {
+                $tags[] = $keyword;
+            } elseif (!preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 2) {
+                //如果不含有中文，则至少2个字符
+                $tags[] = $keyword;
+            }
+        }
+        Tag::multiAddByName($tags,$this);
     }
 
 

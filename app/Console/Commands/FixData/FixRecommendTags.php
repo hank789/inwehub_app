@@ -6,7 +6,9 @@
  */
 
 
+use App\Models\Question;
 use App\Models\RecommendRead;
+use App\Models\Submission;
 use Illuminate\Console\Command;
 
 class FixRecommendTags extends Command
@@ -32,6 +34,14 @@ class FixRecommendTags extends Command
      */
     public function handle()
     {
+        $submissions = Submission::where('status',1)->get();
+        foreach ($submissions as $submission) {
+            $submission->setKeywordTags();
+        }
+        $questions = Question::get();
+        foreach ($questions as $question) {
+            $question->setKeywordTags();
+        }
         $recommends = RecommendRead::get();
         foreach ($recommends as $recommend) {
             $recommend->setKeywordTags();
