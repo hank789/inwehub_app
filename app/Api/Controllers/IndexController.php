@@ -287,12 +287,12 @@ class IndexController extends Controller {
         switch ($source_type) {
             case 1:
                 //文章
-                $recommend = RecommendRead::where('source_id',$source_id,'source_type',Submission::class)->first();
+                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Submission::class)->first();
                 $source = Submission::find($source_id);
                 break;
             case 2:
                 //问答
-                $recommend = RecommendRead::where('source_id',$source_id,'source_type',Question::class)->first();
+                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Question::class)->first();
                 $source = Question::find($source_id);
                 break;
         }
@@ -337,11 +337,14 @@ class IndexController extends Controller {
                 } else {
                     $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
                     if ($tags) {
-                        $query = $query->where(function ($query) use ($tags) {
+                        $query = $query->whereHas('tags',function($query) use ($tags) {
+                            $query->whereIn('tag_id', $tags);
+                        });
+                        /*$query = $query->where(function ($query) use ($tags) {
                             $query->whereHas('tags',function($query) use ($tags) {
                                 $query->whereIn('tag_id', $tags);
                             })->orDoesntHave('tags');
-                        });
+                        });*/
                     }
                 }
             }
