@@ -302,16 +302,20 @@ class IndexController extends Controller {
         } else {
             $tags = $source->tags()->pluck('tag_id')->toArray();
         }
+        $reads = [];
         if ($tags) {
             $query = $query->whereHas('tags',function($query) use ($tags) {
                 $query->whereIn('tag_id', $tags);
             });
             $reads = $query->orderBy('rate','desc')->simplePaginate($perPage);
-        } else {
-            $count = $query->count();
-            $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
-            $reads = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
         }
+        if (empty($reads) || $reads->count() < 4) {
+            $query2 = RecommendRead::where('audit_status',1);
+            $count = $query2->count();
+            $rand = $perPage/$count * 100;
+            $reads = $query2->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
+        }
+
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
             $item = $this->formatRecommendReadItem($item);
