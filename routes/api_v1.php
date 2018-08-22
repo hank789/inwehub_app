@@ -28,6 +28,8 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 
     Route::post('logout', 'AuthController@logout')->middleware('jwt.auth');
 
+    Route::post('operatorLogin', 'AuthController@operatorLogin')->middleware('jwt.auth');
+
     //等级权限判断
     Route::post('checkUserLevel','AuthController@checkUserLevel')->middleware('jwt.auth');
 

@@ -327,7 +327,7 @@ class IndexController extends Controller {
     public function recommendRead(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $orderBy = $request->input('orderBy',1);
-        $recommendType = $request->input('recommendType',2);
+        $recommendType = $request->input('recommendType',1);
         $query = RecommendRead::where('audit_status',1);
         try {
             $user = $JWTAuth->parseToken()->authenticate();

@@ -51,16 +51,13 @@ class SystemController extends Controller {
         if (!$user) {
             return self::createJsonData(false);
         }
-        if (!$user->isRole('operatormanager')) {
+        if (!$user->isRole('operatormanager') && !$user->isRole('operatorrobot')) {
             return self::createJsonData(false);
         }
-        $role = Role::where('slug','operatorrobot')->first();
-        $roleUsers = RoleUser::where('role_id',$role->id)->get();
+        $role1 = Role::where('slug','operatorrobot')->first();
+        $role2 = Role::where('slug','operatormanager')->first();
+        $roleUsers = RoleUser::whereIn('role_id',[$role1->id,$role2->id])->get();
         $return = [];
-        $return[] = [
-          'id' => $user->id,
-          'name' => $user->name
-        ];
         foreach ($roleUsers as $roleUser) {
             $return[] = [
                 'id' => $roleUser->user_id,
