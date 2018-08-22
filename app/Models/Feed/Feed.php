@@ -171,7 +171,7 @@ class Feed extends Model
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
                     'price'      => $question->price,
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
+                    'tags'      => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray()
                 ];
 
                 if ($answer->adopted_at && !$is_pay_for_view) {
@@ -213,7 +213,7 @@ class Feed extends Model
                     'status_description' => $question->price?($question->price.'元悬赏'.($question->status != 8 ? '中':'')):'',
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
+                    'tags'      => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
                 ];
                 if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
@@ -242,7 +242,7 @@ class Feed extends Model
                     'price'      => $question->price,
                     'status'     => $question->status,
                     'status_description' => $question->price?($question->price.'元悬赏'.($question->status != 8 ? '中':'')):'',
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
+                    'tags'      => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray()
                 ];
                 break;
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
@@ -264,7 +264,7 @@ class Feed extends Model
                     'img'       => $submission->data['img']??'',
                     'files'       => $submission->data['files']??'',
                     'domain'    => $submission->data['domain']??'',
-                    'tags'      => $submission->tags()->get()->toArray(),
+                    'tags'      => $submission->tags()->where('category_id','!=',1)->get()->toArray(),
                     'submission_id' => $this->source_id,
                     'current_address_name' => str_limit($current_address_name,34),
                     'current_address_longitude' => $submission->data['current_address_longitude']??'',
@@ -301,7 +301,7 @@ class Feed extends Model
                     'status_description' => $question->price?($question->price.'元悬赏'.($question->status != 8 ? '中':'')):'',
                     'follow_number' => $question->followers,
                     'question_id' => $question->id,
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
+                    'tags'      => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
                 ];
                 break;
             case self::FEED_TYPE_UPVOTE_PAY_QUESTION:
@@ -336,7 +336,7 @@ class Feed extends Model
                     'status_description' => $question->price.'元',
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray()
+                    'tags'      => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray()
                 ];
                 if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
@@ -377,7 +377,7 @@ class Feed extends Model
                     'status_description' => $question->price?($question->price.'元悬赏'.($question->status != 8 ? '中':'')):'',
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
+                    'tags'      => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
                 ];
                 if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
@@ -418,7 +418,7 @@ class Feed extends Model
                     'status_description' => $question->price?($question->price.'元悬赏'.($question->status != 8 ? '中':'')):'',
                     'answer_id' => $answer->id,
                     'question_id' => $question->id,
-                    'tags'      => $question->tags()->select('tag_id','name')->get()->toArray(),
+                    'tags'      => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
                 ];
                 if ($answer->adopted_at && !$is_pay_for_view) {
                     $data['answer_content'] = '[查看最佳回答]';
