@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 
+use App\Logic\QuillLogic;
 use App\Models\Feed\Feed;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
@@ -289,7 +290,7 @@ class Submission extends Model {
                 $content = getWechatUrlBodyText($this->data['url']);
                 $keywords = array_column(BosonNLPService::instance()->keywords($content,15),1);
             } elseif ($this->type == 'article') {
-                $keywords = array_column(BosonNLPService::instance()->keywords($this->title.'。'.$this->data['description'],15),1);
+                $keywords = array_column(BosonNLPService::instance()->keywords($this->title.'。'.QuillLogic::parseText($this->data['description']),15),1);
             } elseif ($this->type == 'text') {
                 $keywords = array_column(BosonNLPService::instance()->keywords($this->title,15),1);
             } else {

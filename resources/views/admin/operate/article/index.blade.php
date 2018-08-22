@@ -50,6 +50,7 @@
                                         <th>标题</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
+                                        <th>标签</th>
                                         <th>类型</th>
                                         <th>浏览数</th>
                                         <th>圈子</th>
@@ -88,6 +89,11 @@
                                                 @endif
                                             </td>
                                             <td>{{ $submission->rate }}</td>
+                                            <td>
+                                                @foreach($submission->tags as $tagInfo)
+                                                    {{ $tagInfo->name.',' }}
+                                                @endforeach
+                                            </td>
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->views }}</td>
                                             <td>{{ $submission->group->name }}</td>
