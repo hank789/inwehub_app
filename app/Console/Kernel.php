@@ -57,7 +57,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixFeedGroup::class,
         Commands\FixData\AddTags::class,
         Commands\FixData\FixRecommendDate::class,
-        Commands\FixData\FixRecommendTags::class
+        Commands\FixData\FixRecommendTags::class,
+        Commands\FixData\FixAutoTags::class
 
     ];
 

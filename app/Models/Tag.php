@@ -75,9 +75,8 @@ class Tag extends Model
         return $this->belongsToMany('App\Models\Category','tag_category_rel');
     }
 
-    /**通过字符串添加标签
-     * @param $tagString
-     * @param $question_id
+    /**
+     * 通过字符串添加标签
      */
     public static function multiSave($tagString,$taggable)
     {
@@ -104,11 +103,10 @@ class Tag extends Model
         return $tags;
     }
 
-    /**通过字符串新增标签
-     * @param $tagString
-     * @param $question_id
+    /**
+     * 通过字符串新增标签
      */
-    public static function multiAddByName($tagString,$taggable)
+    public static function multiAddByName($tagString,$taggable,$category_id=0)
     {
         if (!is_array($tagString)) {
             $tags = array_unique(explode(",",$tagString));
@@ -124,7 +122,16 @@ class Tag extends Model
                 continue;
             }
 
-            $tag = self::firstOrCreate(['name'=>$tag_name]);
+            $tag = self::where(['name'=>$tag_name])->first();
+            if (!$tag) {
+                $tag = self::create(['name'=>$tag_name,'category_id'=>$category_id]);
+                if ($category_id > 0) {
+                    TagCategoryRel::create([
+                        'tag_id' => $tag->id,
+                        'category_id' => $category_id
+                    ]);
+                }
+            }
 
             if(!$taggable->tags->contains($tag->id))
             {
