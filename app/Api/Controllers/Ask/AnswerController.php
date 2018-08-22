@@ -578,18 +578,6 @@ class AnswerController extends Controller
         return self::createJsonData(true,  $return);
     }
 
-    protected function checkCommentIsSupported($user, &$comment) {
-        $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',Comment::class)->where('supportable_id','=',$comment['id'])->first();
-        $comment['is_supported'] = $support?1:0;
-        if ($comment['children']) {
-            foreach ($comment['children'] as &$children) {
-                $this->checkCommentIsSupported($user, $children);
-            }
-        } else {
-            return;
-        }
-    }
-
     //问答留言
     public function comment(Request $request) {
         /*问题创建校验*/

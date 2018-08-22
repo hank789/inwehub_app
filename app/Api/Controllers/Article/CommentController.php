@@ -9,6 +9,7 @@ use App\Models\Submission;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -81,12 +82,18 @@ class CommentController extends Controller {
      *
      * @return mixed
      */
-    public function index(Request $request)
+    public function index(Request $request, JWTAuth $JWTAuth)
     {
         $this->validate($request, [
             'submission_slug' => 'required',
             'sort'            => 'required',
         ]);
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
 
         $submission = Submission::where('slug',$request->submission_slug)->first();
 
@@ -96,6 +103,9 @@ class CommentController extends Controller {
             ->simplePaginate(20);
         $return = $comments->toArray();
         $return['total'] = $submission->comments_number;
+        foreach ($return['data'] as &$item) {
+            $this->checkCommentIsSupported($user, $item);
+        }
 
         return self::createJsonData(true,$return);
     }

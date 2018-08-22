@@ -15,11 +15,13 @@ use App\Logic\QuillLogic;
 use App\Logic\TaskLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Comment;
 use App\Models\Credit;
 use App\Models\Notification;
 use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\Support;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
@@ -62,6 +64,18 @@ trait BaseController {
         if (!$limit) {
             RateLimiter::instance()->increase($event,$submissionId,300,1);
             dispatch(new UpdateSubmissionRate($submissionId))->delay(Carbon::now()->addMinutes(5));
+        }
+    }
+
+    protected function checkCommentIsSupported($user, &$comment) {
+        $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',Comment::class)->where('supportable_id','=',$comment['id'])->first();
+        $comment['is_supported'] = $support?1:0;
+        if ($comment['children']) {
+            foreach ($comment['children'] as &$children) {
+                $this->checkCommentIsSupported($user, $children);
+            }
+        } else {
+            return;
         }
     }
 
