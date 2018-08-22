@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Channels\SlackChannel;
+use App\Models\Credit;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -64,7 +65,8 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
             CreditModel::KEY_COMMUNITY_ANSWER_SHARE,
             CreditModel::KEY_PAY_FOR_VIEW_ANSWER,
             CreditModel::KEY_COMMUNITY_ASK_FOLLOWED,
-            CreditModel::KEY_COMMUNITY_ANSWER_INVITED
+            CreditModel::KEY_COMMUNITY_ANSWER_INVITED,
+            CreditModel::KEY_NEW_UPVOTE
         ];
         if (!in_array($this->creditLog->action,$notBroadcasts)) {
             $via[] = 'broadcast';
