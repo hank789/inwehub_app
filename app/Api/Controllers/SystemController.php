@@ -42,14 +42,18 @@ class SystemController extends Controller {
         return self::createJsonData(true);
     }
 
-    public function getOperators(Request $request) {
-        $uid = $request->input('token');
-        if (!$uid) {
-            return self::createJsonData(false);
-        }
-        $user = User::where('uuid',$uid)->first();
-        if (!$user) {
-            return self::createJsonData(false);
+    public function getOperators(Request $request, JWTAuth $JWTAuth) {
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $uid = $request->input('token');
+            if (!$uid) {
+                return self::createJsonData(false);
+            }
+            $user = User::where('uuid',$uid)->first();
+            if (!$user) {
+                return self::createJsonData(false);
+            }
         }
         if (!$user->isRole('operatormanager') && !$user->isRole('operatorrobot')) {
             return self::createJsonData(false);
