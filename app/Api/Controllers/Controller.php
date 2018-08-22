@@ -7,14 +7,15 @@
 
 use App\Traits\ApiValidatesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Routing\Controller as AppController;
 use App\Traits\CreateJsonResponseData;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Traits\BaseController;
 
 
 
-class Controller extends BaseController
+class Controller extends AppController
 {
-    use AuthorizesRequests, DispatchesJobs, ApiValidatesRequests, CreateJsonResponseData, \App\Traits\BaseController;
+    use AuthorizesRequests, DispatchesJobs, ApiValidatesRequests, CreateJsonResponseData, BaseController;
 
 }

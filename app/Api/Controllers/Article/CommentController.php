@@ -9,6 +9,7 @@ use App\Models\Submission;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -81,21 +82,34 @@ class CommentController extends Controller {
      *
      * @return mixed
      */
-    public function index(Request $request)
+    public function index(Request $request, JWTAuth $JWTAuth)
     {
         $this->validate($request, [
-            'submission_slug' => 'required',
-            'sort'            => 'required',
+            'submission_slug' => 'required'
         ]);
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+        }
+        $orderBy = $request->input('order_by',1);
 
         $submission = Submission::where('slug',$request->submission_slug)->first();
 
-        $comments = $submission->comments()
-            ->where('parent_id', 0)
-            ->orderBy('created_at', 'desc')
-            ->simplePaginate(20);
+        $query = $submission->comments()
+            ->where('parent_id', 0);
+        if ($orderBy == 1) {
+            $query = $query->orderBy('created_at', 'desc');
+        } else {
+            $query = $query->orderBy('supports', 'desc');
+        }
+        $comments = $query->simplePaginate(20);
         $return = $comments->toArray();
         $return['total'] = $submission->comments_number;
+        foreach ($return['data'] as &$item) {
+            $this->checkCommentIsSupported($user, $item);
+        }
 
         return self::createJsonData(true,$return);
     }

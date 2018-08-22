@@ -153,6 +153,27 @@ class AuthController extends Controller
         return static::createJsonData(true,['token'=>$newToken],ApiException::SUCCESS,'ok')->header('Authorization', 'Bearer '.$newToken);
     }
 
+    //运营账户切换
+    public function operatorLogin(Request $request, JWTAuth $JWTAuth) {
+        $validateRules = [
+            'user_id' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $currentUser = $request->user();
+        if (!$currentUser->isRole('operatormanager') && !$currentUser->isRole('operatorrobot')) {
+            return self::createJsonData(false);
+        }
+        $user = User::find($request->input('user_id'));
+        if (!$user) {
+            return self::createJsonData(false);
+        }
+        if (!$user->isRole('operatormanager') && !$user->isRole('operatorrobot')) {
+            return self::createJsonData(false);
+        }
+        $token = $JWTAuth->fromUser($user);
+        return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS);
+    }
+
     public function login(Request $request,JWTAuth $JWTAuth){
 
         $validateRules = [

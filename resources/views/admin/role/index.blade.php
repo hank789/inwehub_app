@@ -43,8 +43,8 @@
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>角色名称</th>
                                         <th>唯一标示</th>
+                                        <th>描述</th>
                                         <th>创建时间</th>
-                                        <th>更新时间</th>
                                         <th>操作</th>
                                     </tr>
                                     @foreach($roles as $role)
@@ -52,6 +52,7 @@
                                             <td><input type="checkbox" name="id[]" value="{{ $role->id }}"/></td>
                                             <td>{{ $role->name }}</td>
                                             <td>{{ $role->slug }}</td>
+                                            <td>{{ $role->description }}</td>
                                             <td>{{ $role->created_at }}</td>
                                             <td>{{ $role->updated_at }}</td>
                                             <td>

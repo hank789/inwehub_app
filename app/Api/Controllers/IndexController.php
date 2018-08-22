@@ -287,12 +287,12 @@ class IndexController extends Controller {
         switch ($source_type) {
             case 1:
                 //文章
-                $recommend = RecommendRead::where('source_id',$source_id,'source_type',Submission::class)->first();
+                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Submission::class)->first();
                 $source = Submission::find($source_id);
                 break;
             case 2:
                 //问答
-                $recommend = RecommendRead::where('source_id',$source_id,'source_type',Question::class)->first();
+                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Question::class)->first();
                 $source = Question::find($source_id);
                 break;
         }
@@ -302,16 +302,20 @@ class IndexController extends Controller {
         } else {
             $tags = $source->tags()->pluck('tag_id')->toArray();
         }
+        $reads = [];
         if ($tags) {
             $query = $query->whereHas('tags',function($query) use ($tags) {
                 $query->whereIn('tag_id', $tags);
             });
             $reads = $query->orderBy('rate','desc')->simplePaginate($perPage);
-        } else {
-            $count = $query->count();
-            $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
-            $reads = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
         }
+        if (empty($reads) || $reads->count() < 4) {
+            $query2 = RecommendRead::where('audit_status',1);
+            $count = $query2->count();
+            $rand = $perPage/$count * 100;
+            $reads = $query2->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
+        }
+
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
             $item = $this->formatRecommendReadItem($item);
@@ -323,7 +327,7 @@ class IndexController extends Controller {
     public function recommendRead(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $orderBy = $request->input('orderBy',1);
-        $recommendType = $request->input('recommendType',2);
+        $recommendType = $request->input('recommendType',1);
         $query = RecommendRead::where('audit_status',1);
         try {
             $user = $JWTAuth->parseToken()->authenticate();
@@ -337,11 +341,14 @@ class IndexController extends Controller {
                 } else {
                     $tags = $user->userRegionTag()->pluck('tag_id')->toArray();
                     if ($tags) {
-                        $query = $query->where(function ($query) use ($tags) {
+                        $query = $query->whereHas('tags',function($query) use ($tags) {
+                            $query->whereIn('tag_id', $tags);
+                        });
+                        /*$query = $query->where(function ($query) use ($tags) {
                             $query->whereHas('tags',function($query) use ($tags) {
                                 $query->whereIn('tag_id', $tags);
                             })->orDoesntHave('tags');
-                        });
+                        });*/
                     }
                 }
             }
