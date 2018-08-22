@@ -297,8 +297,10 @@ class Submission extends Model {
                 $ql = QueryList::get($this->data['url']);
                 $metas = $ql->find('meta[name=keywords]')->content;
                 if ($metas) {
+                    $metas = trim($metas);
                     $metas = str_replace('，',',',$metas);
                     $metas = str_replace('、',',',$metas);
+                    $metas = str_replace(' ',',',$metas);
                     $keywords = explode(',',$metas);
                 } else {
                     $description = $ql->find('meta[name=description]')->content;
@@ -307,11 +309,7 @@ class Submission extends Model {
             }
             $tags = [];
             foreach ($keywords as $keyword) {
-                $keyword = trim($keyword);
-                $keyword = str_replace('，','',$keyword);
-                $keyword = str_replace('、','',$keyword);
-                $keyword = str_replace('"','',$keyword);
-                $keyword = str_replace('。','',$keyword);
+                $keyword = formatKeyword($keyword);
                 if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
                     continue;
                 }
