@@ -1498,3 +1498,14 @@ if (!function_exists('getWechatUrlBodyText')) {
         return $html;
     }
 }
+
+if (!function_exists('formatKeyword')) {
+    function formatKeyword($keyword) {
+        $keyword = trim($keyword);
+        $keyword = str_replace('，','',$keyword);
+        $keyword = str_replace('、','',$keyword);
+        $keyword = str_replace('"','',$keyword);
+        $keyword = str_replace('。','',$keyword);
+        return $keyword;
+    }
+}

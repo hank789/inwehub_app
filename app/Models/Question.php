@@ -511,11 +511,7 @@ class Question extends Model
             $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title),10),1);
             $tags = [];
             foreach ($keywords as $keyword) {
-                $keyword = trim($keyword);
-                $keyword = str_replace('，','',$keyword);
-                $keyword = str_replace('、','',$keyword);
-                $keyword = str_replace('"','',$keyword);
-                $keyword = str_replace('。','',$keyword);
+                $keyword = formatKeyword($keyword);
                 if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
                     continue;
                 }
