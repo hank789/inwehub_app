@@ -290,21 +290,28 @@ class Submission extends Model {
                 $content = getWechatUrlBodyText($this->data['url']);
                 $keywords = array_column(BosonNLPService::instance()->keywords($content,15),1);
             } elseif ($this->type == 'article') {
-                $keywords = array_column(BosonNLPService::instance()->keywords($this->title.'。'.QuillLogic::parseText($this->data['description']),15),1);
+                $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).';'.QuillLogic::parseText($this->data['description']),15),1);
             } elseif ($this->type == 'text') {
-                $keywords = array_column(BosonNLPService::instance()->keywords($this->title,15),1);
+                $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title),15),1);
             } else {
                 $ql = QueryList::get($this->data['url']);
                 $metas = $ql->find('meta[name=keywords]')->content;
                 if ($metas) {
+                    $metas = str_replace('，',',',$metas);
+                    $metas = str_replace('、',',',$metas);
                     $keywords = explode(',',$metas);
                 } else {
                     $description = $ql->find('meta[name=description]')->content;
-                    $keywords = array_column(BosonNLPService::instance()->keywords($this->title.'。'.$description,15),1);
+                    $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).'。'.$description,15),1);
                 }
             }
             $tags = [];
             foreach ($keywords as $keyword) {
+                $keyword = trim($keyword);
+                $keyword = str_replace('，','',$keyword);
+                $keyword = str_replace('、','',$keyword);
+                $keyword = str_replace('"','',$keyword);
+                $keyword = str_replace('。','',$keyword);
                 if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
                     continue;
                 }
