@@ -522,7 +522,7 @@ class Question extends Model
                     $tags[] = $keyword;
                 }
             }
-            Tag::multiAddByName($tags,$this);
+            Tag::multiAddByName($tags,$this,1);
         } catch (\Exception $e) {
             \Log::info('setKeywordTagsError',$this->toArray());
             app('sentry')->captureException($e,$this->toArray());
