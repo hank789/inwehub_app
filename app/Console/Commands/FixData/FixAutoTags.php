@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Models\Category;
+use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use Illuminate\Console\Command;
@@ -32,14 +33,9 @@ class FixAutoTags extends Command
      */
     public function handle()
     {
-        $tags = Tag::where('created_at','>=','2018-08-20 00:00:00')->get();
-        foreach ($tags as $tag) {
-            $tag->category_id = 1;
-            $tag->save();
-            TagCategoryRel::Create([
-                'tag_id' => $tag->id,
-                'category_id' => $tag->category_id
-            ]);
+        $submissions = Submission::where('status',1)->where('type','article')->get();
+        foreach ($submissions as $submission) {
+            $submission->setKeywordTags();
         }
     }
 

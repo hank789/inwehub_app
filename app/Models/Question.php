@@ -508,9 +508,14 @@ class Question extends Model
             if (config('app.env') != 'production') {
                 return;
             }
-            $keywords = array_column(BosonNLPService::instance()->keywords($this->title,10),1);
+            $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title),10),1);
             $tags = [];
             foreach ($keywords as $keyword) {
+                $keyword = trim($keyword);
+                $keyword = str_replace('，','',$keyword);
+                $keyword = str_replace('、','',$keyword);
+                $keyword = str_replace('"','',$keyword);
+                $keyword = str_replace('。','',$keyword);
                 if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
                     continue;
                 }
