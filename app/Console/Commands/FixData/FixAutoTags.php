@@ -5,6 +5,7 @@
  * @email: wanghui@yonglibao.com
  */
 use App\Models\Category;
+use App\Models\RecommendRead;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
@@ -36,6 +37,10 @@ class FixAutoTags extends Command
         $submissions = Submission::where('status',1)->where('type','article')->get();
         foreach ($submissions as $submission) {
             $submission->setKeywordTags();
+            $recommend = RecommendRead::where('source_id',$submission->id)->where('source_type',Submission::class)->first();
+            if ($recommend) {
+                $recommend->setKeywordTags();
+            }
         }
     }
 
