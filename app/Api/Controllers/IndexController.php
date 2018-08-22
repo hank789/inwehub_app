@@ -7,6 +7,7 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Comment;
+use App\Models\Doing;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Notice;
@@ -278,10 +279,16 @@ class IndexController extends Controller {
             'source_id' => 'required|integer',
             'source_type' => 'required|integer',
         ]);
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = null;
+        }
         $source_type = $request->input('source_type',1);
         $source_id = $request->input('source_id');
         $perPage = $request->input('perPage',4);
         $recommend = null;
+        $views = null;
         $tags = null;
         $query = RecommendRead::where('audit_status',1);
         switch ($source_type) {
@@ -296,6 +303,20 @@ class IndexController extends Controller {
                 $source = Question::find($source_id);
                 break;
         }
+        if ($user) {
+            $viewIds = Doing::where('user_id',$user->id)
+                ->where('source_type',Submission::class)
+                ->where('created_at','>=',date('Y-m-d H:i:s',strtotime('-1 hour')))
+                ->select('source_id')->distinct()->pluck('source_id')->toArray();
+            if ($viewIds) {
+                foreach ($viewIds as $viewId) {
+                    $viewRecommend = RecommendRead::where('source_id',$viewId)->where('source_type',Submission::class)->first();
+                    if ($viewRecommend) {
+                        $views[] = $viewRecommend->id;
+                    }
+                }
+            }
+        }
         if ($recommend) {
             $tags = $recommend->tags()->pluck('tag_id')->toArray();
             $query = $query->where('id','!=',$recommend->id);
@@ -304,6 +325,9 @@ class IndexController extends Controller {
         }
         $reads = [];
         if ($tags) {
+            if ($views) {
+                $query = $query->whereNotIn('id',$views);
+            }
             $query = $query->whereHas('tags',function($query) use ($tags) {
                 $query->whereIn('tag_id', $tags);
             });

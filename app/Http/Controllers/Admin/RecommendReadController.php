@@ -176,7 +176,9 @@ class RecommendReadController extends AdminController
             $idArray = explode(",",$ids);
             foreach ($idArray as $id) {
                 $recommendation = RecommendRead::find($id);
+                $article = $recommendation->source;
                 Tag::multiSaveByIds($tagsId,$recommendation);
+                Tag::multiAddByIds($tagsId,$article);
                 $recommendation->setKeywordTags();
             }
         }
