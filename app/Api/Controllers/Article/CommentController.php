@@ -85,8 +85,7 @@ class CommentController extends Controller {
     public function index(Request $request, JWTAuth $JWTAuth)
     {
         $this->validate($request, [
-            'submission_slug' => 'required',
-            'sort'            => 'required',
+            'submission_slug' => 'required'
         ]);
         try {
             $user = $JWTAuth->parseToken()->authenticate();
@@ -94,13 +93,13 @@ class CommentController extends Controller {
             $user = new \stdClass();
             $user->id = 0;
         }
-        $sort = $request->input('sort','new');
+        $orderBy = $request->input('order_by',1);
 
         $submission = Submission::where('slug',$request->submission_slug)->first();
 
         $query = $submission->comments()
             ->where('parent_id', 0);
-        if ($sort == 'new') {
+        if ($orderBy == 1) {
             $query = $query->orderBy('created_at', 'desc');
         } else {
             $query = $query->orderBy('supports', 'desc');
