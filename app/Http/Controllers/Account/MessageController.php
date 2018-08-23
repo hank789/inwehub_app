@@ -99,12 +99,7 @@ class MessageController extends Controller
     {
 
         //客服
-        $role = Role::customerService()->first();
-        $role_user = RoleUser::where('role_id',$role->id)->first();
-        if (!$role_user) {
-            throw new ApiException(ApiException::ERROR);
-        }
-        $customer_id = $role_user->user_id;
+        $customer_id = Role::getCustomerUserId();
         $user = User::find($customer_id);
         $toUser = User::find($contact_id);
         $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();

@@ -23,12 +23,7 @@ class CustomerController extends AdminController {
         $filter =  $request->all();
 
         //客服
-        $role = Role::customerService()->first();
-        $role_user = RoleUser::where('role_id',$role->id)->first();
-        if (!$role_user) {
-            throw new ApiException(ApiException::ERROR);
-        }
-        $contact_id = $role_user->user_id;
+        $contact_id = Role::getCustomerUserId();
         $roomIds = RoomUser::where('user_id',$contact_id)->get()->pluck('room_id')->toArray();
         $query = MessageRoom::whereIn('room_id',$roomIds);
         $query = $query->leftJoin('im_messages','im_message_room.message_id','=','im_messages.id');
@@ -54,12 +49,7 @@ class CustomerController extends AdminController {
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);
             //客服
-            $role = Role::customerService()->first();
-            $role_user = RoleUser::where('role_id',$role->id)->first();
-            if (!$role_user) {
-                throw new ApiException(ApiException::ERROR);
-            }
-            $contact_id = $role_user->user_id;
+            $contact_id = Role::getCustomerUserId();
             $this->dispatch(new SendMessage($request->input('message'),$contact_id));
             return $this->success(route('admin.im.customer.group'),'发送成功');
         }
@@ -75,12 +65,7 @@ class CustomerController extends AdminController {
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);
             //客服
-            $role = Role::customerService()->first();
-            $role_user = RoleUser::where('role_id',$role->id)->first();
-            if (!$role_user) {
-                throw new ApiException(ApiException::ERROR);
-            }
-            $contact_id = $role_user->user_id;
+            $contact_id = Role::getCustomerUserId();
             $this->dispatch(new SendMessage($request->input('test_message'),$contact_id,[$request->input('test_user_id')]));
             Session::flash('message','测试发送成功');
             Session::flash('message_type',2);

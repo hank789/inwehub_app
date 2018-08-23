@@ -45,18 +45,7 @@ class Role extends BicanRole
     }
 
     public static function getCustomerUserId(){
-        $uid = Cache::get('role_customer_uid');
-        if (!$uid) {
-            //客服
-            $role = Role::customerService()->first();
-            $role_user = RoleUser::where('role_id',$role->id)->first();
-            if (!$role_user) {
-                throw new ApiException(ApiException::ERROR);
-            }
-            $uid = $role_user->user_id;
-            Cache::put('role_customer_uid',$uid);
-        }
-        return $uid;
+        return config('app.env') == 'production'?79:31;
     }
 
 }
