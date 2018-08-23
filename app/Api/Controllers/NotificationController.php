@@ -107,12 +107,7 @@ class NotificationController extends Controller
             $im_list = [];
             $is_kefu_in = false;
             //客服
-            $role = Role::customerService()->first();
-            $role_user = RoleUser::where('role_id',$role->id)->first();
-            if (!$role_user) {
-                throw new ApiException(ApiException::ERROR);
-            }
-            $customer_id = $role_user->user_id;
+            $customer_id = Role::getCustomerUserId();
             $customer_user = User::find($customer_id);
             $customer_message = [];
 
@@ -238,7 +233,7 @@ class NotificationController extends Controller
                 ],
                 'im_messages' => $im_list
             ];
-            Cache::put('user_notification_count_'.$user->id,$data,3);
+            Cache::put('user_notification_count_'.$user->id,$data,30);
         }
 
 
