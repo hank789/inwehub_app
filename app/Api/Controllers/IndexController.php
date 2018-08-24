@@ -306,7 +306,7 @@ class IndexController extends Controller {
         if ($user) {
             $viewIds = Doing::where('user_id',$user->id)
                 ->where('source_type',Submission::class)
-                ->where('created_at','>=',date('Y-m-d H:i:s',strtotime('-30 days')))
+                ->where('created_at','>=',date('Y-m-d H:i:s',strtotime('-14 days')))
                 ->select('source_id')->distinct()->pluck('source_id')->toArray();
             if ($viewIds) {
                 foreach ($viewIds as $viewId) {
