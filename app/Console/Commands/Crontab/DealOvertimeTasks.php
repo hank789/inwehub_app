@@ -38,15 +38,17 @@ class DealOvertimeTasks extends Command
             ->where('created_at','<',date('Y-m-d H:i:s',strtotime('-15 days')))->get();
         foreach ($tasks as $task) {
             $answer = Answer::find($task->source_id);
-            $feedback = Feedback::create([
-                'user_id' => $task->user_id,
-                'source_id' => $task->source_id,
-                'source_type' => $task->source_type,
-                'star' => 5,
-                'to_user_id' => $answer->user_id,
-                'content' => '5星好评',
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
+            if ($answer) {
+                $feedback = Feedback::create([
+                    'user_id' => $task->user_id,
+                    'source_id' => $task->source_id,
+                    'source_type' => $task->source_type,
+                    'star' => 5,
+                    'to_user_id' => $answer->user_id,
+                    'content' => '5星好评',
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            }
             $task->status = 1;
             $task->save();
         }
