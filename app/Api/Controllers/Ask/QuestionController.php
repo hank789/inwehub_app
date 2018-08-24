@@ -252,7 +252,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
                 'price'      => $question->price,
-                'tags' => $question->tags()->get()->toArray(),
+                'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray(),
                 'status' => $question->status
             ];
             if($question->question_type == 1){
