@@ -319,7 +319,13 @@ class IndexController extends Controller {
         }
         if ($recommend) {
             $tags = $recommend->tags()->pluck('tag_id')->toArray();
-            $query = $query->where('id','!=',$recommend->id);
+            if ($user) {
+                $recommendedIds = RateLimiter::instance()->sMembers('user-recommend-'.$user->id);
+                $recommendedIds[] = $recommend->id;
+                $query = $query->whereNotIn('id',$recommendedIds);
+            } else {
+                $query = $query->where('id','!=',$recommend->id);
+            }
         } else {
             $tags = $source->tags()->pluck('tag_id')->toArray();
         }
@@ -339,9 +345,11 @@ class IndexController extends Controller {
             $rand = $perPage/$count * 100;
             $reads = $query2->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
         }
-
         $result = $reads->toArray();
         foreach ($result['data'] as &$item) {
+            if ($user) {
+                RateLimiter::instance()->sAdd('user-recommend-'.$user->id,$item['id'],60 * 30);
+            }
             $item = $this->formatRecommendReadItem($item);
         }
         return self::createJsonData(true, $result);
