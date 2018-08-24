@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
         //定时任务
         Commands\Crontab\CalcGroupHot::class,
         Commands\Crontab\AwakeUser::class,
+        Commands\Crontab\DealOvertimeTasks::class,
         //阅读站
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
@@ -85,6 +86,7 @@ class Kernel extends ConsoleKernel
 
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
+        $schedule->command('crontab:deal-overtime-task')->daily()->at('05:00')->withoutOverlapping();
     }
 
     /**
