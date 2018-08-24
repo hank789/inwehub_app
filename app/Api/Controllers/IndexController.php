@@ -321,7 +321,13 @@ class IndexController extends Controller {
             $tags = $recommend->tags()->pluck('tag_id')->toArray();
             if ($user) {
                 $recommendedIds = RateLimiter::instance()->sMembers('user-recommend-'.$user->id);
-                $recommendedIds[] = $recommend->id;
+                if (!in_array($recommend->id,$recommendedIds)) {
+                    $recommendedIds[] = $recommend->id;
+                }
+                $all = RecommendRead::where('audit_status',1)->count();
+                if ($all - count($recommendedIds) <= 4) {
+                    RateLimiter::instance()->sClear('user-recommend-'.$user->id);
+                }
                 $query = $query->whereNotIn('id',$recommendedIds);
             } else {
                 $query = $query->where('id','!=',$recommend->id);
