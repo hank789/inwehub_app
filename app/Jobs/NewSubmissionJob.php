@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Logic\QuillLogic;
 use App\Models\Submission;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -103,7 +104,7 @@ class NewSubmissionJob implements ShouldQueue
         //通知圈主
         if ($submission->user_id != $group->user_id) {
             $notified_uids[$group->user_id] = $group->user_id;
-            $group->user->notify(new NewSubmission($group->user_id,$submission));
+            $group->user->notify((new NewSubmission($group->user_id,$submission))->delay(Carbon::now()->addMinutes(3)));
         }
         //圈主发布的内容通知圈子成员
         if ($submission->user_id == $group->user_id && $members) {
@@ -111,14 +112,14 @@ class NewSubmissionJob implements ShouldQueue
                 if (isset($notified_uids[$muid])) continue;
                 $notified_uids[$muid] = $muid;
                 $mUser = User::find($muid);
-                $mUser->notify(new NewSubmission($muid,$submission));
+                $mUser->notify((new NewSubmission($muid,$submission))->delay(Carbon::now()->addMinutes(3)));
             }
         }
         foreach ($attention_users as $attention_uid) {
             if (isset($notified_uids[$attention_uid])) continue;
             if ($members && !in_array($attention_uid,$members)) continue;
             $attention_user = User::find($attention_uid);
-            if ($attention_user) $attention_user->notify(new FollowedUserNewSubmission($attention_uid,$submission));
+            if ($attention_user) $attention_user->notify((new FollowedUserNewSubmission($attention_uid,$submission))->delay(Carbon::now()->addMinutes(3)));
         }
 
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;

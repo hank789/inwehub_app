@@ -187,7 +187,7 @@ class SubmissionController extends Controller {
             }
             UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
             if ($submission->status == 1) {
-                $this->dispatch((new NewSubmissionJob($submission->id))->delay(Carbon::now()->addMinutes(3)));
+                $this->dispatch((new NewSubmissionJob($submission->id)));
             }
 
         } catch (\Exception $exception) {
@@ -241,7 +241,7 @@ class SubmissionController extends Controller {
         $submission->data = $object_data;
         $submission->save();
         if ($oldStatus == 0 && $submission->status == 1) {
-            $this->dispatch((new NewSubmissionJob($submission->id))->delay(Carbon::now()->addMinutes(3)));
+            $this->dispatch((new NewSubmissionJob($submission->id)));
         }
 
         self::$needRefresh = true;
