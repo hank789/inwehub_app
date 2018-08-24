@@ -54,6 +54,7 @@ class NewSubmissionJob implements ShouldQueue
     public function handle()
     {
         $submission = Submission::find($this->id);
+        if (!$submission) return;
         if ($submission->status == 0) return;
         $submission->setKeywordTags();
         $slackFields = [];
