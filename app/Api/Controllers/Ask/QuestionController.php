@@ -1204,7 +1204,7 @@ class QuestionController extends Controller
                 'answer_number' => $relatedQuestion->answers,
                 'follow_number' => $relatedQuestion->followers,
                 'is_followed_question'   => $is_followed_question,
-                'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray(),
+                'tags'  => $relatedQuestion->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
                 'answer_users' => $answer_users
             ];
         }
@@ -1234,7 +1234,7 @@ class QuestionController extends Controller
                     'answer_number' => $relatedQuestion->answers,
                     'follow_number' => $relatedQuestion->followers,
                     'is_followed_question'   => $is_followed_question,
-                    'tags'  => $relatedQuestion->tags()->select('tag_id','name')->get()->toArray(),
+                    'tags'  => $relatedQuestion->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
                     'answer_users' => $answer_users
                 ];
                 if (count($list) >= $perPage) break;

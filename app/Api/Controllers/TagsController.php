@@ -170,7 +170,7 @@ class TagsController extends Controller {
                     'question_type' => $question->question_type,
                     'user_id' => $question->user_id,
                     'description'  => $question->title,
-                    'tags' => $question->tags()->select('tag_id','name')->get()->toArray(),
+                    'tags' => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
                     'hide' => $question->hide,
                     'price' => $question->price,
                     'status' => $question->status,
@@ -204,7 +204,7 @@ class TagsController extends Controller {
                     'question_type' => $question->question_type,
                     'user_id' => $question->user_id,
                     'description'  => $question->title,
-                    'tags' => $question->tags()->select('tag_id','name')->get()->toArray(),
+                    'tags' => $question->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
                     'hide' => $question->hide,
                     'price' => $question->price,
                     'status' => $question->status,
@@ -264,7 +264,7 @@ class TagsController extends Controller {
             $item['title'] = strip_tags($item['title'],'<a><span>');
             $item['is_upvoted'] = $upvote ? 1 : 0;
             $item['is_bookmark'] = $bookmark ? 1: 0;
-            $item['tags'] = $submission->tags()->select('tag_id','name')->get()->toArray();
+            $item['tags'] = $submission->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray();
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
