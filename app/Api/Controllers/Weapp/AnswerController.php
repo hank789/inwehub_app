@@ -71,7 +71,7 @@ class AnswerController extends Controller {
                 'id' => $question->id,
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
-                'tags' => $question->tags()->get()->toArray(),
+                'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray(),
                 'question_user_name' => $question->hide ? '匿名' : $question->user->name,
                 'question_user_avatar' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
                 'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0)
