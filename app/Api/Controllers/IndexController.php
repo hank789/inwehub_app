@@ -288,7 +288,7 @@ class IndexController extends Controller {
         $source_id = $request->input('source_id');
         $perPage = $request->input('perPage',4);
         $recommend = null;
-        $views = null;
+        $views = [];
         $tags = null;
         $query = RecommendRead::where('audit_status',1);
         switch ($source_type) {
@@ -316,24 +316,25 @@ class IndexController extends Controller {
                     }
                 }
             }
+            $recommendedIds = RateLimiter::instance()->sMembers('user-recommend-'.$user->id);
+            $all = RecommendRead::where('audit_status',1)->count();
+            $views = array_unique(array_merge($views,$recommendedIds));
+            if ($all - count($views) <= 4) {
+                RateLimiter::instance()->sClear('user-recommend-'.$user->id);
+            }
         }
         if ($recommend) {
             $tags = $recommend->tags()->pluck('tag_id')->toArray();
-            if ($user) {
-                $recommendedIds = RateLimiter::instance()->sMembers('user-recommend-'.$user->id);
-                $recommendedIds[] = $recommend->id;
-                $query = $query->whereNotIn('id',$recommendedIds);
-            } else {
-                $query = $query->where('id','!=',$recommend->id);
-            }
+            $views[] = $recommend->id;
         } else {
             $tags = $source->tags()->pluck('tag_id')->toArray();
         }
         $reads = [];
+        $views = array_unique($views);
+        if (count($views) >= 1) {
+            $query = $query->whereNotIn('id',$views);
+        }
         if ($tags) {
-            if ($views) {
-                $query = $query->whereNotIn('id',$views);
-            }
             $query = $query->whereHas('tags',function($query) use ($tags) {
                 $query->whereIn('tag_id', $tags);
             });
