@@ -112,7 +112,14 @@
                         </form>
                     </div>
                     <div class="box-footer clearfix">
-                        {!! str_replace('/?', '?', $recommendations->appends($filter)->render()) !!}
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="text-right">
+                                    <span class="total-num">共 {{ $recommendations->total() }} 条数据</span>
+                                    {!! str_replace('/?', '?', $recommendations->appends($filter)->render()) !!}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
