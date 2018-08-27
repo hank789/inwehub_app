@@ -114,6 +114,11 @@ class TagsLogic {
                     'text'  => $tagInfo->name
                 ];
             }
+        } else {
+            usort($tags, function ($a, $b) {
+                if (strlen($a['text'])==strlen($b['text'])) return 0;
+                return (strlen($a['text'])<strlen($b['text']))?-1:1;
+            });
         }
         $data = [];
         $data['tags'] = $tags;
