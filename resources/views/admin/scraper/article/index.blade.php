@@ -89,7 +89,7 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
-                <div data-spy="affix">
+                <div data-spy="affix" style="overflow-y:auto">
                     <h2 id="article_title"></h2>
                     <div id="article_description"></div>
                     <div id="article_body"></div>
