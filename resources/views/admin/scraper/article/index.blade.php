@@ -53,7 +53,7 @@
                                         <tr id="submission_{{ $article->_id }}">
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-anchor"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
                                                 @if (!$article->isRecommendRead())
                                                         <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $article->_id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->_id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
@@ -68,7 +68,7 @@
                                                     <option value="4" @if($article->topic_id ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
                                                 </select>
                                             </td>
-                                            <td><a class="btn-viewinfo" href="javascript:void(0)" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a></td>
+                                            <td><a class="btn-viewinfo" href="javascript:void(0)" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a></td>
                                             <td>{{ $article->date_time }}</td>
                                         </tr>
                                     @endforeach
@@ -89,7 +89,7 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
-                <div class="affix-top" data-spy="affix">
+                <div data-spy="affix">
                     <h2 id="article_title"></h2>
                     <div id="article_description"></div>
                     <div id="article_body"></div>
@@ -150,7 +150,7 @@
 @section('script')
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
-        set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+        set_active_menu('operations',"{{ route('admin.scraper.article.index') }}");
         function setSupportType(id,obj) {
             $.post('/admin/submission/setSupportType',{id: id, support_type: obj.value},function(msg){
 
@@ -166,8 +166,9 @@
                 var title = $(this).data('title');
                 var description = $(this).data('description');
                 var body = $(this).data('body');
+                var url = $(this).data('url');
 
-                $("#article_title").html(title);
+                $("#article_title").html("<a target='_blank' href='"+url+"'>" + title + "</a>");
                 $("#article_description").html(description);
                 $("#article_body").html(body);
             });
