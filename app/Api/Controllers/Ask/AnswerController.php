@@ -190,7 +190,7 @@ class AnswerController extends Controller
             'is_followed' => $question->hide ? 0 : ($attention_question_user?1:0),
             'user_description' => $question->hide ? '':$question->user->description,
             'description'  => $question->title,
-            'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray(),
+            'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
             'data'  => $question->data,

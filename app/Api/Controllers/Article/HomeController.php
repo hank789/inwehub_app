@@ -87,7 +87,7 @@ class HomeController extends Controller {
             $item['title'] = strip_tags($item['title'],'<a><span>');
             $item['is_upvoted'] = $upvote ? 1 : 0;
             $item['is_bookmark'] = $bookmark ? 1: 0;
-            $item['tags'] = $submission->tags()->where('category_id','!=',1)->get()->toArray();
+            $item['tags'] = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';

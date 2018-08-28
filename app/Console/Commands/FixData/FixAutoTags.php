@@ -9,6 +9,7 @@ use App\Models\RecommendRead;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
+use App\Models\Taggable;
 use Illuminate\Console\Command;
 
 class FixAutoTags extends Command
@@ -34,13 +35,9 @@ class FixAutoTags extends Command
      */
     public function handle()
     {
-        $submissions = Submission::where('status',1)->where('type','article')->get();
-        foreach ($submissions as $submission) {
-            $submission->setKeywordTags();
-            $recommend = RecommendRead::where('source_id',$submission->id)->where('source_type',Submission::class)->first();
-            if ($recommend) {
-                $recommend->setKeywordTags();
-            }
+        $tags = Tag::where('category_id',1)->get();
+        foreach ($tags as $tag) {
+            Taggable::where('tag_id',$tag->id)->update(['is_display'=>0]);
         }
     }
 
