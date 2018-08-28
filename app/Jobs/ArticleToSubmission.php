@@ -106,11 +106,11 @@ class ArticleToSubmission implements ShouldQueue
         }
         $article->cover_url = $img_url;
         $article->save();
-
+        $article_description = strip_tags($article->description);
         $data = [
             'url'           => $url,
             'title'         => $article->title,
-            'description'   => $article->description,
+            'description'   => $article_description,
             'type'          => 'link',
             'embed'         => null,
             'img'           => $img_url,
@@ -127,9 +127,9 @@ class ArticleToSubmission implements ShouldQueue
         $data['current_address_latitude'] = '';
         $data['mentions'] = [];
         $category = Category::where('slug','channel_xwdt')->first();
-        $title = $article->description;
+        $title = $article_description;
         if ($article->source_type != 1) {
-            $title = str_limit($article->description,300);
+            $title = str_limit($article_description,300);
         }
         $submission = Submission::create([
             'title'         => formatContentUrls($title),

@@ -117,22 +117,24 @@ class AtomPosts extends Command
                     'mobile_url'    => '',
                     'date_time'   => $published_at,
                     'source_type' => 2,
-                    'description' => strip_tags($value->summary),
+                    'description' => $value->summary,
                     'cover_url'   => $image_url,
                     'status'         => 1
                 ]);
             }
         }
 
-        $articles = WechatWenzhangInfo::where('source_type',2)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
-        $second = 0;
-        foreach ($articles as $article) {
-            if ($second > 0) {
-                dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds($second));
-            } else {
-                dispatch(new ArticleToSubmission($article->_id));
+        if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
+            $articles = WechatWenzhangInfo::where('source_type',2)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
+            $second = 0;
+            foreach ($articles as $article) {
+                if ($second > 0) {
+                    dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds($second));
+                } else {
+                    dispatch(new ArticleToSubmission($article->_id));
+                }
+                $second += 300;
             }
-            $second += 300;
         }
     }
 }

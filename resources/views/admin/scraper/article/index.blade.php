@@ -50,14 +50,14 @@
                                         <th>创建时间</th>
                                     </tr>
                                     @foreach($articles as $article)
-                                        <tr id="submission_{{ $article->id }}">
+                                        <tr id="submission_{{ $article->_id }}">
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->id }}"><i class="fa fa-anchor"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-anchor"></i></a>
                                                 @if (!$article->isRecommendRead())
-                                                        <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $article->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
+                                                        <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $article->_id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->_id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
-                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->id }}"><i class="fa fa-trash-o"></i></a>
+                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
                                                 </div>
                                             </td>
                                             <td>
@@ -68,7 +68,7 @@
                                                     <option value="4" @if($article->topic_id ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
                                                 </select>
                                             </td>
-                                            <td><a href="#" onclick="openUrl('{{ $article->content_url }}')">{{ str_limit(strip_tags($article->title)) }}</a></td>
+                                            <td><a class="btn-viewinfo" href="javascript:void(0)" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a></td>
                                             <td>{{ $article->date_time }}</td>
                                         </tr>
                                     @endforeach
@@ -89,8 +89,10 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
-                <div class="affix-top" data-spy="affix" data-offset-top="60">
-                    <iframe id="iframe_tag" width="100%" src=""></iframe>
+                <div class="affix-top" data-spy="affix">
+                    <h2 id="article_title"></h2>
+                    <div id="article_description"></div>
+                    <div id="article_body"></div>
                 </div>
             </div>
         </div>
@@ -154,15 +156,20 @@
 
             });
         }
-        function openUrl(url) {
-            window.iframe_tag.src = url
-            var ifm= document.getElementById("iframe_tag");
-            ifm.height=document.documentElement.clientHeight;
-        }
         $(function(){
             $("#select_tags_id").select2({
                 theme:'bootstrap',
                 placeholder: "标签"
+            });
+
+            $(".btn-viewinfo").click(function(){
+                var title = $(this).data('title');
+                var description = $(this).data('description');
+                var body = $(this).data('body');
+
+                $("#article_title").html(title);
+                $("#article_description").html(description);
+                $("#article_body").html(body);
             });
 
             $("#select_tags_id").change(function(){
