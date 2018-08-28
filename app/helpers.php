@@ -420,6 +420,32 @@ if (! function_exists('trans_common_status')) {
     }
 }
 
+/*公告状态文字定义*/
+if (! function_exists('trans_article_status')) {
+
+    function trans_article_status($status){
+        $map = [
+            1 => '待发布',
+            2 => '已发布',
+            3 => '已删除',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+}
+
+
+
 if (! function_exists('trans_app_version_status')) {
 
     function trans_app_version_status($status){

@@ -348,20 +348,8 @@ Route::get('doingLog',['as'=>'admin.logger.doing','uses'=>'LoggerController@doin
 
 /*文章抓取管理*/
 Route::group(['prefix' => 'scraper','namespace'=>'Scraper'],function(){
-    /*文章创建*/
-    Route::get('topic/create',['as'=>'admin.scraper.topic.create','uses'=>'TopicController@create']);
-    Route::post('topic/store',['as'=>'admin.scraper.topic.store','uses'=>'TopicController@store']);
-    Route::get('topic/edit/{id}',['as'=>'admin.scraper.topic.edit','uses'=>'TopicController@edit'])->where(['id'=>'[0-9]+']);
-    Route::post('topic/update',['as'=>'admin.scraper.topic.update','uses'=>'TopicController@update']);
-    Route::post('topic/news/update',['as'=>'admin.scraper.topic.news.update','uses'=>'TopicController@topicNews']);
-    Route::post('topic/loadNews',['as'=>'admin.scraper.topic.loadnews','uses'=>'TopicController@loadNews']);
 
-    /*文章删除*/
-    Route::post('topic/destroy',['as'=>'admin.scraper.topic.destroy','uses'=>'TopicController@destroy']);
-    /*文章审核*/
-    Route::post('topic/verify',['as'=>'admin.scraper.topic.verify','uses'=>'TopicController@verify']);
-    /*文章管理*/
-    Route::resource('topic', 'TopicController',['only' => ['index','edit'],'as'=>'admin.inwehub']);
+    Route::get('article/index',['as'=>'admin.scraper.article.index','uses'=>'ArticleController@index']);
 
     /*新闻管理*/
     Route::get('news/create',['as'=>'admin.scraper.news.create','uses'=>'NewsController@create']);

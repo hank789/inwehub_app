@@ -38,7 +38,7 @@
                                         <div class="col-xs-2">
                                             <select class="form-control" name="status">
                                                 <option value="-1">--状态--</option>
-                                                @foreach(trans_common_status('all') as $key => $status)
+                                                @foreach(trans_article_status('all') as $key => $status)
                                                     <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
                                                 @endforeach
                                             </select>
@@ -78,7 +78,7 @@
                                             <td><a href="{{ $article->content_url }}" target="_blank">链接</a></td>
                                             <td>{{ $article->topic_id }}</td>
                                             <td>{{ timestamp_format($article->date_time) }}</td>
-                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
+                                            <td><span class="label @if($article->status===3) label-danger  @else label-success @endif">{{ trans_article_status($article->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.scraper.news.edit',['id'=>$article->_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
