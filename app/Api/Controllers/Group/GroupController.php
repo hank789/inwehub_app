@@ -505,7 +505,7 @@ class GroupController extends Controller
                 'img'       => $img,
                 'files'       => $submission->data['files']??'',
                 'domain'    => $submission->data['domain']??'',
-                'tags'      => $submission->tags()->where('category_id','!=',1)->get()->toArray(),
+                'tags'      => $submission->tags()->wherePivot('is_display',1)->get()->toArray(),
                 'submission_id' => $submission->id,
                 'current_address_name' => $submission->data['current_address_name']??'',
                 'current_address_longitude' => $submission->data['current_address_longitude']??'',
@@ -783,7 +783,7 @@ class GroupController extends Controller
             $item['title'] = strip_tags($item['title'],'<a><span>');
             $item['is_upvoted'] = $upvote ? 1 : 0;
             $item['is_bookmark'] = $bookmark ? 1: 0;
-            $item['tags'] = $submission->tags()->where('category_id','!=',1)->get()->toArray();
+            $item['tags'] = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
             $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
             $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
             $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';

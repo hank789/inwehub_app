@@ -309,7 +309,7 @@ class Submission extends Model {
                     $keywords = explode(',',$metas);
                 } else {
                     $description = $ql->find('meta[name=description]')->content;
-                    $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).'。'.$description,15),1);
+                    $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).';'.$description,15),1);
                 }
             }
             $tags = [];

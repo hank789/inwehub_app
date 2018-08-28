@@ -35,14 +35,6 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>RSS抓取文章关键词(多个关键词以逗号隔开)</td>
-                                    <td>
-                                        <div class="col-md-12 @if ($errors->has('rss_keywords')) has-error @endif "><input type="text" class="form-control" name="rss_keywords" value="{{ old('rss_keywords',Setting()->get('rss_keywords','')) }}" /></div>
-                                        @if($errors->has('rss_keywords')) <p class="help-block">{{ $errors->first('rss_keywords') }}</p> @endif
-                                    </td>
-                                </tr>
-
                                 </tbody>
                             </table>
                         </div>

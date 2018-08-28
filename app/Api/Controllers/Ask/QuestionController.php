@@ -173,7 +173,7 @@ class QuestionController extends Controller
             'user_description' => $question->hide ? '':$question->user->description,
             'data' => $question->data,
             'description'  => $question->title,
-            'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray(),
+            'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,
@@ -252,7 +252,7 @@ class QuestionController extends Controller
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
                 'price'      => $question->price,
-                'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray(),
+                'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
                 'status' => $question->status
             ];
             if($question->question_type == 1){
@@ -914,7 +914,7 @@ class QuestionController extends Controller
                 'question_user_name' => $question->hide?'匿名':$question->user->name,
                 'price'      => $question->price,
                 'description'  => $question->title,
-                'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray(),
+                'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
                 'status' => $question->status,
                 'created_at' => $question->created_at->diffForHumans(),
             ];
@@ -1204,7 +1204,7 @@ class QuestionController extends Controller
                 'answer_number' => $relatedQuestion->answers,
                 'follow_number' => $relatedQuestion->followers,
                 'is_followed_question'   => $is_followed_question,
-                'tags'  => $relatedQuestion->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
+                'tags'  => $relatedQuestion->tags()->wherePivot('is_display',1)->select('tag_id','name')->get()->toArray(),
                 'answer_users' => $answer_users
             ];
         }
@@ -1234,7 +1234,7 @@ class QuestionController extends Controller
                     'answer_number' => $relatedQuestion->answers,
                     'follow_number' => $relatedQuestion->followers,
                     'is_followed_question'   => $is_followed_question,
-                    'tags'  => $relatedQuestion->tags()->where('category_id','!=',1)->select('tag_id','name')->get()->toArray(),
+                    'tags'  => $relatedQuestion->tags()->wherePivot('is_display',1)->select('tag_id','name')->get()->toArray(),
                     'answer_users' => $answer_users
                 ];
                 if (count($list) >= $perPage) break;

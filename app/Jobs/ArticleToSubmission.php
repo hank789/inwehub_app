@@ -85,17 +85,6 @@ class ArticleToSubmission implements ShouldQueue
             }
         } else {
             $url = $article->content_url;
-            $keywords = Setting()->get('rss_keywords','');
-            if ($keywords) {
-                $keywords = explode(',',$keywords);
-                foreach ($keywords as $keyword) {
-                    if (stripos($article->title,$keyword)===false || stripos($article->description,$keyword)==false) {
-                        $article->status = -1;
-                        $article->save();
-                        return;
-                    }
-                }
-            }
         }
 
         $article->content_url = $url;

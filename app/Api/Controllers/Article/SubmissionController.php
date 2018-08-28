@@ -500,7 +500,7 @@ class SubmissionController extends Controller {
         $return['support_description'] = $downvote?$submission->getDownvoteRateDesc():$submission->getSupportRateDesc($upvote);
         $return += $submission->getSupportTypeTip();
         $return['support_percent'] = $submission->getSupportPercent();
-        $return['tags'] = $submission->tags()->where('category_id','!=',1)->get()->toArray();
+        $return['tags'] = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
         $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;
         $return['bookmarks'] = Collection::where('source_id',$submission->id)
             ->where('source_type',Submission::class)->count();
@@ -535,7 +535,7 @@ class SubmissionController extends Controller {
                 'question_type' => $related_question->question_type,
                 'price'      => $related_question->price,
                 'title'  => $related_question->title,
-                'tags' => $related_question->tags()->where('category_id','!=',1)->get()->toArray(),
+                'tags' => $related_question->tags()->wherePivot('is_display',1)->get()->toArray(),
                 'status' => $related_question->status,
                 'status_description' => $related_question->price.'元',
                 'follow_number' => $related_question->followers,

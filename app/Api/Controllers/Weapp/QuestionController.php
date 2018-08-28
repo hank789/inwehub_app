@@ -231,7 +231,7 @@ class QuestionController extends Controller {
             'user_description' => $question->hide ? '':$question->user->description,
             'data' => $question->data,
             'description'  => $question->title,
-            'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray(),
+            'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
             'status' => $question->status,
@@ -357,7 +357,7 @@ class QuestionController extends Controller {
                 'id' => $question->id,
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
-                'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray(),
+                'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
                 'question_user_name' => $question->hide ? '匿名' : $question->user->name,
                 'question_user_avatar' => $question->hide ? config('image.user_default_avatar') : $question->user->avatar,
                 'question_user_is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0)
@@ -519,7 +519,7 @@ class QuestionController extends Controller {
                 'id' => $question->id,
                 'question_type' => $question->question_type,
                 'description'  => $question->title,
-                'tags' => $question->tags()->where('category_id','!=',1)->get()->toArray()
+                'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray()
             ];
             if($question->question_type == 1){
                 $item['comment_number'] = 0;

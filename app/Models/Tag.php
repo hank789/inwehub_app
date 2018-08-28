@@ -124,7 +124,7 @@ class Tag extends Model
 
             $tag = self::where(['name'=>$tag_name])->first();
             if (!$tag) {
-                $tag = self::create(['name'=>$tag_name,'category_id'=>$category_id]);
+                $tag = self::create(['name'=>$tag_name]);
                 if ($category_id > 0) {
                     TagCategoryRel::create([
                         'tag_id' => $tag->id,
@@ -135,7 +135,7 @@ class Tag extends Model
 
             if(!$taggable->tags->contains($tag->id))
             {
-                $taggable->tags()->attach($tag->id);
+                $taggable->tags()->attach($tag->id,['is_display'=>$category_id==1?0:1]);
                 $tagIds[] = $tag->id;
             }
         }
