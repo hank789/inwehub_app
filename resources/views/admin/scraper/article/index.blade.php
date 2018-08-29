@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6" id="article_html">
-                <div data-spy="affix" class="row pre-scrollable" style="min-height: 600px;max-width: 600px;" tabindex="-1" role="dialog">
+                <div data-spy="affix" class="row pre-scrollable" style="min-height: 500px;" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -107,7 +107,7 @@
                                 <div id="article_description"></div>
                                 <div id="article_body"></div>
                             </div>
-                            <div class="modal-footer">
+                            <div class="modal-footer" style="text-align: left;">
                                 <div class="btn-group-md" >
                                     <button type="button" class="btn btn-default" onclick="closeModal()">Close</button>
                                     <a class="btn btn-default btn-sm btn-publish" id="article_btn_publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
