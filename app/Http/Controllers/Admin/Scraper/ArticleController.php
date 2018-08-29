@@ -9,14 +9,6 @@ use App\Models\Scraper\WechatWenzhangInfo;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use App\Logic\TagsLogic;
-use App\Models\Groups\Group;
-use App\Models\Question;
-use App\Models\RecommendRead;
-use App\Models\Submission;
-use App\Models\Tag;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
 
 class ArticleController extends AdminController
 {
