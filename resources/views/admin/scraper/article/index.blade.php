@@ -81,7 +81,12 @@
                         </div>
                         <div class="box-footer clearfix">
                             <div class="row">
-                                <div class="col-sm-12">
+                                <div class="col-sm-3">
+                                    <div class="btn-group">
+                                        <a href="javascript:void(0)" onclick="deleteRead()" class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除已读">删除已读</a>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9">
                                     <div class="text-right">
                                         <span class="total-num">共 {{ $articles->total() }} 条数据</span>
                                         {!! str_replace('/?', '?', $articles->appends($filter)->render()) !!}
@@ -91,12 +96,28 @@
                         </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6">
-                    <div id="article_html" data-spy="affix" class="row pre-scrollable" style="min-height: 600px;max-width: 600px;" >
-                        <h2 id="article_title"></h2>
-                        <div class="col-md-12" id="article_description"></div>
-                        <div class="col-md-12" id="article_body"></div>
+            <div class="col-lg-6 col-md-6" id="article_html">
+                <div data-spy="affix" class="row pre-scrollable" style="min-height: 600px;max-width: 600px;" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="article_title"></h4>
+                            </div>
+                            <div class="modal-body">
+                                <div id="article_description"></div>
+                                <div id="article_body"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="btn-group-md" >
+                                    <button type="button" class="btn btn-default" onclick="closeModal()">Close</button>
+                                    <a class="btn btn-default btn-sm btn-publish" id="article_btn_publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
+                                    <a class="btn btn-default btn-sm btn-setfav" id="article_btn_setfav" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->_id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
+                                    <a class="btn btn-default btn-sm btn-delete" id="article_btn_delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
             </div>
         </div>
         <div class="modal fade" id="set_fav_modal" tabindex="-1"  role="dialog" aria-labelledby="set_fav_modal">
@@ -142,7 +163,10 @@
     </section>
     <style>
         #article_html img {
-            width: 550px;
+            margin-left:auto;
+            margin-right:auto;
+            max-width: 500px;
+            display:block;
         }
     </style>
 @endsection
@@ -151,6 +175,8 @@
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.scraper.article.index') }}");
+        var readArticle = [];
+        var publishArticle = [];
         function setSupportType(id,obj) {
             $.post('/admin/scraper/setSupportType',{id: id, support_type: obj.value},function(msg){
 
@@ -160,6 +186,20 @@
             $("#submission_" + id).css('background-color','#ecf0f5');
             window.open(url);
         }
+        function closeModal() {
+            $('#article_html').css('display','none');
+        }
+        function deleteRead() {
+            if(!confirm('确认删除已读文章？')){
+                return false;
+            }
+            $.post('/admin/scraper/article/destroy',{ids: readArticle, ignoreIds: publishArticle},function(msg){
+                readArticle.forEach(function (item, index) {
+                    $("#submission_" + item).css('display','none');
+                });
+                readArticle = [];
+            });
+        }
         $(function(){
             $("#select_tags_id").select2({
                 theme:'bootstrap',
@@ -167,16 +207,26 @@
             });
 
             $(".btn-viewinfo").click(function(){
+                $('#article_html').css('display','block');
                 var title = $(this).data('title');
                 var description = $(this).data('description');
                 var body = $(this).data('body');
                 var url = $(this).data('url');
                 var id = $(this).data('id');
                 $("#submission_" + id).css('background-color','#ecf0f5');
+                readArticle.push(id);
+                console.log(readArticle);
 
                 $("#article_title").html("<a target='_blank' href='"+url+"'>" + title + "</a>");
                 $("#article_description").html(description);
                 $("#article_body").html(body);
+
+                $("#article_btn_setfav").data('source_id', id);
+                $("#article_btn_setfav").data('title', title);
+
+                $("#article_btn_publish").data('source_id', id);
+                $("#article_btn_delete").data('source_id', id);
+
             });
 
             $("#select_tags_id").change(function(){
@@ -217,7 +267,8 @@
             $("#set_fav_submit").click(function(){
                 var id = $("#id").val();
                 $.post('/admin/scraper/article/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
-
+                    publishArticle.push(id);
+                    console.log(publishArticle);
                 });
                 $('#submission_setfav_' + id).css('display','none');
                 $('#set_fav_modal').modal('hide');
@@ -228,6 +279,8 @@
                 var follow_btn = $(this);
                 var source_id = $(this).data('source_id');
                 $.post('/admin/scraper/article/publish',{ids: [source_id]},function(msg){
+                    publishArticle.push(source_id);
+                    console.log(publishArticle);
                     follow_btn.html('已发布');
                 });
             });
