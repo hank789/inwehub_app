@@ -1,4 +1,5 @@
 <?php namespace App\Console\Commands\Scraper;
+use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\ArticleToSubmission;
 use App\Jobs\GetArticleBody;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -56,6 +57,11 @@ class WechatPosts extends Command {
                         dispatch(new ArticleToSubmission($article->_id));
                     }
                     $second += 300;
+                }
+            } else {
+                $count = count($articles);
+                if ($count > 0) {
+                    event(new SystemNotify('新抓取'.$count.'篇文章，请及时去后台处理',[]));
                 }
             }
         }

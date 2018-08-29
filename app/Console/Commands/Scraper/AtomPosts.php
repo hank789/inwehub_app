@@ -123,9 +123,8 @@ class AtomPosts extends Command
                 ]);
             }
         }
-
+        $articles = WechatWenzhangInfo::where('source_type',2)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
         if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
-            $articles = WechatWenzhangInfo::where('source_type',2)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
             $second = 0;
             foreach ($articles as $article) {
                 if ($second > 0) {
@@ -134,6 +133,11 @@ class AtomPosts extends Command
                     dispatch(new ArticleToSubmission($article->_id));
                 }
                 $second += 300;
+            }
+        } else {
+            $count = count($articles);
+            if ($count > 0) {
+                event(new SystemNotify('新抓取'.$count.'篇文章，请及时去后台处理',[]));
             }
         }
     }
