@@ -25,6 +25,8 @@ class WechatWenzhangInfo extends Model {
 
     protected $fillable = ['title','content_url','topic_id','mp_id','author','site_name','mobile_url','date_time','source_type','description','body','cover_url','status'];
 
+    //status状态：1待发布，2已发布，3已删除
+
     public function withAuthor(){
         return WechatMpInfo::find($this->mp_id);
     }

@@ -7,7 +7,7 @@
 @endsection
 @section('content')
     <section class="content-header">
-        <h1>发现分享</h1>
+        <h1>待处理文章</h1>
     </section>
     <section id="article_content" class="content">
         <div class="row">
@@ -17,7 +17,7 @@
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="row">
-                                        <form name="searchForm" action="{{ route('admin.operate.article.index') }}">
+                                        <form name="searchForm" action="{{ route('admin.scraper.article.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <div class="col-xs-2">
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
@@ -47,29 +47,32 @@
                                         <th>操作</th>
                                         <th>点赞类型</th>
                                         <th>标题</th>
-                                        <th>创建时间</th>
                                     </tr>
                                     @foreach($articles as $article)
                                         <tr id="submission_{{ $article->_id }}">
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
-                                                @if (!$article->isRecommendRead())
+                                                    <a class="btn btn-default btn-sm" data-toggle="tooltip" title="查看文章" href="javascript:void(0)" onclick="openUrl({{ $article->_id }}, '{{ $article->content_url }}')" target="_blank"><i class="fa fa-eye"></i></a>
+                                                    @if ($article->topic_id <= 0)
+                                                        <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" id="submission_publish_{{ $article->_id }}" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
+                                                    @endif
+                                                    @if (!$article->isRecommendRead())
                                                         <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $article->_id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->_id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
-                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
+                                                    @if ($article->topic_id <= 0 && $article->status==1)
+                                                        <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
+                                                    @endif
                                                 </div>
                                             </td>
                                             <td>
-                                                <select onchange="setSupportType({{ $article->id }},this)">
+                                                <select onchange="setSupportType({{ $article->_id }},this)">
                                                     <option value="1" @if($article->topic_id ? $article->submission()->support_type == 1 : true) selected @endif> 赞|踩</option>
                                                     <option value="2" @if($article->topic_id ? $article->submission()->support_type == 2 : false) selected @endif> 看好|不看好</option>
                                                     <option value="3" @if($article->topic_id ? $article->submission()->support_type == 3 : false) selected @endif> 支持|反对</option>
                                                     <option value="4" @if($article->topic_id ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
                                                 </select>
                                             </td>
-                                            <td><a class="btn-viewinfo" href="javascript:void(0)" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a></td>
-                                            <td>{{ $article->date_time }}</td>
+                                            <td><a class="btn-viewinfo" href="javascript:void(0)" data-id="{{ $article->_id }}" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a><br>{{ $article->date_time }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -89,11 +92,11 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
-                <div data-spy="affix" style="overflow-y:auto">
-                    <h2 id="article_title"></h2>
-                    <div id="article_description"></div>
-                    <div id="article_body"></div>
-                </div>
+                    <div id="article_html" data-spy="affix" class="row pre-scrollable" style="min-height: 600px;max-width: 600px;" >
+                        <h2 id="article_title"></h2>
+                        <div class="col-md-12" id="article_description"></div>
+                        <div class="col-md-12" id="article_body"></div>
+                    </div>
             </div>
         </div>
         <div class="modal fade" id="set_fav_modal" tabindex="-1"  role="dialog" aria-labelledby="set_fav_modal">
@@ -138,11 +141,8 @@
         </div>
     </section>
     <style>
-        .iframe-div {
-            position: fixed;
-            top: 50px;
-            width: 50%;
-            z-index:1040;
+        #article_html img {
+            width: 550px;
         }
     </style>
 @endsection
@@ -152,9 +152,13 @@
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.scraper.article.index') }}");
         function setSupportType(id,obj) {
-            $.post('/admin/submission/setSupportType',{id: id, support_type: obj.value},function(msg){
+            $.post('/admin/scraper/setSupportType',{id: id, support_type: obj.value},function(msg){
 
             });
+        }
+        function openUrl(id, url) {
+            $("#submission_" + id).css('background-color','#ecf0f5');
+            window.open(url);
         }
         $(function(){
             $("#select_tags_id").select2({
@@ -167,6 +171,8 @@
                 var description = $(this).data('description');
                 var body = $(this).data('body');
                 var url = $(this).data('url');
+                var id = $(this).data('id');
+                $("#submission_" + id).css('background-color','#ecf0f5');
 
                 $("#article_title").html("<a target='_blank' href='"+url+"'>" + title + "</a>");
                 $("#article_description").html(description);
@@ -184,10 +190,22 @@
                 var follow_btn = $(this);
                 var source_id = $(this).data('source_id');
 
-                $.post('/admin/submission/destroy',{ids: source_id},function(msg){
-                    follow_btn.removeClass('disabled');
-                    follow_btn.removeAttr('disabled');
-                    $("#submission_" + source_id).css('display','none');
+                $.ajax({
+                    type: "post",
+                    data: {ids: [source_id]},
+                    url:"/admin/scraper/article/destroy",
+                    success: function(data){
+                        if(data.code > 0){
+                            alert(data.message);
+                            return false;
+                        }
+                        follow_btn.removeClass('disabled');
+                        follow_btn.removeAttr('disabled');
+                        $("#submission_" + source_id).css('display','none');
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
                 });
             });
             $(".btn-setfav").click(function(){
@@ -198,11 +216,19 @@
             });
             $("#set_fav_submit").click(function(){
                 var id = $("#id").val();
-                $.post('/admin/submission/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
+                $.post('/admin/scraper/article/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
 
                 });
                 $('#submission_setfav_' + id).css('display','none');
                 $('#set_fav_modal').modal('hide');
+            });
+            $(".btn-publish").click(function(){
+                $(this).button('loading');
+                var follow_btn = $(this);
+                var source_id = $(this).data('source_id');
+                $.post('/admin/scraper/article/publish',{ids: [source_id]},function(msg){
+                    follow_btn.html('已发布');
+                });
             });
         });
     </script>

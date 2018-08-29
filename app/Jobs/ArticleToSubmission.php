@@ -47,7 +47,7 @@ class ArticleToSubmission implements ShouldQueue
     public function handle()
     {
         $article = WechatWenzhangInfo::find($this->id);
-        if ($article->topic_id > 0 || $article->status == 0) return;
+        if ($article->topic_id > 0 || $article->status == 2) return;
         if ($article->source_type == 1) {
             $author = WechatMpInfo::find($article->mp_id);
         } else {
@@ -55,6 +55,7 @@ class ArticleToSubmission implements ShouldQueue
         }
         if (!$author) return;
         if ($author->group_id <= 0) return;
+        $support_type = RateLimiter::instance()->hGet('article_support_type',$this->id);
         $user_id = $author->user_id;
         if ($article->source_type == 1) {
             if (str_contains($article->content_url,'wechat_redirect')) {
@@ -141,9 +142,11 @@ class ArticleToSubmission implements ShouldQueue
             'public'        => $author->group->public,
             'rate'          => firstRate(),
             'user_id'       => $user_id>0?$user_id:504,
+            'support_type'  => $support_type?:1,
             'data'          => $data,
         ]);
         $article->topic_id = $submission->id;
+        $article->status = 2;
         $article->save();
         $author->group->increment('articles');
         dispatch(new NewSubmissionJob($submission->id));

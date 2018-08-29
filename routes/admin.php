@@ -350,6 +350,11 @@ Route::get('doingLog',['as'=>'admin.logger.doing','uses'=>'LoggerController@doin
 Route::group(['prefix' => 'scraper','namespace'=>'Scraper'],function(){
 
     Route::get('article/index',['as'=>'admin.scraper.article.index','uses'=>'ArticleController@index']);
+    Route::post('article/verify_recommend',['as'=>'admin.scraper.article.verify_recommend','uses'=>'ArticleController@verifyRecommend']);
+    Route::post('article/destroy',['as'=>'admin.scraper.article.destroy','uses'=>'ArticleController@destroy']);
+    Route::post('article/publish',['as'=>'admin.scraper.article.publish','uses'=>'ArticleController@publish']);
+    Route::post('article/setSupportType',['as'=>'admin.scraper.article.setSupportType','uses'=>'ArticleController@setSupportType']);
+
 
     /*新闻管理*/
     Route::get('news/create',['as'=>'admin.scraper.news.create','uses'=>'NewsController@create']);
