@@ -91,12 +91,28 @@
                         </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6">
-                    <div id="article_html" data-spy="affix" class="row pre-scrollable" style="min-height: 600px;max-width: 600px;" >
-                        <h2 id="article_title"></h2>
-                        <div class="col-md-12" id="article_description"></div>
-                        <div class="col-md-12" id="article_body"></div>
+            <div class="col-lg-6 col-md-6" id="article_html">
+                <div data-spy="affix" class="row pre-scrollable" style="min-height: 600px;max-width: 600px;" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="article_title"></h4>
+                            </div>
+                            <div class="modal-body">
+                                <div id="article_description"></div>
+                                <div id="article_body"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="btn-group-md" >
+                                    <button type="button" class="btn btn-default" onclick="closeModal()">Close</button>
+                                    <a class="btn btn-default btn-sm btn-publish" id="article_btn_publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
+                                    <a class="btn btn-default btn-sm btn-setfav" id="article_btn_setfav" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->_id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
+                                    <a class="btn btn-default btn-sm btn-delete" id="article_btn_delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
             </div>
         </div>
         <div class="modal fade" id="set_fav_modal" tabindex="-1"  role="dialog" aria-labelledby="set_fav_modal">
@@ -142,7 +158,10 @@
     </section>
     <style>
         #article_html img {
-            width: 550px;
+            margin-left:auto;
+            margin-right:auto;
+            max-width: 500px;
+            display:block;
         }
     </style>
 @endsection
@@ -160,6 +179,9 @@
             $("#submission_" + id).css('background-color','#ecf0f5');
             window.open(url);
         }
+        function closeModal() {
+            $('#article_html').css('display','none');
+        }
         $(function(){
             $("#select_tags_id").select2({
                 theme:'bootstrap',
@@ -167,6 +189,7 @@
             });
 
             $(".btn-viewinfo").click(function(){
+                $('#article_html').css('display','block');
                 var title = $(this).data('title');
                 var description = $(this).data('description');
                 var body = $(this).data('body');
@@ -177,6 +200,13 @@
                 $("#article_title").html("<a target='_blank' href='"+url+"'>" + title + "</a>");
                 $("#article_description").html(description);
                 $("#article_body").html(body);
+
+                $("#article_btn_setfav").data('source_id', id);
+                $("#article_btn_setfav").data('title', title);
+
+                $("#article_btn_publish").data('source_id', id);
+                $("#article_btn_delete").data('source_id', id);
+
             });
 
             $("#select_tags_id").change(function(){
