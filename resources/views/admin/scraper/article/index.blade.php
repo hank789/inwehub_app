@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6" id="article_html">
-                <div data-spy="affix" class="row pre-scrollable" style="min-height: 500px;" tabindex="-1" role="dialog">
+                <div data-spy="affix" class="row pre-scrollable" style="min-height: 500px;margin-top: -50px;" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
