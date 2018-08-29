@@ -221,6 +221,7 @@
                 });
                 $('#submission_setfav_' + id).css('display','none');
                 $('#set_fav_modal').modal('hide');
+                $("#submission_" + id).css('display','none');
             });
             $(".btn-publish").click(function(){
                 $(this).button('loading');
