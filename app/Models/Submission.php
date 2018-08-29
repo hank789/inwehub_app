@@ -293,7 +293,7 @@ class Submission extends Model {
             }
             if (isset($this->data['domain']) && $this->data['domain'] == 'mp.weixin.qq.com') {
                 $content = getWechatUrlBodyText($this->data['url']);
-                $keywords = array_column(BosonNLPService::instance()->keywords($content,15),1);
+                $keywords = array_column(BosonNLPService::instance()->keywords($this->title.';'.$content,15),1);
             } elseif ($this->type == 'article') {
                 $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).';'.QuillLogic::parseText($this->data['description']),15),1);
             } elseif ($this->type == 'text') {

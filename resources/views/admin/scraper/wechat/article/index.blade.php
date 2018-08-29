@@ -62,7 +62,7 @@
                                             <td>{{ $article->author }}</td>
                                             <td>{{ $article->topic_id }}</td>
                                             <td>{{ timestamp_format($article->date_time) }}</td>
-                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
+                                            <td><span class="label @if($article->status===3) label-danger  @else label-success @endif">{{ trans_article_status($article->status) }}</span> </td>
                                         </tr>
                                     @endforeach
                                 </table>

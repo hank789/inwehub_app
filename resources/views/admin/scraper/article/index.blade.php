@@ -1,34 +1,34 @@
 @extends('admin/public/layout')
 
-@section('title')发现分享@endsection
+@section('title')文章待处理@endsection
 @section('css')
     <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
 @endsection
 @section('content')
     <section class="content-header">
-        <h1>发现分享</h1>
+        <h1>待处理文章</h1>
     </section>
-    <section class="content">
+    <section id="article_content" class="content">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-12 col-lg-6 col-md-6">
                 <div class="box">
                         <div class="box-header">
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="row">
-                                        <form name="searchForm" action="{{ route('admin.operate.article.index') }}">
+                                        <form name="searchForm" action="{{ route('admin.scraper.article.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <div class="col-xs-2">
-                                                <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
-                                            </div>
                                             <div class="col-xs-2">
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                             </div>
                                             <div class="col-xs-2">
-                                                <div>
-                                                    <label><input type="checkbox" name="sortByRate" value="1" @if ( $filter['sortByRate']??0) checked @endif >热度排序</label>
-                                                </div>
+                                                <select class="form-control" name="status">
+                                                    <option value="-1">--状态--</option>
+                                                    @foreach(trans_article_status('all') as $key => $status)
+                                                        <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                             <div class="col-xs-1">
                                                 <button type="submit" class="btn btn-primary">搜索</button>
@@ -45,60 +45,34 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th>操作</th>
-                                        <th>ID</th>
                                         <th>点赞类型</th>
                                         <th>标题</th>
-                                        <th>封面图片</th>
-                                        <th>热度</th>
-                                        <th>标签</th>
-                                        <th>类型</th>
-                                        <th>浏览数</th>
-                                        <th>圈子</th>
-                                        <th>发布者</th>
-                                        <th>创建时间</th>
                                     </tr>
-                                    @foreach($submissions as $submission)
-                                        <tr id="submission_{{ $submission->id }}">
+                                    @foreach($articles as $article)
+                                        <tr id="submission_{{ $article->_id }}">
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-eye"></i></a>
-                                                    <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
-                                                    @if (!$submission->isRecommendRead())
-                                                        <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $submission->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}"><i class="fa fa-heart"></i></a>
+                                                    <a class="btn btn-default btn-sm" data-toggle="tooltip" title="查看文章" href="javascript:void(0)" onclick="openUrl({{ $article->_id }}, '{{ $article->content_url }}')" target="_blank"><i class="fa fa-eye"></i></a>
+                                                    @if ($article->topic_id <= 0)
+                                                        <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" id="submission_publish_{{ $article->_id }}" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
                                                     @endif
-                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
+                                                    @if (!$article->isRecommendRead())
+                                                        <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $article->_id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->_id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
+                                                    @endif
+                                                    @if ($article->topic_id <= 0 && $article->status==1)
+                                                        <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
+                                                    @endif
                                                 </div>
                                             </td>
-                                            <td>{{ $submission->id }}</td>
                                             <td>
-                                                <select onchange="setSupportType({{ $submission->id }},this)">
-                                                    <option value="1" @if($submission->support_type == 1) selected @endif> 赞|踩</option>
-                                                    <option value="2" @if($submission->support_type == 2) selected @endif> 看好|不看好</option>
-                                                    <option value="3" @if($submission->support_type == 3) selected @endif> 支持|反对</option>
-                                                    <option value="4" @if($submission->support_type == 4) selected @endif> 意外|不意外</option>
+                                                <select onchange="setSupportType({{ $article->_id }},this)">
+                                                    <option value="1" @if($article->topic_id ? $article->submission()->support_type == 1 : true) selected @endif> 赞|踩</option>
+                                                    <option value="2" @if($article->topic_id ? $article->submission()->support_type == 2 : false) selected @endif> 看好|不看好</option>
+                                                    <option value="3" @if($article->topic_id ? $article->submission()->support_type == 3 : false) selected @endif> 支持|反对</option>
+                                                    <option value="4" @if($article->topic_id ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
                                                 </select>
                                             </td>
-                                            <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
-                                            <td>
-                                                @if ($submission->data['img'] && is_array($submission->data['img']))
-                                                    @foreach($submission->data['img'] as $img)
-                                                        <img width="100" height="100" src="{{ $img }}">
-                                                    @endforeach
-                                                @elseif ($submission->data['img'])
-                                                    <img width="100" height="100" src="{{ $submission->data['img'] ??'' }}">
-                                                @endif
-                                            </td>
-                                            <td>{{ $submission->rate }}</td>
-                                            <td>
-                                                @foreach($submission->tags as $tagInfo)
-                                                    {{ $tagInfo->name.',' }}
-                                                @endforeach
-                                            </td>
-                                            <td>{{ $submission->type }}</td>
-                                            <td>{{ $submission->views }}</td>
-                                            <td>{{ $submission->group->name }}</td>
-                                            <td>{{ $submission->owner->name }}</td>
-                                            <td>{{ $submission->created_at }}</td>
+                                            <td><a class="btn-viewinfo" href="javascript:void(0)" data-id="{{ $article->_id }}" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a><br>{{ $article->date_time }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -109,13 +83,20 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="text-right">
-                                        <span class="total-num">共 {{ $submissions->total() }} 条数据</span>
-                                        {!! str_replace('/?', '?', $submissions->appends($filter)->render()) !!}
+                                        <span class="total-num">共 {{ $articles->total() }} 条数据</span>
+                                        {!! str_replace('/?', '?', $articles->appends($filter)->render()) !!}
                                     </div>
                                 </div>
                             </div>
                         </div>
                 </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                    <div id="article_html" data-spy="affix" class="row pre-scrollable" style="min-height: 600px;max-width: 600px;" >
+                        <h2 id="article_title"></h2>
+                        <div class="col-md-12" id="article_description"></div>
+                        <div class="col-md-12" id="article_body"></div>
+                    </div>
             </div>
         </div>
         <div class="modal fade" id="set_fav_modal" tabindex="-1"  role="dialog" aria-labelledby="set_fav_modal">
@@ -159,22 +140,43 @@
             </div>
         </div>
     </section>
-
+    <style>
+        #article_html img {
+            width: 550px;
+        }
+    </style>
 @endsection
 
 @section('script')
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
-        set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+        set_active_menu('operations',"{{ route('admin.scraper.article.index') }}");
         function setSupportType(id,obj) {
-            $.post('/admin/submission/setSupportType',{id: id, support_type: obj.value},function(msg){
+            $.post('/admin/scraper/setSupportType',{id: id, support_type: obj.value},function(msg){
 
             });
+        }
+        function openUrl(id, url) {
+            $("#submission_" + id).css('background-color','#ecf0f5');
+            window.open(url);
         }
         $(function(){
             $("#select_tags_id").select2({
                 theme:'bootstrap',
                 placeholder: "标签"
+            });
+
+            $(".btn-viewinfo").click(function(){
+                var title = $(this).data('title');
+                var description = $(this).data('description');
+                var body = $(this).data('body');
+                var url = $(this).data('url');
+                var id = $(this).data('id');
+                $("#submission_" + id).css('background-color','#ecf0f5');
+
+                $("#article_title").html("<a target='_blank' href='"+url+"'>" + title + "</a>");
+                $("#article_description").html(description);
+                $("#article_body").html(body);
             });
 
             $("#select_tags_id").change(function(){
@@ -188,10 +190,22 @@
                 var follow_btn = $(this);
                 var source_id = $(this).data('source_id');
 
-                $.post('/admin/submission/destroy',{ids: source_id},function(msg){
-                    follow_btn.removeClass('disabled');
-                    follow_btn.removeAttr('disabled');
-                    $("#submission_" + source_id).css('display','none');
+                $.ajax({
+                    type: "post",
+                    data: {ids: [source_id]},
+                    url:"/admin/scraper/article/destroy",
+                    success: function(data){
+                        if(data.code > 0){
+                            alert(data.message);
+                            return false;
+                        }
+                        follow_btn.removeClass('disabled');
+                        follow_btn.removeAttr('disabled');
+                        $("#submission_" + source_id).css('display','none');
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
                 });
             });
             $(".btn-setfav").click(function(){
@@ -202,11 +216,20 @@
             });
             $("#set_fav_submit").click(function(){
                 var id = $("#id").val();
-                $.post('/admin/submission/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
+                $.post('/admin/scraper/article/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
 
                 });
                 $('#submission_setfav_' + id).css('display','none');
                 $('#set_fav_modal').modal('hide');
+                $("#submission_" + id).css('display','none');
+            });
+            $(".btn-publish").click(function(){
+                $(this).button('loading');
+                var follow_btn = $(this);
+                var source_id = $(this).data('source_id');
+                $.post('/admin/scraper/article/publish',{ids: [source_id]},function(msg){
+                    follow_btn.html('已发布');
+                });
             });
         });
     </script>

@@ -420,6 +420,32 @@ if (! function_exists('trans_common_status')) {
     }
 }
 
+/*公告状态文字定义*/
+if (! function_exists('trans_article_status')) {
+
+    function trans_article_status($status){
+        $map = [
+            1 => '待发布',
+            2 => '已发布',
+            3 => '已删除',
+        ];
+
+        if($status==='all'){
+            return $map;
+        }
+
+
+        if(isset($map[$status])){
+            return $map[$status];
+        }
+
+        return '';
+
+    }
+}
+
+
+
 if (! function_exists('trans_app_version_status')) {
 
     function trans_app_version_status($status){
@@ -1488,12 +1514,12 @@ if (!function_exists('getWechatArticleInfo')) {
 
 
 if (!function_exists('getWechatUrlBodyText')) {
-    function getWechatUrlBodyText($url) {
+    function getWechatUrlBodyText($url,$strip_tags=true) {
         $html = file_get_contents_curl($url);
         $parse = parse_url($url);
         if ($parse['host'] == 'mp.weixin.qq.com') {
             preg_match_all("/id=\"js_content\">(.*)<script/iUs",$html,$content,PREG_PATTERN_ORDER);
-            return isset($content[1][0])?strip_tags($content[1][0]):'';
+            return isset($content[1][0])?($strip_tags?strip_tags($content[1][0]):$content[1][0]):'';
         }
         return $html;
     }
