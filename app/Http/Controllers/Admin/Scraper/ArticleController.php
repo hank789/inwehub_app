@@ -91,10 +91,20 @@ class ArticleController extends AdminController
     public function destroy(Request $request)
     {
         $ids = $request->input('ids');
+        $ignoreIds = $request->input('ignoreIds',[]);
         if ($ids) {
+            $ids = array_unique($ids);
+            $ignoreIds = array_unique($ignoreIds);
+            if ($ignoreIds) {
+                foreach ($ids as $key=>$id) {
+                    if (in_array($id,$ignoreIds)) {
+                        unset($ids[$key]);
+                    }
+                }
+            }
             WechatWenzhangInfo::whereIn('_id',$ids)->where('status',1)->update(['status'=>3]);
         }
-        return $this->success(url()->previous(),'删除成功');
+        return $this->success(url()->previous(),'成功');
     }
 
 }
