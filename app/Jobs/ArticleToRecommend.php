@@ -1,22 +1,16 @@
 <?php namespace App\Jobs;
 
-use App\Models\Category;
 use App\Models\Groups\Group;
 use App\Models\RecommendRead;
-use App\Models\Scraper\Feeds;
-use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Tag;
-use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Storage;
 
 
 
@@ -77,7 +71,7 @@ class ArticleToRecommend implements ShouldQueue
             'sort' => 0,
             'audit_status' => 0,
             'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
-            'created_at' => $article->created_at,
+            'created_at' => $submission->created_at,
             'updated_at' => Carbon::now(),
             'data' => array_merge([
                 'title' => $this->title?:$submission->title,
@@ -93,7 +87,6 @@ class ArticleToRecommend implements ShouldQueue
             $recommend->audit_status = 1;
             $recommend->sort = $recommend->id;
             $recommend->save();
-            Tag::multiSaveByIds($this->tagsId,$recommend);
             Tag::multiAddByIds($this->tagsId,$submission);
             if (isset($recommend->data['domain']) && $recommend->data['domain'] == 'mp.weixin.qq.com') {
                 $info = getWechatArticleInfo($recommend->data['url']);
