@@ -16,7 +16,7 @@ class AdminAuthenticate
     public function handle($request, Closure $next)
     {
 
-        if(!$request->user()->isRole('admin')){
+        if(!$request->user()->hasPermission('admin.index.index')){
             abort(403);
         }
 
