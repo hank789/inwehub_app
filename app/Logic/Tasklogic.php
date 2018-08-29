@@ -1,8 +1,12 @@
 <?php namespace App\Logic;
+use App\Events\Frontend\System\SystemNotify;
+use App\Jobs\SendPhoneMessage;
 use App\Models\Answer;
 use App\Models\Doing;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
@@ -203,6 +207,16 @@ class TaskLogic {
             ];
         }
         return $list;
+    }
+
+    public static function alertManagerPendingArticles($number) {
+        if ($number <= 0) return;
+        event(new SystemNotify('新抓取'.$number.'篇文章，请及时去后台处理',[]));
+        $managerRole = Role::where('slug','operatormanager')->first();
+        $roleUsers = RoleUser::where('role_id',$managerRole->id)->get();
+        foreach ($roleUsers as $roleUser) {
+            dispatch((new SendPhoneMessage($roleUser->user->mobile,['number' => $number],'article_pending_alert')));
+        }
     }
 
 }

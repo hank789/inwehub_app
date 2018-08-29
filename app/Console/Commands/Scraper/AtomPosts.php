@@ -7,6 +7,7 @@
 
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\ArticleToSubmission;
+use App\Logic\TaskLogic;
 use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Third\RssFeed;
@@ -137,7 +138,7 @@ class AtomPosts extends Command
         } else {
             $count = count($articles);
             if ($count > 0) {
-                event(new SystemNotify('新抓取'.$count.'篇文章，请及时去后台处理',[]));
+                TaskLogic::alertManagerPendingArticles($count);
             }
         }
     }
