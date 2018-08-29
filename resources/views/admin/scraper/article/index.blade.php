@@ -44,13 +44,13 @@
                                 <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
-                                        <th>操作</th>
-                                        <th>点赞类型</th>
                                         <th>标题</th>
                                     </tr>
                                     @foreach($articles as $article)
                                         <tr id="submission_{{ $article->_id }}">
                                             <td>
+                                                <a class="btn-viewinfo" href="javascript:void(0)" data-id="{{ $article->_id }}" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a>
+                                                <br>{{ $article->date_time }}
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default btn-sm" data-toggle="tooltip" title="查看文章" href="javascript:void(0)" onclick="openUrl({{ $article->_id }}, '{{ $article->content_url }}')" target="_blank"><i class="fa fa-eye"></i></a>
                                                     @if ($article->topic_id <= 0)
@@ -62,17 +62,14 @@
                                                     @if ($article->topic_id <= 0 && $article->status==1)
                                                         <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
                                                     @endif
+                                                    <select onchange="setSupportType({{ $article->_id }},this)">
+                                                        <option value="1" @if($article->topic_id ? $article->submission()->support_type == 1 : true) selected @endif> 赞|踩</option>
+                                                        <option value="2" @if($article->topic_id ? $article->submission()->support_type == 2 : false) selected @endif> 看好|不看好</option>
+                                                        <option value="3" @if($article->topic_id ? $article->submission()->support_type == 3 : false) selected @endif> 支持|反对</option>
+                                                        <option value="4" @if($article->topic_id ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
+                                                    </select>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <select onchange="setSupportType({{ $article->_id }},this)">
-                                                    <option value="1" @if($article->topic_id ? $article->submission()->support_type == 1 : true) selected @endif> 赞|踩</option>
-                                                    <option value="2" @if($article->topic_id ? $article->submission()->support_type == 2 : false) selected @endif> 看好|不看好</option>
-                                                    <option value="3" @if($article->topic_id ? $article->submission()->support_type == 3 : false) selected @endif> 支持|反对</option>
-                                                    <option value="4" @if($article->topic_id ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
-                                                </select>
-                                            </td>
-                                            <td><a class="btn-viewinfo" href="javascript:void(0)" data-id="{{ $article->_id }}" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a><br>{{ $article->date_time }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -97,11 +94,11 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6" id="article_html">
-                <div data-spy="affix" class="row pre-scrollable" style="min-height: 500px;margin-top: -50px;" tabindex="-1" role="dialog">
+                <div data-spy="affix" class="row pre-scrollable" style="min-height: 500px;margin-top: -70px;" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title" id="article_title"></h4>
+                                <button type="button" class="btn btn-default" onclick="closeModal()">Close</button><h4 class="modal-title" id="article_title"></h4>
                             </div>
                             <div class="modal-body">
                                 <div id="article_description"></div>

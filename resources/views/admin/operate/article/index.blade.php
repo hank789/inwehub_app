@@ -44,9 +44,7 @@
                                 <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
-                                        <th>操作</th>
                                         <th>ID</th>
-                                        <th>点赞类型</th>
                                         <th>标题</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
@@ -55,11 +53,13 @@
                                         <th>浏览数</th>
                                         <th>圈子</th>
                                         <th>发布者</th>
-                                        <th>创建时间</th>
                                     </tr>
                                     @foreach($submissions as $submission)
                                         <tr id="submission_{{ $submission->id }}">
+                                            <td>{{ $submission->id }}</td>
                                             <td>
+                                                <a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a>
+                                                <br>{{ $submission->created_at }}
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-eye"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
@@ -67,18 +67,14 @@
                                                         <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $submission->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
                                                     <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
+                                                    <select onchange="setSupportType({{ $submission->id }},this)">
+                                                        <option value="1" @if($submission->support_type == 1) selected @endif> 赞|踩</option>
+                                                        <option value="2" @if($submission->support_type == 2) selected @endif> 看好|不看好</option>
+                                                        <option value="3" @if($submission->support_type == 3) selected @endif> 支持|反对</option>
+                                                        <option value="4" @if($submission->support_type == 4) selected @endif> 意外|不意外</option>
+                                                    </select>
                                                 </div>
                                             </td>
-                                            <td>{{ $submission->id }}</td>
-                                            <td>
-                                                <select onchange="setSupportType({{ $submission->id }},this)">
-                                                    <option value="1" @if($submission->support_type == 1) selected @endif> 赞|踩</option>
-                                                    <option value="2" @if($submission->support_type == 2) selected @endif> 看好|不看好</option>
-                                                    <option value="3" @if($submission->support_type == 3) selected @endif> 支持|反对</option>
-                                                    <option value="4" @if($submission->support_type == 4) selected @endif> 意外|不意外</option>
-                                                </select>
-                                            </td>
-                                            <td><a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a></td>
                                             <td>
                                                 @if ($submission->data['img'] && is_array($submission->data['img']))
                                                     @foreach($submission->data['img'] as $img)
@@ -98,7 +94,6 @@
                                             <td>{{ $submission->views }}</td>
                                             <td>{{ $submission->group->name }}</td>
                                             <td>{{ $submission->owner->name }}</td>
-                                            <td>{{ $submission->created_at }}</td>
                                         </tr>
                                     @endforeach
                                 </table>

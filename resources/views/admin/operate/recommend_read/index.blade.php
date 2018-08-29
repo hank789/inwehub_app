@@ -64,28 +64,27 @@
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>ID</th>
-                                        <th>操作</th>
                                         <th>标题</th>
                                         <th>标签语</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
                                         <th>排序</th>
                                         <th>标签</th>
-                                        <th>审核状态</th>
-                                        <th>创建时间</th>
                                     </tr>
                                     @foreach($recommendations as $item)
                                         <tr>
                                             <td><input type="checkbox" value="{{ $item->id }}" name="ids[]"/></td>
                                             <td>{{ $item->id }}</td>
                                             <td>
+                                                <a href="{{ $item->getWebUrl() }}" target="_blank">{{ $item->data['title'] }}</a>
+                                                <br>{{ $item->created_at }}
                                                 <div class="btn-group-xs" >
+                                                    <span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span>
                                                     <a class="btn btn-default" href="{{ route('admin.operate.recommendRead.edit',['id'=>$item->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                     <a class="btn btn-default btn-sm btn-setVerify" data-toggle="tooltip" title="通过审核" data-source_id = "{{ $item->id }}"><i class="fa fa-check-square-o"></i></a>
                                                     <a class="btn btn-default btn-sm btn-cancelVerify" data-toggle="tooltip" title="取消审核" data-source_id = "{{ $item->id }}"><i class="fa fa-lock"></i></a>
                                                 </div>
                                             </td>
-                                            <td><a href="{{ $item->getWebUrl() }}" target="_blank">{{ $item->data['title'] }}</a></td>
                                             <td>{{ $item->tips }}</td>
                                             <td>
                                                 @if ($item->data['img'] && is_array($item->data['img']))
@@ -103,8 +102,6 @@
                                                     {{ $tagInfo->name.',' }}
                                                 @endforeach
                                             </td>
-                                            <td><span class="label @if($item->audit_status===0) label-danger  @else label-success @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
-                                            <td>{{ $item->created_at }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
