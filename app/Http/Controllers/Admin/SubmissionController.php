@@ -133,6 +133,7 @@ class SubmissionController extends AdminController
         if (!$group->public) return $this->error(route('admin.operate.article.index'),'私有圈子里的文章不能设为推荐');
         $oldData = $article->data;
         unset($oldData['description']);
+        unset($oldData['title']);
         $recommend = RecommendRead::firstOrCreate([
             'source_id' => $articleId,
             'source_type' => get_class($article)
@@ -145,7 +146,7 @@ class SubmissionController extends AdminController
             'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
             'created_at' => $article->created_at,
             'updated_at' => Carbon::now(),
-            'data' => array_merge([
+            'data' => array_merge($oldData, [
                 'title' => $title?:$article->title,
                 'img'   => $article->data['img'],
                 'category_id' => $article->category_id,
@@ -153,7 +154,7 @@ class SubmissionController extends AdminController
                 'type' => $article->type,
                 'slug' => $article->slug,
                 'group_id' => $article->group_id
-            ],$oldData)
+            ])
         ]);
         if ($recommend->audit_status == 0) {
             $recommend->audit_status = 1;

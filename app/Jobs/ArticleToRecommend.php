@@ -74,7 +74,7 @@ class ArticleToRecommend implements ShouldQueue
             'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
             'created_at' => $submission->created_at,
             'updated_at' => Carbon::now(),
-            'data' => array_merge([
+            'data' => array_merge($oldData, [
                 'title' => $this->title?:$submission->title,
                 'img'   => $submission->data['img'],
                 'category_id' => $submission->category_id,
@@ -82,7 +82,7 @@ class ArticleToRecommend implements ShouldQueue
                 'type' => $submission->type,
                 'slug' => $submission->slug,
                 'group_id' => $submission->group_id
-            ],$oldData)
+            ])
         ]);
         if ($recommend->audit_status == 0) {
             $recommend->audit_status = 1;
