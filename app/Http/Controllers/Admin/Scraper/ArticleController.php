@@ -38,6 +38,13 @@ class ArticleController extends AdminController
         }
 
         $articles = $query->orderBy('date_time','desc')->paginate(20);
+        foreach ($articles as &$article) {
+            if ($article->source_type == 1 && empty($article->body)) {
+                $body = getWechatUrlBodyText($article->content_url,false);
+                $article->body = $body;
+                $article->save();
+            }
+        }
         $data = TagsLogic::loadTags(6,'','id');
         $tags = $data['tags'];
         return view("admin.scraper.article.index")->with('articles',$articles)->with('filter',$filter)->with('tags',$tags);
