@@ -291,9 +291,11 @@ class ProfileController extends Controller
         $info['is_job_info_public'] = $user->userData->job_public;
         $info['is_project_info_public'] = $user->userData->project_public;
         $info['is_edu_info_public'] = $user->userData->edu_public;
-        $info['total_score'] = '综合评分暂无';
+        $info['total_score'] = '暂无';
         $info['work_years'] = $user->getWorkYears();
         $info['followers'] = $user->followers()->count();
+        $info['followed_number'] = $user->followers()->count();
+        $info['follow_user_number'] = $user->attentions()->where('source_type',User::class)->count();
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
 
         $info['submission_count'] = Submission::where('user_id',$user->id)->where('public',1)->whereNull('deleted_at')->count();
@@ -302,6 +304,10 @@ class ProfileController extends Controller
         $info['article_count'] = Submission::where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->count();
         $info['article_comment_count'] = Submission::where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->sum('comments_number');
         $info['article_upvote_count'] = Submission::where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->sum('upvotes');
+
+        $info['publishes'] = $info['answers'] + $info['questions'] + $info['submission_count'] + $info['comment_count'];
+        $info['group_number'] = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->count();
+
         $projects = [];
         $jobs = [];
         $edus = [];

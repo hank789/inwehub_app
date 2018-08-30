@@ -1472,7 +1472,11 @@ if (!function_exists('convertWechatLimitLinkToUnlimit')) {
 
         $account=urlencode($gzh_id);
 
-        $url = "http://api.shenjian.io/?appid=ade2cec5bc6305681b67ee08f351e93f&url={$url}&account={$account}";
+        $url = "https://api.shenjian.io/?appid=46db4da70074ae0e7e08bc7ce90b8d50&url={$url}&account={$account}";
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept-Encoding:gzip'));
+
+        curl_setopt($ch, CURLOPT_ENCODING, "gzip");
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
@@ -1481,6 +1485,7 @@ if (!function_exists('convertWechatLimitLinkToUnlimit')) {
         curl_setopt($ch , CURLOPT_URL , $url);
 
         $res = curl_exec($ch);
+
         curl_close($ch);
 
         return json_decode($res,true);
