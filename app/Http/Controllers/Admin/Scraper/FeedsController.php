@@ -71,6 +71,7 @@ class FeedsController extends AdminController
             'user_id'   => $request->input('user_id',504),
             'source_type' => $request->input('source_type'),
             'source_link'   => $request->input('source_link'),
+            'keywords'  => trim($request->input('keywords')),
             'status'       => 0,
         ];
 
@@ -127,6 +128,7 @@ class FeedsController extends AdminController
         $feed->user_id = $request->input('user_id',504);
         $feed->source_link = trim($request->input('source_link'));
         $feed->source_type = $request->input('source_type');
+        $feed->keywords = trim($request->input('keywords',''));
 
         $feed->save();
 

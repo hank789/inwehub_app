@@ -19,7 +19,7 @@ class Feeds extends Model {
 
     protected $table = 'scraper_feeds';
 
-    protected $fillable = ['name', 'source_type', 'source_link', 'status', 'group_id', 'user_id'];
+    protected $fillable = ['name', 'source_type', 'keywords', 'source_link', 'status', 'group_id', 'user_id'];
 
     public function group() {
         return $this->belongsTo('App\Models\Groups\Group');

@@ -35,6 +35,12 @@
                                 @if($errors->has('user_id')) <p class="help-block">{{ $errors->first('user_id') }}</p> @endif
                             </div>
 
+                            <div class="form-group @if($errors->has('keywords')) has-error @endif ">
+                                <label for="keywords">关键词(多个以"|"隔开):</label>
+                                <input id="keywords" type="text" name="keywords"  class="form-control input-lg" placeholder="关键词，多个以'|'隔开" value="{{ old('keywords','') }}" />
+                                @if($errors->has('keywords')) <p class="help-block">{{ $errors->first('keywords') }}</p> @endif
+                            </div>
+
                             <div class="form-group">
                                 <label for="source_type">源类型：</label>
                                 <div class="radio">
