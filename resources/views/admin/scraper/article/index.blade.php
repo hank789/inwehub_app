@@ -51,6 +51,7 @@
                                             <td>
                                                 <a class="btn-viewinfo" href="javascript:void(0)" data-id="{{ $article->_id }}" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a>
                                                 <br>{{ $article->date_time }}
+                                                <br>作者：{{ $article->author?:$article->withAuthor()->name }}
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default btn-sm" data-toggle="tooltip" title="查看文章" href="javascript:void(0)" onclick="openUrl({{ $article->_id }}, '{{ $article->content_url }}')" target="_blank"><i class="fa fa-eye"></i></a>
                                                     @if ($article->topic_id <= 0)
