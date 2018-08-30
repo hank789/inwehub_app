@@ -61,6 +61,7 @@ class ArticleToRecommend implements ShouldQueue
         if (!$group->public) return;
         $oldData = $submission->data;
         unset($oldData['description']);
+        unset($oldData['title']);
         $recommend = RecommendRead::firstOrCreate([
             'source_id' => $submission->id,
             'source_type' => get_class($submission)
