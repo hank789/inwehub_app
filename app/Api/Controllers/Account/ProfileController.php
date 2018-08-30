@@ -365,6 +365,7 @@ class ProfileController extends Controller
     public function update(Request $request){
         $validateRules = [
             'name' => 'max:128',
+            'realname' => 'max:128',
             'gender'    => 'nullable|in:0,1,2',
             'company'   => 'max:128',
             'province' => 'max:128',
@@ -383,10 +384,18 @@ class ProfileController extends Controller
         $notify = false;
         if($request->input('name') !== null){
             if ($request->input('name') != $user->name) {
-                $notifyInfo .= '姓名变更为['.$request->input('name').'];';
+                $notifyInfo .= '昵称变更为['.$request->input('name').'];';
                 $notify = true;
             }
             $user->name = $request->input('name');
+        }
+
+        if($request->input('realname') !== null){
+            if ($request->input('realname') != $user->realname) {
+                $notifyInfo .= '真实姓名变更为['.$request->input('realname').'];';
+                $notify = true;
+            }
+            $user->realname = $request->input('realname');
         }
 
         if($request->input('email') !== null){

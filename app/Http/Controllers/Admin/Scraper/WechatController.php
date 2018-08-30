@@ -8,8 +8,6 @@ use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
 use App\Models\Scraper\WechatWenzhangInfo;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use Illuminate\Support\Facades\Artisan;
 
 class WechatController extends AdminController
