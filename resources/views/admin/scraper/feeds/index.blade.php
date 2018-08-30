@@ -53,8 +53,8 @@
                                         <th>站点</th>
                                         <th>圈子</th>
                                         <th>文章发布者</th>
+                                        <th>关键词</th>
                                         <th>源地址</th>
-                                        <th>时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -64,9 +64,9 @@
                                             <td><a href="{{ route('admin.scraper.feeds.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->name }}</a></td>
                                             <td>{{ $article->group?$article->group->name:'' }}</td>
                                             <td>{{ $article->user?$article->user->name:'' }}</td>
+                                            <td>{{ $article->keywords }}</td>
                                             <td>{{ $article->source_link }}</td>
-                                            <td>{{ timestamp_format($article->created_at) }}</td>
-                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span> </td>
+                                            <td><span class="label @if($article->status===0) label-danger  @else label-success @endif">{{ trans_common_status($article->status) }}</span>{{ timestamp_format($article->created_at) }} </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.scraper.feeds.edit',['id'=>$article->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>

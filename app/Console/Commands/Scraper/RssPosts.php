@@ -106,6 +106,21 @@ class RssPosts extends Command
                 if (empty($image_url)) {
                     $image_url = getUrlImg($value->link);
                 }
+                $keywords = $topic->keywords;
+                $status = 3;//默认已删除
+                if ($keywords) {
+                    $content = $value->title.';'.$value->description;
+                    $keywordsArr = explode('|',$keywords);
+                    foreach ($keywordsArr as $keyword) {
+                        if (strchr($content,$keyword)) {
+                            $status = 1;
+                            break;
+                        }
+                    }
+                } else {
+                    $status = 1;
+                }
+
                 WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link],[
                     'content_url'           => $value->link,
                     'title'          => $value->title,
@@ -118,7 +133,7 @@ class RssPosts extends Command
                     'source_type' => 2,
                     'description' => $value->description,
                     'cover_url'   => $image_url,
-                    'status'         => 1
+                    'status'         => $status
                 ]);
             }
         }

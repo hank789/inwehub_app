@@ -68,7 +68,7 @@
                                                     <img src="{{ $tag->logo }}"  style="width: 27px;"/>
                                                 @endif
                                             </td>
-                                            <td><a href="{{ route('ask.tag.index',['name'=>$tag->name,'source_type'=>'questions']) }}" target="_blank">{{ $tag->name }}</a></td>
+                                            <td><a href="{{ route('ask.tag.index',['id'=>$tag->id]) }}" target="_blank">{{ $tag->name }}</a></td>
                                             <td>{{ implode(',',$tag->categories->pluck('name')->toArray()) }}</td>
                                             <td width="30%">{{ $tag->summary }}</td>
                                             <td>{{ $tag->countMorph() }}</td>

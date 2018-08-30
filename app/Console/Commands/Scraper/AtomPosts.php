@@ -108,6 +108,21 @@ class AtomPosts extends Command
                     $image_url = getUrlImg($value->link->attributes()->href);
                 }
 
+                $keywords = $topic->keywords;
+                $status = 3;//默认已删除
+                if ($keywords) {
+                    $content = $value->title.';'.$value->summary;
+                    $keywordsArr = explode('|',$keywords);
+                    foreach ($keywordsArr as $keyword) {
+                        if (strchr($content,$keyword)) {
+                            $status = 1;
+                            break;
+                        }
+                    }
+                } else {
+                    $status = 1;
+                }
+
                 WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link->attributes()->href],[
                     'content_url'           => $value->link->attributes()->href,
                     'title'          => $value->title,
@@ -120,7 +135,7 @@ class AtomPosts extends Command
                     'source_type' => 2,
                     'description' => $value->summary,
                     'cover_url'   => $image_url,
-                    'status'         => 1
+                    'status'         => $status
                 ]);
             }
         }
