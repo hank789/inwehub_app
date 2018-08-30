@@ -287,11 +287,16 @@ class IndexController extends Controller {
         $source_type = $request->input('source_type',1);
         $source_id = $request->input('source_id');
         $perPage = $request->input('perPage',4);
-        $recommend = null;
+        $recommend = $source = null;
         $views = [];
         $tags = null;
         $query = RecommendRead::where('audit_status',1);
         switch ($source_type) {
+            case 0:
+                if ($user) {
+                    $tags = $user->userTag()->orderBy('views','desc')->pluck('tag_id')->take(10)->toArray();
+                }
+                break;
             case 1:
                 //文章
                 $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Submission::class)->first();
@@ -326,7 +331,7 @@ class IndexController extends Controller {
         if ($recommend) {
             $tags = $recommend->tags()->pluck('tag_id')->toArray();
             $views[] = $recommend->id;
-        } else {
+        } elseif($source) {
             $tags = $source->tags()->pluck('tag_id')->toArray();
         }
         $reads = [];
