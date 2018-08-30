@@ -11,7 +11,7 @@
     </section>
     <section id="article_content" class="content">
         <div class="row">
-            <div class="col-xs-12 col-lg-6 col-md-6">
+            <div class="col-xs-12 col-lg-4 col-md-4">
                 <div class="box">
                         <div class="box-header">
                             <div class="row">
@@ -19,10 +19,10 @@
                                     <div class="row">
                                         <form name="searchForm" action="{{ route('admin.scraper.article.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <div class="col-xs-2">
+                                            <div class="col-xs-4">
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                             </div>
-                                            <div class="col-xs-2">
+                                            <div class="col-xs-4">
                                                 <select class="form-control" name="status">
                                                     <option value="-1">--状态--</option>
                                                     @foreach(trans_article_status('all') as $key => $status)
@@ -93,7 +93,7 @@
                         </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6" id="article_html">
+            <div class="col-lg-8 col-md-8" id="article_html">
                 <div data-spy="affix" class="row pre-scrollable" style="min-height: 500px;margin-top: -70px;" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
