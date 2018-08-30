@@ -47,7 +47,7 @@ class GetArticleBody implements ShouldQueue
     public function handle()
     {
         $article = WechatWenzhangInfo::find($this->id);
-        if ($article->topic_id > 0 || $article->status != 1 || !empty($article->body)) return;
+        if (!empty($article->body)) return;
 
         if ($article->source_type == 1) {
             $body = getWechatUrlBodyText($article->content_url,false);
