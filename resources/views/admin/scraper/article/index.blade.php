@@ -63,10 +63,10 @@
                                                         <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
                                                     @endif
                                                     <select onchange="setSupportType({{ $article->_id }},this)">
-                                                        <option value="1" @if($article->topic_id ? $article->submission()->support_type == 1 : true) selected @endif> 赞|踩</option>
-                                                        <option value="2" @if($article->topic_id ? $article->submission()->support_type == 2 : false) selected @endif> 看好|不看好</option>
-                                                        <option value="3" @if($article->topic_id ? $article->submission()->support_type == 3 : false) selected @endif> 支持|反对</option>
-                                                        <option value="4" @if($article->topic_id ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
+                                                        <option value="1" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 1 : true) selected @endif> 赞|踩</option>
+                                                        <option value="2" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 2 : false) selected @endif> 看好|不看好</option>
+                                                        <option value="3" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 3 : false) selected @endif> 支持|反对</option>
+                                                        <option value="4" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
                                                     </select>
                                                 </div>
                                             </td>
