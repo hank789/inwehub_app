@@ -107,9 +107,9 @@
                             <div class="modal-footer" style="text-align: left;">
                                 <div class="btn-group-md" >
                                     <button type="button" class="btn btn-default" onclick="closeModal()">Close</button>
-                                    <a class="btn btn-default btn-sm btn-publish" id="article_btn_publish" data-toggle="tooltip" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
-                                    <a class="btn btn-default btn-sm btn-setfav" id="article_btn_setfav" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->_id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
-                                    <a class="btn btn-default btn-sm btn-delete" id="article_btn_delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
+                                    <a class="btn btn-default btn-sm btn-publish" id="article_btn_publish" data-toggle="tooltip" title="发布文章" data-source_id = "0"><i class="fa fa-check-square-o"></i></a>
+                                    <a class="btn btn-default btn-sm btn-setfav" id="article_btn_setfav" data-toggle="tooltip" title="设为精选" data-source_id = "0" data-title="0"><i class="fa fa-heart"></i></a>
+                                    <a class="btn btn-default btn-sm btn-delete" id="article_btn_delete" data-toggle="tooltip" title="删除文章" data-source_id = "0"><i class="fa fa-trash-o"></i></a>
                                 </div>
                             </div>
                         </div>
