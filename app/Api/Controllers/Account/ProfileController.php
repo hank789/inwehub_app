@@ -105,6 +105,8 @@ class ProfileController extends Controller
         }
 
         $info['followers'] = $user->attentions()->count();
+        $info['followed_number'] = $user->followers()->count();
+        $info['popularity'] = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->where('user_id','!=',$user->id)->count();
         $info['publishes'] = $user->userData->questions
             + $user->userData->answers + Submission::where('user_id',$user->id)->count()
             + Comment::where('user_id',$user->id)->count();
