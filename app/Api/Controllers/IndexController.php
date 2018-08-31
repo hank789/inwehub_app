@@ -398,13 +398,17 @@ class IndexController extends Controller {
         switch ($orderBy) {
             case 1:
                 //热门
-                $query = $query->orderBy('rate','desc')->orderBy('sort','desc');
+                $query = $query->orderBy('rate','desc');
                 break;
             case 2:
                 //随机
                 $count = $query->count();
                 $rand = Config::get('inwehub.api_data_page_size')/$count * 100;
                 $query = $query->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'));
+                break;
+            case 3:
+                //发布时间
+                $query = $query->orderBy('id','desc');
                 break;
         }
 
