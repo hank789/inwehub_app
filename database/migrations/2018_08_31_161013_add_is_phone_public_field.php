@@ -13,7 +13,7 @@ class AddIsPhonePublicField extends Migration
      */
     public function up()
     {
-        Schema::table('phone_public', function (Blueprint $table) {
+        Schema::table('user_data', function (Blueprint $table) {
             $table->unsignedTinyInteger('phone_public')->after('is_company')->default(1);
         });
     }
