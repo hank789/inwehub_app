@@ -51,6 +51,7 @@ class ProfileController extends Controller
         $info['uuid'] = $user->uuid;
         $info['name'] = $user->name;
         $info['realname'] = $user->realname;
+        $info['current_day_signed'] = RateLimiter::instance()->getValue('sign:'.$user->id,date('Ymd'))?1:0;
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
         $info['rc_code'] = $user->rc_code;
