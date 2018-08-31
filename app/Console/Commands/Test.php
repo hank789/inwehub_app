@@ -7,6 +7,10 @@ use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Taggable;
 use App\Services\BosonNLPService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
+use QL\Ext\PhantomJs;
+use QL\QueryList;
+use Spatie\Browsershot\Browsershot;
 
 
 class Test extends Command
@@ -32,20 +36,39 @@ class Test extends Command
      */
     public function handle()
     {
-        WechatWenzhangInfo::where('topic_id','>',0)->update(['status'=>2]);
-        WechatWenzhangInfo::where('topic_id','=',0)->update(['status'=>3]);
-        $recommends = RecommendRead::get();
-        foreach ($recommends as $recommend) {
-            $tags = [];
-            $taggables = Taggable::where('taggable_id',$recommend->id)->where('taggable_type',get_class($recommend))->get();
-            foreach ($taggables as $taggable) {
-                if (isset($tags[$taggable->tag_id])) {
-                    $taggable->delete();
-                } else {
-                    $tags[$taggable->tag_id] = $taggable->tag_id;
-                }
-            }
-        }
+
+        Browsershot::url('https://www.baidu.com/')->save('/Users/wanghui/www/interv/intervapp/test.jpg');
+        return;
+        $sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
+        $aHeader = [
+            'Accept: application/json',
+            'Accept-Encoding: gzip, deflate, br',
+            'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
+            'Cookie: _ga=GA1.2.845934384.1535426841; user_trace_token=20180828112721-465c1caa-aa72-11e8-b24b-5254005c3644; LGUID=20180828112721-465c2202-aa72-11e8-b24b-5254005c3644; index_location_city=%E5%85%A8%E5%9B%BD; JSESSIONID=ABAAABAAAGCABCCD28DF8209A7B49B1E86DFDDA7FC4CB8F; _ga=GA1.3.845934384.1535426841; fromsite="zhihu.hank.com:8080"; utm_source=""; _gid=GA1.2.1118280405.1535619468; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1535455700,1535455777,1535455805,1535626070; _gat=1; LGSID=20180831103210-0fb55e88-acc6-11e8-be55-525400f775ce; PRE_UTM=; PRE_HOST=; PRE_SITE=; PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F; LGRID=20180831103238-207ec83e-acc6-11e8-b30a-5254005c3644; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1535682758',
+            'Host: m.lagou.com',
+            'Referer: https://m.lagou.com/search.html',
+            'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+            'X-Requested-With: XMLHttpRequest'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_URL, $sUrl);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $aHeader);
+        //curl_setopt($ch, CURLOPT_POST, true);
+        //curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($aData));
+        $sResult = curl_exec($ch);
+
+        curl_close($ch);
+        $s = json_decode($sResult,true);
+        var_dump($s);
+        //$ql = QueryList::getInstance();
+        // 安装时需要设置PhantomJS二进制文件路径
+        //$ql->use(PhantomJs::class,'/Users/wanghui/www/phantomjs-2.1.1-macosx/bin/phantomjs');
+        //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
+        //$content = $ql->browser('https://www.lagou.com/jobs/list_%E9%94%80%E5%94%AE?px=default&city=%E5%85%A8%E5%9B%BD#filterBox?labelWords=hot')->getHtml();
+        //var_dump($content);
+        //Storage::disk('local')->put('attachments/test.html',$content);
         return;
     }
 }

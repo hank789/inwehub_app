@@ -73,7 +73,7 @@ class UserData extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'coins','credits','authentication_status','last_login_ip','registered_at','last_visit','geohash','longitude','latitude'];
+    protected $fillable = ['user_id', 'coins','credits','authentication_status','last_login_ip', 'phone_public', 'registered_at','last_visit','geohash','longitude','latitude'];
 
     /**
      * The attributes excluded from the model's JSON form.
