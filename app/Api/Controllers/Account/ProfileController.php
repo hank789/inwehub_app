@@ -878,6 +878,7 @@ class ProfileController extends Controller
                     if ($phoneUser) {
                         //过滤掉自己
                         if ($phoneUser->id == $user->id) continue;
+                        if (!$phoneUser->userData->phone_public) continue;
                         $addressBook['is_app_user'] = 1;
                         $addressBook['app_user_name'] = $phoneUser->name;
                         $addressBook['app_user_avatar'] = $phoneUser->avatar;
