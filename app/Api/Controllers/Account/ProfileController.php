@@ -50,6 +50,7 @@ class ProfileController extends Controller
         $info['id'] = $user->id;
         $info['uuid'] = $user->uuid;
         $info['name'] = $user->name;
+        $info['realname'] = $user->realname;
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
         $info['rc_code'] = $user->rc_code;
