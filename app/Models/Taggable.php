@@ -27,7 +27,7 @@ class Taggable extends Model
 {
     protected $table = 'taggables';
 
-    protected $fillable = ['taggable_type', 'taggable_id', 'tag_id'];
+    protected $fillable = ['taggable_type', 'taggable_id', 'tag_id', 'is_display'];
 
 
     public static function hottest($type='all',$pageSize=20)
