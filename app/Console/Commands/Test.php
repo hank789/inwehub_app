@@ -36,6 +36,9 @@ class Test extends Command
      */
     public function handle()
     {
+        $r->description = str_replace('</p>','</div>',$r->description);
+        $r->description = str_replace('<p>','<div>',$r->description);
+
         /*$sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
         $aHeader = [
             'Accept: application/json',

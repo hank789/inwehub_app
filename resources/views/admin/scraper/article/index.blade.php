@@ -94,7 +94,7 @@
                         </div>
                 </div>
             </div>
-            <div class="col-lg-8 col-md-8" id="article_html">
+            <div class="col-lg-8 col-md-8" id="article_html" style="display:none;">
                 <div id="article_body_html" data-spy="affix" class="row pre-scrollable" style="min-height: 500px;margin-top: -70px;" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -206,6 +206,11 @@
 
             $(".btn-viewinfo").click(function(){
                 $('#article_html').css('display','block');
+                if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+                    $('#article_body_html').css('max-width','375px');
+                } else {
+                    $('#article_body_html').css('max-width','1024px');
+                }
                 var title = $(this).data('title');
                 var description = $(this).data('description');
                 var body = $(this).data('body');
