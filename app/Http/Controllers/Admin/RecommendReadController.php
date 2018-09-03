@@ -179,6 +179,7 @@ class RecommendReadController extends AdminController
                 $recommendation = RecommendRead::find($id);
                 $article = $recommendation->source;
                 Tag::multiAddByIds($tagsId,$article);
+                $recommendation->tags()->detach();
                 $recommendation->setKeywordTags();
             }
         }
