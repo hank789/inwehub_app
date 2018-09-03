@@ -1082,58 +1082,63 @@ if (!function_exists('saveImgToCdn')){
 
 if (!function_exists('getUrlImg')) {
     function getUrlImg($url, $dir = 'submissions') {
-        $temp = '';
-        $img_url = '';
-        $useCache = false;
-        $urlArr = parse_url($url);
-        if ($urlArr['host']=='mp.weixin.qq.com') {
-            $f = file_get_contents_curl($url);
-            //微信的文章
-            $pattern = '/var msg_cdn_url = "(.*?)";/s';
-            preg_match_all($pattern,$f,$matches);
-            if(array_key_exists(1, $matches) && !empty($matches[1][0])) {
-                $temp = $matches[1][0];
-            }
-        } else {
-            $ql = \QL\QueryList::getInstance();
-            if (in_array($urlArr['host'],[
-                'www.bilibili.com'
-            ])) {
-                $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
-                $image1 = $ql->browser($url)->find('meta[property=og:image]')->content;
-                $image2 = $ql->browser($url)->find('link[href*=.ico]')->href;
-            } else {
-                $image1 = $ql->get($url)->find('meta[property=og:image]')->content;
-                $image2 = $ql->get($url)->find('link[href*=.ico]')->href;
-            }
-            $image = $image1?:$image2;
-            if (str_contains($image,'.ico')) {
-                $useCache = true;
-            }
-            $temp = Cache::get('domain_url_img_'.domain($url),'');
-            if (empty($temp)) {
-                if (stripos($image,'//') === 0) {
-                    $temp = 'http:'.$image;
-                } elseif (stripos($image,'http') !== 0) {
-                    $temp = $urlArr['scheme'].'://'.$urlArr['host'].$image;
-                } else {
-                    $temp = $image;
+        try {
+            $temp = '';
+            $img_url = '';
+            $useCache = false;
+            $urlArr = parse_url($url);
+            if ($urlArr['host']=='mp.weixin.qq.com') {
+                $f = file_get_contents_curl($url);
+                //微信的文章
+                $pattern = '/var msg_cdn_url = "(.*?)";/s';
+                preg_match_all($pattern,$f,$matches);
+                if(array_key_exists(1, $matches) && !empty($matches[1][0])) {
+                    $temp = $matches[1][0];
                 }
             } else {
-                return $temp;
+                $ql = \QL\QueryList::getInstance();
+                if (in_array($urlArr['host'],[
+                    'www.bilibili.com'
+                ])) {
+                    $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
+                    $image1 = $ql->browser($url)->find('meta[property=og:image]')->content;
+                    $image2 = $ql->browser($url)->find('link[href*=.ico]')->href;
+                } else {
+                    $image1 = $ql->get($url)->find('meta[property=og:image]')->content;
+                    $image2 = $ql->get($url)->find('link[href*=.ico]')->href;
+                }
+                $image = $image1?:$image2;
+                if (str_contains($image,'.ico')) {
+                    $useCache = true;
+                }
+                $temp = Cache::get('domain_url_img_'.domain($url),'');
+                if (empty($temp)) {
+                    if (stripos($image,'//') === 0) {
+                        $temp = 'http:'.$image;
+                    } elseif (stripos($image,'http') !== 0) {
+                        $temp = $urlArr['scheme'].'://'.$urlArr['host'].$image;
+                    } else {
+                        $temp = $image;
+                    }
+                } else {
+                    return $temp;
+                }
             }
-        }
-        if ($temp) {
-            //保存图片
-            $img_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
-            dispatch((new \App\Jobs\UploadFile($img_name,base64_encode(file_get_contents($temp)))));
-            $img_url = Storage::url($img_name);
-            //非微信文章
-            if ($useCache) {
-                Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
+            if ($temp) {
+                //保存图片
+                $img_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+                dispatch((new \App\Jobs\UploadFile($img_name,base64_encode(file_get_contents($temp)))));
+                $img_url = Storage::url($img_name);
+                //非微信文章
+                if ($useCache) {
+                    Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
+                }
             }
+            return $img_url;
+        } catch (Exception $e) {
+            app('sentry')->captureException($e,['url'=>$url]);
+            return null;
         }
-        return $img_url;
     }
 }
 
