@@ -19,7 +19,7 @@ use App\Services\GeoHash;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\App;
 use Tymon\JWTAuth\JWTAuth;
 
 class SystemController extends Controller {
@@ -238,13 +238,14 @@ class SystemController extends Controller {
         ];
         $this->validate($request, $validateRules);
         $data = $request->all();
-        $filename = time().str_random(7).'.jpeg';
+        $snappy = App::make('snappy.image');
+        $snappy->setOption('width',1125);
         if (filter_var($data['html'], FILTER_VALIDATE_URL)) {
-            Browsershot::url($data['html'])->save($filename);
+            $filename = $snappy->getOutput($data['html']);
         } else {
-            Browsershot::html($data['html'])->save($filename);
+            $filename = $snappy->getOutputFromHtml($data['html']);
         }
-        return self::createJsonData(true,['image'=>base64_encode(file_get_contents($filename))]);
+        return self::createJsonData(true,['image'=>base64_encode($filename)]);
     }
 
     //服务条款

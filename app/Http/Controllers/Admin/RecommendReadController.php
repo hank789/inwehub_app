@@ -105,6 +105,7 @@ class RecommendReadController extends AdminController
             return $this->error(route('admin.operate.recommendRead.edit',['id'=>$id]),'请上传封面图片');
         }
         $oldRate = $recommendation->getRateWeight();
+        $oldStatus = $recommendation->audit_status;
 
         $recommendation->sort = $request->input('recommend_sort');
         $recommendation->tips = $request->input('tips');
@@ -118,7 +119,7 @@ class RecommendReadController extends AdminController
         $recommendation->rate = $recommendation->getRateWeight() - $oldRate + $recommendation->rate;
         $recommendation->data = $object_data;
         $recommendation->save();
-        if ($recommendation->audit_status == 1) {
+        if ($oldStatus != 1 && $recommendation->audit_status == 1) {
             switch ($recommendation->source_type) {
                 case Submission::class:
                     if ($recommendation->data['domain'] == 'mp.weixin.qq.com') {
@@ -177,7 +178,6 @@ class RecommendReadController extends AdminController
             foreach ($idArray as $id) {
                 $recommendation = RecommendRead::find($id);
                 $article = $recommendation->source;
-                Tag::multiSaveByIds($tagsId,$recommendation);
                 Tag::multiAddByIds($tagsId,$article);
                 $recommendation->setKeywordTags();
             }

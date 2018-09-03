@@ -12,9 +12,9 @@ class Lagou {
     private $html;
 
     //分页列表页ajax请求接口
-    private static $ajaxDataAPI = 'http://www.lagou.com/jobs/positionAjax.json?city=%E5%8C%97%E4%BA%AC';
+    private static $ajaxDataAPI = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false';
     //拉勾网首页
-    private static $indexPage   = 'http://www.lagou.com';
+    private static $indexPage   = 'https://www.lagou.com';
     //请求头
     private static $header = array(
         'User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36',
@@ -37,7 +37,7 @@ class Lagou {
     public function getData(){
         $this->get(self::$indexPage, null);	//请求首页
         $this->getCookie($this->html);	    //请求cookie
-        $retData = $this->post(self::$ajaxDataAPI,array('first'=>'true','pn'=>1,'kd'=>'php'));
+        $retData = $this->post(self::$ajaxDataAPI,array('first'=>'false','pn'=>1,'kd'=>'php'));
         $retData = json_decode($retData);
         var_dump($retData);
         $totalPage = $retData->content->totalPageCount;

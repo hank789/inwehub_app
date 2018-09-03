@@ -58,7 +58,7 @@ class ArticleToSubmission implements ShouldQueue
         $support_type = RateLimiter::instance()->hGet('article_support_type',$this->id);
         $user_id = $author->user_id;
         if ($article->source_type == 1) {
-            if (str_contains($article->content_url,'wechat_redirect')) {
+            if (str_contains($article->content_url,'wechat_redirect') || config('app.env') != 'production') {
                 $url = $article->content_url;
             } else {
                 $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);

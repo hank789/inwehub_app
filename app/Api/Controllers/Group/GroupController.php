@@ -715,6 +715,7 @@ class GroupController extends Controller
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $type = $request->input('type',1);
         $query = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers','desc');
+        $include_joined = true;
         switch ($type) {
             case 1:
                 //全部圈子
@@ -722,6 +723,7 @@ class GroupController extends Controller
             case 2:
                 //公开圈子
                 $query->where('public',1);
+                $include_joined = false;
                 break;
             case 3:
                 //私密圈子
@@ -740,6 +742,9 @@ class GroupController extends Controller
             }
             if ($user->id == $group->user_id) {
                 $is_joined = 3;
+            }
+            if ($is_joined == 1 && !$include_joined) {
+                continue;
             }
             $return['data'][] = [
                 'id' => $group->id,
