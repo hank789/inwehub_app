@@ -36,10 +36,7 @@ class Test extends Command
      */
     public function handle()
     {
-
-        Browsershot::url('https://www.baidu.com/')->save('/Users/wanghui/www/interv/intervapp/test.jpg');
-        return;
-        $sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
+        /*$sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
         $aHeader = [
             'Accept: application/json',
             'Accept-Encoding: gzip, deflate, br',
@@ -61,13 +58,14 @@ class Test extends Command
 
         curl_close($ch);
         $s = json_decode($sResult,true);
-        var_dump($s);
-        //$ql = QueryList::getInstance();
+        var_dump($s);*/
+        $ql = QueryList::getInstance();
         // 安装时需要设置PhantomJS二进制文件路径
-        //$ql->use(PhantomJs::class,'/Users/wanghui/www/phantomjs-2.1.1-macosx/bin/phantomjs');
+        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
         //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
-        //$content = $ql->browser('https://www.lagou.com/jobs/list_%E9%94%80%E5%94%AE?px=default&city=%E5%85%A8%E5%9B%BD#filterBox?labelWords=hot')->getHtml();
-        //var_dump($content);
+        $content = $ql->get('http://36kr.com/p/5151347.html?ktm_source=feed')->find('meta[property=og:image]')->content;
+        //$content = $ql->browser('http://36kr.com/p/5151347.html?ktm_source=feed')->find('link[href*=.ico]')->href;
+        var_dump($content);
         //Storage::disk('local')->put('attachments/test.html',$content);
         return;
     }
