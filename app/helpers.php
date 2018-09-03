@@ -1224,9 +1224,6 @@ if (!function_exists('file_get_contents_curl')) {
 
         $data = curl_exec($ch);
         curl_close($ch);
-        if (empty($data)) {
-            $data = file_get_contents($url);
-        }
         preg_match('/<title>(?<title>.*?)<\/title>/si', $data, $title);
         if (empty($title)) {
             $ql = \QL\QueryList::getInstance();
