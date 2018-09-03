@@ -57,6 +57,9 @@ return [
     ],
     'boson' => [
         'api_key' => env('BOSON_NLP_KEY')
+    ],
+    'phantomjs' => [
+        'path' => env('PHANTOMJS_PATH')
     ]
 
 ];

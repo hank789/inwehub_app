@@ -1082,11 +1082,12 @@ if (!function_exists('saveImgToCdn')){
 
 if (!function_exists('getUrlImg')) {
     function getUrlImg($url, $dir = 'submissions') {
-        $f = file_get_contents_curl($url);
         $temp = '';
         $img_url = '';
         $useCache = false;
-        if (str_contains($url,'mp.weixin.qq.com')) {
+        $urlArr = parse_url($url);
+        if ($urlArr['host']=='mp.weixin.qq.com') {
+            $f = file_get_contents_curl($url);
             //微信的文章
             $pattern = '/var msg_cdn_url = "(.*?)";/s';
             preg_match_all($pattern,$f,$matches);
@@ -1094,30 +1095,32 @@ if (!function_exists('getUrlImg')) {
                 $temp = $matches[1][0];
             }
         } else {
-            preg_match_all('/<[\s]*meta[\s]*(name|property)="?(og:image)"?[\s]*content="?([^>"]*)"?[\s]*[\/]?[\s]*>/si', $f, $match);
-            if (isset($match[3][0])) {
-                $temp = $match[3][0];
-                if (stripos($temp,'//') === 0) {
-                    $temp = 'http:'.$temp;
+            $ql = \QL\QueryList::getInstance();
+            if (in_array($urlArr['host'],[
+                'www.bilibili.com'
+            ])) {
+                $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
+                $image1 = $ql->browser($url)->find('meta[property=og:image]')->content;
+                $image2 = $ql->browser($url)->find('link[href*=.ico]')->href;
+            } else {
+                $image1 = $ql->get($url)->find('meta[property=og:image]')->content;
+                $image2 = $ql->get($url)->find('link[href*=.ico]')->href;
+            }
+            $image = $image1?:$image2;
+            if (str_contains($image,'.ico')) {
+                $useCache = true;
+            }
+            $temp = Cache::get('domain_url_img_'.domain($url),'');
+            if (empty($temp)) {
+                if (stripos($image,'//') === 0) {
+                    $temp = 'http:'.$image;
+                } elseif (stripos($image,'http') !== 0) {
+                    $temp = $urlArr['scheme'].'://'.$urlArr['host'].$image;
+                } else {
+                    $temp = $image;
                 }
             } else {
-                $temp = Cache::get('domain_url_img_'.domain($url),'');
-                if (empty($temp)) {
-                    $pattern='/<link.+href="?(\S+\.ico)\??"?.+>/i';
-                    preg_match_all($pattern,$f,$matchContent);
-                    if(isset($matchContent[1][0])){
-                        $temp=$matchContent[1][0];
-                        if (stripos($temp,'//') === 0) {
-                            $temp = 'http:'.$temp;
-                        } elseif (stripos($temp,'http') !== 0) {
-                            $urls = parse_url($url);
-                            $temp = $urls['scheme'].'://'.$urls['host'].$temp;
-                        }
-                        $useCache = true;
-                    }
-                } else {
-                    return $temp;
-                }
+                return $temp;
             }
         }
         if ($temp) {
@@ -1184,7 +1187,7 @@ if (!function_exists('getUrlTitle')) {
                 preg_match('/<h2 class="rich_media_title" id="activity-name">(?<h2>.*?)<\/h2>/si', $f, $title);
                 $title['title'] = $title['h2'];
             } else {
-                preg_match('/<title>(?<title>.*?)<\/title>/si', $f, $title);
+                preg_match('/<title.*?>(?<title>.*?)<\/title>/si', $f, $title);
             }
 
             $encode = mb_detect_encoding($title['title'], array('GB2312','GBK','UTF-8', 'CP936', 'ASCII')); //得到字符串编码
@@ -1198,6 +1201,7 @@ if (!function_exists('getUrlTitle')) {
             }
             return htmlspecialchars_decode($title['title']);
         } catch (Exception $e) {
+            var_dump($e->getMessage());
             return '';
         }
     }
@@ -1222,6 +1226,12 @@ if (!function_exists('file_get_contents_curl')) {
         curl_close($ch);
         if (empty($data)) {
             $data = file_get_contents($url);
+        }
+        preg_match('/<title>(?<title>.*?)<\/title>/si', $data, $title);
+        if (empty($title)) {
+            $ql = \QL\QueryList::getInstance();
+            $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
+            $data = $ql->browser($url)->getHtml();
         }
         return $data;
     }
