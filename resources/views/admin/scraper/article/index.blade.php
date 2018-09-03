@@ -95,7 +95,7 @@
                 </div>
             </div>
             <div class="col-lg-8 col-md-8" id="article_html">
-                <div data-spy="affix" class="row pre-scrollable" style="min-height: 500px;margin-top: -70px;" tabindex="-1" role="dialog">
+                <div id="article_body_html" data-spy="affix" class="row pre-scrollable" style="min-height: 500px;margin-top: -70px;" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -224,7 +224,7 @@
 
                 $("#article_btn_publish").data('source_id', id);
                 $("#article_btn_delete").data('source_id', id);
-
+                $("#article_body_html").scrollTop(10);
             });
 
             $("#select_tags_id").change(function(){

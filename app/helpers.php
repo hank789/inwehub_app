@@ -1196,7 +1196,7 @@ if (!function_exists('getUrlTitle')) {
             if (str_contains($url,'3g.163.com')) {
                 $title['title'] = trim($title['title'],'_&#x624B;&#x673A;&#x7F51;&#x6613;&#x7F51;');
             }
-            return $title['title'];
+            return htmlspecialchars_decode($title['title']);
         } catch (Exception $e) {
             return '';
         }
