@@ -48,7 +48,7 @@
                                     </tr>
                                     @foreach($articles as $article)
                                         <tr id="submission_{{ $article->_id }}">
-                                            <td>
+                                            <td style="white-space: normal;">
                                                 <a class="btn-viewinfo" href="javascript:void(0)" data-id="{{ $article->_id }}" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a>
                                                 <br>{{ $article->date_time }}
                                                 <br>作者：{{ $article->author?:$article->withAuthor()->name }}
