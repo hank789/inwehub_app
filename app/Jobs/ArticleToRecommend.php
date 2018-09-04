@@ -25,6 +25,8 @@ class ArticleToRecommend implements ShouldQueue
      */
     public $tries = 1;
 
+    public $timeout = 180;
+
     public $id;
 
     public $title;
