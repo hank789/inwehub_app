@@ -36,16 +36,11 @@ class FixSubmissionSuport extends Command
     {
         $submissions = Submission::get();
         foreach ($submissions as $submission) {
-            $support_count = Support::where('supportable_id',$submission->id)
-                ->where('supportable_type',Submission::class)->count();
-            $comment_count = Comment::where('source_id',$submission->id)
-                ->where('source_type','App\Models\Submission')->count();
-            if ($submission->upvotes != $support_count || $submission->comments_number != $comment_count) {
-                $submission->upvotes = $support_count;
-                $submission->comments_number = $comment_count;
-                $submission->save();
-            }
-
+            $tags = $submission->tags()->pluck('name')->toArray();
+            $data = $submission->data;
+            $data['keywords'] = implode(',',$tags);
+            $submission->data = $data;
+            $submission->save();
         }
     }
 

@@ -14,6 +14,7 @@ use App\Services\BosonNLPService;
 use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 use QL\QueryList;
 
 /**
@@ -93,7 +94,7 @@ use QL\QueryList;
  */
 class Submission extends Model {
 
-    use SoftDeletes,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToUserTrait;
+    use SoftDeletes,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToUserTrait, Searchable;
 
     protected $table = 'submissions';
 
@@ -144,10 +145,34 @@ class Submission extends Model {
         });
     }
 
-    public static function search($word)
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
     {
-        $list = self::where('title','like',"%$word%");
-        return $list;
+        $data = [$this->title];
+        $columns = [
+            'description',
+            'title',
+            'keywords'
+        ];
+        if ($this->data) {
+            foreach ($this->data as $key=>$val) {
+                if (in_array($key,$columns) && $val) {
+                    $data[] = QuillLogic::parseText($val);
+                }
+            }
+        }
+        return [
+            'title' => strip_tags(implode(';',$data)),
+            'status' => $this->status,
+            'public' => $this->public,
+            'group_id' => $this->group_id,
+            'rate' => $this->rate
+        ];
+
     }
 
     public function formatTitle(){
@@ -293,11 +318,11 @@ class Submission extends Model {
             }
             if (isset($this->data['domain']) && $this->data['domain'] == 'mp.weixin.qq.com') {
                 $content = getWechatUrlBodyText($this->data['url']);
-                $keywords = array_column(BosonNLPService::instance()->keywords($this->title.';'.$content,15),1);
+                $keywords = array_column(BosonNLPService::instance()->keywords($this->title.';'.$content),1);
             } elseif ($this->type == 'article') {
-                $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).';'.QuillLogic::parseText($this->data['description']),15),1);
+                $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).';'.QuillLogic::parseText($this->data['description'])),1);
             } elseif ($this->type == 'text') {
-                $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title),15),1);
+                $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title)),1);
             } else {
                 $ql = QueryList::get($this->data['url']);
                 $metas = $ql->find('meta[name=keywords]')->content;
@@ -307,9 +332,15 @@ class Submission extends Model {
                     $metas = str_replace('、',',',$metas);
                     $metas = str_replace(' ',',',$metas);
                     $keywords = explode(',',$metas);
-                } else {
-                    $description = $ql->find('meta[name=description]')->content;
-                    $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).';'.$description,15),1);
+                }
+                $description = strip_tags($this->title).';'.$ql->find('meta[name=description]')->content;
+                if ($description) {
+                    $keywords_description = array_column(BosonNLPService::instance()->keywords($description),1);
+                    if (isset($keywords)) {
+                        $keywords = array_merge($keywords,$keywords_description);
+                    } else {
+                        $keywords = $keywords_description;
+                    }
                 }
             }
             $tags = [];
@@ -326,7 +357,11 @@ class Submission extends Model {
                     $tags[] = $keyword;
                 }
             }
-            Tag::multiAddByName($tags,$this,1);
+            $data = $this->data;
+            $data['keywords'] = implode(',',$tags);
+            $this->data = $data;
+            $this->save();
+            Tag::multiAddByName(array_slice($tags,0,15),$this,1);
         } catch (\Exception $e) {
             \Log::info('setKeywordTagsError',$this->toArray());
             app('sentry')->captureException($e,$this->toArray());

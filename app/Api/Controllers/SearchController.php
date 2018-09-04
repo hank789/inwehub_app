@@ -137,12 +137,12 @@ class SearchController extends Controller
         }
 
         $query = Submission::search($request->input('search_word'))->where('status',1);
-        if ($userPrivateGroups) {
+        if ($userPrivateGroups && false) {
             $query = $query->Where(function ($query) use ($userPrivateGroups) {
                 $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);
             });
         } else {
-            $query = $query->where('public',1);
+            //$query = $query->where('public',1);
         }
         $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
