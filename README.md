@@ -140,6 +140,9 @@ ES_JAVA_OPTS="-Xms2024m -Xmx2024m"  ./bin/elasticsearch  -d
 
 ```bash
 $ php artisan es:init
+//创建对应model的索引
+$ php artisan scout:import 'App\Models\Submission'
+
 ```
 搜索：
 ```
