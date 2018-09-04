@@ -104,5 +104,13 @@ return [
             env('ELASTICSEARCH_HOST', "http://localhost:9200")
         ],
     ],
+    'mysql' => [
+        'mode' => 'LIKE',
+        'model_directories' => [app_path()],
+        'min_search_length' => 2,
+        'min_fulltext_search_length' => 4,
+        'min_fulltext_search_fallback' => 'LIKE',
+        'query_expansion' => false
+    ]
 
 ];
