@@ -286,78 +286,84 @@ class IndexController extends Controller {
         }
         $source_type = $request->input('source_type',1);
         $source_id = $request->input('source_id');
-        $perPage = $request->input('perPage',4);
-        $recommend = $source = null;
-        $views = [];
-        $tags = null;
-        $query = RecommendRead::where('audit_status',1);
-        switch ($source_type) {
-            case 0:
-                if ($user) {
-                    $tags = $user->userTag()->orderBy('views','desc')->pluck('tag_id')->take(10)->toArray();
-                }
-                break;
-            case 1:
-                //文章
-                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Submission::class)->first();
-                $source = Submission::find($source_id);
-                break;
-            case 2:
-                //问答
-                $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Question::class)->first();
-                $source = Question::find($source_id);
-                break;
-        }
-        if ($user) {
-            $viewIds = Doing::where('user_id',$user->id)
-                ->where('source_type',Submission::class)
-                ->where('created_at','>=',date('Y-m-d H:i:s',strtotime('-14 days')))
-                ->select('source_id')->distinct()->pluck('source_id')->toArray();
-            if ($viewIds) {
-                foreach ($viewIds as $viewId) {
-                    $viewRecommend = RecommendRead::where('source_id',$viewId)->where('source_type',Submission::class)->first();
-                    if ($viewRecommend) {
-                        $views[] = $viewRecommend->id;
+        $cache_key = 'user_related_recommend_'.$source_type.'_'.$source_id.'_'.($user?$user->id:'');
+        $result = Cache::get($cache_key);
+        if (!$result) {
+            $perPage = $request->input('perPage',4);
+            $recommend = $source = null;
+            $views = [];
+            $tags = null;
+            $query = RecommendRead::where('audit_status',1);
+            switch ($source_type) {
+                case 0:
+                    if ($user) {
+                        $tags = $user->userTag()->orderBy('views','desc')->pluck('tag_id')->take(10)->toArray();
+                    }
+                    break;
+                case 1:
+                    //文章
+                    $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Submission::class)->first();
+                    $source = Submission::find($source_id);
+                    break;
+                case 2:
+                    //问答
+                    $recommend = RecommendRead::where('source_id',$source_id)->where('source_type',Question::class)->first();
+                    $source = Question::find($source_id);
+                    break;
+            }
+            if ($user) {
+                $viewIds = Doing::where('user_id',$user->id)
+                    ->where('source_type',Submission::class)
+                    ->where('created_at','>=',date('Y-m-d H:i:s',strtotime('-14 days')))
+                    ->select('source_id')->distinct()->pluck('source_id')->toArray();
+                if ($viewIds) {
+                    foreach ($viewIds as $viewId) {
+                        $viewRecommend = RecommendRead::where('source_id',$viewId)->where('source_type',Submission::class)->first();
+                        if ($viewRecommend) {
+                            $views[] = $viewRecommend->id;
+                        }
                     }
                 }
+                $recommendedIds = RateLimiter::instance()->sMembers('user-recommend-'.$user->id);
+                $all = RecommendRead::where('audit_status',1)->count();
+                $views = array_unique(array_merge($views,$recommendedIds));
+                if ($all - count($views) <= 4) {
+                    RateLimiter::instance()->sClear('user-recommend-'.$user->id);
+                }
             }
-            $recommendedIds = RateLimiter::instance()->sMembers('user-recommend-'.$user->id);
-            $all = RecommendRead::where('audit_status',1)->count();
-            $views = array_unique(array_merge($views,$recommendedIds));
-            if ($all - count($views) <= 4) {
-                RateLimiter::instance()->sClear('user-recommend-'.$user->id);
+            if ($recommend) {
+                $tags = $recommend->tags()->pluck('tag_id')->toArray();
+                $views[] = $recommend->id;
+            } elseif($source) {
+                $tags = $source->tags()->pluck('tag_id')->toArray();
             }
-        }
-        if ($recommend) {
-            $tags = $recommend->tags()->pluck('tag_id')->toArray();
-            $views[] = $recommend->id;
-        } elseif($source) {
-            $tags = $source->tags()->pluck('tag_id')->toArray();
-        }
-        $reads = [];
-        $views = array_unique($views);
-        if (count($views) >= 1) {
-            $query = $query->whereNotIn('id',$views);
-        }
-        if ($tags) {
-            $query = $query->whereHas('tags',function($query) use ($tags) {
-                $query->whereIn('tag_id', $tags);
-            });
-            $reads = $query->orderBy('rate','desc')->simplePaginate($perPage);
-        }
-        if (empty($reads) || $reads->count() < 4) {
-            $query2 = RecommendRead::where('audit_status',1);
-            $count = $query2->count();
-            $rand = $perPage/$count * 100;
-            $reads = $query2->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
-        }
-        $result = $reads->toArray();
-        foreach ($result['data'] as &$item) {
-            if ($user) {
-                RateLimiter::instance()->sAdd('user-recommend-'.$user->id,$item['id'],60 * 30);
+            $reads = [];
+            $views = array_unique($views);
+            if (count($views) >= 1) {
+                $query = $query->whereNotIn('id',$views);
             }
-            $item = $this->formatRecommendReadItem($item);
+            if ($tags) {
+                $query = $query->whereHas('tags',function($query) use ($tags) {
+                    $query->whereIn('tag_id', $tags);
+                });
+                $reads = $query->orderBy('rate','desc')->simplePaginate($perPage);
+            }
+            if (empty($reads) || $reads->count() < 4) {
+                $query2 = RecommendRead::where('audit_status',1);
+                $count = $query2->count();
+                $rand = $perPage/$count * 100;
+                $reads = $query2->where(DB::raw('RAND()'),'<=',$rand)->distinct()->orderBy(DB::raw('RAND()'))->simplePaginate($perPage);
+            }
+            $result = $reads->toArray();
+            foreach ($result['data'] as &$item) {
+                if ($user) {
+                    RateLimiter::instance()->sAdd('user-recommend-'.$user->id,$item['id'],60 * 30);
+                }
+                $item = $this->formatRecommendReadItem($item);
+            }
+            Cache::put($cache_key,$result,3);
         }
+
         return self::createJsonData(true, $result);
     }
 
