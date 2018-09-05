@@ -581,7 +581,7 @@ class FollowController extends Controller
         $return = $attentions->toArray();
         $data = [];
         foreach($attentions as $attention){
-            $info = User::find($attention->user_id);
+            $info = User::find($attention->source_id);
             $item = [];
             $item['id'] = $attention->id;
             $item['user_id'] = $info->id;
