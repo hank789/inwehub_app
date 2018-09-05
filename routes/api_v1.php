@@ -171,8 +171,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //收藏列表
     Route::post('collected/{source_type}',['uses'=>'CollectionController@collectList'])->where(['source_type'=>'(questions|answers|readhubSubmission)']);
 
-    //关注我的
+    //关注我的用户
     Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
+    //我关注的用户
+    Route::post('followed/users',['uses'=>'FollowController@followedUsers']);
 
     Route::post('im/getWhisperRoom','MessageController@getWhisperRoom');
 

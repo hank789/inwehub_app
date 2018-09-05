@@ -23,6 +23,15 @@ class SearchController extends Controller
         RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
         RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
+
+    public function suggest(Request $request) {
+        $validateRules = [
+            'search_word' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+
+    }
+
     public function user(Request $request)
     {
         $validateRules = [

@@ -562,6 +562,47 @@ class FollowController extends Controller
         return self::createJsonData(true,$return);
     }
 
+    /*我关注的用户*/
+    public function followedUsers(Request $request)
+    {
+
+        $uuid = $request->input('uuid',0);
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        } else {
+            $user = $request->user();
+        }
+        $query = Attention::where('source_type','=','App\Models\User')->where('user_id',$user->id);
+
+        $attentions = $query->orderBy('created_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $attentions->toArray();
+        $data = [];
+        foreach($attentions as $attention){
+            $info = User::find($attention->user_id);
+            $item = [];
+            $item['id'] = $attention->id;
+            $item['user_id'] = $info->id;
+            $item['uuid'] = $info->uuid;
+            $item['company'] = $info->company;
+            $item['title'] = $info->title;
+            $item['is_expert'] = ($info->authentication && $info->authentication->status === 1) ? 1 : 0;
+            $item['user_name'] = $info->name;
+            $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($info))->where('source_id','=',$info->id)->first();
+            $item['is_following'] = 0;
+            if ($attention){
+                $item['is_following'] = 1;
+            }
+            $item['user_avatar_url'] = $info->getAvatarUrl();
+            $item['description'] = $info->description;
+            $data[] = $item;
+        }
+        $return['data'] = $data;
+        return self::createJsonData(true,$return);
+    }
+
 
     //搜索我关注的用户
     public function searchFollowedUser(Request $request) {
