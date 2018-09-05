@@ -361,7 +361,7 @@ class IndexController extends Controller {
                 }
                 $item = $this->formatRecommendReadItem($item);
             }
-            Cache::put($cache_key,$result,5);
+            Cache::put($cache_key,$result,3);
         }
 
         return self::createJsonData(true, $result);
