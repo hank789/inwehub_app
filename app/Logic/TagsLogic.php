@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Redis;
 /**
  * @author: wanghui
  * @date: 2017/5/23 下午10:06
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class TagsLogic {

@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2018/8/28 下午2:10
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class Lagou {

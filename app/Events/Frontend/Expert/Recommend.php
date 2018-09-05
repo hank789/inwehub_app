@@ -3,7 +3,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/10 下午9:51
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 class Recommend
 {

@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @author: wanghui
  * @date: 2017/5/16 上午10:42
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Models\Relations\BelongsToUserTrait;
 

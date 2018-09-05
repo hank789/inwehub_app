@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
  *
  * @author : wanghui
  * @date : 2017/5/22 下午3:50
- * @email : wanghui@yonglibao.com
+ * @email : hank.huiwang@gmail.com
  * @mixin \Eloquent
  * @property int $id
  * @property int $recommend_uid 邀请人uid

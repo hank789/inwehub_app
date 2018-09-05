@@ -10,7 +10,7 @@ use App\Models\User;
  * 培训经历
  * @author: wanghui
  * @date: 2017/4/21 下午6:17
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 

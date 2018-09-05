@@ -4,7 +4,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/10 下午4:28
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class GtAuthResultGtAuthResultCode extends PBEnum

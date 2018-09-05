@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/10 下午4:29
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 

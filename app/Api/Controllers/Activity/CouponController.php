@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 /**
  * @author: wanghui
  * @date: 2017/7/13 上午11:30
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class CouponController extends Controller {

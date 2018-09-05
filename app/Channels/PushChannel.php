@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/8/16 下午3:22
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Events\Frontend\System\Push;
 use App\Services\RateLimiter;

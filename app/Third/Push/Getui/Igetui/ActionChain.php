@@ -5,7 +5,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/10 下午4:31
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class ActionChain extends PBMessage

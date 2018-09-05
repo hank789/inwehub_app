@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 /**
  * @author: wanghui
  * @date: 2017/12/20 下午3:50
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class LocationController extends Controller {

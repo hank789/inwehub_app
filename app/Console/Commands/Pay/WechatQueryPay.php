@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/6/30 下午2:35
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Models\Pay\Order;
 use Illuminate\Console\Command;

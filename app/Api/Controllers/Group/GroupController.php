@@ -25,7 +25,7 @@ use Tymon\JWTAuth\JWTAuth;
 /**
  * @author: wanghui
  * @date: 2018/4/8 下午2:35
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class GroupController extends Controller
@@ -608,7 +608,15 @@ class GroupController extends Controller
 
     //我的圈子
     public function mine(Request $request) {
-        $user = $request->user();
+        $uuid = $request->input('uuid',0);
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        } else {
+            $user = $request->user();
+        }
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('updated_at','desc')->simplePaginate($perPage);
         $return = $groupMembers->toArray();

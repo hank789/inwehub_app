@@ -3,7 +3,7 @@
 /**
  * @author: wanghui
  * @date: 2017/4/6 下午5:35
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 use Exception;

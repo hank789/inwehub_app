@@ -4,7 +4,7 @@ use HeXiangHui\BosonNLP\BosonNLP;
 /**
  * @author: wanghui
  * @date: 2018/8/17 下午3:22
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  * https://bosonnlp.com/
  */
 

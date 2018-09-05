@@ -9,7 +9,7 @@ use App\Models\Pay\Settlement as SettlementModel;
 /**
  * @author: wanghui
  * @date: 2017/5/22 下午8:21
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class Settlement extends Command {

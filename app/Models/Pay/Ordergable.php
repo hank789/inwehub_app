@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/16 上午11:24
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use Illuminate\Database\Eloquent\Model;
 

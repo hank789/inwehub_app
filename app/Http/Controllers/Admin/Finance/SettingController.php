@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 /**
  * @author: wanghui
  * @date: 2017/5/16 下午7:57
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class SettingController extends AdminController {

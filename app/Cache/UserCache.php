@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/26 下午1:56
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use Illuminate\Support\Facades\Cache;
 

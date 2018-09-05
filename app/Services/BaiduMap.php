@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/11/28 下午2:35
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 namespace App\Services;

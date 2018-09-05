@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Redis;
 /**
  * @author: wanghui
  * @date: 2017/11/14 下午3:28
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class SubmissionVotesController extends Controller {

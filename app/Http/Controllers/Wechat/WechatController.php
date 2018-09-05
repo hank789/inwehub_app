@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Session;
 /**
  * @author: wanghui
  * @date: 2017/6/21 下午6:55
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class WechatController extends Controller

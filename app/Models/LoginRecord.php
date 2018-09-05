@@ -5,7 +5,7 @@
  *
  * @author : wanghui
  * @date : 2017/4/7 下午6:49
- * @email : wanghui@yonglibao.com
+ * @email : hank.huiwang@gmail.com
  * @property int $id
  * @property int $user_id 用户id
  * @property string|null $ip ip地址，可为空

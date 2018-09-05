@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Config;
 /**
  * @author: wanghui
  * @date: 2017/6/7 上午11:28
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class ProjectController extends Controller {

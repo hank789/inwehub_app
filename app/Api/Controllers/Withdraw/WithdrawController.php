@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 /**
  * @author: wanghui
  * @date: 2017/5/16 下午2:11
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class WithdrawController extends Controller {

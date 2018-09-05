@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 /**
  * @author: wanghui
  * @date: 2017/5/16 下午7:59
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class OrderController extends AdminController {

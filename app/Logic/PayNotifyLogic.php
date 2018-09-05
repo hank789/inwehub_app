@@ -9,7 +9,7 @@ use Payment\Notify\PayNotifyInterface;
 /**
  * @author: wanghui
  * @date: 2017/5/15 下午9:12
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class PayNotifyLogic implements PayNotifyInterface {

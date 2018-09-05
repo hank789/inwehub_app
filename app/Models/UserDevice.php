@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @author : wanghui
  * @date : 2017/5/9 下午6:00
- * @email : wanghui@yonglibao.com
+ * @email : hank.huiwang@gmail.com
  * @mixin \Eloquent
  * @property int $id
  * @property int $user_id

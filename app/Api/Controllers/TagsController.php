@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Config;
 /**
  * @author: wanghui
  * @date: 2017/4/20 下午8:40
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class TagsController extends Controller {

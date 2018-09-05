@@ -424,6 +424,15 @@ class FollowController extends Controller
     /*我的关注*/
     public function attentions(Request $request)
     {
+        $uuid = $request->input('uuid',0);
+        if ($uuid) {
+            $user = User::where('uuid',$uuid)->first();
+            if (!$user) {
+                throw new ApiException(ApiException::BAD_REQUEST);
+            }
+        } else {
+            $user = $request->user();
+        }
         $source_type = $request->route()->parameter('source_type');
         $sourceClassMap = [
             'questions' => 'App\Models\Question',
@@ -437,7 +446,7 @@ class FollowController extends Controller
 
         $model = App::make($sourceClassMap[$source_type]);
 
-        $query = $request->user()->attentions()->where('source_type','=',$sourceClassMap[$source_type]);
+        $query = $user->attentions()->where('source_type','=',$sourceClassMap[$source_type]);
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
 
         $attentions = $query->orderBy('attentions.created_at','desc')->simplePaginate($perPage);
@@ -457,7 +466,11 @@ class FollowController extends Controller
                     $item['user_avatar_url'] = $info->avatar;
                     $item['is_expert'] = ($info->authentication && $info->authentication->status == 1) ? 1 : 0;
                     $item['description'] = $info->description;
-                    $item['is_followed'] = 1;
+                    $attention = Attention::where("user_id",'=',$request->user()->id)->where('source_type','=',get_class($info))->where('source_id','=',$info->id)->first();
+                    $item['is_following'] = 0;
+                    if ($attention){
+                        $item['is_following'] = 1;
+                    }
                     break;
                 case 'questions':
                     $item['question_id'] = $info->id;

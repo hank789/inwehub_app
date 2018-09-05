@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 /**
  * @author: wanghui
  * @date: 2017/4/13 下午7:42
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 

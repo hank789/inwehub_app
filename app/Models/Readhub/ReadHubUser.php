@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @author: wanghui
  * @date: 2017/8/1 上午10:46
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 /**

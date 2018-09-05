@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/18 下午6:37
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Logic\TaskLogic;
 use App\Models\AppVersion;

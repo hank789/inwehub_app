@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * @author: wanghui
  * @date: 2017/11/13 下午6:53
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 trait SubmitSubmission
