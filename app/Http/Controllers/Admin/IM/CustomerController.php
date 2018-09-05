@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Session;
 /**
  * @author: wanghui
  * @date: 2017/10/23 下午2:31
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class CustomerController extends AdminController {

@@ -8,7 +8,7 @@ use Carbon\Carbon;
 /**
  * @author: wanghui
  * @date: 2017/5/31 下午7:30
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class QuestionLogic {

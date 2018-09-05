@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2018/8/27 下午7:39
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class Jobs {

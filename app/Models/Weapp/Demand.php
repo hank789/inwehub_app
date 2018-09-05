@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/6/16 下午6:49
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Models\IM\Room;
 use App\Models\Tag;

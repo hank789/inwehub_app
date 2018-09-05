@@ -4,7 +4,7 @@ use App\Http\Controllers\Controller;
 /**
  * @author: wanghui
  * @date: 2017/4/19 下午7:49
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class IndexController extends Controller

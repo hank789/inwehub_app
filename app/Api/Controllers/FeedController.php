@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/10/26 下午4:43
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 use App\Exceptions\ApiException;

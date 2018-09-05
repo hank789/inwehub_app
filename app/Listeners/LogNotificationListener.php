@@ -3,7 +3,7 @@
 /**
  * @author: wanghui
  * @date: 2017/8/16 下午4:09
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Models\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;

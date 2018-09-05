@@ -9,7 +9,7 @@ use App\Events\Frontend\System\Credit as CreditEvent;
 /**
  * @author: wanghui
  * @date: 2017/7/13 上午11:30
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class SignController extends Controller {

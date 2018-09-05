@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 /**
  * @author: wanghui
  * @date: 2017/11/14 下午4:39
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class BookmarksController extends Controller {

@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/16 下午3:23
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Events\Frontend\Withdraw\WithdrawCreate;
 use App\Events\Frontend\Withdraw\WithdrawOffline;

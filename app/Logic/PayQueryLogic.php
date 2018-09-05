@@ -6,7 +6,7 @@ use Payment\Config;
 /**
  * @author: wanghui
  * @date: 2017/6/30 下午3:01
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class PayQueryLogic {

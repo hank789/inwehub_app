@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2018/3/12 上午11:55
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;

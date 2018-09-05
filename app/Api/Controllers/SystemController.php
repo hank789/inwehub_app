@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/4/21 下午3:30
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 use App\Events\Frontend\Auth\UserLoggedIn;

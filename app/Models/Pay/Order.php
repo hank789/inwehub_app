@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/15 下午8:45
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 use App\Models\Relations\BelongsToUserTrait;

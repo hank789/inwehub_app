@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/4/20 下午4:23
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 use App\Cache\UserCache;

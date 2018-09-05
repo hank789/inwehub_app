@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/10 下午9:56
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Events\Frontend\Expert\Recommend;
 use Illuminate\Contracts\Queue\ShouldQueue;

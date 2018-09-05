@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/11/14 下午4:46
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 trait Bookmarkable

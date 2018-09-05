@@ -12,7 +12,7 @@ use Payment\Common\PayException;
 /**
  * @author: wanghui
  * @date: 2017/5/15 下午8:59
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class NotifyController extends Controller

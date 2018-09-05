@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/4/13 下午7:40
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use Goutte\Client;
 use Symfony\Component\DomCrawler\Crawler;

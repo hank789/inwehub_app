@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 /**
  * @author: wanghui
  * @date: 2018/3/9 下午1:53
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 

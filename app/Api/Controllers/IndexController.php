@@ -25,7 +25,7 @@ use Tymon\JWTAuth\JWTAuth;
 /**
  * @author: wanghui
  * @date: 2017/5/12 下午5:55
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class IndexController extends Controller {

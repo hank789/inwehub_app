@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/15 上午10:56
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Models\Attention;
 use App\Models\Authentication;

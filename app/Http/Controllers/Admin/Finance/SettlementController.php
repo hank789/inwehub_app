@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Artisan;
 /**
  * @author: wanghui
  * @date: 2017/5/16 下午7:59
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class SettlementController extends AdminController {

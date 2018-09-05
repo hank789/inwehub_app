@@ -25,7 +25,7 @@ use Tymon\JWTAuth\JWTAuth;
 /**
  * @author: wanghui
  * @date: 2018/4/8 下午2:35
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class GroupController extends Controller

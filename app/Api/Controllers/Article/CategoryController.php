@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 /**
  * @author: wanghui
  * @date: 2017/11/14 上午11:07
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class CategoryController extends Controller {

@@ -4,7 +4,7 @@ use App\Models\User;
 /**
  * @author: wanghui
  * @date: 2017/8/24 下午3:49
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class NotificationSettings

@@ -26,7 +26,7 @@ use Tymon\JWTAuth\JWTAuth;
 /**
  * @author: wanghui
  * @date: 2017/6/16 下午2:31
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class QuestionController extends Controller {

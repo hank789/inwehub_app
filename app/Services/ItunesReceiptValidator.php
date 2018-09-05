@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/6/13 下午3:26
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class ItunesReceiptValidator {

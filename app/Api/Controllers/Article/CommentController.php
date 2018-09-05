@@ -14,7 +14,7 @@ use Tymon\JWTAuth\JWTAuth;
 /**
  * @author: wanghui
  * @date: 2017/11/14 下午12:09
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class CommentController extends Controller {

@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/4/7 下午1:32
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Events\Frontend\Answer\Answered;
 use App\Events\Frontend\System\SystemNotify;

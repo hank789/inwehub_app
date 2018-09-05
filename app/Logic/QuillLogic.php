@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/6/9 下午1:51
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Jobs\UploadFile;
 use Illuminate\Support\Facades\Storage;

@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/8/16 下午3:28
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use Illuminate\Notifications\Notification;
 use App\Events\Frontend\Wechat\Notice;

@@ -17,7 +17,7 @@ use Payment\Config;
 /**
  * @author: wanghui
  * @date: 2017/5/15 下午6:54
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class PayController extends Controller {

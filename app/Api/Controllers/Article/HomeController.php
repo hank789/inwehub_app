@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Config;
 /**
  * @author: wanghui
  * @date: 2017/11/13 下午5:29
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class HomeController extends Controller {

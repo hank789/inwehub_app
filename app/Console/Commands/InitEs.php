@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2018/2/22 下午4:44
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 use GuzzleHttp\Client;

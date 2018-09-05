@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/5/16 下午2:01
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\Order;

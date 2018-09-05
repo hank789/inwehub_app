@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/4/10 下午8:10
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 use Spatie\MediaLibrary\Media;

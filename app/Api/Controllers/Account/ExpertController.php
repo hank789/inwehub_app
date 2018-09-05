@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\File;
 /**
  * @author: wanghui
  * @date: 2017/4/21 下午1:54
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 class ExpertController extends Controller {

@@ -2,7 +2,7 @@
 /**
  * @author: wanghui
  * @date: 2017/10/25 下午8:17
- * @email: wanghui@yonglibao.com
+ * @email: hank.huiwang@gmail.com
  */
 
 use App\Models\Feed\Feed;
