@@ -173,8 +173,6 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
 
     //关注我的用户
     Route::post('follow_my/users',['uses'=>'FollowController@followMe']);
-    //我关注的用户
-    Route::post('followed/users',['uses'=>'FollowController@followedUsers']);
 
     Route::post('im/getWhisperRoom','MessageController@getWhisperRoom');
 
