@@ -1140,10 +1140,10 @@ if (!function_exists('getUrlInfo')) {
                     $temp = $image;
                 }
             }
-            $encode = mb_detect_encoding($title, array('GB2312','GBK','UTF-8', 'CP936', 'ASCII')); //得到字符串编码
+            $encode = mb_detect_encoding($title); //得到字符串编码
             $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
             $title = trim($title);
-            if ( $encode != 'CP936' && $encode != $file_charset) {
+            if ( $encode != 'CP936' && $encode && $encode != $file_charset) {
                 $title = iconv($encode, $file_charset, $title);
             }
             if (str_contains($url,'3g.163.com')) {

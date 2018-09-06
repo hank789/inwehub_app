@@ -104,7 +104,7 @@ class RssPosts extends Command
                     $guid = $value->link;
                 }
                 if (empty($image_url)) {
-                    $info = getUrlInfo($value->link,true);
+                    $info = getUrlInfo((string)$value->link,true);
                     $image_url = $info['img_url'];
                 }
                 $keywords = $topic->keywords;
