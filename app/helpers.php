@@ -1080,11 +1080,22 @@ if (!function_exists('saveImgToCdn')){
     }
 }
 
-if (!function_exists('getUrlImg')) {
-    function getUrlImg($url, $dir = 'submissions') {
+
+if (!function_exists('getUrlInfo')) {
+    function getUrlInfo($url, $withImageUrl = false, $dir = 'submissions') {
+        $img_url = Cache::get('url_img_'.$url,'');
+        $title = Cache::get('url_title_'.$url, '');
+        if ($title && $img_url) {
+            return ['title'=>$title,'img_url'=>$img_url];
+        }
+        if ($title && !$withImageUrl) {
+            return ['title'=>$title,'img_url'=>$img_url];
+        }
+        if ($img_url && $withImageUrl) {
+            return ['title'=>$title,'img_url'=>$img_url];
+        }
         try {
             $temp = '';
-            $img_url = '';
             $useCache = false;
             $urlArr = parse_url($url);
             if ($urlArr['host']=='mp.weixin.qq.com') {
@@ -1095,36 +1106,52 @@ if (!function_exists('getUrlImg')) {
                 if(array_key_exists(1, $matches) && !empty($matches[1][0])) {
                     $temp = $matches[1][0];
                 }
+                preg_match('/<h2 class="rich_media_title" id="activity-name">(?<h2>.*?)<\/h2>/si', $f, $title);
+                $title = $title['h2'];
             } else {
                 $ql = \QL\QueryList::getInstance();
                 if (in_array($urlArr['host'],[
                     'www.bilibili.com'
                 ])) {
                     $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
-                    $image1 = $ql->browser($url)->find('meta[property=og:image]')->content;
-                    $image2 = $ql->browser($url)->find('link[href*=.ico]')->href;
+                    $ql->browser($url);
+
                 } else {
-                    $image1 = $ql->get($url)->find('meta[property=og:image]')->content;
-                    $image2 = $ql->get($url)->find('link[href*=.ico]')->href;
+                    $ql->get($url);
                 }
-                $image = $image1?:$image2;
+                $image = $ql->find('meta[property=og:image]')->content;
+                if (!$image) {
+                    $image = $ql->find('meta[itemprop=image]')->content;
+                    if (!$image) {
+                        $image = $ql->find('link[href*=.ico]')->href;
+                    }
+                }
+                $title = $ql->find('title')->text();
                 if (str_contains($image,'.ico')) {
                     $useCache = true;
+                    $img_url = Cache::get('domain_url_img_'.domain($url),'');
                 }
-                $temp = Cache::get('domain_url_img_'.domain($url),'');
-                if (empty($temp)) {
-                    if (stripos($image,'//') === 0) {
-                        $temp = 'http:'.$image;
-                    } elseif (stripos($image,'http') !== 0) {
-                        $temp = $urlArr['scheme'].'://'.$urlArr['host'].$image;
-                    } else {
-                        $temp = $image;
-                    }
+
+                if (stripos($image,'//') === 0) {
+                    $temp = 'http:'.$image;
+                } elseif (stripos($image,'http') !== 0) {
+                    $temp = $urlArr['scheme'].'://'.$urlArr['host'].$image;
                 } else {
-                    return $temp;
+                    $temp = $image;
                 }
             }
-            if ($temp) {
+            $encode = mb_detect_encoding($title, array('GB2312','GBK','UTF-8', 'CP936', 'ASCII')); //得到字符串编码
+            $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
+            $title = trim($title);
+            if ( $encode != 'CP936' && $encode != $file_charset) {
+                $title = iconv($encode, $file_charset, $title);
+            }
+            if (str_contains($url,'3g.163.com')) {
+                $title = trim($title,'_&#x624B;&#x673A;&#x7F51;&#x6613;&#x7F51;');
+            }
+            $title = htmlspecialchars_decode($title);
+            Cache::put('url_title_'.$url,$title,60);
+            if ($temp && $withImageUrl && !$img_url) {
                 //保存图片
                 $img_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
                 dispatch((new \App\Jobs\UploadFile($img_name,base64_encode(file_get_contents($temp)))));
@@ -1133,11 +1160,12 @@ if (!function_exists('getUrlImg')) {
                 if ($useCache) {
                     Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
                 }
+                Cache::put('url_img_'.$url,$img_url,60);
             }
-            return $img_url;
+            return ['title'=>$title,'img_url'=>$img_url];
         } catch (Exception $e) {
             app('sentry')->captureException($e,['url'=>$url]);
-            return null;
+            return ['title'=>$title,'img_url'=>$img_url];
         }
     }
 }
@@ -1181,34 +1209,6 @@ if (!function_exists('getRequestIpAddress')) {
     function getRequestIpAddress()
     {
         return $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-    }
-}
-
-if (!function_exists('getUrlTitle')) {
-    function getUrlTitle($url) {
-        try {
-            $f = file_get_contents_curl($url);
-            if (str_contains($url,'mp.weixin.qq.com')) {
-                preg_match('/<h2 class="rich_media_title" id="activity-name">(?<h2>.*?)<\/h2>/si', $f, $title);
-                $title['title'] = $title['h2'];
-            } else {
-                preg_match('/<title.*?>(?<title>.*?)<\/title>/si', $f, $title);
-            }
-
-            $encode = mb_detect_encoding($title['title'], array('GB2312','GBK','UTF-8', 'CP936', 'ASCII')); //得到字符串编码
-            $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
-            $title['title'] = trim($title['title']);
-            if ( $encode != 'CP936' && $encode != $file_charset) {
-                return iconv($encode, $file_charset, $title['title']);
-            }
-            if (str_contains($url,'3g.163.com')) {
-                $title['title'] = trim($title['title'],'_&#x624B;&#x673A;&#x7F51;&#x6613;&#x7F51;');
-            }
-            return htmlspecialchars_decode($title['title']);
-        } catch (Exception $e) {
-            var_dump($e->getMessage());
-            return '';
-        }
     }
 }
 
@@ -1430,9 +1430,9 @@ if (!function_exists('formatContentUrls')) {
         $urls = getContentUrls($content);
         if ($urls) {
             foreach ($urls as $url) {
-                $title = getUrlTitle($url);
-                if (empty($title)) continue;
-                $formatUrl = '['.$title.']('.$url.')';
+                $info = getUrlInfo($url);
+                if (empty($info['title'])) continue;
+                $formatUrl = '['.$info['title'].']('.$url.')';
                 $content = str_replace($url,$formatUrl,$content);
             }
         }

@@ -105,7 +105,8 @@ class AtomPosts extends Command
                 }
 
                 if (empty($image_url)) {
-                    $image_url = getUrlImg($value->link->attributes()->href);
+                    $info = getUrlInfo($value->link->attributes()->href,true);
+                    $image_url = $info['img_url'];
                 }
 
                 $keywords = $topic->keywords;
