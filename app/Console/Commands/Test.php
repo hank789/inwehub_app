@@ -4,13 +4,13 @@ namespace App\Console\Commands;
 
 use App\Models\RecommendRead;
 use App\Models\Scraper\WechatWenzhangInfo;
+use App\Models\Submission;
 use App\Models\Taggable;
 use App\Services\BosonNLPService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
-use Spatie\Browsershot\Browsershot;
 
 
 class Test extends Command
@@ -36,8 +36,6 @@ class Test extends Command
      */
     public function handle()
     {
-
-
         /*$sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
         $aHeader = [
             'Accept: application/json',
@@ -76,6 +74,18 @@ class Test extends Command
             ]
         ])->getHtml();
         var_dump($content);
+        $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
+            'pageNumber' => 2,
+            'pageType' => ''
+        ],[
+            'headers' => [
+                'Host'    => 'www.jianyu360.com',
+                'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+                'Cookie'    => 'UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371'
+            ]
+        ])->getHtml();
+        var_dump($content);
         return;
         $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
             'pageNumber' => 1,
@@ -101,9 +111,9 @@ class Test extends Command
         return;
         //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
         $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r){
-            $r->setMethod('POST');
-            $r->setUrl('https://www.jianyu360.com/jylab/supsearch/index.html');
-            $r->setRequestData([
+            //$r->setMethod('POST');
+            $r->setUrl('https://www.jianyu360.com/article/content/ABCY2EAfTIFGSA7AlZhcHUJJzACHj1mZnB%2FKx47LCE3YFJzfwVUCQc%3D.html');
+            /*$r->setRequestData([
                 'keywords' => '',
                 'publishtime' => '',
                 'timeslot' => '',
@@ -113,7 +123,7 @@ class Test extends Command
                 'maxprice' => '',
                 'industry' => '',
                 'selectType' => 'title'
-            ]);
+            ]);*/
             //$r->setTimeout(10000); // 10 seconds
             //$r->setDelay(3); // 3 seconds
             //$r->addHeader('Cookie','UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371');
@@ -124,9 +134,13 @@ class Test extends Command
                 'Cookie' => 'UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371'
             ]);
             return $r;
-        })->find('div.lucene')->htmls();
+        });
+        $source_url = $content->find('a.com-original')->href;
+        $bid_html_body = $content->find('div.com-detail')->htmls()->first();
         //$content = $ql->browser('http://36kr.com/p/5151347.html?ktm_source=feed')->find('link[href*=.ico]')->href;
-        var_dump($content);
+        var_dump($source_url);
+        var_dump($bid_html_body);
+
         //Storage::disk('local')->put('attachments/test1.html',$content);
         return;
     }

@@ -1,9 +1,5 @@
 <?php namespace App\Console\Commands\Scraper;
-use App\Models\Inwehub\Feeds;
-use App\Models\Inwehub\News;
-use App\Services\WechatPostSpider;
 use Illuminate\Console\Command;
-use Goutte\Client;
 
 /**
  * @author: wanghui
