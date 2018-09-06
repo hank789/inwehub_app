@@ -112,27 +112,6 @@ trait SubmitSubmission
     }
 
     /**
-     * Fetches the title from an external URL.
-     *
-     * @param  $url
-     *
-     * @return string title
-     */
-    protected function getTitle($url)
-    {
-        //$apiURL = 'https://midd.voten.co/embed/title?url='.$url;
-
-        try {
-            //$title = file_get_contents($apiURL);
-            $title = getUrlTitle($url);
-        } catch (\Exception $exception) {
-            throw new ApiException(ApiException::ARTICLE_GET_URL_TITLE_ERROR);
-        }
-
-        return $title;
-    }
-
-    /**
      * whether or not the title has already been posted.
      *
      * @return bool

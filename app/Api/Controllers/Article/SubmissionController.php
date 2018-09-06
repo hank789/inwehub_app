@@ -116,11 +116,11 @@ class SubmissionController extends Controller {
 
                 $data = [
                     'url'           => $request->url,
-                    'title'         => Cache::get('submission_url_title_'.$request->url,''),
+                    'title'         => Cache::get('url_title_'.$request->url,''),
                     'description'   => null,
                     'type'          => 'link',
                     'embed'         => null,
-                    'img'           => ($img_url['img']?$img_url['img'][0]:'')?:Cache::get('submission_url_img_'.$request->url,''),
+                    'img'           => ($img_url['img']?$img_url['img'][0]:'')?:Cache::get('url_img_'.$request->url,''),
                     'thumbnail'     => null,
                     'providerName'  => null,
                     'publishedTime' => null,
@@ -294,15 +294,9 @@ class SubmissionController extends Controller {
                 'url'   => 'required|url'
             ]);
             try {
-                $url_title = $this->getTitle($url);
-                $img_url = Cache::get('submission_url_img_'.$url,'');
-                Cache::put('submission_url_title_'.$url,$url_title,60);
-                if (empty($img_url)) {
-                    $img_url = getUrlImg($url);
-                    if ($img_url) {
-                        Cache::put('submission_url_img_'.$url,$img_url,60);
-                    }
-                }
+                $info = getUrlInfo($url,true);
+                $url_title = $info['title'];
+                $img_url = $info['img_url'];
                 if (empty($title)) $title = $url_title;
                 $data = [
                     'url'           => $url,
@@ -391,17 +385,9 @@ class SubmissionController extends Controller {
             'url' => 'required|url',
         ]);
 
-        $title = $this->getTitle($request->url);
-        $img_url = Cache::get('submission_url_img_'.$request->url,'');
-        Cache::put('submission_url_title_'.$request->url,$title,60);
-        if (empty($img_url)) {
-            $img_url = getUrlImg($request->url);
-            if ($img_url) {
-                Cache::put('submission_url_img_'.$request->url,$img_url,60);
-            }
-        }
+        $info = getUrlInfo($request->url,true);
 
-        return self::createJsonData(true,['title'=>$title,'img_url'=>$img_url]);
+        return self::createJsonData(true,$info);
     }
 
 
