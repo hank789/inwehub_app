@@ -105,7 +105,7 @@ class AtomPosts extends Command
                 }
 
                 if (empty($image_url)) {
-                    $info = getUrlInfo($value->link->attributes()->href,true);
+                    $info = getUrlInfo((string)$value->link->attributes()->href,true);
                     $image_url = $info['img_url'];
                 }
 
