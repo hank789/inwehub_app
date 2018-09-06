@@ -44,6 +44,8 @@ class BidInfo extends Command {
         $ql2->use(PhantomJs::class,config('services.phantomjs.path'));
         $cookie = Setting()->get('scraper_jianyu360_cookie','');
         $count = 0;
+        $newBidIds = [];
+        $startTime = time();
         if (empty($cookie)) {
             event(new SystemNotify('抓取招标信息未设置cookie，请到后台设置',[]));
             return;
@@ -63,11 +65,21 @@ class BidInfo extends Command {
             ])->getHtml();
             $data = json_decode($content,true);
             if ($data) {
-                foreach ($data as $item) {
+                foreach ($data['list'] as $item) {
+                    $this->info($item['title']);
                     $bid = BidInfoModel::where('guid',$item['_id'])->first();
                     if ($bid) {
-                        return;
+                        if (in_array($item['_id'],$newBidIds)) {
+                            continue;
+                        } else {
+                            if ($count >= 1) {
+                                $endTime = time();
+                                event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
+                            }
+                            return;
+                        }
                     }
+                    $newBidIds[] = $item['_id'];
                     $info = [
                         'guid' => $item['_id'],
                         'source_url' => $item['_id'],
@@ -84,7 +96,8 @@ class BidInfo extends Command {
                         'industry' => $item['industry']??'',
                         's_subscopeclass' => $item['s_subscopeclass']??'',
                         'winner' => $item['winner']??'',
-                        'publishtime' => isset($item['publishtime'])?date('Y-m-d H:i:s',$item['publishtime']):''
+                        'publishtime' => isset($item['publishtime'])?date('Y-m-d H:i:s',$item['publishtime']):'',
+                        'status' => 2
                     ];
                     sleep(rand(5,20));
                     $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie){
@@ -114,6 +127,9 @@ class BidInfo extends Command {
                 return;
             }
         }
-        event(new SystemNotify('抓取了'.$count.'条招标信息',[]));
+        if ($count >= 1) {
+            $endTime = time();
+            event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
+        }
     }
 }

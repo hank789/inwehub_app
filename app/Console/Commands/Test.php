@@ -61,8 +61,20 @@ class Test extends Command
         var_dump($s);*/
         $ql = QueryList::getInstance();
         // 安装时需要设置PhantomJS二进制文件路径
-        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        /*$content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
+        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
+            'pageNumber' => 1,
+            'pageType' => ''
+        ],[
+            'headers' => [
+                'Host'    => 'www.jianyu360.com',
+                'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+                'Cookie'    => 'UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371'
+            ]
+        ])->getHtml();
+        var_dump($content);
+        $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
             'pageNumber' => 2,
             'pageType' => ''
         ],[
@@ -96,7 +108,7 @@ class Test extends Command
             ]
         ])->getHtml();
         var_dump($content);
-        return;*/
+        return;
         //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
         $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r){
             //$r->setMethod('POST');

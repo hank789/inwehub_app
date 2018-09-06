@@ -355,6 +355,12 @@ Route::group(['prefix' => 'scraper','namespace'=>'Scraper'],function(){
     Route::post('article/publish',['as'=>'admin.scraper.article.publish','uses'=>'ArticleController@publish']);
     Route::post('article/setSupportType',['as'=>'admin.scraper.article.setSupportType','uses'=>'ArticleController@setSupportType']);
 
+    Route::get('bid/index',['as'=>'admin.scraper.bid.index','uses'=>'BidController@index']);
+    Route::post('bid/verify_recommend',['as'=>'admin.scraper.bid.verify_recommend','uses'=>'BidController@verifyRecommend']);
+    Route::post('bid/destroy',['as'=>'admin.scraper.bid.destroy','uses'=>'BidController@destroy']);
+    Route::post('bid/publish',['as'=>'admin.scraper.bid.publish','uses'=>'BidController@publish']);
+    Route::post('bid/setSupportType',['as'=>'admin.scraper.bid.setSupportType','uses'=>'BidController@setSupportType']);
+
 
     /*新闻管理*/
     Route::get('news/create',['as'=>'admin.scraper.news.create','uses'=>'NewsController@create']);

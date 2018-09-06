@@ -13,8 +13,8 @@ class CreateScraperBidInfoTable extends Migration
     {
         Schema::create('scraper_bid_info', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('guid',255)->comment('唯一id');
-            $table->string('source_url',1024)->unique()->comment('原文地址');
+            $table->string('guid',255)->unique()->comment('唯一id');
+            $table->string('source_url',1024)->index()->comment('原文地址');
             $table->string('title', 1024)->default('')->comment('标题');
             $table->string('projectname', 1024)->default('')->comment('项目名称');
             $table->string('projectcode')->default('')->comment('项目编号');
@@ -24,7 +24,7 @@ class CreateScraperBidInfoTable extends Migration
             $table->string('area')->default('')->comment('招标区域');
             $table->string('budget')->default('')->comment('预算金额');
             $table->string('bidamount')->default('')->comment('中标金额');
-            $table->dateTime('bidopentime')->default('')->comment('投标截止时间');
+            $table->dateTime('bidopentime')->nullable()->comment('投标截止时间');
             $table->string('industry')->default('')->comment('所属行业');
             $table->string('s_subscopeclass')->default('')->comment('行业细分');
             $table->string('winner')->default('')->comment('中标者');
