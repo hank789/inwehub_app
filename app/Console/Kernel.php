@@ -27,11 +27,12 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\CalcGroupHot::class,
         Commands\Crontab\AwakeUser::class,
         Commands\Crontab\DealOvertimeTasks::class,
-        //阅读站
+        //抓取脚本
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
         Commands\Scraper\RssPosts::class,
         Commands\Scraper\AtomPosts::class,
+        Commands\Scraper\BidInfo::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
@@ -83,7 +84,7 @@ class Kernel extends ConsoleKernel
             //$schedule->command('scraper:wechat:author')->hourly();
             $schedule->command('scraper:atom')->cron('0 8,16,20 * * *');
             $schedule->command('scraper:rss')->cron('30 7,13,19,21 * * *');
-
+            $schedule->command('scraper:bid:info')->cron('20 7,13,19,21 * * *');
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
         $schedule->command('crontab:deal-overtime-task')->daily()->at('05:00')->withoutOverlapping();
