@@ -1150,7 +1150,7 @@ if (!function_exists('getUrlInfo')) {
                 $title = trim($title,'_&#x624B;&#x673A;&#x7F51;&#x6613;&#x7F51;');
             }
             $title = htmlspecialchars_decode($title);
-            Cache::put('url_title_'.$url,$title,60);
+            Cache::put('url_title_'.$url,$title,60 * 24 * 7);
             if ($temp && $withImageUrl && !$img_url) {
                 //保存图片
                 $img_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
@@ -1160,7 +1160,7 @@ if (!function_exists('getUrlInfo')) {
                 if ($useCache) {
                     Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
                 }
-                Cache::put('url_img_'.$url,$img_url,60);
+                Cache::put('url_img_'.$url,$img_url,60 * 24 * 7);
             }
             return ['title'=>$title,'img_url'=>$img_url];
         } catch (Exception $e) {
