@@ -1,4 +1,4 @@
-@servers(['web-test1' => 'web@47.92.24.67','web-pro' => 'web@47.92.64.32'])
+@servers(['web-test1' => 'web@47.92.24.67','web-pro' => 'web@47.92.64.32','web-read' => 'web@47.92.104.35'])
 
 @task('test',['on' => ['web-test1']])
     cd /home/web/www/intervapp
@@ -49,7 +49,7 @@ php artisan migrate
 php artisan queue:restart
 @endtask
 
-@task('pro-m',['on' => ['web-pro']])
+@task('pro-m',['on' => ['web-pro','web-read']])
 cd /home/web/www/inwehub_app
 git pull origin master
 @endtask
