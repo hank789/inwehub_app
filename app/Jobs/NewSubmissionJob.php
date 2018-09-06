@@ -58,6 +58,7 @@ class NewSubmissionJob implements ShouldQueue
         if (!$submission) return;
         if ($submission->status == 0) return;
         $submission->setKeywordTags();
+        $submission->calculationRate();
         $slackFields = [];
         foreach ($submission->data as $field=>$value){
             if ($value){
