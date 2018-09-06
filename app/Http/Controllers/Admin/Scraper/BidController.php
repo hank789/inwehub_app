@@ -33,8 +33,8 @@ class BidController extends AdminController
         if( isset($filter['status']) && $filter['status'] > -1 ){
             $query->where('status','=',$filter['status']);
         } else {
-            $filter['status']=1;
-            $query->where('status','=',1);
+            $filter['status']=2;
+            $query->where('status','=',2);
         }
 
         $articles = $query->orderBy('publishtime','desc')->paginate(20);
