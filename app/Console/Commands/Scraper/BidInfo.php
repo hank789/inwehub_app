@@ -43,14 +43,15 @@ class BidInfo extends Command {
         $ql = QueryList::getInstance();
         $ql2 = new QueryList();
         $ql2->use(PhantomJs::class,config('services.phantomjs.path'));
-        $cookie = Setting()->get('scraper_jianyu360_cookie','');
+        $cookies = Setting()->get('scraper_jianyu360_cookie','');
         $count = 0;
         $newBidIds = [];
         $startTime = time();
-        if (empty($cookie)) {
+        if (empty($cookies)) {
             event(new SystemNotify('抓取招标信息未设置cookie，请到后台设置',[]));
             return;
         }
+        $cookie = explode('||',$cookies);
         //最多10页
         for ($page=1;$page<=10;$page++) {
             sleep(rand(5,20));
@@ -62,7 +63,7 @@ class BidInfo extends Command {
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                    'Cookie'    => $cookie
+                    'Cookie'    => $cookie[rand(0,count($cookie))]
                 ]
             ])->getHtml();
             $data = json_decode($content,true);

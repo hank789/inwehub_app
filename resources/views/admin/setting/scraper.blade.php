@@ -37,7 +37,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td>剑鱼站点cookie</td>
+                                    <td>剑鱼站点cookie(多个以"||"相隔)</td>
                                     <td>
                                         <div class="col-md-12 @if ($errors->has('scraper_jianyu360_cookie')) has-error @endif ">
                                             <input type="text" class="form-control" name="scraper_jianyu360_cookie" value="{{ old('scraper_jianyu360_cookie',Setting()->get('scraper_jianyu360_cookie','')) }}" /></div>
@@ -45,7 +45,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>剑鱼APP cookie(使用抓包软件获得)</td>
+                                    <td>剑鱼APP cookie(使用抓包软件获得，多个以"||"相隔)</td>
                                     <td>
                                         <div class="col-md-12 @if ($errors->has('scraper_jianyu360_app_cookie')) has-error @endif ">
                                             <input type="text" class="form-control" name="scraper_jianyu360_app_cookie" value="{{ old('scraper_jianyu360_app_cookie',Setting()->get('scraper_jianyu360_app_cookie','')) }}" /></div>

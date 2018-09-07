@@ -51,7 +51,7 @@ class BidLogic {
                     'Host'   => 'www.jianyu360.com',
                     'Referer'       => 'https://www.jianyu360.com/jylab/supsearch/index.html',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                    'Cookie' => $cookie
+                    'Cookie' => $cookie[rand(0,count($cookie))]
                 ]);
                 return $r;
             });
@@ -59,9 +59,10 @@ class BidLogic {
             $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
             if (empty($info['source_url']) || empty($item['bid_html_body'])) {
                 event(new SystemNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',[]));
-                $cookie2 = Setting()->get('scraper_jianyu360_app_cookie','');
-                if ($cookie2) {
-                    $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie2){
+                $cookies2 = Setting()->get('scraper_jianyu360_app_cookie','');
+                $cookies2Arr = explode('||',$cookies2);
+                if ($cookies2) {
+                    $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookies2Arr){
                         //$r->setMethod('POST');
                         $r->setUrl('https://www.jianyu360.com/jyapp/article/content/'.$item['_id'].'.html');
                         //$r->setTimeout(10000); // 10 seconds
@@ -71,7 +72,7 @@ class BidLogic {
                             'Referer'       => 'https://www.jianyu360.com/jyapp/wxpush/bidinfo/1536284358',
                             'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                             'User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77',
-                            'Cookie' => $cookie2
+                            'Cookie' => $cookies2Arr[rand(0,count($cookies2Arr))]
                         ]);
                         return $r;
                     });
