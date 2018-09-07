@@ -10,9 +10,8 @@ use PHPHtmlParser\Dom;
 
 class BidLogic {
 
-    public static function scraperSaveList($data, $ql2, $cookie, $ips, &$count) {
+    public static function scraperSaveList($data, $ql2, $agentPc, $agentApp, &$count) {
         if (empty($data['list'])) return false;
-        shuffle($ips);
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
             //超过2天的不抓取
@@ -44,12 +43,12 @@ class BidLogic {
                 'source_url' => '',
             ];
             sleep(rand(5,20));
-            $cookies2 = Setting()->get('scraper_jianyu360_app_cookie','');
-            $cookies2Arr = explode('||',$cookies2);
+
             $item['bid_html_body'] = '';
-            if ($cookies2) {
-                for ($i=0;$i<count($ips);$i++) {
-                    $content = self::getAppData($ql2,$item,$cookies2Arr,$ips[$i]);
+            if ($agentApp) {
+                shuffle($agentApp);
+                for ($i=0;$i<count($agentApp);$i++) {
+                    $content = self::getAppData($ql2,$item,$agentApp[$i]);
                     if ($content) break;
                 }
                 $info['source_url'] = $content->find('a.original')->href;
@@ -67,8 +66,9 @@ class BidLogic {
             if (empty($info['source_url']) || empty($item['bid_html_body'])) {
                 event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',[]));
                 sleep(rand(5,10));
-                for ($i=0;$i<count($ips);$i++) {
-                    $content = self::getPcData($ql2,$item,$cookie,$ips[$i]);
+                shuffle($agentPc);
+                for ($i=0;$i<count($agentPc);$i++) {
+                    $content = self::getPcData($ql2,$item,$agentPc[$i]);
                     if ($content) break;
                 }
                 $info['source_url'] = $content->find('a.com-original')->href;
@@ -86,9 +86,9 @@ class BidLogic {
         return true;
     }
 
-    public static function getAppData($ql2,$item,$cookies2Arr,$ip) {
+    public static function getAppData($ql2,$item,$agent) {
         try {
-            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookies2Arr){
+            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $agent){
                 //$r->setMethod('POST');
                 $r->setUrl('https://www.jianyu360.com/jyapp/article/content/'.$item['_id'].'.html');
                 //$r->setTimeout(10000); // 10 seconds
@@ -98,11 +98,11 @@ class BidLogic {
                     'Referer'       => 'https://www.jianyu360.com/jyapp/jylab/mainSearch',
                     'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                     'User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77',
-                    'Cookie' => $cookies2Arr[rand(0,count($cookies2Arr)-1)]
+                    'Cookie' => $agent['cookie']
                 ]);
                 return $r;
             },false,[
-                '--proxy' => $ip['ip'].':'.$ip['port'],
+                '--proxy' => $agent['proxy'],
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
@@ -111,9 +111,9 @@ class BidLogic {
         return $content;
     }
 
-    public static function getPcData($ql2,$item,$cookie,$ip) {
+    public static function getPcData($ql2,$item,$agent) {
         try {
-            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie){
+            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $agent){
                 $r->setUrl('https://www.jianyu360.com/article/content/'.$item['_id'].'.html');
                 //$r->setTimeout(10000); // 10 seconds
                 //$r->setDelay(5); // 3 seconds
@@ -121,11 +121,11 @@ class BidLogic {
                     'Host'   => 'www.jianyu360.com',
                     'Referer'       => 'https://www.jianyu360.com/jylab/supsearch/index.html',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                    'Cookie' => $cookie[rand(0,count($cookie)-1)]
+                    'Cookie' => $agent['cookie']
                 ]);
                 return $r;
             },false,[
-                '--proxy' => $ip['ip'].':'.$ip['port'],
+                '--proxy' => $agent['proxy'],
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {

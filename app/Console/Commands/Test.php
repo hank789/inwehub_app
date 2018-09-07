@@ -38,12 +38,6 @@ class Test extends Command
      */
     public function handle()
     {
-        for ($i=0;$i<10;$i++) {
-            $content = $this->getHtmlData($i);
-            if ($content) break;
-        }
-        var_dump($content);
-        return;
         /*$sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
         $aHeader = [
             'Accept: application/json',
@@ -69,7 +63,7 @@ class Test extends Command
         var_dump($s);*/
         $ql = QueryList::getInstance();
         // 安装时需要设置PhantomJS二进制文件路径
-        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         //$h = file_get_contents(storage_path().'/app/attachments/test3.html');
         //$ql->html($h);
 
@@ -79,7 +73,7 @@ class Test extends Command
         //$html = $dom->find('pre#h_content');
         //var_dump((string)$html);
         //return;
-        $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
+        /*$content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
             'pageNumber' => 1,
             'pageType' => ''
         ],[

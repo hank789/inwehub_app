@@ -65,17 +65,43 @@ class BidSearch extends Command {
             event(new SystemNotify('未设置爬虫代理，请到后台设置',[]));
             return;
         }
-        $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
+        $ips = $proxy['msg'];
+
+        $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
+        $cookiesAppArr = explode('||',$cookiesApp);
+        $agentApp = [];
+        if ($cookiesApp) {
+            foreach ($cookiesAppArr as $key=>$cookies2Item) {
+                $agentApp[] = [
+                    'cookie' => $cookies2Item,
+                    'proxy' => $ips[$key]['ip'].':'.$ips[$key]['port']
+                ];
+                unset($ips[$key]);
+            }
+        }
+
+        shuffle($ips);
+        $agentPc = [];
+        foreach ($cookie as $key=>$cookieItem) {
+            $agentPc[] = [
+                'cookie' => $cookieItem,
+                'proxy' => $ips[$key]['ip'].':'.$ips[$key]['port']
+            ];
+            unset($ips[$key]);
+        }
+        shuffle($ips);
+
         foreach ($keywords as $keyword) {
             sleep(rand(20,60));
-            for ($i=0;$i<count($proxy['msg']);$i++) {
-                $content = $this->getHtmlData($ql,$keyword,$proxy['msg'][$i],$cookie);
+            shuffle($agentPc);
+            for ($i=0;$i<count($agentPc);$i++) {
+                $content = $this->getHtmlData($ql,$keyword,$agentPc[$i]);
                 if ($content) break;
             }
 
             $data = json_decode($content,true);
             if ($data) {
-                $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$proxy['msg'],$count);
+                $result = BidLogic::scraperSaveList($data,$ql2,$agentPc,$agentApp,$count);
                 if (!$result) {
                     if ($count >= 1) {
                         $endTime = time();
@@ -96,7 +122,7 @@ class BidSearch extends Command {
         }
     }
 
-    protected function getHtmlData($ql,$keyword,$ip,$cookie) {
+    protected function getHtmlData($ql,$keyword,$agent) {
         try {
             //全文搜索返回全部500条信息
             $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
@@ -112,12 +138,12 @@ class BidSearch extends Command {
                 'industry' => '',
                 'tabularflag' => 'Y'
             ],[
-                'proxy' => $ip['ip'].':'.$ip['port'],
+                'proxy' => $agent['proxy'],
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                    'Cookie'    => $cookie[rand(0,count($cookie)-1)]
+                    'Cookie'    => $agent['cookie']
                 ]
             ])->getHtml();
         } catch (\Exception $e) {
