@@ -67,7 +67,7 @@ class BidSearch extends Command {
         }
         $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
         foreach ($keywords as $keyword) {
-            sleep(rand(5,20));
+            sleep(rand(20,60));
             for ($i=0;$i<count($proxy['msg']);$i++) {
                 $content = $this->getHtmlData($ql,$keyword,$proxy['msg'][$i],$cookie);
                 if ($content) break;
