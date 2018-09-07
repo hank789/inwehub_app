@@ -63,7 +63,7 @@ class BidInfo extends Command {
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                    'Cookie'    => $cookie[rand(0,count($cookie))]
+                    'Cookie'    => $cookie[rand(0,count($cookie)-1)]
                 ]
             ])->getHtml();
             $data = json_decode($content,true);
