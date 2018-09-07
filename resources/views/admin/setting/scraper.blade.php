@@ -37,6 +37,15 @@
                                 </tr>
 
                                 <tr>
+                                    <td>招标信息关键词(多个以|隔开)</td>
+                                    <td>
+                                        <div class="col-md-12 @if ($errors->has('scraper_bid_keywords')) has-error @endif ">
+                                            <input type="text" class="form-control" name="scraper_bid_keywords" value="{{ old('scraper_bid_keywords',Setting()->get('scraper_bid_keywords','SAP|信息化|供应链金融|供应链管理|供应链|平台|oracle|管理咨询|麦肯锡')) }}" /></div>
+                                        @if($errors->has('scraper_bid_keywords')) <p class="help-block">{{ $errors->first('scraper_bid_keywords') }}</p> @endif
+                                    </td>
+                                </tr>
+
+                                <tr>
                                     <td>剑鱼站点cookie(多个以"||"相隔)</td>
                                     <td>
                                         <div class="col-md-12 @if ($errors->has('scraper_jianyu360_cookie')) has-error @endif ">
