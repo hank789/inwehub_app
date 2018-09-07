@@ -87,7 +87,7 @@ class BidSearch extends Command {
                         $endTime = time();
                         event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
                     }
-                    return;
+                    continue;
                 }
             } else {
                 event(new SystemNotify('抓取招标信息失败，对应cookie已失效，请到后台设置',[]));
