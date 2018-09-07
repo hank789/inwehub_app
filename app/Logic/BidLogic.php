@@ -43,28 +43,15 @@ class BidLogic {
                 'status' => 2,
                 'source_url' => '',
             ];
-            sleep(rand(5,20));
+            sleep(rand(5,10));
             $cookies2 = Setting()->get('scraper_jianyu360_app_cookie','');
             $cookies2Arr = explode('||',$cookies2);
             $item['bid_html_body'] = '';
             if ($cookies2) {
-                $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookies2Arr){
-                    //$r->setMethod('POST');
-                    $r->setUrl('https://www.jianyu360.com/jyapp/article/content/'.$item['_id'].'.html');
-                    //$r->setTimeout(10000); // 10 seconds
-                    //$r->setDelay(3); // 3 seconds
-                    $r->setHeaders([
-                        'Host'   => 'www.jianyu360.com',
-                        'Referer'       => 'https://www.jianyu360.com/jyapp/jylab/mainSearch',
-                        'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                        'User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77',
-                        'Cookie' => $cookies2Arr[rand(0,count($cookies2Arr)-1)]
-                    ]);
-                    return $r;
-                },false,[
-                    '--proxy' => $ip['ip'].':'.$ip['port'],
-                    '--proxy-type' => 'http'
-                ]);
+                for ($i=0;$i<count($ips);$i++) {
+                    $content = self::getAppData($ql2,$item,$cookies2Arr,$ips[$i]);
+                    if ($content) break;
+                }
                 $info['source_url'] = $content->find('a.original')->href;
                 $bid_html_body = $ql2->removeHead()->getHtml();
                 $dom = new Dom();
@@ -79,21 +66,10 @@ class BidLogic {
 
             if (empty($info['source_url']) || empty($item['bid_html_body'])) {
                 event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',[]));
-                $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie){
-                    $r->setUrl('https://www.jianyu360.com/article/content/'.$item['_id'].'.html');
-                    //$r->setTimeout(10000); // 10 seconds
-                    //$r->setDelay(5); // 3 seconds
-                    $r->setHeaders([
-                        'Host'   => 'www.jianyu360.com',
-                        'Referer'       => 'https://www.jianyu360.com/jylab/supsearch/index.html',
-                        'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                        'Cookie' => $cookie[rand(0,count($cookie)-1)]
-                    ]);
-                    return $r;
-                },false,[
-                    '--proxy' => $ip['ip'].':'.$ip['port'],
-                    '--proxy-type' => 'http'
-                ]);
+                for ($i=0;$i<count($ips);$i++) {
+                    $content = self::getPcData($ql2,$item,$cookie,$ips[$i]);
+                    if ($content) break;
+                }
                 $info['source_url'] = $content->find('a.com-original')->href;
                 $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
                 if (empty($info['source_url']) || empty($item['bid_html_body'])) {
@@ -107,6 +83,54 @@ class BidLogic {
             $count ++;
         }
         return true;
+    }
+
+    public static function getAppData($ql2,$item,$cookies2Arr,$ip) {
+        try {
+            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookies2Arr){
+                //$r->setMethod('POST');
+                $r->setUrl('https://www.jianyu360.com/jyapp/article/content/'.$item['_id'].'.html');
+                //$r->setTimeout(10000); // 10 seconds
+                //$r->setDelay(3); // 3 seconds
+                $r->setHeaders([
+                    'Host'   => 'www.jianyu360.com',
+                    'Referer'       => 'https://www.jianyu360.com/jyapp/jylab/mainSearch',
+                    'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77',
+                    'Cookie' => $cookies2Arr[rand(0,count($cookies2Arr)-1)]
+                ]);
+                return $r;
+            },false,[
+                '--proxy' => $ip['ip'].':'.$ip['port'],
+                '--proxy-type' => 'http'
+            ]);
+        } catch (\Exception $e) {
+            $content = null;
+        }
+        return $content;
+    }
+
+    public static function getPcData($ql2,$item,$cookie,$ip) {
+        try {
+            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie){
+                $r->setUrl('https://www.jianyu360.com/article/content/'.$item['_id'].'.html');
+                //$r->setTimeout(10000); // 10 seconds
+                //$r->setDelay(5); // 3 seconds
+                $r->setHeaders([
+                    'Host'   => 'www.jianyu360.com',
+                    'Referer'       => 'https://www.jianyu360.com/jylab/supsearch/index.html',
+                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+                    'Cookie' => $cookie[rand(0,count($cookie)-1)]
+                ]);
+                return $r;
+            },false,[
+                '--proxy' => $ip['ip'].':'.$ip['port'],
+                '--proxy-type' => 'http'
+            ]);
+        } catch (\Exception $e) {
+            $content = null;
+        }
+        return $content;
     }
 
 }
