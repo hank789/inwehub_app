@@ -11,6 +11,7 @@ use PHPHtmlParser\Dom;
 class BidLogic {
 
     public static function scraperSaveList($data, $ql2, $cookie, &$count) {
+        if (empty($data['list'])) return false;
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
             //超过2天的不抓取
