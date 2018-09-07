@@ -58,39 +58,42 @@ class BidSearch extends Command {
             return;
         }
         foreach ($keywords as $keyword) {
-            //最多10页
-            for ($page=1;$page<=10;$page++) {
-                $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
-                    'pageNumber' => $page,
-                    'reqType' => 'bidSearch',
-                    'searchvalue' => $keyword,
-                    'area' => '',
-                    'subtype' => '',
-                    'publishtime' => '',
-                    'selectType' => 'all',
-                    'minprice' => '',
-                    'maxprice' => '',
-                    'industry' => '',
-                    'tabularflag' => 'Y'
-                ],[
-                    'headers' => [
-                        'Host'    => 'www.jianyu360.com',
-                        'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
-                        'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                        'Cookie'    => $cookie
-                    ]
-                ])->getHtml();
-                $data = json_decode($content,true);
-                if ($data) {
-                    $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$count);
-                    if (!$result) {
-                        return;
+            //全文搜索返回全部500条信息
+            $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
+                'pageNumber' => 1,
+                'reqType' => 'bidSearch',
+                'searchvalue' => $keyword,
+                'area' => '',
+                'subtype' => '',
+                'publishtime' => '',
+                'selectType' => 'all',
+                'minprice' => '',
+                'maxprice' => '',
+                'industry' => '',
+                'tabularflag' => 'Y'
+            ],[
+                'headers' => [
+                    'Host'    => 'www.jianyu360.com',
+                    'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
+                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+                    'Cookie'    => $cookie
+                ]
+            ])->getHtml();
+            $data = json_decode($content,true);
+            if ($data) {
+                $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$count);
+                if (!$result) {
+                    if ($count >= 1) {
+                        $endTime = time();
+                        event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
                     }
-                } else {
-                    event(new SystemNotify('抓取招标信息失败，对应cookie已失效，请到后台设置',[]));
                     return;
                 }
+            } else {
+                event(new SystemNotify('抓取招标信息失败，对应cookie已失效，请到后台设置',[]));
+                return;
             }
+
         }
 
         if ($count >= 1) {

@@ -62,7 +62,7 @@ class Test extends Command
         var_dump($s);*/
         $ql = QueryList::getInstance();
         // 安装时需要设置PhantomJS二进制文件路径
-        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
         //$h = file_get_contents(storage_path().'/app/attachments/test3.html');
         //$ql->html($h);
 
@@ -72,7 +72,7 @@ class Test extends Command
         //$html = $dom->find('pre#h_content');
         //var_dump((string)$html);
         //return;
-        /*$content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
+        $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
             'pageNumber' => 1,
             'pageType' => ''
         ],[
@@ -84,6 +84,7 @@ class Test extends Command
             ]
         ])->getHtml();
         var_dump($content);
+        return;
         $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
             'pageNumber' => 2,
             'pageType' => ''
@@ -96,7 +97,7 @@ class Test extends Command
             ]
         ])->getHtml();
         var_dump($content);
-        return;*/
+        return;
         /*$content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
             'pageNumber' => 1,
             'reqType' => 'bidSearch',

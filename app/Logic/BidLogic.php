@@ -13,6 +13,10 @@ class BidLogic {
     public static function scraperSaveList($data, $ql2, $cookie, &$count) {
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
+            //超过2天的不抓取
+            if (isset($item['publishtime']) && $item['publishtime'] <= strtotime('-2 days')) {
+                return false;
+            }
             $bid = BidInfoModel::where('guid',$item['_id'])->first();
             if ($bid) {
                 continue;
