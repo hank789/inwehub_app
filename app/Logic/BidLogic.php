@@ -10,7 +10,7 @@ use PHPHtmlParser\Dom;
 
 class BidLogic {
 
-    public static function scraperSaveList($data, $ql2, $cookie, &$count) {
+    public static function scraperSaveList($data, $ql2, $cookie, $ips, &$count) {
         if (empty($data['list'])) return false;
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
@@ -22,6 +22,7 @@ class BidLogic {
             if ($bid) {
                 continue;
             }
+            $ip = $ips[rand(0,count($ips)-1)];
             $newBidIds[] = $item['_id'];
             $info = [
                 'guid' => $item['_id'],
@@ -60,7 +61,10 @@ class BidLogic {
                         'Cookie' => $cookies2Arr[rand(0,count($cookies2Arr)-1)]
                     ]);
                     return $r;
-                });
+                },false,[
+                    '--proxy' => $ip['ip'].':'.$ip['port'],
+                    '--proxy-type' => 'http'
+                ]);
                 $info['source_url'] = $content->find('a.original')->href;
                 $bid_html_body = $ql2->removeHead()->getHtml();
                 $dom = new Dom();
@@ -86,7 +90,10 @@ class BidLogic {
                         'Cookie' => $cookie[rand(0,count($cookie)-1)]
                     ]);
                     return $r;
-                });
+                },false,[
+                    '--proxy' => $ip['ip'].':'.$ip['port'],
+                    '--proxy-type' => 'http'
+                ]);
                 $info['source_url'] = $content->find('a.com-original')->href;
                 $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
                 if (empty($info['source_url']) || empty($item['bid_html_body'])) {

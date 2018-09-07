@@ -52,13 +52,22 @@ class BidInfo extends Command {
             return;
         }
         $cookie = explode('||',$cookies);
+
+        $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
+        if (!$proxy) {
+            event(new SystemNotify('未设置爬虫代理，请到后台设置',[]));
+            return;
+        }
+
         //最多10页
         for ($page=1;$page<=10;$page++) {
             sleep(rand(5,20));
+            $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
             $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
                 'pageNumber' => $page,
                 'pageType' => ''
             ],[
+                'proxy' => $ip['ip'].':'.$ip['port'],
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
@@ -68,7 +77,7 @@ class BidInfo extends Command {
             ])->getHtml();
             $data = json_decode($content,true);
             if ($data) {
-                $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$count);
+                $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$proxy['msg'],$count);
                 if (!$result) {
                     if ($count >= 1) {
                         $endTime = time();
