@@ -37,6 +37,15 @@
                                 </tr>
 
                                 <tr>
+                                    <td>爬虫代理</td>
+                                    <td>
+                                        <div class="col-md-12 @if ($errors->has('scraper_proxy_address')) has-error @endif ">
+                                            <input type="text" class="form-control" name="scraper_proxy_address" value="{{ old('scraper_proxy_address',Setting()->get('scraper_proxy_address','')) }}" /></div>
+                                        @if($errors->has('scraper_proxy_address')) <p class="help-block">{{ $errors->first('scraper_proxy_address') }}</p> @endif
+                                    </td>
+                                </tr>
+
+                                <tr>
                                     <td>招标信息关键词(多个以|隔开)</td>
                                     <td>
                                         <div class="col-md-12 @if ($errors->has('scraper_bid_keywords')) has-error @endif ">
