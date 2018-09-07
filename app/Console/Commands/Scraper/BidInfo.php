@@ -61,7 +61,7 @@ class BidInfo extends Command {
         $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
         //最多10页
         for ($page=1;$page<=10;$page++) {
-            sleep(rand(5,10));
+            sleep(rand(5,20));
             for ($i=0;$i<count($proxy['msg']);$i++) {
                 $content = $this->getHtmlData($ql,$page,$proxy['msg'][$i],$cookie);
                 if ($content) break;

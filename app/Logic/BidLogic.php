@@ -12,7 +12,7 @@ class BidLogic {
 
     public static function scraperSaveList($data, $ql2, $cookie, $ips, &$count) {
         if (empty($data['list'])) return false;
-        $ip = $ips[rand(0,count($ips)-1)];
+        shuffle($ips);
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
             //超过2天的不抓取
@@ -43,7 +43,7 @@ class BidLogic {
                 'status' => 2,
                 'source_url' => '',
             ];
-            sleep(rand(5,10));
+            sleep(rand(5,20));
             $cookies2 = Setting()->get('scraper_jianyu360_app_cookie','');
             $cookies2Arr = explode('||',$cookies2);
             $item['bid_html_body'] = '';
@@ -66,6 +66,7 @@ class BidLogic {
 
             if (empty($info['source_url']) || empty($item['bid_html_body'])) {
                 event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',[]));
+                sleep(rand(5,10));
                 for ($i=0;$i<count($ips);$i++) {
                     $content = self::getPcData($ql2,$item,$cookie,$ips[$i]);
                     if ($content) break;
