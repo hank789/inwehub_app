@@ -22,7 +22,7 @@ class BidInfo extends Model {
     public $timestamps = true;
 
     protected $fillable = ['guid','source_url','topic_id','title','projectname',
-        'projectcode','buyer','toptype','subtype','area','budget','bidamount',
+        'projectcode','buyer','toptype','subtype','area','budget','bidamount', 'source_domain',
         'bidopentime','industry','s_subscopeclass','winner','detail','publishtime','topic_id','status'];
 
     //status状态：1待发布，2已发布，3已删除

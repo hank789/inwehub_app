@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\RecommendRead;
+use App\Models\Scraper\BidInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Taggable;
@@ -37,6 +38,12 @@ class Test extends Command
      */
     public function handle()
     {
+        $items = BidInfo::get();
+        foreach ($items as $item) {
+            $item->source_domain = parse_url($item->source_url, PHP_URL_HOST);
+            $item->save();
+        }
+        return;
         /*$sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
         $aHeader = [
             'Accept: application/json',
@@ -121,9 +128,10 @@ class Test extends Command
         var_dump($content);
         return;*/
         //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
-        $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r){
+        $cookie = 'SESSIONID=aea5b8fc92dd29486aff8adbe209c4a5ba12f936; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536286450; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1536283507,1536286139';
+        $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($cookie){
             //$r->setMethod('POST');
-            $r->setUrl('https://www.jianyu360.com/jyapp/article/content/ABCY2EAfTIeLy8vRHhhcHUJJzACHj1mZnB%2FK1g7Ki4deGlzZxlUCfM%3D.html');
+            $r->setUrl('https://www.jianyu360.com/jyapp/article/content/ABCY2EAfTIvJyksJFZhcHUJJzACHj1mZnB%2FKA4gPy43eFJzfzNUCZM%3D.html');
             /*$r->setRequestData([
                 'keywords' => '',
                 'publishtime' => '',
@@ -142,7 +150,7 @@ class Test extends Command
                 'Host'   => 'www.jianyu360.com',
                 'Referer'       => 'https://www.jianyu360.com/jyapp/wxpush/bidinfo/1536284358',
                 'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Cookie' => 'SESSIONID=aea5b8fc92dd29486aff8adbe209c4a5ba12f936; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536286450; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1536283507,1536286139'
+                'Cookie' => $cookie
             ]);
             return $r;
         });
@@ -151,7 +159,7 @@ class Test extends Command
         $dom = new Dom();
         $dom->load($bid_html_body);
         $html = $dom->find('pre#h_content');
-        var_dump((string)$html);
+        var_dump($html->__toString());
         //$content = $ql->browser('http://36kr.com/p/5151347.html?ktm_source=feed')->find('link[href*=.ico]')->href;
         var_dump($source_url);
         //var_dump($bid_html_body);

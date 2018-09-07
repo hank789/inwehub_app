@@ -45,6 +45,7 @@ class BidLogic {
             sleep(rand(5,20));
             $cookies2 = Setting()->get('scraper_jianyu360_app_cookie','');
             $cookies2Arr = explode('||',$cookies2);
+            $item['bid_html_body'] = '';
             if ($cookies2) {
                 $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookies2Arr){
                     //$r->setMethod('POST');
@@ -65,9 +66,11 @@ class BidLogic {
                 $dom = new Dom();
                 $dom->load($bid_html_body);
                 $html = $dom->find('pre#h_content');
-                $item['bid_html_body'] = (string)$html;
-            } else {
-                $item['bid_html_body'] = '';
+                try {
+                    $item['bid_html_body'] = $html->__toString();
+                } catch (\Exception $e) {
+
+                }
             }
 
             if (empty($info['source_url']) || empty($item['bid_html_body'])) {
@@ -91,6 +94,7 @@ class BidLogic {
                     return false;
                 }
             }
+            $info['source_domain'] = parse_url($info['source_url'], PHP_URL_HOST);
             $info['detail'] = $item;
             BidInfoModel::create($info);
             $count ++;
