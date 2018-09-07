@@ -15,6 +15,7 @@ class CreateScraperBidInfoTable extends Migration
             $table->increments('id');
             $table->string('guid',255)->unique()->comment('唯一id');
             $table->string('source_url',1024)->index()->comment('原文地址');
+            $table->string('source_domain')->index()->comment('原文域名');
             $table->string('title', 1024)->default('')->comment('标题');
             $table->string('projectname', 1024)->default('')->comment('项目名称');
             $table->string('projectcode')->default('')->comment('项目编号');
