@@ -62,7 +62,7 @@ class Test extends Command
         var_dump($s);*/
         $ql = QueryList::getInstance();
         // 安装时需要设置PhantomJS二进制文件路径
-        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         //$h = file_get_contents(storage_path().'/app/attachments/test3.html');
         //$ql->html($h);
 
@@ -72,7 +72,7 @@ class Test extends Command
         //$html = $dom->find('pre#h_content');
         //var_dump((string)$html);
         //return;
-        $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
+        /*$content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
             'pageNumber' => 1,
             'pageType' => ''
         ],[
@@ -97,7 +97,7 @@ class Test extends Command
             ]
         ])->getHtml();
         var_dump($content);
-        return;
+        return;*/
         /*$content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
             'pageNumber' => 1,
             'reqType' => 'bidSearch',
@@ -123,7 +123,7 @@ class Test extends Command
         //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
         $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r){
             //$r->setMethod('POST');
-            $r->setUrl('https://www.jianyu360.com/jyapp/article/content/ABCY2EAfTIeJyw7RGhhcHUJJzACHj1mZnB%2FKz87IC8NeFJzezNUCck%3D.html');
+            $r->setUrl('https://www.jianyu360.com/jyapp/article/content/ABCY2EAfTIeLy8vRHhhcHUJJzACHj1mZnB%2FK1g7Ki4deGlzZxlUCfM%3D.html');
             /*$r->setRequestData([
                 'keywords' => '',
                 'publishtime' => '',
@@ -141,7 +141,7 @@ class Test extends Command
             $r->setHeaders([
                 'Host'   => 'www.jianyu360.com',
                 'Referer'       => 'https://www.jianyu360.com/jyapp/wxpush/bidinfo/1536284358',
-                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+                'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Cookie' => 'SESSIONID=aea5b8fc92dd29486aff8adbe209c4a5ba12f936; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536286450; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1536283507,1536286139'
             ]);
             return $r;
