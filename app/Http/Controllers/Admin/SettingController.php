@@ -269,7 +269,8 @@ class SettingController extends AdminController
     public function scraper(Request $request){
         $validateRules = [
             'is_scraper_wechat_auto_publish' => 'required|between:0,1',
-            'scraper_jianyu360_cookie' => 'required'
+            'scraper_jianyu360_cookie' => 'required',
+            'scraper_jianyu360_app_cookie' => 'required'
         ];
         if($request->isMethod('post')){
             $this->validate($request,$validateRules);
