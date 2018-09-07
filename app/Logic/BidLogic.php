@@ -12,7 +12,7 @@ class BidLogic {
 
     public static function scraperSaveList($data, $ql2, $cookie, $ips, &$count) {
         if (empty($data['list'])) return false;
-        $ip = $ips[rand(0,count($ips)-1)];
+        shuffle($ips);
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
             //超过2天的不抓取
