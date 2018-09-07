@@ -57,6 +57,7 @@ class BidLogic {
             $info['source_url'] = $content->find('a.com-original')->href;
             $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
             if (empty($info['source_url']) || empty($item['bid_html_body'])) {
+                event(new SystemNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',[]));
                 $cookie2 = Setting()->get('scraper_jianyu360_app_cookie','');
                 if ($cookie2) {
                     $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie2){
@@ -82,7 +83,7 @@ class BidLogic {
                     $item['bid_html_body'] = (string)$html;
                 }
                 if (empty($info['source_url']) || empty($item['bid_html_body'])) {
-                    event(new SystemNotify('抓取招标详情失败，对应cookie已失效，请到后台设置',[]));
+                    event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',[]));
                     return false;
                 }
             }
