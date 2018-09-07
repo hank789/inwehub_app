@@ -42,7 +42,8 @@ class BidSearch extends Command {
     {
         $word = $this->argument('word');
         if (empty($word)) {
-            $keywords = ['SAP','信息化','供应链金融','供应链管理','供应链','平台','oracle','管理咨询','麦肯锡'];
+            $scraper_bid_keywords = Setting()->get('scraper_bid_keywords','SAP|信息化|供应链金融|供应链管理|供应链|平台|oracle|管理咨询|麦肯锡');
+            $keywords = explode('|',$scraper_bid_keywords);
         } else {
             $keywords = [$word];
         }
