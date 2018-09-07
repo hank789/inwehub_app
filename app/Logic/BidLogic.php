@@ -68,7 +68,6 @@ class BidLogic {
                         $r->setHeaders([
                             'Host'   => 'www.jianyu360.com',
                             'Referer'       => 'https://www.jianyu360.com/jyapp/wxpush/bidinfo/1536284358',
-                            'Accept-Encoding' => 'br, gzip, deflate',
                             'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                             'User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77',
                             'Cookie' => $cookie2
