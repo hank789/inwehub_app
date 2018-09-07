@@ -9,6 +9,7 @@ use App\Models\Taggable;
 use App\Services\BosonNLPService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use PHPHtmlParser\Dom;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
 
@@ -61,8 +62,17 @@ class Test extends Command
         var_dump($s);*/
         $ql = QueryList::getInstance();
         // 安装时需要设置PhantomJS二进制文件路径
-        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        //$h = file_get_contents(storage_path().'/app/attachments/test3.html');
+        //$ql->html($h);
+
+        //$bid_html_body = $ql->removeHead()->getHtml();
+        //$dom = new Dom();
+        //$dom->load($bid_html_body);
+        //$html = $dom->find('pre#h_content');
+        //var_dump((string)$html);
+        //return;
+        /*$content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
             'pageNumber' => 1,
             'pageType' => ''
         ],[
@@ -86,8 +96,8 @@ class Test extends Command
             ]
         ])->getHtml();
         var_dump($content);
-        return;
-        $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
+        return;*/
+        /*$content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
             'pageNumber' => 1,
             'reqType' => 'bidSearch',
             'searchvalue' => '系统',
@@ -108,11 +118,11 @@ class Test extends Command
             ]
         ])->getHtml();
         var_dump($content);
-        return;
+        return;*/
         //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
         $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r){
             //$r->setMethod('POST');
-            $r->setUrl('https://www.jianyu360.com/article/content/ABCY2EAfTIFGSA7AlZhcHUJJzACHj1mZnB%2FKx47LCE3YFJzfwVUCQc%3D.html');
+            $r->setUrl('https://www.jianyu360.com/jyapp/article/content/ABCY2EAfTIeJyw7RGhhcHUJJzACHj1mZnB%2FKz87IC8NeFJzezNUCck%3D.html');
             /*$r->setRequestData([
                 'keywords' => '',
                 'publishtime' => '',
@@ -129,17 +139,21 @@ class Test extends Command
             //$r->addHeader('Cookie','UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371');
             $r->setHeaders([
                 'Host'   => 'www.jianyu360.com',
-                'Referer'       => 'https://www.jianyu360.com/jylab/supsearch/index.html',
+                'Referer'       => 'https://www.jianyu360.com/jyapp/wxpush/bidinfo/1536284358',
                 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                'Cookie' => 'UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371'
+                'Cookie' => 'SESSIONID=aea5b8fc92dd29486aff8adbe209c4a5ba12f936; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536286450; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1536283507,1536286139'
             ]);
             return $r;
         });
-        $source_url = $content->find('a.com-original')->href;
-        $bid_html_body = $content->find('div.com-detail')->htmls()->first();
+        $source_url = $content->find('a.original')->href;
+        $bid_html_body = $content->removeHead()->getHtml();
+        $dom = new Dom();
+        $dom->load($bid_html_body);
+        $html = $dom->find('pre#h_content');
+        var_dump((string)$html);
         //$content = $ql->browser('http://36kr.com/p/5151347.html?ktm_source=feed')->find('link[href*=.ico]')->href;
         var_dump($source_url);
-        var_dump($bid_html_body);
+        //var_dump($bid_html_body);
 
         //Storage::disk('local')->put('attachments/test1.html',$content);
         return;

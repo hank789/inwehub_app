@@ -44,6 +44,14 @@
                                         @if($errors->has('scraper_jianyu360_cookie')) <p class="help-block">{{ $errors->first('scraper_jianyu360_cookie') }}</p> @endif
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>剑鱼APP cookie(使用抓包软件获得)</td>
+                                    <td>
+                                        <div class="col-md-12 @if ($errors->has('scraper_jianyu360_app_cookie')) has-error @endif ">
+                                            <input type="text" class="form-control" name="scraper_jianyu360_app_cookie" value="{{ old('scraper_jianyu360_app_cookie',Setting()->get('scraper_jianyu360_app_cookie','')) }}" /></div>
+                                        @if($errors->has('scraper_jianyu360_app_cookie')) <p class="help-block">{{ $errors->first('scraper_jianyu360_app_cookie') }}</p> @endif
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>

@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\RssPosts::class,
         Commands\Scraper\AtomPosts::class,
         Commands\Scraper\BidInfo::class,
+        Commands\Scraper\BidSearch::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
