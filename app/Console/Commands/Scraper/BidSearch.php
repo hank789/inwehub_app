@@ -65,10 +65,9 @@ class BidSearch extends Command {
             event(new SystemNotify('未设置爬虫代理，请到后台设置',[]));
             return;
         }
-
+        $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
         foreach ($keywords as $keyword) {
             sleep(rand(10,60));
-            $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
             //全文搜索返回全部500条信息
             $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
                 'pageNumber' => 1,

@@ -58,11 +58,10 @@ class BidInfo extends Command {
             event(new SystemNotify('未设置爬虫代理，请到后台设置',[]));
             return;
         }
-
+        $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
         //最多10页
         for ($page=1;$page<=10;$page++) {
             sleep(rand(5,20));
-            $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
             $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
                 'pageNumber' => $page,
                 'pageType' => ''
