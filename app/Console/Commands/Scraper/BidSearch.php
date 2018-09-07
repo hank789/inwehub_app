@@ -58,6 +58,7 @@ class BidSearch extends Command {
             return;
         }
         foreach ($keywords as $keyword) {
+            sleep(rand(10,60));
             //全文搜索返回全部500条信息
             $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
                 'pageNumber' => 1,
