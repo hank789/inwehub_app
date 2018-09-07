@@ -38,6 +38,12 @@ class Test extends Command
      */
     public function handle()
     {
+        for ($i=0;$i<10;$i++) {
+            $content = $this->getHtmlData($i);
+            if ($content) break;
+        }
+        var_dump($content);
+        return;
         /*$sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
         $aHeader = [
             'Accept: application/json',
@@ -77,7 +83,7 @@ class Test extends Command
             'pageNumber' => 1,
             'pageType' => ''
         ],[
-            'proxy' => 'http://218.244.44.194:8060/',
+            'proxy' => '125.123.122.31:42480',
             'headers' => [
                 'Host'    => 'www.jianyu360.com',
                 'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
@@ -161,5 +167,10 @@ class Test extends Command
 
         //Storage::disk('local')->put('attachments/test1.html',$content);
         return;
+    }
+
+    public function getHtmlData($i) {
+        if ($i == 4) return $i;
+        return null;
     }
 }

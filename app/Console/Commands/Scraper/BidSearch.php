@@ -67,7 +67,37 @@ class BidSearch extends Command {
         }
         $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
         foreach ($keywords as $keyword) {
-            sleep(rand(10,60));
+            sleep(rand(5,20));
+            for ($i=0;$i<count($proxy['msg']);$i++) {
+                $content = $this->getHtmlData($ql,$keyword,$proxy['msg'][$i],$cookie);
+                if ($content) break;
+            }
+
+            $data = json_decode($content,true);
+            if ($data) {
+                $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$proxy['msg'],$count);
+                if (!$result) {
+                    if ($count >= 1) {
+                        $endTime = time();
+                        event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
+                    }
+                    continue;
+                }
+            } else {
+                event(new SystemNotify('抓取招标信息失败，对应cookie已失效，请到后台设置',[]));
+                return;
+            }
+
+        }
+
+        if ($count >= 1) {
+            $endTime = time();
+            event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
+        }
+    }
+
+    protected function getHtmlData($ql,$keyword,$ip,$cookie) {
+        try {
             //全文搜索返回全部500条信息
             $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
                 'pageNumber' => 1,
@@ -90,26 +120,9 @@ class BidSearch extends Command {
                     'Cookie'    => $cookie[rand(0,count($cookie)-1)]
                 ]
             ])->getHtml();
-            $data = json_decode($content,true);
-            if ($data) {
-                $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$proxy['msg'],$count);
-                if (!$result) {
-                    if ($count >= 1) {
-                        $endTime = time();
-                        event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
-                    }
-                    continue;
-                }
-            } else {
-                event(new SystemNotify('抓取招标信息失败，对应cookie已失效，请到后台设置',[]));
-                return;
-            }
-
+        } catch (\Exception $e) {
+            $content = null;
         }
-
-        if ($count >= 1) {
-            $endTime = time();
-            event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
-        }
+        return $content;
     }
 }

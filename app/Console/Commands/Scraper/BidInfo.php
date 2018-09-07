@@ -61,19 +61,11 @@ class BidInfo extends Command {
         $ip = $proxy['msg'][rand(0,count($proxy['msg'])-1)];
         //最多10页
         for ($page=1;$page<=10;$page++) {
-            sleep(rand(5,20));
-            $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
-                'pageNumber' => $page,
-                'pageType' => ''
-            ],[
-                'proxy' => $ip['ip'].':'.$ip['port'],
-                'headers' => [
-                    'Host'    => 'www.jianyu360.com',
-                    'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
-                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                    'Cookie'    => $cookie[rand(0,count($cookie)-1)]
-                ]
-            ])->getHtml();
+            sleep(rand(5,10));
+            for ($i=0;$i<count($proxy['msg']);$i++) {
+                $content = $this->getHtmlData($ql,$page,$proxy['msg'][$i],$cookie);
+                if ($content) break;
+            }
             $data = json_decode($content,true);
             if ($data) {
                 $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$proxy['msg'],$count);
@@ -93,5 +85,25 @@ class BidInfo extends Command {
             $endTime = time();
             event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
         }
+    }
+
+    protected function getHtmlData($ql,$page,$ip,$cookie) {
+        try {
+            $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
+                'pageNumber' => $page,
+                'pageType' => ''
+            ],[
+                'proxy' => $ip['ip'].':'.$ip['port'],
+                'headers' => [
+                    'Host'    => 'www.jianyu360.com',
+                    'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
+                    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+                    'Cookie'    => $cookie[rand(0,count($cookie)-1)]
+                ]
+            ])->getHtml();
+        } catch (\Exception $e) {
+            $content = null;
+        }
+        return $content;
     }
 }
