@@ -69,6 +69,10 @@ class BidInfo extends Command {
             if ($data) {
                 $result = BidLogic::scraperSaveList($data,$ql2,$cookie,$count);
                 if (!$result) {
+                    if ($count >= 1) {
+                        $endTime = time();
+                        event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
+                    }
                     return;
                 }
             } else {
