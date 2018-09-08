@@ -1554,9 +1554,9 @@ if (!function_exists('formatKeyword')) {
 }
 
 if (!function_exists('getProxyIps')) {
-    function getProxyIps() {
+    function getProxyIps($min = 5) {
         $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips');
-        $ql = \QL\QueryList::getInstance();
+        $ql = new \QL\QueryList();
         foreach ($ips as $key=>$ip) {
             $opts = [
                 'proxy' => $ip,
@@ -1574,7 +1574,7 @@ if (!function_exists('getProxyIps')) {
                 unset($ips[$key]);
             }
         }
-        if (empty($ips) || count($ips) <= 3) {
+        if (empty($ips) || count($ips) < $min) {
             $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
             if (!$proxy) {
                 return false;

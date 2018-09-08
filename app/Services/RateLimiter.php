@@ -29,6 +29,11 @@ class RateLimiter extends Singleton
         $this->client = $client;
     }
 
+    public function disconnect() {
+        $this->client = null;
+        self::$instance = null;
+    }
+
     private function key($event,$target)
     {
         return implode(

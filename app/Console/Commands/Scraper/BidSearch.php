@@ -1,6 +1,7 @@
 <?php namespace App\Console\Commands\Scraper;
 use App\Events\Frontend\System\SystemNotify;
 use App\Logic\BidLogic;
+use App\Services\RateLimiter;
 use Illuminate\Console\Command;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
@@ -58,44 +59,21 @@ class BidSearch extends Command {
             event(new SystemNotify('抓取招标信息未设置cookie，请到后台设置',[]));
             return;
         }
-        $cookie = explode('||',$cookies);
+        $cookiesPcArr = explode('||',$cookies);
 
-        $ips = getProxyIps();
-        if (!$ips) {
+        if (!Setting()->get('scraper_proxy_address','')) {
             event(new SystemNotify('未设置爬虫代理，请到后台设置',[]));
             return;
         }
 
         $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
         $cookiesAppArr = explode('||',$cookiesApp);
-        $agentApp = [];
-        if ($cookiesApp) {
-            foreach ($cookiesAppArr as $key=>$cookies2Item) {
-                $agentApp[] = [
-                    'cookie' => $cookies2Item,
-                    'proxy' => $ips[$key]
-                ];
-                unset($ips[$key]);
-            }
-        }
-
-        shuffle($ips);
-        $agentPc = [];
-        foreach ($cookie as $key=>$cookieItem) {
-            $agentPc[] = [
-                'cookie' => $cookieItem,
-                'proxy' => $ips[$key]
-            ];
-            unset($ips[$key]);
-        }
-        shuffle($ips);
 
         foreach ($keywords as $keyword) {
             sleep(rand(60,70));
-            shuffle($agentPc);
             $data = null;
-            for ($i=0;$i<count($agentPc);$i++) {
-                $content = $this->getHtmlData($ql,$keyword,$agentPc[$i]);
+            for ($i=0;$i<5;$i++) {
+                $content = $this->getHtmlData($ql,$keyword,$cookiesPcArr);
                 if ($content) {
                     $data = json_decode($content,true);
                     if ($data['status']==1) {
@@ -105,17 +83,9 @@ class BidSearch extends Command {
             }
 
             $fields = [];
-            $fields[] = [
-                'title'=>'agentPc',
-                'value'=>json_encode($agentPc)
-            ];
-            $fields[] = [
-                'title'=>'agentApp',
-                'value'=>json_encode($agentApp)
-            ];
             if ($data) {
                 event(new SystemNotify('准备处理'.count($data['list']).'条['.$keyword.']招标信息'));
-                $result = BidLogic::scraperSaveList($data,$ql2,$agentPc,$agentApp,$count);
+                $result = BidLogic::scraperSaveList($data,$ql2,$cookiesPcArr,$cookiesAppArr,$count);
                 if (!$result) {
                     $endTime = time();
                     $fields[] = [
@@ -126,7 +96,7 @@ class BidSearch extends Command {
                     continue;
                 }
             } else {
-                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效，请到后台设置',$fields));
+                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效或代理IP已耗尽，请到后台设置',$fields));
                 return;
             }
 
@@ -138,7 +108,9 @@ class BidSearch extends Command {
         }
     }
 
-    protected function getHtmlData($ql,$keyword,$agent) {
+    protected function getHtmlData($ql,$keyword,$cookiesPcArr) {
+        $ips = getProxyIps(1);
+        $cookie = $cookiesPcArr[rand(0,count($cookiesPcArr)-1)];
         try {
             //全文搜索返回全部500条信息
             $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
@@ -154,17 +126,17 @@ class BidSearch extends Command {
                 'industry' => '',
                 'tabularflag' => 'Y'
             ],[
-                'proxy' => $agent['proxy'],
+                'proxy' => $ips[0],
                 'timeout' => 60,
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                    'Cookie'    => $agent['cookie']
+                    'Cookie'    => $cookie
                 ]
             ])->getHtml();
         } catch (\Exception $e) {
-            app('sentry')->captureException($e,['keyword'=>$keyword,'agent'=>$agent]);
+            app('sentry')->captureException($e,['keyword'=>$keyword,'proxy'=>$ips[0],'cookiesPc'=>$cookie]);
             $content = null;
         }
         return $content;
