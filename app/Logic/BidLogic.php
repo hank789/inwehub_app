@@ -43,16 +43,22 @@ class BidLogic {
                 'source_url' => '',
             ];
             sleep(rand(5,20));
-
+            $bid_html_body = '';
             $item['bid_html_body'] = '';
             if ($agentApp) {
                 shuffle($agentApp);
                 for ($i=0;$i<count($agentApp);$i++) {
                     $content = self::getAppData($ql2,$item,$agentApp[$i]);
-                    if ($content) break;
+                    if ($content) {
+                        $bid_html_body = $content->removeHead()->getHtml();
+                        if ($bid_html_body != '<html></html>') {
+                            break;
+                        } else {
+                            sleep(5);
+                        }
+                    }
                 }
                 $info['source_url'] = $content->find('a.original')->href;
-                $bid_html_body = $content->removeHead()->getHtml();
                 $dom = new Dom();
                 $dom->load($bid_html_body);
                 $html = $dom->find('pre#h_content');
@@ -79,7 +85,17 @@ class BidLogic {
                 shuffle($agentPc);
                 for ($i=0;$i<count($agentPc);$i++) {
                     $content = self::getPcData($ql2,$item,$agentPc[$i]);
-                    if ($content) break;
+                    if ($content) {
+                        if ($content->getHtml() != '<html></html>') {
+                            break;
+                        } else {
+                            sleep(5);
+                        }
+                    }
+                }
+                if ($content->getHtml() == '<html></html>') {
+                    event(new SystemNotify('抓取招标详情失败，代理超时，跳过此条记录',$fields));
+                    continue;
                 }
                 $info['source_url'] = $content->find('a.com-original')->href;
                 $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
