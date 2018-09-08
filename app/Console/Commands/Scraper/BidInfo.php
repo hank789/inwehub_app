@@ -83,29 +83,27 @@ class BidInfo extends Command {
         shuffle($ips);
         //最多10页
         for ($page=1;$page<=10;$page++) {
-            sleep(rand(10,20));
-            for ($i=0;$i<count($agentPc);$i++) {
-                $content = $this->getHtmlData($ql,$page,$agentPc);
+            sleep(rand(10, 20));
+            for ($i = 0; $i < count($agentPc); $i++) {
+                $content = $this->getHtmlData($ql, $page, $agentPc);
                 if ($content) break;
             }
-            $data = json_decode($content,true);
+            $data = json_decode($content, true);
             if ($data) {
-                $result = BidLogic::scraperSaveList($data,$ql2,$agentPc,$agentApp,$count);
+                $result = BidLogic::scraperSaveList($data, $ql2, $agentPc, $agentApp, $count);
                 if (!$result) {
-                    if ($count >= 1) {
-                        $endTime = time();
-                        event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
-                    }
+                    $endTime = time();
+                    event(new SystemNotify('抓取了' . $count . '条最新招标信息，用时' . ($endTime - $startTime) . '秒', []));
                     return;
                 }
             } else {
-                event(new SystemNotify('抓取招标信息失败，对应cookie已失效，请到后台设置',[]));
+                event(new SystemNotify('抓取招最新标信息失败，对应cookie已失效，请到后台设置', []));
                 return;
             }
         }
         if ($count >= 1) {
             $endTime = time();
-            event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
+            event(new SystemNotify('抓取了'.$count.'条最新招标信息，用时'.($endTime-$startTime).'秒',[]));
         }
     }
 
@@ -124,6 +122,7 @@ class BidInfo extends Command {
                 ]
             ])->getHtml();
         } catch (\Exception $e) {
+            app('sentry')->captureException($e,['page'=>$page,'agent'=>$agent]);
             $content = null;
         }
         return $content;

@@ -64,7 +64,7 @@ class BidLogic {
             }
 
             if (empty($info['source_url']) || empty($item['bid_html_body'])) {
-                event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',[]));
+                event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',[$info['source_url'],$item]));
                 sleep(rand(5,10));
                 shuffle($agentPc);
                 for ($i=0;$i<count($agentPc);$i++) {
@@ -74,7 +74,7 @@ class BidLogic {
                 $info['source_url'] = $content->find('a.com-original')->href;
                 $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
                 if (empty($info['source_url']) || empty($item['bid_html_body'])) {
-                    event(new SystemNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',[]));
+                    event(new SystemNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',[$info['source_url'],$item]));
                     return false;
                 }
             }
@@ -106,6 +106,7 @@ class BidLogic {
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
+            app('sentry')->captureException($e,['item'=>$item,'agent'=>$agent]);
             $content = null;
         }
         return $content;
@@ -129,6 +130,7 @@ class BidLogic {
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
+            app('sentry')->captureException($e,['item'=>$item,'agent'=>$agent]);
             $content = null;
         }
         return $content;
