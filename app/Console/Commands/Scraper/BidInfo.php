@@ -89,6 +89,10 @@ class BidInfo extends Command {
 
     protected function getHtmlData($ql,$page,$cookiesPcArr) {
         $ips = getProxyIps(1);
+        if (!$ips) {
+            event(new SystemNotify('代理IP已耗尽，请到后台设置', []));
+            exit();
+        }
         try {
             $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
                 'pageNumber' => $page,

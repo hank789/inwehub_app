@@ -110,6 +110,10 @@ class BidSearch extends Command {
 
     protected function getHtmlData($ql,$keyword,$cookiesPcArr) {
         $ips = getProxyIps(1);
+        if (!$ips) {
+            event(new SystemNotify('代理IP已耗尽，请到后台设置', []));
+            exit();
+        }
         $cookie = $cookiesPcArr[rand(0,count($cookiesPcArr)-1)];
         try {
             //全文搜索返回全部500条信息
