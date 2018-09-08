@@ -93,7 +93,7 @@ class BidSearch extends Command {
 
         foreach ($keywords as $keyword) {
             sleep(rand(20,60));
-            shuffle($agentPc);
+            shuffle($agenPc);
             for ($i=0;$i<count($agentPc);$i++) {
                 $content = $this->getHtmlData($ql,$keyword,$agentPc[$i]);
                 if ($content) break;
@@ -103,14 +103,12 @@ class BidSearch extends Command {
             if ($data) {
                 $result = BidLogic::scraperSaveList($data,$ql2,$agentPc,$agentApp,$count);
                 if (!$result) {
-                    if ($count >= 1) {
-                        $endTime = time();
-                        event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
-                    }
+                    $endTime = time();
+                    event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息，用时'.($endTime-$startTime).'秒',[]));
                     continue;
                 }
             } else {
-                event(new SystemNotify('抓取招标信息失败，对应cookie已失效，请到后台设置',[]));
+                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效，请到后台设置',[]));
                 return;
             }
 
@@ -118,7 +116,7 @@ class BidSearch extends Command {
 
         if ($count >= 1) {
             $endTime = time();
-            event(new SystemNotify('抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
+            event(new SystemNotify('根据关键词抓取了'.$count.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
         }
     }
 
@@ -147,6 +145,7 @@ class BidSearch extends Command {
                 ]
             ])->getHtml();
         } catch (\Exception $e) {
+            app('sentry')->captureException($e,['keyword'=>$keyword,'agent'=>$agent]);
             $content = null;
         }
         return $content;
