@@ -155,7 +155,9 @@ class Test extends Command
             '--proxy-type' => 'http'
         ]);
         $source_url = $content->find('a.original')->href;
+        var_dump($source_url);
         $bid_html_body = $content->removeHead()->getHtml();
+        var_dump($bid_html_body);
         $dom = new Dom();
         $dom->load($bid_html_body);
         $html = $dom->find('pre#h_content');
