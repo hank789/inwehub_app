@@ -1592,7 +1592,7 @@ if (!function_exists('getProxyIps')) {
                     $title = '';
                 }
                 if (strstr($title, '百度一下')) {
-                    \App\Services\RateLimiter::instance()->sAdd('proxy_ips',$ip['ip'].':'.$ip['port']);
+                    \App\Services\RateLimiter::instance()->sAdd('proxy_ips',$ip['ip'].':'.$ip['port'], 0);
                     $ips[] = $ip['ip'].':'.$ip['port'];
                 }
             }
