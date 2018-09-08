@@ -123,8 +123,10 @@ class Test extends Command
         var_dump($content);
         return;*/
         //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
-        $cookie = 'SESSIONID=aea5b8fc92dd29486aff8adbe209c4a5ba12f936; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536286450; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1536283507,1536286139';
-        $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($cookie){
+        $ips = getProxyIps();
+        $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
+        $cookiesAppArr = explode('||',$cookiesApp);
+        $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($cookiesAppArr){
             //$r->setMethod('POST');
             $r->setUrl('https://www.jianyu360.com/jyapp/article/content/ABCY2EAfTIvJyksJFZhcHUJJzACHj1mZnB%2FKA4gPy43eFJzfzNUCZM%3D.html');
             /*$r->setRequestData([
@@ -143,12 +145,15 @@ class Test extends Command
             //$r->addHeader('Cookie','UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371');
             $r->setHeaders([
                 'Host'   => 'www.jianyu360.com',
-                'Referer'       => 'https://www.jianyu360.com/jyapp/wxpush/bidinfo/1536284358',
+                'Referer'       => 'https://www.jianyu360.com/jylab/supsearch/index.html',
                 'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Cookie' => $cookie
+                'Cookie' => $cookiesAppArr[0]
             ]);
             return $r;
-        });
+        },false,[
+            '--proxy' => $ips[0],
+            '--proxy-type' => 'http'
+        ]);
         $source_url = $content->find('a.original')->href;
         $bid_html_body = $content->removeHead()->getHtml();
         $dom = new Dom();
