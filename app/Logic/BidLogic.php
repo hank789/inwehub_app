@@ -59,12 +59,21 @@ class BidLogic {
                 try {
                     $item['bid_html_body'] = $html->__toString();
                 } catch (\Exception $e) {
-
+                    app('sentry')->captureException($e,['item'=>$item,'agentApp'=>$agentApp[$i]]);
                 }
             }
 
             if (empty($info['source_url']) || empty($item['bid_html_body'])) {
-                event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',[$info['source_url'],$item]));
+                $fields = [];
+                $fields[] = [
+                    'title'=>'source_url',
+                    'value'=>$info['source_url']
+                ];
+                $fields[] = [
+                    'title'=>'item',
+                    'value'=>json_encode($item)
+                ];
+                event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
                 sleep(rand(5,10));
                 shuffle($agentPc);
                 for ($i=0;$i<count($agentPc);$i++) {
@@ -74,7 +83,7 @@ class BidLogic {
                 $info['source_url'] = $content->find('a.com-original')->href;
                 $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
                 if (empty($info['source_url']) || empty($item['bid_html_body'])) {
-                    event(new SystemNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',[$info['source_url'],$item]));
+                    event(new SystemNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',$fields));
                     return false;
                 }
             }

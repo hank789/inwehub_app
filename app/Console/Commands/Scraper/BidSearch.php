@@ -105,15 +105,25 @@ class BidSearch extends Command {
                 }
             }
 
+            $fields = [];
+            $fields[] = [
+                'title'=>'agentPc',
+                'value'=>json_encode($agentPc)
+            ];
+            $fields[] = [
+                'title'=>'agentApp',
+                'value'=>json_encode($agentApp)
+            ];
             if ($data) {
+                event(new SystemNotify('准备处理'.count($data['list']).'条['.$keyword.']招标信息'));
                 $result = BidLogic::scraperSaveList($data,$ql2,$agentPc,$agentApp,$count);
                 if (!$result) {
                     $endTime = time();
-                    event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息，用时'.($endTime-$startTime).'秒',['agentPc'=>$agentPc,'agentApp'=>$agentApp]));
+                    event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息，用时'.($endTime-$startTime).'秒',$fields));
                     continue;
                 }
             } else {
-                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效，请到后台设置',['data'=>$data,'agentPc'=>$agentPc,'agentApp'=>$agentApp]));
+                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效，请到后台设置',$fields));
                 return;
             }
 
