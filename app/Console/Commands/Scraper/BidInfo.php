@@ -85,7 +85,7 @@ class BidInfo extends Command {
         for ($page=1;$page<=10;$page++) {
             sleep(rand(10, 20));
             for ($i = 0; $i < count($agentPc); $i++) {
-                $content = $this->getHtmlData($ql, $page, $agentPc);
+                $content = $this->getHtmlData($ql, $page, $agentPc[$i]);
                 if ($content) break;
             }
             $data = json_decode($content, true);
