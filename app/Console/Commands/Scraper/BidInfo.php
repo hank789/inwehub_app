@@ -114,6 +114,7 @@ class BidInfo extends Command {
                 'pageType' => ''
             ],[
                 'proxy' => $agent['proxy'],
+                'timeout' => 30,
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
