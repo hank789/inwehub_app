@@ -1552,3 +1552,43 @@ if (!function_exists('formatKeyword')) {
         return $keyword;
     }
 }
+
+if (!function_exists('getProxyIps')) {
+    function getProxyIps() {
+        $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips');
+        $ql = \QL\QueryList::getInstance();
+        foreach ($ips as $key=>$ip) {
+            $opts = [
+                'proxy' => $ip,
+                //Set the timeout time in seconds
+                'timeout' => 3,
+            ];
+            $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
+            if (!strstr($title, '百度一下')) {
+                \App\Services\RateLimiter::instance()->sRem('proxy_ips',$ip);
+                unset($ips[$key]);
+            }
+        }
+        if (empty($ips)) {
+            $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
+            if (!$proxy) {
+                return false;
+            }
+            $ipsNew = $proxy['msg'];
+            foreach ($ipsNew as $key=>$ip) {
+                $opts = [
+                    'proxy' => $ip['ip'].':'.$ip['port'],
+                    //Set the timeout time in seconds
+                    'timeout' => 3,
+                ];
+                $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
+                if (strstr($title, '百度一下')) {
+                    \App\Services\RateLimiter::instance()->sAdd('proxy_ips',$ip['ip'].':'.$ip['port']);
+                    $ips[] = $ip['ip'].':'.$ip['port'];
+                }
+            }
+        }
+        shuffle($ips);
+        return $ips;
+    }
+}

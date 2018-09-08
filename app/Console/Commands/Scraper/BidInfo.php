@@ -53,12 +53,12 @@ class BidInfo extends Command {
         }
         $cookie = explode('||',$cookies);
 
-        $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
-        if (!$proxy) {
+        $ips = getProxyIps();
+        if (!$ips) {
             event(new SystemNotify('未设置爬虫代理，请到后台设置',[]));
             return;
         }
-        $ips = $proxy['msg'];
+
         $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
         $cookiesAppArr = explode('||',$cookiesApp);
         $agentApp = [];
@@ -66,7 +66,7 @@ class BidInfo extends Command {
             foreach ($cookiesAppArr as $key=>$cookies2Item) {
                 $agentApp[] = [
                     'cookie' => $cookies2Item,
-                    'proxy' => $ips[$key]['ip'].':'.$ips[$key]['port']
+                    'proxy' => $ips[$key]
                 ];
                 unset($ips[$key]);
             }
@@ -76,7 +76,7 @@ class BidInfo extends Command {
         foreach ($cookie as $key=>$cookieItem) {
             $agentPc[] = [
                 'cookie' => $cookieItem,
-                'proxy' => $ips[$key]['ip'].':'.$ips[$key]['port']
+                'proxy' => $ips[$key]
             ];
             unset($ips[$key]);
         }
