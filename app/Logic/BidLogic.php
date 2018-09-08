@@ -52,7 +52,7 @@ class BidLogic {
                     if ($content) break;
                 }
                 $info['source_url'] = $content->find('a.original')->href;
-                $bid_html_body = $ql2->removeHead()->getHtml();
+                $bid_html_body = $content->removeHead()->getHtml();
                 $dom = new Dom();
                 $dom->load($bid_html_body);
                 $html = $dom->find('pre#h_content');
