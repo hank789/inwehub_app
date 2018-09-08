@@ -1,6 +1,7 @@
 <?php namespace App\Console\Commands\Scraper;
 use App\Events\Frontend\System\SystemNotify;
 use App\Logic\BidLogic;
+use App\Services\RateLimiter;
 use Illuminate\Console\Command;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
@@ -45,59 +46,38 @@ class BidInfo extends Command {
         $ql2->use(PhantomJs::class,config('services.phantomjs.path'));
         $cookies = Setting()->get('scraper_jianyu360_cookie','');
         $count = 0;
-        $newBidIds = [];
         $startTime = time();
         if (empty($cookies)) {
             event(new SystemNotify('抓取招标信息未设置cookie，请到后台设置',[]));
             return;
         }
-        $cookie = explode('||',$cookies);
+        $cookiesPcArr = explode('||',$cookies);
 
-        $ips = getProxyIps();
-        if (!$ips) {
+        if (!Setting()->get('scraper_proxy_address','')) {
             event(new SystemNotify('未设置爬虫代理，请到后台设置',[]));
             return;
         }
 
         $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
         $cookiesAppArr = explode('||',$cookiesApp);
-        $agentApp = [];
-        if ($cookiesApp) {
-            foreach ($cookiesAppArr as $key=>$cookies2Item) {
-                $agentApp[] = [
-                    'cookie' => $cookies2Item,
-                    'proxy' => $ips[$key]
-                ];
-                unset($ips[$key]);
-            }
-        }
-        shuffle($ips);
-        $agentPc = [];
-        foreach ($cookie as $key=>$cookieItem) {
-            $agentPc[] = [
-                'cookie' => $cookieItem,
-                'proxy' => $ips[$key]
-            ];
-            unset($ips[$key]);
-        }
-        shuffle($ips);
+
         //最多10页
         for ($page=1;$page<=10;$page++) {
             sleep(rand(10, 20));
-            for ($i = 0; $i < count($agentPc); $i++) {
-                $content = $this->getHtmlData($ql, $page, $agentPc[$i]);
+            for ($i = 0; $i < 5; $i++) {
+                $content = $this->getHtmlData($ql, $page, $cookiesPcArr);
                 if ($content) break;
             }
             $data = json_decode($content, true);
             if ($data) {
-                $result = BidLogic::scraperSaveList($data, $ql2, $agentPc, $agentApp, $count);
+                $result = BidLogic::scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, $count);
                 if (!$result) {
                     $endTime = time();
                     event(new SystemNotify('抓取了' . $count . '条最新招标信息，用时' . ($endTime - $startTime) . '秒', []));
                     return;
                 }
             } else {
-                event(new SystemNotify('抓取招最新标信息失败，对应cookie已失效，请到后台设置', []));
+                event(new SystemNotify('抓取招最新标信息失败，对应cookie已失效或代理IP已耗尽，请到后台设置', []));
                 return;
             }
         }
@@ -107,23 +87,24 @@ class BidInfo extends Command {
         }
     }
 
-    protected function getHtmlData($ql,$page,$agent) {
+    protected function getHtmlData($ql,$page,$cookiesPcArr) {
+        $ips = getProxyIps(1);
         try {
             $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
                 'pageNumber' => $page,
                 'pageType' => ''
             ],[
-                'proxy' => $agent['proxy'],
+                'proxy' => $ips[0],
                 'timeout' => 30,
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                    'Cookie'    => $agent['cookie']
+                    'Cookie'    => $cookiesPcArr[0]
                 ]
             ])->getHtml();
         } catch (\Exception $e) {
-            app('sentry')->captureException($e,['page'=>$page,'agent'=>$agent]);
+            app('sentry')->captureException($e,['page'=>$page,'proxy'=>$ips[0],'cookiesPc'=>$cookiesPcArr[0]]);
             $content = null;
         }
         return $content;
