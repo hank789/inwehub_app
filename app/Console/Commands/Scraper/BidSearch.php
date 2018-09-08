@@ -92,23 +92,28 @@ class BidSearch extends Command {
         shuffle($ips);
 
         foreach ($keywords as $keyword) {
-            sleep(rand(20,60));
+            sleep(rand(30,60));
             shuffle($agentPc);
+            $data = null;
             for ($i=0;$i<count($agentPc);$i++) {
                 $content = $this->getHtmlData($ql,$keyword,$agentPc[$i]);
-                if ($content) break;
+                if ($content) {
+                    $data = json_decode($content,true);
+                    if ($data['status']==1) {
+                        break;
+                    }
+                }
             }
 
-            $data = json_decode($content,true);
             if ($data) {
                 $result = BidLogic::scraperSaveList($data,$ql2,$agentPc,$agentApp,$count);
                 if (!$result) {
                     $endTime = time();
-                    event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息，用时'.($endTime-$startTime).'秒',[]));
+                    event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息，用时'.($endTime-$startTime).'秒',['agentPc'=>$agentPc,'agentApp'=>$agentApp]));
                     continue;
                 }
             } else {
-                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效，请到后台设置',[]));
+                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效，请到后台设置',['data'=>$data,'agentPc'=>$agentPc,'agentApp'=>$agentApp]));
                 return;
             }
 
