@@ -93,7 +93,7 @@ class BidSearch extends Command {
 
         foreach ($keywords as $keyword) {
             sleep(rand(20,60));
-            shuffle($agenPc);
+            shuffle($agentPc);
             for ($i=0;$i<count($agentPc);$i++) {
                 $content = $this->getHtmlData($ql,$keyword,$agentPc[$i]);
                 if ($content) break;
