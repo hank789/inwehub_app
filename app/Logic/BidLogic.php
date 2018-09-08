@@ -100,7 +100,7 @@ class BidLogic {
             $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $agent){
                 //$r->setMethod('POST');
                 $r->setUrl('https://www.jianyu360.com/jyapp/article/content/'.$item['_id'].'.html');
-                //$r->setTimeout(10000); // 10 seconds
+                $r->setTimeout(30000); // 10 seconds
                 //$r->setDelay(3); // 3 seconds
                 $r->setHeaders([
                     'Host'   => 'www.jianyu360.com',
@@ -125,7 +125,7 @@ class BidLogic {
         try {
             $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $agent){
                 $r->setUrl('https://www.jianyu360.com/article/content/'.$item['_id'].'.html');
-                //$r->setTimeout(10000); // 10 seconds
+                $r->setTimeout(30000); // 10 seconds
                 //$r->setDelay(5); // 3 seconds
                 $r->setHeaders([
                     'Host'   => 'www.jianyu360.com',
