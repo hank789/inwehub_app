@@ -119,6 +119,10 @@ class BidSearch extends Command {
                 $result = BidLogic::scraperSaveList($data,$ql2,$agentPc,$agentApp,$count);
                 if (!$result) {
                     $endTime = time();
+                    $fields[] = [
+                        'title'=>'agentApp',
+                        'value'=>json_encode($data)
+                    ];
                     event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息，用时'.($endTime-$startTime).'秒',$fields));
                     continue;
                 }
@@ -152,7 +156,7 @@ class BidSearch extends Command {
                 'tabularflag' => 'Y'
             ],[
                 'proxy' => $agent['proxy'],
-                'timeout' => 30,
+                'timeout' => 60,
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
