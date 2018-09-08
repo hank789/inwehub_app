@@ -92,7 +92,7 @@ class BidSearch extends Command {
         shuffle($ips);
 
         foreach ($keywords as $keyword) {
-            sleep(rand(30,60));
+            sleep(rand(60,70));
             shuffle($agentPc);
             $data = null;
             for ($i=0;$i<count($agentPc);$i++) {
@@ -120,7 +120,7 @@ class BidSearch extends Command {
                 if (!$result) {
                     $endTime = time();
                     $fields[] = [
-                        'title'=>'agentApp',
+                        'title'=>'data',
                         'value'=>json_encode($data)
                     ];
                     event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息，用时'.($endTime-$startTime).'秒',$fields));
