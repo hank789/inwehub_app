@@ -92,8 +92,8 @@ class BidLogic {
                     }
                 }
                 if ($content->getHtml() == '<html></html>') {
-                    event(new SystemNotify('抓取招标详情失败，代理超时，跳过此条记录',$fields));
-                    continue;
+                    event(new SystemNotify('代理已耗尽，需重新申请',$fields));
+                    return false;
                 }
                 $info['source_url'] = $content->find('a.com-original')->href;
                 $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
