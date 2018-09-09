@@ -46,6 +46,7 @@ class BidInfo extends Command {
         $ql2->use(PhantomJs::class,config('services.phantomjs.path'));
         $cookies = Setting()->get('scraper_jianyu360_cookie','');
         $count = 0;
+        $allCount = 0;
         $startTime = time();
         if (empty($cookies)) {
             event(new SystemNotify('抓取招标信息未设置cookie，请到后台设置',[]));
@@ -63,7 +64,10 @@ class BidInfo extends Command {
 
         //最多10页
         for ($page=1;$page<=10;$page++) {
-            sleep(rand(10, 15));
+            if ($count <= 5 && $page >= 2) {
+                sleep(rand(10, 15));
+            }
+            $count = 0;
             for ($i = 0; $i < 5; $i++) {
                 $content = $this->getHtmlData($ql, $page, $cookiesPcArr);
                 if ($content) break;
@@ -71,6 +75,7 @@ class BidInfo extends Command {
             $data = json_decode($content, true);
             if ($data) {
                 $result = BidLogic::scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, $count);
+                $allCount += $count;
                 if (!$result) {
                     $endTime = time();
                     event(new SystemNotify('抓取了' . $count . '条最新招标信息，用时' . ($endTime - $startTime) . '秒', []));
@@ -81,9 +86,9 @@ class BidInfo extends Command {
                 return;
             }
         }
-        if ($count >= 1) {
+        if ($allCount >= 1) {
             $endTime = time();
-            event(new SystemNotify('抓取了'.$count.'条最新招标信息，用时'.($endTime-$startTime).'秒',[]));
+            event(new SystemNotify('抓取了'.$allCount.'条最新招标信息，用时'.($endTime-$startTime).'秒',[]));
         }
     }
 
