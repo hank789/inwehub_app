@@ -87,7 +87,7 @@ class BidLogic {
                         if ($content->getHtml() != '<html></html>') {
                             break;
                         } else {
-                            sleep(1);
+                            sleep(5);
                         }
                     }
                 }

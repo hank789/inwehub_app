@@ -1578,7 +1578,7 @@ if (!function_exists('getProxyIps')) {
                 unset($ips[$key]);
             }
         }
-        if (empty($ips) || count($ips) < $min) {
+        while (empty($ips) || count($ips) < $min) {
             $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
             if (!$proxy) {
                 return false;
