@@ -1563,7 +1563,7 @@ if (!function_exists('getProxyIps')) {
                 //Set the timeout time in seconds
                 'timeout' => 3,
             ];
-            $i=3;
+            $i=5;
             while ($i--) {
                 try {
                     $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
@@ -1590,7 +1590,7 @@ if (!function_exists('getProxyIps')) {
                     //Set the timeout time in seconds
                     'timeout' => 3,
                 ];
-                $i=3;
+                $i=5;
                 while ($i--) {
                     try {
                         $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
