@@ -68,8 +68,11 @@ class BidSearch extends Command {
         $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
         $cookiesAppArr = explode('||',$cookiesApp);
         $allCount = 0;
-        foreach ($keywords as $keyword) {
-            sleep(rand(60,70));
+        $count = 0;
+        foreach ($keywords as $key=>$keyword) {
+            if ($count <= 6 && $key>=1) {
+                sleep(rand(60,70));
+            }
             $count = 0;
             $data = null;
             for ($i=0;$i<5;$i++) {
@@ -83,28 +86,23 @@ class BidSearch extends Command {
                 sleep(rand(20,40));
             }
 
-            $fields = [];
             if ($data) {
                 event(new SystemNotify('准备处理'.count($data['list']).'条['.$keyword.']招标信息'));
                 $result = BidLogic::scraperSaveList($data,$ql2,$cookiesPcArr,$cookiesAppArr,$count);
                 $allCount += $count;
                 if (!$result) {
                     $endTime = time();
-                    $fields[] = [
-                        'title'=>'data',
-                        'value'=>json_encode($data)
-                    ];
-                    event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息，用时'.($endTime-$startTime).'秒',$fields));
+                    event(new SystemNotify('抓取了'.$count.'条['.$keyword.']招标信息,忽略'.(count($data['list'])-$count).'条，已用时'.($endTime-$startTime).'秒'));
                     continue;
                 }
             } else {
-                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效或代理IP已耗尽，请到后台设置',$fields));
+                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效或代理IP已耗尽，请到后台设置'));
                 return;
             }
 
         }
 
-        if ($count >= 1) {
+        if ($allCount >= 1) {
             $endTime = time();
             event(new SystemNotify('根据关键词抓取了'.$allCount.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
         }
