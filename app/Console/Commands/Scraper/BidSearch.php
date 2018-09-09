@@ -80,6 +80,7 @@ class BidSearch extends Command {
                         break;
                     }
                 }
+                sleep(rand(20,40));
             }
 
             $fields = [];
