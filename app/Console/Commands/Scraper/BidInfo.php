@@ -63,7 +63,7 @@ class BidInfo extends Command {
 
         //最多10页
         for ($page=1;$page<=10;$page++) {
-            sleep(rand(10, 20));
+            sleep(rand(10, 15));
             for ($i = 0; $i < 5; $i++) {
                 $content = $this->getHtmlData($ql, $page, $cookiesPcArr);
                 if ($content) break;
