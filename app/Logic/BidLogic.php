@@ -42,7 +42,7 @@ class BidLogic {
                 'status' => 2,
                 'source_url' => '',
             ];
-            sleep(rand(5,20));
+            sleep(rand(5,10));
             $bid_html_body = '';
             $item['bid_html_body'] = '';
             if ($cookiesAppArr) {
@@ -53,7 +53,7 @@ class BidLogic {
                         if ($bid_html_body != '<html></html>') {
                             break;
                         } else {
-                            sleep(3);
+                            sleep(1);
                         }
                     }
                 }
@@ -80,14 +80,14 @@ class BidLogic {
                     'value'=>json_encode($item)
                 ];
                 event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
-                sleep(rand(5,10));
+                sleep(rand(2,5));
                 for ($i=0;$i<5;$i++) {
                     $content = self::getPcData($ql2,$item,$cookiesPcArr);
                     if ($content) {
                         if ($content->getHtml() != '<html></html>') {
                             break;
                         } else {
-                            sleep(3);
+                            sleep(1);
                         }
                     }
                 }
@@ -118,7 +118,7 @@ class BidLogic {
             $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ips){
                 //$r->setMethod('POST');
                 $r->setUrl('https://www.jianyu360.com/jyapp/article/content/'.$item['_id'].'.html');
-                $r->setTimeout(30000); // 10 seconds
+                $r->setTimeout(20000); // 10 seconds
                 //$r->setDelay(3); // 3 seconds
                 $r->setHeaders([
                     'Host'   => 'www.jianyu360.com',
@@ -145,7 +145,7 @@ class BidLogic {
         try {
             $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ips){
                 $r->setUrl('https://www.jianyu360.com/article/content/'.$item['_id'].'.html');
-                $r->setTimeout(30000); // 10 seconds
+                $r->setTimeout(20000); // 10 seconds
                 //$r->setDelay(5); // 3 seconds
                 $r->setHeaders([
                     'Host'   => 'www.jianyu360.com',
