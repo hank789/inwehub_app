@@ -24,12 +24,40 @@ class SearchController extends Controller
         RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
 
+    public function topInfo(Request $request, JWTAuth $JWTAuth) {
+        try {
+            $loginUser = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $loginUser = new \stdClass();
+            $loginUser->id = -1;
+            $loginUser->name = '游客';
+        }
+        $searchHistory = RateLimiter::instance()->hGetAll('search-user-count-'.$loginUser->id);
+        $searchCount = RateLimiter::instance()->hGetAll('search-word-count');
+        arsort($searchCount);
+        $topSearch = array_slice($searchCount,0,10,true);
+        $searchHistory = array_slice($searchHistory,0,20,true);
+        return self::createJsonData(true,['history'=>array_keys($searchHistory),'top'=>array_keys($topSearch)]);
+    }
+
     public function suggest(Request $request) {
         $validateRules = [
-            'search_word' => 'required',
+            'search_word' => 'required|min:1',
         ];
         $this->validate($request,$validateRules);
-
+        $searchWord = strtolower($request->input('search_word'));
+        $searchCount = RateLimiter::instance()->hGetAll('search-word-count');
+        arsort($searchCount);
+        $suggest = [];
+        foreach ($searchCount as $word=>$count) {
+            if (str_contains(strtolower($word),$searchWord)) {
+                $suggest[] = $word;
+            }
+        }
+        if (empty($suggest)) {
+            $suggest[] = $request->input('search_word');
+        }
+        return self::createJsonData(true,['suggest'=>$suggest]);
     }
 
     public function user(Request $request)
