@@ -1615,3 +1615,31 @@ if (!function_exists('getProxyIps')) {
         return $ips;
     }
 }
+
+if (!function_exists('curlShadowsocks')) {
+    function curlShadowsocks($url) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+        //通过代理访问需要额外添加的参数项
+        curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+        curl_setopt($ch, CURLOPT_PROXY, "127.0.0.1");
+        curl_setopt($ch, CURLOPT_PROXYPORT, "1080");
+
+        $result = curl_exec($ch);
+        if($result === false){
+            var_dump(curl_error($ch));
+            curl_close($ch);
+            exit();
+        }
+        curl_close($ch);
+
+        return $result;
+    }
+}
