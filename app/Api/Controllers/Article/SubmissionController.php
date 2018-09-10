@@ -173,9 +173,9 @@ class SubmissionController extends Controller {
                 'status'        => $request->input('draft',0)?0:1,
                 'user_id'       => $user->id,
                 'data'          => $data,
+                'views'         => 1
             ]);
             $group->increment('articles');
-            $submission->increment('views');
             GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
             RateLimiter::instance()->sClear('group_read_users:'.$group->id);
             if ($request->type == 'link') {
@@ -345,9 +345,9 @@ class SubmissionController extends Controller {
                 'status'        => 1,
                 'user_id'       => $operator_id?:$user->id,
                 'data'          => $data,
+                'views'         => 1
             ]);
             $group->increment('articles');
-            $submission->increment('views');
             GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
             RateLimiter::instance()->sClear('group_read_users:'.$group->id);
             if ($request->type == 'link'||true) {
