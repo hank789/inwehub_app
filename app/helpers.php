@@ -1583,6 +1583,12 @@ if (!function_exists('getProxyIps')) {
             if (!$proxy) {
                 return false;
             }
+            if ($proxy['code'] == 3001) {
+                sleep(6);
+            } elseif ($proxy['code'] != 0) {
+                event(new \App\Events\Frontend\System\SystemNotify('代理返回失败：'.$proxy['msg']));
+                return false;
+            }
             $ipsNew = $proxy['msg'];
             foreach ($ipsNew as $key=>$ip) {
                 $opts = [
