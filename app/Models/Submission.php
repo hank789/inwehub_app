@@ -187,7 +187,7 @@ class Submission extends Model {
         $submission = $this;
         //发布文章
         $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-        $url = $submission->data['url']??$comment_url;
+        $url = $comment_url;
         $upvote = Support::where('user_id',$user->id)
             ->where('supportable_id',$submission->id)
             ->where('supportable_type',Submission::class)

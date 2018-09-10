@@ -249,7 +249,9 @@ class Feed extends Model
                 //发布文章
                 $submission = Submission::find($this->source_id);
                 if (!$submission) return null;
-                $data = $submission->formatItem(Auth::user());
+                $item = $submission->formatItem(Auth::user());
+                $data = $item['feed'];
+                $url = $item['url'];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答
