@@ -40,6 +40,26 @@ class SearchController extends Controller
         return self::createJsonData(true,['history'=>array_keys($searchHistory),'top'=>array_keys($topSearch)]);
     }
 
+    public function suggest(Request $request) {
+        $validateRules = [
+            'search_word' => 'required|min:1',
+        ];
+        $this->validate($request,$validateRules);
+        $searchWord = strtolower($request->input('search_word'));
+        $searchCount = RateLimiter::instance()->hGetAll('search-word-count');
+        arsort($searchCount);
+        $suggest = [];
+        foreach ($searchCount as $word=>$count) {
+            if (str_contains(strtolower($word),$searchWord)) {
+                $suggest[] = $word;
+            }
+        }
+        if (empty($suggest)) {
+            $suggest[] = $request->input('search_word');
+        }
+        return self::createJsonData(true,['suggest'=>$suggest]);
+    }
+
     public function user(Request $request)
     {
         $validateRules = [
