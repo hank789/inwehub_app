@@ -182,32 +182,12 @@ class SearchController extends Controller
             //$query = $query->where('public',1);
         }
         $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
-        $data = [];
-        foreach ($submissions as $submission) {
-            $upvote = Support::where('user_id',$user->id)
-                ->where('supportable_id',$submission['id'])
-                ->where('supportable_type',Submission::class)
-                ->exists();
-            $bookmark = Collection::where('user_id',$user->id)
-                ->where('source_id',$submission['id'])
-                ->where('source_type',Submission::class)
-                ->exists();
-            $item = $submission->toArray();
-            $item['title'] = strip_tags($item['title']);
-            $item['is_upvoted'] = $upvote ? 1 : 0;
-            $item['is_bookmark'] = $bookmark ? 1: 0;
-            $item['tags'] = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
-            $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
-            $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
-            $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
-            $group = Group::find($submission->group_id);
-            $item['group'] = $group->toArray();
-            $item['group']['subscribers'] = $group->getHotIndex();
-            $item['category_name'] = $group->name;
-            $data[] = $item;
-        }
         $return = $submissions->toArray();
-        $return['data'] = $data;
+        $list = [];
+        foreach ($submissions as $submission) {
+            $list[] = $submission->formatItem($user);
+        }
+        $return['data'] = $list;
         $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]',',搜索结果'.$submissions->total());
         return self::createJsonData(true, $return);
     }
