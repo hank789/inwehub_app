@@ -268,6 +268,10 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
 });
 //搜索问答
 Route::post('search/question','SearchController@question');
+//热门搜索和历史
+Route::post('search/topInfo','SearchController@topInfo');
+
+
 
 //支付
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Pay'], function() {

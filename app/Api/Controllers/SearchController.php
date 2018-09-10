@@ -24,12 +24,20 @@ class SearchController extends Controller
         RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
 
-    public function suggest(Request $request) {
-        $validateRules = [
-            'search_word' => 'required',
-        ];
-        $this->validate($request,$validateRules);
-
+    public function topInfo(Request $request, JWTAuth $JWTAuth) {
+        try {
+            $loginUser = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $loginUser = new \stdClass();
+            $loginUser->id = -1;
+            $loginUser->name = '游客';
+        }
+        $searchHistory = RateLimiter::instance()->hGetAll('search-user-count-'.$loginUser->id);
+        $searchCount = RateLimiter::instance()->hGetAll('search-word-count');
+        arsort($searchCount);
+        $topSearch = array_slice($searchCount,0,10,true);
+        $searchHistory = array_slice($searchHistory,0,20,true);
+        return self::createJsonData(true,['history'=>array_keys($searchHistory),'top'=>array_keys($topSearch)]);
     }
 
     public function user(Request $request)
