@@ -568,20 +568,21 @@ class GroupController extends Controller
         $return = $members->toArray();
         $return['data'] = [];
         if ($page == 1) {
-            $ownerMember = GroupMember::where('group_id',$request->input('id'))->where('user_id',$group->user_id)->first();
+            $owner = $group->user;
+            $ownerMember = GroupMember::where('group_id',$group->id)->where('user_id',$owner->id)->first();
             $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$ownerMember->user_id)->first();
             $return['data'][] = [
                 'id' => $ownerMember->id,
-                'user_id' => $ownerMember->user_id,
-                'uuid' => $ownerMember->user->uuid,
-                'user_name' => $ownerMember->user->name,
-                'user_avatar_url' => $ownerMember->user->avatar,
-                'audit_status' => $ownerMember->audit_status,
-                'description' => $ownerMember->user->description,
-                'is_expert'   => $ownerMember->user->is_expert,
+                'user_id' => $owner->id,
+                'uuid' => $owner->uuid,
+                'user_name' => $owner->name,
+                'user_avatar_url' => $owner->avatar,
+                'audit_status' => GroupMember::AUDIT_STATUS_SUCCESS,
+                'description' => $owner->description,
+                'is_expert'   => $owner->is_expert,
                 'is_followed' => $attention?1:0,
-                "title" => $ownerMember->user->title,
-                "company" =>  $ownerMember->user->company,//公司
+                "title" => $owner->title,
+                "company" =>  $owner->company,//公司
                 "created_at" => (string) $ownerMember->created_at
             ];
         }
@@ -632,7 +633,7 @@ class GroupController extends Controller
                 'public' => $group->public,
                 'subscribers' => $group->getHotIndex(),
                 'articles'    => $group->articles,
-                'is_joined'   => 1,
+                'is_joined'   => $groupMember->group->user_id == $user->id ? 3:1,
                 'audit_status' => $group->audit_status,
                 'unread_count' => RateLimiter::instance()->sIsMember('group_read_users:'.$group->id,$user->id)?0:1,
                 'owner' => [
