@@ -188,6 +188,12 @@ class Submission extends Model {
         //发布文章
         $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
         $url = $comment_url;
+        $support_uids = Support::where('supportable_id',$submission->id)
+            ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
+        $supporters = [];
+        if ($support_uids) {
+            $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
+        }
         $upvote = Support::where('user_id',$user->id)
             ->where('supportable_id',$submission->id)
             ->where('supportable_type',Submission::class)
@@ -207,6 +213,7 @@ class Submission extends Model {
             'comment_url' => $comment_url,
             'comment_number' => $submission->comments_number,
             'support_number' => $submission->upvotes,
+            'supporter_list' => $supporters,
             'is_upvoted'     => $upvote ? 1 : 0,
             'is_recommend'   => $submission->is_recommend,
             'submission_type' => $submission->type,
