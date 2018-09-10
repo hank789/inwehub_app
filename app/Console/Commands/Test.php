@@ -62,6 +62,13 @@ class Test extends Command
         $s = json_decode($sResult,true);
         var_dump($s);*/
         $ql = QueryList::getInstance();
+        $content = $ql->get('https://news.google.com/articles/CAIiEMjNCShUMVGhcRMUGKW9No8qFwgEKg8IACoHCAow-4fWBzD4z0gwgtt6',[],[
+            'proxy' => 'socks5h://127.0.0.1:1080',
+        ])->find('div.m2L3rb.eLNT1d')->children('a')->attrs('href');
+        var_dump($content);
+        //Storage::disk('local')->put('attachments/test5.html',$content);
+        return;
+
         // 安装时需要设置PhantomJS二进制文件路径
         //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
         //$h = file_get_contents(storage_path().'/app/attachments/test3.html');
@@ -76,7 +83,11 @@ class Test extends Command
         //use Shadowsocks
         $content = $ql->get('https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ5Y0RKakVnSmxiaWdBUAE',[],[
             'proxy' => 'socks5h://127.0.0.1:1080',
-        ])->getHtml();
+        ])->rules([
+            'title' => ['span','text'],
+            'link'  => ['a','href'],
+            'description' => ['p','text']
+        ])->range('div.ZulkBc.qNiaOd')->query()->getData();
         var_dump($content);
         //Storage::disk('local')->put('attachments/test4.html',$content);
         return;

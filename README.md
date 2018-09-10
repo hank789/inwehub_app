@@ -156,6 +156,44 @@ http://anyproxy.io/cn/
 anyproxy --intercept
 ```
 
+##shadowsocks客户端：https://blog.csdn.net/wh211212/article/details/79165415
+
+```bash
+pip install shadowsocks
+mkdir /etc/shadowsocks
+vi /etc/shadowsocks/shadowsocks.json
+```
+
+添加配置信息：前提是需要有ss服务器的地址、端口等信息
+
+``
+{
+    "server":"x.x.x.x",  # Shadowsocks服务器地址
+    "server_port":1035,  # Shadowsocks服务器端口
+    "local_address": "127.0.0.1", # 本地IP
+    "local_port":1080,  # 本地端口
+    "password":"password", # Shadowsocks连接密码
+    "timeout":300,  # 等待超时时间
+    "method":"aes-256-cfb",  # 加密方式
+    "fast_open": false,  # true或false。开启fast_open以降低延迟，但要求Linux内核在3.7+
+    "workers": 1  #工作线程数 
+}
+``
+启动Shadowsocks服务:
+```
+sslocal -c /etc/shadowsocks/shadowsocks.json -d start
+```
+测试是否启动：
+```bash
+curl --socks5 127.0.0.1:1080 http://httpbin.org/ip
+```
+Shadowsock客户端服务已正常运行，则结果如下：
+```
+{
+  "origin": "x.x.x.x"       #你的Shadowsock服务器IP
+}
+```
+
 ## 部署
 使用https://laravel.com/docs/5.4/envoy 进行部署
 注意事项:
