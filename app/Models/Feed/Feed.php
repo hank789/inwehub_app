@@ -249,7 +249,7 @@ class Feed extends Model
                 //发布文章
                 $submission = Submission::find($this->source_id);
                 if (!$submission) return null;
-                $item = $submission->formatItem(Auth::user());
+                $item = $submission->formatListItem(Auth::user());
                 $data = $item['feed'];
                 $url = $item['url'];
                 break;

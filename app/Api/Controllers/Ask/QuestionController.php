@@ -906,35 +906,7 @@ class QuestionController extends Controller
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
-            $item = [
-                'id' => $question->id,
-                'question_type' => $question->question_type,
-                'question_user_avatar' => $question->hide?config('image.user_default_avatar'):$question->user->avatar,
-                'question_user_is_expert' => $question->hide?0:$question->user->is_expert,
-                'question_user_name' => $question->hide?'匿名':$question->user->name,
-                'price'      => $question->price,
-                'description'  => $question->title,
-                'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
-                'status' => $question->status,
-                'created_at' => $question->created_at->diffForHumans(),
-            ];
-            if($question->question_type == 1){
-                $item['comment_number'] = 0;
-                $item['average_rate'] = 0;
-                $item['support_number'] = 0;
-                $item['status_description'] = $question->price.'元';
-                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
-                if ($bestAnswer) {
-                    $item['comment_number'] = $bestAnswer->comments;
-                    $item['average_rate'] = $bestAnswer->getFeedbackRate();
-                    $item['support_number'] = $bestAnswer->supports;
-                }
-            } else {
-                $item['answer_number'] = $question->answers;
-                $item['follow_number'] = $question->followers;
-                $item['status_description'] = $question->price.'元悬赏'.($question->status <= 7 ? '中':($question->status==8?',已采纳':',已关闭'));
-            }
-            $list[] = $item;
+            $list[] = $question->formatListItem();
         }
         $return['data'] = $list;
         return self::createJsonData(true,$return);

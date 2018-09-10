@@ -183,7 +183,7 @@ class Submission extends Model {
         return strip_tags($this->title,'<a><span>');
     }
 
-    public function formatItem($user, $withGroup = true) {
+    public function formatListItem($user, $withGroup = true) {
         $submission = $this;
         //发布文章
         $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
