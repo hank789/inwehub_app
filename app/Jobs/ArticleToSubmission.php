@@ -146,6 +146,7 @@ class ArticleToSubmission implements ShouldQueue
             'user_id'       => $user_id>0?$user_id:504,
             'support_type'  => $support_type?:1,
             'data'          => $data,
+            'views'         => 1
         ]);
         $article->topic_id = $submission->id;
         $article->status = 2;
