@@ -71,7 +71,7 @@ class BidSearch extends Command {
         $count = 0;
         foreach ($keywords as $key=>$keyword) {
             if ($count <= 6 && $key>=1) {
-                sleep(rand(60,70));
+                sleep((6-$count) * 10);
             }
             $count = 0;
             $data = null;

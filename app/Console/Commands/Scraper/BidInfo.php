@@ -65,7 +65,7 @@ class BidInfo extends Command {
         //最多10页
         for ($page=1;$page<=10;$page++) {
             if ($count <= 5 && $page >= 2) {
-                sleep(rand(10, 15));
+                sleep(rand(5, 10));
             }
             $count = 0;
             for ($i = 0; $i < 5; $i++) {

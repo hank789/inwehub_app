@@ -12,6 +12,7 @@ class BidLogic {
 
     public static function scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, &$count) {
         if (empty($data['list'])) return false;
+        $timeCost = 6;
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
             //超过2天的不抓取
@@ -22,6 +23,7 @@ class BidLogic {
             if ($bid) {
                 continue;
             }
+            $startTime = time();
             $newBidIds[] = $item['_id'];
             $info = [
                 'guid' => $item['_id'],
@@ -42,7 +44,10 @@ class BidLogic {
                 'status' => 2,
                 'source_url' => '',
             ];
-            sleep(rand(5,10));
+            if ($timeCost <= 5) {
+                sleep(rand(5-$timeCost,10-$timeCost));
+            }
+            $timeCost = 0;
             $bid_html_body = '';
             $item['bid_html_body'] = '';
             if ($cookiesAppArr) {
@@ -105,8 +110,18 @@ class BidLogic {
             }
             $info['source_domain'] = parse_url($info['source_url'], PHP_URL_HOST);
             $info['detail'] = $item;
-            BidInfoModel::create($info);
-            $count ++;
+            try {
+                $bid = BidInfoModel::where('guid',$item['_id'])->first();
+                if ($bid) {
+                    continue;
+                }
+                BidInfoModel::create($info);
+                $count++;
+            } catch (\Exception $e) {
+                app('sentry')->captureException($e,['item'=>$item]);
+            }
+            $endTime = time();
+            $timeCost = $endTime - $startTime;
         }
         return true;
     }
