@@ -62,15 +62,15 @@ class Test extends Command
         $s = json_decode($sResult,true);
         var_dump($s);*/
         $ql = QueryList::getInstance();
-        $content = $ql->get('https://news.google.com/articles/CAIiEMjNCShUMVGhcRMUGKW9No8qFwgEKg8IACoHCAow-4fWBzD4z0gwgtt6',[],[
+        /*$content = $ql->get('https://news.google.com/articles/CAIiEMjNCShUMVGhcRMUGKW9No8qFwgEKg8IACoHCAow-4fWBzD4z0gwgtt6',[],[
             'proxy' => 'socks5h://127.0.0.1:1080',
         ])->find('div.m2L3rb.eLNT1d')->children('a')->attrs('href');
         var_dump($content);
         //Storage::disk('local')->put('attachments/test5.html',$content);
-        return;
+        return;*/
 
         // 安装时需要设置PhantomJS二进制文件路径
-        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         //$h = file_get_contents(storage_path().'/app/attachments/test3.html');
         //$ql->html($h);
 
@@ -81,13 +81,17 @@ class Test extends Command
         //var_dump((string)$html);
         //return;
         //use Shadowsocks
-        $content = $ql->get('https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ5Y0RKakVnSmxiaWdBUAE',[],[
-            'proxy' => 'socks5h://127.0.0.1:1080',
+        $content = $ql->browser('https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ5Y0RKakVnSmxiaWdBUAE',false,[
+            '--proxy' => '127.0.0.1:1080',
+            '--proxy-type' => 'socks5'
+            //'proxy' => 'socks5h://127.0.0.1:1080',
         ])->rules([
-            'title' => ['span','text'],
-            'link'  => ['a','href'],
-            'description' => ['p','text']
-        ])->range('div.ZulkBc.qNiaOd')->query()->getData();
+            'title' => ['a.ipQwMb.Q7tWef>span','text'],
+            'link'  => ['a.ipQwMb.Q7tWef','href'],
+            'author' => ['.KbnJ8','text'],
+            'description' => ['p.HO8did.Baotjf','text'],
+            'image' => ['img.tvs3Id.dIH98c','src']
+        ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
         var_dump($content);
         //Storage::disk('local')->put('attachments/test4.html',$content);
         return;

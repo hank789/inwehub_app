@@ -40,11 +40,14 @@ class GoogleNewsAccenture extends Command {
         $list = $ql->get('https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ5Y0RKakVnSmxiaWdBUAE',[],[
             'proxy' => 'socks5h://127.0.0.1:1080',
         ])->rules([
-            'title' => ['span','text'],
-            'link'  => ['a','href'],
-            'description' => ['p','text']
-        ])->range('div.ZulkBc.qNiaOd')->query()->getData();
+            'title' => ['a.ipQwMb.Q7tWef>span','text'],
+            'link'  => ['a.ipQwMb.Q7tWef','href'],
+            'author' => ['.KbnJ8','text'],
+            'description' => ['p.HO8did.Baotjf','text'],
+            'image' => ['img.tvs3Id.dIH98c','src']
+        ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
         foreach ($list as &$item) {
+            sleep(1);
             $item['href'] = $ql->get('https://news.google.com/'.$item['link'],[],[
                 'proxy' => 'socks5h://127.0.0.1:1080',
             ])->find('div.m2L3rb.eLNT1d')->children('a')->attrs('href');
