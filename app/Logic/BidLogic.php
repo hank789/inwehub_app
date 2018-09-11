@@ -51,14 +51,15 @@ class BidLogic {
             $bid_html_body = '';
             $item['bid_html_body'] = '';
             if ($cookiesAppArr) {
-                for ($i=0;$i<5;$i++) {
-                    $content = self::getAppData($ql2,$item,$cookiesAppArr);
+                for ($i=0;$i<3;$i++) {
+                    $ips = getProxyIps(1);
+                    $content = self::getAppData($ql2,$item,$cookiesAppArr,$ips);
                     if ($content) {
                         $bid_html_body = $content->removeHead()->getHtml();
                         if ($bid_html_body != '<html></html>') {
                             break;
                         } else {
-                            sleep(1);
+                            getProxyIps(2);
                         }
                     }
                 }
@@ -86,13 +87,14 @@ class BidLogic {
                 ];
                 event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
                 sleep(rand(2,5));
-                for ($i=0;$i<5;$i++) {
-                    $content = self::getPcData($ql2,$item,$cookiesPcArr);
+                for ($i=0;$i<3;$i++) {
+                    $ips = getProxyIps(1);
+                    $content = self::getPcData($ql2,$item,$cookiesPcArr,$ips);
                     if ($content) {
                         if ($content->getHtml() != '<html></html>') {
                             break;
                         } else {
-                            sleep(5);
+                            getProxyIps(2);
                         }
                     }
                 }
@@ -126,8 +128,7 @@ class BidLogic {
         return true;
     }
 
-    public static function getAppData($ql2,$item,$cookiesAppArr) {
-        $ips = getProxyIps(1);
+    public static function getAppData($ql2,$item,$cookiesAppArr,$ips) {
         $cookie = $cookiesAppArr[rand(0,count($cookiesAppArr)-1)];
         try {
             $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ips){
@@ -144,7 +145,7 @@ class BidLogic {
                 ]);
                 return $r;
             },false,[
-                '--proxy' => $ips[0],
+                '--proxy' => $ips[count($ips)-1],
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
@@ -154,8 +155,7 @@ class BidLogic {
         return $content;
     }
 
-    public static function getPcData($ql2,$item,$cookiesPcArr) {
-        $ips = getProxyIps(1);
+    public static function getPcData($ql2,$item,$cookiesPcArr,$ips) {
         $cookie = $cookiesPcArr[rand(0,count($cookiesPcArr)-1)];
         try {
             $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ips){
@@ -170,7 +170,7 @@ class BidLogic {
                 ]);
                 return $r;
             },false,[
-                '--proxy' => $ips[0],
+                '--proxy' => $ips[count($ips)-1],
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
