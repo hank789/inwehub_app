@@ -1560,19 +1560,19 @@ if (!function_exists('getProxyIps')) {
 
         while (empty($ips) || count($ips) < $min) {
             //优先取自己的代理
-            $scored_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('validated:jianyu360','+inf',7,'haipproxy:');
-            $ttl_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('ttl:jianyu360','+inf',time() - 2 * 60,'haipproxy:');
-            $speed_proxies = \App\Services\RateLimiter::instance()->zRangeByScore('speed:jianyu360',0,1000 * 10,'haipproxy:');
-            $proxies = ($scored_proxies and $ttl_proxies and $speed_proxies) ? $speed_proxies:[];
+            $scored_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('validated:jianyu360','+inf',7,false,'haipproxy:');
+            $ttl_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('ttl:jianyu360','+inf',time() - 30 * 60,false,'haipproxy:');
+            $speed_proxies = \App\Services\RateLimiter::instance()->zRangeByScore('speed:jianyu360',0,1000 * 10,false,'haipproxy:');
+            $proxies = array_intersect($scored_proxies,$ttl_proxies,$speed_proxies);
             if (!$proxies || count($proxies) < $min) {
-                $proxies = (($ttl_proxies and $speed_proxies)?$speed_proxies:[])?:$scored_proxies;
+                $proxies = array_merge(array_intersect($ttl_proxies, $speed_proxies),$scored_proxies);
             }
 
             if (!$proxies || count($proxies) < $min)
-                $proxies = $ttl_proxies?:$scored_proxies;
+                $proxies = array_merge($ttl_proxies,$scored_proxies);
 
             if ($proxies) {
-                foreach ($proxies as $proxyIp=>$score) {
+                foreach ($proxies as $proxyIp) {
                     $proxyIp = str_replace('http://','',$proxyIp);
                     if (\App\Services\RateLimiter::instance()->sIsMember('proxy_ips_deleted',$proxyIp)) {
                         continue;
@@ -1641,6 +1641,10 @@ if (!function_exists('deleteProxyIp')) {
     function deleteProxyIp($ip) {
         \App\Services\RateLimiter::instance()->sRem('proxy_ips',$ip);
         \App\Services\RateLimiter::instance()->sAdd('proxy_ips_deleted',$ip, 0);
+        \App\Services\RateLimiter::instance()->sRem('all',$ip,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('validated:jianyu360',$ip,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('ttl:jianyu360',$ip,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('speed:jianyu360',$ip,'haipproxy:');
     }
 }
 
