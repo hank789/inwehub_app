@@ -1068,11 +1068,13 @@ if (!function_exists('string')){
 }
 
 if (!function_exists('saveImgToCdn')){
-    function saveImgToCdn($imgUrl){
+    function saveImgToCdn($imgUrl,$dir = 'avatar'){
         $parse_url = parse_url($imgUrl);
         if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
-            $file_name = 'avatar/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-            Storage::disk('oss')->put($file_name,file_get_contents($imgUrl));
+            $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+            $ql = \QL\QueryList::getInstance();
+            $content = $ql->get($imgUrl)->getHtml();
+            Storage::disk('oss')->put($file_name,$content);
             $cdn_url = Storage::disk('oss')->url($file_name);
             return $cdn_url;
         }
@@ -1154,7 +1156,9 @@ if (!function_exists('getUrlInfo')) {
             if ($temp && $withImageUrl && !$img_url) {
                 //保存图片
                 $img_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
-                dispatch((new \App\Jobs\UploadFile($img_name,base64_encode(file_get_contents($temp)))));
+                $ql = new \QL\QueryList();
+                $img_contet = $ql->get($temp)->getHtml();
+                dispatch((new \App\Jobs\UploadFile($img_name,base64_encode($img_contet))));
                 $img_url = Storage::url($img_name);
                 //非微信文章
                 if ($useCache) {
@@ -1213,7 +1217,7 @@ if (!function_exists('getRequestIpAddress')) {
 }
 
 if (!function_exists('file_get_contents_curl')) {
-    function file_get_contents_curl($url, $timeout = '10')
+    function file_get_contents_curl($url, $checkTitle = true)
     {
         $ch = curl_init();
         $headers = [];
@@ -1229,11 +1233,13 @@ if (!function_exists('file_get_contents_curl')) {
 
         $data = curl_exec($ch);
         curl_close($ch);
-        preg_match('/<title>(?<title>.*?)<\/title>/si', $data, $title);
-        if (empty($title)) {
-            $ql = \QL\QueryList::getInstance();
-            $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
-            $data = $ql->browser($url)->getHtml();
+        if ($checkTitle) {
+            preg_match('/<title>(?<title>.*?)<\/title>/si', $data, $title);
+            if (empty($title)) {
+                $ql = \QL\QueryList::getInstance();
+                $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
+                $data = $ql->browser($url)->getHtml();
+            }
         }
         return $data;
     }
