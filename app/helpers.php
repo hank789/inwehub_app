@@ -1578,7 +1578,49 @@ if (!function_exists('getProxyIps')) {
                 unset($ips[$key]);
             }
         }
+
         while (empty($ips) || count($ips) < $min) {
+            //优先取自己的代理
+            $scored_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('validated:jianyu360','+inf',7,'haipproxy:');
+            $ttl_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('ttl:jianyu360','+inf',time() - 2 * 60,'haipproxy:');
+            $speed_proxies = \App\Services\RateLimiter::instance()->zRangeByScore('speed:jianyu360',0,1000 * 10,'haipproxy:');
+            $proxies = ($scored_proxies and $ttl_proxies and $speed_proxies) ? $speed_proxies:[];
+            if (!$proxies || count($proxies) < $min) {
+                $proxies = (($ttl_proxies and $speed_proxies)?$speed_proxies:[])?:$scored_proxies;
+            }
+
+            if (!$proxies || count($proxies) < $min)
+                $proxies = $ttl_proxies?:$scored_proxies;
+
+            if ($proxies) {
+                foreach ($proxies as $proxyIp=>$score) {
+                    $proxyIp = str_replace('http://','',$proxyIp);
+                    if (\App\Services\RateLimiter::instance()->sIsMember('proxy_ips_deleted',$proxyIp)) {
+                        continue;
+                    }
+                    $opts = [
+                        'proxy' => $proxyIp,
+                        //Set the timeout time in seconds
+                        'timeout' => 3,
+                    ];
+                    $i=4;
+                    while ($i--) {
+                        try {
+                            $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
+                            break;
+                        } catch (Exception $e) {
+                            $title = '';
+                        }
+                    }
+                    if (strstr($title, '百度一下')) {
+                        \App\Services\RateLimiter::instance()->sAdd('proxy_ips',$proxyIp, 0);
+                        $ips[] = $proxyIp;
+                    }
+                    if (count($ips) >= 2*$min) return $ips;
+                }
+            }
+            if (count($ips) >= 2*$min) return $ips;
+
             $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
             if (!$proxy) {
                 return false;
@@ -1613,6 +1655,13 @@ if (!function_exists('getProxyIps')) {
         }
         shuffle($ips);
         return $ips;
+    }
+}
+
+if (!function_exists('deleteProxyIp')) {
+    function deleteProxyIp($ip) {
+        \App\Services\RateLimiter::instance()->sRem('proxy_ips',$ip);
+        \App\Services\RateLimiter::instance()->sAdd('proxy_ips_deleted',$ip, 0);
     }
 }
 

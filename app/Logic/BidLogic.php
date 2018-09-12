@@ -53,12 +53,14 @@ class BidLogic {
             if ($cookiesAppArr) {
                 for ($i=0;$i<3;$i++) {
                     $ips = getProxyIps(1);
-                    $content = self::getAppData($ql2,$item,$cookiesAppArr,$ips);
+                    $ip = $ips[count($ips) - 1];
+                    $content = self::getAppData($ql2,$item,$cookiesAppArr,$ip);
                     if ($content) {
                         $bid_html_body = $content->removeHead()->getHtml();
                         if ($bid_html_body != '<html></html>') {
                             break;
                         } else {
+                            deleteProxyIp($ip);
                             getProxyIps(2);
                         }
                     }
@@ -89,11 +91,13 @@ class BidLogic {
                 sleep(rand(2,5));
                 for ($i=0;$i<3;$i++) {
                     $ips = getProxyIps(1);
-                    $content = self::getPcData($ql2,$item,$cookiesPcArr,$ips);
+                    $ip = $ips[count($ips) - 1];
+                    $content = self::getPcData($ql2,$item,$cookiesPcArr,$ip);
                     if ($content) {
                         if ($content->getHtml() != '<html></html>') {
                             break;
                         } else {
+                            deleteProxyIp($ip);
                             getProxyIps(2);
                         }
                     }
@@ -128,10 +132,10 @@ class BidLogic {
         return true;
     }
 
-    public static function getAppData($ql2,$item,$cookiesAppArr,$ips) {
+    public static function getAppData($ql2,$item,$cookiesAppArr,$ip) {
         $cookie = $cookiesAppArr[rand(0,count($cookiesAppArr)-1)];
         try {
-            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ips){
+            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ip){
                 //$r->setMethod('POST');
                 $r->setUrl('https://www.jianyu360.com/jyapp/article/content/'.$item['_id'].'.html');
                 $r->setTimeout(20000); // 10 seconds
@@ -145,20 +149,21 @@ class BidLogic {
                 ]);
                 return $r;
             },false,[
-                '--proxy' => $ips[count($ips)-1],
+                '--proxy' => $ip,
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
-            app('sentry')->captureException($e,['item'=>$item,'cookieApp'=>$cookie,'proxy'=>$ips[0]]);
+            deleteProxyIp($ip);
+            app('sentry')->captureException($e,['item'=>$item,'cookieApp'=>$cookie,'proxy'=>$ip]);
             $content = null;
         }
         return $content;
     }
 
-    public static function getPcData($ql2,$item,$cookiesPcArr,$ips) {
+    public static function getPcData($ql2,$item,$cookiesPcArr,$ip) {
         $cookie = $cookiesPcArr[rand(0,count($cookiesPcArr)-1)];
         try {
-            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ips){
+            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ip){
                 $r->setUrl('https://www.jianyu360.com/article/content/'.$item['_id'].'.html');
                 $r->setTimeout(20000); // 10 seconds
                 //$r->setDelay(5); // 3 seconds
@@ -170,10 +175,11 @@ class BidLogic {
                 ]);
                 return $r;
             },false,[
-                '--proxy' => $ips[count($ips)-1],
+                '--proxy' => $ip,
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
+            deleteProxyIp($ip);
             app('sentry')->captureException($e,['item'=>$item,'cookiePc'=>$cookie,'proxy'=>$ips[0]]);
             $content = null;
         }
