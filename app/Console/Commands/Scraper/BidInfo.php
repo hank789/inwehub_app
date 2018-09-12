@@ -61,11 +61,11 @@ class BidInfo extends Command {
 
         $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
         $cookiesAppArr = explode('||',$cookiesApp);
-
+        validateProxyIps();
         //最多10页
         for ($page=1;$page<=10;$page++) {
             if ($count <= 5 && $page >= 2) {
-                sleep(rand(10, 15));
+                sleep(rand(5, 10));
             }
             $count = 0;
             for ($i = 0; $i < 5; $i++) {
@@ -98,12 +98,13 @@ class BidInfo extends Command {
             event(new SystemNotify('代理IP已耗尽，请到后台设置', []));
             exit();
         }
+        $ip = $ips[0];
         try {
             $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
                 'pageNumber' => $page,
                 'pageType' => ''
             ],[
-                'proxy' => $ips[0],
+                'proxy' => $ip,
                 'timeout' => 30,
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
@@ -113,7 +114,8 @@ class BidInfo extends Command {
                 ]
             ])->getHtml();
         } catch (\Exception $e) {
-            app('sentry')->captureException($e,['page'=>$page,'proxy'=>$ips[0],'cookiesPc'=>$cookiesPcArr[0]]);
+            deleteProxyIp($ip);
+            app('sentry')->captureException($e,['page'=>$page,'proxy'=>$ip,'cookiesPc'=>$cookiesPcArr[0]]);
             $content = null;
         }
         return $content;

@@ -62,8 +62,53 @@ class Test extends Command
         $s = json_decode($sResult,true);
         var_dump($s);*/
         $ql = QueryList::getInstance();
-        // 安装时需要设置PhantomJS二进制文件路径
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
+        $cookiesAppArr = explode('||',$cookiesApp);
+        //$ips = getProxyIps();
+        $ips = ['139.217.24.50:3128'=>1];
+        foreach ($ips as $ip=>$score) {
+            $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($cookiesAppArr,$ip){
+                //$r->setMethod('POST');
+                $r->setUrl('https://www.jianyu360.com/jyapp/article/content/ABCY2EAfTIvJyksJFZhcHUJJzACHj1mZnB%2FKA4gPy43eFJzfzNUCZM%3D.html');
+                /*$r->setRequestData([
+                    'keywords' => '',
+                    'publishtime' => '',
+                    'timeslot' => '',
+                    'area' => '',
+                    'subtype' => '',
+                    'minprice' => '',
+                    'maxprice' => '',
+                    'industry' => '',
+                    'selectType' => 'title'
+                ]);*/
+                //$r->setTimeout(10000); // 10 seconds
+                //$r->setDelay(3); // 3 seconds
+                //$r->addHeader('Cookie','UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371');
+                $r->setHeaders([
+                    'Host'   => 'www.jianyu360.com',
+                    'Referer'       => 'https://www.jianyu360.com/jylab/supsearch/index.html',
+                    'Accept'    => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Cookie' => $cookiesAppArr[0]
+                ]);
+                return $r;
+            },false,[
+                '--proxy' => $ip,
+                '--proxy-type' => 'http'
+            ]);
+            $source_url = $content->find('a.original')->href;
+            var_dump($source_url);
+            $bid_html_body = $content->removeHead()->getHtml();
+            if ($bid_html_body == '<html></html>') {
+                var_dump($ip);
+            }
+            sleep(3);
+        }
+        return;
+
+
+        // 安装时需要设置PhantomJS二进制文件路径
+        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
         //$h = file_get_contents(storage_path().'/app/attachments/test3.html');
         //$ql->html($h);
 
@@ -73,19 +118,20 @@ class Test extends Command
         //$html = $dom->find('pre#h_content');
         //var_dump((string)$html);
         //return;
-        /*$content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
-            'pageNumber' => 1,
-            'pageType' => ''
-        ],[
-            'proxy' => '125.123.122.31:42480',
-            'headers' => [
-                'Host'    => 'www.jianyu360.com',
-                'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
-                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                'Cookie'    => 'UM_distinctid=1658ad731701d9-0a4842018c67e4-34677908-1fa400-1658ad731726e2; Hm_lvt_72331746d85dcac3dac65202d103e5d9=1535632683; SESSIONID=1cf035dc58c73fbf2e4d7cf8fa937eb6c2282cb8; Hm_lvt_d7bc90fd54f45f37f12967f13c4ba19a=1536135302; CNZZDATA1261815924=1954814009-1535630590-%7C1536137064; userid_secure=GycHKzoDekh6Vx0oKF8XQ1VWXWIjFx4FOh1EYQ==; Hm_lpvt_d7bc90fd54f45f37f12967f13c4ba19a=1536139371; Hm_lpvt_72331746d85dcac3dac65202d103e5d9=1536139371'
-            ]
-        ])->getHtml();
+        //use Shadowsocks
+        $content = $ql->browser('https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ5Y0RKakVnSmxiaWdBUAE',false,[
+            '--proxy' => '127.0.0.1:1080',
+            '--proxy-type' => 'socks5'
+            //'proxy' => 'socks5h://127.0.0.1:1080',
+        ])->rules([
+            'title' => ['a.ipQwMb.Q7tWef>span','text'],
+            'link'  => ['a.ipQwMb.Q7tWef','href'],
+            'author' => ['.KbnJ8','text'],
+            'description' => ['p.HO8did.Baotjf','text'],
+            'image' => ['img.tvs3Id.dIH98c','src']
+        ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
         var_dump($content);
+        //Storage::disk('local')->put('attachments/test4.html',$content);
         return;
         $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
             'pageNumber' => 2,
@@ -123,7 +169,6 @@ class Test extends Command
         var_dump($content);
         return;*/
         //$ql = QueryList::get('https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=');
-        $ips = getProxyIps();
         $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
         $cookiesAppArr = explode('||',$cookiesApp);
         $content = $ql->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($cookiesAppArr){
@@ -151,7 +196,7 @@ class Test extends Command
             ]);
             return $r;
         },false,[
-            '--proxy' => $ips[0],
+            '--proxy' => 'http://89.22.175.42:8080',
             '--proxy-type' => 'http'
         ]);
         $source_url = $content->find('a.original')->href;

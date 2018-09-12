@@ -131,27 +131,7 @@ class SearchController extends Controller
         $questions = Question::search($request->input('search_word'))->where(function($query) {$query->where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);})->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($questions as $question) {
-            $item = [
-                'id' => $question->id,
-                'question_type' => $question->question_type,
-                'description'  => $question->title,
-                'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray()
-            ];
-            if($question->question_type == 1){
-                $item['comment_number'] = 0;
-                $item['average_rate'] = 0;
-                $item['support_number'] = 0;
-                $bestAnswer = $question->answers()->where('adopted_at','>',0)->first();
-                if ($bestAnswer) {
-                    $item['comment_number'] = $bestAnswer->comments;
-                    $item['average_rate'] = $bestAnswer->getFeedbackRate();
-                    $item['support_number'] = $bestAnswer->supports;
-                }
-            } else {
-                $item['answer_number'] = $question->answers;
-                $item['follow_number'] = $question->followers;
-            }
-            $data[] = $item;
+            $data[] = $question->formatListItem();
         }
         $return = $questions->toArray();
         $return['data'] = $data;
@@ -182,6 +162,7 @@ class SearchController extends Controller
             //$query = $query->where('public',1);
         }
         $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $return = $submissions->toArray();
         $data = [];
         foreach ($submissions as $submission) {
             $upvote = Support::where('user_id',$user->id)
@@ -206,7 +187,6 @@ class SearchController extends Controller
             $item['category_name'] = $group->name;
             $data[] = $item;
         }
-        $return = $submissions->toArray();
         $return['data'] = $data;
         $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]',',搜索结果'.$submissions->total());
         return self::createJsonData(true, $return);

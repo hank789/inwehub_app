@@ -485,64 +485,7 @@ class GroupController extends Controller
         $return = $submissions->toArray();
         $list = [];
         foreach ($submissions as $submission) {
-            //发布文章
-            $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-            $url = $submission->data['url']??$comment_url;
-            $support_uids = Support::where('supportable_id',$submission->id)
-                ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
-            $supporters = [];
-            if ($support_uids) {
-                $supporters = User::select('name','uuid')->whereIn('id',$support_uids)->get()->toArray();
-            }
-            $upvote = Support::where('user_id',$user->id)
-                ->where('supportable_id',$submission->id)
-                ->where('supportable_type',Submission::class)
-                ->exists();
-            $img = $submission->data['img']??'';
-            $sourceData = [
-                'title'     => strip_tags($submission->title),
-                'article_title' => $submission->data['title']??'',
-                'img'       => $img,
-                'files'       => $submission->data['files']??'',
-                'domain'    => $submission->data['domain']??'',
-                'tags'      => $submission->tags()->wherePivot('is_display',1)->get()->toArray(),
-                'submission_id' => $submission->id,
-                'current_address_name' => $submission->data['current_address_name']??'',
-                'current_address_longitude' => $submission->data['current_address_longitude']??'',
-                'current_address_latitude'  => $submission->data['current_address_latitude']??'',
-                'comment_url' => $comment_url,
-                'comment_number' => $submission->comments_number,
-                'support_number' => $submission->upvotes,
-                'supporter_list' => $supporters,
-                'is_upvoted'     => $upvote ? 1 : 0,
-                'is_recommend'   => $submission->is_recommend,
-                'submission_type' => $submission->type,
-                'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
-                'group'    => null
-            ];
-            $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE;
-            if ($submission->type == 'text') $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_SHARE;
-            if ($submission->type == 'link') {
-                $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_LINK;
-            }
-
-            $list[] = [
-                'id' => $submission->id,
-                'title' => $submission->user->name.'发布了'.($submission->type == 'article' ? '文章':'分享'),
-                'top' => $submission->top,
-                'user'  => [
-                    'id'    => $submission->user->id ,
-                    'uuid'  => $submission->user->uuid,
-                    'name'  => $submission->user->name,
-                    'is_expert' => $submission->user->is_expert,
-                    'avatar'=> $submission->user->avatar
-                ],
-                'feed'  => $sourceData,
-                'url'   => $url,
-                'feed_type'  => $feed_type,
-                'created_at' => (string)$submission->created_at
-            ];
-
+            $list[] = $submission->formatListItem($user,false);
         }
         $return['data'] = $list;
         return self::createJsonData(true, $return);

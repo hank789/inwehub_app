@@ -1068,11 +1068,13 @@ if (!function_exists('string')){
 }
 
 if (!function_exists('saveImgToCdn')){
-    function saveImgToCdn($imgUrl){
+    function saveImgToCdn($imgUrl,$dir = 'avatar'){
         $parse_url = parse_url($imgUrl);
         if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
-            $file_name = 'avatar/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-            Storage::disk('oss')->put($file_name,file_get_contents($imgUrl));
+            $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+            $ql = \QL\QueryList::getInstance();
+            $content = $ql->get($imgUrl)->getHtml();
+            Storage::disk('oss')->put($file_name,$content);
             $cdn_url = Storage::disk('oss')->url($file_name);
             return $cdn_url;
         }
@@ -1154,7 +1156,9 @@ if (!function_exists('getUrlInfo')) {
             if ($temp && $withImageUrl && !$img_url) {
                 //保存图片
                 $img_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
-                dispatch((new \App\Jobs\UploadFile($img_name,base64_encode(file_get_contents($temp)))));
+                $ql = new \QL\QueryList();
+                $img_contet = $ql->get($temp)->getHtml();
+                dispatch((new \App\Jobs\UploadFile($img_name,base64_encode($img_contet))));
                 $img_url = Storage::url($img_name);
                 //非微信文章
                 if ($useCache) {
@@ -1213,7 +1217,7 @@ if (!function_exists('getRequestIpAddress')) {
 }
 
 if (!function_exists('file_get_contents_curl')) {
-    function file_get_contents_curl($url, $timeout = '10')
+    function file_get_contents_curl($url, $checkTitle = true)
     {
         $ch = curl_init();
         $headers = [];
@@ -1229,11 +1233,13 @@ if (!function_exists('file_get_contents_curl')) {
 
         $data = curl_exec($ch);
         curl_close($ch);
-        preg_match('/<title>(?<title>.*?)<\/title>/si', $data, $title);
-        if (empty($title)) {
-            $ql = \QL\QueryList::getInstance();
-            $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
-            $data = $ql->browser($url)->getHtml();
+        if ($checkTitle) {
+            preg_match('/<title>(?<title>.*?)<\/title>/si', $data, $title);
+            if (empty($title)) {
+                $ql = \QL\QueryList::getInstance();
+                $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
+                $data = $ql->browser($url)->getHtml();
+            }
         }
         return $data;
     }
@@ -1553,17 +1559,17 @@ if (!function_exists('formatKeyword')) {
     }
 }
 
-if (!function_exists('getProxyIps')) {
-    function getProxyIps($min = 5) {
+if (!function_exists('validateProxyIps')) {
+    function validateProxyIps() {
         $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips');
         $ql = new \QL\QueryList();
-        foreach ($ips as $key=>$ip) {
+        foreach ($ips as $proxyIp) {
             $opts = [
-                'proxy' => $ip,
+                'proxy' => $proxyIp,
                 //Set the timeout time in seconds
                 'timeout' => 3,
             ];
-            $i=4;
+            $i=3;
             while ($i--) {
                 try {
                     $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
@@ -1572,13 +1578,60 @@ if (!function_exists('getProxyIps')) {
                     $title = '';
                 }
             }
-
             if (!strstr($title, '百度一下')) {
-                \App\Services\RateLimiter::instance()->sRem('proxy_ips',$ip);
-                unset($ips[$key]);
+                deleteProxyIp($proxyIp);
             }
         }
+    }
+}
+
+if (!function_exists('getProxyIps')) {
+    function getProxyIps($min = 5) {
+        $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips');
+        $ql = new \QL\QueryList();
+
         while (empty($ips) || count($ips) < $min) {
+            //优先取自己的代理
+            $scored_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('validated:jianyu360','+inf',7,false,'haipproxy:');
+            $ttl_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('ttl:jianyu360','+inf',time() - 30 * 60,false,'haipproxy:');
+            $speed_proxies = \App\Services\RateLimiter::instance()->zRangeByScore('speed:jianyu360',0,1000 * 10,false,'haipproxy:');
+            $proxies = array_intersect($scored_proxies,$ttl_proxies,$speed_proxies);
+            if (!$proxies || count($proxies) < $min) {
+                $proxies = array_merge(array_intersect($ttl_proxies, $speed_proxies),$scored_proxies);
+            }
+
+            if (!$proxies || count($proxies) < $min)
+                $proxies = array_merge($ttl_proxies,$scored_proxies);
+
+            if ($proxies) {
+                foreach ($proxies as $proxyIp) {
+                    $proxyIp = str_replace('http://','',$proxyIp);
+                    if (\App\Services\RateLimiter::instance()->sIsMember('proxy_ips_deleted',$proxyIp)) {
+                        continue;
+                    }
+                    $opts = [
+                        'proxy' => $proxyIp,
+                        //Set the timeout time in seconds
+                        'timeout' => 3,
+                    ];
+                    $i=3;
+                    while ($i--) {
+                        try {
+                            $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
+                            break;
+                        } catch (Exception $e) {
+                            $title = '';
+                        }
+                    }
+                    if (strstr($title, '百度一下')) {
+                        \App\Services\RateLimiter::instance()->sAdd('proxy_ips',$proxyIp, 0);
+                        $ips[] = $proxyIp;
+                    }
+                    if (count($ips) >= 2*$min) return $ips;
+                }
+            }
+            if (count($ips) >= 2*$min) return $ips;
+
             $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
             if (!$proxy) {
                 return false;
@@ -1596,7 +1649,7 @@ if (!function_exists('getProxyIps')) {
                     //Set the timeout time in seconds
                     'timeout' => 3,
                 ];
-                $i=4;
+                $i=3;
                 while ($i--) {
                     try {
                         $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
@@ -1613,5 +1666,44 @@ if (!function_exists('getProxyIps')) {
         }
         shuffle($ips);
         return $ips;
+    }
+}
+
+if (!function_exists('deleteProxyIp')) {
+    function deleteProxyIp($ip) {
+        \App\Services\RateLimiter::instance()->sRem('proxy_ips',$ip);
+        \App\Services\RateLimiter::instance()->sAdd('proxy_ips_deleted',$ip, 0);
+        \App\Services\RateLimiter::instance()->sRem('all',$ip,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('validated:jianyu360',$ip,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('ttl:jianyu360',$ip,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('speed:jianyu360',$ip,'haipproxy:');
+    }
+}
+
+if (!function_exists('curlShadowsocks')) {
+    function curlShadowsocks($url) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+        //通过代理访问需要额外添加的参数项
+        curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
+        curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+        curl_setopt($ch, CURLOPT_PROXY, "127.0.0.1");
+        curl_setopt($ch, CURLOPT_PROXYPORT, "1080");
+
+        $result = curl_exec($ch);
+        if($result === false){
+            var_dump(curl_error($ch));
+            curl_close($ch);
+            exit();
+        }
+        curl_close($ch);
+
+        return $result;
     }
 }

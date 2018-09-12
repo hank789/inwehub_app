@@ -106,8 +106,8 @@ class RateLimiter extends Singleton
         return $this->client->sMembers('inwehub:'.$key);
     }
 
-    public function sRem($key,$value) {
-        return $this->client->sRem('inwehub:'.$key,$value);
+    public function sRem($key,$value,$keyPrefix = 'inwehub:') {
+        return $this->client->sRem($keyPrefix.$key,$value);
     }
 
     public function sIsMember($key,$value){
@@ -150,8 +150,20 @@ class RateLimiter extends Singleton
      * $redis->zRevRange('key', 0, -1, true); // array('val10' => 10, 'val2' => 2, 'val0' => 0)
      * </pre>
      */
-    public function zRevrange($key,$start,$end){
-        return $this->client->zRevRange('inwehub:'.$key,$start,$end,'WITHSCORES');
+    public function zRevrange($key,$start,$end,$keyPrefix = 'inwehub:'){
+        return $this->client->zRevRange($keyPrefix.$key,$start,$end,'WITHSCORES');
+    }
+
+    public function zRevrangeByScore($key,$start,$end,$withscores=true,$keyPrefix = 'inwehub:') {
+        return $this->client->zRevRangeByScore($keyPrefix.$key,$start,$end,['withscores' => $withscores]);
+    }
+
+    public function zRangeByScore($key,$start,$end,$withscores=true,$keyPrefix = 'inwehub:') {
+        return $this->client->zRangeByScore($keyPrefix.$key,$start,$end,['withscores' => $withscores]);
+    }
+
+    public function zRem($key,$value,$keyPrefix = 'inwehub:') {
+        return $this->client->zRem($keyPrefix.$key,$value);
     }
 
 

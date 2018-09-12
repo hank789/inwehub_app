@@ -12,6 +12,7 @@ class BidLogic {
 
     public static function scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, &$count) {
         if (empty($data['list'])) return false;
+        $timeCost = 6;
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
             //超过2天的不抓取
@@ -22,6 +23,7 @@ class BidLogic {
             if ($bid) {
                 continue;
             }
+            $startTime = time();
             $newBidIds[] = $item['_id'];
             $info = [
                 'guid' => $item['_id'],
@@ -42,18 +44,24 @@ class BidLogic {
                 'status' => 2,
                 'source_url' => '',
             ];
-            sleep(rand(5,10));
+            if ($timeCost <= 5) {
+                sleep(rand(5-$timeCost,10-$timeCost));
+            }
+            $timeCost = 0;
             $bid_html_body = '';
             $item['bid_html_body'] = '';
             if ($cookiesAppArr) {
-                for ($i=0;$i<5;$i++) {
-                    $content = self::getAppData($ql2,$item,$cookiesAppArr);
+                for ($i=0;$i<3;$i++) {
+                    $ips = getProxyIps(1);
+                    $ip = $ips[0];
+                    $content = self::getAppData($ql2,$item,$cookiesAppArr,$ip);
                     if ($content) {
                         $bid_html_body = $content->removeHead()->getHtml();
                         if ($bid_html_body != '<html></html>') {
                             break;
                         } else {
-                            sleep(1);
+                            deleteProxyIp($ip);
+                            getProxyIps(2);
                         }
                     }
                 }
@@ -81,13 +89,16 @@ class BidLogic {
                 ];
                 event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
                 sleep(rand(2,5));
-                for ($i=0;$i<5;$i++) {
-                    $content = self::getPcData($ql2,$item,$cookiesPcArr);
+                for ($i=0;$i<3;$i++) {
+                    $ips = getProxyIps(1);
+                    $ip = $ips[0];
+                    $content = self::getPcData($ql2,$item,$cookiesPcArr,$ip);
                     if ($content) {
                         if ($content->getHtml() != '<html></html>') {
                             break;
                         } else {
-                            sleep(5);
+                            deleteProxyIp($ip);
+                            getProxyIps(2);
                         }
                     }
                 }
@@ -105,17 +116,26 @@ class BidLogic {
             }
             $info['source_domain'] = parse_url($info['source_url'], PHP_URL_HOST);
             $info['detail'] = $item;
-            BidInfoModel::create($info);
-            $count ++;
+            try {
+                $bid = BidInfoModel::where('guid',$item['_id'])->first();
+                if ($bid) {
+                    continue;
+                }
+                BidInfoModel::create($info);
+                $count++;
+            } catch (\Exception $e) {
+                app('sentry')->captureException($e,['item'=>$item]);
+            }
+            $endTime = time();
+            $timeCost = $endTime - $startTime;
         }
         return true;
     }
 
-    public static function getAppData($ql2,$item,$cookiesAppArr) {
-        $ips = getProxyIps(1);
+    public static function getAppData($ql2,$item,$cookiesAppArr,$ip) {
         $cookie = $cookiesAppArr[rand(0,count($cookiesAppArr)-1)];
         try {
-            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ips){
+            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ip){
                 //$r->setMethod('POST');
                 $r->setUrl('https://www.jianyu360.com/jyapp/article/content/'.$item['_id'].'.html');
                 $r->setTimeout(20000); // 10 seconds
@@ -129,21 +149,21 @@ class BidLogic {
                 ]);
                 return $r;
             },false,[
-                '--proxy' => $ips[0],
+                '--proxy' => $ip,
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
-            app('sentry')->captureException($e,['item'=>$item,'cookieApp'=>$cookie,'proxy'=>$ips[0]]);
+            deleteProxyIp($ip);
+            app('sentry')->captureException($e,['item'=>$item,'cookieApp'=>$cookie,'proxy'=>$ip]);
             $content = null;
         }
         return $content;
     }
 
-    public static function getPcData($ql2,$item,$cookiesPcArr) {
-        $ips = getProxyIps(1);
+    public static function getPcData($ql2,$item,$cookiesPcArr,$ip) {
         $cookie = $cookiesPcArr[rand(0,count($cookiesPcArr)-1)];
         try {
-            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ips){
+            $content = $ql2->browser(function (\JonnyW\PhantomJs\Http\RequestInterface $r) use ($item, $cookie, $ip){
                 $r->setUrl('https://www.jianyu360.com/article/content/'.$item['_id'].'.html');
                 $r->setTimeout(20000); // 10 seconds
                 //$r->setDelay(5); // 3 seconds
@@ -155,10 +175,11 @@ class BidLogic {
                 ]);
                 return $r;
             },false,[
-                '--proxy' => $ips[0],
+                '--proxy' => $ip,
                 '--proxy-type' => 'http'
             ]);
         } catch (\Exception $e) {
+            deleteProxyIp($ip);
             app('sentry')->captureException($e,['item'=>$item,'cookiePc'=>$cookie,'proxy'=>$ips[0]]);
             $content = null;
         }

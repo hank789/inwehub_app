@@ -249,44 +249,10 @@ class Feed extends Model
                 //发布文章
                 $submission = Submission::find($this->source_id);
                 if (!$submission) return null;
-                $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-                //$url = $submission->data['url']??$comment_url;
-                $url = $comment_url;
-                $upvote = Support::where('user_id',Auth::user()->id)
-                    ->where('supportable_id',$submission->id)
-                    ->where('supportable_type',Submission::class)
-                    ->exists();
-
-                $group = Group::find($submission->group_id);
-                $current_address_name = $submission->data['current_address_name']??'';
-                $data = [
-                    'title'     => str_limit(strip_tags($submission->title),120),
-                    'img'       => $submission->data['img']??'',
-                    'files'       => $submission->data['files']??'',
-                    'domain'    => $submission->data['domain']??'',
-                    'tags'      => $submission->tags()->wherePivot('is_display',1)->get()->toArray(),
-                    'submission_id' => $this->source_id,
-                    'current_address_name' => str_limit($current_address_name,34),
-                    'current_address_longitude' => $submission->data['current_address_longitude']??'',
-                    'current_address_latitude'  => $submission->data['current_address_latitude']??'',
-                    'comment_url' => $comment_url,
-                    'comment_number' => $submission->comments_number,
-                    'support_number' => $submission->upvotes,
-                    'views'          => $submission->views,
-                    'is_upvoted'     => $upvote ? 1 : 0,
-                    'submission_type' => $submission->type,
-                    //'comments' => $submission->comments()->with('owner','children')->where('parent_id', 0)->orderBy('id','desc')->take(8)->get(),
-                    'group'    => $group?$group->toArray():[]
-                ];
-                if ($data['group']) {
-                    $data['group']['name'] = str_limit($data['group']['name'], 20);
-                }
-                $data['group']['subscribers'] = $group->getHotIndex();
-                if ($submission->type == 'text') $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_SHARE;
-                if ($submission->type == 'link') {
-                    $this->feed_type = self::FEED_TYPE_SUBMIT_READHUB_LINK;
-                    $data['article_title'] = $submission->data['title'];
-                }
+                $item = $submission->formatListItem(Auth::user());
+                $data = $item['feed'];
+                $url = $item['url'];
+                $this->feed_type = $item['feed_type'];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答
