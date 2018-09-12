@@ -1557,27 +1557,6 @@ if (!function_exists('getProxyIps')) {
     function getProxyIps($min = 5) {
         $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips');
         $ql = new \QL\QueryList();
-        foreach ($ips as $key=>$ip) {
-            $opts = [
-                'proxy' => $ip,
-                //Set the timeout time in seconds
-                'timeout' => 3,
-            ];
-            $i=4;
-            while ($i--) {
-                try {
-                    $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
-                    break;
-                } catch (Exception $e) {
-                    $title = '';
-                }
-            }
-
-            if (!strstr($title, '百度一下')) {
-                \App\Services\RateLimiter::instance()->sRem('proxy_ips',$ip);
-                unset($ips[$key]);
-            }
-        }
 
         while (empty($ips) || count($ips) < $min) {
             //优先取自己的代理
@@ -1603,7 +1582,7 @@ if (!function_exists('getProxyIps')) {
                         //Set the timeout time in seconds
                         'timeout' => 3,
                     ];
-                    $i=4;
+                    $i=3;
                     while ($i--) {
                         try {
                             $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
@@ -1638,7 +1617,7 @@ if (!function_exists('getProxyIps')) {
                     //Set the timeout time in seconds
                     'timeout' => 3,
                 ];
-                $i=4;
+                $i=3;
                 while ($i--) {
                     try {
                         $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
