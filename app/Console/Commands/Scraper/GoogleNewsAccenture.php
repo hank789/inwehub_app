@@ -51,6 +51,10 @@ class GoogleNewsAccenture extends Command {
             $item['href'] = $ql->get('https://news.google.com/'.$item['link'],[],[
                 'proxy' => 'socks5h://127.0.0.1:1080',
             ])->find('div.m2L3rb.eLNT1d')->children('a')->attrs('href');
+            if ($item['image']) {
+                //图片本地化
+                $item['image'] = saveImgToCdn($item['image'],'submissions');
+            }
         }
         var_dump($list);
     }
