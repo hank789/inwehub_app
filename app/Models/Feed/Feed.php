@@ -252,6 +252,7 @@ class Feed extends Model
                 $item = $submission->formatListItem(Auth::user());
                 $data = $item['feed'];
                 $url = $item['url'];
+                $this->feed_type = $item['feed_type'];
                 break;
             case self::FEED_TYPE_FOLLOW_FREE_QUESTION:
                 //关注了互动问答
