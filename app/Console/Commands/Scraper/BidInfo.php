@@ -61,7 +61,7 @@ class BidInfo extends Command {
 
         $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
         $cookiesAppArr = explode('||',$cookiesApp);
-
+        validateProxyIps();
         //最多10页
         for ($page=1;$page<=10;$page++) {
             if ($count <= 5 && $page >= 2) {

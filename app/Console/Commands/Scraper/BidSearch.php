@@ -69,6 +69,7 @@ class BidSearch extends Command {
         $cookiesAppArr = explode('||',$cookiesApp);
         $allCount = 0;
         $count = 0;
+        validateProxyIps();
         foreach ($keywords as $key=>$keyword) {
             if ($count <= 6 && $key>=1) {
                 sleep((6-$count) * 10);

@@ -1553,6 +1553,32 @@ if (!function_exists('formatKeyword')) {
     }
 }
 
+if (!function_exists('validateProxyIps')) {
+    function validateProxyIps() {
+        $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips');
+        $ql = new \QL\QueryList();
+        foreach ($ips as $proxyIp) {
+            $opts = [
+                'proxy' => $proxyIp,
+                //Set the timeout time in seconds
+                'timeout' => 3,
+            ];
+            $i=3;
+            while ($i--) {
+                try {
+                    $title = $ql->get('http://www.baidu.com',null,$opts)->find('title')->text();
+                    break;
+                } catch (Exception $e) {
+                    $title = '';
+                }
+            }
+            if (!strstr($title, '百度一下')) {
+                deleteProxyIp($proxyIp);
+            }
+        }
+    }
+}
+
 if (!function_exists('getProxyIps')) {
     function getProxyIps($min = 5) {
         $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips');
