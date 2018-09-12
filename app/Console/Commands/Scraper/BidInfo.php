@@ -98,7 +98,7 @@ class BidInfo extends Command {
             event(new SystemNotify('代理IP已耗尽，请到后台设置', []));
             exit();
         }
-        $ip = $ips[count($ips) - 1];
+        $ip = $ips[0];
         try {
             $content = $ql->post('https://www.jianyu360.com/jylab/supsearch/getNewBids',[
                 'pageNumber' => $page,

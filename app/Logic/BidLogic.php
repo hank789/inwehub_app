@@ -53,7 +53,7 @@ class BidLogic {
             if ($cookiesAppArr) {
                 for ($i=0;$i<3;$i++) {
                     $ips = getProxyIps(1);
-                    $ip = $ips[count($ips) - 1];
+                    $ip = $ips[0];
                     $content = self::getAppData($ql2,$item,$cookiesAppArr,$ip);
                     if ($content) {
                         $bid_html_body = $content->removeHead()->getHtml();
@@ -91,7 +91,7 @@ class BidLogic {
                 sleep(rand(2,5));
                 for ($i=0;$i<3;$i++) {
                     $ips = getProxyIps(1);
-                    $ip = $ips[count($ips) - 1];
+                    $ip = $ips[0];
                     $content = self::getPcData($ql2,$item,$cookiesPcArr,$ip);
                     if ($content) {
                         if ($content->getHtml() != '<html></html>') {
