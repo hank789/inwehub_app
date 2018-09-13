@@ -1624,7 +1624,7 @@ if (!function_exists('getProxyIps')) {
                         }
                     }
                     if (strstr($title, '百度一下')) {
-                        \App\Services\RateLimiter::instance()->sAdd('proxy_ips',$proxyIp, 0);
+                        \App\Services\RateLimiter::instance()->sAdd('proxy_ips_'.$domain,$proxyIp, 0);
                         $ips[] = $proxyIp;
                     }
                     if (count($ips) >= 2*$min) return $ips;
