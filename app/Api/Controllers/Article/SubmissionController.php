@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\NewSubmissionJob;
 use App\Jobs\UploadFile;
@@ -362,6 +363,7 @@ class SubmissionController extends Controller {
             if ($submission->status == 1) {
                 $this->dispatch(new NewSubmissionJob($submission->id));
             }
+            event(new SystemNotify('通过workflow发布分享:'.$title));
 
         } catch (\Exception $exception) {
             app('sentry')->captureException($exception);

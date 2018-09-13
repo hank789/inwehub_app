@@ -1,4 +1,8 @@
 <?php namespace App\Console\Commands\Scraper;
+use App\Events\Frontend\System\SystemNotify;
+use App\Models\Scraper\WechatMpInfo;
+use App\Models\Scraper\WechatMpList;
+use App\Services\Spiders\Wechat\WechatSpider;
 use Illuminate\Console\Command;
 
 /**
@@ -36,9 +40,35 @@ class WechatAuthor extends Command {
      */
     public function handle()
     {
-        $path = config('app.spider_path');
+        /*$path = config('app.spider_path');
         if($path){
             shell_exec('cd '.$path.' && python auto_add_mp.py >> /tmp/auto_add_mp.log');
+        }*/
+        $all = WechatMpList::get();
+        $spider = new WechatSpider();
+        foreach ($all as $item) {
+            $info = WechatMpInfo::where('wx_hao',$item->wx_hao)->first();
+            if ($info) {
+                $item->delete();
+            } else {
+                $data = $spider->getGzhInfo($item->wx_hao);
+                if ($data['name']) {
+                    WechatMpInfo::create([
+                        'name' => $data['name'],
+                        'wx_hao' => $data['wechatid'],
+                        'company' => $data['company'],
+                        'description' => $data['description'],
+                        'logo_url' => $data['img'],
+                        'qr_url' => $data['qrcode'],
+                        'wz_url' => $data['url'],
+                        'last_qunfa_id' => $data['last_qunfa_id'],
+                        'create_time' => date('Y-m-d H:i:s')
+                    ]);
+                } else {
+                    event(new SystemNotify('抓取微信公众号失败：'.$item->wx_hao));
+                }
+                $item->delete();
+            }
         }
     }
 }

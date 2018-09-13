@@ -180,7 +180,7 @@ class BidLogic {
             ]);
         } catch (\Exception $e) {
             deleteProxyIp($ip);
-            app('sentry')->captureException($e,['item'=>$item,'cookiePc'=>$cookie,'proxy'=>$ips[0]]);
+            app('sentry')->captureException($e,['item'=>$item,'cookiePc'=>$cookie,'proxy'=>$ip]);
             $content = null;
         }
         return $content;
