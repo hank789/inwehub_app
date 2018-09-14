@@ -45,8 +45,8 @@ class WechatPosts extends Command {
     {
         $path = config('app.spider_path');
         if($path){
-            //shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
-            $spider = new WechatSpider();
+            shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
+            /*$spider = new WechatSpider();
             $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
             $succ_count = 0;
             foreach ($mpInfos as $mpInfo) {
@@ -98,9 +98,11 @@ class WechatPosts extends Command {
                     $mpInfo->update_time = date('Y-m-d H:i:s');
                     $mpInfo->save();
                 }
-            }
+            }*/
             $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
-
+            foreach ($articles as $article) {
+                dispatch(new GetArticleBody($article->_id));
+            }
             if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
                 $second = 0;
                 foreach ($articles as $article) {
