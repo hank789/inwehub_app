@@ -35,7 +35,8 @@ class SearchController extends Controller
         $searchHistory = RateLimiter::instance()->hGetAll('search-user-count-'.$loginUser->id);
         $searchCount = RateLimiter::instance()->hGetAll('search-word-count');
         arsort($searchCount);
-        $topSearch = array_slice($searchCount,0,10,true);
+        //$topSearch = array_slice($searchCount,0,10,true);
+        $topSearch = ['SAP','智能制造','区块链','数字化转型','转行','制造业','顾问','Oracle','ToB','金融'];
         $searchHistory = array_slice($searchHistory,0,20,true);
         return self::createJsonData(true,['history'=>array_keys($searchHistory),'top'=>array_keys($topSearch)]);
     }
@@ -53,9 +54,6 @@ class SearchController extends Controller
             if (str_contains(strtolower($word),$searchWord)) {
                 $suggest[] = $word;
             }
-        }
-        if (empty($suggest)) {
-            $suggest[] = $request->input('search_word');
         }
         return self::createJsonData(true,['suggest'=>$suggest]);
     }
@@ -165,27 +163,7 @@ class SearchController extends Controller
         $return = $submissions->toArray();
         $data = [];
         foreach ($submissions as $submission) {
-            $upvote = Support::where('user_id',$user->id)
-                ->where('supportable_id',$submission['id'])
-                ->where('supportable_type',Submission::class)
-                ->exists();
-            $bookmark = Collection::where('user_id',$user->id)
-                ->where('source_id',$submission['id'])
-                ->where('source_type',Submission::class)
-                ->exists();
-            $item = $submission->toArray();
-            $item['title'] = strip_tags($item['title']);
-            $item['is_upvoted'] = $upvote ? 1 : 0;
-            $item['is_bookmark'] = $bookmark ? 1: 0;
-            $item['tags'] = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
-            $item['data']['current_address_name'] = $item['data']['current_address_name']??'';
-            $item['data']['current_address_longitude'] = $item['data']['current_address_longitude']??'';
-            $item['data']['current_address_latitude']  = $item['data']['current_address_latitude']??'';
-            $group = Group::find($submission->group_id);
-            $item['group'] = $group->toArray();
-            $item['group']['subscribers'] = $group->getHotIndex();
-            $item['category_name'] = $group->name;
-            $data[] = $item;
+            $data[] = $submission->formatListItem($user);
         }
         $return['data'] = $data;
         $this->searchNotify($user,$request->input('search_word'),'在栏目[分享]',',搜索结果'.$submissions->total());

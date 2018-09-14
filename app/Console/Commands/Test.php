@@ -4,10 +4,12 @@ namespace App\Console\Commands;
 
 use App\Models\RecommendRead;
 use App\Models\Scraper\BidInfo;
+use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Taggable;
 use App\Services\BosonNLPService;
+use App\Services\Spiders\Wechat\WechatSpider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use PHPHtmlParser\Dom;
@@ -38,6 +40,11 @@ class Test extends Command
      */
     public function handle()
     {
+        $wechat = new WechatSpider();
+        $mp = WechatMpInfo::find(4);
+        $items = $wechat->getGzhArticles($mp);
+        var_dump($items);
+        return;
         /*$sUrl = 'https://m.lagou.com/search.json?city=%E5%85%A8%E5%9B%BD&positionName=sap&pageNo=1&pageSize=15';
         $aHeader = [
             'Accept: application/json',
@@ -62,6 +69,19 @@ class Test extends Command
         $s = json_decode($sResult,true);
         var_dump($s);*/
         $ql = QueryList::getInstance();
+        $opts = [
+            //Set the timeout time in seconds
+            'timeout' => 10,
+            'headers' => [
+                'Host'   => 'weixin.sogou.com',
+            ]
+        ];
+        $content = $ql->get('http://mp.weixin.qq.com/profile?src=3&timestamp=1536830900&ver=1&signature=NKQVmha9HAVDZdnvcqm2poIuSypgNmHb4Z8rZ8UUdwhtLSyUv2LnpneWG8ovrr7FjSoKABpEexJ7puIjcgQ-eA==',null,$opts);
+        //var_dump($content->getHtml());
+        return;
+
+
+
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         $cookiesApp = Setting()->get('scraper_jianyu360_app_cookie','');
         $cookiesAppArr = explode('||',$cookiesApp);

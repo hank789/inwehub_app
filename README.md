@@ -194,6 +194,16 @@ Shadowsock客户端服务已正常运行，则结果如下：
 }
 ```
 
+##代理服务,需要安装python3环境
+```
+git clone git@github.com:hank789/haipproxy.git
+pip install -r requirements.txt
+nohup python3 crawler_booter.py --usage crawler common ajax > /tmp/proxy_ip_crawler.log &
+nohup python3 crawler_booter.py --usage validator init jianyu360 sogou > /tmp/proxy_ip_validator.log &
+nohup python3 scheduler_booter.py --usage crawler common ajax > /tmp/proxy_ip_scheduler_crawler.log &
+nohup python3 scheduler_booter.py --usage validator jianyu360 sogou > /tmp/proxy_ip_scheduler_validator.log &
+```
+
 ## 部署
 使用https://laravel.com/docs/5.4/envoy 进行部署
 注意事项:
