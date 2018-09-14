@@ -201,4 +201,14 @@ class WechatSpider
         return $content;
     }
 
+    protected function jiefeng() {
+        $max_count = 0;
+        print("出现验证码，准备自动识别");
+        while ($max_count < 5) {
+            $max_count += 1;
+            $time = intval(microtime(true) * 1000);
+            $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
+        }
+    }
+
 }
