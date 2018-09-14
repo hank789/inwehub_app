@@ -54,9 +54,6 @@ class SearchController extends Controller
                 $suggest[] = $word;
             }
         }
-        if (empty($suggest)) {
-            $suggest[] = $request->input('search_word');
-        }
         return self::createJsonData(true,['suggest'=>$suggest]);
     }
 

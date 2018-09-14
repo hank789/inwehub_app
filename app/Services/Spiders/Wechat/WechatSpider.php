@@ -29,26 +29,28 @@ class WechatSpider
      */
     public function getGzhInfo($wx_hao) {
         $request_url = 'http://weixin.sogou.com/weixin?query='.$wx_hao.'&_sug_type_=&_sug_=n&type=1&page=1&ie=utf8';
-        for ($i=0;$i<4;$i++) {
+        for ($i=0;$i<8;$i++) {
             $ips = getProxyIps(1,'sogou');
-            $ip = $ips[0];
+            $ip = $ips[0]??'';
             $content = $this->requestUrl($request_url,$ip);
             if ($content) {
                 $html = $content->getHtml();
-                if (!str_contains('用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证',$html)) {
+                if (!str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
                     break;
                 } else {
+                    var_dump('公众号访问频繁');
                     deleteProxyIp($ip,'sogou');
                 }
+            } else {
+                deleteProxyIp($ip,'sogou');
             }
         }
-        $wechatid = $content->find('label[name=em_weixinhao]')->text();
+        $wechatid = $content->find('label[name=em_weixinhao]')->eq(0)->text();
         $img = $content->find('div.img-box > a')->children('img')->attr('src');
         $url = $content->find('div.img-box')->children('a')->attr('href');
-        $name = $content->find('div.txt-box > p.tit')->children('a')->text();
+        $name = $content->find('div.txt-box > p.tit')->eq(0)->children('a')->text();
         $description = $content->find('ul.news-list2 > li')->children('dl')->map(function ($item) {
             $dt = $item->find('dt')->text();
-            var_dump($dt);
             if ($dt == '功能介绍：') {
                 return ['description'=>$item->find('dd')->text()];
             }
@@ -61,6 +63,7 @@ class WechatSpider
             'wechatid' => $wechatid,
             'img' => $img,
             'url' => $url,
+            'qrcode' => '',
             'description' => $description[0]['description']??'',
             'company' => $description[1]['company']??'',
             'last_qunfa_id' => 0
@@ -69,13 +72,18 @@ class WechatSpider
     }
 
     public function getGzhArticles(WechatMpInfo $mpInfo) {
-        for ($i=0;$i<4;$i++) {
+        for ($i=0;$i<8;$i++) {
             $ips = getProxyIps(1,'sogou');
-            $ip = $ips[0];
+            $ip = $ips[0]??'';
             $content = $this->requestUrl($mpInfo->wz_url,$ip);
             if ($content) {
                 $html = $content->getHtml();
-                if (!$content->find('title')->text()) {
+                $sogouTitle = $content->find('title')->text();
+                if (str_contains($sogouTitle,'请输入验证码')) {
+                    var_dump('请输入验证码');
+                    deleteProxyIp($ip,'sogou');
+                } elseif (!$sogouTitle) {
+                    var_dump('链接已过期');
                     //说明链接已过期
                     $newData = $this->getGzhInfo($mpInfo->wx_hao);
                     if (empty($newData['name'])) {
@@ -84,11 +92,13 @@ class WechatSpider
                     }
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
-                }elseif (!str_contains('用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证',$html)) {
+                }elseif (!str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
                     break;
                 } else {
                     deleteProxyIp($ip,'sogou');
                 }
+            } else {
+                deleteProxyIp($ip,'sogou');
             }
         }
         $html = $content->getHtml();
@@ -109,14 +119,13 @@ class WechatSpider
                             case 1:
                                 //文字
                                 $item['content'] = $comm_msg_info['content'];
+                                $items[] = $item;
                                 break;
                             case 3:
                                 //图片
-                                continue;
                                 break;
                             case 34:
                                 // 音频
-                                continue;
                                 break;
                             case 49:
                                 //图文
@@ -159,18 +168,18 @@ class WechatSpider
                                         $items[] = $itemnew;
                                     }
                                 }
-                                continue;
                                 break;
                             case 62:
                                 $item['cdn_videoid'] = $listdic['video_msg_ext_info']['cdn_videoid'];
                                 $item['thumb'] = $listdic['video_msg_ext_info']['thumb'];
-                                continue;
+                                //$items[] = $item;
                                 break;
                         }
-                        $items[] = $item;
                     }
                 }
             }
+        } else {
+            event(new SystemNotify('抓取微信公众号['.$mpInfo->wx_hao.']文章失败'));
         }
         return $items;
     }
@@ -185,6 +194,7 @@ class WechatSpider
             if (empty($ip)) unset($opts['proxy']);
             $content = $this->ql->get($url,null,$opts);
         } catch (\Exception $e) {
+            var_dump($e->getMessage());
             app('sentry')->captureException($e,['url'=>$url,'proxy'=>$ip]);
             $content = null;
         }

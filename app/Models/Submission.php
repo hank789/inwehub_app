@@ -5,6 +5,7 @@
  * @email: hank.huiwang@gmail.com
  */
 
+use App\Jobs\UpdateSubmissionKeywords;
 use App\Logic\QuillLogic;
 use App\Models\Feed\Feed;
 use App\Models\Relations\BelongsToUserTrait;
@@ -12,6 +13,7 @@ use App\Models\Relations\MorphManyCommentsTrait;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\BosonNLPService;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
@@ -427,8 +429,8 @@ class Submission extends Model {
             $this->save();
             Tag::multiAddByName(array_slice($tags,0,15),$this,1);
         } catch (\Exception $e) {
-            \Log::info('setKeywordTagsError',$this->toArray());
             app('sentry')->captureException($e,$this->toArray());
+            dispatch((new UpdateSubmissionKeywords($this->id))->delay(Carbon::now()->addSeconds(300)));
         }
     }
 

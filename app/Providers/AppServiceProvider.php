@@ -55,35 +55,6 @@ class AppServiceProvider extends ServiceProvider
             return preg_match('/^(\+?0?86\-?)?((13\d|14[57]|15[^4,\D]|17[35678]|18\d)\d{8}|170[059]\d{7})$/', $value);
         });
 
-        /*Queue::failing(function ($job) {
-            // Notify team of failing job...
-            Log::error('队列任务执行出错',['connection'=>$job->connectionName,'job'=>$job->job,'msg'=>$job->exception->getMessage()]);
-        });*/
-        Log::listen(function($log)
-        {
-            if( get_class($log) === 'Illuminate\Log\Events\MessageLogged' && $log->level === 'error' && !($log->message instanceof \Exception)){
-                try{
-                    switch($log->level){
-                        case 'error':
-                            //Notify team of error
-                            \Slack::to(config('slack.exception_channel'))->attach([
-                                'pretext' => '错误详细信息',
-                                'color' => 'danger',
-                                'fields' => [
-                                    [
-                                        'title' => 'Stack trace',
-                                        'value' => is_array($log->context) ? json_encode($log->context,JSON_UNESCAPED_UNICODE):$log->context
-                                    ]
-                                ]
-                            ])->send($log->message);
-                            break;
-                    }
-                }catch (\Exception $e){
-                    app('sentry')->captureException($e);
-                }
-            }
-        });
-
         //事件监听
         Question::observe(QuestionObserver::class);
         Authentication::observe(AuthenticationObserver::class);

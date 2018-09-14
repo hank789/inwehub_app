@@ -1631,10 +1631,11 @@ if (!function_exists('getProxyIps')) {
                 }
             }
             if (count($ips) >= 2*$min) return $ips;
-
+            $scraper_proxy_address = Setting()->get('scraper_proxy_address','');
+            if (empty($scraper_proxy_address)) return [];
             $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
             if (!$proxy) {
-                return false;
+                return [];
             }
             if ($proxy['code'] == 3001) {
                 sleep(6);
@@ -1673,7 +1674,7 @@ if (!function_exists('deleteProxyIp')) {
     function deleteProxyIp($ip,$domain = 'jianyu360') {
         \App\Services\RateLimiter::instance()->sRem('proxy_ips_'.$domain,$ip);
         \App\Services\RateLimiter::instance()->sAdd('proxy_ips_deleted_'.$domain,$ip, 0);
-        \App\Services\RateLimiter::instance()->sRem('all',$ip,'haipproxy:');
+        //\App\Services\RateLimiter::instance()->sRem('all',$ip,'haipproxy:');
         \App\Services\RateLimiter::instance()->zRem('validated:'.$domain,$ip,'haipproxy:');
         \App\Services\RateLimiter::instance()->zRem('ttl:'.$domain,$ip,'haipproxy:');
         \App\Services\RateLimiter::instance()->zRem('speed:'.$domain,$ip,'haipproxy:');
