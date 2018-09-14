@@ -83,7 +83,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
         $schedule->command('crontab:calc-group-hot')->hourly();
         if (config('app.env') == 'production') {
-            $schedule->command('scraper:wechat:posts')->cron('30 7,9,11,13,15,17,19,21,23 * * *')->withoutOverlapping();
+            //$schedule->command('scraper:wechat:posts')->cron('30 7,9,11,13,15,17,19,21,23 * * *')->withoutOverlapping();
             $schedule->command('scraper:atom')->cron('0 8,16,20 * * *');
             $schedule->command('scraper:rss')->cron('30 7,13,19,21 * * *');
             $schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
