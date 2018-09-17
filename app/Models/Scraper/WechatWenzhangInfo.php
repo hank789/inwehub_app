@@ -23,7 +23,11 @@ class WechatWenzhangInfo extends Model {
 
     public $timestamps = true;
 
-    protected $fillable = ['title','content_url','topic_id','mp_id','author','site_name','mobile_url','date_time','source_type','description','body','cover_url','status'];
+    protected $fillable = ['title','content_url','source_url','topic_id',
+        'qunfa_id','mp_id','author','site_name','mobile_url','date_time',
+        'read_count','like_count','comment_count','site_name',
+        'author','msg_index','copyright_stat','type',
+        'source_type','description','body','cover_url','status'];
 
     //status状态：1待发布，2已发布，3已删除
 
