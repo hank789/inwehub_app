@@ -37,16 +37,18 @@ class WechatSpider
         for ($i=0;$i<8;$i++) {
             $ips = getProxyIps(1,'sogou');
             $ip = $ips[0]??'';
+            var_dump($ip);
             $content = $this->requestUrl($request_url,$ip);
             if ($content) {
                 $html = $content->getHtml();
-                if (!str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
-                    break;
-                } else {
+                var_dump($html);
+                if (str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
                     var_dump('公众号访问频繁');
                     $r = $content->find('input[name=r]')->val();
                     $this->jiefeng($r);
                     deleteProxyIp($ip,'sogou');
+                } else {
+                    break;
                 }
             } else {
                 deleteProxyIp($ip,'sogou');
@@ -100,10 +102,10 @@ class WechatSpider
                     }
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
-                } elseif (!str_contains($sogouTitle,$mpInfo->name)) {
-                    deleteProxyIp($ip,'sogou');
-                } else {
+                } elseif (str_contains($sogouTitle,$mpInfo->name)) {
                     var_dump('抓取成功');
+                } else {
+                    deleteProxyIp($ip,'sogou');
                     break;
                 }
             } else {
