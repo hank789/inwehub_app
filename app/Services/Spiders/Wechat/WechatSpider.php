@@ -35,7 +35,7 @@ class WechatSpider
     public function getGzhInfo($wx_hao) {
         $request_url = 'http://weixin.sogou.com/weixin?query='.$wx_hao.'&_sug_type_=&_sug_=n&type=1&page=1&ie=utf8';
         for ($i=0;$i<16;$i++) {
-            $ips = getProxyIps(2,'sogou');
+            $ips = getProxyIps(5,'sogou');
             $ip = $ips[0]??'';
             if ($i>=14) $ip =null;
             var_dump($ip);
@@ -83,7 +83,7 @@ class WechatSpider
 
     public function getGzhArticles(WechatMpInfo $mpInfo) {
         for ($i=0;$i<16;$i++) {
-            $ips = getProxyIps(2,'sogou');
+            $ips = getProxyIps(5,'sogou');
             var_dump($ips);
             $ip = $ips[0]??'';
             if ($i>=14) $ip =null;
@@ -93,7 +93,11 @@ class WechatSpider
                 $sogouTitle = $content->find('title')->text();
                 if (str_contains($sogouTitle,'请输入验证码')) {
                     var_dump('请输入验证码');
-                    $this->jiefeng2();
+                    $jiefengR = $this->jiefeng2();
+                    if ($jiefengR && $jiefengR['ret'] == -6) {
+                        event(new SystemNotify('微信公众号['.$mpInfo->wx_hao.']抓取文章失败，无法解封IP'));
+                        exit();
+                    }
                     deleteProxyIp($ip,'sogou');
                 } elseif (!$sogouTitle) {
                     var_dump('链接已过期');
