@@ -1560,8 +1560,8 @@ if (!function_exists('formatKeyword')) {
 }
 
 if (!function_exists('validateProxyIps')) {
-    function validateProxyIps() {
-        $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips');
+    function validateProxyIps($domain = 'jianyu360') {
+        $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips_'.$domain);
         $ql = new \QL\QueryList();
         foreach ($ips as $proxyIp) {
             $opts = [
@@ -1673,12 +1673,13 @@ if (!function_exists('getProxyIps')) {
 if (!function_exists('deleteProxyIp')) {
     function deleteProxyIp($ip,$domain = 'jianyu360') {
         if (empty($ip)) return;
+        $httpIp = 'http://'.$ip;
         \App\Services\RateLimiter::instance()->sRem('proxy_ips_'.$domain,$ip);
         \App\Services\RateLimiter::instance()->sAdd('proxy_ips_deleted_'.$domain,$ip, 0);
         //\App\Services\RateLimiter::instance()->sRem('all',$ip,'haipproxy:');
-        \App\Services\RateLimiter::instance()->zRem('validated:'.$domain,$ip,'haipproxy:');
-        \App\Services\RateLimiter::instance()->zRem('ttl:'.$domain,$ip,'haipproxy:');
-        \App\Services\RateLimiter::instance()->zRem('speed:'.$domain,$ip,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('validated:'.$domain,$httpIp,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('ttl:'.$domain,$httpIp,'haipproxy:');
+        \App\Services\RateLimiter::instance()->zRem('speed:'.$domain,$httpIp,'haipproxy:');
     }
 }
 

@@ -45,6 +45,7 @@ class WechatAuthor extends Command {
             shell_exec('cd '.$path.' && python auto_add_mp.py >> /tmp/auto_add_mp.log');
         }*/
         $all = WechatMpList::get();
+        validateProxyIps('sogou');
         getProxyIps(5,'sogou');
         $spider = new WechatSpider();
         foreach ($all as $item) {
