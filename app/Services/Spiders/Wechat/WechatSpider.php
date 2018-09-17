@@ -34,9 +34,10 @@ class WechatSpider
      */
     public function getGzhInfo($wx_hao) {
         $request_url = 'http://weixin.sogou.com/weixin?query='.$wx_hao.'&_sug_type_=&_sug_=n&type=1&page=1&ie=utf8';
-        for ($i=0;$i<8;$i++) {
-            $ips = getProxyIps(1,'sogou');
+        for ($i=0;$i<10;$i++) {
+            $ips = getProxyIps(2,'sogou');
             $ip = $ips[0]??'';
+            if ($i>=9) $ip =null;
             var_dump($ip);
             $content = $this->requestUrl($request_url,$ip);
             if ($content) {
@@ -80,9 +81,10 @@ class WechatSpider
     }
 
     public function getGzhArticles(WechatMpInfo $mpInfo) {
-        for ($i=0;$i<8;$i++) {
-            $ips = getProxyIps(1,'sogou');
+        for ($i=0;$i<10;$i++) {
+            $ips = getProxyIps(2,'sogou');
             $ip = $ips[0]??'';
+            if ($i>=9) $ip =null;
             var_dump($ip);
             $content = $this->requestUrl($mpInfo->wz_url,$ip);
             if ($content) {
