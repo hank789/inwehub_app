@@ -21,6 +21,8 @@ class WechatSpider
 
     protected $url;
 
+    protected $proxyIp;
+
     public function __construct()
     {
         $this->ql = QueryList::getInstance();
@@ -80,6 +82,7 @@ class WechatSpider
         for ($i=0;$i<8;$i++) {
             $ips = getProxyIps(1,'sogou');
             $ip = $ips[0]??'';
+            var_dump($ip);
             $content = $this->requestUrl($mpInfo->wz_url,$ip);
             if ($content) {
                 $sogouTitle = $content->find('title')->text();
@@ -97,6 +100,11 @@ class WechatSpider
                     }
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
+                } elseif (!str_contains($sogouTitle,$mpInfo->name)) {
+                    deleteProxyIp($ip,'sogou');
+                } else {
+                    var_dump('抓取成功');
+                    break;
                 }
             } else {
                 deleteProxyIp($ip,'sogou');
@@ -188,12 +196,15 @@ class WechatSpider
     protected function requestUrl($url,$ip) {
         try {
             $this->url = $url;
+            $this->proxyIp = $ip;
             $opts = [
                 'proxy' => $ip,
                 //Set the timeout time in seconds
                 'timeout' => 10
             ];
-            if (empty($ip)) unset($opts['proxy']);
+            if (empty($ip)) {
+                unset($opts['proxy']);
+            }
             $content = $this->ql->get($url,null,$opts);
         } catch (\Exception $e) {
             var_dump($e->getMessage());
@@ -204,13 +215,15 @@ class WechatSpider
     }
 
     public function jiefeng($r) {
-        $max_count = 4;
+        $max_count = 0;
+        if ($this->proxyIp) return;
         print("出现验证码，准备自动识别");
-        while ($max_count < 5) {
+        while ($max_count < 2) {
             $max_count += 1;
             $time = intval(microtime(true) * 1000);
             $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
-            $result = RuoKuaiService::dama($codeurl);
+            $img_data = $this->ql->get($codeurl)->getHtml();
+            $result = RuoKuaiService::dama($img_data);
             if (isset($result['Result'])) {
                 $img_code = $result['Result'];
                 $post_data = [
@@ -219,13 +232,7 @@ class WechatSpider
                     'v' => 5
                 ];
 
-                $result = $this->ql->post('http://weixin.sogou.com/antispider/thank.php',$post_data,[
-                    'headers' => [
-                        'Host' => 'weixin.sogou.com',
-                        'Referer' => 'http://weixin.sogou.com/antispider/?from='.$r,
-                        'User-Agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0'
-                    ]
-                ])->getHtml();
+                $result = $this->ql->post('http://weixin.sogou.com/antispider/thank.php',$post_data)->getHtml();
                 var_dump($result);
 
                 $resultArr = json_decode($result,true);
@@ -239,24 +246,22 @@ class WechatSpider
     }
 
     public function jiefeng2() {
+        if ($this->proxyIp) return false;
         $time = explode(' ',microtime());
         $timever = $time[1].($time[0] * 1000);
         $codeurl = 'http://mp.weixin.qq.com/mp/verifycode?cert='.$timever;
-        $result = RuoKuaiService::dama($codeurl,2040);
+        $img_data = $this->ql->get($codeurl)->getHtml();
+        $result = RuoKuaiService::dama($img_data,2040);
         $img_code = $result['Result'];
         $post_url = 'http://mp.weixin.qq.com/mp/verifycode';
         $post_data = [
             'cert' => $timever,
-            'input'=> $img_code
+            'input'=> $img_code,
+            'appmsg_token' => ''
         ];
-        $result2 = $this->ql->post($post_url,$post_data,[
-            'headers' => [
-                'Host' => 'mp.weixin.qq.com',
-                'Referer' => $this->url,
-                'User-Agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0'
-            ]
-        ])->getHtml();
-        var_dump($result);
+        $result2 = $this->ql->post($post_url,$post_data)->getHtml();
+        var_dump($result2);
+        return json_decode($result2,true);
     }
 
 }

@@ -1672,6 +1672,7 @@ if (!function_exists('getProxyIps')) {
 
 if (!function_exists('deleteProxyIp')) {
     function deleteProxyIp($ip,$domain = 'jianyu360') {
+        if (empty($ip)) return;
         \App\Services\RateLimiter::instance()->sRem('proxy_ips_'.$domain,$ip);
         \App\Services\RateLimiter::instance()->sAdd('proxy_ips_deleted_'.$domain,$ip, 0);
         //\App\Services\RateLimiter::instance()->sRem('all',$ip,'haipproxy:');
