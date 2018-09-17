@@ -204,7 +204,7 @@ class WechatSpider
             $opts = [
                 'proxy' => $ip,
                 //Set the timeout time in seconds
-                'timeout' => 10
+                'timeout' => 5
             ];
             if (empty($ip)) {
                 unset($opts['proxy']);
