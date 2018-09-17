@@ -1632,7 +1632,7 @@ if (!function_exists('getProxyIps')) {
                     if (count($ips) >= 2*$min) return $ips;
                 }
             }
-            if (count($ips) >= 2*$min) return $ips;
+            if (count($ips) >= 2*$min || in_array($domain,['sogou'])) return $ips;
             $scraper_proxy_address = Setting()->get('scraper_proxy_address','');
             if (empty($scraper_proxy_address)) return [];
             $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
