@@ -1626,6 +1626,8 @@ if (!function_exists('getProxyIps')) {
                     if (strstr($title, '百度一下')) {
                         \App\Services\RateLimiter::instance()->sAdd('proxy_ips_'.$domain,$proxyIp, 0);
                         $ips[] = $proxyIp;
+                    } else {
+                        deleteProxyIp($proxyIp,$domain);
                     }
                     if (count($ips) >= 2*$min) return $ips;
                 }
@@ -1662,6 +1664,8 @@ if (!function_exists('getProxyIps')) {
                 if (strstr($title, '百度一下')) {
                     \App\Services\RateLimiter::instance()->sAdd('proxy_ips_'.$domain,$ip['ip'].':'.$ip['port'], 0);
                     $ips[] = $ip['ip'].':'.$ip['port'];
+                } else {
+                    deleteProxyIp($ip['ip'].':'.$ip['port'],$domain);
                 }
             }
         }
