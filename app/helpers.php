@@ -1590,7 +1590,7 @@ if (!function_exists('getProxyIps')) {
         $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips_'.$domain);
         $ql = new \QL\QueryList();
 
-        while (empty($ips) || count($ips) < $min) {
+        while (empty($ips)) {
             //优先取自己的代理
             $scored_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('validated:'.$domain,'+inf',7,false,'haipproxy:');
             $ttl_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('ttl:'.$domain,'+inf',time() - 30 * 60,false,'haipproxy:');
