@@ -125,6 +125,16 @@ class WechatSpider
         if (preg_match($pattern, $html, $matchs)) {
             if(isset($matchs[1]))
             {
+                $matchs[1] = str_replace('&#39;', '\'',$matchs[1]);
+                $matchs[1] = str_replace('&amp;', '&',$matchs[1]);
+                $matchs[1] = str_replace('&gt;', '>',$matchs[1]);
+                $matchs[1] = str_replace('&lt;', '<',$matchs[1]);
+                $matchs[1] = str_replace('&yen;', '¥',$matchs[1]);
+                $matchs[1] = str_replace('amp;', '',$matchs[1]);
+                $matchs[1] = str_replace('&lt;', '<',$matchs[1]);
+                $matchs[1] = str_replace('&gt;', '>',$matchs[1]);
+                $matchs[1] = str_replace('&nbsp;', ' ',$matchs[1]);
+                $matchs[1] = str_replace('\\', '',$matchs[1]);
                 $data = json_decode($matchs[1],true);
                 if (isset($data['list'])) {
                     foreach ($data['list'] as $listdic) {
