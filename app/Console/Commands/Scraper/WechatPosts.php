@@ -45,6 +45,7 @@ class WechatPosts extends Command {
     {
         $path = config('app.spider_path');
         if($path){
+            validateProxyIps('sogou');
             //shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
             getProxyIps(5,'sogou');
             $spider = new WechatSpider();
