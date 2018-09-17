@@ -84,6 +84,7 @@ class WechatSpider
     public function getGzhArticles(WechatMpInfo $mpInfo) {
         for ($i=0;$i<16;$i++) {
             $ips = getProxyIps(2,'sogou');
+            var_dump($ips);
             $ip = $ips[0]??'';
             if ($i>=14) $ip =null;
             var_dump($ip);
@@ -219,7 +220,7 @@ class WechatSpider
     }
 
     public function jiefeng($r) {
-        $max_count = 0;
+        $max_count = 1;
         if ($this->proxyIp) return;
         print("出现验证码，准备自动识别");
         while ($max_count < 2) {
@@ -244,6 +245,13 @@ class WechatSpider
                     print("搜狗返回验证码错误，1秒后更换验证码再次启动尝试，尝试次数：".($max_count));
                     sleep(1);
                     continue;
+                }
+                if (isset($resultArr['id']) && $resultArr['id']) {
+                    sleep(1);
+                    $pbsnuid = $resultArr['id'];
+                    $pburl = 'http://pb.sogou.com/pv.gif?uigs_productid=webapp&type=antispider&subtype=0_seccodeInputSuccess&domain=weixin&suv=&snuid='.$pbsnuid.'&t='.time();
+                    $this->ql->get($pburl);
+                    sleep(2);
                 }
             }
         }
