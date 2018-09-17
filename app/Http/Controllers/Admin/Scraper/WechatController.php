@@ -83,8 +83,7 @@ class WechatController extends AdminController
     {
         $articleIds = $request->input('id');
         WechatMpInfo::whereIn('_id',$articleIds)->update(['status'=>1]);
-        Artisan::queue('scraper:wechat:author');
-        return $this->success(route('admin.scraper.wechat.author.index'),'审核成功,正在抓取文章数据,请稍候');
+        return $this->success(route('admin.scraper.wechat.author.index'),'审核成功,若要马上抓取数据，点击"搜索"旁边的同步按钮');
     }
 
     /*审核*/
@@ -102,7 +101,7 @@ class WechatController extends AdminController
 
     public function sync(Request $request){
         Artisan::queue('scraper:wechat:author');
-        return $this->success(route('admin.scraper.wechat.author.index'),'正在抓取文章数据,请稍候');
+        return $this->success(route('admin.scraper.wechat.author.index'),'正在抓取公众号数据,请稍候');
     }
 
 
