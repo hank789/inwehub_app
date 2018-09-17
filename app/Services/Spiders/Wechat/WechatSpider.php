@@ -48,6 +48,7 @@ class WechatSpider
                     $this->jiefeng($r);
                     deleteProxyIp($ip,'sogou');
                 } else {
+                    var_dump('抓取公众号成功');
                     break;
                 }
             } else {
@@ -104,10 +105,10 @@ class WechatSpider
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
                 } elseif (str_contains($sogouTitle,$mpInfo->name)) {
-                    var_dump('抓取成功');
+                    var_dump('抓取文章列表成功');
+                    break;
                 } else {
                     deleteProxyIp($ip,'sogou');
-                    break;
                 }
             } else {
                 deleteProxyIp($ip,'sogou');
