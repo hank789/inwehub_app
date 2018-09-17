@@ -1579,7 +1579,7 @@ if (!function_exists('validateProxyIps')) {
                 }
             }
             if (!strstr($title, '百度一下')) {
-                deleteProxyIp($proxyIp);
+                deleteProxyIp($proxyIp,$domain);
             }
         }
     }
