@@ -54,17 +54,22 @@ class WechatAuthor extends Command {
             } else {
                 $data = $spider->getGzhInfo($item->wx_hao);
                 if ($data['name']) {
-                    WechatMpInfo::create([
-                        'name' => $data['name'],
-                        'wx_hao' => $data['wechatid'],
-                        'company' => $data['company'],
-                        'description' => $data['description'],
-                        'logo_url' => $data['img'],
-                        'qr_url' => $data['qrcode'],
-                        'wz_url' => $data['url'],
-                        'last_qunfa_id' => $data['last_qunfa_id'],
-                        'create_time' => date('Y-m-d H:i:s')
-                    ]);
+                    $info = WechatMpInfo::where('wx_hao',$item->wx_hao)->first();
+                    if ($info) {
+                        $item->delete();
+                    } else {
+                        WechatMpInfo::create([
+                            'name' => $data['name'],
+                            'wx_hao' => $data['wechatid'],
+                            'company' => $data['company'],
+                            'description' => $data['description'],
+                            'logo_url' => $data['img'],
+                            'qr_url' => $data['qrcode'],
+                            'wz_url' => $data['url'],
+                            'last_qunfa_id' => $data['last_qunfa_id'],
+                            'create_time' => date('Y-m-d H:i:s')
+                        ]);
+                    }
                 } else {
                     event(new SystemNotify('抓取微信公众号失败：'.$item->wx_hao));
                 }
