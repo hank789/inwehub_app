@@ -41,15 +41,15 @@ class WechatSpider
             var_dump($ip);
             $content = $this->requestUrl($request_url,$ip);
             if ($content) {
-                $html = $content->getHtml();
-                if (str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
+                $sogouTitle = $content->find('title')->text();
+                if (str_contains($sogouTitle,$wx_hao)) {
+                    var_dump('抓取公众号成功');
+                    break;
+                } else {
                     var_dump('公众号访问频繁');
                     $r = $content->find('input[name=r]')->val();
                     $this->jiefeng($r);
                     deleteProxyIp($ip,'sogou');
-                } else {
-                    var_dump('抓取公众号成功');
-                    break;
                 }
             } else {
                 deleteProxyIp($ip,'sogou');
