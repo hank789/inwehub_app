@@ -41,7 +41,6 @@ class WechatSpider
             $content = $this->requestUrl($request_url,$ip);
             if ($content) {
                 $html = $content->getHtml();
-                var_dump($html);
                 if (str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
                     var_dump('公众号访问频繁');
                     $r = $content->find('input[name=r]')->val();
@@ -154,7 +153,7 @@ class WechatSpider
                                 $item['source_url'] = $app_msg_ext_info['source_url'];
                                 $item['cover'] = $app_msg_ext_info['cover'];
                                 $item['author'] = $app_msg_ext_info['author'];
-                                $item['copyright_stat'] = $app_msg_ext_info['copyright_stat'];
+                                $item['copyright_stat'] = $app_msg_ext_info['copyright_stat']??0;
                                 $items[] = $item;
                                 if ($app_msg_ext_info['is_multi'] == 1) {
                                     foreach ($app_msg_ext_info['multi_app_msg_item_list'] as $multidic) {
