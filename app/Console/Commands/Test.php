@@ -40,6 +40,21 @@ class Test extends Command
      */
     public function handle()
     {
+        $list = WechatWenzhangInfo::where('status',1)->get();
+        foreach ($list as $item) {
+            $item->content_url = str_replace('&#39;', '\'',$item->content_url);
+            $item->content_url = str_replace('&amp;', '&',$item->content_url);
+            $item->content_url = str_replace('&gt;', '>',$item->content_url);
+            $item->content_url = str_replace('&lt;', '<',$item->content_url);
+            $item->content_url = str_replace('&yen;', '¥',$item->content_url);
+            $item->content_url = str_replace('amp;', '',$item->content_url);
+            $item->content_url = str_replace('&lt;', '<',$item->content_url);
+            $item->content_url = str_replace('&gt;', '>',$item->content_url);
+            $item->content_url = str_replace('&nbsp;', ' ',$item->content_url);
+            $item->content_url = str_replace('\\', '',$item->content_url);
+            $item->save();
+        }
+        return;
         // Get the QueryList instance
         $ql = QueryList::getInstance();
 // Get the login form
