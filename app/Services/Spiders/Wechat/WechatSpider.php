@@ -1,6 +1,7 @@
 <?php namespace App\Services\Spiders\Wechat;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\WechatMpInfo;
+use App\Services\RuoKuaiService;
 use Illuminate\Support\Facades\Storage;
 use QL\QueryList;
 
@@ -17,6 +18,8 @@ class WechatSpider
      * @var QueryList
      */
     protected $ql;
+
+    protected $url;
 
     public function __construct()
     {
@@ -39,6 +42,8 @@ class WechatSpider
                     break;
                 } else {
                     var_dump('公众号访问频繁');
+                    $r = $content->find('input[name=r]')->val();
+                    $this->jiefeng($r);
                     deleteProxyIp($ip,'sogou');
                 }
             } else {
@@ -77,10 +82,10 @@ class WechatSpider
             $ip = $ips[0]??'';
             $content = $this->requestUrl($mpInfo->wz_url,$ip);
             if ($content) {
-                $html = $content->getHtml();
                 $sogouTitle = $content->find('title')->text();
                 if (str_contains($sogouTitle,'请输入验证码')) {
                     var_dump('请输入验证码');
+                    $this->jiefeng2();
                     deleteProxyIp($ip,'sogou');
                 } elseif (!$sogouTitle) {
                     var_dump('链接已过期');
@@ -92,10 +97,6 @@ class WechatSpider
                     }
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
-                }elseif (!str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
-                    break;
-                } else {
-                    deleteProxyIp($ip,'sogou');
                 }
             } else {
                 deleteProxyIp($ip,'sogou');
@@ -186,6 +187,7 @@ class WechatSpider
 
     protected function requestUrl($url,$ip) {
         try {
+            $this->url = $url;
             $opts = [
                 'proxy' => $ip,
                 //Set the timeout time in seconds
@@ -201,14 +203,60 @@ class WechatSpider
         return $content;
     }
 
-    protected function jiefeng() {
-        $max_count = 0;
+    public function jiefeng($r) {
+        $max_count = 4;
         print("出现验证码，准备自动识别");
         while ($max_count < 5) {
             $max_count += 1;
             $time = intval(microtime(true) * 1000);
             $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
+            $result = RuoKuaiService::dama($codeurl);
+            if (isset($result['Result'])) {
+                $img_code = $result['Result'];
+                $post_data = [
+                    'c' => $img_code,
+                    'r' => $r,
+                    'v' => 5
+                ];
+
+                $result = $this->ql->post('http://weixin.sogou.com/antispider/thank.php',$post_data,[
+                    'headers' => [
+                        'Host' => 'weixin.sogou.com',
+                        'Referer' => 'http://weixin.sogou.com/antispider/?from='.$r,
+                        'User-Agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0'
+                    ]
+                ])->getHtml();
+                var_dump($result);
+
+                $resultArr = json_decode($result,true);
+                if ($resultArr['code'] != 0) {
+                    print("搜狗返回验证码错误，1秒后更换验证码再次启动尝试，尝试次数：".($max_count));
+                    sleep(1);
+                    continue;
+                }
+            }
         }
+    }
+
+    public function jiefeng2() {
+        $time = explode(' ',microtime());
+        $timever = $time[1].($time[0] * 1000);
+        $codeurl = 'http://mp.weixin.qq.com/mp/verifycode?cert='.$timever;
+        $result = RuoKuaiService::dama($codeurl,2040);
+        $img_code = $result['Result'];
+        $post_url = 'http://mp.weixin.qq.com/mp/verifycode';
+        $post_data = [
+            'cert' => $timever,
+            'input'=> $img_code
+        ];
+        $result2 = $this->ql->post($post_url,$post_data,[
+            'headers' => [
+                'Host' => 'mp.weixin.qq.com',
+                'Referer' => $this->url,
+                'User-Agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0'
+            ]
+        ])->getHtml();
+        var_dump($result);
     }
 
 }

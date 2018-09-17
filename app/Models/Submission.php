@@ -167,8 +167,14 @@ class Submission extends Model {
                 }
             }
         }
+        $title = strip_tags(implode(';',$data));
+        $str_length = strlen($title);
+        if ($str_length >= 32760) {
+            //elasticsearch的索引长度为32766
+            $title = str_limit($title,$str_length/1.6,'');
+        }
         return [
-            'title' => strip_tags(implode(';',$data)),
+            'title' => $title,
             'status' => $this->status,
             'public' => $this->public,
             'group_id' => $this->group_id,

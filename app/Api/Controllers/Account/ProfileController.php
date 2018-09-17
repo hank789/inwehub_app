@@ -242,6 +242,7 @@ class ProfileController extends Controller
         $info['id'] = $user->id;
         $info['uuid'] = $user->uuid;
         $info['name'] = $user->name;
+        $info['realname'] = $is_self?$user->realname:'';
         $info['mobile'] = $user->mobile;
         $info['email'] = $user->email;
         $info['avatar_url'] = $user->avatar;
