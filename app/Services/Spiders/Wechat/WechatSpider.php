@@ -1,6 +1,7 @@
 <?php namespace App\Services\Spiders\Wechat;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\WechatMpInfo;
+use App\Services\RuoKuaiService;
 use Illuminate\Support\Facades\Storage;
 use QL\QueryList;
 
@@ -18,6 +19,10 @@ class WechatSpider
      */
     protected $ql;
 
+    protected $url;
+
+    protected $proxyIp;
+
     public function __construct()
     {
         $this->ql = QueryList::getInstance();
@@ -32,14 +37,18 @@ class WechatSpider
         for ($i=0;$i<8;$i++) {
             $ips = getProxyIps(1,'sogou');
             $ip = $ips[0]??'';
+            var_dump($ip);
             $content = $this->requestUrl($request_url,$ip);
             if ($content) {
                 $html = $content->getHtml();
-                if (!str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
-                    break;
-                } else {
+                var_dump($html);
+                if (str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
                     var_dump('公众号访问频繁');
+                    $r = $content->find('input[name=r]')->val();
+                    $this->jiefeng($r);
                     deleteProxyIp($ip,'sogou');
+                } else {
+                    break;
                 }
             } else {
                 deleteProxyIp($ip,'sogou');
@@ -75,12 +84,13 @@ class WechatSpider
         for ($i=0;$i<8;$i++) {
             $ips = getProxyIps(1,'sogou');
             $ip = $ips[0]??'';
+            var_dump($ip);
             $content = $this->requestUrl($mpInfo->wz_url,$ip);
             if ($content) {
-                $html = $content->getHtml();
                 $sogouTitle = $content->find('title')->text();
                 if (str_contains($sogouTitle,'请输入验证码')) {
                     var_dump('请输入验证码');
+                    $this->jiefeng2();
                     deleteProxyIp($ip,'sogou');
                 } elseif (!$sogouTitle) {
                     var_dump('链接已过期');
@@ -92,10 +102,11 @@ class WechatSpider
                     }
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
-                }elseif (!str_contains($html,'用户您好，您的访问过于频繁，为确认本次访问为正常用户行为，需要您协助验证')) {
-                    break;
+                } elseif (str_contains($sogouTitle,$mpInfo->name)) {
+                    var_dump('抓取成功');
                 } else {
                     deleteProxyIp($ip,'sogou');
+                    break;
                 }
             } else {
                 deleteProxyIp($ip,'sogou');
@@ -186,12 +197,16 @@ class WechatSpider
 
     protected function requestUrl($url,$ip) {
         try {
+            $this->url = $url;
+            $this->proxyIp = $ip;
             $opts = [
                 'proxy' => $ip,
                 //Set the timeout time in seconds
                 'timeout' => 10
             ];
-            if (empty($ip)) unset($opts['proxy']);
+            if (empty($ip)) {
+                unset($opts['proxy']);
+            }
             $content = $this->ql->get($url,null,$opts);
         } catch (\Exception $e) {
             var_dump($e->getMessage());
@@ -201,14 +216,54 @@ class WechatSpider
         return $content;
     }
 
-    protected function jiefeng() {
+    public function jiefeng($r) {
         $max_count = 0;
+        if ($this->proxyIp) return;
         print("出现验证码，准备自动识别");
-        while ($max_count < 5) {
+        while ($max_count < 2) {
             $max_count += 1;
             $time = intval(microtime(true) * 1000);
             $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
+            $img_data = $this->ql->get($codeurl)->getHtml();
+            $result = RuoKuaiService::dama($img_data);
+            if (isset($result['Result'])) {
+                $img_code = $result['Result'];
+                $post_data = [
+                    'c' => $img_code,
+                    'r' => $r,
+                    'v' => 5
+                ];
+
+                $result = $this->ql->post('http://weixin.sogou.com/antispider/thank.php',$post_data)->getHtml();
+                var_dump($result);
+
+                $resultArr = json_decode($result,true);
+                if ($resultArr['code'] != 0) {
+                    print("搜狗返回验证码错误，1秒后更换验证码再次启动尝试，尝试次数：".($max_count));
+                    sleep(1);
+                    continue;
+                }
+            }
         }
+    }
+
+    public function jiefeng2() {
+        if ($this->proxyIp) return false;
+        $time = explode(' ',microtime());
+        $timever = $time[1].($time[0] * 1000);
+        $codeurl = 'http://mp.weixin.qq.com/mp/verifycode?cert='.$timever;
+        $img_data = $this->ql->get($codeurl)->getHtml();
+        $result = RuoKuaiService::dama($img_data,2040);
+        $img_code = $result['Result'];
+        $post_url = 'http://mp.weixin.qq.com/mp/verifycode';
+        $post_data = [
+            'cert' => $timever,
+            'input'=> $img_code,
+            'appmsg_token' => ''
+        ];
+        $result2 = $this->ql->post($post_url,$post_data)->getHtml();
+        var_dump($result2);
+        return json_decode($result2,true);
     }
 
 }

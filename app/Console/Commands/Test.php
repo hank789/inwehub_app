@@ -40,6 +40,39 @@ class Test extends Command
      */
     public function handle()
     {
+        // Get the QueryList instance
+        $ql = QueryList::getInstance();
+// Get the login form
+        $form = $ql->get('https://github.com/login')->find('form');
+
+// Fill in the GitHub username and password
+        $form->find('input[name=login]')->val('hank789');
+        $form->find('input[name=password]')->val('wanghui8831');
+
+// Serialize the form data
+        $fromData = $form->serializeArray();
+        $postData = [];
+        foreach ($fromData as $item) {
+            $postData[$item['name']] = $item['value'];
+        }
+
+// Submit the login form
+        $actionUrl = 'https://github.com'.$form->attr('action');
+        $rs = $ql->post($actionUrl,$postData);
+        //var_dump($rs->getHtml());
+// To determine whether the login is successful
+// echo $ql->getHtml();
+
+        $userName = $ql->get('https://github.com/')->find('span.text-bold')->text();
+        //Storage::disk('local')->put('attachments/test4.html',$userName);
+        var_dump($userName);
+        if($userName)
+        {
+            echo 'Login successful ! Welcome:'.$userName;
+        }else{
+            echo 'Login failed !';
+        }
+        return;
         $wechat = new WechatSpider();
         $mp = WechatMpInfo::find(4);
         $items = $wechat->getGzhArticles($mp);
