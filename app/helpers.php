@@ -1602,13 +1602,13 @@ if (!function_exists('getProxyIps')) {
 
             if (!$proxies || count($proxies) < $min)
                 $proxies = array_merge($ttl_proxies,$scored_proxies);
-
             if ($proxies) {
                 foreach ($proxies as $proxyIp) {
                     $proxyIp = str_replace('http://','',$proxyIp);
                     if (\App\Services\RateLimiter::instance()->sIsMember('proxy_ips_deleted_'.$domain,$proxyIp)) {
                         continue;
                     }
+                    if (in_array($proxyIp,$ips)) continue;
                     $opts = [
                         'proxy' => $proxyIp,
                         //Set the timeout time in seconds
