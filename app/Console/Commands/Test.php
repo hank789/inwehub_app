@@ -41,6 +41,17 @@ class Test extends Command
      */
     public function handle()
     {
+
+        $i = 0;
+        $ips = [];
+
+        while ($i<=5) {
+            $i++;
+            if ($i==2) continue;
+            $ips[] = $i;
+        }
+        var_dump($ips);
+        return;
         $domain = 'sogou';
         $members = RateLimiter::instance()->sMembers('proxy_ips_deleted_'.$domain);
         foreach ($members as $member) {

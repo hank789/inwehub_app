@@ -72,71 +72,82 @@ class GoogleNews extends Command {
                 continue;
             }
             $this->info($info['url']);
-            $list = $ql->browser($info['url'],false,[
-                '--proxy' => '127.0.0.1:1080',
-                '--proxy-type' => 'socks5'
-            ])->rules([
-                'title' => ['a.ipQwMb.Q7tWef>span','text'],
-                'link'  => ['a.ipQwMb.Q7tWef','href'],
-                'author' => ['.KbnJ8','text'],
-                'dateTime' => ['time.WW6dff','datetime'],
-                'description' => ['p.HO8did.Baotjf','text'],
-                'image' => ['img.tvs3Id.dIH98c','src']
-            ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
-            foreach ($list as &$item) {
-                $exist_submission_id = Redis::connection()->hget('voten:submission:url',$item['link']);
-                if ($exist_submission_id) continue;
-                $dateTime = trim(str_replace('seconds:','',trim($item['dateTime']??'')));
-                if ($dateTime) {
-                    $dateTime = substr($dateTime,0,10);
-                    if ($dateTime <= strtotime('-3 days')) continue;
-                }
-                sleep(1);
-                $urlHtml = curlShadowsocks('https://news.google.com/'.$item['link']);
-                $item['href'] = $ql->setHtml($urlHtml)->find('div.m2L3rb.eLNT1d')->children('a')->attr('href');
-                if ($item['image']) {
-                    //图片本地化
-                    $item['image'] = saveImgToCdn($item['image'],'submissions');
-                }
-                $data = [
-                    'url'           => $item['href'],
-                    'title'         => $item['title'],
-                    'description'   => null,
-                    'type'          => 'link',
-                    'embed'         => null,
-                    'img'           => $item['image']??'',
-                    'thumbnail'     => null,
-                    'providerName'  => $item['author'],
-                    'publishedTime' => $dateTime,
-                    'domain'        => domain($item['href']),
-                ];
+            try {
+                $list = $ql->browser($info['url'],false,[
+                    '--proxy' => '127.0.0.1:1080',
+                    '--proxy-type' => 'socks5'
+                ])->rules([
+                    'title' => ['a.ipQwMb.Q7tWef>span','text'],
+                    'link'  => ['a.ipQwMb.Q7tWef','href'],
+                    'author' => ['.KbnJ8','text'],
+                    'dateTime' => ['time.WW6dff','datetime'],
+                    'description' => ['p.HO8did.Baotjf','text'],
+                    'image' => ['img.tvs3Id.dIH98c','src']
+                ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
+                foreach ($list as &$item) {
+                    $exist_submission_id = Redis::connection()->hget('voten:submission:url',$item['link']);
+                    if ($exist_submission_id) continue;
+                    $dateTime = trim(str_replace('seconds:','',trim($item['dateTime']??'')));
+                    if ($dateTime) {
+                        $dateTime = substr($dateTime,0,10);
+                        if ($dateTime <= strtotime('-3 days')) continue;
+                    }
+                    sleep(1);
+                    try {
+                        $urlHtml = curlShadowsocks('https://news.google.com/'.$item['link']);
+                        $item['href'] = $ql->setHtml($urlHtml)->find('div.m2L3rb.eLNT1d')->children('a')->attr('href');
+                        if ($item['image']) {
+                            //图片本地化
+                            $item['image'] = saveImgToCdn($item['image'],'submissions');
+                        }
+                        $data = [
+                            'url'           => $item['href'],
+                            'title'         => $item['title'],
+                            'description'   => null,
+                            'type'          => 'link',
+                            'embed'         => null,
+                            'img'           => $item['image']??'',
+                            'thumbnail'     => null,
+                            'providerName'  => $item['author'],
+                            'publishedTime' => $dateTime,
+                            'domain'        => domain($item['href']),
+                        ];
 
-                $data['current_address_name'] = '';
-                $data['current_address_longitude'] = '';
-                $data['current_address_latitude'] = '';
-                $data['mentions'] = [];
-                $submission = Submission::create([
-                    'title'         => $item['description'],
-                    'slug'          => $this->slug($item['title']),
-                    'type'          => 'link',
-                    'category_name' => $category->name,
-                    'category_id'   => $category->id,
-                    'group_id'      => $group_id,
-                    'public'        => $group->public,
-                    'rate'          => firstRate(),
-                    'status'        => 1,
-                    'user_id'       => $group->user_id,
-                    'data'          => $data,
-                    'views'         => 1,
-                ]);
-                Redis::connection()->hset('voten:submission:url',$item['link'], $submission->id);
-                Tag::multiAddByName($info['tags'],$submission);
-                if ($dateTime) {
-                    $submission->created_at = date('Y-m-d H:i:s',$dateTime);
-                    $submission->save();
+                        $data['current_address_name'] = '';
+                        $data['current_address_longitude'] = '';
+                        $data['current_address_latitude'] = '';
+                        $data['mentions'] = [];
+                        $submission = Submission::create([
+                            'title'         => $item['description'],
+                            'slug'          => $this->slug($item['title']),
+                            'type'          => 'link',
+                            'category_name' => $category->name,
+                            'category_id'   => $category->id,
+                            'group_id'      => $group_id,
+                            'public'        => $group->public,
+                            'rate'          => firstRate(),
+                            'status'        => 1,
+                            'user_id'       => $group->user_id,
+                            'data'          => $data,
+                            'views'         => 1,
+                        ]);
+                        Redis::connection()->hset('voten:submission:url',$item['link'], $submission->id);
+                        Tag::multiAddByName($info['tags'],$submission);
+                        if ($dateTime) {
+                            $submission->created_at = date('Y-m-d H:i:s',$dateTime);
+                            $submission->save();
+                        }
+                        dispatch((new NewSubmissionJob($submission->id)));
+                    } catch (\Exception $e) {
+                        app('sentry')->captureException($e,['url'=>'https://news.google.com/'.$item['link'],'title'=>$item['title']]);
+                        sleep(5);
+                    }
                 }
-                dispatch((new NewSubmissionJob($submission->id)));
+            } catch (\Exception $e) {
+                app('sentry')->captureException($e,['url'=>$info['url']]);
+                sleep(5);
             }
+
         }
     }
 }
