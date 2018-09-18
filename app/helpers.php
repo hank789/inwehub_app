@@ -1596,11 +1596,11 @@ if (!function_exists('getProxyIps')) {
             $ttl_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('ttl:'.$domain,'+inf',time() - 30 * 60,false,'haipproxy:');
             $speed_proxies = \App\Services\RateLimiter::instance()->zRangeByScore('speed:'.$domain,0,1000 * 10,false,'haipproxy:');
             $proxies = array_intersect($scored_proxies,$ttl_proxies,$speed_proxies);
-            if (!$proxies || count($proxies) < $min) {
+            if (!$proxies || count($proxies) < 2*$min) {
                 $proxies = array_merge(array_intersect($ttl_proxies, $speed_proxies),$scored_proxies);
             }
 
-            if (!$proxies || count($proxies) < $min)
+            if (!$proxies || count($proxies) < 2*$min)
                 $proxies = array_merge($ttl_proxies,$scored_proxies);
             if ($proxies) {
                 foreach ($proxies as $proxyIp) {
