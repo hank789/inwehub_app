@@ -368,9 +368,9 @@ class Submission extends Model {
             ->count();
         $commentSupports = $this->comments()->sum('supports');
         $views = $this->views;
-        //如果是原创文章，权重高一点，默认给10000阅读
+        //如果是原创文章，权重高一点，默认给100阅读
         if ($this->type == 'article') {
-            $views += 10000;
+            $views += 100;
         }
         $rate =  hotRate($views,$this->comments_number, $this->upvotes-$this->downvotes,$commentSupports + $this->collections + $shareNumber,$this->created_at,$this->updated_at);
         $this->rate = $rate;

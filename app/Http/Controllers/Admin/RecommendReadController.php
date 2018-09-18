@@ -120,19 +120,6 @@ class RecommendReadController extends AdminController
         $recommendation->data = $object_data;
         $recommendation->save();
         if ($oldStatus != 1 && $recommendation->audit_status == 1) {
-            switch ($recommendation->source_type) {
-                case Submission::class:
-                    if ($recommendation->data['domain'] == 'mp.weixin.qq.com') {
-                        $info = getWechatArticleInfo($recommendation->data['url']);
-                        if ($info['error_code'] == 0) {
-                            $submission = Submission::find($recommendation->source_id);
-                            $submission->views += $info['data']['article_view_count'];
-                            $submission->upvotes += $info['data']['article_agree_count'];
-                            $submission->calculationRate();
-                        }
-                    }
-                    break;
-            }
             $recommendation->setKeywordTags();
         }
 
@@ -143,19 +130,6 @@ class RecommendReadController extends AdminController
         $ids = $request->input('ids');
         foreach ($ids as $id) {
             $recommendation = RecommendRead::find($id);
-            switch ($recommendation->source_type) {
-                case Submission::class:
-                    if ($recommendation->data['domain'] == 'mp.weixin.qq.com') {
-                        $info = getWechatArticleInfo($recommendation->data['url']);
-                        if ($info['error_code'] == 0) {
-                            $submission = Submission::find($recommendation->source_id);
-                            $submission->views += $info['data']['article_view_count'];
-                            $submission->upvotes += $info['data']['article_agree_count'];
-                            $submission->calculationRate();
-                        }
-                    }
-                    break;
-            }
             $recommendation->setKeywordTags();
         }
         RecommendRead::whereIn('id',$ids)->update(['audit_status'=>1]);

@@ -91,14 +91,14 @@ class ArticleToRecommend implements ShouldQueue
             $recommend->sort = $recommend->id;
             $recommend->save();
             Tag::multiAddByIds($this->tagsId,$submission);
-            if (isset($recommend->data['domain']) && $recommend->data['domain'] == 'mp.weixin.qq.com') {
+            /*if (isset($recommend->data['domain']) && $recommend->data['domain'] == 'mp.weixin.qq.com') {
                 $info = getWechatArticleInfo($recommend->data['url']);
                 if ($info['error_code'] == 0) {
                     $submission->views += $info['data']['article_view_count'];
                     $submission->upvotes += $info['data']['article_agree_count'];
                     $submission->calculationRate();
                 }
-            }
+            }*/
             $recommend->setKeywordTags();
         }
 

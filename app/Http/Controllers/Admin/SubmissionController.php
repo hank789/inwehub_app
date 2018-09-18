@@ -161,14 +161,6 @@ class SubmissionController extends AdminController
             $recommend->sort = $recommend->id;
             $recommend->save();
             Tag::multiAddByIds($tagsId,$article);
-            if (isset($recommend->data['domain']) && $recommend->data['domain'] == 'mp.weixin.qq.com') {
-                $info = getWechatArticleInfo($recommend->data['url']);
-                if ($info['error_code'] == 0) {
-                    $article->views += $info['data']['article_view_count'];
-                    $article->upvotes += $info['data']['article_agree_count'];
-                    $article->calculationRate();
-                }
-            }
             $recommend->setKeywordTags();
         }
         return $this->success(url()->previous(),'设为精选成功');
