@@ -9,6 +9,7 @@ use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Taggable;
 use App\Services\BosonNLPService;
+use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -40,19 +41,10 @@ class Test extends Command
      */
     public function handle()
     {
-        $list = WechatWenzhangInfo::where('status',1)->get();
-        foreach ($list as $item) {
-            $item->content_url = str_replace('&#39;', '\'',$item->content_url);
-            $item->content_url = str_replace('&amp;', '&',$item->content_url);
-            $item->content_url = str_replace('&gt;', '>',$item->content_url);
-            $item->content_url = str_replace('&lt;', '<',$item->content_url);
-            $item->content_url = str_replace('&yen;', '¥',$item->content_url);
-            $item->content_url = str_replace('amp;', '',$item->content_url);
-            $item->content_url = str_replace('&lt;', '<',$item->content_url);
-            $item->content_url = str_replace('&gt;', '>',$item->content_url);
-            $item->content_url = str_replace('&nbsp;', ' ',$item->content_url);
-            $item->content_url = str_replace('\\', '',$item->content_url);
-            $item->save();
+        $domain = 'sogou';
+        $deleted = RateLimiter::instance()->sMembers('proxy_ips_deleted_'.$domain);
+        foreach ($deleted as $item) {
+            deleteProxyIp($item,$domain);
         }
         return;
         // Get the QueryList instance
