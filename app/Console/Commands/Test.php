@@ -41,11 +41,27 @@ class Test extends Command
      */
     public function handle()
     {
-        $domain = 'sogou';
-        $deleted = RateLimiter::instance()->sMembers('proxy_ips_deleted_'.$domain);
-        foreach ($deleted as $item) {
-            deleteProxyIp($item,$domain);
+        $info['url'] = 'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ3WmpSc0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen';
+        $ql = QueryList::getInstance();
+        $list = $ql->get($info['url'],[],[
+            'proxy' => 'socks5h://127.0.0.1:1080',
+        ])->rules([
+            'title' => ['a.ipQwMb.Q7tWef>span','text'],
+            'link'  => ['a.ipQwMb.Q7tWef','href'],
+            'author' => ['.KbnJ8','text'],
+            'dateTime' => ['time.WW6dff','datetime'],
+            'description' => ['p.HO8did.Baotjf','text'],
+            'image' => ['img.tvs3Id.dIH98c','src']
+        ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
+
+        foreach ($list as &$item) {
+            sleep(1);
+            $item['href'] = $ql->get('https://news.google.com/' . $item['link'], [], [
+                'proxy' => 'socks5h://127.0.0.1:1080',
+            ])->find('div.m2L3rb.eLNT1d')->children('a')->attrs('href');
         }
+        var_dump($list);
+        Storage::disk('local')->put('attachments/test4.html',json_encode($list));
         return;
         // Get the QueryList instance
         $ql = QueryList::getInstance();

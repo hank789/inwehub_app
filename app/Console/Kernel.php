@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\AtomPosts::class,
         Commands\Scraper\BidInfo::class,
         Commands\Scraper\BidSearch::class,
-        Commands\Scraper\GoogleNewsAccenture::class,
+        Commands\Scraper\GoogleNews::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
@@ -88,6 +88,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:rss')->cron('30 7,10,13,16,19,21 * * *');
             $schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
             $schedule->command('scraper:bid:search')->cron('40 7,10,13,17,21 * * *');
+            $schedule->command('scraper:google:news')->hourly();
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
         $schedule->command('crontab:deal-overtime-task')->daily()->at('05:00')->withoutOverlapping();
