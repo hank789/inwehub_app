@@ -1688,7 +1688,7 @@ if (!function_exists('deleteProxyIp')) {
         $httpIp = 'http://'.$ip;
         \App\Services\RateLimiter::instance()->sRem('proxy_ips_'.$domain,$ip);
         \App\Services\RateLimiter::instance()->sAdd('proxy_ips_deleted_'.$domain,$ip, 0);
-        //\App\Services\RateLimiter::instance()->sRem('all',$ip,'haipproxy:');
+        \App\Services\RateLimiter::instance()->sRem('all',$ip,'haipproxy:');
         \App\Services\RateLimiter::instance()->zRem('validated:'.$domain,$httpIp,'haipproxy:');
         \App\Services\RateLimiter::instance()->zRem('ttl:'.$domain,$httpIp,'haipproxy:');
         \App\Services\RateLimiter::instance()->zRem('speed:'.$domain,$httpIp,'haipproxy:');

@@ -41,6 +41,12 @@ class Test extends Command
      */
     public function handle()
     {
+        $domain = 'sogou';
+        $members = RateLimiter::instance()->sMembers('proxy_ips_deleted_'.$domain);
+        foreach ($members as $member) {
+            deleteProxyIp($member,$domain);
+        }
+        return;
         $info['url'] = 'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ3WmpSc0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen';
         $ql = QueryList::getInstance();
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));
