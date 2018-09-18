@@ -14,6 +14,7 @@ use App\Models\Tag;
 use App\Traits\SubmitSubmission;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
+use QL\Ext\PhantomJs;
 use QL\QueryList;
 
 class GoogleNews extends Command {
@@ -59,6 +60,7 @@ class GoogleNews extends Command {
             41 => ['url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREp6Y0daa0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Deloitte'],//Deloitte global news
         ];
         $ql = QueryList::getInstance();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         $category = Category::where('slug','channel_xwdt')->first();
         foreach ($urls as $group_id => $info) {
             $group = Group::find($group_id);
@@ -70,8 +72,9 @@ class GoogleNews extends Command {
                 continue;
             }
             $this->info($info['url']);
-            $list = $ql->get($info['url'],[],[
-                'proxy' => 'socks5h://127.0.0.1:1080',
+            $list = $ql->browser($info['url'],false,[
+                '--proxy' => '127.0.0.1:1080',
+                '--proxy-type' => 'socks5'
             ])->rules([
                 'title' => ['a.ipQwMb.Q7tWef>span','text'],
                 'link'  => ['a.ipQwMb.Q7tWef','href'],
@@ -86,9 +89,8 @@ class GoogleNews extends Command {
                 $dateTime = trim(str_replace('seconds:','',trim($item['dateTime']??'')));
                 if ($dateTime <= strtotime('-3 days')) continue;
                 sleep(1);
-                $item['href'] = $ql->get('https://news.google.com/'.$item['link'],[],[
-                    'proxy' => 'socks5h://127.0.0.1:1080',
-                ])->find('div.m2L3rb.eLNT1d')->children('a')->attr('href');
+                $urlHtml = curlShadowsocks('https://news.google.com/'.$item['link']);
+                $item['href'] = $ql->setHtml($urlHtml)->find('div.m2L3rb.eLNT1d')->children('a')->attr('href');
                 if ($item['image']) {
                     //图片本地化
                     $item['image'] = saveImgToCdn($item['image'],'submissions');

@@ -43,6 +43,13 @@ class Test extends Command
     {
         $info['url'] = 'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ3WmpSc0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen';
         $ql = QueryList::getInstance();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $html = curlShadowsocks('https://news.google.com/articles/CBMiWmh0dHBzOi8vd3d3LnRoZXJlZ2lzdGVyLmNvLnVrLzIwMTgvMDkvMTMvc2FwX3NvdXRoX2FmcmljYV9wcm9iZV9jb3JydXB0aW9uX3dhdGVyX21pbmlzdHJ5L9IBAA?hl=en-US&gl=US&ceid=US%3Aen');
+
+        $item['href'] = $ql->setHtml($html)->find('div.m2L3rb.eLNT1d')->children('a')->attr('href');
+        var_dump($item['href']);
+        return;
+
         $list = $ql->get($info['url'],[],[
             'proxy' => 'socks5h://127.0.0.1:1080',
         ])->rules([
