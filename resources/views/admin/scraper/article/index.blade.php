@@ -207,7 +207,7 @@
             $(".btn-viewinfo").click(function(){
                 $('#article_html').css('display','block');
                 if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
-                    $('#article_body_html').css('max-width','375px');
+                    $('#article_body_html').css('max-width',window.screen.width + 'px');
                 } else {
                     $('#article_body_html').css('max-width','1024px');
                 }
