@@ -122,7 +122,7 @@ class RssPosts extends Command
                     $status = 1;
                 }
 
-                WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link],[
+                $article = WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link],[
                     'content_url'           => $value->link,
                     'title'          => $value->title,
                     'author'    => $author,
@@ -136,6 +136,9 @@ class RssPosts extends Command
                     'cover_url'   => $image_url,
                     'status'         => $status
                 ]);
+                if ($topic->is_auto_publish == 1 && $status == 1) {
+                    dispatch(new ArticleToSubmission($article->_id));
+                }
             }
         }
         $articles = WechatWenzhangInfo::where('source_type',2)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();

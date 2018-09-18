@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Models\Groups\Group;
 use App\Models\Scraper\Feeds;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -49,7 +50,8 @@ class FeedsController extends AdminController
 
     public function create()
     {
-        return view("admin.scraper.feeds.create");
+        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get()->toArray();
+        return view("admin.scraper.feeds.create")->with('groups',$groups);
     }
 
     /**
@@ -72,6 +74,7 @@ class FeedsController extends AdminController
             'source_type' => $request->input('source_type'),
             'source_link'   => $request->input('source_link'),
             'keywords'  => trim($request->input('keywords')),
+            'is_auto_publish' => $request->input('is_auto_publish',0),
             'status'       => 0,
         ];
 
@@ -99,8 +102,8 @@ class FeedsController extends AdminController
         if(!$feeds){
             abort(404);
         }
-
-        return view("admin.scraper.feeds.edit")->with(compact('feeds'));
+        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get()->toArray();
+        return view("admin.scraper.feeds.edit")->with(compact('feeds','groups'));
 
     }
 
@@ -129,6 +132,7 @@ class FeedsController extends AdminController
         $feed->source_link = trim($request->input('source_link'));
         $feed->source_type = $request->input('source_type');
         $feed->keywords = trim($request->input('keywords',''));
+        $feed->is_auto_publish = $request->input('is_auto_publish',0);
 
         $feed->save();
 

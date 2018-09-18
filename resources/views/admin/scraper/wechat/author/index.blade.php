@@ -83,7 +83,7 @@
                                             <td>{{ $author->group?$author->group->name:'' }}</td>
                                             <td>{{ $author->user?$author->user->name:'' }}</td>
                                             <td>{{ timestamp_format($author->create_time) }}</td>
-                                            <td><span class="label @if($author->status===0) label-danger  @else label-success @endif">{{ trans_common_status($author->status) }}</span> </td>
+                                            <td><span class="label @if($author->status===0) label-danger  @else label-success @endif">{{ trans_common_status($author->status) }} {{ $author->is_auto_publish?'自动发布文章':'' }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.scraper.wechat.author.edit',['id'=>$author->_id]) }}" data-toggle="tooltip" title="审核"><i class="fa fa-edit"></i></a>

@@ -36,7 +36,8 @@
                                 <label for="wx_hao">圈子:</label>
                                 <div class="row">
                                     <div class="col-sm-10">
-                                        <select id="select_group_id" name="select_group_id" class="form-control" >
+                                        <select id="select_group_id" name="select_group_id" class="form-control">
+                                            <option value="0" {{ $author->group_id == 0 ? 'selected':'' }}></option>
                                             @foreach($groups as $group)
                                                 <option value="{{ $group['id'] }}" {{ $author->group_id == $group['id'] ? 'selected':'' }}>{{ $group['name'] }}</option>
                                             @endforeach
@@ -53,12 +54,19 @@
                                         <select id="author_id_select" name="author_id_select" class="form-control">
                                             <option value="{{ $author->user_id }}" selected> {{ $author->user_id?'<span><img style="width: 30px;height: 20px;" src="' .($author->user->avatar) .'" class="img-flag" />' . ($author->user->name).'</span>':'' }} </option>
                                         </select>
-                                        @if ($errors->first('author_id'))
+                                        @if ($errors->first('user_id'))
                                             <span class="help-block">{{ $errors->first('user_id') }}</span>
                                         @endif
                                     </div>
                                 </div>
-                                @if($errors->has('user_id')) <p class="help-block">{{ $errors->first('user_id') }}</p> @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="is_auto_publish">是否自动发布文章：</label>
+                                <div class="radio">
+                                    <label><input type="radio" name="is_auto_publish" value="0" @if ( $author->is_auto_publish == 0) checked @endif >审核后发布</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <label><input type="radio" name="is_auto_publish" value="1" @if ( $author->is_auto_publish == 1) checked @endif>自动发布</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                </div>
                             </div>
 
                             <div class="form-group @if ($errors->first('audit_status')) has-error @endif">
@@ -91,7 +99,8 @@
         set_active_menu('manage_scraper',"{{ route('admin.scraper.wechat.author.index') }}");
         $("#select_group_id").select2({
             theme:'bootstrap',
-            placeholder: "选择圈子"
+            placeholder: "选择圈子",
+            tags:false
         });
 
         $("#select_group_id").change(function(){

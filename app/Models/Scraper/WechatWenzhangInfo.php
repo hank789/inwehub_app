@@ -32,7 +32,11 @@ class WechatWenzhangInfo extends Model {
     //status状态：1待发布，2已发布，3已删除
 
     public function withAuthor(){
-        return WechatMpInfo::find($this->mp_id);
+        if ($this->source_type == 1) {
+            return WechatMpInfo::find($this->mp_id);
+        } else {
+            return Feeds::find($this->mp_id);
+        }
     }
 
     public function submission() {

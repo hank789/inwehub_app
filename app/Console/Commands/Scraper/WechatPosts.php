@@ -94,6 +94,9 @@ class WechatPosts extends Command {
                             'comment_count' => 0
                         ]);
                         (new GetArticleBody($article->_id))->handle();
+                        if ($mpInfo->is_auto_publish == 1 && $article->date_time >= date('Y-m-d 00:00:00',strtotime('-1 days'))) {
+                            dispatch(new ArticleToSubmission($article->_id));
+                        }
                     }
                 }
                 if ($last_qunfa_id < $cur_qunfa_id) {
