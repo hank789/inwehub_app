@@ -1597,8 +1597,11 @@ if (!function_exists('getProxyIps')) {
     function getProxyIps($min = 5, $domain = 'jianyu360') {
         $ips = \App\Services\RateLimiter::instance()->sMembers('proxy_ips_'.$domain);
         $ql = new \QL\QueryList();
+        $i = 0;
 
         while (empty($ips)) {
+            if ($i >= 5) break;
+            $i++;
             //优先取自己的代理
             $scored_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('validated:'.$domain,'+inf',7,false,'haipproxy:');
             $ttl_proxies = \App\Services\RateLimiter::instance()->zRevrangeByScore('ttl:'.$domain,'+inf',time() - 30 * 60,false,'haipproxy:');
@@ -1614,9 +1617,9 @@ if (!function_exists('getProxyIps')) {
                 foreach ($proxies as $proxyIp) {
                     $proxyIp = str_replace('http://','',$proxyIp);
                     if (\App\Services\RateLimiter::instance()->sIsMember('proxy_ips_deleted_'.$domain,$proxyIp)) {
+                        deleteProxyIp($proxyIp,$domain);
                         continue;
                     }
-                    if (in_array($proxyIp,$ips)) continue;
                     $opts = [
                         'proxy' => $proxyIp,
                         //Set the timeout time in seconds
@@ -1640,7 +1643,8 @@ if (!function_exists('getProxyIps')) {
                     if (count($ips) >= 2*$min) return $ips;
                 }
             }
-            if (count($ips) >= 2*$min || in_array($domain,['sogou'])) return $ips;
+            if (count($ips) >= 2*$min) return $ips;
+            if (in_array($domain,['sogou'])) continue;
             $scraper_proxy_address = Setting()->get('scraper_proxy_address','');
             if (empty($scraper_proxy_address)) return [];
             $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
