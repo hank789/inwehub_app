@@ -1078,9 +1078,7 @@ if (!function_exists('saveImgToCdn')){
                 'lh3.googleusercontent.com'
             ]) || str_contains($parse_url['host'],'googleusercontent.com')) {
                 //判断是否需要翻墙
-                $content = $ql->get($imgUrl, [], [
-                    'proxy' => 'socks5h://127.0.0.1:1080',
-                ])->getHtml();
+                $content = curlShadowsocks($imgUrl);
             } else {
                 $content = $ql->get($imgUrl)->getHtml();
             }
