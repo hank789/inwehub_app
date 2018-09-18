@@ -4,6 +4,7 @@ use App\Jobs\GetArticleBody;
 use App\Logic\TaskLogic;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
+use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -45,9 +46,14 @@ class WechatPosts extends Command {
     {
         $path = config('app.spider_path');
         if($path){
-            validateProxyIps('sogou');
+            $domain = 'sogou';
+            $members = RateLimiter::instance()->sMembers('proxy_ips_deleted_'.$domain);
+            foreach ($members as $member) {
+                deleteProxyIp($member,$domain);
+            }
+            validateProxyIps($domain);
             //shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
-            getProxyIps(5,'sogou');
+            getProxyIps(5,$domain);
             $spider = new WechatSpider();
             $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
             $succ_count = 0;

@@ -2,6 +2,7 @@
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
+use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
 use Illuminate\Console\Command;
 
@@ -45,6 +46,11 @@ class WechatAuthor extends Command {
             shell_exec('cd '.$path.' && python auto_add_mp.py >> /tmp/auto_add_mp.log');
         }*/
         $all = WechatMpList::get();
+        $domain = 'sogou';
+        $members = RateLimiter::instance()->sMembers('proxy_ips_deleted_'.$domain);
+        foreach ($members as $member) {
+            deleteProxyIp($member,$domain);
+        }
         validateProxyIps('sogou');
         getProxyIps(5,'sogou');
         $spider = new WechatSpider();
