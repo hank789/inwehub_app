@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Jobs\ArticleToSubmission;
+use App\Models\Groups\Group;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -113,13 +114,14 @@ class WechatController extends AdminController
     public function editAuthor($id)
     {
         $author = WechatMpInfo::find($id);
-        return view("admin.scraper.wechat.author.edit")->with('author',$author);
+        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get()->toArray();
+        return view("admin.scraper.wechat.author.edit")->with('author',$author)->with('groups',$groups);
     }
 
     public function updateAuthor(Request $request) {
         $validateRules = [
             'id'      => 'required',
-            'group_id'   => 'required|integer',
+            'group_id'   => 'required|integer|min:1',
             'user_id'   => 'required|integer|min:1',
             'audit_status' => 'required|integer'
         ];
