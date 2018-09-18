@@ -24,7 +24,10 @@ class PushChannel {
         if ($message) {
             RateLimiter::instance()->increase('push_notify_user_'.date('Ymd'),$notifiable->id,3600*24);
             // 将通知发送给 $notifiable 实例
-            event(new Push($notifiable->id,$message['title'],strip_tags($message['body']),$message['payload']));
+            //3分钟内只接收一条推送
+            if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('push_notify_user',str_replace('\\','-',$notification->type).'_'.$notifiable->id,180)) {
+                event(new Push($notifiable->id,$message['title'],strip_tags($message['body']),$message['payload']));
+            }
         }
     }
 

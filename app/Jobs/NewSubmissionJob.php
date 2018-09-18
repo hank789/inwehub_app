@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Logic\QuillLogic;
 use App\Models\Submission;
 use App\Models\User;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -77,10 +78,16 @@ class NewSubmissionJob implements ShouldQueue
                 }
             }
         }
+
         $user = User::find($submission->user_id);
 
         event(new CreditEvent($submission->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$submission->id,'动态分享'));
         $group = Group::find($submission->group_id);
+
+        $group->increment('articles');
+        GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
+        RateLimiter::instance()->sClear('group_read_users:'.$group->id);
+
         $members = [];
         feed()
             ->causedBy($user)

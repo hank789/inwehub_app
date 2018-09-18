@@ -1073,7 +1073,17 @@ if (!function_exists('saveImgToCdn')){
         if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
             $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
             $ql = \QL\QueryList::getInstance();
-            $content = $ql->get($imgUrl)->getHtml();
+            if (in_array($parse_url['host'],[
+                'lh4.googleusercontent.com',
+                'lh3.googleusercontent.com'
+            ]) || str_contains($parse_url['host'],'googleusercontent.com')) {
+                //判断是否需要翻墙
+                $content = $ql->get($imgUrl, [], [
+                    'proxy' => 'socks5h://127.0.0.1:1080',
+                ])->getHtml();
+            } else {
+                $content = $ql->get($imgUrl)->getHtml();
+            }
             Storage::disk('oss')->put($file_name,$content);
             $cdn_url = Storage::disk('oss')->url($file_name);
             return $cdn_url;
@@ -1712,5 +1722,22 @@ if (!function_exists('curlShadowsocks')) {
         curl_close($ch);
 
         return $result;
+    }
+}
+
+
+if (!function_exists('formatHtml')) {
+    function formatHtml($html) {
+        $html = str_replace('&#39;', '\'',$html);
+        $html = str_replace('&amp;', '&',$html);
+        $html = str_replace('&gt;', '>',$html);
+        $html = str_replace('&lt;', '<',$html);
+        $html = str_replace('&yen;', '¥',$html);
+        $html = str_replace('amp;', '',$html);
+        $html = str_replace('&lt;', '<',$html);
+        $html = str_replace('&gt;', '>',$html);
+        $html = str_replace('&nbsp;', ' ',$html);
+        $html = str_replace('\\', '',$html);
+        return $html;
     }
 }

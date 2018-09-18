@@ -176,9 +176,6 @@ class SubmissionController extends Controller {
                 'data'          => $data,
                 'views'         => 1
             ]);
-            $group->increment('articles');
-            GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
-            RateLimiter::instance()->sClear('group_read_users:'.$group->id);
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
             }
@@ -348,9 +345,7 @@ class SubmissionController extends Controller {
                 'data'          => $data,
                 'views'         => 1
             ]);
-            $group->increment('articles');
-            GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
-            RateLimiter::instance()->sClear('group_read_users:'.$group->id);
+
             if ($request->type == 'link'||true) {
                 Redis::connection()->hset('voten:submission:url',$url, $submission->id);
             }
