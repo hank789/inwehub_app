@@ -87,7 +87,10 @@ class GoogleNews extends Command {
                 $exist_submission_id = Redis::connection()->hget('voten:submission:url',$item['link']);
                 if ($exist_submission_id) continue;
                 $dateTime = trim(str_replace('seconds:','',trim($item['dateTime']??'')));
-                if ($dateTime <= strtotime('-3 days')) continue;
+                if ($dateTime) {
+                    $dateTime = substr($dateTime,0,10);
+                    if ($dateTime <= strtotime('-3 days')) continue;
+                }
                 sleep(1);
                 $urlHtml = curlShadowsocks('https://news.google.com/'.$item['link']);
                 $item['href'] = $ql->setHtml($urlHtml)->find('div.m2L3rb.eLNT1d')->children('a')->attr('href');
@@ -129,7 +132,6 @@ class GoogleNews extends Command {
                 Redis::connection()->hset('voten:submission:url',$item['link'], $submission->id);
                 Tag::multiAddByName($info['tags'],$submission);
                 if ($dateTime) {
-                    $dateTime = substr($dateTime,0,10);
                     $submission->created_at = date('Y-m-d H:i:s',$dateTime);
                     $submission->save();
                 }
