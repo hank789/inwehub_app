@@ -126,12 +126,13 @@ class GoogleNews extends Command {
                     'data'          => $data,
                     'views'         => 1,
                 ]);
+                Redis::connection()->hset('voten:submission:url',$item['link'], $submission->id);
+                Tag::multiAddByName($info['tags'],$submission);
                 if ($dateTime) {
+                    $dateTime = substr($dateTime,0,10);
                     $submission->created_at = date('Y-m-d H:i:s',$dateTime);
                     $submission->save();
                 }
-                Redis::connection()->hset('voten:submission:url',$item['link'], $submission->id);
-                Tag::multiAddByName($info['tags'],$submission);
                 dispatch((new NewSubmissionJob($submission->id)));
             }
         }
