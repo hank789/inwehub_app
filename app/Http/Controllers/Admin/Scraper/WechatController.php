@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Jobs\ArticleToSubmission;
+use App\Models\Groups\Group;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -113,21 +114,24 @@ class WechatController extends AdminController
     public function editAuthor($id)
     {
         $author = WechatMpInfo::find($id);
-        return view("admin.scraper.wechat.author.edit")->with('author',$author);
+        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get()->toArray();
+        return view("admin.scraper.wechat.author.edit")->with('author',$author)->with('groups',$groups);
     }
 
     public function updateAuthor(Request $request) {
         $validateRules = [
             'id'      => 'required',
-            'group_id'   => 'required|integer',
+            'group_id'   => 'required|integer|min:1',
             'user_id'   => 'required|integer|min:1',
-            'audit_status' => 'required|integer'
+            'audit_status' => 'required|integer',
+            'is_auto_publish' => 'required|integer'
         ];
         $this->validate($request,$validateRules);
         $author = WechatMpInfo::find($request->input('id'));
         $author->group_id = $request->input('group_id');
         $author->user_id = $request->input('user_id',504);
         $author->status = $request->input('audit_status');
+        $author->is_auto_publish = $request->input('is_auto_publish',0);
         $author->save();
         return $this->success(route('admin.scraper.wechat.author.index'),'修改成功');
     }
