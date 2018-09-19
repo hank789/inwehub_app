@@ -14,6 +14,7 @@ use App\Models\Relations\MorphManyTagsTrait;
 use App\Services\BosonNLPService;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
@@ -398,30 +399,12 @@ class Submission extends Model {
             } else {
                 $parse_url = parse_url($this->data['url']);
                 $gfw_urls = RateLimiter::instance()->sMembers('gfw_urls');
-                $gfw_urls = array_merge($gfw_urls,[
-                    'www.enterprisetimes.co.uk',
-                    'www.independent.co.uk',
-                    'www.businessinsider.com',
-                    'www.reuters.com',
-                    'www.fool.com',
-                    'www.bloomberg.com',
-                    'www.wsj.com',
-                    'www.investors.com',
-                    'thestarphoenix.com',
-                    'www.nytimes.com',
-                    'www.voanews.com',
-                    'www.refinery29.com',
-                    'www.bizjournals.com',
-                    'www.youtube.com',
-                    'uk.businessinsider.com',
-                    'www.bbc.com'
-                ]);
                 if (in_array($parse_url['host'],$gfw_urls)) {
                     $html = curlShadowsocks($this->data['url']);
                     $ql = QueryList::getInstance();
                     $ql->setHtml($html);
                 } else {
-                    $ql = QueryList::get($this->data['url']);
+                    $ql = QueryList::get($this->data['url'],null,['timeout'=>15]);
                 }
                 $metas = $ql->find('meta[name=keywords]')->content;
                 if ($metas) {
@@ -463,11 +446,12 @@ class Submission extends Model {
             $this->data = $data;
             $this->save();
             Tag::multiAddByName(array_slice($tags,0,15),$this,1);
-        } catch (\Exception $e) {
+        } catch (ConnectException $e) {
             var_dump($this->data['url']);
             if (isset($parse_url)) {
                 RateLimiter::instance()->sAdd('gfw_urls',$parse_url['host'],0);
             }
+        } catch (\Exception $e) {
             app('sentry')->captureException($e,$this->toArray());
             dispatch((new UpdateSubmissionKeywords($this->id))->delay(Carbon::now()->addSeconds(300)));
         }
