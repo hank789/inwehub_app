@@ -85,7 +85,7 @@ class Kernel extends ConsoleKernel
         if (config('app.env') == 'production') {
             //$schedule->command('scraper:wechat:posts')->cron('30 7,9,11,13,15,17,19,21,23 * * *')->withoutOverlapping();
             $schedule->command('scraper:atom')->cron('0 8,10,16,20 * * *');
-            $schedule->command('scraper:rss')->cron('30 7,10,13,16,19,21 * * *');
+            $schedule->command('scraper:rss')->cron('30 7,9,11,13,15,17,19,21,22,23 * * *');
             $schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
             $schedule->command('scraper:bid:search')->cron('40 7,10,13,17,21 * * *');
             $schedule->command('scraper:google:news')->hourly();
