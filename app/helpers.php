@@ -1073,10 +1073,11 @@ if (!function_exists('saveImgToCdn')){
         if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
             $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
             $ql = \QL\QueryList::getInstance();
+            $gfw_urls = \App\Services\RateLimiter::instance()->sMembers('gfw_urls');
             if (in_array($parse_url['host'],[
                 'lh4.googleusercontent.com',
                 'lh3.googleusercontent.com'
-            ]) || str_contains($parse_url['host'],'googleusercontent.com')) {
+            ]) || str_contains($parse_url['host'],'googleusercontent.com') || in_array($parse_url['host'],$gfw_urls)) {
                 //判断是否需要翻墙
                 $content = curlShadowsocks($imgUrl);
             } else {
@@ -1120,14 +1121,19 @@ if (!function_exists('getUrlInfo')) {
                 $title = $title['h2'];
             } else {
                 $ql = \QL\QueryList::getInstance();
+                $gfw_urls = \App\Services\RateLimiter::instance()->sMembers('gfw_urls');
                 if (in_array($urlArr['host'],[
                     'www.bilibili.com'
                 ])) {
                     $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
                     $ql->browser($url);
 
-                } else {
-                    $ql->get($url);
+                } elseif (in_array($urlArr['host'],$gfw_urls)) {
+                    $html = curlShadowsocks($url);
+                    $ql->setHtml($html);
+                }
+                else {
+                    $ql->get($url,null,['timeout'=>15]);
                 }
                 $image = $ql->find('meta[property=og:image]')->content;
                 if (!$image) {
@@ -1185,6 +1191,10 @@ if (!function_exists('getUrlInfo')) {
                 Cache::put('url_img_'.$url,$img_url,60 * 24 * 7);
             }
             return ['title'=>$title,'img_url'=>$img_url];
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            if (isset($urlArr)) {
+                \App\Services\RateLimiter::instance()->sAdd('gfw_urls',$urlArr['host'],0);
+            }
         } catch (Exception $e) {
             app('sentry')->captureException($e,['url'=>$url]);
             return ['title'=>$title,'img_url'=>$img_url];

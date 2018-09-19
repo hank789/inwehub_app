@@ -8,7 +8,7 @@ Here is a sample status icon showing the state of the master branch.
 3. 执行`php artisan key:generate`
 4. 执行`php artisan migrate`
 5. 执行`php artisan db:seed`
-6. 执行`php artisan component install intervapp/plus-component-web`
+6. 查看:https://github.com/tlaverdure/laravel-echo-server,安装socket
 
 ## 线上配置
 1. 安装进程管理工具:supervisor
