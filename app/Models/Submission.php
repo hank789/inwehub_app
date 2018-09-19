@@ -396,7 +396,17 @@ class Submission extends Model {
             } elseif ($this->type == 'text') {
                 $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title)),1);
             } else {
-                $ql = QueryList::get($this->data['url']);
+                $parse_url = parse_url($this->data['url']);
+                if (in_array($parse_url['host'],[
+                    'www.enterprisetimes.co.uk',
+                    'www.independent.co.uk'
+                ])) {
+                    $html = curlShadowsocks($this->data['url']);
+                    $ql = QueryList::getInstance();
+                    $ql->setHtml($html);
+                } else {
+                    $ql = QueryList::get($this->data['url']);
+                }
                 $metas = $ql->find('meta[name=keywords]')->content;
                 if ($metas) {
                     $metas = trim($metas);

@@ -430,6 +430,7 @@ class SubmissionController extends Controller {
         $group = Group::find($submission->group_id);
         $return['group'] = $group->toArray();
         $return['group']['is_joined'] = 1;
+        $return['group']['name'] = str_limit($return['group']['name'], 20);
         if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
             $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
             $return['group']['is_joined'] = -1;
