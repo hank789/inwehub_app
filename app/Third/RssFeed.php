@@ -147,20 +147,9 @@ class RssFeed
 	 */
 	public static function loadXml($url, $user, $pass)
 	{
-		$e = self::$cacheExpire;
-		$cacheFile = self::$cacheDir . '/feed.' . md5(serialize(func_get_args())) . '.xml';
 
-		if (self::$cacheDir
-			&& (time() - @filemtime($cacheFile) <= (is_string($e) ? strtotime($e) - time() : $e))
-			&& $data = @file_get_contents($cacheFile)
-		) {
-			// ok
-		} elseif ($data = trim(self::httpRequest($url, $user, $pass))) {
-			if (self::$cacheDir) {
-				file_put_contents($cacheFile, $data);
-			}
-		} elseif (self::$cacheDir && $data = @file_get_contents($cacheFile)) {
-			// ok
+		if ($data = trim(self::httpRequest($url, $user, $pass))) {
+
 		} else {
 			throw new \Exception('Cannot load feed.');
 		}
