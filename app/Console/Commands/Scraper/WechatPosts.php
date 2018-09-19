@@ -64,7 +64,8 @@ class WechatPosts extends Command {
                 $last_qunfa_time = $mpInfo->last_qufa_time;
                 $cur_qunfa_id = $last_qunfa_id;
                 $wz_list = $spider->getGzhArticles($mpInfo);
-                if (empty($wz_list)) continue;
+                if ($wz_list === false) break;
+                if (count($wz_list) <= 0) continue;
                 $qunfa_time = '';
                 foreach ($wz_list as $wz_item) {
                     $temp_qunfa_id = $wz_item['qunfa_id'];
