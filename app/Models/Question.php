@@ -549,6 +549,9 @@ class Question extends Model
                 if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
                     continue;
                 }
+                if (!checkInvalidTagString($keyword)) {
+                    continue;
+                }
                 //如果含有中文，则至少2个中文字符
                 if (preg_match("/[\x7f-\xff]/", $keyword) && strlen($keyword) >= 6) {
                     $tags[] = $keyword;

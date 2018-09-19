@@ -46,6 +46,7 @@ class Test extends Command
         foreach ($tags as $tag) {
             if (!checkInvalidTagString($tag->name)) {
                 var_dump($tag->name);
+                $tag->delete();
             }
         }
         return;
