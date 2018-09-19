@@ -12,6 +12,7 @@ use App\Models\Taggable;
 use App\Services\BosonNLPService;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use PHPHtmlParser\Dom;
@@ -42,12 +43,20 @@ class Test extends Command
      */
     public function handle()
     {
-        $tags = Tag::get();
-        foreach ($tags as $tag) {
-            if (!checkInvalidTagString($tag->name)) {
-                var_dump($tag->name);
-                $tag->delete();
-            }
+        try {
+            $ql = QueryList::getInstance();
+            $content = $ql->get('https://www.itjuzi.com/company/58747',null,['timeout'=>3]);
+            $company_url = $content->find('div.link-line>a')->eq(1)->href;
+            var_dump($company_url);
+            $desc = $content->find('div.block>div.summary')->eq(1)->html();
+            var_dump($desc);
+            var_dump($content->find('h2.seo-slogan')->html());
+            var_dump($content->find('span.scope.c-gray-aset')->html());
+        } catch (ConnectException $e) {
+            var_dump(123);
+        } catch (\Exception $e) {
+            var_dump(get_class($e));
+            var_dump($e->getMessage());
         }
         return;
         $domain = 'sogou';
