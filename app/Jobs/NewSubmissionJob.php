@@ -58,8 +58,6 @@ class NewSubmissionJob implements ShouldQueue
         $submission = Submission::find($this->id);
         if (!$submission) return;
         if ($submission->status == 0) return;
-        $submission->setKeywordTags();
-        $submission->calculationRate();
         $slackFields = [];
         foreach ($submission->data as $field=>$value){
             if ($value){
@@ -129,7 +127,8 @@ class NewSubmissionJob implements ShouldQueue
             $attention_user = User::find($attention_uid);
             if ($attention_user) $attention_user->notify((new FollowedUserNewSubmission($attention_uid,$submission))->delay(Carbon::now()->addMinutes(3)));
         }
-
+        $submission->setKeywordTags();
+        $submission->calculationRate();
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         return \Slack::to(config('slack.ask_activity_channel'))
             ->disableMarkdown()
