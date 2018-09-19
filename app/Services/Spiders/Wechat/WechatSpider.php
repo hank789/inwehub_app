@@ -96,7 +96,7 @@ class WechatSpider
                     $jiefengR = $this->jiefeng2();
                     if ($jiefengR && $jiefengR['ret'] == -6) {
                         event(new SystemNotify('微信公众号['.$mpInfo->wx_hao.']抓取文章失败，无法解封IP'));
-                        exit();
+                        return false;
                     }
                     deleteProxyIp($ip,'sogou');
                 } elseif (!$sogouTitle) {
@@ -105,7 +105,7 @@ class WechatSpider
                     $newData = $this->getGzhInfo($mpInfo->wx_hao);
                     if (empty($newData['name'])) {
                         event(new SystemNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
-                        return;
+                        return [];
                     }
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
