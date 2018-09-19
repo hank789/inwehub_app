@@ -407,7 +407,9 @@ class Submission extends Model {
                     'www.wsj.com',
                     'www.investors.com',
                     'thestarphoenix.com',
-                    'www.voanews.com'
+                    'www.nytimes.com',
+                    'www.voanews.com',
+                    'www.refinery29.com'
                 ])) {
                     $html = curlShadowsocks($this->data['url']);
                     $ql = QueryList::getInstance();
