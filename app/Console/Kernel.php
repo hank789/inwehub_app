@@ -35,6 +35,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\BidInfo::class,
         Commands\Scraper\BidSearch::class,
         Commands\Scraper\GoogleNews::class,
+        Commands\Scraper\ItJuZi::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
