@@ -448,6 +448,7 @@ class Submission extends Model {
             $this->save();
             Tag::multiAddByName(array_slice($tags,0,15),$this,1);
         } catch (\Exception $e) {
+            var_dump($this->data['url']);
             app('sentry')->captureException($e,$this->toArray());
             dispatch((new UpdateSubmissionKeywords($this->id))->delay(Carbon::now()->addSeconds(300)));
         }
