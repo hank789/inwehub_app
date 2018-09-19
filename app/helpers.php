@@ -1133,12 +1133,15 @@ if (!function_exists('getUrlInfo')) {
                 if (!$image) {
                     $image = $ql->find('meta[itemprop=image]')->content;
                     if (!$image) {
-                        $image = $ql->find('link[href*=.ico]')->href;
+                        $image = $ql->find('link[rel=icon]')->href;
                         if (!$image) {
-                            if (in_array($urlArr['host'],[
-                                'finance.sina.com.cn'
-                            ])) {
-                                $image = 'http://finance.sina.com.cn/favicon.ico';
+                            $image = $ql->find('link[href*=.ico]')->href;
+                            if (!$image) {
+                                if ($urlArr['host'] == 'www.iyiou.com') {
+                                    $image = $ql->find('img.aligncenter')->src;
+                                } else {
+                                    $image = $urlArr['scheme'].'://'.$urlArr['host'].'/favicon.ico';
+                                }
                             }
                         }
                     }
