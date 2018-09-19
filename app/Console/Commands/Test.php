@@ -44,7 +44,7 @@ class Test extends Command
     {
         $tags = Tag::get();
         foreach ($tags as $tag) {
-            if (!checkInvalidString($tag->name)) {
+            if (!checkInvalidTagString($tag->name)) {
                 var_dump($tag->name);
             }
         }
