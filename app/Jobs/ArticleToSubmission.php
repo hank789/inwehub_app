@@ -132,7 +132,7 @@ class ArticleToSubmission implements ShouldQueue
         $category = Category::where('slug','channel_xwdt')->first();
         $title = $article_description;
         if ($article->source_type != 1) {
-            $title = str_limit($article_description,300);
+            $title = str_limit($article_description,600);
         }
         $submission = Submission::create([
             'title'         => formatContentUrls($title),
