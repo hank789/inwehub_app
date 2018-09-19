@@ -93,6 +93,15 @@ class WechatSpider
                 $sogouTitle = $content->find('title')->text();
                 if (str_contains($sogouTitle,'请输入验证码')) {
                     var_dump('请输入验证码');
+                    if (empty($ip)) {
+                        $wzHtml = curlShadowsocks($mpInfo->wz_url);
+                        $content->setHtml($wzHtml);
+                        $sogouTitle = $content->find('title')->text();
+                        if (!str_contains($sogouTitle,'请输入验证码')) {
+                            var_dump('抓取文章列表成功');
+                            break;
+                        }
+                    }
                     $jiefengR = $this->jiefeng2();
                     if ($jiefengR && $jiefengR['ret'] == -6) {
                         event(new SystemNotify('微信公众号['.$mpInfo->wx_hao.']抓取文章失败，无法解封IP'));
