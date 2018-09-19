@@ -397,7 +397,8 @@ class Submission extends Model {
                 $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title)),1);
             } else {
                 $parse_url = parse_url($this->data['url']);
-                if (in_array($parse_url['host'],[
+                $gfw_urls = RateLimiter::instance()->sMembers('gfw_urls');
+                $gfw_urls = array_merge($gfw_urls,[
                     'www.enterprisetimes.co.uk',
                     'www.independent.co.uk',
                     'www.businessinsider.com',
@@ -412,8 +413,10 @@ class Submission extends Model {
                     'www.refinery29.com',
                     'www.bizjournals.com',
                     'www.youtube.com',
-                    'uk.businessinsider.com'
-                ])) {
+                    'uk.businessinsider.com',
+                    'www.bbc.com'
+                ]);
+                if (in_array($parse_url['host'],$gfw_urls)) {
                     $html = curlShadowsocks($this->data['url']);
                     $ql = QueryList::getInstance();
                     $ql->setHtml($html);
@@ -462,6 +465,9 @@ class Submission extends Model {
             Tag::multiAddByName(array_slice($tags,0,15),$this,1);
         } catch (\Exception $e) {
             var_dump($this->data['url']);
+            if (isset($parse_url)) {
+                RateLimiter::instance()->sAdd('gfw_urls',$parse_url['host'],0);
+            }
             app('sentry')->captureException($e,$this->toArray());
             dispatch((new UpdateSubmissionKeywords($this->id))->delay(Carbon::now()->addSeconds(300)));
         }
