@@ -399,7 +399,11 @@ class Submission extends Model {
                 $parse_url = parse_url($this->data['url']);
                 if (in_array($parse_url['host'],[
                     'www.enterprisetimes.co.uk',
-                    'www.independent.co.uk'
+                    'www.independent.co.uk',
+                    'www.businessinsider.com',
+                    'www.reuters.com',
+                    'www.fool.com',
+                    'www.bloomberg.com'
                 ])) {
                     $html = curlShadowsocks($this->data['url']);
                     $ql = QueryList::getInstance();
