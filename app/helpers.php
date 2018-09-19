@@ -1613,6 +1613,10 @@ if (!function_exists('getProxyIps')) {
 
             if (!$proxies || count($proxies) < 2*$min)
                 $proxies = array_merge($ttl_proxies,$scored_proxies);
+            if (!$proxies || count($proxies) < 2*$min) {
+                $proxies = array_merge($proxies,$speed_proxies);
+            }
+
             if ($proxies) {
                 foreach ($proxies as $proxyIp) {
                     $proxyIp = str_replace('http://','',$proxyIp);
