@@ -1748,9 +1748,9 @@ if (!function_exists('formatHtml')) {
     }
 }
 
-if (!function_exists('checkInvalidString')) {
-    function checkInvalidString($str) {
-        return preg_match("/^[\x{4e00}-\x{9fa5}A-Za-z0-9_.-\/ ]+$/u", $str);
+if (!function_exists('checkInvalidTagString')) {
+    function checkInvalidTagString($str) {
+        return preg_match("/^[\x{4e00}-\x{9fa5}A-Za-z0-9_.\·\-\/ ]+$/u", $str);
     }
 }
 
