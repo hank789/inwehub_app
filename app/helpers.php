@@ -1134,6 +1134,13 @@ if (!function_exists('getUrlInfo')) {
                     $image = $ql->find('meta[itemprop=image]')->content;
                     if (!$image) {
                         $image = $ql->find('link[href*=.ico]')->href;
+                        if (!$image) {
+                            if (in_array($urlArr['host'],[
+                                'finance.sina.com.cn'
+                            ])) {
+                                $image = 'http://finance.sina.com.cn/favicon.ico';
+                            }
+                        }
                     }
                 }
                 $title = $ql->find('title')->text();
