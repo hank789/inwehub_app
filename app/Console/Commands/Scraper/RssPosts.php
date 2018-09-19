@@ -108,9 +108,11 @@ class RssPosts extends Command
                     $image_url = $info['img_url'];
                 }
                 $keywords = $topic->keywords;
+                $description = formatHtml($value->description);
+                $title = formatHtml($value->title);
                 $status = 3;//默认已删除
                 if ($keywords) {
-                    $content = $value->title.';'.$value->description;
+                    $content = $title.';'.$description;
                     $keywordsArr = explode('|',$keywords);
                     foreach ($keywordsArr as $keyword) {
                         if (strchr($content,$keyword)) {
@@ -124,7 +126,7 @@ class RssPosts extends Command
 
                 $article = WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link],[
                     'content_url'           => $value->link,
-                    'title'          => $value->title,
+                    'title'          => $title,
                     'author'    => $author,
                     'site_name'      => $topic->name,
                     'topic_id'       => 0,
@@ -132,7 +134,7 @@ class RssPosts extends Command
                     'mobile_url'     => '',
                     'date_time'   => new DateTime($value->pubDate),
                     'source_type' => 2,
-                    'description' => $value->description,
+                    'description' => $description,
                     'cover_url'   => $image_url,
                     'status'         => $status
                 ]);

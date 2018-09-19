@@ -110,9 +110,11 @@ class AtomPosts extends Command
                 }
 
                 $keywords = $topic->keywords;
+                $description = formatHtml($value->summary);
+                $title = formatHtml($value->title);
                 $status = 3;//默认已删除
                 if ($keywords) {
-                    $content = $value->title.';'.$value->summary;
+                    $content = $title.';'.$description;
                     $keywordsArr = explode('|',$keywords);
                     foreach ($keywordsArr as $keyword) {
                         if (strchr($content,$keyword)) {
@@ -126,7 +128,7 @@ class AtomPosts extends Command
 
                 $article = WechatWenzhangInfo::firstOrCreate(['content_url' => $value->link->attributes()->href],[
                     'content_url'           => $value->link->attributes()->href,
-                    'title'          => $value->title,
+                    'title'          => $title,
                     'author'    => $author_name,
                     'site_name'      => $topic->name,
                     'topic_id'       => 0,
@@ -134,7 +136,7 @@ class AtomPosts extends Command
                     'mobile_url'    => '',
                     'date_time'   => $published_at,
                     'source_type' => 2,
-                    'description' => $value->summary,
+                    'description' => $description,
                     'cover_url'   => $image_url,
                     'status'         => $status
                 ]);
