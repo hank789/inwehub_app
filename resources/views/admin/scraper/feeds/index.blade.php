@@ -50,6 +50,7 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th><input type="checkbox" class="checkbox-toggle" /></th>
+                                        <th>ID</th>
                                         <th>站点</th>
                                         <th>圈子</th>
                                         <th>文章发布者</th>
@@ -61,6 +62,7 @@
                                     @foreach($feeds as $article)
                                         <tr>
                                             <td><input type="checkbox" name="id[]" value="{{ $article->id }}"/></td>
+                                            <td> {{ $article->id }}</td>
                                             <td><a href="{{ route('admin.scraper.feeds.edit',['id'=>$article->id]) }}" target="_blank">{{ $article->name }}</a></td>
                                             <td>{{ $article->group?$article->group->name:'' }}</td>
                                             <td>{{ $article->user?$article->user->name:'' }}</td>
