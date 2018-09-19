@@ -409,7 +409,10 @@ class Submission extends Model {
                     'thestarphoenix.com',
                     'www.nytimes.com',
                     'www.voanews.com',
-                    'www.refinery29.com'
+                    'www.refinery29.com',
+                    'www.bizjournals.com',
+                    'www.youtube.com',
+                    'uk.businessinsider.com'
                 ])) {
                     $html = curlShadowsocks($this->data['url']);
                     $ql = QueryList::getInstance();
