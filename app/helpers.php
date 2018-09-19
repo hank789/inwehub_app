@@ -1747,3 +1747,10 @@ if (!function_exists('formatHtml')) {
         return $html;
     }
 }
+
+if (!function_exists('checkInvalidString')) {
+    function checkInvalidString($str) {
+        return preg_match("/^[\x{4e00}-\x{9fa5}A-Za-z0-9_.-\/ ]+$/u", $str);
+    }
+}
+
