@@ -7,6 +7,7 @@ use App\Models\Scraper\BidInfo;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
+use App\Models\Tag;
 use App\Models\Taggable;
 use App\Services\BosonNLPService;
 use App\Services\RateLimiter;
@@ -41,16 +42,12 @@ class Test extends Command
      */
     public function handle()
     {
-
-        $i = 0;
-        $ips = [];
-
-        while ($i<=5) {
-            $i++;
-            if ($i==2) continue;
-            $ips[] = $i;
+        $tags = Tag::get();
+        foreach ($tags as $tag) {
+            if (!checkInvalidString($tag->name)) {
+                var_dump($tag->name);
+            }
         }
-        var_dump($ips);
         return;
         $domain = 'sogou';
         $members = RateLimiter::instance()->sMembers('proxy_ips_deleted_'.$domain);
