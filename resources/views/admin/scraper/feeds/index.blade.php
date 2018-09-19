@@ -94,7 +94,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $feeds->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $feeds->render()) !!}
+                                    {!! str_replace('/?', '?', $feeds->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>

@@ -106,7 +106,7 @@
                             <div class="col-sm-9">
                                 <div class="text-right">
                                     <span class="total-num">共 {{ $authors->total() }} 条数据</span>
-                                    {!! str_replace('/?', '?', $authors->render()) !!}
+                                    {!! str_replace('/?', '?', $authors->appends($filter)->render()) !!}
                                 </div>
                             </div>
                         </div>
