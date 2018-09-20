@@ -90,6 +90,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
             $schedule->command('scraper:bid:search')->cron('40 7,10,13,17,21 * * *');
             $schedule->command('scraper:google:news')->hourly();
+            $schedule->command('scraper:itjuzi:news')->cron('40 7,13,17,21 * * *');
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
         $schedule->command('crontab:deal-overtime-task')->daily()->at('05:00')->withoutOverlapping();
