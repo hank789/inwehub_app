@@ -384,6 +384,15 @@ class Submission extends Model {
         }
     }
 
+    public function updateLinkImage($imgUrl) {
+        if ($this->type == 'link') {
+            $data = $this->data;
+            $data['img'] = $imgUrl;
+            $this->data = $data;
+            $this->save();
+        }
+    }
+
     //设置关键词标签
     public function setKeywordTags() {
         try {
