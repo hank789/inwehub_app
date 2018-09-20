@@ -92,8 +92,10 @@ class ItJuZi extends Command {
                             continue;
                         }
                         $type = 'link';
+                        $img = saveImgToCdn($item['com_logo']);
                         if (strlen($company_url) <= 7) {
                             $type = 'text';
+                            $img = [$img];
                         }
 
                         $title = date('n月d日',strtotime($item['date'])).'，「'.$item['com_name'].'」获得金额'.$item['money'].$item['currency'].'的'.$item['round'].'融资，投资方'.implode('，',array_column($item['invsest_with'],'invst_name')).'。';
@@ -104,7 +106,7 @@ class ItJuZi extends Command {
                             'description'   => $company_description,
                             'type'          => $type,
                             'embed'         => null,
-                            'img'           => saveImgToCdn($item['com_logo']),
+                            'img'           => $img,
                             'thumbnail'     => null,
                             'providerName'  => 'itjuzi.com',
                             'publishedTime' => $item['date'],
