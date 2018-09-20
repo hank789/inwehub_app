@@ -15,6 +15,7 @@ use App\Services\BosonNLPService;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
@@ -454,6 +455,9 @@ class Submission extends Model {
             if (isset($parse_url)) {
                 RateLimiter::instance()->sAdd('gfw_urls',$parse_url['host'],0);
             }
+            dispatch((new UpdateSubmissionKeywords($this->id))->delay(Carbon::now()->addSeconds(300)));
+        } catch (TooManyRedirectsException $e) {
+            app('sentry')->captureException($e,$this->toArray());
         } catch (\Exception $e) {
             app('sentry')->captureException($e,$this->toArray());
             dispatch((new UpdateSubmissionKeywords($this->id))->delay(Carbon::now()->addSeconds(300)));
