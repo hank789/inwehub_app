@@ -76,7 +76,10 @@ class ItJuZi extends Command {
                     $guid = 'company_invest_'.$item['com_id'].'_'.$item['invse_id'];
                     $company = Submission::where('slug',$guid)->first();
                     if (!$company) {
-                        $content = $ql->get('https://www.itjuzi.com/company/'.$item['com_id']);
+                        $content = $ql->get('https://www.itjuzi.com/company/'.$item['com_id'],null,[
+                            'timeout' => 10,
+                            'headers' => $headers
+                        ]);
                         $company_url = $content->find('div.link-line>a')->eq(1)->href;
                         $item['custom_data']['company_slogan'] = $content->find('h2.seo-slogan')->html();
                         $item['custom_data']['company_summary'] = $content->find('span.scope.c-gray-aset')->html();
