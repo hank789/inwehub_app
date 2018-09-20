@@ -1137,20 +1137,29 @@ if (!function_exists('getUrlInfo')) {
                 }
                 $image = $ql->find('meta[property=og:image]')->content;
                 if (!$image) {
+                    $image = $ql->find('meta[name=image]')->content;
+                }
+                if (!$image) {
                     $image = $ql->find('meta[itemprop=image]')->content;
                     if (!$image) {
                         $image = $ql->find('link[rel=icon]')->href;
                         if (!$image) {
-                            $image = $ql->find('link[href*=.ico]')->href;
+                            $image = $ql->find('link[rel=shortcut icon]')->href;
                             if (!$image) {
-                                if ($urlArr['host'] == 'www.iyiou.com') {
-                                    $image = $ql->find('img.aligncenter')->src;
-                                } else {
-                                    $image = $urlArr['scheme'].'://'.$urlArr['host'].'/favicon.ico';
+                                $image = $ql->find('link[href*=.ico]')->href;
+                                if (!$image) {
+                                    if ($urlArr['host'] == 'www.iyiou.com') {
+                                        $image = $ql->find('img.aligncenter')->src;
+                                    } else {
+                                        $image = $urlArr['scheme'].'://'.$urlArr['host'].'/favicon.ico';
+                                    }
                                 }
                             }
                         }
                     }
+                }
+                if (!$image) {
+                    event(new \App\Events\Frontend\System\SystemNotify('未取到网站:'.$url.'的图片'));
                 }
                 $title = $ql->find('title')->text();
                 if (str_contains($image,'.ico')) {
