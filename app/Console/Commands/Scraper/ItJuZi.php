@@ -6,6 +6,8 @@ use App\Models\Groups\Group;
 use App\Models\Submission;
 use App\Models\Tag;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
+use QL\Ext\PhantomJs;
 use QL\QueryList;
 
 /**
@@ -45,6 +47,7 @@ class ItJuZi extends Command {
         $group = Group::find(56);
         $category = Category::where('slug','company_invest')->first();
         $ql = QueryList::getInstance();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         $cookie = '_ga=GA1.2.502552747.1537344894; _gid=GA1.2.209525726.1537344894; gr_user_id=92ec759a-4af4-4baf-9109-efb8b7dcd108; Hm_lvt_1c587ad486cdb6b962e94fc2002edf89=1537344894; acw_tc=781bad2315373449752386213e3da25a5aa0d609ed41ec04989654db6a835d; identity=hank.wang%40inwehub.com; remember_code=%2F2sadyUZtH; unique_token=639426; Hm_lvt_80ec13defd46fe15d2c2dcf90450d14b=1537345185; MEIQIA_EXTRA_TRACK_ID=5e7b329c28eb11e7afd102fa39e25136; session=e38827c47a6682e8f8f091f4d514ade9318a3dee; user-radar.itjuzi.com=%7B%22n%22%3A%22%5Cu6854%5Cu53cb913f8e96bfe431%22%2C%22v%22%3A2%7D; Hm_lpvt_80ec13defd46fe15d2c2dcf90450d14b=1537411689; MEIQIA_VISIT_ID=1ASEdpEbDmRuEYcguA1WLfSf4ae; Hm_lpvt_1c587ad486cdb6b962e94fc2002edf89=1537411703; gr_session_id_eee5a46c52000d401f969f4535bdaa78=0837d6b3-e50a-43d8-9872-fb63088f8a3a; gr_cs1_0837d6b3-e50a-43d8-9872-fb63088f8a3a=user_id%3A639426; gr_session_id_eee5a46c52000d401f969f4535bdaa78_0837d6b3-e50a-43d8-9872-fb63088f8a3a=true';
         $headers = [
             'Host'    => 'radar.itjuzi.com',
@@ -57,6 +60,7 @@ class ItJuZi extends Command {
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
             'Cookie'    => $cookie
         ];
+
         $page = 1;
         while (true) {
             $requestUrl = 'http://radar.itjuzi.com/investevent/info?location=in&orderby=def&page='.$page.'&scope=126';
@@ -76,11 +80,8 @@ class ItJuZi extends Command {
                     $guid = 'company_invest_'.$item['com_id'].'_'.$item['invse_id'];
                     $company = Submission::where('slug',$guid)->first();
                     if (!$company) {
-                        $content = $ql->get('https://www.itjuzi.com/company/'.$item['com_id'],null,[
-                            'timeout' => 10,
-                            'headers' => $headers
-                        ]);
-                        $company_url = $content->find('div.link-line>a')->eq(1)->href;
+                        $content = $ql->browser('https://www.itjuzi.com/company/'.$item['com_id']);
+                        $company_url = $content->find('div.link-line>a')->eq(2)->href;
                         $item['custom_data']['company_slogan'] = $content->find('h2.seo-slogan')->html();
                         $item['custom_data']['company_summary'] = $content->find('span.scope.c-gray-aset')->html();
                         $company_description = $content->find('div.block>div.summary')->eq(1)->html();
