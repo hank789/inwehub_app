@@ -38,6 +38,7 @@ class UpdateSubmissionKeywords implements ShouldQueue
     public function handle()
     {
         $submission = Submission::find($this->submissionId);
+        if (!$submission) return;
         $submission->setKeywordTags();
         $recommendRead = RecommendRead::where('source_id',$this->submissionId)->where('source_type',Submission::class)->first();
         if ($recommendRead) {
