@@ -413,6 +413,9 @@ class Submission extends Model {
                     $metas = str_replace('、',',',$metas);
                     $metas = str_replace(' ',',',$metas);
                     $keywords = explode(',',$metas);
+                    if (count($keywords) == 1 && $keywords[0] == $metas) {
+                        $keywords = explode(' ',$metas);
+                    }
                 }
                 $description = strip_tags($this->title).';'.$ql->find('meta[name=description]')->content;
                 if ($description) {
