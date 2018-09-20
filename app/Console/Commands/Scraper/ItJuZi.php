@@ -96,7 +96,7 @@ class ItJuZi extends Command {
                             $type = 'text';
                         }
 
-                        $title = date('n月d日',strtotime($item['date'])).'，「'.$item['com_name'].'」获得金额'.$item['money'].$item['currency'].'的'.$item['round'].'融资，投资方'.implode(',',array_column($item['invsest_with'],'invst_name'));
+                        $title = date('n月d日',strtotime($item['date'])).'，「'.$item['com_name'].'」获得金额'.$item['money'].$item['currency'].'的'.$item['round'].'融资，投资方'.implode('，',array_column($item['invsest_with'],'invst_name'));
                         $this->info($title);
                         $data = [
                             'url'           => $company_url,
