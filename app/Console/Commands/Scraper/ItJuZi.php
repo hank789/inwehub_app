@@ -92,7 +92,7 @@ class ItJuZi extends Command {
                             continue;
                         }
 
-                        $title = '「'.$item['com_name'].'」于'.date('Y年n月d日',strtotime($item['date'])).'获得投资方'.implode(',',array_column($item['invsest_with'],'invst_name')).$item['money'].$item['currency'].'的'.$item['round'].'融资。';
+                        $title = '「'.$item['com_name'].'」于'.date('Y年n月d日',strtotime($item['date'])).'获得投资方'.implode(',',array_column($item['invsest_with'],'invst_name')).'金额'.$item['money'].$item['currency'].'的'.$item['round'].'融资。';
                         $this->info($title);
                         $data = [
                             'url'           => $company_url,
@@ -113,7 +113,7 @@ class ItJuZi extends Command {
                         $data['current_address_latitude'] = '';
                         $data['mentions'] = [];
                         $submission = Submission::create([
-                            'title'         => $title.'<br><br>'.$company_description,
+                            'title'         => $title.'<br>'.$company_description,
                             'slug'          => $guid,
                             'type'          => 'link',
                             'category_name' => $category->name,
