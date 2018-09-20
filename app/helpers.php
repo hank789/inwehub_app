@@ -1083,9 +1083,9 @@ if (!function_exists('saveImgToCdn')){
             } else {
                 $content = $ql->get($imgUrl)->getHtml();
             }
-            Storage::disk('oss')->put($file_name,$content);
-            $cdn_url = Storage::disk('oss')->url($file_name);
-            return $cdn_url;
+
+            dispatch((new \App\Jobs\UploadFile($file_name,base64_encode($content))));
+            return Storage::url($file_name);
         }
         return $imgUrl;
     }
@@ -1198,17 +1198,17 @@ if (!function_exists('getUrlInfo')) {
             $title = htmlspecialchars_decode($title);
             Cache::put('url_title_'.$url,$title,60 * 24 * 7);
             if ($temp && $withImageUrl && !$img_url) {
-                //保存图片
-                $img_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
-                $ql = new \QL\QueryList();
-                $img_contet = $ql->get($temp)->getHtml();
-                dispatch((new \App\Jobs\UploadFile($img_name,base64_encode($img_contet))));
-                $img_url = Storage::url($img_name);
-                //非微信文章
-                if ($useCache) {
-                    Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
+                try {
+                    //保存图片
+                    $img_url = saveImgToCdn($temp,$dir);
+                    //非微信文章
+                    if ($useCache) {
+                        Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
+                    }
+                    Cache::put('url_img_'.$url,$img_url,60 * 24 * 7);
+                } catch (Exception $e) {
+                    $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
                 }
-                Cache::put('url_img_'.$url,$img_url,60 * 24 * 7);
             }
             return ['title'=>$title,'img_url'=>$img_url];
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
