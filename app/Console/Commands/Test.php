@@ -45,7 +45,8 @@ class Test extends Command
     {
         try {
             $ql = QueryList::getInstance();
-            $content = $ql->get('https://www.itjuzi.com/company/58747',null,['timeout'=>3]);
+            $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+            $content = $ql->browser('https://www.itjuzi.com/company/58747');
             $company_url = $content->find('div.link-line>a')->eq(1)->href;
             var_dump($company_url);
             $desc = $content->find('div.block>div.summary')->eq(1)->html();
