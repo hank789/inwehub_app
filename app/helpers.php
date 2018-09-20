@@ -1118,7 +1118,14 @@ if (!function_exists('getUrlInfo')) {
                     $temp = $matches[1][0];
                 }
                 preg_match('/<h2 class="rich_media_title" id="activity-name">(?<h2>.*?)<\/h2>/si', $f, $title);
-                $title = $title['h2'];
+                if (isset($title['h2'])) {
+                    $title = $title['h2'];
+                } elseif (str_contains($f,'该公众号已迁移至新的帐号，原帐号已回收。')) {
+                    //该微信文章已转移
+                } else {
+                    //该微信文章或已删除
+                    $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
+                }
             } else {
                 $ql = \QL\QueryList::getInstance();
                 $gfw_urls = \App\Services\RateLimiter::instance()->sMembers('gfw_urls');
