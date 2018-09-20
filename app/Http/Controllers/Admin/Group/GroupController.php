@@ -2,6 +2,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
+use App\Models\Submission;
 use App\Models\UserOauth;
 use App\Notifications\GroupAuditResult;
 use Illuminate\Http\Request;
@@ -134,6 +135,17 @@ class GroupController extends AdminController {
         }
         return $this->success(route('admin.group.index'),'审核成功');
 
+    }
+
+    public function destroy(Request $request)
+    {
+        $ids = $request->input('id');
+        foreach ($ids as $id) {
+            if (Submission::where('group_id',$id)->count() <= 0) {
+                Group::destroy($id);
+            }
+        }
+        return $this->success(url()->previous(),'删除成功，有文章的圈子不会被删除');
     }
 
 }

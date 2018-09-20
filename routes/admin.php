@@ -313,6 +313,7 @@ Route::group(['prefix' => 'group','namespace'=>'Group'], function() {
     Route::post('verify',['as'=>'admin.group.verify','uses'=>'GroupController@verify']);
     Route::get('edit/{id}',['as'=>'admin.group.edit','uses'=>'GroupController@edit'])->where(['id'=>'[0-9]+']);
     Route::post('update',['as'=>'admin.group.update','uses'=>'GroupController@update']);
+    Route::post('destroy',['as'=>'admin.group.destroy','uses'=>'GroupController@destroy']);
 });
 
 //客服聊天
