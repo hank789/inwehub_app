@@ -1139,6 +1139,9 @@ if (!function_exists('getUrlInfo')) {
                 if (!$image) {
                     $image = $ql->find('meta[name=image]')->content;
                 }
+                if ($urlArr['host'] == 'm.jiemian.com') {
+                    $image = $ql->find('div.wechat_logo>img')->src;
+                }
                 if (!$image) {
                     $image = $ql->find('meta[itemprop=image]')->content;
                     if (!$image) {
