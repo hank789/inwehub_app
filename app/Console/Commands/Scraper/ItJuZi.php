@@ -91,14 +91,18 @@ class ItJuZi extends Command {
                             event(new SystemNotify('抓取IT橘子企业详情失败:'.$item['com_id']));
                             continue;
                         }
+                        $type = 'link';
+                        if (strlen($company_url) <= 7) {
+                            $type = 'text';
+                        }
 
-                        $title = '「'.$item['com_name'].'」于'.date('Y年n月d日',strtotime($item['date'])).'获得投资方'.implode(',',array_column($item['invsest_with'],'invst_name')).'金额'.$item['money'].$item['currency'].'的'.$item['round'].'融资。';
+                        $title = date('n月d日',strtotime($item['date'])).'，「'.$item['com_name'].'」获得金额'.$item['money'].$item['currency'].'的'.$item['round'].'融资，投资方'.implode(',',array_column($item['invsest_with'],'invst_name'));
                         $this->info($title);
                         $data = [
                             'url'           => $company_url,
                             'title'         => $item['com_name'].'-'.$item['custom_data']['company_slogan'],
                             'description'   => $company_description,
-                            'type'          => 'link',
+                            'type'          => $type,
                             'embed'         => null,
                             'img'           => saveImgToCdn($item['com_logo']),
                             'thumbnail'     => null,
@@ -113,9 +117,9 @@ class ItJuZi extends Command {
                         $data['current_address_latitude'] = '';
                         $data['mentions'] = [];
                         $submission = Submission::create([
-                            'title'         => $title.'<br>'.$company_description,
+                            'title'         => $title.'<br><br>'.$company_description,
                             'slug'          => $guid,
-                            'type'          => 'link',
+                            'type'          => $type,
                             'category_name' => $category->name,
                             'category_id'   => $category->id,
                             'group_id'      => $group->id,
