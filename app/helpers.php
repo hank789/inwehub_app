@@ -1217,6 +1217,9 @@ if (!function_exists('getUrlInfo')) {
             }
         } catch (Exception $e) {
             app('sentry')->captureException($e,['url'=>$url]);
+            if (empty($img_url) && $urlArr['host'] =='www.linkedin.com') {
+                $img_url = 'https://cdn.inwehub.com/system/favicon_linkedin.ico';
+            }
             return ['title'=>$title,'img_url'=>$img_url];
         }
     }
