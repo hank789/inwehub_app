@@ -84,7 +84,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
             'avatar' => $this->answer->user->avatar,
-            'title'  => '您关注的用户'.$this->answer->user->name.'有了新的回答',
+            'title'  => '您关注的@'.$this->answer->user->name.'有了新回答',
             'body'   => $this->question->title,
             'extra_body' => ''
         ];
@@ -105,7 +105,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
                 return null;
         }
         return [
-            'title' => '您关注的用户'.$this->answer->user->name.'有了新的回答',
+            'title' => '您关注的@'.$this->answer->user->name.'有了新回答',
             'body'  => $this->question->title,
             'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
         ];
@@ -131,7 +131,7 @@ class FollowedUserAnswered extends Notification implements ShouldBroadcast,Shoul
             $template_id = 'hT6MT7Xg3hsKaU0vP0gaWxFZT-DdMVsGnTFST9x_Qwc';
         }
         return [
-            'first'    => '您关注的用户'.$this->answer->user->name.'有了新的回答',
+            'first'    => '您关注的@'.$this->answer->user->name.'有了新回答',
             'keyword1' => $this->question->title,
             'keyword2' => $keyword2,
             'keyword3' => '',
