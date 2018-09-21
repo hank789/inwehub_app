@@ -86,7 +86,7 @@ class FollowedQuestionAnswered extends Notification implements ShouldBroadcast,S
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
             'avatar' => $this->answer->user->avatar,
-            'title'  => $title.$this->answer->user->name.'回答了您关注的问题',
+            'title'  => $this->answer->user->name.'回答了您关注的问题',
             'body'   => $this->question->title,
             'extra_body' => ''
         ];
@@ -105,7 +105,7 @@ class FollowedQuestionAnswered extends Notification implements ShouldBroadcast,S
                 break;
         }
         return [
-            'title' => '用户'.$this->answer->user->name.'回答了您关注的问题',
+            'title' => $this->answer->user->name.'回答了您关注的问题',
             'body'  => $this->question->title,
             'payload' => ['object_type'=>$object_type,'object_id'=>$object_id],
         ];

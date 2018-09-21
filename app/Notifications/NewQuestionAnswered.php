@@ -81,7 +81,7 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
             'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_TASK,
             'avatar' => $this->answer->user->avatar,
-            'title'  => $title.$this->answer->user->name.'回复了你的问题',
+            'title'  => $this->answer->user->name.'回复了你的问题',
             'body'   => $this->question->title,
             'extra_body' => ''
         ];

@@ -69,7 +69,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
 
     protected function getTitle(){
         $user = User::find($this->attention->user_id);
-        return '用户'.$user->name.'关注了你';
+        return $user->name.'关注了你';
     }
 
     /**

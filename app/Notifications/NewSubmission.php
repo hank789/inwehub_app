@@ -46,10 +46,10 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
         $group = Group::find($this->submission->group_id);
         if ($this->user_id == $group->user_id) {
             //通知圈主
-            $this->title = '您的圈子['.$group->name.']有新的'.($this->submission->type == 'link' ? '文章':'分享').'发布';
+            $this->title = '您的圈子['.$group->name.']有新'.($this->submission->type == 'link' ? '文章':'分享').'发布';
         } elseif ($this->submission->user_id == $group->user_id){
             //圈主发布的文章
-            $this->title = '圈主['.$group->name.']发布了新的'.($this->submission->type == 'link' ? '文章':'分享');
+            $this->title = '圈子['.$group->name.']发布了新'.($this->submission->type == 'link' ? '文章':'分享');
         } else {
             return [];
         }
