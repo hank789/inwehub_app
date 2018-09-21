@@ -86,7 +86,6 @@ class NewSubmissionJob implements ShouldQueue
         GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
         RateLimiter::instance()->sClear('group_read_users:'.$group->id);
 
-        $members = [];
         feed()
             ->causedBy($user)
             ->performedOn($submission)
@@ -97,10 +96,9 @@ class NewSubmissionJob implements ShouldQueue
                 'submission_title'=>$submission->title
             ])
             ->log($user->name.'发布了'.($submission->type == 'article' ? '文章':'分享'), Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
-        if (!$group->public) {
-            //私密圈子的分享只通知圈子内的人
-            $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
-        }
+
+        $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
+
 
         //关注的用户接收通知
         $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();
@@ -123,7 +121,8 @@ class NewSubmissionJob implements ShouldQueue
         }
         foreach ($attention_users as $attention_uid) {
             if (isset($notified_uids[$attention_uid])) continue;
-            if ($members && !in_array($attention_uid,$members)) continue;
+            //私密圈子的分享只通知圈子内的人
+            if (!$group->public && $members && !in_array($attention_uid,$members)) continue;
             $attention_user = User::find($attention_uid);
             if ($attention_user) $attention_user->notify((new FollowedUserNewSubmission($attention_uid,$submission))->delay(Carbon::now()->addMinutes(3)));
         }
