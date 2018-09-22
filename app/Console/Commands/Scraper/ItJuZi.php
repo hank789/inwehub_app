@@ -132,7 +132,7 @@ class ItJuZi extends Command {
                             'data'          => $data,
                             'views'         => 1,
                         ]);
-                        Tag::multiAddByName('企业服务',$submission);
+                        Tag::multiAddByName('企业服务',$submission,1);
                         dispatch((new NewSubmissionJob($submission->id)));
                     }
                 }
