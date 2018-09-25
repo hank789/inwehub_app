@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Http\Middleware\GetUserFromToken;
 use App\Http\Middleware\GetWeappUserFromToken;
 use App\Http\Middleware\RefreshToken;
+use App\Http\Middleware\ValidUserPhone;
 use App\Http\Middleware\WeappUserAuth;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -67,6 +68,7 @@ class Kernel extends HttpKernel
         'permission' => \Bican\Roles\Middleware\VerifyPermission::class,
         'installer' => \App\Http\Middleware\InstallerCheck::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'user.phone' => ValidUserPhone::class,
 
         'jwt.auth' => GetUserFromToken::class,
         'jwt.refresh' => RefreshToken::class,

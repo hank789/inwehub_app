@@ -118,7 +118,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
 
 
     //专家认证申请
-    Route::post('expert/apply','ExpertController@apply');
+    Route::post('expert/apply','ExpertController@apply')->middleware('user.phone');
     //推荐专家
     Route::post('expert/recommend','ExpertController@recommend');
     //专家审核情况
@@ -189,23 +189,23 @@ Route::post('im/createRoom','Account\MessageController@createRoom');
 //问答模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], function() {
     //回答反馈
-    Route::post('answer/feedback','AnswerController@feedback');
+    Route::post('answer/feedback','AnswerController@feedback')->middleware('user.phone');
     //我的回答列表
     Route::post('answer/myList','AnswerController@myList');
     //我的提问列表
     Route::post('question/myList','QuestionController@myList');
     //拒绝回答
-    Route::post('question/rejectAnswer','QuestionController@rejectAnswer');
+    Route::post('question/rejectAnswer','QuestionController@rejectAnswer')->middleware('user.phone');
     //提问请求
-    Route::post('question/request','QuestionController@request');
+    Route::post('question/request','QuestionController@request')->middleware('user.phone');
     //新建回答
-    Route::post('answer/store','AnswerController@store');
+    Route::post('answer/store','AnswerController@store')->middleware('user.phone');
     //采纳回答
-    Route::post('answer/adopt','AnswerController@adopt');
+    Route::post('answer/adopt','AnswerController@adopt')->middleware('user.phone');
     //修改回答
-    Route::post('answer/update','AnswerController@update');
+    Route::post('answer/update','AnswerController@update')->middleware('user.phone');
     //新建提问
-    Route::post('question/store','QuestionController@store');
+    Route::post('question/store','QuestionController@store')->middleware('user.phone');
     //查看点评
     Route::post('answer/feedbackInfo','AnswerController@feedbackInfo');
     //获取问题分享图
@@ -227,9 +227,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Ask'], funct
 
 
     //问答留言
-    Route::post('answer/comment','AnswerController@comment');
+    Route::post('answer/comment','AnswerController@comment')->middleware('user.phone');
     //回答暂存
-    Route::post('answer/saveDraft','AnswerController@saveDraft');
+    Route::post('answer/saveDraft','AnswerController@saveDraft')->middleware('user.phone');
     //取得回答暂存内容
     Route::post('answer/getDraft','AnswerController@getDraft');
     //我的围观
@@ -429,7 +429,7 @@ Route::post('activity/inviteRegister/rules', 'Activity\InviteController@inviteRu
 //企业
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','namespace'=>'Company'], function() {
     //申请认证
-    Route::post('apply','CompanyController@apply');
+    Route::post('apply','CompanyController@apply')->middleware('user.phone');
     //认证信息
     Route::post('applyInfo','CompanyController@applyInfo');
 
@@ -522,9 +522,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'readhub'], fu
 //圈子
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','prefix' => 'group'], function() {
     //创建圈子
-    Route::post('store','GroupController@store');
+    Route::post('store','GroupController@store')->middleware('user.phone');
     //修改圈子
-    Route::post('update','GroupController@update');
+    Route::post('update','GroupController@update')->middleware('user.phone');
     //加入圈子
     Route::post('join','GroupController@join');
     //分享设为精华
@@ -572,7 +572,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     //文章列表
     Route::post('list','HomeController@feed');
     //存储文章
-    Route::post('store','SubmissionController@store');
+    Route::post('store','SubmissionController@store')->middleware('user.phone');
     //更新文章
     Route::post('update','SubmissionController@update');
     //设置点赞类型
@@ -581,12 +581,12 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('recommend-app-submission','SubmissionController@recommendSubmission');
 
     //获取url标题
-    Route::post('fetch-url-title','SubmissionController@getTitleAPI');
+    Route::post('fetch-url-title','SubmissionController@getTitleAPI')->middleware('user.phone');
     //获取频道
     Route::post('get-categories','CategoryController@getCategories');
 
     //文章回复
-    Route::post('comment-store','CommentController@store');
+    Route::post('comment-store','CommentController@store')->middleware('user.phone');
     //删除回复
     Route::post('destroy-comment','CommentController@destroy');
     //文章收藏
@@ -595,9 +595,9 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('destroy-submission','SubmissionController@destroy');
 
     //赞文章
-    Route::post('upvote-submission','SubmissionVotesController@upVote');
+    Route::post('upvote-submission','SubmissionVotesController@upVote')->middleware('user.phone');
     //踩文章
-    Route::post('downvote-submission','SubmissionVotesController@downVote');
+    Route::post('downvote-submission','SubmissionVotesController@downVote')->middleware('user.phone');
     //他的专栏
     Route::post('user','HomeController@userArticle');
 });
@@ -608,9 +608,9 @@ Route::post('article/thirdApiStore','Article\SubmissionController@thirdApiStore'
 //文章回复列表
 Route::post('article/comments','Article\CommentController@index');
 //点赞
-Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
+Route::post('support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware(['jwt.auth','user.phone']);
 //踩
-Route::post('downvote/{source_type}',['uses'=>'DownVoteController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware('jwt.auth');
+Route::post('downvote/{source_type}',['uses'=>'DownVoteController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware(['jwt.auth','user.phone']);
 //附近位置
 Route::post('location/nearbySearch',['uses'=>'LocationController@nearbySearch'])->middleware('jwt.auth');
 //附近的人
