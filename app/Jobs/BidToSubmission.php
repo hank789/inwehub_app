@@ -5,19 +5,14 @@ namespace App\Jobs;
 use App\Models\Category;
 use App\Models\Groups\Group;
 use App\Models\Scraper\BidInfo;
-use App\Models\Scraper\Feeds;
-use App\Models\Scraper\WechatMpInfo;
-use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Storage;
 
 
 
@@ -68,7 +63,7 @@ class BidToSubmission implements ShouldQueue
         $article_description = $article->detail['bid_html_body'];
         $data = [
             'url'           => $url,
-            'title'         => $article->projectname,
+            'title'         => $article->title,
             'description'   => $article_description,
             'type'          => 'link',
             'embed'         => null,
@@ -85,8 +80,9 @@ class BidToSubmission implements ShouldQueue
         $data['current_address_latitude'] = '';
         $data['mentions'] = [];
         $category = Category::where('slug','bid_info')->first();
+        $titleTip = '。<br>'.($article->area?'地区：'.$article->area.'；':'').($article->industry?'行业：'.$article->industry.'；':'').($article->subtype?'类型：'.$article->subtype.'；':'').'发布时间：'.date('m月d号',strtotime($article->publishtime));
         $submission = Submission::create([
-            'title'         => $article->title.'<br>地区：'.$article->area.';行业：'.$article->industry.';发布时间：'.date('m月d号',strtotime($article->publishtime)),
+            'title'         => $article->title.$titleTip,
             'slug'          => $this->slug($article->title),
             'type'          => 'link',
             'category_name' => $category->name,
