@@ -10,6 +10,7 @@ use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\Taggable;
 use App\Services\BosonNLPService;
+use App\Services\QcloudService;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
 use GuzzleHttp\Exception\ConnectException;
@@ -43,21 +44,9 @@ class Test extends Command
      */
     public function handle()
     {
-        try {
-            $ql = QueryList::getInstance();
-            $ql->use(PhantomJs::class,config('services.phantomjs.path'));
-            $content = $ql->browser('https://www.itjuzi.com/company/58747');
-            $company_url = $content->find('div.link-line>a')->eq(1)->href;
-            var_dump($company_url);
-            $desc = $content->find('div.block>div.summary')->eq(1)->html();
-            var_dump($desc);
-            var_dump($content->find('h2.seo-slogan')->html());
-            var_dump($content->find('span.scope.c-gray-aset')->html());
-        } catch (ConnectException $e) {
-            var_dump(123);
-        } catch (\Exception $e) {
-            var_dump(get_class($e));
-            var_dump($e->getMessage());
+        $submissions = Submission::whereIn('group_id',[56])->get();
+        foreach ($submissions as $submission) {
+            Taggable::where('taggable_id',$submission->id)->where('taggable_type',get_class($submission))->update(['is_display'=>0]);
         }
         return;
         $domain = 'sogou';

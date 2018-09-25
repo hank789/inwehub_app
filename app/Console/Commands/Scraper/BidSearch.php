@@ -70,10 +70,14 @@ class BidSearch extends Command {
         $allCount = 0;
         $count = 0;
         validateProxyIps();
-        foreach ($keywords as $key=>$keyword) {
+        foreach ($keywords as $key=>$keywordConfig) {
             if ($count <= 6 && $key>=1) {
                 sleep((6-$count) * 10);
             }
+            $keywordArr = explode('_',$keywordConfig);
+            $keyword = $keywordArr[0];
+            unset($keywordArr[0]);
+
             $count = 0;
             $data = null;
             for ($i=0;$i<5;$i++) {
@@ -89,7 +93,7 @@ class BidSearch extends Command {
 
             if ($data) {
                 event(new SystemNotify('准备处理'.count($data['list']).'条['.$keyword.']招标信息'));
-                $result = BidLogic::scraperSaveList($data,$ql2,$cookiesPcArr,$cookiesAppArr,$count);
+                $result = BidLogic::scraperSaveList($data,$ql2,$cookiesPcArr,$cookiesAppArr,$count,$keywordArr);
                 $allCount += $count;
                 if (!$result) {
                     $endTime = time();
@@ -105,7 +109,7 @@ class BidSearch extends Command {
 
         if ($allCount >= 1) {
             $endTime = time();
-            event(new SystemNotify('根据关键词抓取了'.$allCount.'条招标信息，用时'.($endTime-$startTime).'秒',[]));
+            event(new SystemNotify('新抓取'.$allCount.'条招标信息，请及时去后台处理.用时'.($endTime-$startTime).'秒',[]));
         }
     }
 

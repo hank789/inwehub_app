@@ -50,26 +50,18 @@
                                         <tr id="submission_{{ $article->id }}">
                                             <td style="white-space: normal;">
                                                 <a class="btn-viewinfo" href="javascript:void(0)" data-id="{{ $article->id }}" data-url="{{ $article->source_url }}" data-title="{{ $article->title }}" data-description="{{ $article->projectname }}" data-body="{{ $article->detail['bid_html_body'] }}">{{ str_limit(strip_tags($article->title)) }}</a>
+                                                <br>圈子：{{ isset($article->detail['group_ids'])?$article->getGroup()->name:'' }}
                                                 <br>发布时间：{{ $article->publishtime }},截止时间：{{ $article->bidopentime }}
                                                 <br>发布者：{{ $article->buyer }},地区：{{ $article->area }},行业：{{ $article->industry }}
                                                 <br>{{ $article->subtype }},预算：{{ $article->budget }},中标金额：{{ $article->bidamount }}
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default btn-sm" data-toggle="tooltip" title="查看文章" href="javascript:void(0)" onclick="openUrl({{ $article->id }}, '{{ $article->source_url }}')" target="_blank"><i class="fa fa-eye"></i></a>
-                                                    @if ($article->topic_id <= 0 && false)
+                                                    @if ($article->topic_id <= 0)
                                                         <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" id="submission_publish_{{ $article->id }}" title="发布文章" data-source_id = "{{ $article->id }}"><i class="fa fa-check-square-o"></i></a>
-                                                    @endif
-                                                    @if (!$article->isRecommendRead() && false)
-                                                        <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $article->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
                                                     @if ($article->topic_id <= 0 && $article->status==1)
                                                         <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->id }}"><i class="fa fa-trash-o"></i></a>
                                                     @endif
-                                                    <select style="display: none" onchange="setSupportType({{ $article->id }},this)">
-                                                        <option value="1" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 1 : true) selected @endif> 赞|踩</option>
-                                                        <option value="2" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 2 : false) selected @endif> 看好|不看好</option>
-                                                        <option value="3" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 3 : false) selected @endif> 支持|反对</option>
-                                                        <option value="4" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
-                                                    </select>
                                                 </div>
                                             </td>
                                         </tr>
@@ -109,8 +101,7 @@
                             <div class="modal-footer" style="text-align: left;">
                                 <div class="btn-group-md" >
                                     <button type="button" class="btn btn-default" onclick="closeModal()">Close</button>
-                                    <a class="btn btn-default btn-sm btn-publish" id="article_btn_publish" data-toggle="tooltip" title="发布文章" data-source_id = "0"><i class="fa fa-check-square-o"></i></a>
-                                    <a class="btn btn-default btn-sm btn-setfav" id="article_btn_setfav" data-toggle="tooltip" title="设为精选" data-source_id = "0" data-title="0"><i class="fa fa-heart"></i></a>
+                                    <a class="btn btn-default btn-sm btn-publish" id="article_btn_publish" data-toggle="tooltip" title="发布文章" data-source_id = "0" data-button_type="1"><i class="fa fa-check-square-o"></i></a>
                                     <a class="btn btn-default btn-sm btn-delete" id="article_btn_delete" data-toggle="tooltip" title="删除文章" data-source_id = "0"><i class="fa fa-trash-o"></i></a>
                                 </div>
                             </div>
@@ -282,10 +273,17 @@
                 $(this).button('loading');
                 var follow_btn = $(this);
                 var source_id = $(this).data('source_id');
+                var button_type = $(this).data('button_type');
                 $.post('/admin/scraper/bid/publish',{ids: [source_id]},function(msg){
                     publishArticle.push(source_id);
+                    if (button_type) {
+                        $("#submission_" + source_id).css('display','none');
+                        follow_btn.html('<i class="fa fa-check-square-o"></i>');
+                        follow_btn.button('已发布');
+                    } else {
+                        follow_btn.html('已发布');
+                    }
                     console.log(publishArticle);
-                    follow_btn.html('已发布');
                 });
             });
         });

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Jobs\ArticleToRecommend;
-use App\Jobs\ArticleToSubmission;
+use App\Jobs\BidToSubmission;
 use App\Models\Scraper\BidInfo;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -33,8 +33,8 @@ class BidController extends AdminController
         if( isset($filter['status']) && $filter['status'] > -1 ){
             $query->where('status','=',$filter['status']);
         } else {
-            $filter['status']=2;
-            $query->where('status','=',2);
+            $filter['status']=1;
+            $query->where('status','=',1);
         }
 
         $articles = $query->orderBy('publishtime','desc')->paginate(20);
@@ -49,13 +49,13 @@ class BidController extends AdminController
         ]);
         $ids = $request->input('ids');
         foreach ($ids as $id) {
-            $article = WechatWenzhangInfo::find($id);
+            $article = BidInfo::find($id);
             if ($article->status == 2) continue;
             if ($article->status == 3) {
                 $article->status = 1;
                 $article->save();
             }
-            dispatch(new ArticleToSubmission($id));
+            dispatch(new BidToSubmission($id));
         }
         return $this->success(url()->previous(),'成功');
     }

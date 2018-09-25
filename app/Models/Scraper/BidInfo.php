@@ -1,5 +1,6 @@
 <?php namespace App\Models\Scraper;
 
+use App\Models\Groups\Group;
 use App\Models\RecommendRead;
 use App\Models\Submission;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,14 @@ class BidInfo extends Model {
             }
         }
         return false;
+    }
+
+    public function getGroup() {
+        $groupId = $this->detail['group_ids']??'';
+        if ($groupId) {
+            return Group::find($groupId[0]);
+        }
+        return null;
     }
 
 }

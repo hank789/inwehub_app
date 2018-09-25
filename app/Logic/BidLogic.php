@@ -10,7 +10,7 @@ use PHPHtmlParser\Dom;
 
 class BidLogic {
 
-    public static function scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, &$count) {
+    public static function scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, &$count, $groupIdArr) {
         if (empty($data['list'])) return false;
         $timeCost = 6;
         foreach ($data['list'] as $item) {
@@ -41,7 +41,7 @@ class BidLogic {
                 's_subscopeclass' => $item['s_subscopeclass']??'',
                 'winner' => $item['winner']??'',
                 'publishtime' => isset($item['publishtime'])?date('Y-m-d H:i:s',$item['publishtime']):'',
-                'status' => 2,
+                'status' => 1,
                 'source_url' => '',
             ];
             if ($timeCost <= 5) {
@@ -115,6 +115,8 @@ class BidLogic {
                 }
             }
             $info['source_domain'] = parse_url($info['source_url'], PHP_URL_HOST);
+            shuffle($groupIdArr);
+            $item['group_ids'] = $groupIdArr;
             $info['detail'] = $item;
             try {
                 $bid = BidInfoModel::where('guid',$item['_id'])->first();
