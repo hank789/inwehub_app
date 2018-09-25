@@ -79,7 +79,7 @@ class AuthController extends Controller
     {
         $validateRules = [
             'mobile' => 'required|cn_phone',
-            'type'   => 'required|in:register,login,change,wx_gzh_register,weapp_register'
+            'type'   => 'required|in:register,login,change,wx_gzh_register,weapp_register,change_phone'
         ];
 
         $this->validate($request,$validateRules);
@@ -126,6 +126,12 @@ class AuthController extends Controller
                 break;
             case 'weapp_register':
                 //微信小程序验证码
+                break;
+            case 'change_phone':
+                //换绑手机号
+                if ($user) {
+                    throw new ApiException(ApiException::USER_PHONE_EXIST);
+                }
                 break;
             default:
                 if(!$user){
@@ -628,6 +634,36 @@ class AuthController extends Controller
 
         $token = $JWTAuth->fromUser($user);
         return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);
+    }
+
+    //更换手机号码
+    public function changePhone(Request $request) {
+        /*表单数据校验*/
+        $this->validate($request, [
+            'mobile' => 'required|cn_phone',
+            'code' => 'required',
+        ]);
+        $mobile = $request->input('mobile');
+        if(RateLimiter::instance()->increase('userChangePhone',$mobile,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        $user = User::where('mobile',$mobile)->first();
+        if($user){
+            throw new ApiException(ApiException::USER_PHONE_EXIST);
+        }
+        $loginUser = $request->user();
+
+        //验证手机验证码
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('change_phone',$mobile));
+        $code = $request->input('code');
+        if($code_cache != $code){
+            throw new ApiException(ApiException::ARGS_YZM_ERROR);
+        }
+
+        $loginUser->mobile = $mobile;
+        $loginUser->save();
+
+        return self::createJsonData(true);
     }
 
         /*忘记密码*/

@@ -28,6 +28,9 @@ Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
 
     Route::post('logout', 'AuthController@logout')->middleware('jwt.auth');
 
+    //更换手机号
+    Route::post('changePhone', 'AuthController@changePhone')->middleware('jwt.auth');
+
     Route::post('operatorLogin', 'AuthController@operatorLogin')->middleware('jwt.auth');
 
     //等级权限判断
