@@ -115,7 +115,8 @@ class BidLogic {
                 }
             }
             $info['source_domain'] = parse_url($info['source_url'], PHP_URL_HOST);
-            $item['group_ids'] = shuffle($groupIdArr);
+            shuffle($groupIdArr);
+            $item['group_ids'] = $groupIdArr;
             $info['detail'] = $item;
             try {
                 $bid = BidInfoModel::where('guid',$item['_id'])->first();
