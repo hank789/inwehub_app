@@ -18,7 +18,7 @@
                             <table class="table table-bordered table-striped dataTable text-center">
                                 <thead>
                                 <tr role="row">
-                                    <th>参数</th>
+                                    <th width="40%">参数</th>
                                     <th>数值</th>
                                 </tr>
                                 </thead>
@@ -46,7 +46,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td>招标信息关键词(多个以|隔开)</td>
+                                    <td>招标信息关键词(多个以"|"隔开,若发布到指定圈子以"_"隔开，如"SAP_1"表示SAP发布到圈子ID为1)</td>
                                     <td>
                                         <div class="col-md-12 @if ($errors->has('scraper_bid_keywords')) has-error @endif ">
                                             <input type="text" class="form-control" name="scraper_bid_keywords" value="{{ old('scraper_bid_keywords',Setting()->get('scraper_bid_keywords','SAP|信息化|供应链金融|供应链管理|供应链|平台|oracle|管理咨询|麦肯锡')) }}" /></div>

@@ -165,7 +165,7 @@ class Submission extends Model {
         if ($this->data) {
             foreach ($this->data as $key=>$val) {
                 if (in_array($key,$columns) && $val) {
-                    $data[] = QuillLogic::parseText($val);
+                    $data[] = strip_tags(QuillLogic::parseText($val));
                 }
             }
         }
