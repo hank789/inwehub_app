@@ -44,6 +44,21 @@ class Test extends Command
      */
     public function handle()
     {
+        $info['url'] = 'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ3WmpSc0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen';
+        $ql = QueryList::getInstance();
+        $list = $ql->get($info['url'],[],[
+            'proxy' => 'socks5h://127.0.0.1:1080',
+            'debug' => true
+        ])->rules([
+            'title' => ['a.ipQwMb.Q7tWef>span','text'],
+            'link'  => ['a.ipQwMb.Q7tWef','href'],
+            'author' => ['.KbnJ8','text'],
+            'dateTime' => ['time.WW6dff','datetime'],
+            'description' => ['p.HO8did.Baotjf','text'],
+            'image' => ['img.tvs3Id.dIH98c','src']
+        ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
+        var_dump($list[0]);
+        return;
         $submissions = Submission::whereIn('group_id',[56])->get();
         foreach ($submissions as $submission) {
             Taggable::where('taggable_id',$submission->id)->where('taggable_type',get_class($submission))->update(['is_display'=>0]);

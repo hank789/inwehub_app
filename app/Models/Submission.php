@@ -409,7 +409,7 @@ class Submission extends Model {
             } else {
                 $parse_url = parse_url($this->data['url']);
                 $gfw_urls = RateLimiter::instance()->sMembers('gfw_urls');
-                if (in_array($parse_url['host'],$gfw_urls)) {
+                if (isset($parse_url['host']) && in_array($parse_url['host'],$gfw_urls)) {
                     $html = curlShadowsocks($this->data['url']);
                     $ql = QueryList::getInstance();
                     $ql->setHtml($html);

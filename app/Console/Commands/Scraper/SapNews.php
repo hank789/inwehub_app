@@ -49,7 +49,7 @@ class SapNews extends Command {
         $group_id = 51;
         $url1 = 'https://blogs.sap.com';
         $url2 = 'https://blogs.saphana.com/blog';
-        $limitViews = 100;
+        $limitViews = 500;
         $ql = QueryList::getInstance();
         $category = Category::where('slug','sap_news')->first();
 
@@ -58,12 +58,14 @@ class SapNews extends Command {
             event(new SystemNotify('圈子['.$group_id.']不存在'));
             return;
         }
+        $count = 0;
+        $totalViews = [];
 
         $this->info($url1);
         try {
             $page = 1;
             while (true) {
-                $list = $ql->get($url1.'/page/'.$page.'/')->rules([
+                $list = $ql->get($url1.'/page/'.$page.'/',[],['proxy' => 'socks5h://127.0.0.1:1080'])->rules([
                     'title' => ['h2.entry-title>a','text'],
                     'link'  => ['h2.entry-title>a','href'],
                     'author' => ['span.by-author.vcard.profile>a.url.fn.n','text'],
@@ -73,7 +75,8 @@ class SapNews extends Command {
                 ])->range('article.post.type-post.status-publish.format-standard.hentry')->query()->getData();
                 $page++;
                 $isBreak = false;
-                foreach ($list as &$item) {
+                if (count($list) <= 0 || empty($list)) break;
+                foreach ($list as $item) {
                     $exist_submission_id = Redis::connection()->hget('voten:submission:url', $item['link']);
                     if ($exist_submission_id) continue;
                     $dateTime = $item['dateTime'];
@@ -84,11 +87,13 @@ class SapNews extends Command {
                             break;
                         }
                     }
+                    $this->info($item['title']);
+                    $count++;
                     $isBreak = false;
-                    $views = $ql->get($item['link'])->find('div.entry-title.single>span.blog-date-info')->eq(1)->text();
+                    $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('div.entry-title.single>span.blog-date-info')->eq(1)->text();
                     $views = trim(str_replace('Views','',$views));
-                    var_dump($views);
                     if ($views < $limitViews) continue;
+                    $totalViews[] = $views;
                     sleep(1);
                     try {
                         if ($item['image']) {
@@ -143,7 +148,7 @@ class SapNews extends Command {
             $this->info($url2);
             $page = 1;
             while (true) {
-                $list = $ql->get($url2.'/page/'.$page.'/')->rules([
+                $list = $ql->get($url2.'/page/'.$page.'/',[],['proxy' => 'socks5h://127.0.0.1:1080'])->rules([
                     'title' => ['h2>a','text'],
                     'link'  => ['h2>a','href'],
                     'author' => ['p.posted>a','text'],
@@ -153,8 +158,8 @@ class SapNews extends Command {
                 ])->range('article.post-listing')->query()->getData();
                 $page++;
                 $isBreak = false;
-                foreach ($list as &$item) {
-                    var_dump($item);
+                if (count($list) <= 0 || empty($list)) break;
+                foreach ($list as $item) {
                     $exist_submission_id = Redis::connection()->hget('voten:submission:url', $item['link']);
                     if ($exist_submission_id) continue;
                     $dateTime = $item['dateTime'];
@@ -165,10 +170,12 @@ class SapNews extends Command {
                             break;
                         }
                     }
+                    $this->info($item['title']);
+                    $count++;
                     $isBreak = false;
-                    $views = $ql->get($item['link'])->find('span.simple-pvc-views')->text();
-                    var_dump($views);
+                    $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('span.simple-pvc-views')->text();
                     if ($views < $limitViews) continue;
+                    $totalViews[] = $views;
                     sleep(1);
                     try {
                         if ($item['image']) {
@@ -225,5 +232,7 @@ class SapNews extends Command {
             app('sentry')->captureException($e);
             sleep(5);
         }
+        //var_dump($count);
+        //var_dump($totalViews);
     }
 }
