@@ -14,7 +14,6 @@ use App\Models\Tag;
 use App\Traits\SubmitSubmission;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
-use QL\Ext\PhantomJs;
 use QL\QueryList;
 use DateTime;
 
@@ -52,8 +51,7 @@ class SapNews extends Command {
         $url2 = 'https://blogs.saphana.com/blog';
         $limitViews = 100;
         $ql = QueryList::getInstance();
-        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        $category = Category::where('slug','channel_xwdt')->first();
+        $category = Category::where('slug','sap_news')->first();
 
         $group = Group::find($group_id);
         if (!$group) {
