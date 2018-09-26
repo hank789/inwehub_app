@@ -13,6 +13,8 @@ use App\Models\Pay\Settlement;
 use App\Models\Pay\UserMoney;
 use App\Models\Pay\Withdraw;
 use App\Models\Question;
+use App\Models\Scraper\BidInfo;
+use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\Taggable;
@@ -70,7 +72,7 @@ class IndexController extends AdminController
             }
 
             //问题平均接单时间
-            $questionConfirmeds = Doing::where('action','question_answer_confirmed')->get();
+            /*$questionConfirmeds = Doing::where('action','question_answer_confirmed')->get();
             $questionCount = $questionConfirmeds->count();
             $questionAnswerCount = Doing::where('action','question_answered')->count();
             $questionConfirmSecond = 0;
@@ -87,7 +89,14 @@ class IndexController extends AdminController
 
             }
             $questionAvaConfirmTime = $questionCount ? round($questionConfirmSecond/60/$questionCount,2) : 0;
-            $questionAvgAnswerTime = $questionAnswerCount ? round($questionAnswerSecond/60/$questionAnswerCount,2): 0;
+            $questionAvgAnswerTime = $questionAnswerCount ? round($questionAnswerSecond/60/$questionAnswerCount,2): 0;*/
+
+            //未处理文章数
+            $articlesTodo = WechatWenzhangInfo::where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->count();
+            //未处理招标数
+            $bidTodo = BidInfo::where('status',1)->count();
+            //未处理招聘数
+            $recruitTodo = 0;
 
             $userChart = $this->drawUserChart();
             $questionChart = $this->drawQuestionChart();
@@ -138,10 +147,10 @@ class IndexController extends AdminController
             $searchCount = array_slice($searchCount,0,100,true);
             return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
                     'totalAnswerNum',
-                    'userInfoCompleteTime',
+                    //'userInfoCompleteTime',
                     'userInfoCompletePercent',
-                    'questionAvaConfirmTime',
-                    'questionAvgAnswerTime',
+                    //'questionAvaConfirmTime',
+                    //'questionAvgAnswerTime',
                     'submissionLinkCount',
                     'submissionTextCount',
                     'totalTasks',
@@ -162,6 +171,9 @@ class IndexController extends AdminController
                     'totalPayForView',
                     'totalFeeMoney',
                     'searchCount',
+                    'articlesTodo',
+                    'bidTodo',
+                    'recruitTodo',
                     'userChart','questionChart','systemInfo')
             ;
         });
