@@ -53,7 +53,7 @@ class Group extends Model
     use BelongsToUserTrait;
 
     protected $table = 'groups';
-    protected $fillable = ['user_id','name','description','logo','public','audit_status','subscribers', 'top', 'articles','failed_reason'];
+    protected $fillable = ['user_id','name','description','logo','background_img','public','audit_status','subscribers', 'top', 'articles','failed_reason'];
 
 
     const AUDIT_STATUS_DRAFT = 0;

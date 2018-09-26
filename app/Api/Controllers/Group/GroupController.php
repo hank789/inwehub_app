@@ -54,12 +54,24 @@ class GroupController extends Controller
         dispatch((new UploadFile($file_name,(substr($url[1],6)))));
         $img_url = Storage::disk('oss')->url($file_name);
 
+        $background_img_base64 = $request->input('background_img');
+        if (!$background_img_base64) {
+            $background_img = 'https://cdn.inwehub.com/system/group_18@3x.png';
+        } else {
+            $background_img_base64_arr = explode(';',$background_img_base64);
+            $background_img_base64_type = explode('/',$background_img_base64_arr[0]);
+            $file_name = 'groups/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$background_img_base64_type[1];
+            dispatch((new UploadFile($file_name,(substr($background_img_base64_arr[1],6)))));
+            $background_img = Storage::disk('oss')->url($file_name);
+        }
+
         $group = Group::create([
             'user_id' => $user->id,
             'name'    => $request->input('name'),
             'description' => $request->input('description'),
             'public'  => $request->input('public',1),
             'logo'    => $img_url,
+            'background_img' => $background_img,
             'audit_status' => Group::AUDIT_STATUS_DRAFT,
             'subscribers'  => 1
         ]);
@@ -120,6 +132,17 @@ class GroupController extends Controller
             dispatch((new UploadFile($file_name,(substr($url[1],6)))));
             $img_url = Storage::disk('oss')->url($file_name);
         }
+
+        $background_img_base64 = $request->input('background_img');
+        if ($background_img_base64) {
+            $background_img_base64_arr = explode(';',$background_img_base64);
+            $background_img_base64_type = explode('/',$background_img_base64_arr[0]);
+            $file_name = 'groups/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$background_img_base64_type[1];
+            dispatch((new UploadFile($file_name,(substr($background_img_base64_arr[1],6)))));
+            $background_img = Storage::disk('oss')->url($file_name);
+            $group->background_img = $background_img;
+        }
+
         $group->logo = $img_url;
         $group->save();
         if ($oldPublic != $request->input('public')) Submission::where('group_id',$group->id)->update(['public'=>$group->public]);
