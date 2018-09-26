@@ -666,12 +666,13 @@ class AuthController extends Controller
             $oauthData = UserOauth::where('user_id',$user->id)
                 ->where('status',1)->first();
             if ($type == 1) {
-                return self::createJsonData(true,['mobile'=>$mobile,'avatar'=>$user->avatar,'name'=>$user->name],$oauthData?ApiException::USER_PHONE_EXIST_BIND_WECHAT:ApiException::USER_PHONE_EXIST_NOT_BIND_WECHAT);
+                return self::createJsonData(true,['token'=>'','mobile'=>$mobile,'avatar'=>$user->avatar,'name'=>$user->name],$oauthData?ApiException::USER_PHONE_EXIST_BIND_WECHAT:ApiException::USER_PHONE_EXIST_NOT_BIND_WECHAT);
             }
             if ($type == 2 && !$oauthData) {
                 //如果有结算中的余额，暂时不处理
-                if ($loginUser->userMoney->settlement_money>0) {
-
+                $remain_money = $loginUser->userMoney->settlement_money+$loginUser->userMoney->total_money;
+                if ($remain_money>0) {
+                    throw new ApiException(ApiException::USER_HAS_MONEY_REMAIN);
                 }
                 //合并微信账户
                 //1.当前用户的微信登陆信息都改为手机号用户的id
@@ -717,7 +718,7 @@ class AuthController extends Controller
         }
         $newToken = $JWTAuth->getToken();
 
-        return self::createJsonData(true,['token'=>$newToken]);
+        return self::createJsonData(true,['token'=>$newToken,'mobile'=>$mobile,'avatar'=>$loginUser->avatar,'name'=>$loginUser->name]);
     }
 
         /*忘记密码*/

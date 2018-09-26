@@ -36,6 +36,10 @@ class WechatController extends AdminController
             $query->where('name','like', '%'.$filter['word'].'%');
         }
 
+        if( isset($filter['wx_hao']) && $filter['wx_hao'] ){
+            $query->where('wx_hao', $filter['wx_hao']);
+        }
+
         /*问题状态过滤*/
         if( isset($filter['status']) && $filter['status'] > -1 ){
             $query->where('status','=',$filter['status']);

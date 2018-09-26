@@ -397,7 +397,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'project','nam
 //活动模块
 Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','namespace'=>'Activity'], function() {
     //获取红包
-    Route::post('getCoupon', 'CouponController@getCoupon');
+    Route::post('getCoupon', 'CouponController@getCoupon')->middleware('user.phone');
     //活动列表
     Route::post('list', 'ActivityController@index');
     //活动回复列表
@@ -410,14 +410,14 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'activity','na
     Route::post('detail', 'ActivityController@detail');
 
     //邀请注册活动页
-    Route::post('inviteRegister/introduce', 'InviteController@registerIntroduce');
+    Route::post('inviteRegister/introduce', 'InviteController@registerIntroduce')->middleware('user.phone');
     //我邀请的好友
     Route::post('inviteRegister/myList', 'InviteController@myRegisterList');
 
     //每日签到
-    Route::post('sign/daily', 'SignController@daily');
+    Route::post('sign/daily', 'SignController@daily')->middleware('user.phone');
     //获取用户签到信息
-    Route::post('sign/dailyInfo', 'SignController@dailyInfo');
+    Route::post('sign/dailyInfo', 'SignController@dailyInfo')->middleware('user.phone');
 
 });
 
