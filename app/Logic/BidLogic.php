@@ -5,7 +5,6 @@
  * @email:    hank.HuiWang@gmail.com
  */
 use App\Events\Frontend\System\ExceptionNotify;
-use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\BidInfo as BidInfoModel;
 use PHPHtmlParser\Dom;
 
