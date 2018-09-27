@@ -79,6 +79,7 @@ class Indeed extends Command {
                 if (count($content) <= 0 || empty($content)) break;
                 foreach ($content as $item) {
                     $this->info($item['dateTime'].';'.$item['title']);
+                    if (!str_contains($item['title'],$keyword) && !str_contains($item['title'],strtolower($keyword))) continue;
                     if (!in_array($item['dateTime'],$allowDate)) {
                         $isBreak = true;
                         break;

@@ -22,7 +22,7 @@ class BidLogic {
             if (isset($item['publishtime']) && $item['publishtime'] <= strtotime('-2 days')) {
                 return false;
             }
-            if ($keyword && $onlyTitleMatch && !str_contains($item['title'],$keyword)) {
+            if ($keyword && $onlyTitleMatch && !str_contains($item['title'],$keyword) && !str_contains($item['title'],strtolower($keyword))) {
                 continue;
             }
             $subtype = $item['subtype']??'';
