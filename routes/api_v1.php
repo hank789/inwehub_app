@@ -527,6 +527,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Group','pref
     Route::post('update','GroupController@update')->middleware('user.phone');
     //加入圈子
     Route::post('join','GroupController@join');
+    //设置圈子通知
+    Route::post('setNotify','GroupController@setNotify');
     //分享设为精华
     Route::post('setSubmissionRecommend','GroupController@setSubmissionRecommend');
     //取消推荐

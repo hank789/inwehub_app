@@ -838,6 +838,27 @@ class GroupController extends Controller
         return self::createJsonData(true);
     }
 
+    //设置圈子通知
+    public function setNotify(Request $request) {
+        $this->validate($request,[
+            'id'=>'required|integer',
+            'is_notify' => 'required|integer|in:0,1'
+        ]);
+        $group = Group::find($request->input('id'));
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+        if (!$groupMember) {
+            throw new ApiException(ApiException::GROUP_NOT_JOINED);
+        }
+        $groupMember->is_notify = $request->input('is_notify');
+        $groupMember->save();
+        self::$needRefresh = true;
+        return self::createJsonData(true,['is_notify'=>$request->input('is_notify')]);
+    }
+
     //获取反馈圈子
     public function getHelpGroup(Request $request) {
         $group = Group::where('name','帮助与反馈')->first();
