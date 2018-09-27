@@ -170,8 +170,10 @@ class GroupController extends Controller
         }
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
         $return['is_joined'] = -1;
+        $return['current_user_notify'] = 0;
         if ($groupMember) {
             $return['is_joined'] = $groupMember->audit_status;
+            $return['current_user_notify'] = $groupMember->is_notify;
         }
         if ($user->id == $group->user_id) {
             $return['is_joined'] = 3;
