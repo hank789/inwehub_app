@@ -59,7 +59,7 @@ class BidToSubmission implements ShouldQueue
             return;
         }
 
-        $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
+        $img_url = 'https://cdn.inwehub.com/groups/2018/09/1537334960wpnKTwa.png';
         $article_description = $article->detail['bid_html_body'];
         $data = [
             'url'           => $url,

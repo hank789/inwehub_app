@@ -100,6 +100,8 @@ class SapNews extends Command {
                         if ($item['image']) {
                             //图片本地化
                             $item['image'] = saveImgToCdn($item['image'], 'submissions');
+                        } else {
+                            $item['image'] = 'https://cdn.inwehub.com/groups/2018/09/1537341872OLqcb91.png';
                         }
                         $data = [
                             'url' => $item['link'],
@@ -107,7 +109,7 @@ class SapNews extends Command {
                             'description' => null,
                             'type' => 'link',
                             'embed' => null,
-                            'img' => $item['image'] ?? '',
+                            'img' => $item['image'],
                             'thumbnail' => null,
                             'providerName' => $item['author'],
                             'publishedTime' => $dateTime->getTimestamp(),

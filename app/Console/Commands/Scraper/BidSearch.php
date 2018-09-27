@@ -106,10 +106,10 @@ class BidSearch extends Command {
             }
 
         }
-
-        if ($allCount >= 1) {
+        $totalCount = \App\Models\Scraper\BidInfo::where('status',1)->count();
+        if ($allCount >= 1 || $totalCount >= 1) {
             $endTime = time();
-            event(new SystemNotify('新抓取'.$allCount.'条招标信息，请及时去后台处理.用时'.($endTime-$startTime).'秒',[]));
+            event(new SystemNotify('新抓取'.$allCount.'条(共'.$totalCount.'条)招标信息，请及时去后台处理.用时'.($endTime-$startTime).'秒',[]));
         }
     }
 

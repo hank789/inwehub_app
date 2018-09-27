@@ -44,20 +44,12 @@ class Test extends Command
      */
     public function handle()
     {
-        $info['url'] = 'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ3WmpSc0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen';
+        $info['url'] = 'https://cn.indeed.com/jobs?q=SAP&jt=fulltime&sort=date&limit=50&sr=directhire&radius=0';
         $ql = QueryList::getInstance();
-        $list = $ql->get($info['url'],[],[
-            'proxy' => 'socks5h://127.0.0.1:1080',
-            'debug' => true
-        ])->rules([
-            'title' => ['a.ipQwMb.Q7tWef>span','text'],
-            'link'  => ['a.ipQwMb.Q7tWef','href'],
-            'author' => ['.KbnJ8','text'],
-            'dateTime' => ['time.WW6dff','datetime'],
-            'description' => ['p.HO8did.Baotjf','text'],
-            'image' => ['img.tvs3Id.dIH98c','src']
-        ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
-        var_dump($list[0]);
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+
+        $list = $ql->browser($info['url'])->getHtml();
+        Storage::disk('local')->put('attachments/test4.html',$list);
         return;
         $submissions = Submission::whereIn('group_id',[56])->get();
         foreach ($submissions as $submission) {

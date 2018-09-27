@@ -19,7 +19,6 @@
         "jacobcyl/ali-oss-storage": "dev-master",
         "jaeger/querylist": "^4.0",
         "jaeger/querylist-phantomjs": "^4.0",
-        "kurisu/captcha_reader": "^1.0",
         "laravel/framework": "5.5.*",
         "laravel/scout": "^4.0",
         "laravel/tinker": "~1.0",
