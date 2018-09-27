@@ -5,6 +5,7 @@
  * @email:    hank.HuiWang@gmail.com
  */
 
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
@@ -55,7 +56,7 @@ class SapNews extends Command {
 
         $group = Group::find($group_id);
         if (!$group) {
-            event(new SystemNotify('圈子['.$group_id.']不存在'));
+            event(new ExceptionNotify('圈子['.$group_id.']不存在'));
             return;
         }
         $count = 0;

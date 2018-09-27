@@ -1,4 +1,5 @@
 <?php namespace App\Services\Spiders\Wechat;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\WechatMpInfo;
 use App\Services\RuoKuaiService;
@@ -108,7 +109,7 @@ class WechatSpider
                     }
                     $jiefengR = $this->jiefeng2();
                     if ($jiefengR && $jiefengR['ret'] == -6) {
-                        event(new SystemNotify('微信公众号['.$mpInfo->wx_hao.']抓取文章失败，无法解封IP'));
+                        event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']抓取文章失败，无法解封IP'));
                         return false;
                     }
                     deleteProxyIp($ip,'sogou');
@@ -117,7 +118,7 @@ class WechatSpider
                     //说明链接已过期
                     $newData = $this->getGzhInfo($mpInfo->wx_hao);
                     if (empty($newData['name'])) {
-                        event(new SystemNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
+                        event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
                         return [];
                     }
                     $mpInfo->wz_url = $newData['url'];
@@ -211,7 +212,7 @@ class WechatSpider
                 }
             }
         } else {
-            event(new SystemNotify('抓取微信公众号['.$mpInfo->wx_hao.']文章失败'));
+            event(new ExceptionNotify('抓取微信公众号['.$mpInfo->wx_hao.']文章失败'));
         }
         return $items;
     }

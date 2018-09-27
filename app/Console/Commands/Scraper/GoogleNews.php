@@ -5,6 +5,7 @@
  * @email:    hank.HuiWang@gmail.com
  */
 
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
@@ -65,7 +66,7 @@ class GoogleNews extends Command {
         foreach ($urls as $group_id => $info) {
             $group = Group::find($group_id);
             if (!$group) {
-                event(new SystemNotify('圈子['.$group_id.']不存在'));
+                event(new ExceptionNotify('圈子['.$group_id.']不存在'));
                 continue;
             }
             if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {

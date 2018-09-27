@@ -4,6 +4,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\Auth\UserLoggedOut;
 use App\Events\Frontend\Auth\UserRegistered;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
@@ -197,7 +198,7 @@ class AuthController extends Controller
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         if(RateLimiter::instance()->increase('userLoginCount',$credentials['mobile'],60,30)){
-            event(new SystemNotify('用户登录['.$credentials['mobile'].']60秒内尝试了30次以上'));
+            event(new ExceptionNotify('用户登录['.$credentials['mobile'].']60秒内尝试了30次以上'));
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         if (isset($credentials['phoneCode']) && $credentials['phoneCode']) {
@@ -736,7 +737,7 @@ class AuthController extends Controller
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         if(RateLimiter::instance()->increase('userForgetPasswordCount',$mobile,60,30)){
-            event(new SystemNotify('忘记密码['.$mobile.']60秒内尝试了30次以上'));
+            event(new ExceptionNotify('忘记密码['.$mobile.']60秒内尝试了30次以上'));
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 

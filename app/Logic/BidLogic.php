@@ -4,6 +4,7 @@
  * @date: 2018/9/6 下午8:31
  * @email:    hank.HuiWang@gmail.com
  */
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\BidInfo as BidInfoModel;
 use PHPHtmlParser\Dom;
@@ -87,7 +88,7 @@ class BidLogic {
                     'title'=>'item',
                     'value'=>json_encode($item)
                 ];
-                event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
+                event(new ExceptionNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
                 sleep(rand(2,5));
                 for ($i=0;$i<3;$i++) {
                     $ips = getProxyIps(1);
@@ -103,14 +104,14 @@ class BidLogic {
                     }
                 }
                 if ($content->getHtml() == '<html></html>') {
-                    event(new SystemNotify('代理已耗尽，需重新申请',$fields));
+                    event(new ExceptionNotify('代理已耗尽，需重新申请',$fields));
                     return false;
                 }
                 $info['source_url'] = $content->find('a.com-original')->href;
                 $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
                 if (empty($info['source_url']) || empty($item['bid_html_body'])) {
                     \Log::info('scraper_jianyu_www_error',['bid_html_body'=>$content->getHtml(), 'item'=>$item]);
-                    event(new SystemNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',$fields));
+                    event(new ExceptionNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',$fields));
                     return false;
                 }
             }

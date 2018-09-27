@@ -1170,7 +1170,7 @@ if (!function_exists('getUrlInfo')) {
                 }
                 if (!$image) {
                     $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
-                    event(new \App\Events\Frontend\System\SystemNotify('未取到网站:'.$url.'的图片'));
+                    event(new \App\Events\Frontend\System\ExceptionNotify('未取到网站:'.$url.'的图片'));
                 }
                 $title = $ql->find('title')->text();
                 if (str_contains($image,'.ico')) {
@@ -1701,7 +1701,7 @@ if (!function_exists('getProxyIps')) {
             if ($proxy['code'] == 3001) {
                 sleep(6);
             } elseif ($proxy['code'] != 0) {
-                event(new \App\Events\Frontend\System\SystemNotify('代理返回失败：'.$proxy['msg']));
+                event(new \App\Events\Frontend\System\ExceptionNotify('代理返回失败：'.$proxy['msg']));
                 return false;
             }
             $ipsNew = $proxy['msg'];

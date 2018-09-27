@@ -1,4 +1,5 @@
 <?php namespace App\Console\Commands\Scraper;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
@@ -78,7 +79,7 @@ class WechatAuthor extends Command {
                         ]);
                     }
                 } else {
-                    event(new SystemNotify('抓取微信公众号失败：'.$item->wx_hao));
+                    event(new ExceptionNotify('抓取微信公众号失败：'.$item->wx_hao));
                 }
                 $item->delete();
             }

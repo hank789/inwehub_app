@@ -5,6 +5,7 @@
  * @email: hank.huiwang@gmail.com
  */
 
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\ArticleToSubmission;
 use App\Logic\TaskLogic;
@@ -58,7 +59,7 @@ class AtomPosts extends Command
                 $xml = RssFeed::loadAtom($source_link);
             } catch (\Exception $e) {
                 app('sentry')->captureException($e);
-                event(new SystemNotify('RSS抓取失败：'.$topic->source_link));
+                event(new ExceptionNotify('RSS抓取失败：'.$topic->source_link));
                 continue;
             }
 

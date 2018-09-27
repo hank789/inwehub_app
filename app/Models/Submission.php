@@ -15,6 +15,7 @@ use App\Services\BosonNLPService;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -466,6 +467,8 @@ class Submission extends Model {
             }
             dispatch((new UpdateSubmissionKeywords($this->id))->delay(Carbon::now()->addSeconds(300)));
         } catch (TooManyRedirectsException $e) {
+            app('sentry')->captureException($e,$this->toArray());
+        } catch (RequestException $e) {
             app('sentry')->captureException($e,$this->toArray());
         } catch (\Exception $e) {
             app('sentry')->captureException($e,$this->toArray());
