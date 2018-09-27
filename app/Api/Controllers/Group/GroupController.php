@@ -718,7 +718,7 @@ class GroupController extends Controller
             if ($user->id == $group->user_id) {
                 $is_joined = 3;
             }
-            if ($is_joined == 1 && !$include_joined) {
+            if (($is_joined == 1 || $is_joined == 3) && !$include_joined) {
                 continue;
             }
             $return['data'][] = [
