@@ -11,15 +11,25 @@ use PHPHtmlParser\Dom;
 
 class BidLogic {
 
-    public static function scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, &$count, $groupIdArr) {
+    public static function scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, &$count, $groupIdArr, $onlyTitleMatch = false) {
         if (empty($data['list'])) return false;
         $timeCost = 6;
+        $keyword = $groupIdArr[0];
+        unset($groupIdArr[0]);
+        $type = ['招标公告','招标','邀标','询价','竞谈','单一','竞价','变更','其他'];
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
             //超过2天的不抓取
             if (isset($item['publishtime']) && $item['publishtime'] <= strtotime('-2 days')) {
                 return false;
             }
+            if ($keyword && $onlyTitleMatch && !str_contains($item['title'],$keyword)) {
+                continue;
+            }
+            $subtype = $item['subtype']??'';
+            $toptype = $item['toptype']??'';
+            //不在指定类型的不要
+            if (!in_array($subtype,$type) && !in_array($toptype,$type)) continue;
             $bid = BidInfoModel::where('guid',$item['_id'])->first();
             if ($bid) {
                 continue;
@@ -32,8 +42,8 @@ class BidLogic {
                 'projectname' => $item['projectname']??'',
                 'projectcode' => $item['projectcode']??'',
                 'buyer' => $item['buyer']??'',
-                'toptype' => $item['toptype']??'',
-                'subtype' => $item['subtype']??'',
+                'toptype' => $toptype,
+                'subtype' => $subtype,
                 'area' => $item['area']??'',
                 'budget' => $item['budget']??'',
                 'bidamount' => $item['bidamount']??'',

@@ -75,7 +75,7 @@ class BidInfo extends Command {
             }
             $data = json_decode($content, true);
             if ($data) {
-                $result = BidLogic::scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, $count, []);
+                $result = BidLogic::scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, $count, ['']);
                 $allCount += $count;
                 if (!$result) {
                     $endTime = time();

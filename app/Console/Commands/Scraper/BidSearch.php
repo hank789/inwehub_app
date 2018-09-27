@@ -77,7 +77,6 @@ class BidSearch extends Command {
             }
             $keywordArr = explode('_',$keywordConfig);
             $keyword = $keywordArr[0];
-            unset($keywordArr[0]);
 
             $count = 0;
             $data = null;
@@ -94,7 +93,7 @@ class BidSearch extends Command {
 
             if ($data) {
                 event(new SystemNotify('准备处理'.count($data['list']).'条['.$keyword.']招标信息'));
-                $result = BidLogic::scraperSaveList($data,$ql2,$cookiesPcArr,$cookiesAppArr,$count,$keywordArr);
+                $result = BidLogic::scraperSaveList($data,$ql2,$cookiesPcArr,$cookiesAppArr,$count,$keywordArr,true);
                 $allCount += $count;
                 if (!$result) {
                     $endTime = time();
