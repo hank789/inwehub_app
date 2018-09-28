@@ -80,7 +80,7 @@ class BidToSubmission implements ShouldQueue
         $data['current_address_latitude'] = '';
         $data['mentions'] = [];
         $category = Category::where('slug','bid_info')->first();
-        $titleTip = '。<br>'.($article->area?'地区：'.$article->area.' <br>':'').($article->subtype?'类型：'.$article->subtype.' <br>':'').'发布时间：'.date('m月d号',strtotime($article->publishtime));
+        $titleTip = ' <br>'.($article->area?'地区：'.$article->area.' <br>':'').($article->subtype?'类型：'.$article->subtype.' <br>':'').'发布时间：'.date('m月d号',strtotime($article->publishtime));
         $submission = Submission::create([
             'title'         => $article->title.$titleTip,
             'slug'          => $this->slug($article->title),

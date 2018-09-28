@@ -159,6 +159,10 @@ class WechatController extends AdminController
             'wx_hao'        => trim($request->input('wx_hao')),
             'name'  =>$request->input('wx_hao'),
         ];
+        $mpInfo = WechatMpInfo::where('wx_hao',trim($request->input('wx_hao')))->first();
+        if ($mpInfo) {
+            return  $this->error("此公众号已存在",route('admin.scraper.wechat.author.index'));
+        }
 
         $news = WechatMpList::create($data);
 
