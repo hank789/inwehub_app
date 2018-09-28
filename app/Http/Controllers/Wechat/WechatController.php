@@ -78,7 +78,10 @@ class WechatController extends Controller
     public function oauth(Request $request,JWTAuth $JWTAuth){
         Log::info('oauth_request');
         $redirect = $request->get('redirect','');
+        $rc_code = $request->get('rc_code','');
         Session::put("wechat_user_redirect",$redirect);
+        Session::put("wechat_user_rccode",$rc_code);
+
         $userInfo = session('wechat_userinfo');
         if($userInfo && isset($userInfo['app_token'])){
             $token = $userInfo['app_token'];
@@ -153,6 +156,8 @@ class WechatController extends Controller
         $token = '';
         $userInfo['app_token'] = $token;
         $redirect = session('wechat_user_redirect');
+        $rc_code = session('wechat_user_rccode');
+        $rc_uid = 0;
         $needCreateUser = false;
         if ($oauthData) {
             $user = User::find($oauthData->user_id);
@@ -205,12 +210,19 @@ class WechatController extends Controller
 
         if ($needCreateUser) {
             //注册用户
+            if ($rc_code) {
+                //邀请码
+                $rcUser = User::where('rc_code',$rc_code)->first();
+                if ($rcUser) {
+                    $rc_uid = $rcUser->id;
+                }
+            }
             $registrar = new Registrar();
             $new_user = $registrar->create([
                 'name' => $oauthData->nickname,
                 'email' => null,
                 'mobile' => null,
-                'rc_uid' => 0,
+                'rc_uid' => $rc_uid,
                 'title'  => '',
                 'company' => '',
                 'gender' => $oauthData['full_info']['sex']??0,
