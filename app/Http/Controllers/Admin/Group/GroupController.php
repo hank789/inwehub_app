@@ -61,7 +61,7 @@ class GroupController extends AdminController {
             'name'   => 'required',
             'audit_status' => 'required|integer',
             'description'   => 'required',
-            'author_id' => 'required',
+            'author_id' => 'required|integer|min:1',
             'public' => 'required',
             'failed_reason' => 'required_if:audit_status,2'
         ];

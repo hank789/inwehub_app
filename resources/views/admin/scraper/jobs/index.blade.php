@@ -157,7 +157,7 @@
             $('#article_html').css('display','none');
         }
         function deleteRead() {
-            if(!confirm('确认删除已读文章？')){
+            if(!confirm('确认删除已读信息？')){
                 return false;
             }
             $.post('/admin/scraper/jobs/destroy',{ids: readArticle, ignoreIds: publishArticle},function(msg){
@@ -177,7 +177,7 @@
                 $("#tagIds").val($("#select_tags_id").val());
             });
             $(".btn-delete").click(function(){
-                if(!confirm('确认删除该文章？')){
+                if(!confirm('确认删除该信息？')){
                     return false;
                 }
                 $(this).button('loading');

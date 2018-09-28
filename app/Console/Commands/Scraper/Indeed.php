@@ -65,7 +65,7 @@ class Indeed extends Command {
             $offset = 0;
             while (true) {
                 $this->info($offset);
-                $requestUrl = $baseUrl.'/jobs?q='.$keyword.'&jt=fulltime&sort=date&limit='.$limit.'&sr=directhire&radius=0&start='.$offset;
+                $requestUrl = $baseUrl.'/jobs?q=title%3A'.$keyword.'&jt=fulltime&sort=date&limit='.$limit.'&sr=directhire&radius=0&start='.$offset;
                 $isBreak = false;
                 $content = $ql->browser($requestUrl)->rules([
                     'title' => ['h2.jobtitle>a','text'],
@@ -127,6 +127,7 @@ class Indeed extends Command {
                 }
                 $offset += $limit;
                 if ($isBreak) break;
+                if ($offset >= 3000) break;
             }
         }
         $total = Jobs::where('status',1)->count();
