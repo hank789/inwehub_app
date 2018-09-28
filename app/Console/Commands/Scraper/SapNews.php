@@ -52,7 +52,7 @@ class SapNews extends Command {
         $url2 = 'https://blogs.saphana.com/blog';
         $limitViews = 500;
         $ql = QueryList::getInstance();
-        $category = Category::where('slug','sap_news')->first();
+        $category = Category::where('slug','sap_blog')->first();
 
         $group = Group::find($group_id);
         if (!$group) {

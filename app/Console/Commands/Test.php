@@ -2,11 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Doing;
 use App\Models\RecommendRead;
 use App\Models\Scraper\BidInfo;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
+use App\Models\Support;
 use App\Models\Tag;
 use App\Models\Taggable;
 use App\Services\BosonNLPService;
@@ -44,12 +46,15 @@ class Test extends Command
      */
     public function handle()
     {
-        $info['url'] = 'https://cn.indeed.com/jobs?q=SAP&jt=fulltime&sort=date&limit=50&sr=directhire&radius=0';
-        $ql = QueryList::getInstance();
-        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
-
-        $list = $ql->browser($info['url'])->getHtml();
-        Storage::disk('local')->put('attachments/test4.html',$list);
+        $submissions = Submission::get();
+        foreach ($submissions as $submission) {
+            $supports = Support::where('supportable_type','=',get_class($submission))->where('supportable_id','=',$submission->id)->count();
+            $views = Doing::where('action',Doing::ACTION_VIEW_SUBMISSION)->where('source_id',$submission->id)->where('source_type',get_class($submission))->count();
+            $submission->upvotes = $supports;
+            $submission->views = $views;
+            $submission->save();
+            $submission->calculationRate();
+        }
         return;
         $submissions = Submission::whereIn('group_id',[56])->get();
         foreach ($submissions as $submission) {
