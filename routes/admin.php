@@ -35,6 +35,9 @@ Route::get('user/addressBook',['as'=>'admin.user.addressBook','uses'=>'UserContr
 Route::post('user/destroy',['as'=>'admin.user.destroy','uses'=>'UserController@destroy']);
 /*用户审核*/
 Route::post('user/verify',['as'=>'admin.user.verify','uses'=>'UserController@verify']);
+//用户解绑微信
+Route::post('user/unbindWechat',['as'=>'admin.user.unbindWechat','uses'=>'UserController@unbindWechat']);
+
 /*用户管理*/
 Route::resource('user', 'UserController',['except' => ['show','destroy'],'as'=>'admin']);
 /*用户经历*/
