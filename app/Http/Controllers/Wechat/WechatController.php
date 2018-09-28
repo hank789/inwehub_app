@@ -120,6 +120,7 @@ class WechatController extends Controller
         // 获取 OAuth 授权结果用户信息
         $user = $oauth->user();
         $userInfo = $user->toArray();
+        Log::info('oauth_callback_userinfo',$userInfo);
         //微信公众号和微信app的openid不同，但是unionid相同
         $unionid = isset($userInfo['original']['unionid'])?$userInfo['original']['unionid']:'';
         $oauthDataUpdate = true;
