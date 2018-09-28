@@ -65,7 +65,8 @@ class Indeed extends Command {
             $offset = 0;
             while (true) {
                 $this->info($offset);
-                $requestUrl = $baseUrl.'/jobs?q=title%3A'.$keyword.'&jt=fulltime&sort=date&limit='.$limit.'&sr=directhire&radius=0&start='.$offset;
+                urlencode()
+                $requestUrl = $baseUrl.'/jobs?q=title%3A'.urlencode($keyword).'&jt=fulltime&sort=date&limit='.$limit.'&sr=directhire&radius=0&start='.$offset;
                 $isBreak = false;
                 $content = $ql->browser($requestUrl)->rules([
                     'title' => ['h2.jobtitle>a','text'],
