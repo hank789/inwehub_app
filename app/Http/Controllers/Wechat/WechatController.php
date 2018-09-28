@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LoginRecord;
 use App\Models\User;
 use App\Services\Registrar;
+use function GuzzleHttp\Psr7\parse_query;
 use Log;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -79,10 +80,14 @@ class WechatController extends Controller
         Log::info('oauth_request',$request->all());
         $redirect = $request->get('redirect','');
         $rc_code = $request->get('rc_code','');
+        if ($redirect && empty($rc_code)) {
+            $parse_url = parse_url($redirect);
+            $parse_query = isset($parse_url['query'])?parse_query($parse_url['query']):[];
+            $rc_code = isset($parse_query['rc_code'])?$parse_query['rc_code']:'';
+        }
         Session::put("wechat_user_redirect",$redirect);
         Session::put("wechat_user_rccode",$rc_code);
         Log::info('oauth_request_rc',[$rc_code]);
-
         $userInfo = session('wechat_userinfo');
         if($userInfo && isset($userInfo['app_token'])){
             $token = $userInfo['app_token'];
