@@ -79,7 +79,7 @@ class JobToSubmission implements ShouldQueue
         $data['current_address_latitude'] = '';
         $data['mentions'] = [];
         $category = Category::where('slug','jobs_info')->first();
-        $titleTip = '<br><br>'.$article->company.'<br>'.$article->city.'<br>'.$article->summary;
+        $titleTip = '。<br>公司：'.$article->company.'<br>地点：'.$article->city.'<br>'.$article->summary;
         $submission = Submission::create([
             'title'         => $article->title.$titleTip,
             'slug'          => $this->slug($article->title),
