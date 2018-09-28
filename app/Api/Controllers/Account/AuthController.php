@@ -667,7 +667,7 @@ class AuthController extends Controller
             $oauthData = UserOauth::where('user_id',$user->id)
                 ->where('status',1)->first();
             if ($type == 1) {
-                return self::createJsonData(true,['token'=>'','mobile'=>$mobile,'avatar'=>$user->avatar,'name'=>$user->name],$oauthData?ApiException::USER_PHONE_EXIST_BIND_WECHAT:ApiException::USER_PHONE_EXIST_NOT_BIND_WECHAT);
+                return self::createJsonData(true,['token'=>'','mobile'=>$mobile,'avatar'=>$user->avatar,'name'=>$user->name,'is_expert'=>$user->is_expert],$oauthData?ApiException::USER_PHONE_EXIST_BIND_WECHAT:ApiException::USER_PHONE_EXIST_NOT_BIND_WECHAT);
             }
             if ($type == 2 && !$oauthData) {
                 //如果有结算中的余额，暂时不处理
@@ -719,7 +719,7 @@ class AuthController extends Controller
         }
         $newToken = $JWTAuth->getToken();
 
-        return self::createJsonData(true,['token'=>$newToken,'mobile'=>$mobile,'avatar'=>$loginUser->avatar,'name'=>$loginUser->name]);
+        return self::createJsonData(true,['token'=>$newToken,'mobile'=>$mobile,'avatar'=>$loginUser->avatar,'name'=>$loginUser->name,'is_expert'=>$loginUser->is_expert]);
     }
 
         /*忘记密码*/

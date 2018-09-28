@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Jobs\ArticleToRecommend;
-use App\Jobs\BidToSubmission;
-use App\Models\Scraper\BidInfo;
+use App\Jobs\JobToSubmission;
+use App\Models\Scraper\Jobs;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use App\Logic\TagsLogic;
 
-class BidController extends AdminController
+class JobsController extends AdminController
 {
 
     /**
@@ -22,7 +21,7 @@ class BidController extends AdminController
     {
         $filter =  $request->all();
 
-        $query = BidInfo::query();
+        $query = Jobs::query();
 
         /*标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
@@ -37,10 +36,10 @@ class BidController extends AdminController
             $query->where('status','=',1);
         }
 
-        $articles = $query->orderBy('publishtime','desc')->paginate(20);
+        $articles = $query->orderBy('id','desc')->paginate(20);
         $data = TagsLogic::loadTags(6,'','id');
         $tags = $data['tags'];
-        return view("admin.scraper.bid.index")->with('articles',$articles)->with('filter',$filter)->with('tags',$tags);
+        return view("admin.scraper.jobs.index")->with('articles',$articles)->with('filter',$filter)->with('tags',$tags);
     }
 
     public function publish(Request $request) {
@@ -49,13 +48,13 @@ class BidController extends AdminController
         ]);
         $ids = $request->input('ids');
         foreach ($ids as $id) {
-            $article = BidInfo::find($id);
+            $article = Jobs::find($id);
             if ($article->status == 2) continue;
             if ($article->status == 3) {
                 $article->status = 1;
                 $article->save();
             }
-            dispatch(new BidToSubmission($id));
+            dispatch(new JobToSubmission($id));
         }
         return $this->success(url()->previous(),'成功');
     }
@@ -65,7 +64,7 @@ class BidController extends AdminController
             'id' => 'required',
             'support_type' => 'required|in:1,2,3,4',
         ]);
-        RateLimiter::instance()->hSet('bid_support_type',$request->input('id'),$request->input('support_type'));
+        RateLimiter::instance()->hSet('job_support_type',$request->input('id'),$request->input('support_type'));
         return $this->success(url()->previous(),'成功');
     }
 
@@ -102,7 +101,7 @@ class BidController extends AdminController
                     }
                 }
             }
-            BidInfo::whereIn('id',$ids)->where('status',1)->update(['status'=>3]);
+            Jobs::whereIn('id',$ids)->where('status',1)->update(['status'=>3]);
         }
         return $this->success(url()->previous(),'成功');
     }
