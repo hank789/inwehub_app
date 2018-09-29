@@ -77,7 +77,7 @@ class ItJuZi extends Command {
                     //7天前的数据不抓取，由于是按照时间倒序，所以只要出现一个小于7天的，下面的都是小于7天的
                     if ($item['date'] < date('Y-m-d',strtotime('-7 days'))) return;
                     $guid = 'company_invest_'.$item['com_id'].'_'.$item['invse_id'];
-                    $company = Submission::where('slug',$guid)->first();
+                    $company = Submission::where('slug',$guid)->withTrashed()->first();
                     if (!$company) {
                         $content = $ql2->get('https://www.itjuzi.com/company/'.$item['com_id']);
                         $company_url = $content->find('div.link-line>a')->eq(2)->href;
