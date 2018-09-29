@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         //抓取脚本
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
+        Commands\Scraper\WechatMpPosts::class,
         Commands\Scraper\RssPosts::class,
         Commands\Scraper\AtomPosts::class,
         Commands\Scraper\BidInfo::class,
