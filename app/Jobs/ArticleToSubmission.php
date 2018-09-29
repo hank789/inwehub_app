@@ -60,7 +60,7 @@ class ArticleToSubmission implements ShouldQueue
         $support_type = RateLimiter::instance()->hGet('article_support_type',$this->id);
         $user_id = $author->user_id;
         if ($article->source_type == 1) {
-            if (str_contains($article->content_url,'wechat_redirect') || config('app.env') != 'production') {
+            if (str_contains($article->content_url,'wechat_redirect') || str_contains($article->content_url,'__biz=') || config('app.env') != 'production') {
                 $url = $article->content_url;
             } else {
                 $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
@@ -152,7 +152,7 @@ class ArticleToSubmission implements ShouldQueue
         $article->status = 2;
         $article->save();
         $author->group->increment('articles');
-        (new NewSubmissionJob($submission->id))->handle();
+        (new NewSubmissionJob($submission->id,true))->handle();
         RateLimiter::instance()->sClear('group_read_users:'.$author->group->id);
         Redis::connection()->hset('voten:submission:url',$url, $submission->id);
 

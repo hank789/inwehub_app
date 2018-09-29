@@ -5,6 +5,7 @@
  * @email:    hank.HuiWang@gmail.com
  */
 
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
@@ -65,7 +66,7 @@ class GoogleNews extends Command {
         foreach ($urls as $group_id => $info) {
             $group = Group::find($group_id);
             if (!$group) {
-                event(new SystemNotify('圈子['.$group_id.']不存在'));
+                event(new ExceptionNotify('圈子['.$group_id.']不存在'));
                 continue;
             }
             if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
@@ -83,7 +84,7 @@ class GoogleNews extends Command {
                     'dateTime' => ['time.WW6dff','datetime'],
                     'description' => ['p.HO8did.Baotjf','text'],
                     'image' => ['img.tvs3Id.dIH98c','src']
-                ])->range('div.NiLAwe.y6IFtc.R7GTQ.keNKEd.j7vNaf.nID9nc')->query()->getData();
+                ])->range('div.NiLAwe.R7GTQ.keNKEd.j7vNaf')->query()->getData();
                 foreach ($list as &$item) {
                     $exist_submission_id = Redis::connection()->hget('voten:submission:url',$item['link']);
                     if ($exist_submission_id) continue;
@@ -99,6 +100,8 @@ class GoogleNews extends Command {
                         if ($item['image']) {
                             //图片本地化
                             $item['image'] = saveImgToCdn($item['image'],'submissions');
+                        } else {
+                            $item['image'] = 'https://cdn.inwehub.com/system/group_18@3x.png';
                         }
                         $data = [
                             'url'           => $item['href'],

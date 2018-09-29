@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Channels\PushChannel;
 use App\Channels\WechatNoticeChannel;
 use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Notification as NotificationModel;
 use App\Models\Submission;
 use Illuminate\Bus\Queueable;
@@ -44,6 +45,9 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
         //自己发的不通知
         if ($this->user_id == $this->submission->user_id) return [];
         $group = Group::find($this->submission->group_id);
+        $groupMember = GroupMember::where('user_id',$this->user_id)->where('group_id',$group->id)->first();
+        if (!$groupMember) return [];
+        if (!$groupMember->is_notify) return [];
         if ($this->user_id == $group->user_id) {
             //通知圈主
             $this->title = '您的圈子['.$group->name.']有新'.($this->submission->type == 'link' ? '文章':'分享').'发布';
@@ -54,7 +58,7 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
             return [];
         }
         $via = ['database', 'broadcast'];
-        if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_my_user_new_activity']??true)){
+        if ($notifiable->checkCanDisturbNotify()){
             $via[] = PushChannel::class;
             //$via[] = WechatNoticeChannel::class;
         }

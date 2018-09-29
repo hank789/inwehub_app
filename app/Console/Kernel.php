@@ -30,12 +30,15 @@ class Kernel extends ConsoleKernel
         //抓取脚本
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
+        Commands\Scraper\WechatMpPosts::class,
         Commands\Scraper\RssPosts::class,
         Commands\Scraper\AtomPosts::class,
         Commands\Scraper\BidInfo::class,
         Commands\Scraper\BidSearch::class,
         Commands\Scraper\GoogleNews::class,
         Commands\Scraper\ItJuZi::class,
+        Commands\Scraper\SapNews::class,
+        Commands\Scraper\Indeed::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
@@ -84,6 +87,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
         $schedule->command('crontab:calc-group-hot')->hourly();
         if (config('app.env') == 'production') {
+            //10 8,12,14,16,18,20,22
             //$schedule->command('scraper:wechat:posts')->cron('30 7,9,11,13,15,17,19,21,23 * * *')->withoutOverlapping();
             $schedule->command('scraper:atom')->cron('0 8,10,16,20 * * *');
             $schedule->command('scraper:rss')->cron('30 7,9,11,13,15,17,19,21,22,23 * * *');
@@ -91,6 +95,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:bid:search')->cron('40 7,10,13,17,21 * * *');
             $schedule->command('scraper:google:news')->hourly();
             $schedule->command('scraper:itjuzi:news')->cron('40 7,13,17,21 * * *');
+            $schedule->command('scraper:sap:news')->cron('50 8,12,14,16,19,22 * * *');
+            $schedule->command('scraper:indeed:jobs')->cron('55 7,10,13,15,17,21 * * *');
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
         $schedule->command('crontab:deal-overtime-task')->daily()->at('05:00')->withoutOverlapping();

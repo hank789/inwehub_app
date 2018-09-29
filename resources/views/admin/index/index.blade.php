@@ -219,8 +219,8 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
                     <div class="info-box-content">
-                        <span class="info-box-text">简历平均完成时间</span>
-                        <span class="info-box-number">{{ $userInfoCompleteTime }}min</span>
+                        <span class="info-box-text">未处理文章数</span>
+                        <span class="info-box-number">{{ $articlesTodo }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
@@ -231,16 +231,16 @@
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
                     <div class="info-box-content">
-                        <span class="info-box-text">问题平均接单时间</span>
-                        <span class="info-box-number">{{ $questionAvaConfirmTime }}min</span>
+                        <span class="info-box-text">未处理招标数</span>
+                        <span class="info-box-number">{{ $bidTodo }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
                     <div class="info-box-content">
-                        <span class="info-box-text">问题平均回答时间</span>
-                        <span class="info-box-number">{{ $questionAvgAnswerTime }}min</span>
+                        <span class="info-box-text">未处理招聘数</span>
+                        <span class="info-box-number">{{ $recruitTodo }}</span>
                     </div><!-- /.info-box-content -->
                 </div><!-- /.info-box -->
             </div><!-- /.col -->

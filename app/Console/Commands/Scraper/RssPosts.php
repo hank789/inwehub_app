@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Scraper;
 
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\ArticleToSubmission;
 use App\Logic\TaskLogic;
@@ -54,7 +55,7 @@ class RssPosts extends Command
                 $xml = RssFeed::loadRss($source_link);
             } catch (\Exception $e) {
                 app('sentry')->captureException($e);
-                event(new SystemNotify('RSS抓取失败：'.$topic->source_link));
+                event(new ExceptionNotify('RSS抓取失败：'.$topic->source_link));
                 continue;
             }
             foreach ($xml->channel->item as $key => $value) {

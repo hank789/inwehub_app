@@ -1170,7 +1170,7 @@ if (!function_exists('getUrlInfo')) {
                 }
                 if (!$image) {
                     $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
-                    event(new \App\Events\Frontend\System\SystemNotify('未取到网站:'.$url.'的图片'));
+                    event(new \App\Events\Frontend\System\ExceptionNotify('未取到网站:'.$url.'的图片'));
                 }
                 $title = $ql->find('title')->text();
                 if (str_contains($image,'.ico')) {
@@ -1588,12 +1588,18 @@ if (!function_exists('getWechatArticleInfo')) {
 
 
 if (!function_exists('getWechatUrlBodyText')) {
-    function getWechatUrlBodyText($url,$strip_tags=true) {
+    function getWechatUrlBodyText($url,$strip_tags=true, $downloadImg = false) {
         $html = file_get_contents_curl($url);
         $parse = parse_url($url);
         if ($parse['host'] == 'mp.weixin.qq.com') {
             preg_match_all("/id=\"js_content\">(.*)<script/iUs",$html,$content,PREG_PATTERN_ORDER);
-            return isset($content[1][0])?($strip_tags?strip_tags($content[1][0]):$content[1][0]):'';
+            $html = isset($content[1][0])?($strip_tags?strip_tags($content[1][0]):$content[1][0]):'';
+            if ($downloadImg) {
+                $html = preg_replace_callback('/data-src="(.*?)"/', function($matches){
+                    $imgUrl = saveImgToCdn($matches[1],'wechat_temp');
+                    return 'src="'.$imgUrl.'"';
+                }, $html);
+            }
         }
         return $html;
     }
@@ -1701,7 +1707,7 @@ if (!function_exists('getProxyIps')) {
             if ($proxy['code'] == 3001) {
                 sleep(6);
             } elseif ($proxy['code'] != 0) {
-                event(new \App\Events\Frontend\System\SystemNotify('代理返回失败：'.$proxy['msg']));
+                event(new \App\Events\Frontend\System\ExceptionNotify('代理返回失败：'.$proxy['msg']));
                 return false;
             }
             $ipsNew = $proxy['msg'];
@@ -1794,6 +1800,34 @@ if (!function_exists('formatHtml')) {
 if (!function_exists('checkInvalidTagString')) {
     function checkInvalidTagString($str) {
         return preg_match("/^[\x{4e00}-\x{9fa5}A-Za-z0-9_.\·\-\/ ]+$/u", $str);
+    }
+}
+
+if (!function_exists('convertWechatTempLink')) {
+    function convertWechatTempLink($tempUrl,$wxhao='') {
+        $ch = curl_init();
+        $headers = [];
+        $headers[] = 'Host: mp.weixin.qq.com';
+        $headers[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+        $headers[] = 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77 MicroMessenger/6.7.2 NetType/WIFI Language/zh_CN';
+        //$headers[] = 'Cookie: wxtokenkey=777; devicetype=iOS11.4.1; lang=zh_CN; pass_ticket=5QcZNPRW6B7DTn8HR24bymCHMIHv2bOcrkLOxw5CTEitpmT+Pi6dqxwGmJ4yB1O+; rewardsn=; version=16070228; wap_sid2=CJCoqZMHElxQdTVHQW5RYUQ5VmJXRjBLblVLeUpYbHRQN19VLTF1YkdvalhGSmxMUGVxNUczdDJFbmI5aHNhUEZpdnd3VVU5dzM2cVBtbm9EcTRoM0NlSjBBWjlHdEFEQUFBfjDkyLvdBTgNQAE=; wxuin=1919570960; pgv_pvid=4415209260; 3g_guest_id=-8754439858010685440; sd_cookie_crttime=1516967978602; sd_userid=83451516967978602';
+        $headers[] = 'Cookie: wxtokenkey=777; devicetype=iOS11.4.1; lang=zh_CN; pass_ticket=5QcZNPRW6B7DTn8HR24bymCHMIHv2bOcrkLOxw5CTEitpmT+Pi6dqxwGmJ4yB1O+; rewardsn=; version=16070228; wap_sid2=CJCoqZMHElxTSUp3TkpiYnZ6bC1xaDgxTnBWOHp5SXU3NkFSM3Z6ekY4elRZTFo4WElRbW5sZ2lRemZtS2JTNHVRVVBBa0hZeFU3SlJzS1VHbTd2N0lMSXU2VEZKOUFEQUFBfjDb0bvdBTgNQAE=; wxuin=1919570960; pgv_pvid=4415209260; 3g_guest_id=-8754439858010685440; sd_cookie_crttime=1516967978602; sd_userid=83451516967978602';
+        $headers[] = 'Accept-Language: zh-cn';
+        $headers[] = 'Accept-Encoding: br, gzip, deflate';
+        $headers[] = 'Connection: keep-alive';
+        $detailUrl = $tempUrl.'&ascene=1&devicetype=iOS11.4.1&version=16070228&nettype=WIFI&abtest_cookie=BQABAAoACwANABIAEwAFACOXHgBZmR4AYpkeAG6ZHgB8mR4AAAA%3D&lang=zh_CN&fontScale=100&pass_ticket=5QcZNPRW6B7DTn8HR24bymCHMIHv2bOcrkLOxw5CTEitpmT%2BPi6dqxwGmJ4yB1O%2B&wx_header=1';
+        curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+        curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $detailUrl);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_exec($ch);
+        $headers = curl_getinfo($ch);
+        curl_close($ch);
+        var_dump($headers);
+        $link = $headers['url'];
+        return;
     }
 }
 

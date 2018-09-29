@@ -327,7 +327,18 @@ class UserController extends AdminController
         User::whereIn('id',$userIds)->update(['status'=>-1]);
 
         return $this->success(url()->previous(),'用户禁用成功');
+    }
 
+    //解绑微信
+    public function unbindWechat(Request $request) {
+        $userIds = $request->input('id');
+        foreach ($userIds as $userId) {
+            $user = User::find($userId);
+            if ($user->mobile) {
+                UserOauth::where('user_id',$userId)->whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])->delete();
+            }
+        }
+        return $this->success(url()->previous(),'用户微信解绑成功');
     }
 
     public function itemInfo(Request $request){

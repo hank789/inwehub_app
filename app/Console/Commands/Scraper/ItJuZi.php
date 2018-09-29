@@ -1,4 +1,5 @@
 <?php namespace App\Console\Commands\Scraper;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
@@ -88,7 +89,7 @@ class ItJuZi extends Command {
                         $company_description = $content->find('meta[name=Description]')->content;
                         if (empty($company_description) || empty($company_url)) {
                             var_dump($item['com_id']);
-                            event(new SystemNotify('抓取IT橘子企业详情失败:'.$item['com_id']));
+                            event(new ExceptionNotify('抓取IT橘子企业详情失败:'.$item['com_id']));
                             continue;
                         }
                         $type = 'link';
@@ -140,7 +141,7 @@ class ItJuZi extends Command {
                 sleep(5);
             } else {
                 var_dump($content);
-                event(new SystemNotify('抓取IT橘子企业服务信息失败:'.$data['msg']));
+                event(new ExceptionNotify('抓取IT橘子企业服务信息失败:'.$data['msg']));
                 return;
             }
         }

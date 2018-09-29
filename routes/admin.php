@@ -35,6 +35,9 @@ Route::get('user/addressBook',['as'=>'admin.user.addressBook','uses'=>'UserContr
 Route::post('user/destroy',['as'=>'admin.user.destroy','uses'=>'UserController@destroy']);
 /*用户审核*/
 Route::post('user/verify',['as'=>'admin.user.verify','uses'=>'UserController@verify']);
+//用户解绑微信
+Route::post('user/unbindWechat',['as'=>'admin.user.unbindWechat','uses'=>'UserController@unbindWechat']);
+
 /*用户管理*/
 Route::resource('user', 'UserController',['except' => ['show','destroy'],'as'=>'admin']);
 /*用户经历*/
@@ -361,6 +364,12 @@ Route::group(['prefix' => 'scraper','namespace'=>'Scraper'],function(){
     Route::post('bid/destroy',['as'=>'admin.scraper.bid.destroy','uses'=>'BidController@destroy']);
     Route::post('bid/publish',['as'=>'admin.scraper.bid.publish','uses'=>'BidController@publish']);
     Route::post('bid/setSupportType',['as'=>'admin.scraper.bid.setSupportType','uses'=>'BidController@setSupportType']);
+
+    Route::get('jobs/index',['as'=>'admin.scraper.jobs.index','uses'=>'JobsController@index']);
+    Route::post('jobs/verify_recommend',['as'=>'admin.scraper.jobs.verify_recommend','uses'=>'JobsController@verifyRecommend']);
+    Route::post('jobs/destroy',['as'=>'admin.scraper.jobs.destroy','uses'=>'JobsController@destroy']);
+    Route::post('jobs/publish',['as'=>'admin.scraper.jobs.publish','uses'=>'JobsController@publish']);
+    Route::post('jobs/setSupportType',['as'=>'admin.scraper.jobs.setSupportType','uses'=>'JobsController@setSupportType']);
 
 
     /*新闻管理*/

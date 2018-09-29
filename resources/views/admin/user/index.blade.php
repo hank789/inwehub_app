@@ -21,6 +21,9 @@
                                 <div class="btn-group">
                                     <a href="{{ route('admin.user.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="创建新用户"><i class="fa fa-plus"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.user.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
+
+                                    <button class="btn btn-default btn-sm" data-toggle="tooltip" title="解绑微信" onclick="confirm_submit('item_form','{{  route('admin.user.unbindWechat') }}','确认解绑微信账户选中项？')"><i class="fa fa-wechat"></i></button>
+
                                     <a href="{{ route('admin.user.export',$filter) }}" target="_blank" class="btn btn-default btn-sm" data-toggle="tooltip" title="导出用户"><i class="fa fa-file-excel-o"></i></a>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="禁用选中项" onclick="confirm_submit('item_form','{{  route('admin.user.destroy') }}','确认禁用选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>

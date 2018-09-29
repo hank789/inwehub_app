@@ -36,16 +36,18 @@ class NewSubmissionJob implements ShouldQueue
 
     public $id;
 
+    public $notifyAutoChannel = false;
+
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($id)
+    public function __construct($id, $notifyAutoChannel = false)
     {
         $this->id = $id;
-
+        $this->notifyAutoChannel = $notifyAutoChannel;
     }
 
     /**
@@ -61,14 +63,7 @@ class NewSubmissionJob implements ShouldQueue
         $slackFields = [];
         foreach ($submission->data as $field=>$value){
             if ($value){
-                if (is_array($value)) {
-                    foreach ($value as $key => $item) {
-                        $slackFields[] = [
-                            'title' => $field.$key,
-                            'value' => $item
-                        ];
-                    }
-                } else {
+                if (!is_array($value) && in_array($field,['url','title'])) {
                     $slackFields[] = [
                         'title' => $field,
                         'value' => $field=='description'?QuillLogic::parseText($value):$value
@@ -129,7 +124,11 @@ class NewSubmissionJob implements ShouldQueue
         $submission->setKeywordTags();
         $submission->calculationRate();
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
-        return \Slack::to(config('slack.ask_activity_channel'))
+        $channel = config('slack.ask_activity_channel');
+        if ($this->notifyAutoChannel) {
+            $channel = config('slack.auto_channel');
+        }
+        return \Slack::to($channel)
             ->disableMarkdown()
             ->attach(
                 [

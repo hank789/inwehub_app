@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Category;
 use App\Models\Groups\Group;
-use App\Models\Scraper\BidInfo;
+use App\Models\Scraper\Jobs;
 use App\Models\Submission;
 use App\Services\RateLimiter;
 use App\Traits\SubmitSubmission;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Redis;
 
 
 
-class BidToSubmission implements ShouldQueue
+class JobToSubmission implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SubmitSubmission;
 
@@ -45,12 +45,11 @@ class BidToSubmission implements ShouldQueue
      */
     public function handle()
     {
-        $article = BidInfo::find($this->id);
+        $article = Jobs::find($this->id);
         if ($article->topic_id > 0 || $article->status == 2) return;
-        $groups = $article->detail['group_ids'];
-        if (!$groups) return;
-        $group = Group::find($groups[0]);
-        $support_type = RateLimiter::instance()->hGet('bid_support_type',$this->id);
+        $group = Group::find($article->group_id);
+        if (!$group) return;
+        $support_type = RateLimiter::instance()->hGet('job_support_type',$this->id);
         $url = $article->source_url;
         //检查url是否重复
         $exist_submission_id = Redis::connection()->hget('voten:submission:url',$url);
@@ -59,8 +58,8 @@ class BidToSubmission implements ShouldQueue
             return;
         }
 
-        $img_url = 'https://cdn.inwehub.com/groups/2018/09/1537334960wpnKTwa.png';
-        $article_description = $article->detail['bid_html_body'];
+        $img_url = 'https://cdn.inwehub.com/groups/2018/09/1537336382whB1pRb.png';
+        $article_description = $article->summary;
         $data = [
             'url'           => $url,
             'title'         => $article->title,
@@ -79,8 +78,8 @@ class BidToSubmission implements ShouldQueue
         $data['current_address_longitude'] = '';
         $data['current_address_latitude'] = '';
         $data['mentions'] = [];
-        $category = Category::where('slug','bid_info')->first();
-        $titleTip = ' <br>'.($article->area?'地区：'.$article->area.' <br>':'').($article->subtype?'类型：'.$article->subtype.' <br>':'').'发布时间：'.date('m月d号',strtotime($article->publishtime));
+        $category = Category::where('slug','jobs_info')->first();
+        $titleTip = ' <br>公司：'.$article->company.' <br>地点：'.$article->city.' <br>'.$article->summary;
         $submission = Submission::create([
             'title'         => $article->title.$titleTip,
             'slug'          => $this->slug($article->title),

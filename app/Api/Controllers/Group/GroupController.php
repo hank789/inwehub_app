@@ -54,12 +54,24 @@ class GroupController extends Controller
         dispatch((new UploadFile($file_name,(substr($url[1],6)))));
         $img_url = Storage::disk('oss')->url($file_name);
 
+        $background_img_base64 = $request->input('background_img');
+        if (!$background_img_base64) {
+            $background_img = 'https://cdn.inwehub.com/system/group_18@3x.png';
+        } else {
+            $background_img_base64_arr = explode(';',$background_img_base64);
+            $background_img_base64_type = explode('/',$background_img_base64_arr[0]);
+            $file_name = 'groups/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$background_img_base64_type[1];
+            dispatch((new UploadFile($file_name,(substr($background_img_base64_arr[1],6)))));
+            $background_img = Storage::disk('oss')->url($file_name);
+        }
+
         $group = Group::create([
             'user_id' => $user->id,
             'name'    => $request->input('name'),
             'description' => $request->input('description'),
             'public'  => $request->input('public',1),
             'logo'    => $img_url,
+            'background_img' => $background_img,
             'audit_status' => Group::AUDIT_STATUS_DRAFT,
             'subscribers'  => 1
         ]);
@@ -119,8 +131,18 @@ class GroupController extends Controller
             $file_name = 'groups/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$url_type[1];
             dispatch((new UploadFile($file_name,(substr($url[1],6)))));
             $img_url = Storage::disk('oss')->url($file_name);
+            $group->logo = $img_url;
         }
-        $group->logo = $img_url;
+
+        $background_img_base64 = $request->input('background_img');
+        $background_img_base64_arr = explode(';',$background_img_base64);
+        if (count($background_img_base64_arr) > 1) {
+            $background_img_base64_type = explode('/',$background_img_base64_arr[0]);
+            $file_name = 'groups/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$background_img_base64_type[1];
+            dispatch((new UploadFile($file_name,(substr($background_img_base64_arr[1],6)))));
+            $background_img = Storage::disk('oss')->url($file_name);
+            $group->background_img = $background_img;
+        }
         $group->save();
         if ($oldPublic != $request->input('public')) Submission::where('group_id',$group->id)->update(['public'=>$group->public]);
         self::$needRefresh = true;
@@ -147,8 +169,10 @@ class GroupController extends Controller
         }
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
         $return['is_joined'] = -1;
+        $return['current_user_notify'] = 0;
         if ($groupMember) {
             $return['is_joined'] = $groupMember->audit_status;
+            $return['current_user_notify'] = $groupMember->is_notify;
         }
         if ($user->id == $group->user_id) {
             $return['is_joined'] = 3;
@@ -695,7 +719,7 @@ class GroupController extends Controller
             if ($user->id == $group->user_id) {
                 $is_joined = 3;
             }
-            if ($is_joined == 1 && !$include_joined) {
+            if (($is_joined == 1 || $is_joined == 3) && !$include_joined) {
                 continue;
             }
             $return['data'][] = [
@@ -811,6 +835,27 @@ class GroupController extends Controller
             $room->save();
         }
         return self::createJsonData(true);
+    }
+
+    //设置圈子通知
+    public function setNotify(Request $request) {
+        $this->validate($request,[
+            'id'=>'required|integer',
+            'is_notify' => 'required|integer|in:0,1'
+        ]);
+        $group = Group::find($request->input('id'));
+        if (!$group) {
+            throw new ApiException(ApiException::GROUP_NOT_EXIST);
+        }
+        $user = $request->user();
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+        if (!$groupMember) {
+            throw new ApiException(ApiException::GROUP_NOT_JOINED);
+        }
+        $groupMember->is_notify = $request->input('is_notify');
+        $groupMember->save();
+        self::$needRefresh = true;
+        return self::createJsonData(true,['is_notify'=>$request->input('is_notify')]);
     }
 
     //获取反馈圈子

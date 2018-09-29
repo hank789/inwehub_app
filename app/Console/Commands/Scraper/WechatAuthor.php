@@ -1,9 +1,10 @@
 <?php namespace App\Console\Commands\Scraper;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
 use App\Services\RateLimiter;
-use App\Services\Spiders\Wechat\WechatSpider;
+use App\Services\Spiders\Wechat\WechatSogouSpider;
 use Illuminate\Console\Command;
 
 /**
@@ -53,7 +54,7 @@ class WechatAuthor extends Command {
         }
         validateProxyIps('sogou');
         getProxyIps(5,'sogou');
-        $spider = new WechatSpider();
+        $spider = new WechatSogouSpider();
         foreach ($all as $item) {
             $info = WechatMpInfo::where('wx_hao',$item->wx_hao)->first();
             if ($info) {
@@ -78,7 +79,7 @@ class WechatAuthor extends Command {
                         ]);
                     }
                 } else {
-                    event(new SystemNotify('抓取微信公众号失败：'.$item->wx_hao));
+                    event(new ExceptionNotify('抓取微信公众号失败：'.$item->wx_hao));
                 }
                 $item->delete();
             }

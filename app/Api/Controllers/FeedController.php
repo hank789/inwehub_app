@@ -37,18 +37,8 @@ class FeedController extends Controller
                 break;
             case 2:
                 //全部
-                $query = $query->whereIn('feed_type', [
-                    Feed::FEED_TYPE_ANSWER_PAY_QUESTION,
-                    Feed::FEED_TYPE_ANSWER_FREE_QUESTION,
-                    Feed::FEED_TYPE_CREATE_FREE_QUESTION,
-                    Feed::FEED_TYPE_CREATE_PAY_QUESTION,
-                    Feed::FEED_TYPE_FOLLOW_FREE_QUESTION,
-                    Feed::FEED_TYPE_COMMENT_PAY_QUESTION,
-                    Feed::FEED_TYPE_COMMENT_FREE_QUESTION,
-                    Feed::FEED_TYPE_UPVOTE_PAY_QUESTION,
-                    Feed::FEED_TYPE_UPVOTE_FREE_QUESTION,
-                    Feed::FEED_TYPE_ADOPT_ANSWER,
-                ]);
+                $followers = $user->attentions()->where('source_type', '=', get_class($user))->pluck('source_id')->toArray();
+                $query = $query->where('public',1)->whereIn('user_id', $followers);
                 $groupIds = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
                 if ($groupIds) {
                     $query = $query->orWhereIn('group_id',$groupIds);

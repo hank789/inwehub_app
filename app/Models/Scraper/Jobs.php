@@ -17,7 +17,11 @@ class Jobs extends Model {
 
     protected $table = 'scraper_jobs';
 
-    protected $fillable = ['positionName', 'positionId', 'city', 'salary', 'companyId',
-        'companyLogo', 'companyName', 'companyFullName'];
+    protected $fillable = ['title', 'guid', 'city', 'source_url',
+        'company', 'topic_id','status','summary','group_id','tags'];
+
+    public function group() {
+        return $this->belongsTo('App\Models\Groups\Group');
+    }
 
 }

@@ -1,4 +1,5 @@
 <?php namespace App\Console\Commands\Scraper;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Logic\BidLogic;
 use App\Services\RateLimiter;
@@ -55,13 +56,13 @@ class BidSearch extends Command {
         $cookies = Setting()->get('scraper_jianyu360_cookie','');
         $startTime = time();
         if (empty($cookies)) {
-            event(new SystemNotify('抓取招标信息未设置cookie，请到后台设置',[]));
+            event(new ExceptionNotify('抓取招标信息未设置cookie，请到后台设置',[]));
             return;
         }
         $cookiesPcArr = explode('||',$cookies);
 
         if (!Setting()->get('scraper_proxy_address','')) {
-            event(new SystemNotify('未设置爬虫代理，请到后台设置',[]));
+            event(new ExceptionNotify('未设置爬虫代理，请到后台设置',[]));
             return;
         }
 
@@ -76,7 +77,6 @@ class BidSearch extends Command {
             }
             $keywordArr = explode('_',$keywordConfig);
             $keyword = $keywordArr[0];
-            unset($keywordArr[0]);
 
             $count = 0;
             $data = null;
@@ -93,7 +93,7 @@ class BidSearch extends Command {
 
             if ($data) {
                 event(new SystemNotify('准备处理'.count($data['list']).'条['.$keyword.']招标信息'));
-                $result = BidLogic::scraperSaveList($data,$ql2,$cookiesPcArr,$cookiesAppArr,$count,$keywordArr);
+                $result = BidLogic::scraperSaveList($data,$ql2,$cookiesPcArr,$cookiesAppArr,$count,$keywordArr,true);
                 $allCount += $count;
                 if (!$result) {
                     $endTime = time();
@@ -101,22 +101,22 @@ class BidSearch extends Command {
                     continue;
                 }
             } else {
-                event(new SystemNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效或代理IP已耗尽，请到后台设置'));
+                event(new ExceptionNotify('抓取['.$keyword.']招标信息失败，对应cookie已失效或代理IP已耗尽，请到后台设置'));
                 return;
             }
 
         }
-
-        if ($allCount >= 1) {
+        $totalCount = \App\Models\Scraper\BidInfo::where('status',1)->count();
+        if ($allCount >= 1 || $totalCount >= 1) {
             $endTime = time();
-            event(new SystemNotify('新抓取'.$allCount.'条招标信息，请及时去后台处理.用时'.($endTime-$startTime).'秒',[]));
+            event(new SystemNotify('新抓取'.$allCount.'条(共'.$totalCount.'条)招标信息，请及时去后台处理.用时'.($endTime-$startTime).'秒',[]));
         }
     }
 
     protected function getHtmlData($ql,$keyword,$cookiesPcArr) {
         $ips = getProxyIps(1);
         if (!$ips) {
-            event(new SystemNotify('代理IP已耗尽，请到后台设置', []));
+            event(new ExceptionNotify('代理IP已耗尽，请到后台设置', []));
             exit();
         }
         $ip = $ips[0];

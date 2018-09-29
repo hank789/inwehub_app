@@ -1,8 +1,11 @@
 <?php namespace App\Http\Controllers\Wechat;
 use App\Events\Frontend\Auth\UserLoggedIn;
+use App\Events\Frontend\Auth\UserRegistered;
 use App\Http\Controllers\Controller;
 use App\Models\LoginRecord;
 use App\Models\User;
+use App\Services\Registrar;
+use function GuzzleHttp\Psr7\parse_query;
 use Log;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -74,9 +77,17 @@ class WechatController extends Controller
 
 
     public function oauth(Request $request,JWTAuth $JWTAuth){
-        Log::info('oauth_request');
+        Log::info('oauth_request',$request->all());
         $redirect = $request->get('redirect','');
+        $rc_code = $request->get('rc_code','');
+        if ($redirect && empty($rc_code)) {
+            $parse_url = parse_url($redirect);
+            $parse_query = isset($parse_url['query'])?parse_query($parse_url['query']):[];
+            $rc_code = isset($parse_query['rc_code'])?$parse_query['rc_code']:'';
+        }
         Session::put("wechat_user_redirect",$redirect);
+        Session::put("wechat_user_rccode",$rc_code);
+        Log::info('oauth_request_rc',[$rc_code]);
         $userInfo = session('wechat_userinfo');
         if($userInfo && isset($userInfo['app_token'])){
             $token = $userInfo['app_token'];
@@ -118,6 +129,7 @@ class WechatController extends Controller
         // 获取 OAuth 授权结果用户信息
         $user = $oauth->user();
         $userInfo = $user->toArray();
+        //Log::info('oauth_callback_userinfo',$userInfo);
         //微信公众号和微信app的openid不同，但是unionid相同
         $unionid = isset($userInfo['original']['unionid'])?$userInfo['original']['unionid']:'';
         $oauthDataUpdate = true;
@@ -126,7 +138,7 @@ class WechatController extends Controller
             ->where('openid',$userInfo['id'])->first();
         if (!$oauthData && $unionid) {
             $oauthAppData = UserOauth::where('unionid',$unionid)->where('user_id','>',0)->first();
-            if ($oauthAppData && $oauthAppData->user->mobile) {
+            if ($oauthAppData) {
                 //如果已经用app微信登陆过了
                 $oauthData = UserOauth::create(
                     [
@@ -150,6 +162,10 @@ class WechatController extends Controller
         $token = '';
         $userInfo['app_token'] = $token;
         $redirect = session('wechat_user_redirect');
+        $rc_code = session('wechat_user_rccode');
+        Log::info('oauth_callback',[$rc_code]);
+        $rc_uid = 0;
+        $needCreateUser = false;
         if ($oauthData) {
             $user = User::find($oauthData->user_id);
             if ($oauthDataUpdate) {
@@ -174,9 +190,11 @@ class WechatController extends Controller
                 //登陆事件通知
                 event(new UserLoggedIn($user,'微信'));
                 Session::put("wechat_userinfo",$userInfo);
+            } else {
+                $needCreateUser = true;
             }
         } elseif($userInfo['id']) {
-            UserOauth::create(
+            $oauthData = UserOauth::create(
                 [
                     'auth_type'=>UserOauth::AUTH_TYPE_WEIXIN_GZH,
                     'user_id'=> 0,
@@ -191,9 +209,47 @@ class WechatController extends Controller
                     'scope'=>'snsapi_userinfo'
                 ]
             );
+            $needCreateUser = true;
         } else {
             Log::info('微信认证失败',['userinfo'=>$userInfo,'request'=>$request->all()]);
             return redirect('/wechat/oauth');
+        }
+
+        if ($needCreateUser) {
+            //注册用户
+            if ($rc_code) {
+                //邀请码
+                $rcUser = User::where('rc_code',$rc_code)->first();
+                if ($rcUser) {
+                    $rc_uid = $rcUser->id;
+                }
+            }
+            $registrar = new Registrar();
+            $new_user = $registrar->create([
+                'name' => $oauthData->nickname,
+                'email' => null,
+                'mobile' => null,
+                'rc_uid' => $rc_uid,
+                'title'  => '',
+                'company' => '',
+                'gender' => $oauthData['full_info']['sex']??0,
+                'password' => time(),
+                'status' => 1,
+                'visit_ip' => $request->getClientIp(),
+                'source' => User::USER_SOURCE_WEIXIN_GZH,
+            ]);
+            $new_user->attachRole(2); //默认注册为普通用户角色
+            $new_user->userData->email_status = 1;
+            $new_user->userData->save();
+            $new_user->avatar = $oauthData->avatar;
+            $new_user->save();
+            $oauthData->user_id = $new_user->id;
+            $oauthData->save();
+            //注册事件通知
+            event(new UserRegistered($new_user,$oauthData->id,'微信公众号'));
+            $token = $JWTAuth->fromUser($new_user);
+            $userInfo['app_token'] = $token;
+            Session::put("wechat_userinfo",$userInfo);
         }
 
         return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);

@@ -4,10 +4,15 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\Auth\UserLoggedOut;
 use App\Events\Frontend\Auth\UserRegistered;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\SendPhoneMessage;
+use App\Models\Attention;
 use App\Models\Credit;
+use App\Models\Doing;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\IM\Message;
 use App\Models\IM\Room;
 use App\Models\IM\RoomUser;
@@ -79,7 +84,7 @@ class AuthController extends Controller
     {
         $validateRules = [
             'mobile' => 'required|cn_phone',
-            'type'   => 'required|in:register,login,change,wx_gzh_register,weapp_register'
+            'type'   => 'required|in:register,login,change,wx_gzh_register,weapp_register,change_phone'
         ];
 
         $this->validate($request,$validateRules);
@@ -126,6 +131,9 @@ class AuthController extends Controller
                 break;
             case 'weapp_register':
                 //微信小程序验证码
+                break;
+            case 'change_phone':
+                //换绑手机号
                 break;
             default:
                 if(!$user){
@@ -190,7 +198,7 @@ class AuthController extends Controller
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         if(RateLimiter::instance()->increase('userLoginCount',$credentials['mobile'],60,30)){
-            event(new SystemNotify('用户登录['.$credentials['mobile'].']60秒内尝试了30次以上'));
+            event(new ExceptionNotify('用户登录['.$credentials['mobile'].']60秒内尝试了30次以上'));
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         if (isset($credentials['phoneCode']) && $credentials['phoneCode']) {
@@ -630,6 +638,90 @@ class AuthController extends Controller
         return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS,$message);
     }
 
+    //更换手机号码
+    public function changePhone(Request $request,JWTAuth $JWTAuth) {
+        /*表单数据校验*/
+        $this->validate($request, [
+            'mobile' => 'required|cn_phone',
+            'code' => 'required',
+        ]);
+        $mobile = $request->input('mobile');
+        if(RateLimiter::instance()->increase('userChangePhone',$mobile,3,1)){
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+        $loginUser = $request->user();
+
+        //验证手机验证码
+        $code_cache = Cache::get(SendPhoneMessage::getCacheKey('change_phone',$mobile));
+        $code = $request->input('code');
+        if($code_cache != $code){
+            throw new ApiException(ApiException::ARGS_YZM_ERROR);
+        }
+        $type = $request->input('type',1);
+        $user = User::where('mobile',$mobile)->first();
+        if($user){
+            //当前登录用户已绑定手机号，提示已存在手机号
+            if ($loginUser->mobile) {
+                throw new ApiException(ApiException::USER_PHONE_EXIST);
+            }
+            $oauthData = UserOauth::where('user_id',$user->id)
+                ->where('status',1)->first();
+            if ($type == 1) {
+                return self::createJsonData(true,['token'=>'','mobile'=>$mobile,'avatar'=>$user->avatar,'name'=>$user->name,'is_expert'=>$user->is_expert],$oauthData?ApiException::USER_PHONE_EXIST_BIND_WECHAT:ApiException::USER_PHONE_EXIST_NOT_BIND_WECHAT);
+            }
+            if ($type == 2 && !$oauthData) {
+                //如果有结算中的余额，暂时不处理
+                $remain_money = $loginUser->userMoney->settlement_money+$loginUser->userMoney->total_money;
+                if ($remain_money>0) {
+                    throw new ApiException(ApiException::USER_HAS_MONEY_REMAIN);
+                }
+                //合并微信账户
+                //1.当前用户的微信登陆信息都改为手机号用户的id
+                UserOauth::where('user_id',$loginUser->id)->update(['user_id'=>$user->id]);
+                //2.当前用户加入的圈子
+                $groupIds = GroupMember::where('user_id',$user->id)->pluck('group_id')->toArray();
+                GroupMember::where('user_id',$loginUser->id)->whereNotIn('group_id',$groupIds)->update(['user_id'=>$user->id]);
+                //合并关注
+                $attentions = Attention::where('user_id',$loginUser->id)->get();
+                foreach ($attentions as $attention) {
+                    $existA = Attention::where('user_id',$user->id)
+                        ->where('source_id',$attention->source_id)
+                        ->where('source_type',$attention->source_type)->first();
+                    if (!$existA) {
+                        $attention->user_id = $user->id;
+                        $attention->save();
+                    }
+                }
+                $attentionUsers = Attention::where('source_id',$loginUser->id)
+                    ->where('source_type',get_class($user))->get();
+                foreach ($attentionUsers as $attentionUser) {
+                    $existB = Attention::where('user_id',$attentionUser->user_id)
+                        ->where('source_id',$user->id)
+                        ->where('source_type',get_class($user))->first();
+                    if (!$existB) {
+                        $attentionUser->source_id = $user->id;
+                        $attentionUser->save();
+                    }
+                }
+                Doing::where('user_id',$loginUser->id)->update(['user_id'=>$user->id]);
+                //3.当前用户状态改为不可用
+                $loginUser->status = -1;
+                $loginUser->save();
+                //现token实现
+                $JWTAuth->setRequest($request)->parseToken()->refresh();
+                $newToken = $JWTAuth->fromUser($user);
+                return self::createJsonData(true,['token'=>$newToken]);
+            }
+        }
+        if (!$user) {
+            $loginUser->mobile = $mobile;
+            $loginUser->save();
+        }
+        $newToken = $JWTAuth->getToken();
+
+        return self::createJsonData(true,['token'=>$newToken,'mobile'=>$mobile,'avatar'=>$loginUser->avatar,'name'=>$loginUser->name,'is_expert'=>$loginUser->is_expert]);
+    }
+
         /*忘记密码*/
     public function forgetPassword(Request $request)
     {
@@ -645,13 +737,8 @@ class AuthController extends Controller
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         if(RateLimiter::instance()->increase('userForgetPasswordCount',$mobile,60,30)){
-            event(new SystemNotify('忘记密码['.$mobile.']60秒内尝试了30次以上'));
+            event(new ExceptionNotify('忘记密码['.$mobile.']60秒内尝试了30次以上'));
             throw new ApiException(ApiException::VISIT_LIMIT);
-        }
-
-        $user = User::where('mobile',$mobile)->first();
-        if(!$user){
-            throw new ApiException(ApiException::USER_NOT_FOUND);
         }
 
         //验证手机验证码
@@ -659,6 +746,11 @@ class AuthController extends Controller
         $code = $request->input('code');
         if($code_cache != $code){
             throw new ApiException(ApiException::ARGS_YZM_ERROR);
+        }
+
+        $user = User::where('mobile',$mobile)->first();
+        if(!$user){
+            throw new ApiException(ApiException::USER_NOT_FOUND);
         }
 
         $user->password = Hash::make($request->input('password'));

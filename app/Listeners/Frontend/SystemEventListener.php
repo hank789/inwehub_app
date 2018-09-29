@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Listeners\Frontend;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\FuncZan;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Credit as CreditModel;
@@ -58,6 +59,23 @@ class SystemEventListener implements ShouldQueue
     public function systemNotify($event){
         try {
             \Slack::to(config('slack.ask_activity_channel'))
+                ->attach(
+                    [
+                        'fields' => $event->fields
+                    ]
+                )
+                ->send($event->message);
+        } catch (\Exception $e) {
+            app('sentry')->captureException($e);
+        }
+    }
+
+    /**
+     * @param ExceptionNotify $event
+     */
+    public function exceptionNotify($event) {
+        try {
+            \Slack::to(config('slack.exception_channel'))
                 ->attach(
                     [
                         'fields' => $event->fields
@@ -183,6 +201,11 @@ class SystemEventListener implements ShouldQueue
         $events->listen(
             SystemNotify::class,
             'App\Listeners\Frontend\SystemEventListener@systemNotify'
+        );
+
+        $events->listen(
+            ExceptionNotify::class,
+            'App\Listeners\Frontend\SystemEventListener@exceptionNotify'
         );
     }
 }

@@ -5,7 +5,7 @@ use App\Logic\TaskLogic;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Services\RateLimiter;
-use App\Services\Spiders\Wechat\WechatSpider;
+use App\Services\Spiders\Wechat\WechatSogouSpider;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -54,7 +54,7 @@ class WechatPosts extends Command {
             validateProxyIps($domain);
             //shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
             getProxyIps(5,$domain);
-            $spider = new WechatSpider();
+            $spider = new WechatSogouSpider();
             $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
             $succ_count = 0;
             foreach ($mpInfos as $mpInfo) {
@@ -83,6 +83,8 @@ class WechatPosts extends Command {
                     if ($wz_item['type'] == 49) {
                         if (empty($wz_item['content_url'])) continue;
                         $this->info($wz_item['title']);
+                        $uuid = base64_encode($wz_item['title'].$wz_item['digest']);
+                        if (RateLimiter::instance()->hGet('wechat_article',$uuid)) continue;
                         $article = WechatWenzhangInfo::create([
                             'title' => $wz_item['title'],
                             'source_url' => $wz_item['source_url'],
@@ -100,6 +102,7 @@ class WechatPosts extends Command {
                             'read_count' => 0,
                             'comment_count' => 0
                         ]);
+                        RateLimiter::instance()->hSet('wechat_article',$uuid,$article->_id);
                         (new GetArticleBody($article->_id))->handle();
                         if ($mpInfo->is_auto_publish == 1 && $article->date_time >= date('Y-m-d 00:00:00',strtotime('-1 days'))) {
                             dispatch(new ArticleToSubmission($article->_id));

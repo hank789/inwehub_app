@@ -4,21 +4,31 @@
  * @date: 2018/9/6 下午8:31
  * @email:    hank.HuiWang@gmail.com
  */
-use App\Events\Frontend\System\SystemNotify;
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Models\Scraper\BidInfo as BidInfoModel;
 use PHPHtmlParser\Dom;
 
 class BidLogic {
 
-    public static function scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, &$count, $groupIdArr) {
+    public static function scraperSaveList($data, $ql2, $cookiesPcArr, $cookiesAppArr, &$count, $groupIdArr, $onlyTitleMatch = false) {
         if (empty($data['list'])) return false;
         $timeCost = 6;
+        $keyword = $groupIdArr[0];
+        unset($groupIdArr[0]);
+        $type = ['招标公告','招标','邀标','询价','竞谈','单一','竞价','变更','其他'];
         foreach ($data['list'] as $item) {
             var_dump($item['title']);
             //超过2天的不抓取
             if (isset($item['publishtime']) && $item['publishtime'] <= strtotime('-2 days')) {
                 return false;
             }
+            if ($keyword && $onlyTitleMatch && !str_contains($item['title'],$keyword) && !str_contains($item['title'],strtolower($keyword))) {
+                continue;
+            }
+            $subtype = $item['subtype']??'';
+            $toptype = $item['toptype']??'';
+            //不在指定类型的不要
+            if (!in_array($subtype,$type) && !in_array($toptype,$type)) continue;
             $bid = BidInfoModel::where('guid',$item['_id'])->first();
             if ($bid) {
                 continue;
@@ -31,8 +41,8 @@ class BidLogic {
                 'projectname' => $item['projectname']??'',
                 'projectcode' => $item['projectcode']??'',
                 'buyer' => $item['buyer']??'',
-                'toptype' => $item['toptype']??'',
-                'subtype' => $item['subtype']??'',
+                'toptype' => $toptype,
+                'subtype' => $subtype,
                 'area' => $item['area']??'',
                 'budget' => $item['budget']??'',
                 'bidamount' => $item['bidamount']??'',
@@ -87,7 +97,7 @@ class BidLogic {
                     'title'=>'item',
                     'value'=>json_encode($item)
                 ];
-                event(new SystemNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
+                event(new ExceptionNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
                 sleep(rand(2,5));
                 for ($i=0;$i<3;$i++) {
                     $ips = getProxyIps(1);
@@ -103,14 +113,14 @@ class BidLogic {
                     }
                 }
                 if ($content->getHtml() == '<html></html>') {
-                    event(new SystemNotify('代理已耗尽，需重新申请',$fields));
+                    event(new ExceptionNotify('代理已耗尽，需重新申请',$fields));
                     return false;
                 }
                 $info['source_url'] = $content->find('a.com-original')->href;
                 $item['bid_html_body'] = $content->find('div.com-detail')->htmls()->first();
                 if (empty($info['source_url']) || empty($item['bid_html_body'])) {
                     \Log::info('scraper_jianyu_www_error',['bid_html_body'=>$content->getHtml(), 'item'=>$item]);
-                    event(new SystemNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',$fields));
+                    event(new ExceptionNotify('抓取招标详情失败，对应www站点cookie已失效，请到后台设置',$fields));
                     return false;
                 }
             }

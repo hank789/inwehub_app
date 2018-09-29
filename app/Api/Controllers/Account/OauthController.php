@@ -2,9 +2,11 @@
 
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\Auth\UserLoggedIn;
+use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Models\User;
 use App\Models\UserOauth;
+use App\Services\Registrar;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\JWTAuth;
 
@@ -39,7 +41,7 @@ class OauthController extends Controller
         //微信公众号和微信app的openid不同，但是unionid相同
         $unionid = isset($data['full_info']['unionid'])?$data['full_info']['unionid']:'1';
         $oauthGzhData = UserOauth::where('unionid',$unionid)->where('user_id','>',0)->first();
-        if ($oauthGzhData && $oauthGzhData->user_id && $oauthGzhData->user->mobile) {
+        if ($oauthGzhData && $oauthGzhData->user_id) {
             $user_id = $oauthGzhData->user_id;
             $user = User::find($user_id);
             $token = $JWTAuth->fromUser($user);
@@ -76,6 +78,33 @@ class OauthController extends Controller
         if ($token && $user) {
             //登陆事件通知
             event(new UserLoggedIn($user,'App内微信'));
+        }
+        if (!$oauthData->user_id) {
+            //注册用户
+            $registrar = new Registrar();
+            $new_user = $registrar->create([
+                'name' => $oauthData->nickname,
+                'email' => null,
+                'mobile' => null,
+                'rc_uid' => 0,
+                'title'  => '',
+                'company' => '',
+                'gender' => $oauthData['full_info']['sex']??0,
+                'password' => time(),
+                'status' => 1,
+                'visit_ip' => $request->getClientIp(),
+                'source' => User::USER_SOURCE_WEIXIN_GZH,
+            ]);
+            $new_user->attachRole(2); //默认注册为普通用户角色
+            $new_user->userData->email_status = 1;
+            $new_user->userData->save();
+            $new_user->avatar = $oauthData->avatar;
+            $new_user->save();
+            $oauthData->user_id = $new_user->id;
+            $oauthData->save();
+            //注册事件通知
+            event(new UserRegistered($new_user,$oauthData->id,'微信APP'));
+            $token = $JWTAuth->fromUser($new_user);
         }
         return self::createJsonData(true,['token'=>$token]);
     }

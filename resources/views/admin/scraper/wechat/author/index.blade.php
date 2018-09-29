@@ -27,6 +27,9 @@
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
+                                            <input type="text" class="form-control" name="wx_hao" placeholder="公众号" value="{{ $filter['wx_hao'] or '' }}"/>
+                                        </div>
+                                        <div class="col-xs-2">
                                             <select class="form-control" name="status">
                                                 <option value="-1">--状态--</option>
                                                 @foreach(trans_common_status('all') as $key => $status)
@@ -38,7 +41,9 @@
                                             <button type="submit" class="btn btn-primary">搜索</button>
                                         </div>
                                     </form>
-                                    <a class="btn btn-default" href="{{ route('admin.scraper.wechat.author.sync') }}" data-toggle="tooltip" title="抓取数据"><i class="fa fa-refresh"></i></a>
+                                    <div class="col-xs-1">
+                                        <a class="btn btn-default" href="{{ route('admin.scraper.wechat.author.sync') }}" data-toggle="tooltip" title="抓取数据"><i class="fa fa-refresh"></i></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

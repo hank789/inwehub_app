@@ -1,23 +1,23 @@
 @extends('admin/public/layout')
 
-@section('title')文章待处理@endsection
+@section('title')招聘信息@endsection
 @section('css')
     <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
 @endsection
 @section('content')
     <section class="content-header">
-        <h1>待处理文章</h1>
+        <h1>招聘信息</h1>
     </section>
     <section id="article_content" class="content">
         <div class="row">
-            <div class="col-xs-12 col-lg-4 col-md-4">
+            <div class="col-xs-12 col-lg-12 col-md-12">
                 <div class="box">
                         <div class="box-header">
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="row">
-                                        <form name="searchForm" action="{{ route('admin.scraper.article.index') }}">
+                                        <form name="searchForm" action="{{ route('admin.scraper.jobs.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <div class="col-xs-4">
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
@@ -47,28 +47,20 @@
                                         <th>标题</th>
                                     </tr>
                                     @foreach($articles as $article)
-                                        <tr id="submission_{{ $article->_id }}">
+                                        <tr id="submission_{{ $article->id }}">
                                             <td style="white-space: normal;">
-                                                <a class="btn-viewinfo" href="javascript:void(0)" data-id="{{ $article->_id }}" data-url="{{ $article->content_url }}" data-title="{{ $article->title }}" data-description="{{ $article->description }}" data-body="{{ $article->body }}">{{ str_limit(strip_tags($article->title)) }}</a>
-                                                <br>{{ $article->date_time }}
-                                                <br>来源：{{ $article->withAuthor()->name }}  圈子：{{ $article->withAuthor()->group->name }}
+                                                <a class="btn-viewinfo" href="{{ $article->source_url }}" target="_blank">{{ str_limit(strip_tags($article->title)) }}</a>
+                                                <br>圈子：{{ $article->group->name }}
+                                                <br>公司：{{ $article->company }},地区：{{ $article->city }},关键词：{{ $article->tags }}
+                                                <br>{{ $article->summary }}
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default btn-sm" data-toggle="tooltip" title="查看文章" href="javascript:void(0)" onclick="openUrl({{ $article->_id }}, '{{ $article->content_url }}')" target="_blank"><i class="fa fa-eye"></i></a>
+                                                    <a class="btn btn-default btn-sm" data-toggle="tooltip" title="查看文章" href="{{ $article->source_url }}" target="_blank"><i class="fa fa-eye"></i></a>
                                                     @if ($article->topic_id <= 0)
-                                                        <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" id="submission_publish_{{ $article->_id }}" title="发布文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-check-square-o"></i></a>
-                                                    @endif
-                                                    @if (!$article->isRecommendRead())
-                                                        <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $article->_id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $article->_id }}" data-title="{{ $article->title }}"><i class="fa fa-heart"></i></a>
+                                                        <a class="btn btn-default btn-sm btn-publish" data-toggle="tooltip" id="submission_publish_{{ $article->id }}" title="发布文章" data-source_id = "{{ $article->id }}"><i class="fa fa-check-square-o"></i></a>
                                                     @endif
                                                     @if ($article->topic_id <= 0 && $article->status==1)
-                                                        <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->_id }}"><i class="fa fa-trash-o"></i></a>
+                                                        <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->id }}"><i class="fa fa-trash-o"></i></a>
                                                     @endif
-                                                    <select onchange="setSupportType({{ $article->_id }},this)">
-                                                        <option value="1" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 1 : true) selected @endif> 赞|踩</option>
-                                                        <option value="2" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 2 : false) selected @endif> 看好|不看好</option>
-                                                        <option value="3" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 3 : false) selected @endif> 支持|反对</option>
-                                                        <option value="4" @if(($article->topic_id && $article->submission()) ? $article->submission()->support_type == 4 : false) selected @endif> 意外|不意外</option>
-                                                    </select>
                                                 </div>
                                             </td>
                                         </tr>
@@ -92,29 +84,6 @@
                                 </div>
                             </div>
                         </div>
-                </div>
-            </div>
-            <div class="col-lg-8 col-md-8" id="article_html" style="display:none;">
-                <div id="article_body_html" data-spy="affix" class="row pre-scrollable" style="min-height: 500px;margin-top: -70px;" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="btn btn-default" onclick="closeModal()">Close</button><h4 class="modal-title" id="article_title"></h4>
-                            </div>
-                            <div class="modal-body">
-                                <div id="article_description"></div>
-                                <div id="article_body"></div>
-                            </div>
-                            <div class="modal-footer" style="text-align: left;">
-                                <div class="btn-group-md" >
-                                    <button type="button" class="btn btn-default" onclick="closeModal()">Close</button>
-                                    <a class="btn btn-default btn-sm btn-publish" id="article_btn_publish" data-toggle="tooltip" title="发布文章" data-source_id = "0" data-button_type="1"><i class="fa fa-check-square-o"></i></a>
-                                    <a class="btn btn-default btn-sm btn-setfav" id="article_btn_setfav" data-toggle="tooltip" title="设为精选" data-source_id = "0" data-title="0"><i class="fa fa-heart"></i></a>
-                                    <a class="btn btn-default btn-sm btn-delete" id="article_btn_delete" data-toggle="tooltip" title="删除文章" data-source_id = "0"><i class="fa fa-trash-o"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -172,11 +141,11 @@
 @section('script')
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
-        set_active_menu('operations',"{{ route('admin.scraper.article.index') }}");
+        set_active_menu('operations',"{{ route('admin.scraper.jobs.index') }}");
         var readArticle = [];
         var publishArticle = [];
         function setSupportType(id,obj) {
-            $.post('/admin/scraper/setSupportType',{id: id, support_type: obj.value},function(msg){
+            $.post('/admin/scraper/jobs/setSupportType',{id: id, support_type: obj.value},function(msg){
 
             });
         }
@@ -188,10 +157,10 @@
             $('#article_html').css('display','none');
         }
         function deleteRead() {
-            if(!confirm('确认删除已读文章？')){
+            if(!confirm('确认删除已读信息？')){
                 return false;
             }
-            $.post('/admin/scraper/article/destroy',{ids: readArticle, ignoreIds: publishArticle},function(msg){
+            $.post('/admin/scraper/jobs/destroy',{ids: readArticle, ignoreIds: publishArticle},function(msg){
                 readArticle.forEach(function (item, index) {
                     $("#submission_" + item).css('display','none');
                 });
@@ -204,39 +173,11 @@
                 placeholder: "标签"
             });
 
-            $(".btn-viewinfo").click(function(){
-                $('#article_html').css('display','block');
-                if(/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
-                    $('#article_body_html').css('max-width',window.screen.width + 'px');
-                } else {
-                    $('#article_body_html').css('max-width','1024px');
-                }
-                var title = $(this).data('title');
-                var description = $(this).data('description');
-                var body = $(this).data('body');
-                var url = $(this).data('url');
-                var id = $(this).data('id');
-                $("#submission_" + id).css('background-color','#ecf0f5');
-                readArticle.push(id);
-                console.log(readArticle);
-
-                $("#article_title").html("<a target='_blank' href='"+url+"'>" + title + "</a>");
-                $("#article_description").html(description);
-                $("#article_body").html(body);
-
-                $("#article_btn_setfav").data('source_id', id);
-                $("#article_btn_setfav").data('title', title);
-
-                $("#article_btn_publish").data('source_id', id);
-                $("#article_btn_delete").data('source_id', id);
-                $("#article_body_html").scrollTop(10);
-            });
-
             $("#select_tags_id").change(function(){
                 $("#tagIds").val($("#select_tags_id").val());
             });
             $(".btn-delete").click(function(){
-                if(!confirm('确认删除该文章？')){
+                if(!confirm('确认删除该信息？')){
                     return false;
                 }
                 $(this).button('loading');
@@ -246,7 +187,7 @@
                 $.ajax({
                     type: "post",
                     data: {ids: [source_id]},
-                    url:"/admin/scraper/article/destroy",
+                    url:"/admin/scraper/jobs/destroy",
                     success: function(data){
                         if(data.code > 0){
                             alert(data.message);
@@ -269,7 +210,7 @@
             });
             $("#set_fav_submit").click(function(){
                 var id = $("#id").val();
-                $.post('/admin/scraper/article/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
+                $.post('/admin/scraper/jobs/verify_recommend',{id: id,title: $("#title").val(),tagIds: $("#tagIds").val(),tips: $("#tips").val()},function(msg){
                     publishArticle.push(id);
                     console.log(publishArticle);
                 });
@@ -282,7 +223,7 @@
                 var follow_btn = $(this);
                 var source_id = $(this).data('source_id');
                 var button_type = $(this).data('button_type');
-                $.post('/admin/scraper/article/publish',{ids: [source_id]},function(msg){
+                $.post('/admin/scraper/jobs/publish',{ids: [source_id]},function(msg){
                     publishArticle.push(source_id);
                     if (button_type) {
                         $("#submission_" + source_id).css('display','none');
