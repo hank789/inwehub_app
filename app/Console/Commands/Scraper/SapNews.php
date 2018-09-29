@@ -140,7 +140,7 @@ class SapNews extends Command {
                             $submission->created_at = $dateTime;
                             $submission->save();
                         }
-                        dispatch((new NewSubmissionJob($submission->id)));
+                        dispatch((new NewSubmissionJob($submission->id,true)));
                     } catch (\Exception $e) {
                         app('sentry')->captureException($e, ['url' => $item['link'], 'title' => $item['title']]);
                         sleep(5);

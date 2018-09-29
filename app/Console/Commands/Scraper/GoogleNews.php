@@ -140,7 +140,7 @@ class GoogleNews extends Command {
                             $submission->created_at = date('Y-m-d H:i:s',$dateTime);
                             $submission->save();
                         }
-                        dispatch((new NewSubmissionJob($submission->id)));
+                        dispatch((new NewSubmissionJob($submission->id,true)));
                     } catch (\Exception $e) {
                         app('sentry')->captureException($e,['url'=>'https://news.google.com/'.$item['link'],'title'=>$item['title']]);
                         sleep(5);

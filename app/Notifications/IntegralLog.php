@@ -154,7 +154,7 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
             ];
         }
 
-        return \Slack::to(config('slack.ask_activity_channel'))
+        return \Slack::to(config('slack.auto_channel'))
             ->attach(
                 [
                     'fields' => $fields
