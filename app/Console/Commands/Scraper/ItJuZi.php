@@ -134,7 +134,7 @@ class ItJuZi extends Command {
                             'views'         => 1,
                         ]);
                         Tag::multiAddByName('企业服务',$submission,1);
-                        dispatch((new NewSubmissionJob($submission->id)));
+                        dispatch((new NewSubmissionJob($submission->id,true)));
                     }
                 }
                 if ($page > $pageTotal) return;
