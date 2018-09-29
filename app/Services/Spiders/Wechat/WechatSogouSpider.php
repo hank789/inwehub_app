@@ -12,7 +12,7 @@ use QL\QueryList;
  * @email:    hank.HuiWang@gmail.com
  */
 
-class WechatSpider
+class WechatSogouSpider
 {
 
     /**

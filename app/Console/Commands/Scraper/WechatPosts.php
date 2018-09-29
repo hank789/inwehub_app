@@ -5,7 +5,7 @@ use App\Logic\TaskLogic;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Services\RateLimiter;
-use App\Services\Spiders\Wechat\WechatSpider;
+use App\Services\Spiders\Wechat\WechatSogouSpider;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -54,7 +54,7 @@ class WechatPosts extends Command {
             validateProxyIps($domain);
             //shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
             getProxyIps(5,$domain);
-            $spider = new WechatSpider();
+            $spider = new WechatSogouSpider();
             $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
             $succ_count = 0;
             foreach ($mpInfos as $mpInfo) {
