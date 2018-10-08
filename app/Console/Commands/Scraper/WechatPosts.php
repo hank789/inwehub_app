@@ -22,7 +22,7 @@ class WechatPosts extends Command {
      *
      * @var string
      */
-    protected $signature = 'scraper:wechat:posts';
+    protected $signature = 'scraper:wechat:posts {gzh?}';
     /**
      * The console command description.
      *
@@ -55,7 +55,14 @@ class WechatPosts extends Command {
             //shell_exec('cd '.$path.' && python updatemp.py >> /tmp/updatemp.log');
             getProxyIps(5,$domain);
             $spider = new WechatSogouSpider();
-            $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
+            $gzh = $this->argument('gzh');
+            $notify = true;
+            if ($gzh) {
+                $notify = false;
+                $mpInfos = WechatMpInfo::where('status',1)->where('wx_hao',$gzh)->orderBy('update_time','asc')->get();
+            } else {
+                $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
+            }
             $succ_count = 0;
             foreach ($mpInfos as $mpInfo) {
                 $this->info($mpInfo->name);
@@ -130,7 +137,7 @@ class WechatPosts extends Command {
                 }
             } else {
                 $count = count($articles);
-                if ($count > 0) {
+                if ($count > 0 && $notify) {
                     TaskLogic::alertManagerPendingArticles($count);
                 }
             }

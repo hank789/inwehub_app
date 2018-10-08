@@ -1831,3 +1831,36 @@ if (!function_exists('convertWechatTempLink')) {
     }
 }
 
+if (!function_exists('convertWechatTempLinkToForever')) {
+    function convertWechatTempLinkToForever($tempUrl) {
+        try {
+            $ql = \QL\QueryList::getInstance();
+            $url = $ql->post('http://47.104.218.0:81/getA8Key?apiKey=cpopweixin_share',['tempUrl'=>$tempUrl])->getHtml();
+            $ch = curl_init();
+            $headers = [];
+            $headers[] = 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6';
+            $headers[] = 'Cache-Control: no-cache';
+            $headers[] = 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0';
+            curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+            curl_setopt($ch,CURLOPT_HTTPHEADER,$headers);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+
+            curl_exec($ch);
+            $headers = curl_getinfo($ch);
+            curl_close($ch);
+            $link = $headers['url'];
+            if (str_contains($link,'__biz=')) {
+                return $link;
+            } else {
+                return '';
+            }
+        } catch (Exception $e) {
+            return '';
+        }
+    }
+}
+
+

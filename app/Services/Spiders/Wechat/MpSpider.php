@@ -41,6 +41,7 @@ class MpSpider {
     public function getGzhInfo($wx_hao) {
         $url = $this->mpUrl.'/cgi-bin/searchbiz?action=search_biz&token='.$this->token.'&lang=zh_CN&f=json&ajax=1&random=0.930593749582243&query='.$wx_hao.'&begin=0&count=5';
         $data = $this->ql->get($url,null,[
+            'cookies' => null,
             'headers' => [
                 'Host'   => 'mp.weixin.qq.com',
                 'X-Requested-With' => 'XMLHttpRequest',
@@ -65,10 +66,11 @@ class MpSpider {
                 'fakeid' => $mpInfo['fakeid']
             ];
         } elseif ($dataArr['base_resp']['ret'] == 200013) {
-            //抓取太频繁直接退出
+            //抓取太频繁
+            var_dump($dataArr);
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
-            exit();
         } elseif ($dataArr['base_resp']['ret'] != 0) {
+            var_dump($dataArr);
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
         } else {
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
@@ -80,7 +82,7 @@ class MpSpider {
     public function getGzhArticles(WechatMpInfo $mpInfo) {
         $mp = $this->getGzhInfo($mpInfo->wx_hao);
         if (!$mp) {
-            return [];
+            return false;
         }
         $url = $this->mpUrl.'/cgi-bin/appmsg?token='.$this->token.'&lang=zh_CN&f=json&ajax=1&random=0.5033763103689131&action=list_ex&begin=0&count=5&query=&fakeid='.urlencode($mp['fakeid']).'&type=9';
         $data =$this->ql->get($url,null,[
