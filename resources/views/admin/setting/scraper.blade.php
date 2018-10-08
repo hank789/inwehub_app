@@ -70,6 +70,22 @@
                                         @if($errors->has('scraper_jianyu360_app_cookie')) <p class="help-block">{{ $errors->first('scraper_jianyu360_app_cookie') }}</p> @endif
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>微信公众号Cookie</td>
+                                    <td>
+                                        <div class="col-md-12 @if ($errors->has('scraper_wechat_gzh_cookie')) has-error @endif ">
+                                            <input type="text" class="form-control" name="scraper_wechat_gzh_cookie" value="{{ old('scraper_wechat_gzh_cookie',Setting()->get('scraper_wechat_gzh_cookie','')) }}" /></div>
+                                        @if($errors->has('scraper_wechat_gzh_cookie')) <p class="help-block">{{ $errors->first('scraper_wechat_gzh_cookie') }}</p> @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>微信公众号Token</td>
+                                    <td>
+                                        <div class="col-md-12 @if ($errors->has('scraper_wechat_gzh_token')) has-error @endif ">
+                                            <input type="text" class="form-control" name="scraper_wechat_gzh_token" value="{{ old('scraper_wechat_gzh_token',Setting()->get('scraper_wechat_gzh_token','')) }}" /></div>
+                                        @if($errors->has('scraper_wechat_gzh_token')) <p class="help-block">{{ $errors->first('scraper_wechat_gzh_token') }}</p> @endif
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>

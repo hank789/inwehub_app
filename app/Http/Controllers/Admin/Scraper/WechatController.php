@@ -105,7 +105,7 @@ class WechatController extends AdminController
     }
 
     public function sync(Request $request){
-        Artisan::queue('scraper:wechat:author');
+        Artisan::queue('scraper:wechat:gzh:author');
         return $this->success(route('admin.scraper.wechat.author.index'),'正在抓取公众号数据,请稍候');
     }
 
@@ -168,7 +168,7 @@ class WechatController extends AdminController
 
         if($news){
             $message = '发布成功!请稍等片刻,正在为您抓取公众号信息 ';
-            Artisan::queue('scraper:wechat:author');
+            Artisan::queue('scraper:wechat:gzh:author');
             return $this->success(route('admin.scraper.wechat.author.index'),$message);
         }
 
