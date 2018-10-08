@@ -68,7 +68,7 @@ class WechatMpPosts extends Command {
                     'mp_id' => $mpInfo->_id,
                     'author' => '',
                     'msg_index' => $wz_item['itemidx'],
-                    'copyright_stat' => $wz_item['copyright_stat'],
+                    'copyright_stat' => 100,
                     'qunfa_id' => 0,
                     'type' => 49,
                     'like_count' => 0,
@@ -81,6 +81,7 @@ class WechatMpPosts extends Command {
                     dispatch(new ArticleToSubmission($article->_id));
                 }
             }
+            sleep(5);
         }
         $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
         if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
