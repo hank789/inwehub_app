@@ -670,43 +670,7 @@ class AuthController extends Controller
                 return self::createJsonData(true,['token'=>'','mobile'=>$mobile,'avatar'=>$user->avatar,'name'=>$user->name,'is_expert'=>$user->is_expert],$oauthData?ApiException::USER_PHONE_EXIST_BIND_WECHAT:ApiException::USER_PHONE_EXIST_NOT_BIND_WECHAT);
             }
             if ($type == 2 && !$oauthData) {
-                //如果有结算中的余额，暂时不处理
-                $remain_money = $loginUser->userMoney->settlement_money+$loginUser->userMoney->total_money;
-                if ($remain_money>0) {
-                    throw new ApiException(ApiException::USER_HAS_MONEY_REMAIN);
-                }
-                //合并微信账户
-                //1.当前用户的微信登陆信息都改为手机号用户的id
-                UserOauth::where('user_id',$loginUser->id)->update(['user_id'=>$user->id]);
-                //2.当前用户加入的圈子
-                $groupIds = GroupMember::where('user_id',$user->id)->pluck('group_id')->toArray();
-                GroupMember::where('user_id',$loginUser->id)->whereNotIn('group_id',$groupIds)->update(['user_id'=>$user->id]);
-                //合并关注
-                $attentions = Attention::where('user_id',$loginUser->id)->get();
-                foreach ($attentions as $attention) {
-                    $existA = Attention::where('user_id',$user->id)
-                        ->where('source_id',$attention->source_id)
-                        ->where('source_type',$attention->source_type)->first();
-                    if (!$existA) {
-                        $attention->user_id = $user->id;
-                        $attention->save();
-                    }
-                }
-                $attentionUsers = Attention::where('source_id',$loginUser->id)
-                    ->where('source_type',get_class($user))->get();
-                foreach ($attentionUsers as $attentionUser) {
-                    $existB = Attention::where('user_id',$attentionUser->user_id)
-                        ->where('source_id',$user->id)
-                        ->where('source_type',get_class($user))->first();
-                    if (!$existB) {
-                        $attentionUser->source_id = $user->id;
-                        $attentionUser->save();
-                    }
-                }
-                Doing::where('user_id',$loginUser->id)->update(['user_id'=>$user->id]);
-                //3.当前用户状态改为不可用
-                $loginUser->status = -1;
-                $loginUser->save();
+                $user->mergeUser($loginUser);
                 //现token实现
                 $JWTAuth->setRequest($request)->parseToken()->refresh();
                 $newToken = $JWTAuth->fromUser($user);

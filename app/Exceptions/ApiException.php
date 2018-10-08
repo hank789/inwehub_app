@@ -68,6 +68,8 @@ class ApiException extends Exception
     const USER_PHONE_EXIST_BIND_WECHAT = 1128;
     const USER_NEED_VALID_PHONE = 1129;
     const USER_HAS_MONEY_REMAIN = 1130;
+    const USER_WECHAT_EXIST_NOT_BIND_PHONE = 1131;
+    const USER_WECHAT_ALREADY_BIND = 1132;
 
     //问答模块响应码
     const ASK_NEED_USER_INFORMATION = 3000;
@@ -173,6 +175,8 @@ class ApiException extends Exception
         self::USER_PHONE_EXIST_BIND_WECHAT => '此手机号已绑定其它微信',
         self::USER_NEED_VALID_PHONE => '需要验证手机号',
         self::USER_HAS_MONEY_REMAIN => '当前用户账户余额大于0',
+        self::USER_WECHAT_EXIST_NOT_BIND_PHONE => '微信已注册但未绑定手机号',
+        self::USER_WECHAT_ALREADY_BIND => '微信已绑定',
 
 
         //问答模块
