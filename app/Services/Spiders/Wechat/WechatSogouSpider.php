@@ -110,7 +110,7 @@ class WechatSogouSpider
                         $content->setHtml($wzHtml);
                         $sogouTitle = $content->find('title')->text();
                         if (!str_contains($sogouTitle,'请输入验证码')) {
-                            var_dump('抓取文章列表成功');
+                            var_dump('Shadowsocks抓取文章列表成功');
                             break;
                         } else {
                             $this->ssIpLocked = true;
