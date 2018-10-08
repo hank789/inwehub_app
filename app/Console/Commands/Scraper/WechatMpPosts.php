@@ -49,7 +49,8 @@ class WechatMpPosts extends Command {
         $spider = new MpSpider();
         foreach ($mpInfos as $mpInfo) {
             $this->info($mpInfo->name);
-            #查看一下该号今天是否已经发送文章
+            //一个小时内刚处理过的跳过
+            if (strtotime($mpInfo->update_time) >= strtotime('-90 minutes')) continue;
             $wz_list = $spider->getGzhArticles($mpInfo);
             if ($wz_list === false) {
                 Artisan::queue('scraper:wechat:posts');
