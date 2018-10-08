@@ -91,6 +91,15 @@ class WechatSogouSpider
             $ip = $ips[0]??'';
             if ($i>=14) $ip =null;
             var_dump($ip);
+            if (empty($mpInfo->wz_url)) {
+                $newData = $this->getGzhInfo($mpInfo->wx_hao);
+                if (empty($newData['name'])) {
+                    event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
+                    return [];
+                }
+                $mpInfo->wz_url = $newData['url'];
+                $mpInfo->save();
+            }
             $content = $this->requestUrl($mpInfo->wz_url,$ip);
             if ($content) {
                 $sogouTitle = $content->find('title')->text();

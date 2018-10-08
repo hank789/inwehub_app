@@ -66,8 +66,6 @@ class WechatMpAuthor extends Command {
                             'create_time' => date('Y-m-d H:i:s')
                         ]);
                     }
-                } else {
-                    event(new ExceptionNotify('抓取微信公众号失败：'.$item->wx_hao));
                 }
                 $item->delete();
             }

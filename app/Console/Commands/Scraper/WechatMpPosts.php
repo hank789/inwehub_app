@@ -6,9 +6,9 @@ use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\MpSpider;
-use App\Services\Spiders\Wechat\WechatSogouSpider;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * @author: wanghui
@@ -51,6 +51,10 @@ class WechatMpPosts extends Command {
             $this->info($mpInfo->name);
             #查看一下该号今天是否已经发送文章
             $wz_list = $spider->getGzhArticles($mpInfo);
+            if ($wz_list === false) {
+                Artisan::queue('scraper:wechat:posts');
+                return;
+            }
             foreach ($wz_list as $wz_item) {
                 $this->info($wz_item['title']);
                 if ($wz_item['update_time'] <= strtotime('-2 days')) continue;
@@ -81,7 +85,7 @@ class WechatMpPosts extends Command {
                     dispatch(new ArticleToSubmission($article->_id));
                 }
             }
-            sleep(10);
+            sleep(15);
         }
         $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
         if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
