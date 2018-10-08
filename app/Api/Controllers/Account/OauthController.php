@@ -59,9 +59,9 @@ class OauthController extends Controller
             } elseif ($user->id > 0 && $oauthGzhData->user_id != $user->id) {
                 if ($oauthGzhData->user->mobile) {
                     //微信认证已绑定其它手机号
-                    throw new ApiException(ApiException::USER_OAUTH_BIND_OTHERS);
+                    return self::createJsonData(true,['wechat_name'=>$oauthGzhData->nickname,'avatar'=>$oauthGzhData->user->avatar,'name'=>$oauthGzhData->user->name,'is_expert'=>$oauthGzhData->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
                 } elseif ($bindType == 1){
-                    throw new ApiException(ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
+                    return self::createJsonData(true,['wechat_name'=>$oauthGzhData->nickname,'avatar'=>$oauthGzhData->user->avatar,'name'=>$oauthGzhData->user->name,'is_expert'=>$oauthGzhData->user->is_expert],ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
                 }
             } elseif ($user->id > 0 && $oauthGzhData->user_id == $user->id) {
                 event(new UserLoggedIn($user,'App内微信'));
@@ -80,16 +80,16 @@ class OauthController extends Controller
             } elseif ($user->id > 0 && $object->user_id != $user->id) {
                 if ($object->user->mobile) {
                     //微信认证已绑定其它手机号
-                    throw new ApiException(ApiException::USER_OAUTH_BIND_OTHERS);
+                    return self::createJsonData(true,['wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
                 } elseif ($bindType == 1){
-                    throw new ApiException(ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
+                    return self::createJsonData(true,['wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
                 }
             } elseif ($user->id > 0 && $object->user_id == $user->id) {
                 event(new UserLoggedIn($user,'App内微信'));
                 return self::createJsonData(true,['token'=>$token]);
             }
             if($object->user_id && $object->user_id != $user->id && $bindType == 1){
-                throw new ApiException(ApiException::USER_OAUTH_BIND_OTHERS);
+                return self::createJsonData(true,['wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
             }
         }
 
