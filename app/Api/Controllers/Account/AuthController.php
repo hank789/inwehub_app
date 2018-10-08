@@ -717,7 +717,7 @@ class AuthController extends Controller
             $loginUser->mobile = $mobile;
             $loginUser->save();
         }
-        $newToken = $JWTAuth->getToken();
+        $newToken = $JWTAuth->fromUser($loginUser);
 
         return self::createJsonData(true,['token'=>$newToken,'mobile'=>$mobile,'avatar'=>$loginUser->avatar,'name'=>$loginUser->name,'is_expert'=>$loginUser->is_expert]);
     }
