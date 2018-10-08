@@ -1856,9 +1856,11 @@ if (!function_exists('convertWechatTempLinkToForever')) {
             if (str_contains($link,'__biz=')) {
                 return $link;
             } else {
+                event(new \App\Events\Frontend\System\ExceptionNotify('convertWechatTempLinkToForever:'.$link));
                 return '';
             }
         } catch (Exception $e) {
+            app('sentry')->captureException($e);
             return '';
         }
     }
