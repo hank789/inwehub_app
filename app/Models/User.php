@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models;
+use App\Exceptions\ApiException;
+use App\Models\Groups\GroupMember;
 use App\Models\IM\Message;
 use App\Models\Pay\UserMoney;
 use App\Models\Relations\HasRoleAndPermission;
@@ -715,6 +717,49 @@ class User extends Model implements AuthenticatableContract,
             return false;
         }
         return true;
+    }
+
+    //合并用户
+    public function mergeUser(User $fromUser) {
+        if ($this->id == $fromUser->id) return;
+        $user = $this;
+        //如果有结算中的余额，暂时不处理
+        $remain_money = $fromUser->userMoney->settlement_money+$fromUser->userMoney->total_money;
+        if ($remain_money>0) {
+            throw new ApiException(ApiException::USER_HAS_MONEY_REMAIN);
+        }
+        //合并微信账户
+        //1.当前用户的微信登陆信息都改为手机号用户的id
+        UserOauth::where('user_id',$fromUser->id)->update(['user_id'=>$user->id]);
+        //2.当前用户加入的圈子
+        $groupIds = GroupMember::where('user_id',$user->id)->pluck('group_id')->toArray();
+        GroupMember::where('user_id',$fromUser->id)->whereNotIn('group_id',$groupIds)->update(['user_id'=>$user->id]);
+        //合并关注
+        $attentions = Attention::where('user_id',$fromUser->id)->get();
+        foreach ($attentions as $attention) {
+            $existA = Attention::where('user_id',$user->id)
+                ->where('source_id',$attention->source_id)
+                ->where('source_type',$attention->source_type)->first();
+            if (!$existA) {
+                $attention->user_id = $user->id;
+                $attention->save();
+            }
+        }
+        $attentionUsers = Attention::where('source_id',$fromUser->id)
+            ->where('source_type',get_class($user))->get();
+        foreach ($attentionUsers as $attentionUser) {
+            $existB = Attention::where('user_id',$attentionUser->user_id)
+                ->where('source_id',$user->id)
+                ->where('source_type',get_class($user))->first();
+            if (!$existB) {
+                $attentionUser->source_id = $user->id;
+                $attentionUser->save();
+            }
+        }
+        Doing::where('user_id',$fromUser->id)->update(['user_id'=>$user->id]);
+        //3.用户状态改为不可用
+        $fromUser->status = -1;
+        $fromUser->save();
     }
 
     public static function genRcCode(){
