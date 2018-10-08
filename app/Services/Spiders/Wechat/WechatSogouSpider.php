@@ -113,6 +113,11 @@ class WechatSogouSpider
                             var_dump('Shadowsocks抓取文章列表成功');
                             break;
                         } else {
+                            var_dump('Shadowsocks需要验证码');
+                            $jiefengR = $this->jiefeng2(true);
+                            if ($jiefengR && $jiefengR['ret'] != -6) {
+                                continue;
+                            }
                             $this->ssIpLocked = true;
                         }
                     }
@@ -285,7 +290,7 @@ class WechatSogouSpider
         }
     }
 
-    public function jiefeng2() {
+    public function jiefeng2($proxy=false) {
         if ($this->proxyIp) return false;
         $time = explode(' ',microtime());
         $timever = $time[1].($time[0] * 1000);
@@ -299,7 +304,11 @@ class WechatSogouSpider
             'input'=> $img_code,
             'appmsg_token' => ''
         ];
-        $result2 = $this->ql->post($post_url,$post_data)->getHtml();
+        $otherArgs = [];
+        if ($proxy) {
+            $otherArgs = ['proxy' => 'socks5h://127.0.0.1:1080'];
+        }
+        $result2 = $this->ql->post($post_url,$post_data,$otherArgs)->getHtml();
         var_dump($result2);
         return json_decode($result2,true);
     }
