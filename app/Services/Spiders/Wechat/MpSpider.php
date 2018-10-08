@@ -64,6 +64,10 @@ class MpSpider {
                 'last_qunfa_id' => 0,
                 'fakeid' => $mpInfo['fakeid']
             ];
+        } elseif ($dataArr['base_resp']['ret'] == 200013) {
+            //抓取太频繁直接退出
+            event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
+            exit();
         } elseif ($dataArr['base_resp']['ret'] != 0) {
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
         } else {

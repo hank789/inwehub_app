@@ -81,7 +81,7 @@ class WechatMpPosts extends Command {
                     dispatch(new ArticleToSubmission($article->_id));
                 }
             }
-            sleep(5);
+            sleep(10);
         }
         $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
         if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
