@@ -1834,6 +1834,7 @@ if (!function_exists('convertWechatTempLink')) {
 if (!function_exists('convertWechatTempLinkToForever')) {
     function convertWechatTempLinkToForever($tempUrl) {
         try {
+            //www.cpopweixin.com
             $ql = \QL\QueryList::getInstance();
             $url = $ql->post('http://47.104.218.0:81/getA8Key?apiKey=cpopweixin_share',['tempUrl'=>$tempUrl])->getHtml();
             $ch = curl_init();
