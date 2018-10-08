@@ -53,7 +53,7 @@ class WechatMpPosts extends Command {
             if (strtotime($mpInfo->update_time) >= strtotime('-90 minutes')) continue;
             $wz_list = $spider->getGzhArticles($mpInfo);
             if ($wz_list === false) {
-                Artisan::queue('scraper:wechat:posts');
+                (new WechatPosts())->handle();
                 break;
             }
             foreach ($wz_list as $wz_item) {
