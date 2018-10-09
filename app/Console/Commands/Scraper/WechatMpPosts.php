@@ -47,6 +47,7 @@ class WechatMpPosts extends Command {
     {
         $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
         $spider = new MpSpider();
+        $successCount = 0;
         foreach ($mpInfos as $mpInfo) {
             $this->info($mpInfo->name);
             //一个小时内刚处理过的跳过
@@ -56,6 +57,7 @@ class WechatMpPosts extends Command {
                 Artisan::call('scraper:wechat:posts');
                 break;
             }
+            $successCount++;
             foreach ($wz_list as $wz_item) {
                 $this->info($wz_item['title']);
                 if ($wz_item['update_time'] <= strtotime('-2 days')) continue;
@@ -88,7 +90,7 @@ class WechatMpPosts extends Command {
             }
             $mpInfo->update_time = date('Y-m-d H:i:s');
             $mpInfo->save();
-            sleep(rand(20,25));
+            sleep(rand(25,30));
         }
         $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
         if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
