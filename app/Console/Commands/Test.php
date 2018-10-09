@@ -17,6 +17,7 @@ use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use PHPHtmlParser\Dom;
 use QL\Ext\PhantomJs;
@@ -46,15 +47,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $submissions = Submission::get();
-        foreach ($submissions as $submission) {
-            $supports = Support::where('supportable_type','=',get_class($submission))->where('supportable_id','=',$submission->id)->count();
-            $views = Doing::where('action',Doing::ACTION_VIEW_SUBMISSION)->where('source_id',$submission->id)->where('source_type',get_class($submission))->count();
-            $submission->upvotes = $supports;
-            $submission->views = $views;
-            $submission->save();
-            $submission->calculationRate();
-        }
+        Artisan::call('scraper:wechat:posts');
         return;
         $submissions = Submission::whereIn('group_id',[56])->get();
         foreach ($submissions as $submission) {
