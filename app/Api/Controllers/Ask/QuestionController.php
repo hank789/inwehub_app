@@ -63,6 +63,7 @@ class QuestionController extends Controller
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
 
         $is_self = $user->id == $question->user_id;
