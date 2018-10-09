@@ -118,7 +118,7 @@ class WechatController extends Controller
                     break;
             }
             if ($source_type_class) {
-                $this->doing($user->id,$action,$source_type_class,$target_id,$request->input('title'),$request->input('target'),0,$refer_user_id);
+                $this->doing($user,$action,$source_type_class,$target_id,$request->input('title'),$request->input('target'),0,$refer_user_id);
             }
         }
         return self::createJsonData(true);

@@ -17,12 +17,11 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Comment;
 use App\Models\Credit;
-use App\Models\Feed\Feed;
+use App\Models\Doing;
 use App\Models\Notification;
 use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
-use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Task;
 use App\Models\User;
@@ -112,7 +111,7 @@ trait BaseController {
 
     /**
      * 记录用户动态
-     * @param $user_id; 动态发起人
+     * @param $user; 动态发起人
      * @param $action;  动作 ['ask','answer',...]
      * @param $source_id; 问题或文章ID
      * @param $subject;   问题或文章标题
@@ -122,12 +121,15 @@ trait BaseController {
      * @param null $refer_content; 引用内容
      * @return static
      */
-    protected function doing($user_id,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content='')
+    protected function doing($user,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content='')
     {
-        if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user_id.'_'.$source_id)){
+        if (strpos($action,'view') === 0 || strpos($action,'share') === 0) {
+            event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].':'.$subject));
+        }
+        if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user->id.'_'.$source_id)){
             try {
                 dispatch(new SaveActivity([
-                    'user_id' => $user_id,
+                    'user_id' => $user->id,
                     'action' => $action,
                     'source_id' => $source_id,
                     'source_type' => $source_type,
@@ -453,7 +455,7 @@ trait BaseController {
                 UserTag::multiIncrement($loginUser->id,$question->tags()->get(),'questions');
 
                 /*记录动态*/
-                $this->doing($answer->user_id,$doing_prefix.'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
+                $this->doing($answer->user,$doing_prefix.'question_answered',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
 
                 /*记录通知*/
                 if ($question->user_id != $answer->user_id)
@@ -520,7 +522,7 @@ trait BaseController {
                 /*修改问题邀请表的回答状态*/
                 QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$loginUser->id)->update(['status'=>QuestionInvitation::STATUS_CONFIRMED]);
                 /*记录动态*/
-                $this->doing($answer->user_id,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
+                $this->doing($answer->user,'question_answer_confirmed',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id,$question->user_id);
                 RateLimiter::instance()->lock_release($lock_key);
                 event(new Answered($answer));
                 $question->user->notify(new NewQuestionConfirm($question->user_id,$question,$answer));

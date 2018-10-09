@@ -79,7 +79,7 @@ class QuestionController extends Controller {
         $tagString = $request->input('tags');
         Tag::multiSaveByIds($tagString,$question);
         //记录动态
-        $this->doing($question->user_id,'free_question_submit',get_class($question),$question->id,$question->title,'');
+        $this->doing($question->user,'free_question_submit',get_class($question),$question->id,$question->title,'');
         $user->userData()->increment('questions');
         UserTag::multiIncrement($user->id,$question->tags()->get(),'questions');
         //匿名互动提问的不加分
@@ -270,7 +270,7 @@ class QuestionController extends Controller {
             $myAnswer = Answer::where('question_id',$id)->where('user_id',$user->id)->first();
             if ($myAnswer) $my_answer_id = $myAnswer->id;
         }
-        $this->doing($user->id,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,'查看问题');
+        $this->doing($user,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,$question->title);
 
         return self::createJsonData(true,[
             'is_followed_question'=>$is_followed_question,

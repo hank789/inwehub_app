@@ -219,7 +219,7 @@ class ProfileController extends Controller
             try{
                 $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
                 if ($loginUser->id != $user->id) {
-                    $this->doing($loginUser->id,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,'查看简历');
+                    $this->doing($loginUser,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,$user->name);
                 }
                 $info_percent = $loginUser->getInfoCompletePercent(true);
                 $loginUserInfoCompletePercent = $info_percent['score'];

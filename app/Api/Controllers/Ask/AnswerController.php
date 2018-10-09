@@ -205,7 +205,7 @@ class AnswerController extends Controller
         ];
         $answer->increment('views');
         QuestionLogic::calculationQuestionRate($question->id);
-        $this->doing($user->id,Doing::ACTION_VIEW_ANSWER,get_class($answer),$answer->id,'查看回答');
+        $this->doing($user,Doing::ACTION_VIEW_ANSWER,get_class($answer),$answer->id,$answer->getContentText());
         $this->logUserViewTags($user->id,$question->tags()->get());
 
         return self::createJsonData(true,[
@@ -380,7 +380,7 @@ class AnswerController extends Controller
 
         $this->finishTask(get_class($answer),$answer->id,Task::ACTION_TYPE_ANSWER_FEEDBACK,[$request->user()->id]);
 
-        $this->doing($loginUser->id,'question_answer_feedback',get_class($answer),$answer->id,'回答评价',$feedback->content,$feedback->id,$answer->user_id,$answer->getContentText());
+        $this->doing($loginUser,Doing::ACTION_QUESTION_ANSWER_FEEDBACK,get_class($answer),$answer->id,$answer->getContentText(),$feedback->content,$feedback->id,$answer->user_id);
 
         $this->credit($loginUser->id,Credit::KEY_NEW_ANSWER_FEEDBACK,$feedback->id,'回答评价');
         $action = '';
@@ -490,7 +490,7 @@ class AnswerController extends Controller
         event(new PayForView($order));
         UserTag::multiIncrement($loginUser->id,$answer->question->tags()->get(),'questions');
 
-        $this->doing($loginUser->id,Doing::ACTION_PAY_FOR_VIEW_ANSWER,get_class($answer),$answer->id,'付费围观答案','',0,$answer->user_id);
+        $this->doing($loginUser,Doing::ACTION_PAY_FOR_VIEW_ANSWER,get_class($answer),$answer->id,$answer->getContentText(),'',0,$answer->user_id);
         $this->credit($answer->question->user_id,Credit::KEY_PAY_FOR_VIEW_ANSWER,$order->id,'问题被付费围观');
         self::$needRefresh = true;
         return self::createJsonData(true,[

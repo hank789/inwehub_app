@@ -146,7 +146,7 @@ class QuestionController extends Controller
 
 
             //记录动态
-            $this->doing($question->user_id,'ask',get_class($question),$question->id,$question->title,$question->description);
+            $this->doing($question->user,'ask',get_class($question),$question->id,$question->title,$question->description);
 
 
             /*邀请作答逻辑处理*/
@@ -262,7 +262,7 @@ class QuestionController extends Controller
             $question->increment('price',$request->input('coins'));
 
             DB::commit();
-            $this->doing($question->user_id,'append_reward',get_class($question),$question->id,$question->title,"追加了 ".$request->input('coins')." 个金币");
+            $this->doing($question->user,'append_reward',get_class($question),$question->id,$question->title,"追加了 ".$request->input('coins')." 个金币");
             return $this->success(route('ask.question.detail',['question_id'=>$id]),"追加悬赏成功");
 
         }catch (\Exception $e) {
@@ -366,7 +366,7 @@ class QuestionController extends Controller
         //已邀请
         $question->invitedAnswer();
         //记录动态
-        $this->doing($to_user_id,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
+        $this->doing($toUser,'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
         //记录任务
         $this->task($to_user_id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
 
@@ -425,7 +425,7 @@ class QuestionController extends Controller
         //已邀请
         $question->invitedAnswer();
         //记录动态
-        $this->doing($question->user_id,'question_answer_confirming',get_class($question),$question->id,$question->title,'');
+        $this->doing($question->user,'question_answer_confirming',get_class($question),$question->id,$question->title,'');
 
         if($invitation){
             $this->counter('question_invite_num_'.$loginUser->id,1);
