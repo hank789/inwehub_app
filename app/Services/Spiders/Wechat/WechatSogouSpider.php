@@ -227,6 +227,7 @@ class WechatSogouSpider
             }
         } else {
             event(new ExceptionNotify('抓取微信公众号['.$mpInfo->wx_hao.']文章失败'));
+            return false;
         }
         return $items;
     }
