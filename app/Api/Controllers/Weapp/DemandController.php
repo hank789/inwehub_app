@@ -39,6 +39,7 @@ class DemandController extends controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $type = $request->input('type');
         $data = [];
@@ -172,6 +173,7 @@ class DemandController extends controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $demand = Demand::findOrFail($request->input('id'));
         $demand->increment('views');
@@ -399,6 +401,7 @@ class DemandController extends controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $demand = Demand::findOrFail($request->input('id'));
         $im_rooms = Room::where('source_id',$demand->id)->where('source_type',get_class($demand))->paginate(Config::get('inwehub.api_data_page_size'));

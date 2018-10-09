@@ -161,6 +161,7 @@ class GroupController extends Controller
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $return = $group->toArray();
         $return['subscribers'] = $group->getHotIndex();
@@ -648,6 +649,7 @@ class GroupController extends Controller
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $groups = [];
         if ($days == 1) {

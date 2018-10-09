@@ -225,6 +225,7 @@ class SystemController extends Controller {
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
             $user_total_money = 0;
         }
         $config = get_pay_config();

@@ -554,6 +554,7 @@ class AnswerController extends Controller
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         //专业只有问题作者，回答者，付费围观的人才能看到回复
         $is_question_author = $user->id == $source->question->user_id;

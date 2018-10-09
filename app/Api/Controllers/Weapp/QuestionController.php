@@ -122,6 +122,7 @@ class QuestionController extends Controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
 
         $is_self = $user->id == $question->user_id;
@@ -330,6 +331,7 @@ class QuestionController extends Controller {
                 } else {
                     $user = new \stdClass();
                     $user->id = 0;
+                    $user->name = '游客';
                 }
                 $query = $query->where('user_id',$user->id);
                 break;
@@ -557,6 +559,7 @@ class QuestionController extends Controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $answers = $question->answers()->whereNull('adopted_at')->orderBy('supports','DESC')->orderBy('updated_at','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $answers->toArray();

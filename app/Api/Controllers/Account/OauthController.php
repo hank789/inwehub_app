@@ -46,6 +46,7 @@ class OauthController extends Controller
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         //微信公众号和微信app的openid不同，但是unionid相同
         $unionid = isset($data['full_info']['unionid'])?$data['full_info']['unionid']:'1';
