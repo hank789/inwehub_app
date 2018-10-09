@@ -124,7 +124,7 @@ trait BaseController {
     protected function doing($user,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content='')
     {
         if (strpos($action,'view') === 0 || strpos($action,'share') === 0) {
-            event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].':'.$subject));
+            event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].':'.strip_tags($subject)));
         }
         if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user->id.'_'.$source_id)){
             try {

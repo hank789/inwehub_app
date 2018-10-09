@@ -921,6 +921,7 @@ class QuestionController extends Controller
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
 
         $query = Question::where('questions.is_recommend',1)->where('questions.question_type',1);
@@ -999,6 +1000,7 @@ class QuestionController extends Controller
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $query = Question::where('questions.question_type',2);
 
@@ -1088,6 +1090,7 @@ class QuestionController extends Controller
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $is_self = $user->id == $question->user_id;
         $answers = $question->answers()->orderBy('adopted_at','DESC')->orderBy('supports','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));

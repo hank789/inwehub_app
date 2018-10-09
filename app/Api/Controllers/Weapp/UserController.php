@@ -218,6 +218,7 @@ class UserController extends controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $demand_ids = Demand::where('user_id',$user->id)->get()->pluck('id')->toArray();
         //获取未读消息数

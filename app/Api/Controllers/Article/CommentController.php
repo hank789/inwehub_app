@@ -92,6 +92,7 @@ class CommentController extends Controller {
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $orderBy = $request->input('order_by',1);
 

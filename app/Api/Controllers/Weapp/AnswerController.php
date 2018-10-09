@@ -60,6 +60,7 @@ class AnswerController extends Controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $query = Answer::where('user_id','=',$user->id);
         $answers = $query->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
