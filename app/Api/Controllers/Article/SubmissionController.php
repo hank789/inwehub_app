@@ -531,7 +531,7 @@ class SubmissionController extends Controller {
         }
 
         $this->logUserViewTags($user->id,$submission->tags()->get());
-        $this->doing($user->id,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,'查看动态');
+        $this->doing($user,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,$submission->title);
         return self::createJsonData(true,$return);
     }
 

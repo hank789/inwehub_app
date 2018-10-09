@@ -214,7 +214,7 @@ class QuestionController extends Controller
             $myAnswer = Answer::where('question_id',$id)->where('user_id',$user->id)->first();
             if ($myAnswer) $my_answer_id = $myAnswer->id;
         }
-        $this->doing($user->id,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,'查看问题');
+        $this->doing($user,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,$question->title);
         $this->logUserViewTags($user->id,$question->tags()->get());
         QuestionLogic::calculationQuestionRate($question->id);
         return self::createJsonData(true,[
@@ -465,7 +465,7 @@ class QuestionController extends Controller
             }
 
             //记录动态
-            $this->doing($question->user_id,$doing_prefix.'question_submit',get_class($question),$question->id,$question->title,'');
+            $this->doing($question->user,$doing_prefix.'question_submit',get_class($question),$question->id,$question->title,'');
 
             $waiting_second = rand(1,5);
 
@@ -540,7 +540,7 @@ class QuestionController extends Controller
                 //已邀请
                 $question->invitedAnswer();
                 //记录动态
-                $this->doing($toUser->id,$doing_prefix.'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
+                $this->doing($toUser,$doing_prefix.'question_invite_answer_confirming',get_class($question),$question->id,$question->title,'',0,$question->user_id);
                 //记录任务
                 $this->task($toUser->id,get_class($question),$question->id,Task::ACTION_TYPE_ANSWER);
                 //通知
@@ -804,7 +804,7 @@ class QuestionController extends Controller
         $tagString = trim($request->input('tags'));
         Tag::multiSaveByIds($tagString,$answer);
         /*记录动态*/
-        $this->doing($answer->user_id,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id);
+        $this->doing($answer->user,'question_answer_rejected',get_class($question),$question->id,$question->title,$answer->getContentText(),$answer->id);
         /*修改问题邀请表的回答状态*/
         QuestionInvitation::where('question_id','=',$question->id)->where('user_id','=',$request->user()->id)->update(['status'=>QuestionInvitation::STATUS_REJECTED]);
         self::$needRefresh = true;

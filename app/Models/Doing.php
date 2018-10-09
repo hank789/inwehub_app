@@ -56,8 +56,23 @@ class Doing extends Model
     const ACTION_SHARE_RESUME_SUCCESS = 'share_resume_success';
     const ACTION_SHARE_SUBMISSION_SUCCESS = 'share_submission_success';
     const ACTION_SHARE_INVITE_REGISTER_SUCCESS = 'share_invite_register_success';
+    const ACTION_QUESTION_ANSWER_FEEDBACK = 'question_answer_feedback';
 
 
+    public static $actionName = [
+        self::ACTION_VIEW_RESUME => '浏览简历',
+        self::ACTION_VIEW_PAY_QUESTION => '浏览问题',
+        self::ACTION_VIEW_FREE_QUESTION => '浏览问题',
+        self::ACTION_VIEW_ANSWER => '浏览回答',
+        self::ACTION_VIEW_SUBMISSION => '浏览文章',
+        self::ACTION_SHARE_QUESTION_SUCCESS => '分享问题',
+        self::ACTION_SHARE_ANSWER_SUCCESS => '分享回答',
+        self::ACTION_SHARE_INVITE_ANSWER_SUCCESS => '分享邀请回答',
+        self::ACTION_SHARE_RESUME_SUCCESS => '分享简历',
+        self::ACTION_SHARE_SUBMISSION_SUCCESS => '分享文章',
+        self::ACTION_SHARE_INVITE_REGISTER_SUCCESS => '分享邀请注册',
+
+    ];
 
     public function source()
     {
