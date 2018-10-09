@@ -79,8 +79,6 @@ class WechatPosts extends Command {
                 foreach ($wz_list as $wz_item) {
                     $temp_qunfa_id = $wz_item['qunfa_id'];
                     if ($last_qunfa_id >= $temp_qunfa_id) {
-                        $mpInfo->update_time = date('Y-m-d H:i:s');
-                        $mpInfo->save();
                         $this->info('没有更新文章');
                         break;
                     }
@@ -121,10 +119,10 @@ class WechatPosts extends Command {
                 if ($last_qunfa_id < $cur_qunfa_id) {
                     $mpInfo->last_qunfa_id = $cur_qunfa_id;
                     $mpInfo->last_qufa_time = $qunfa_time;
-                    $mpInfo->update_time = date('Y-m-d H:i:s');
-                    $mpInfo->save();
                 }
-                sleep(rand(5,15));
+                $mpInfo->update_time = date('Y-m-d H:i:s');
+                $mpInfo->save();
+                sleep(rand(8,15));
             }
             $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
             if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
