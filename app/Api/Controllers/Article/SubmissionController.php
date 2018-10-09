@@ -420,6 +420,7 @@ class SubmissionController extends Controller {
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
+            $user->name = '游客';
         }
         $submission = Submission::where('slug',$request->slug)->first();
         if (!$submission) {
