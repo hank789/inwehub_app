@@ -119,6 +119,7 @@ class WechatSogouSpider
                             }
                             $mpInfo->wz_url = $newData['url'];
                             $mpInfo->save();
+                            continue;
                         } elseif (!str_contains($sogouTitle,'请输入验证码')) {
                             var_dump('Shadowsocks抓取文章列表成功');
                             break;
