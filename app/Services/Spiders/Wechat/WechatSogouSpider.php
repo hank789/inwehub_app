@@ -109,7 +109,17 @@ class WechatSogouSpider
                         $wzHtml = curlShadowsocks($mpInfo->wz_url);
                         $content->setHtml($wzHtml);
                         $sogouTitle = $content->find('title')->text();
-                        if (!str_contains($sogouTitle,'请输入验证码')) {
+                        if (!$sogouTitle) {
+                            var_dump('链接已过期');
+                            //说明链接已过期
+                            $newData = $this->getGzhInfo($mpInfo->wx_hao);
+                            if (empty($newData['name'])) {
+                                event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
+                                return [];
+                            }
+                            $mpInfo->wz_url = $newData['url'];
+                            $mpInfo->save();
+                        } elseif (!str_contains($sogouTitle,'请输入验证码')) {
                             var_dump('Shadowsocks抓取文章列表成功');
                             break;
                         } else {
