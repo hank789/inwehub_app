@@ -38,16 +38,14 @@ class NewSubmissionJob implements ShouldQueue
 
     public $notifyAutoChannel = false;
 
+    public $additionalSlackMsg = '';
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct($id, $notifyAutoChannel = false)
+
+    public function __construct($id, $notifyAutoChannel = false, $additionalSlackMsg='')
     {
         $this->id = $id;
         $this->notifyAutoChannel = $notifyAutoChannel;
+        $this->additionalSlackMsg = $additionalSlackMsg;
     }
 
     /**
@@ -140,6 +138,6 @@ class NewSubmissionJob implements ShouldQueue
                     'color'     => 'good',
                     'fields' => $slackFields
                 ]
-            )->send('用户'.formatSlackUser($user).'在圈子['.$group->name.']提交了新分享');
+            )->send($this->additionalSlackMsg.'用户'.formatSlackUser($user).'在圈子['.$group->name.']提交了新分享');
     }
 }
