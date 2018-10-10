@@ -119,12 +119,20 @@ trait BaseController {
      * @param int $refer_id;  问题或者文章ID
      * @param int $refer_user_id; 引用内容作者ID
      * @param null $refer_content; 引用内容
+     * @param string $link
      * @return static
      */
-    protected function doing($user,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content='')
+    protected function doing($user,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content='',$link = '')
     {
         if (strpos($action,'view') === 0 || strpos($action,'share') === 0) {
-            event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].':'.strip_tags($subject)));
+            $slackFields = [];
+            if ($link) {
+                $slackFields[] = [
+                    'title'=>'链接',
+                    'value'=>$link
+                ];
+            }
+            event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].':'.strip_tags($subject),$slackFields));
         }
         if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user->id.'_'.$source_id)){
             try {
