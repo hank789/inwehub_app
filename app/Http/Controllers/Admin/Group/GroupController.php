@@ -68,12 +68,20 @@ class GroupController extends AdminController {
         $this->validate($request,$validateRules);
         $group = Group::find($request->input('id'));
         $img_url = '';
+        $background_img = '';
         if($request->hasFile('img_url')){
             $file = $request->file('img_url');
             $extension = strtolower($file->getClientOriginalExtension());
             $filePath = 'groups/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
             Storage::disk('oss')->put($filePath,File::get($file));
             $img_url = Storage::disk('oss')->url($filePath);
+        }
+        if($request->hasFile('background_img')){
+            $file = $request->file('background_img');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filePath = 'groups/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $background_img = Storage::disk('oss')->url($filePath);
         }
         if(!$group){
             $group = Group::create([
@@ -82,7 +90,8 @@ class GroupController extends AdminController {
                 'description'  => $request->input('description'),
                 'public'       => $request->input('audit_status') == Group::AUDIT_STATUS_SYSTEM?0:$request->input('public'),
                 'user_id'      => $request->input('author_id'),
-                'logo'         => $img_url
+                'logo'         => $img_url,
+                'background_img' => $background_img,
             ]);
             if ($request->input('audit_status') != Group::AUDIT_STATUS_SYSTEM) {
                 GroupMember::create([
@@ -103,6 +112,9 @@ class GroupController extends AdminController {
 
             if ($img_url) {
                 $group->logo = $img_url;
+            }
+            if ($background_img) {
+                $group->background_img = $background_img;
             }
             $group->save();
             if ($oldStatus != $request->input('audit_status')) {
