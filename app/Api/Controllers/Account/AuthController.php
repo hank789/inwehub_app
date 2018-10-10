@@ -179,6 +179,7 @@ class AuthController extends Controller
             return self::createJsonData(false);
         }
         $token = $JWTAuth->fromUser($user);
+        event(new SystemNotify('用户登录: '.$user->id.'['.$user->name.'];设备:App'));
         return static::createJsonData(true,['token'=>$token],ApiException::SUCCESS);
     }
 

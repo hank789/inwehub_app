@@ -30,6 +30,7 @@ class OauthController extends Controller
         $data = $request->all();
         $user = null;
         $token = null;
+        $newUser = 0;
         $user_id = 0;
         try {
             $user = $JWTAuth->parseToken()->authenticate();
@@ -40,7 +41,7 @@ class OauthController extends Controller
                 $oauthData = UserOauth::where('user_id',$user_id)->whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH])->first();
                 if ($oauthData) {
                     //已绑定微信认证
-                    return self::createJsonData(true,['token'=>$token],ApiException::USER_WECHAT_ALREADY_BIND);
+                    return self::createJsonData(true,['token'=>$token, 'newUser'=>$newUser],ApiException::USER_WECHAT_ALREADY_BIND);
                 }
             }
         } catch (\Exception $e) {
@@ -60,13 +61,13 @@ class OauthController extends Controller
             } elseif ($user->id > 0 && $oauthGzhData->user_id != $user->id) {
                 if ($oauthGzhData->user->mobile) {
                     //微信认证已绑定其它手机号
-                    return self::createJsonData(true,['token'=>'','wechat_name'=>$oauthGzhData->nickname,'avatar'=>$oauthGzhData->user->avatar,'name'=>$oauthGzhData->user->name,'is_expert'=>$oauthGzhData->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
+                    return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$oauthGzhData->nickname,'avatar'=>$oauthGzhData->user->avatar,'name'=>$oauthGzhData->user->name,'is_expert'=>$oauthGzhData->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
                 } elseif ($bindType == 1){
-                    return self::createJsonData(true,['token'=>'','wechat_name'=>$oauthGzhData->nickname,'avatar'=>$oauthGzhData->user->avatar,'name'=>$oauthGzhData->user->name,'is_expert'=>$oauthGzhData->user->is_expert],ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
+                    return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$oauthGzhData->nickname,'avatar'=>$oauthGzhData->user->avatar,'name'=>$oauthGzhData->user->name,'is_expert'=>$oauthGzhData->user->is_expert],ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
                 }
             } elseif ($user->id > 0 && $oauthGzhData->user_id == $user->id) {
                 event(new UserLoggedIn($user,'App内微信'));
-                return self::createJsonData(true,['token'=>$token]);
+                return self::createJsonData(true,['token'=>$token, 'newUser'=>$newUser]);
             }
         }
 
@@ -81,16 +82,16 @@ class OauthController extends Controller
             } elseif ($user->id > 0 && $object->user_id != $user->id) {
                 if ($object->user->mobile) {
                     //微信认证已绑定其它手机号
-                    return self::createJsonData(true,['token'=>'','wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
+                    return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
                 } elseif ($bindType == 1){
-                    return self::createJsonData(true,['token'=>'','wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
+                    return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
                 }
             } elseif ($user->id > 0 && $object->user_id == $user->id) {
                 event(new UserLoggedIn($user,'App内微信'));
-                return self::createJsonData(true,['token'=>$token]);
+                return self::createJsonData(true,['token'=>$token, 'newUser'=>$newUser]);
             }
             if($object->user_id && $object->user_id != $user->id && $bindType == 1){
-                return self::createJsonData(true,['token'=>'','wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
+                return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
             }
         }
 
@@ -144,8 +145,9 @@ class OauthController extends Controller
             //注册事件通知
             event(new UserRegistered($new_user,$oauthData->id,'微信APP'));
             $token = $JWTAuth->fromUser($new_user);
+            $newUser = 1;
         }
-        return self::createJsonData(true,['token'=>$token]);
+        return self::createJsonData(true,['token'=>$token, 'newUser'=>$newUser]);
     }
 
 
