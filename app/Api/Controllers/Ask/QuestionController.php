@@ -215,7 +215,8 @@ class QuestionController extends Controller
             $myAnswer = Answer::where('question_id',$id)->where('user_id',$user->id)->first();
             if ($myAnswer) $my_answer_id = $myAnswer->id;
         }
-        $this->doing($user,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,$question->title);
+        $this->doing($user,$question->question_type == 1 ? Doing::ACTION_VIEW_PAY_QUESTION:Doing::ACTION_VIEW_FREE_QUESTION,get_class($question),$question->id,$question->title,'',0,0,
+            '',config('app.mobile_url').'#/ask/offer/answers/'.$question->id);
         $this->logUserViewTags($user->id,$question->tags()->get());
         QuestionLogic::calculationQuestionRate($question->id);
         return self::createJsonData(true,[

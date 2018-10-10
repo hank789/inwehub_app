@@ -219,7 +219,7 @@ class ProfileController extends Controller
             try{
                 $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
                 if ($loginUser->id != $user->id) {
-                    $this->doing($loginUser,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,$user->name);
+                    $this->doing($loginUser,Doing::ACTION_VIEW_RESUME,get_class($user),$user->id,$user->name,'',0,0,'',config('app.mobile_url').'#/share/resume?id='.$user->uuid);
                 }
                 $info_percent = $loginUser->getInfoCompletePercent(true);
                 $loginUserInfoCompletePercent = $info_percent['score'];
@@ -341,6 +341,7 @@ class ProfileController extends Controller
         $groups = [];
         foreach ($groupMembers as $groupMember) {
             $group = $groupMember->group;
+            if (!$group) continue;
             $groups[] = [
                 'id' => $group->id,
                 'name' => $group->name,

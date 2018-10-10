@@ -206,7 +206,8 @@ class AnswerController extends Controller
         ];
         $answer->increment('views');
         QuestionLogic::calculationQuestionRate($question->id);
-        $this->doing($user,Doing::ACTION_VIEW_ANSWER,get_class($answer),$answer->id,$answer->getContentText());
+        $this->doing($user,Doing::ACTION_VIEW_ANSWER,get_class($answer),$answer->id,$answer->getContentText(),'',0,0,
+            '',config('app.mobile_url').'#/ask/offer/'.$answer->id);
         $this->logUserViewTags($user->id,$question->tags()->get());
 
         return self::createJsonData(true,[
