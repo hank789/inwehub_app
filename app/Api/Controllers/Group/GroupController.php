@@ -164,10 +164,6 @@ class GroupController extends Controller
             $user->name = '游客';
         }
         $return = $group->toArray();
-        $return['subscribers'] = $group->getHotIndex();
-        if ($group->audit_status == Group::AUDIT_STATUS_SYSTEM) {
-            $return['subscribers'] += User::count();
-        }
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
         $return['is_joined'] = -1;
         $return['current_user_notify'] = 0;
