@@ -532,7 +532,7 @@ class SubmissionController extends Controller {
         }
 
         $this->logUserViewTags($user->id,$submission->tags()->get());
-        $this->doing($user,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,$submission->title);
+        $this->doing($user,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,$submission->type == 'link'?$submission->data['title']:$submission->title);
         return self::createJsonData(true,$return);
     }
 
