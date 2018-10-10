@@ -45,6 +45,14 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label>圈子背景图</label>
+                                <input type="file" name="background_img" />
+                                <div style="margin-top: 10px;">
+                                    <img src="{{ old('background_img',$group->background_img) }}" width="200"/>
+                                </div>
+                            </div>
+
                             <div class="form-group @if ($errors->first('author_id')) has-error @endif">
                                 <label for="author_id_select" class="control-label">圈主</label>
                                 <div class="row">
