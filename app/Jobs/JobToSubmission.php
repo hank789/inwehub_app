@@ -58,7 +58,8 @@ class JobToSubmission implements ShouldQueue
             return;
         }
 
-        $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
+        $urlInfo = getUrlInfo($url,true);
+        $img_url = $urlInfo['img_url'];
         $article_description = $article->summary;
         $data = [
             'url'           => $url,
