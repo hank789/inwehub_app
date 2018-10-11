@@ -108,8 +108,8 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
             $title = strip_tags($this->submission->data['title']);
         }
         return [
-            'title' => $title,
-            'body'  => '',
+            'title' => '',
+            'body'  => $title,
             'payload' => ['object_type'=>'readhub_new_submission','object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug],
         ];
     }
