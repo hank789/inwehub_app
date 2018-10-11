@@ -54,7 +54,7 @@ class WechatMpPosts extends Command {
             if (strtotime($mpInfo->update_time) >= strtotime('-90 minutes')) continue;
             $wz_list = $spider->getGzhArticles($mpInfo);
             if ($wz_list === false) {
-                Artisan::call('scraper:wechat:posts');
+                //Artisan::call('scraper:wechat:posts');
                 break;
             }
             $successCount++;
@@ -90,8 +90,9 @@ class WechatMpPosts extends Command {
             }
             $mpInfo->update_time = date('Y-m-d H:i:s');
             $mpInfo->save();
-            sleep(rand(25,30));
+            sleep(rand(10,20));
         }
+        var_dump($successCount);
         $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
         if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
             $second = 0;
