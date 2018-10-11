@@ -53,8 +53,8 @@ class WechatMpPosts extends Command {
             //一个小时内刚处理过的跳过
             if (strtotime($mpInfo->update_time) >= strtotime('-90 minutes')) continue;
             $wz_list = $spider->getGzhArticles($mpInfo);
-            if ($wz_list === false) {
-                //Artisan::call('scraper:wechat:posts');
+            if ($wz_list === false || $successCount >= 50) {
+                Artisan::call('scraper:wechat:posts');
                 break;
             }
             $successCount++;
