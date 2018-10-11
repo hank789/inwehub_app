@@ -1,12 +1,6 @@
 <?php namespace App\Third;
+use QL\QueryList;
 
-/**
- * RSS for PHP - small and easy-to-use library for consuming an RSS Feed
- *
- * @copyright  Copyright (c) 2008 David Grudl
- * @license    New BSD License
- * @version    1.3
- */
 class RssFeed
 {
 	/** @var int */
@@ -169,31 +163,7 @@ class RssFeed
 	 */
 	public static function httpRequest($url, $user, $pass)
 	{
-		if (extension_loaded('curl')) {
-			$curl = curl_init();
-			curl_setopt($curl, CURLOPT_URL, $url);
-			if ($user !== null || $pass !== null) {
-				curl_setopt($curl, CURLOPT_USERPWD, "$user:$pass");
-			}
-			curl_setopt($curl, CURLOPT_HEADER, false);
-			curl_setopt($curl, CURLOPT_TIMEOUT, 120);
-			curl_setopt($curl, CURLOPT_ENCODING, '');
-			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); // no echo, just return result
-			if (!ini_get('open_basedir')) {
-				curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); // sometime is useful :)
-			}
-			$result = curl_exec($curl);
-            curl_close($curl);
-            if (empty($result)) {
-                $result = file_get_contents($url);
-            }
-			return $result;
-
-		} elseif ($user === null && $pass === null) {
-			return file_get_contents($url);
-
-		} else {
-			throw new \Exception('PHP extension CURL is not loaded.');
-		}
+		$ql = QueryList::getInstance();
+		return $ql->get($url)->getHtml();
 	}
 }
