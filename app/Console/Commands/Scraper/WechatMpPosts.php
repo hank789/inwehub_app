@@ -66,7 +66,12 @@ class WechatMpPosts extends Command {
                 if ($mpInfo->qr_url) {
                     $wz_list = WechatGzhService::instance()->getProfile($mpInfo->qr_url);
                     if ($wz_list) {
-                        foreach ($wz_list as &$item) {
+                        $newItems = [];
+                        foreach ($wz_list as $key=>&$item) {
+                            if (!isset($item['app_msg_ext_info'])) {
+                                unset($wz_list[$key]);
+                                continue;
+                            }
                             $item['title'] = $item['app_msg_ext_info']['title'];
                             $item['digest'] = $item['app_msg_ext_info']['digest'];
                             $item['link'] = formatHtml($item['app_msg_ext_info']['content_url']);
@@ -77,6 +82,25 @@ class WechatMpPosts extends Command {
                             $item['itemidx'] = $item['app_msg_ext_info']['fileid'];
                             $item['copyright_stat'] = $item['app_msg_ext_info']['copyright_stat']??100;
                             $item['type'] = $item['comm_msg_info']['type'];
+                            if (count($item['app_msg_ext_info']['multi_app_msg_item_list']) >= 1) {
+                                foreach ($item['app_msg_ext_info']['multi_app_msg_item_list'] as $multi_item) {
+                                    $newItems[] = [
+                                        'title' => $multi_item['title'],
+                                        'digest' => $multi_item['digest'],
+                                        'link' => $multi_item['content_url'],
+                                        'update_time' => $item['update_time'],
+                                        'aid' => $multi_item['fileid'],
+                                        'cover' => $multi_item['cover'],
+                                        'author' => $multi_item['author'],
+                                        'itemidx' => $multi_item['fileid'],
+                                        'copyright_stat' => $multi_item['copyright_stat']??100,
+                                        'type' => $item['comm_msg_info']['type']
+                                    ];
+                                }
+                            }
+                        }
+                        if ($newItems) {
+                            $wz_list = array_merge($wz_list,$newItems);
                         }
                     }
                 }
