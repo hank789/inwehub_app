@@ -97,7 +97,7 @@ class MpSpider {
             ]
         ])->getHtml();
         $dataArr = json_decode($data, true);
-        if ($dataArr['app_msg_cnt']) {
+        if (isset($dataArr['app_msg_cnt'])) {
             return $dataArr['app_msg_list'];
         } else {
             event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']文章抓取失败:'.$data));
