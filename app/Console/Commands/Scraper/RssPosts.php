@@ -62,7 +62,7 @@ class RssPosts extends Command
                 $image_url    = '';
                 $author       = '';
                 $article_tags = [];
-
+                $this->info($value->title);
                 $dom = new Dom();
                 $dom->load($value->description);
 
