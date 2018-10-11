@@ -103,8 +103,22 @@ class SubmissionController extends AdminController
         \Log::info('test',[$tagString]);
 
         /*更新标签*/
-        $submission->tags()->detach();
-        Tag::multiSaveByIds($tagString,$submission);
+        $oldTags = $submission->tags->pluck('id')->toArray();
+        if (!is_array($tagString)) {
+            $tags = array_unique(explode(",",$tagString));
+        } else {
+            $tags = array_unique($tagString);
+        }
+        foreach ($tags as $tag) {
+            if (!in_array($tag,$oldTags)) {
+                $submission->tags()->attach($tag);
+            }
+        }
+        foreach ($oldTags as $oldTag) {
+            if (!in_array($oldTag,$tags)) {
+                $submission->tags()->detach($oldTag);
+            }
+        }
 
         return $this->success(url()->previous(),'文章修改成功');
     }
