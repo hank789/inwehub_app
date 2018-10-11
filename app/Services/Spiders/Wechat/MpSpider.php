@@ -102,7 +102,7 @@ class MpSpider {
         } else {
             event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']文章抓取失败:'.$data));
         }
-        return [];
+        return false;
     }
 
     /**
