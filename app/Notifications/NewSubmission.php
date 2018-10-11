@@ -100,8 +100,8 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
     public function toPush($notifiable)
     {
         return [
-            'title' => $this->title,
-            'body'  => strip_tags($this->submission->title),
+            'title' => strip_tags($this->submission->title),
+            'body'  => '',
             'payload' => ['object_type'=>'readhub_new_submission','object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug],
         ];
     }
