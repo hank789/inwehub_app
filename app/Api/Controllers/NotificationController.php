@@ -67,7 +67,7 @@ class NotificationController extends Controller
     {
         $notification_type = $request->input('notification_type',0);
         $user = $request->user();
-        $query = $user->unreadNotifications();
+        $query = Notification::where('notifiable_id',$user->id)->where('	notifiable_type',get_class($user))->whereNull('read_at');
         if ($notification_type) {
             $query = $query->where('notification_type',$notification_type);
         } else {
