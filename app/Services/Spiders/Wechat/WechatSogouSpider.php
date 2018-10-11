@@ -37,6 +37,7 @@ class WechatSogouSpider
      */
     public function getGzhInfo($wx_hao) {
         $request_url = 'http://weixin.sogou.com/weixin?query='.$wx_hao.'&_sug_type_=&_sug_=n&type=1&page=1&ie=utf8';
+        $jieFengCount = 0;
         for ($i=0;$i<16;$i++) {
             $ips = getProxyIps(5,'sogou');
             $ip = $ips[0]??'';
@@ -52,6 +53,11 @@ class WechatSogouSpider
                     var_dump('公众号访问频繁');
                     $r = $content->find('input[name=r]')->val();
                     $this->jiefeng($r);
+                    if ($jieFengCount >= 2) {
+                        event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
+                        exit();
+                    }
+                    $jieFengCount ++;
                     deleteProxyIp($ip,'sogou');
                 }
             } else {
