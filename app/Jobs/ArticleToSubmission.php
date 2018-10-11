@@ -8,8 +8,10 @@ use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Services\RateLimiter;
+use App\Services\WechatGzhService;
 use App\Traits\SubmitSubmission;
 use Carbon\Carbon;
+use function GuzzleHttp\Psr7\parse_query;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -65,29 +67,38 @@ class ArticleToSubmission implements ShouldQueue
             } else {
                 $url = convertWechatTempLinkToForever($article->content_url);
                 if (!$url) {
-                    $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
-                    if ($unlimitUrl['error_code'] != 0) {
-                        $fileds = [
-                            [
-                                'title' => '返回结果',
-                                'value' => json_encode($unlimitUrl, JSON_UNESCAPED_UNICODE)
-                            ]
-                        ];
-                        //调用失败
-                        \Slack::to(config('slack.ask_activity_channel'))
-                            ->attach(
+                    $url = WechatGzhService::instance()->foreverUrl($article->content_url);
+                    if (!$url) {
+                        $unlimitUrl = convertWechatLimitLinkToUnlimit($article->content_url,$author->wx_hao);
+                        if ($unlimitUrl['error_code'] != 0) {
+                            $fileds = [
                                 [
-                                    'fields' => $fileds
+                                    'title' => '返回结果',
+                                    'value' => json_encode($unlimitUrl, JSON_UNESCAPED_UNICODE)
                                 ]
-                            )
-                            ->send('解析微信公众号永久链接失败，稍后会继续尝试');
-                        if ($unlimitUrl['error_code'] == 114) {
-                            dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds(60));
+                            ];
+                            //调用失败
+                            \Slack::to(config('slack.ask_activity_channel'))
+                                ->attach(
+                                    [
+                                        'fields' => $fileds
+                                    ]
+                                )
+                                ->send('解析微信公众号永久链接失败，稍后会继续尝试');
+                            if ($unlimitUrl['error_code'] == 114) {
+                                dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds(60));
+                            }
+                            return;
                         }
-                        return;
+                        $url = $unlimitUrl['data']['article_origin_url'];
                     }
-                    $url = $unlimitUrl['data']['article_origin_url'];
                 }
+            }
+            if (empty($author->qr_url)) {
+                $parse_url = parse_url($url);
+                $query = parse_query($parse_url['query']);
+                $author->qr_url = $query['__biz'];
+                $author->save();
             }
         } else {
             $url = $article->content_url;

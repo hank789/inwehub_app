@@ -16,6 +16,7 @@ use App\Services\QcloudService;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
 use GuzzleHttp\Exception\ConnectException;
+use function GuzzleHttp\Psr7\parse_query;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -47,7 +48,14 @@ class Test extends Command
      */
     public function handle()
     {
-        Artisan::call('scraper:wechat:posts');
+        $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
+        foreach ($mpInfos as $mpInfo) {
+            $wz = WechatWenzhangInfo::where('mp_id',$mpInfo->_id)->where('content_url','like','%__biz=%')->orderBy('_id','desc')->first();
+            $parse_url = parse_url($wz->content_url);
+            $query = parse_query($parse_url['query']);
+            $mpInfo->qr_url = $query['__biz'];
+            $mpInfo->save();
+        }
         return;
         $submissions = Submission::whereIn('group_id',[56])->get();
         foreach ($submissions as $submission) {
