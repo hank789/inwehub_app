@@ -87,12 +87,16 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
      */
     public function toArray($notifiable)
     {
+        $body = strip_tags($this->submission->title);
+        if ($this->submission->type == 'link') {
+            $body = strip_tags($this->submission->data['title']);
+        }
         return [
             'url'    => '/c/'.$this->submission->category_id.'/'.$this->submission->slug,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'avatar' => $this->submission->owner->avatar,
             'title'  => $this->title,
-            'body'   => strip_tags($this->submission->title),
+            'body'   => $body,
             'extra_body' => ''
         ];
     }
