@@ -103,12 +103,13 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
 
     public function toPush($notifiable)
     {
+        $group = Group::find($this->submission->group_id);
         $title = strip_tags($this->submission->title);
         if ($this->submission->type == 'link') {
             $title = strip_tags($this->submission->data['title']);
         }
         return [
-            'title' => $this->title,
+            'title' => $group->name,
             'body'  => $title,
             'payload' => ['object_type'=>'readhub_new_submission','object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug],
         ];
