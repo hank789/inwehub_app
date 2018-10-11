@@ -6,7 +6,9 @@ use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\MpSpider;
+use App\Services\WechatGzhService;
 use Carbon\Carbon;
+use function GuzzleHttp\Psr7\parse_query;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -52,12 +54,38 @@ class WechatMpPosts extends Command {
             $this->info($mpInfo->name);
             //一个小时内刚处理过的跳过
             if (strtotime($mpInfo->update_time) >= strtotime('-90 minutes')) continue;
-            $wz_list = $spider->getGzhArticles($mpInfo);
+            $wz_list = false;
+            //先通过公众号服务取50次数据
+            if ($successCount < 50) {
+                $wz_list = $spider->getGzhArticles($mpInfo);
+            }
             if ($wz_list === false || $successCount >= 50) {
+                //只执行上面的服务50次
+                if ($mpInfo->qr_url) {
+                    $wz_list = WechatGzhService::instance()->getProfile($mpInfo->qr_url);
+                    if ($wz_list) {
+                        foreach ($wz_list as &$item) {
+                            $item['title'] = $item['app_msg_ext_info']['title'];
+                            $item['digest'] = $item['app_msg_ext_info']['digest'];
+                            $item['link'] = formatHtml($item['app_msg_ext_info']['content_url']);
+                            $item['update_time'] = $item['comm_msg_info']['datetime'];
+                            $item['aid'] = $item['comm_msg_info']['id'];
+                            $item['cover'] = $item['app_msg_ext_info']['cover'];
+                            $item['author'] = $item['app_msg_ext_info']['author'];
+                            $item['itemidx'] = $item['app_msg_ext_info']['fileid'];
+                            $item['copyright_stat'] = $item['app_msg_ext_info']['copyright_stat'];
+                            $item['type'] = $item['comm_msg_info']['type'];
+                        }
+                    }
+                }
+            } else {
+                $successCount++;
+            }
+
+            if ($wz_list === false) {
                 Artisan::call('scraper:wechat:posts');
                 break;
             }
-            $successCount++;
             foreach ($wz_list as $wz_item) {
                 $this->info($wz_item['title']);
                 if ($wz_item['update_time'] <= strtotime('-2 days')) continue;
@@ -73,15 +101,21 @@ class WechatMpPosts extends Command {
                     'description' => $wz_item['digest'],
                     'date_time'   => date('Y-m-d H:i:s',$wz_item['update_time']),
                     'mp_id' => $mpInfo->_id,
-                    'author' => '',
+                    'author' => $wz_item['author']??'',
                     'msg_index' => $wz_item['itemidx'],
-                    'copyright_stat' => 100,
+                    'copyright_stat' => $wz_item['copyright_stat']??100,
                     'qunfa_id' => 0,
-                    'type' => 49,
+                    'type' => $wz_item['type']??49,
                     'like_count' => 0,
                     'read_count' => 0,
                     'comment_count' => 0
                 ]);
+                if (empty($mpInfo->qr_url)) {
+                    $parse_url = parse_url($content_url);
+                    $query = parse_query($parse_url['query']);
+                    $mpInfo->qr_url = $query['__biz'];
+                }
+
                 RateLimiter::instance()->hSet('wechat_article',$uuid,$article->_id);
                 (new GetArticleBody($article->_id))->handle();
                 if ($mpInfo->is_auto_publish == 1 && $article->date_time >= date('Y-m-d 00:00:00',strtotime('-1 days'))) {
