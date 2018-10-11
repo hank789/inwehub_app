@@ -50,16 +50,18 @@ class WechatMpPosts extends Command {
         $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
         $spider = new MpSpider();
         $successCount = 0;
+        $flag = true;
         foreach ($mpInfos as $mpInfo) {
             $this->info($mpInfo->name);
             //一个小时内刚处理过的跳过
             if (strtotime($mpInfo->update_time) >= strtotime('-90 minutes')) continue;
             $wz_list = false;
             //先通过公众号服务取50次数据
-            if ($successCount < 50) {
+            if ($successCount < 50 && $flag) {
                 $wz_list = $spider->getGzhArticles($mpInfo);
             }
             if ($wz_list === false || $successCount >= 50) {
+                $flag = false;
                 //只执行上面的服务50次
                 if ($mpInfo->qr_url) {
                     $wz_list = WechatGzhService::instance()->getProfile($mpInfo->qr_url);
@@ -73,7 +75,7 @@ class WechatMpPosts extends Command {
                             $item['cover'] = $item['app_msg_ext_info']['cover'];
                             $item['author'] = $item['app_msg_ext_info']['author'];
                             $item['itemidx'] = $item['app_msg_ext_info']['fileid'];
-                            $item['copyright_stat'] = $item['app_msg_ext_info']['copyright_stat'];
+                            $item['copyright_stat'] = $item['app_msg_ext_info']['copyright_stat']??100;
                             $item['type'] = $item['comm_msg_info']['type'];
                         }
                     }
