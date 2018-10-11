@@ -127,7 +127,7 @@ class WechatMpPosts extends Command {
             if ($successCount < 50) {
                 sleep(rand(10,20));
             } else {
-                sleep(rand(1,5));
+                sleep(rand(3,8));
             }
         }
         var_dump($successCount);
