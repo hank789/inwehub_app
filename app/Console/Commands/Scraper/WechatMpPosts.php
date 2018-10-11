@@ -124,7 +124,11 @@ class WechatMpPosts extends Command {
             }
             $mpInfo->update_time = date('Y-m-d H:i:s');
             $mpInfo->save();
-            sleep(rand(10,20));
+            if ($successCount < 50) {
+                sleep(rand(10,20));
+            } else {
+                sleep(rand(1,5));
+            }
         }
         var_dump($successCount);
         $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
