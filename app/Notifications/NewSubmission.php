@@ -108,6 +108,7 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
         if ($this->submission->type == 'link') {
             $title = strip_tags($this->submission->data['title']);
         }
+        if (empty($title)) return false;
         return [
             'title' => $group->name,
             'body'  => $title,
