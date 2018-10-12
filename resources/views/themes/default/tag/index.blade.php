@@ -21,6 +21,7 @@
                             <button type="button" id="follow-button" class="btn btn-default btn-xs" data-source_type = "tag" data-source_id = "{{ $tag->id }}"  data-show_num="false" data-toggle="tooltip" data-placement="right" title="" data-original-title="关注后将获得更新提醒">关注</button>
                         @endif
                             <a class="btn btn-default btn-xs" href="{{ route('admin.tag.edit',['id'=>$tag->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                            <button class="btn btn-default btn-xs" data-toggle="tooltip" title="删除选中项" onclick="deleteTag('{{ $tag->id }}')"><i class="fa fa-trash-o"></i></button>
 
                     </div>
                 </div>

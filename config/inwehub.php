@@ -2,7 +2,7 @@
 
 return [
     'version' => 'Interv0.1',
-    'release' => '20180328',
+    'release' => '20181007',
     'user_cache_time' => 1, //用户数据缓存时间单位分钟
     'user_invite_limit' => 10000000,//用户邀请回答限制数
     'admin' => [

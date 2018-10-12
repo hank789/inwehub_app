@@ -313,6 +313,26 @@ function check_login(){
     return true;
 }
 
+function deleteTag(id) {
+    if(!confirm('确认删除该标签？')){
+        return false;
+    }
+    $.ajax({
+        data: {id: id},
+        type: "POST",
+        url: "/admin/tag/destroy",
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(url) {
+            alert('删除成功');
+            window.close();
+        },
+        error:function(){
+            alert('删除失败');
+        }
+    });
+}
 
 
 
