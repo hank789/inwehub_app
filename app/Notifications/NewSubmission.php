@@ -111,6 +111,7 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
         if (empty($title)) return false;
         return [
             'title' => $group->name,
+            'forcePush' => $this->submission->data['sourceViews']??false,
             'body'  => $title,
             'payload' => ['object_type'=>'readhub_new_submission','object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug],
         ];

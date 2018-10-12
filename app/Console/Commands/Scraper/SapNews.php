@@ -117,6 +117,7 @@ class SapNews extends Command {
                             'providerName' => $item['author'],
                             'publishedTime' => $dateTime->getTimestamp(),
                             'domain' => domain($item['link']),
+                            'sourceViews' => $views
                         ];
 
                         $data['current_address_name'] = '';
