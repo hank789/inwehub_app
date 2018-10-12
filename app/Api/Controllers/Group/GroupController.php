@@ -486,10 +486,15 @@ class GroupController extends Controller
         $type = $request->input('type');
         $group = Group::find($request->input('id'));
         $user = $request->user();
+        $limit = Config::get('inwehub.api_data_page_size');
+        $page = $request->input('page',1);
         if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
             $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
             if (!$groupMember && $user->id != $group->user_id) {
-                return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
+                //未加入圈子也显示10条
+                $limit = 10;
+                $page = 1;
+                //return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
             }
         }
 
@@ -508,7 +513,7 @@ class GroupController extends Controller
                 break;
         }
 
-        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate($limit,[],'page',$page);
 
         $return = $submissions->toArray();
         $list = [];
