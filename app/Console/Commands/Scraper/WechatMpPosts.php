@@ -115,16 +115,19 @@ class WechatMpPosts extends Command {
             foreach ($wz_list as $wz_item) {
                 $this->info($wz_item['title']);
                 if ($wz_item['update_time'] <= strtotime('-2 days')) continue;
+                $wz_item['title'] = formatHtml($wz_item['title']);
+                $wz_item['digest'] = formatHtml($wz_item['digest']);
+
                 $uuid = base64_encode($wz_item['title'].$wz_item['digest']);
                 if (RateLimiter::instance()->hGet('wechat_article',$uuid)) continue;
                 $content_url = substr($wz_item['link'],0,strpos($wz_item['link'],'&chksm='));
                 if (WechatWenzhangInfo::where('content_url',$content_url)->first()) continue;
                 $article = WechatWenzhangInfo::create([
-                    'title' => formatHtml($wz_item['title']),
+                    'title' => $wz_item['title'],
                     'source_url' => $wz_item['aid'],//此api接口内应该是唯一的
                     'content_url' => $content_url,
                     'cover_url'   => $wz_item['cover'],
-                    'description' => formatHtml($wz_item['digest']),
+                    'description' => $wz_item['digest'],
                     'date_time'   => date('Y-m-d H:i:s',$wz_item['update_time']),
                     'mp_id' => $mpInfo->_id,
                     'author' => $wz_item['author']??'',
