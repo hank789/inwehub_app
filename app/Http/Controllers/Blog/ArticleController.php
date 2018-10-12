@@ -155,12 +155,12 @@ class ArticleController extends Controller
             abort(404);
         }
 
-        if($article->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
+        if($article->user_id !== $request->user()->id && !$request->user()->hasPermission('admin.index.index')){
             abort(403);
         }
 
         /*编辑问题时效控制*/
-        if( !$request->user()->isRole('admin') && Setting()->get('edit_article_timeout') ){
+        if( !$request->user()->hasPermission('admin.index.index') && Setting()->get('edit_article_timeout') ){
             if( $article->created_at->diffInMinutes() > Setting()->get('edit_article_timeout') ){
                 return $this->showErrorMsg(route('website.index'),'你已超过文章可编辑的最大时长，不能进行编辑了。如有疑问请联系管理员!');
             }
@@ -189,7 +189,7 @@ class ArticleController extends Controller
             abort(404);
         }
 
-        if($article->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
+        if($article->user_id !== $request->user()->id && !$request->user()->hasPermission('admin.index.index')){
             abort(403);
         }
 

@@ -186,12 +186,12 @@ class QuestionController extends Controller
             abort(404);
         }
 
-        if($question->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
+        if($question->user_id !== $request->user()->id && !$request->user()->hasPermission('admin.index.index')){
             abort(403);
         }
 
         /*编辑问题时效控制*/
-        if( !$request->user()->isRole('admin') && Setting()->get('edit_question_timeout') ){
+        if( !$request->user()->hasPermission('admin.index.index') && Setting()->get('edit_question_timeout') ){
             if( $question->created_at->diffInMinutes() > Setting()->get('edit_question_timeout') ){
                 return $this->showErrorMsg(route('website.index'),'你已超过问题可编辑的最大时长，不能进行编辑了。如有疑问请联系管理员!');
             }
@@ -211,7 +211,7 @@ class QuestionController extends Controller
             abort(404);
         }
 
-        if($question->user_id !== $request->user()->id && !$request->user()->isRole('admin')){
+        if($question->user_id !== $request->user()->id && !$request->user()->hasPermission('admin.index.index')){
             abort(403);
         }
 
@@ -487,7 +487,7 @@ class QuestionController extends Controller
         $question = Question::findOrFail($id);
         $user = $request->user();
 
-        if(($user->id !== $question->user_id) && !$user->isRole('admin')){
+        if(($user->id !== $question->user_id) && !$user->hasPermission('admin.index.index')){
             abort(403);
         }
         //修改问题状态为已关闭
