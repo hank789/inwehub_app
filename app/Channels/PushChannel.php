@@ -33,13 +33,13 @@ class PushChannel {
             //记录单一事件的推送频率
             $key = str_replace('\\','-',get_class($notification)).'_'.$notifiable->id;
             if (!RateLimiter::instance()->getValue('push_notify_user',$key)) {
-                $expire2 = 180;
+                $expire2 = 300;
             } else {
                 $expire2 = 0;
             }
 
             // 将通知发送给 $notifiable 实例
-            //3分钟内只接收一条推送
+            //5分钟内只接收一条推送
             if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('push_notify_user',$key,$expire2)) {
                 event(new Push($notifiable->id,$message['title'],strip_tags($message['body']),$message['payload']));
                 if (config('app.env') == 'production') {
