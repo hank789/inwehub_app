@@ -5,6 +5,7 @@ use App\Models\Scraper\WechatMpList;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\MpSpider;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * @author: wanghui
@@ -66,6 +67,8 @@ class WechatMpAuthor extends Command {
                             'create_time' => date('Y-m-d H:i:s')
                         ]);
                     }
+                } else {
+                    Artisan::call('scraper:wechat:author');
                 }
                 $item->delete();
             }
