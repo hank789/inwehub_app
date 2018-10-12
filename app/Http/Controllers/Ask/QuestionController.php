@@ -231,8 +231,22 @@ class QuestionController extends Controller
         \Log::info('test',[$tagString]);
 
         /*更新标签*/
-        $question->tags()->detach();
-        Tag::multiSaveByIds($tagString,$question);
+        $oldTags = $question->tags->pluck('id')->toArray();
+        if (!is_array($tagString)) {
+            $tags = array_unique(explode(",",$tagString));
+        } else {
+            $tags = array_unique($tagString);
+        }
+        foreach ($tags as $tag) {
+            if (!in_array($tag,$oldTags)) {
+                $question->tags()->attach($tag);
+            }
+        }
+        foreach ($oldTags as $oldTag) {
+            if (!in_array($oldTag,$tags)) {
+                $question->tags()->detach($oldTag);
+            }
+        }
 
         return $this->success(route('ask.question.detail',['question_id'=>$question->id]),"问题编辑成功");
 
