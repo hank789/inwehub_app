@@ -5,6 +5,7 @@ use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
 use App\Models\Attention;
 use App\Models\Collection;
+use App\Models\Doing;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
@@ -216,6 +217,8 @@ class GroupController extends Controller
                 $return['unread_group_im_messages'] = MessageRoom::where('room_id',$room->id)->where('message_id','>',$roomUser->last_msg_id)->count();
             }
         }
+        $this->doing($user,Doing::ACTION_VIEW_GROUP,get_class($group),$group->id,$group->name,'',0,0,'',
+            config('app.mobile_url').'#/group/detail/'.$group->id);
         return self::createJsonData(true,$return);
     }
 
