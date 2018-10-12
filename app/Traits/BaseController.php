@@ -132,7 +132,7 @@ trait BaseController {
                     'value'=>$link
                 ];
             }
-            event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].':'.strip_tags($subject),$slackFields));
+            event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].':'.str_limit(strip_tags($subject)),$slackFields));
         }
         if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user->id.'_'.$source_id)){
             try {
