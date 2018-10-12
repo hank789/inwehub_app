@@ -143,7 +143,9 @@ class Submission extends Model {
                 ->where('supportable_type','App\Models\Submission')
                 ->delete();
             $group = Group::find($submission->group_id);
-            $group->decrement('subscribers');
+            if ($group->subscribers >= 1) {
+                $group->decrement('subscribers');
+            }
             //删除推荐
             RecommendRead::where('source_type','=',get_class($submission))->where('source_id','=',$submission->id)->delete();
             /*删除标签关联*/
