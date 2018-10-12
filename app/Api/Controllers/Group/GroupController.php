@@ -513,7 +513,7 @@ class GroupController extends Controller
                 break;
         }
 
-        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate($limit,[],'page',$page);
+        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate($limit,['*'],'page',$page);
 
         $return = $submissions->toArray();
         $list = [];
