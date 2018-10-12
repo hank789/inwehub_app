@@ -103,6 +103,9 @@ class SapNews extends Command {
                         } else {
                             $item['image'] = 'https://cdn.inwehub.com/groups/2018/09/1537341872OLqcb91.png';
                         }
+                        $item['title'] = formatHtml($item['title']);
+                        $item['description'] = formatHtml($item['description']);
+
                         $data = [
                             'url' => $item['link'],
                             'title' => $item['title'],
@@ -185,6 +188,8 @@ class SapNews extends Command {
                             //图片本地化
                             $item['image'] = saveImgToCdn($item['image'], 'submissions');
                         }
+                        $item['title'] = formatHtml($item['title']);
+                        $item['description'] = formatHtml($item['description']);
                         $data = [
                             'url' => $item['link'],
                             'title' => $item['title'],

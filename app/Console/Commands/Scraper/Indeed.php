@@ -115,12 +115,12 @@ class Indeed extends Command {
                     $link = $headers['url'];
                     Jobs::create([
                         'guid'  => $uuid,
-                        'title' => trim($item['title']),
+                        'title' => formatHtml(trim($item['title'])),
                         'city'  => trim($item['city']),
                         'source_url' => $link,
                         'tags' => $keyword,
                         'company' => trim($item['company']),
-                        'summary' => trim($item['summary']),
+                        'summary' => formatHtml(trim($item['summary'])),
                         'group_id' => $groupId,
                         'status' => 1
                     ]);
