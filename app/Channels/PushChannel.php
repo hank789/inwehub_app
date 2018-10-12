@@ -44,7 +44,7 @@ class PushChannel {
                 event(new Push($notifiable->id,$message['title'],strip_tags($message['body']),$message['payload']));
                 if (config('app.env') == 'production') {
                     $mp = \Mixpanel::getInstance("688ee16000ddf4f44891e06b79847d4e");
-                    $mp->people->set($notifiable->id, [
+                    $mp->people->setOnce($notifiable->id, [
                         'email'=> $notifiable->email,
                         'gender' => $notifiable->gender,
                         'phone' => $notifiable->mobile,
