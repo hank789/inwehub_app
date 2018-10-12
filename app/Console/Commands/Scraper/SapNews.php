@@ -51,6 +51,7 @@ class SapNews extends Command {
         $url1 = 'https://blogs.sap.com';
         $url2 = 'https://blogs.saphana.com/blog';
         $limitViews = 500;
+        $limitDays = 7;
         $ql = QueryList::getInstance();
         $category = Category::where('slug','sap_blog')->first();
 
@@ -83,7 +84,7 @@ class SapNews extends Command {
                     $dateTime = $item['dateTime'];
                     if ($dateTime) {
                         $dateTime = new DateTime($dateTime);
-                        if ($dateTime->getTimestamp() <= strtotime('-3 days')) {
+                        if ($dateTime->getTimestamp() <= strtotime('-'.$limitDays.' days')) {
                             $isBreak = true;
                             break;
                         }
@@ -172,7 +173,7 @@ class SapNews extends Command {
                     $dateTime = $item['dateTime'];
                     if ($dateTime) {
                         $dateTime = strtotime($dateTime);
-                        if ($dateTime <= strtotime('-3 days')) {
+                        if ($dateTime <= strtotime('-'.$limitDays.' days')) {
                             $isBreak = true;
                             break;
                         }
