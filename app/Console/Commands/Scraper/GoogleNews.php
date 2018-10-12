@@ -103,6 +103,8 @@ class GoogleNews extends Command {
                         } else {
                             $item['image'] = 'https://cdn.inwehub.com/system/group_18@3x.png';
                         }
+                        $item['title'] = formatHtml($item['title']);
+                        $item['description'] = formatHtml($item['description']);
                         $data = [
                             'url'           => $item['href'],
                             'title'         => $item['title'],

@@ -104,7 +104,7 @@ class ItJuZi extends Command {
                         $data = [
                             'url'           => $company_url,
                             'title'         => $item['com_name'].'-'.$item['custom_data']['company_slogan'],
-                            'description'   => $company_description,
+                            'description'   => formatHtml($company_description),
                             'type'          => $type,
                             'embed'         => null,
                             'img'           => $img,
