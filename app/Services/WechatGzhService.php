@@ -23,6 +23,8 @@ class WechatGzhService
 
     private $apiUrl = 'http://47.96.179.217/';
 
+    private $count = 0;
+
     protected static $instance = null;
 
     public function __construct()
@@ -49,6 +51,7 @@ class WechatGzhService
 
     protected function postRequest($url,array $params) {
         $ql = QueryList::getInstance();
+        $this->count++;
         try {
             $data = $ql->post($url,$params)->getHtml();
         } catch (\Exception $e) {
@@ -61,6 +64,10 @@ class WechatGzhService
             return $result['data'];
         } else {
             event(new ExceptionNotify('公众号服务接口返回失败:'.$result['message']));
+            if ($result['message'] != 'no money' && $this->count <= 3) {
+                sleep(5);
+                return $this->postRequest($url,$params);
+            }
             return false;
         }
     }
