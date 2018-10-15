@@ -135,12 +135,15 @@ class WechatController extends Controller
         $oauthDataUpdate = true;
         //判断用户是否已注册完成,如未完成,走注册流程
         $oauthData = UserOauth::where('auth_type',UserOauth::AUTH_TYPE_WEIXIN_GZH)
-            ->where('openid',$userInfo['id'])->first();
+            ->where('openid',$userInfo['id'])->where('user_id','>',0)->first();
         if (!$oauthData && $unionid) {
             $oauthAppData = UserOauth::where('unionid',$unionid)->where('user_id','>',0)->first();
             if ($oauthAppData) {
                 //如果已经用app微信登陆过了
-                $oauthData = UserOauth::create(
+                $oauthData = UserOauth::updateOrCreate([
+                    'auth_type'=> UserOauth::AUTH_TYPE_WEIXIN_GZH,
+                    'openid'   => $userInfo['id']
+                ],
                     [
                         'auth_type'=>UserOauth::AUTH_TYPE_WEIXIN_GZH,
                         'user_id'=> $oauthAppData->user_id,
