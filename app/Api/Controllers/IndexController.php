@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Translation\Dumper\IniFileDumper;
 use Tymon\JWTAuth\JWTAuth;
 
 /**
@@ -166,7 +167,7 @@ class IndexController extends Controller {
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
         ];
-
+        $this->doing($user,Doing::ACTION_VIEW_HOME,'',0,'');
         return self::createJsonData(true,$data);
     }
 
@@ -283,11 +284,13 @@ class IndexController extends Controller {
         try {
             $user = $JWTAuth->parseToken()->authenticate();
         } catch (\Exception $e) {
-            $user = null;
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
         }
         $source_type = $request->input('source_type',1);
         $source_id = $request->input('source_id');
-        $cache_key = 'user_related_recommend_'.$source_type.'_'.$source_id.'_'.($user?$user->id:'');
+        $cache_key = 'user_related_recommend_'.$source_type.'_'.$source_id.'_'.$user->id;
         $result = Cache::get($cache_key);
         if (!$result) {
             $perPage = $request->input('perPage',4);
@@ -297,8 +300,9 @@ class IndexController extends Controller {
             $query = RecommendRead::where('audit_status',1);
             switch ($source_type) {
                 case 0:
-                    if ($user) {
+                    if ($user->id) {
                         $tags = $user->userTag()->orderBy('views','desc')->pluck('tag_id')->take(10)->toArray();
+                        $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'');
                     }
                     break;
                 case 1:
@@ -312,7 +316,7 @@ class IndexController extends Controller {
                     $source = Question::find($source_id);
                     break;
             }
-            if ($user) {
+            if ($user->id) {
                 $viewIds = Doing::where('user_id',$user->id)
                     ->where('source_type',Submission::class)
                     ->where('created_at','>=',date('Y-m-d H:i:s',strtotime('-14 days')))
@@ -357,7 +361,7 @@ class IndexController extends Controller {
             }
             $result = $reads->toArray();
             foreach ($result['data'] as &$item) {
-                if ($user) {
+                if ($user->id) {
                     RateLimiter::instance()->sAdd('user-recommend-'.$user->id,$item['id'],60 * 30);
                 }
                 $item = $this->formatRecommendReadItem($item);
@@ -401,6 +405,9 @@ class IndexController extends Controller {
             $user = new \stdClass();
             $user->id = 0;
             $user->name = '游客';
+        }
+        if ($recommendType == 2) {
+            $this->doing($user,Doing::ACTION_VIEW_SKILL_DOMAIN,'',0,'');
         }
 
         switch ($orderBy) {

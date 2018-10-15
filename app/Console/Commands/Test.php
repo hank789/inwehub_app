@@ -12,6 +12,7 @@ use App\Models\Support;
 use App\Models\Tag;
 use App\Models\Taggable;
 use App\Services\BosonNLPService;
+use App\Services\MixpanelService;
 use App\Services\QcloudService;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
@@ -48,16 +49,13 @@ class Test extends Command
      */
     public function handle()
     {
-        $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
-        foreach ($mpInfos as $mpInfo) {
-            $wz = WechatWenzhangInfo::where('mp_id',$mpInfo->_id)->where('content_url','like','%__biz=%')->orderBy('_id','desc')->first();
-            if ($wz) {
-                $parse_url = parse_url($wz->content_url);
-                $query = parse_query($parse_url['query']);
-                $mpInfo->qr_url = $query['__biz'];
-                $mpInfo->save();
-            }
-        }
+        $data = MixpanelService::instance()->request(['events'],[
+            'event' => ['inwehub:analysis:router:count'],
+            'type'  => 'unique',
+            'unit'  => 'day',
+            'interval' => 1
+        ]);
+        var_dump($data);
         return;
         $submissions = Submission::whereIn('group_id',[56])->get();
         foreach ($submissions as $submission) {
