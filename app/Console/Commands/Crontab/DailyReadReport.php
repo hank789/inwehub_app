@@ -42,7 +42,7 @@ class DailyReadReport extends Command
         ]);
         $today = date('Y-m-d');
         $current = $data['data']['values']["inwehub:discover_detail"][$today];
-        event(new OperationNotify('今日总阅读数'.$current));
+        event(new OperationNotify('今日总阅读数：'.$current));
     }
 
 }

@@ -43,7 +43,7 @@ class DailyUserActiveReport extends Command
         $today = date('Y-m-d');
         $current = $data['data']['values']["inwehub:analysis:router:count"][$today];
         $percent = bcadd($current/$count * 100,0,2);
-        event(new OperationNotify('今日日活完成率'.$percent.'%（'.$current.'/'.$count.'）'));
+        event(new OperationNotify('今日日活完成率：'.$percent.'%（'.$current.'/'.$count.'）'));
     }
 
 }
