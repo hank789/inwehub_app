@@ -152,23 +152,7 @@ class CommentObserver implements ShouldQueue {
                     'title' => '地址',
                     'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
                 ];
-                foreach ($submission->data as $field=>$value){
-                    if ($value){
-                        if (is_array($value)) {
-                            foreach ($value as $key => $item) {
-                                $fields[] = [
-                                    'title' => $field.$key,
-                                    'value' => $item
-                                ];
-                            }
-                        } else {
-                            $fields[] = [
-                                'title' => $field,
-                                'value' => $field=='description'?QuillLogic::parseText($value):$value
-                            ];
-                        }
-                    }
-                }
+
                 $user = $comment->user;
                 $notifyUids = [];
                 if ($comment->parent_id > 0 && $comment->parent->user_id != $comment->user_id) {
