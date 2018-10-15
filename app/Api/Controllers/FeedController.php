@@ -6,6 +6,7 @@
  */
 
 use App\Exceptions\ApiException;
+use App\Models\Doing;
 use App\Models\Feed\Feed;
 use App\Models\Groups\GroupMember;
 use App\Models\Tag;
@@ -43,6 +44,7 @@ class FeedController extends Controller
                 if ($groupIds) {
                     $query = $query->orWhereIn('group_id',$groupIds);
                 }
+                $this->doing($user,Doing::ACTION_VIEW_FEED_FOLLOW,'',0,'');
                 break;
             case 3:
                 //问答

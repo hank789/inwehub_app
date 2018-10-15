@@ -58,6 +58,13 @@ class Doing extends Model
     const ACTION_SHARE_INVITE_REGISTER_SUCCESS = 'share_invite_register_success';
     const ACTION_QUESTION_ANSWER_FEEDBACK = 'question_answer_feedback';
     const ACTION_VIEW_GROUP = 'view_group';
+    const ACTION_VIEW_HOME = 'view_home';
+    const ACTION_VIEW_SKILL_DOMAIN = 'view_skill_domain';
+    const ACTION_VIEW_FEED_FOLLOW = 'view_feed_follow';
+    const ACTION_VIEW_QUESTION_LIST = 'view_question_list';
+    const ACTION_VIEW_GROUP_LIST = 'view_group_list';
+    const ACTION_VIEW_NOTIFICATION_LIST = 'view_notification_list';
+    const ACTION_VIEW_MY_INFO = 'view_my_info';
 
 
     public static $actionName = [
@@ -73,7 +80,13 @@ class Doing extends Model
         self::ACTION_SHARE_RESUME_SUCCESS => '分享简历',
         self::ACTION_SHARE_SUBMISSION_SUCCESS => '分享文章',
         self::ACTION_SHARE_INVITE_REGISTER_SUCCESS => '分享邀请注册',
-
+        self::ACTION_VIEW_HOME => '浏览首页',
+        self::ACTION_VIEW_SKILL_DOMAIN => '浏览领域',
+        self::ACTION_VIEW_FEED_FOLLOW => '浏览社区关注页',
+        self::ACTION_VIEW_QUESTION_LIST => '浏览社区问答页',
+        self::ACTION_VIEW_GROUP_LIST => '浏览社区圈子页',
+        self::ACTION_VIEW_NOTIFICATION_LIST => '浏览通知页',
+        self::ACTION_VIEW_MY_INFO => '浏览我的页面'
     ];
 
     public function source()

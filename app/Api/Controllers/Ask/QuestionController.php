@@ -881,12 +881,21 @@ class QuestionController extends Controller
 
 
     //问答社区列表
-    public function questionList(Request $request){
+    public function questionList(Request $request, JWTAuth $JWTAuth){
         $orderBy = $request->input('order_by',3);//1最新，2最热，3综合，
         $filter = $request->input('filter',1);//1悬赏大厅，2热门
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
         if ($filter == 1) {
+            $filterName = '悬赏大厅';
             $query = Question::where('question_type',2)->where('status','<=',6);
         } else {
+            $filterName = '热门';
             $query = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);
         }
         $queryOrderBy = 'questions.rate';
@@ -905,6 +914,7 @@ class QuestionController extends Controller
                 break;
         }
         $questions = $query->orderBy($queryOrderBy,'desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $this->doing($user,Doing::ACTION_VIEW_QUESTION_LIST,'',0,$filterName);
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){
