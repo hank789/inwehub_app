@@ -167,7 +167,7 @@ class IndexController extends Controller {
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
         ];
-        $this->doing($user,Doing::ACTION_VIEW_HOME,'',0,'');
+        $this->doing($user,Doing::ACTION_VIEW_HOME,'',0,'核心页面');
         return self::createJsonData(true,$data);
     }
 
@@ -302,7 +302,7 @@ class IndexController extends Controller {
                 case 0:
                     if ($user->id) {
                         $tags = $user->userTag()->orderBy('views','desc')->pluck('tag_id')->take(10)->toArray();
-                        $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'');
+                        $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'核心页面');
                     }
                     break;
                 case 1:
@@ -407,13 +407,13 @@ class IndexController extends Controller {
             $user->name = '游客';
         }
         if ($recommendType == 2) {
-            $this->doing($user,Doing::ACTION_VIEW_SKILL_DOMAIN,'',0,'');
+            $this->doing($user,Doing::ACTION_VIEW_SKILL_DOMAIN,'',0,'核心页面');
         }
 
         switch ($orderBy) {
             case 1:
                 //热门
-                $query = $query->orderBy('rate','desc');
+                $query = $query->orderBy('rate','desc')->orderBy('id','desc');
                 break;
             case 2:
                 //随机

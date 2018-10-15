@@ -44,7 +44,7 @@ class FeedController extends Controller
                 if ($groupIds) {
                     $query = $query->orWhereIn('group_id',$groupIds);
                 }
-                $this->doing($user,Doing::ACTION_VIEW_FEED_FOLLOW,'',0,'');
+                $this->doing($user,Doing::ACTION_VIEW_FEED_FOLLOW,'',0,'核心页面');
                 break;
             case 3:
                 //问答

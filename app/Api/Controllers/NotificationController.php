@@ -97,7 +97,7 @@ class NotificationController extends Controller
         $data = Cache::get('user_notification_count_'.$user->id);
         $need_report = $request->input('need_report',0);
         if ($need_report) {
-            $this->doing($user,Doing::ACTION_VIEW_NOTIFICATION_LIST,'',0,'');
+            $this->doing($user,Doing::ACTION_VIEW_NOTIFICATION_LIST,'',0,'核心页面');
         }
         if (!$data) {
             $todo_task = $user->tasks()->where('status',0)->count();

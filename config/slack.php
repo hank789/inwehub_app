@@ -32,6 +32,7 @@ return [
     'exception_channel' => env('SLACK_EXCEPTION_CHANNEL','#app_ask_activity'),
     'user_chat_channel' => env('SLACK_USER_CHAT_CHANNEL','#app_ask_activity'),
     'auto_channel' => env('SLACK_AUTO_CHANNEL','#app_ask_activity'),
+    'operation_channel' => env('SLACK_OPERATION_CHANNEL','#prd_operation_notice'),
 
     /*
     |-------------------------------------------------------------

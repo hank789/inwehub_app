@@ -593,7 +593,7 @@ class GroupController extends Controller
             }
         } else {
             $user = $request->user();
-            $this->doing($user,Doing::ACTION_VIEW_GROUP_LIST,'',0,'');
+            $this->doing($user,Doing::ACTION_VIEW_GROUP_LIST,'',0,'核心页面');
         }
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('updated_at','desc')->simplePaginate($perPage);
