@@ -73,7 +73,7 @@ class MixpanelService
         $data = curl_exec($curl_handle);
         curl_close($curl_handle);
 
-        return json_decode($data);
+        return json_decode($data,true);
     }
 
 }

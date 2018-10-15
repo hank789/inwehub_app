@@ -914,7 +914,7 @@ class QuestionController extends Controller
                 break;
         }
         $questions = $query->orderBy($queryOrderBy,'desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
-        $this->doing($user,Doing::ACTION_VIEW_QUESTION_LIST,'',0,$filterName);
+        $this->doing($user,Doing::ACTION_VIEW_QUESTION_LIST,'',0,$filterName.'-核心页面');
         $return = $questions->toArray();
         $list = [];
         foreach($questions as $question){

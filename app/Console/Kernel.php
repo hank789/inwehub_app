@@ -27,6 +27,10 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\CalcGroupHot::class,
         Commands\Crontab\AwakeUser::class,
         Commands\Crontab\DealOvertimeTasks::class,
+        Commands\Crontab\DailyUserActiveReport::class,
+        Commands\Crontab\DailyRecommendReport::class,
+        Commands\Crontab\DailyRegisterReport::class,
+        Commands\Crontab\DailyReadReport::class,
         //抓取脚本
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
@@ -98,6 +102,9 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:itjuzi:news')->cron('40 7,13,17,21 * * *');
             $schedule->command('scraper:sap:news')->cron('50 8,12,14,16,19,22 * * *');
             $schedule->command('scraper:indeed:jobs')->cron('55 7,10,13,15,17,21 * * *');
+            $schedule->command('crontab:report:daily:user-active')->hourly();
+            $schedule->command('crontab:report:daily:recommend')->cron('5 8,11,14,17,21,24');
+            $schedule->command('crontab:report:daily:read')->cron('5 8,11,14,17,21,24');
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
         $schedule->command('crontab:deal-overtime-task')->daily()->at('05:00')->withoutOverlapping();

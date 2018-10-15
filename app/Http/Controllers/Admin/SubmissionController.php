@@ -158,7 +158,7 @@ class SubmissionController extends AdminController
             'sort' => 0,
             'audit_status' => 0,
             'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
-            'created_at' => $article->created_at,
+            'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'data' => array_merge($oldData, [
                 'title' => $title?:$article->title,
