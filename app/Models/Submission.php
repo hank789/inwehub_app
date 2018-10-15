@@ -380,7 +380,9 @@ class Submission extends Model {
         if ($this->type == 'article') {
             $views += 100;
         }
-        $rate =  hotRate($views,$this->comments_number, $this->upvotes-$this->downvotes,$commentSupports + $this->collections + $shareNumber,$this->created_at,$this->updated_at);
+        $Qscore = $this->upvotes-$this->downvotes;
+        $Ascores = $commentSupports + $this->collections + $shareNumber;
+        $rate =  hotRate($views,$this->comments_number?:1, $Qscore, $Ascores,$this->created_at,$this->updated_at);
         $this->rate = $rate;
         $this->save();
         $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();

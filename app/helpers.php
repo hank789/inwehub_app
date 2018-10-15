@@ -1358,7 +1358,7 @@ if (!function_exists('hotRate')) {
         if ($Qanswers!=0 && $Qscore==0) {
             $Qscore = 1;
         }
-        $dividend = (log10($Qviews)*4) + (($Qanswers * $Qscore)/5) + $Ascores;
+        $dividend = (log10($Qviews)*4) + (($Qanswers * $Qscore)/2) + $Ascores;
         $divisor = pow((($Qage + 1) - ($Qage - $Qupdated)/2), 1.5);
 
         return $dividend/$divisor;
