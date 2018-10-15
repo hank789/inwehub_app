@@ -116,23 +116,7 @@ class SupportObserver implements ShouldQueue {
                         'title' => '地址',
                         'value' => config('app.mobile_url').'#/c/'.$source->category_id.'/'.$source->slug
                     ];
-                    foreach ($source->data as $field=>$value){
-                        if ($value){
-                            if (is_array($value)) {
-                                foreach ($value as $key => $item) {
-                                    $fields[] = [
-                                        'title' => $field.$key,
-                                        'value' => $item
-                                    ];
-                                }
-                            } else {
-                                $fields[] = [
-                                    'title' => $field,
-                                    'value' => $value
-                                ];
-                            }
-                        }
-                    }
+
                     event(new Credit($support->user_id,CreditModel::KEY_NEW_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_NEW_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_NEW_UPVOTE),$support->id,'点赞动态分享'));
                     event(new Credit($source->user_id,CreditModel::KEY_READHUB_SUBMISSION_UPVOTE,Setting()->get('coins_'.CreditModel::KEY_READHUB_SUBMISSION_UPVOTE),Setting()->get('credits_'.CreditModel::KEY_READHUB_SUBMISSION_UPVOTE),$support->id,'动态分享被点赞'));
                     //通知专栏作者
