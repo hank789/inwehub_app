@@ -103,6 +103,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:sap:news')->cron('50 8,12,14,16,19,22 * * *');
             $schedule->command('scraper:indeed:jobs')->cron('55 7,10,13,15,17,21 * * *');
             $schedule->command('crontab:report:daily:user-active')->hourly();
+            $schedule->command('crontab:report:daily:register')->dailyAt('09:00');
             $schedule->command('crontab:report:daily:recommend')->cron('5 8,11,14,17,21,24 * * *');
             $schedule->command('crontab:report:daily:read')->cron('5 8,11,14,17,21,24 * * *');
         }

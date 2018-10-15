@@ -35,7 +35,7 @@ class DailyRecommendReport extends Command
     {
        $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[date('Y-m-d 00:00:00'),date('Y-m-d 23:59:59')])->count();
        $percent = bcadd($recommends/50 * 100,0,2);
-       event(new OperationNotify('今日推荐完成率'.$percent.'%（'.$recommends.'/50）'));
+       event(new OperationNotify('今日推荐完成率：'.$percent.'%（'.$recommends.'/50）'));
     }
 
 }
