@@ -39,7 +39,7 @@ class DailyUserActiveReport extends Command
             'unit'  => 'day',
             'interval' => 1
         ]);
-        $count = User::where('status',1)->count();
+        $count = 0.1 * User::where('status',1)->count();
         $today = date('Y-m-d');
         $current = $data['data']['values']["inwehub:analysis:router:count"][$today];
         $percent = bcadd($current/$count * 100,0,2);
