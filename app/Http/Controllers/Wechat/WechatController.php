@@ -253,6 +253,11 @@ class WechatController extends Controller
             $token = $JWTAuth->fromUser($new_user);
             $userInfo['app_token'] = $token;
             Session::put("wechat_userinfo",$userInfo);
+            if (config('app.env') == 'production') {
+                $mp = \Mixpanel::getInstance(config('app.mixpanel_token'));
+                $mp->identify($new_user->id);
+                $mp->track("inwehub:register:success",['app'=>'inwehub','user_id'=>$new_user->id,'page_title'=>'微信注册','page'=>'oauth','page_name'=>'wechat-oauth']);
+            }
         }
 
         return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);

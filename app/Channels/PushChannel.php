@@ -43,7 +43,7 @@ class PushChannel {
             if (($message['forcePush']??false) || RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('push_notify_user',$key,$expire2)) {
                 event(new Push($notifiable->id,$message['title'],strip_tags($message['body']),$message['payload'],$message['inAppTitle']??false));
                 if (config('app.env') == 'production') {
-                    $mp = \Mixpanel::getInstance("688ee16000ddf4f44891e06b79847d4e");
+                    $mp = \Mixpanel::getInstance(config('app.mixpanel_token'));
                     $mp->identify($notifiable->id);
                     $mp->track("inwehub:push:send",['app'=>'inwehub','user_id'=>$notifiable->id,'page_title'=>'发送推送','page'=>$message['payload']['object_id'],'page_name'=>$message['payload']['object_type']]);
                 }
