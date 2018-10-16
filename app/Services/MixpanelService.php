@@ -33,6 +33,7 @@ class MixpanelService
     private $api_url = 'https://mixpanel.com/api';
     private $version = '2.0';
     private $api_secret;
+    private $tryTimes = 0;
 
     public function __construct()
     {
@@ -50,7 +51,7 @@ class MixpanelService
         // $method is an API method such as general, unique, average, etc.
         // $params is an associative array of parameters.
         // See http://mixpanel.com/api/docs/guides/api/
-
+        $this->tryTimes++;
         $params['format'] = $format;
 
         $param_query = '';
@@ -73,7 +74,9 @@ class MixpanelService
         $data = curl_exec($curl_handle);
         curl_close($curl_handle);
 
-        return json_decode($data,true);
+        $res = json_decode($data,true);
+        if (empty($res) && $this->tryTimes <= 3) return $this->request($methods,$params,$format);
+        return $res;
     }
 
 }
