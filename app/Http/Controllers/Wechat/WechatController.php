@@ -2,7 +2,7 @@
 use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\Auth\UserRegistered;
 use App\Http\Controllers\Controller;
-use App\Models\LoginRecord;
+use App\Jobs\MixpanelEvent;
 use App\Models\User;
 use App\Services\Registrar;
 use function GuzzleHttp\Psr7\parse_query;
@@ -254,9 +254,7 @@ class WechatController extends Controller
             $userInfo['app_token'] = $token;
             Session::put("wechat_userinfo",$userInfo);
             if (config('app.env') == 'production') {
-                $mp = \Mixpanel::getInstance(config('app.mixpanel_token'));
-                $mp->identify($new_user->id);
-                $mp->track("inwehub:register:success",['app'=>'inwehub','user_id'=>$new_user->id,'page_title'=>'微信注册','page'=>'oauth','page_name'=>'wechat-oauth']);
+                $this->dispatch(new MixpanelEvent($new_user->id,"inwehub:register:success",'微信注册','oauth','wechat-oauth'));
             }
         }
 
