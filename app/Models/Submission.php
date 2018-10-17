@@ -214,6 +214,10 @@ class Submission extends Model {
             ->where('supportable_id',$submission->id)
             ->where('supportable_type',Submission::class)
             ->exists();
+        $downvote = DownVote::where('user_id',$user->id)
+            ->where('source_id',$submission->id)
+            ->where('source_type',Submission::class)
+            ->exists();
         $img = $submission->data['img']??'';
         $sourceData = [
             'title'     => strip_tags($submission->title),
@@ -231,6 +235,7 @@ class Submission extends Model {
             'support_number' => $submission->upvotes,
             'supporter_list' => $supporters,
             'is_upvoted'     => $upvote ? 1 : 0,
+            'is_downvoted'   => $downvote ? 1 : 0,
             'is_recommend'   => $submission->is_recommend,
             'submission_type' => $submission->type,
             'group'    => $withGroup?$submission->group->toArray():null
