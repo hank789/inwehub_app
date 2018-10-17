@@ -599,10 +599,11 @@ class GroupController extends Controller
         $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('updated_at','desc')->simplePaginate($perPage);
         $return = $groupMembers->toArray();
         $return['data'] = [];
+        $otherGroups = [];
         foreach ($groupMembers as $groupMember) {
             $group = $groupMember->group;
             if ($group->audit_status == Group::AUDIT_STATUS_REJECT && $group->user_id != $user->id) continue;
-            $return['data'][] = [
+            $item = [
                 'id' => $group->id,
                 'name' => $group->name,
                 'description' => $group->description,
@@ -622,7 +623,13 @@ class GroupController extends Controller
                     'is_expert' => $group->user->is_expert
                 ]
             ];
+            if ($group->user_id == $user->id) {
+                $return['data'][] = $item;
+            } else {
+                $otherGroups[] = $item;
+            }
         }
+        $return['data'] = array_merge($return['data'],$otherGroups);
         return self::createJsonData(true,$return);
     }
 

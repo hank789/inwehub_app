@@ -1811,7 +1811,10 @@ if (!function_exists('convertWechatTempLink')) {
         $headers[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
         $headers[] = 'User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77 MicroMessenger/6.7.2 NetType/WIFI Language/zh_CN';
         //$headers[] = 'Cookie: wxtokenkey=777; devicetype=iOS11.4.1; lang=zh_CN; pass_ticket=5QcZNPRW6B7DTn8HR24bymCHMIHv2bOcrkLOxw5CTEitpmT+Pi6dqxwGmJ4yB1O+; rewardsn=; version=16070228; wap_sid2=CJCoqZMHElxQdTVHQW5RYUQ5VmJXRjBLblVLeUpYbHRQN19VLTF1YkdvalhGSmxMUGVxNUczdDJFbmI5aHNhUEZpdnd3VVU5dzM2cVBtbm9EcTRoM0NlSjBBWjlHdEFEQUFBfjDkyLvdBTgNQAE=; wxuin=1919570960; pgv_pvid=4415209260; 3g_guest_id=-8754439858010685440; sd_cookie_crttime=1516967978602; sd_userid=83451516967978602';
-        $headers[] = 'Cookie: wxtokenkey=777; devicetype=iOS11.4.1; lang=zh_CN; pass_ticket=5QcZNPRW6B7DTn8HR24bymCHMIHv2bOcrkLOxw5CTEitpmT+Pi6dqxwGmJ4yB1O+; rewardsn=; version=16070228; wap_sid2=CJCoqZMHElxTSUp3TkpiYnZ6bC1xaDgxTnBWOHp5SXU3NkFSM3Z6ekY4elRZTFo4WElRbW5sZ2lRemZtS2JTNHVRVVBBa0hZeFU3SlJzS1VHbTd2N0lMSXU2VEZKOUFEQUFBfjDb0bvdBTgNQAE=; wxuin=1919570960; pgv_pvid=4415209260; 3g_guest_id=-8754439858010685440; sd_cookie_crttime=1516967978602; sd_userid=83451516967978602';
+        //$headers[] = 'Cookie: wxtokenkey=777; devicetype=iOS11.4.1; lang=zh_CN; pass_ticket=5QcZNPRW6B7DTn8HR24bymCHMIHv2bOcrkLOxw5CTEitpmT+Pi6dqxwGmJ4yB1O+; rewardsn=; version=16070228; wap_sid2=CJCoqZMHElxTSUp3TkpiYnZ6bC1xaDgxTnBWOHp5SXU3NkFSM3Z6ekY4elRZTFo4WElRbW5sZ2lRemZtS2JTNHVRVVBBa0hZeFU3SlJzS1VHbTd2N0lMSXU2VEZKOUFEQUFBfjDb0bvdBTgNQAE=; wxuin=1919570960; pgv_pvid=4415209260; 3g_guest_id=-8754439858010685440; sd_cookie_crttime=1516967978602; sd_userid=83451516967978602';
+        $headers[] = 'Cookie: news_commid=oDOGxv7l8A-ljmv1uQO1hbBEUIok; pgv_pvid=4415209260; 3g_guest_id=-8754439858010685440; sd_cookie_crttime=1516967978602; sd_userid=83451516967978602';
+        $headers[] = 'X-WECHAT-KEY: e681a4d9d0dfea6789de3d06eb7d4b50a62297923874a4474fe5f1e72ad6e4e723505828f3fc1827da6c2ea84f61f5972e758696f85da39793408c7ce229f9544c79ad6a48afb2638e8ad7079f9d89b9';
+        $headers[] = 'X-WECHAT-UIN: MTkxOTU3MDk2MA%3D%3D';
         $headers[] = 'Accept-Language: zh-cn';
         $headers[] = 'Accept-Encoding: br, gzip, deflate';
         $headers[] = 'Connection: keep-alive';
@@ -1827,7 +1830,7 @@ if (!function_exists('convertWechatTempLink')) {
         curl_close($ch);
         var_dump($headers);
         $link = $headers['url'];
-        return;
+        return $link;
     }
 }
 
