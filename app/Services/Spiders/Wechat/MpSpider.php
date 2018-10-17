@@ -1,9 +1,6 @@
 <?php namespace App\Services\Spiders\Wechat;
 use App\Events\Frontend\System\ExceptionNotify;
-use App\Jobs\ArticleToSubmission;
-use App\Jobs\GetArticleBody;
 use App\Models\Scraper\WechatMpInfo;
-use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Setting;
 use App\Services\RateLimiter;
 use Jaeger\GHttp;
@@ -69,6 +66,7 @@ class MpSpider {
             //抓取太频繁
             var_dump($dataArr);
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
+            RateLimiter::instance()->setVale('scraper_mp_freq',date('Y-m-d'),1,60*60*24);
         } elseif ($dataArr['base_resp']['ret'] != 0) {
             var_dump($dataArr);
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
