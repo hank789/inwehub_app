@@ -51,6 +51,7 @@ class MpSpider {
         $dataArr = json_decode($data, true);
         if (isset($dataArr['total']) && $dataArr['total'] > 0) {
             $mpInfo = $dataArr['list'][0];
+            RateLimiter::instance()->increase('scraper_mp_count',date('Ymd'),60*60*24);
             return [
                 'name' => $mpInfo['nickname'],
                 'wechatid' => $wx_hao,
@@ -65,7 +66,7 @@ class MpSpider {
         } elseif ($dataArr['base_resp']['ret'] == 200013) {
             //抓取太频繁
             var_dump($dataArr);
-            event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
+            event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败,已抓取'.RateLimiter::instance()->getValue('scraper_mp_count',date('Ymd')).'次:'.$data));
             RateLimiter::instance()->setVale('scraper_mp_freq',date('Y-m-d'),1,60*60*24);
         } elseif ($dataArr['base_resp']['ret'] != 0) {
             var_dump($dataArr);
