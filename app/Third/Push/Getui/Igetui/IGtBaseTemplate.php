@@ -96,7 +96,7 @@ class IGtBaseTemplate
         return $this->pushInfo;
     }
 
-    function set_pushInfo($actionLocKey, $badge, $message, $sound, $payload, $locKey, $locArgs, $launchImage, $contentAvailable = 0)
+    function set_pushInfo($actionLocKey, $badge, $message, $sound, $payload, $locKey, $locArgs, $launchImage, $contentAvailable = 0, $title = '')
     {
         $this->pushInfo = new PushInfo();
         $this->pushInfo->set_invalidAPN(true);
@@ -104,6 +104,13 @@ class IGtBaseTemplate
         $apn = new IGtAPNPayload();
 
         $alertMsg = new DictionaryAlertMsg();
+
+        if ($title) {
+            $alertMsg->title=$title;
+            $alertMsg->titleLocKey="TitleLocKey";
+            $alertMsg->titleLocArgs=array("TitleLocArg");
+        }
+
         if ($actionLocKey != null && $actionLocKey != '')
         {
             $alertMsg->actionLocKey = $actionLocKey;

@@ -52,23 +52,16 @@ class GetuiPush
         var_dump($ret);
     }
 
-    function pushAPN($DeviceToken)
+    function pushAPN($DeviceToken,$data)
     {
 
         //APN简单推送
         $igt = new IGtPush(NULL, $this->APPKEY, $this->MASTERSECRET);
         $template = new IGtAPNTemplate();
-        $apn = new IGtAPNPayload();
-        $alertmsg = new SimpleAlertMsg();
-        $alertmsg->alertMsg = "";
-        $apn->alertMsg = $alertmsg;
-//        $apn->badge=2;
-        $apn->sound = "";
-        $apn->add_customMsg("payload", "payload");
-        $apn->contentAvailable = 1;
-        $apn->category = "ACTIONABLE";
-        $template->set_apnInfo($apn);
+        //$template ->set_pushInfo($actionLocKey,$badge,$message,$sound,$payload,$locKey,$locArgs,$launchImage);
+        $template->set_pushInfo("ActionLockey", 1, $data['body'], "", $data['payload'], "查看", "", "",0,$data['title']);
         $message = new IGtSingleMessage();
+        $message->set_data($template);
 
         //APN高级推送
         //        $igt = new IGtPushPush($this->HOST,$this->APPKEY,$this->MASTERSECRET);
@@ -131,7 +124,7 @@ class GetuiPush
         $alertmsg = new DictionaryAlertMsg();
         $alertmsg->body = $data['body'];
         $alertmsg->actionLocKey = "查看";
-        $alertmsg->locKey = $data['text'];
+        $alertmsg->locKey = $data['body'];
         $alertmsg->locArgs = array("locargs");
         $alertmsg->launchImage = "launchimage";
         //        IOS8.2 支持
@@ -142,9 +135,9 @@ class GetuiPush
 
         //       $apn->badge=1;
 //		$apn->sound="com.gexin.ios.silence";
-        $apn->add_customMsg("payload", $data['content']);
-//        $apn->contentAvailable=1;
-        //        $apn->category="ACTIONABLE";
+        $apn->add_customMsg("payload", $data['payload']);
+        $apn->contentAvailable=1;
+        $apn->category="ACTIONABLE";
         $template->set_apnInfo($apn);
         $message = new IGtSingleMessage();
 
@@ -174,6 +167,14 @@ class GetuiPush
         //var_dump($rep);
         //echo("<br><br>");
         return $rep;
+    }
+
+    function isOnline($cid) {
+        $status = $this->getUserStatus($cid);
+        if(is_array($status)&&'Online'==$status['result']){
+            return true;
+        }
+        return false;
     }
 
 //推送任务停止
@@ -512,15 +513,17 @@ class GetuiPush
         $alertmsg->locArgs = array("locargs");
         $alertmsg->launchImage = "launchimage";
 //        IOS8.2 支持
-        $alertmsg->title = $data['title'];
-        $alertmsg->titleLocKey = "TitleLocKey";
-        $alertmsg->titleLocArgs = array("TitleLocArg");
+        if ($data['title']) {
+            $alertmsg->title = $data['title'];
+            $alertmsg->titleLocKey = "TitleLocKey";
+            $alertmsg->titleLocArgs = array("TitleLocArg");
+        }
 
         $apn->alertMsg = $alertmsg;
         //$apn->badge = 7;
         $apn->sound = "";
         $apn->add_customMsg("payload", $data['payload']);
-        $apn->contentAvailable = 1;
+        $apn->contentAvailable = 0;
         $apn->category = "ACTIONABLE";
         $template->set_apnInfo($apn);
 
