@@ -233,6 +233,7 @@ class Submission extends Model {
             'comment_url' => $comment_url,
             'comment_number' => $submission->comments_number,
             'support_number' => $submission->upvotes,
+            'downvote_number' => $submission->downvotes,
             'supporter_list' => $supporters,
             'is_upvoted'     => $upvote ? 1 : 0,
             'is_downvoted'   => $downvote ? 1 : 0,
