@@ -40,7 +40,7 @@ class PushChannel {
 
             // 将通知发送给 $notifiable 实例
             //5分钟内只接收一条推送
-            if (($message['forcePush']??false) || RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('push_notify_user',$key,$expire2)) {
+            if (($message['forcePush']??false) || config('app.env') != 'production' || RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('push_notify_user',$key,$expire2)) {
                 event(new Push($notifiable->id,$message['title'],strip_tags($message['body']),$message['payload'],$message['inAppTitle']??false));
                 if (config('app.env') == 'production') {
                     $mp = \Mixpanel::getInstance(config('app.mixpanel_token'));

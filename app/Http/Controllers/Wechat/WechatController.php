@@ -168,7 +168,7 @@ class WechatController extends Controller
         $rc_code = session('wechat_user_rccode');
         Log::info('oauth_callback',[$rc_code]);
         $rc_uid = 0;
-        $needCreateUser = false;
+        $needCreateUser = 0;
         if ($oauthData) {
             $user = User::find($oauthData->user_id);
             if ($oauthDataUpdate) {
@@ -194,7 +194,7 @@ class WechatController extends Controller
                 event(new UserLoggedIn($user,'微信'));
                 Session::put("wechat_userinfo",$userInfo);
             } else {
-                $needCreateUser = true;
+                $needCreateUser = 1;
             }
         } elseif($userInfo['id']) {
             $oauthData = UserOauth::create(
@@ -212,7 +212,7 @@ class WechatController extends Controller
                     'scope'=>'snsapi_userinfo'
                 ]
             );
-            $needCreateUser = true;
+            $needCreateUser = 1;
         } else {
             Log::info('微信认证失败',['userinfo'=>$userInfo,'request'=>$request->all()]);
             return redirect('/wechat/oauth');
@@ -253,12 +253,9 @@ class WechatController extends Controller
             $token = $JWTAuth->fromUser($new_user);
             $userInfo['app_token'] = $token;
             Session::put("wechat_userinfo",$userInfo);
-            if (config('app.env') == 'production') {
-                $this->dispatch(new MixpanelEvent($new_user->id,"inwehub:register:success",'微信注册','oauth','wechat-oauth'));
-            }
         }
 
-        return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);
+        return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect.'&newUser='.$needCreateUser);
     }
 
 
