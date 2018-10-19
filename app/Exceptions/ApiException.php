@@ -233,7 +233,7 @@ class ApiException extends Exception
         self::GROUP_EXIST => '圈子已存在',
         self::GROUP_NOT_EXIST => '圈子不存在',
         self::GROUP_UNDER_AUDIT => '圈子正在审核中',
-        self::GROUP_NOT_JOINED => '您还未加入该圈子'
+        self::GROUP_NOT_JOINED => '成为圈成员，查看所有分享'
     ];
 
 

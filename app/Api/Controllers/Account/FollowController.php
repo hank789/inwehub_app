@@ -3,6 +3,7 @@
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\QuestionLogic;
+use App\Models\AddressBook;
 use App\Models\Attention;
 use App\Models\Authentication;
 use App\Models\Credit;
@@ -615,6 +616,13 @@ class FollowController extends Controller
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
 
+        $addressBookUids = [];
+        if ($user->mobile) {
+            //查找通讯录
+            $addressBookUids = AddressBook::where('phone',$user->mobile)->get()->pluck('user_id')->toArray();
+            $addressBookUids = array_unique($addressBookUids);
+        }
+
         $attentionUsers[] = $user->id;
         $attentionUsers = array_unique(array_merge($attentionUsers,getSystemUids()));
         $banUsers = User::where('status',-1)->get()->pluck('id')->toArray();
@@ -625,6 +633,11 @@ class FollowController extends Controller
         if ($attentionUsers) {
             $query = $query->whereNotIn('user_id',$attentionUsers);
             $query1 = $query1->whereNotIn('user_id',$attentionUsers);
+            $addressBookUids = array_diff($addressBookUids,$attentionUsers);
+        }
+        if ($addressBookUids) {
+            $query = $query->whereIn('user_id',$addressBookUids);
+            $query1 = $query1->whereIn('user_id',$addressBookUids);
         }
         if ($tags) {
             $query = $query->whereIn('tag_id',$tags)->orderBy('skills','desc')->orderBy('answers','desc')->distinct();

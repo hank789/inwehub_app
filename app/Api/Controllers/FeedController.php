@@ -26,6 +26,8 @@ class FeedController extends Controller
             case 1:
                 //关注
                 $followers = $user->attentions()->where('source_type', '=', get_class($user))->pluck('source_id')->toArray();
+                //包括自己
+                $followers[] = $user->id;
                 $attentionTags = $user->attentions()->where('source_type', '=', Tag::class)->pluck('source_id')->toArray();
                 $query = $query->whereIn('user_id', $followers);
                 if ($attentionTags) {
@@ -39,6 +41,8 @@ class FeedController extends Controller
             case 2:
                 //全部
                 $followers = $user->attentions()->where('source_type', '=', get_class($user))->pluck('source_id')->toArray();
+                //包括自己
+                $followers[] = $user->id;
                 $query = $query->where('public',1)->whereIn('user_id', $followers);
                 $groupIds = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
                 if ($groupIds) {
