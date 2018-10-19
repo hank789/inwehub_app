@@ -217,7 +217,7 @@ class AuthController extends Controller
                 //密码登陆如果用户不存在自动创建用户
                 $registrar = new Registrar();
                 $user = $registrar->create([
-                    'name' => 'InweHub用户'.rand(10000,99999),
+                    'name' => '手机用户'.rand(100000,999999),
                     'email' => null,
                     'mobile' => $credentials['mobile'],
                     'rc_uid' => 0,
