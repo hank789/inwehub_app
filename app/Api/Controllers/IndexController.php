@@ -302,7 +302,6 @@ class IndexController extends Controller {
                 case 0:
                     if ($user->id) {
                         $tags = $user->userTag()->orderBy('views','desc')->pluck('tag_id')->take(10)->toArray();
-                        $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'核心页面');
                     }
                     break;
                 case 1:

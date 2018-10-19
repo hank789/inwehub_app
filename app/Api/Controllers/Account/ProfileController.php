@@ -188,6 +188,10 @@ class ProfileController extends Controller
         if ($trains->count()) {
             $train_desc = $trains[0].($trains->count()>1?'等':'').$trains->count().'个认证';
         }
+        $need_report = $request->input('need_report',0);
+        if ($need_report) {
+            $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'核心页面');
+        }
 
         $data = [
             'info'   => $info,
