@@ -9,6 +9,7 @@ use App\Jobs\UpdateSubmissionKeywords;
 use App\Logic\QuillLogic;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Relations\BelongsToUserTrait;
 use App\Models\Relations\MorphManyCommentsTrait;
 use App\Models\Relations\MorphManyTagsTrait;
@@ -218,6 +219,8 @@ class Submission extends Model {
             ->where('source_id',$submission->id)
             ->where('source_type',Submission::class)
             ->exists();
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+
         $img = $submission->data['img']??'';
         $sourceData = [
             'title'     => strip_tags($submission->title),
@@ -239,6 +242,7 @@ class Submission extends Model {
             'is_upvoted'     => $upvote ? 1 : 0,
             'is_downvoted'   => $downvote ? 1 : 0,
             'is_recommend'   => $submission->is_recommend,
+            'is_joined_group'=> $groupMember?1:0,
             'submission_type' => $submission->type,
             'group'    => $withGroup?$submission->group->toArray():null
         ];
