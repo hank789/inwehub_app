@@ -231,6 +231,7 @@ class Submission extends Model {
             'current_address_longitude' => $submission->data['current_address_longitude']??'',
             'current_address_latitude'  => $submission->data['current_address_latitude']??'',
             'comment_url' => $comment_url,
+            'link_url' => '',
             'comment_number' => $submission->comments_number,
             'support_number' => $submission->upvotes,
             'downvote_number' => $submission->downvotes,
@@ -248,6 +249,7 @@ class Submission extends Model {
         if ($submission->type == 'text') $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_SHARE;
         if ($submission->type == 'link') {
             $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_LINK;
+            $sourceData['link_url'] = $submission->data['url'];
         }
 
         $item = [
