@@ -198,6 +198,7 @@ class AuthController extends Controller
 
         /*只接收mobile和password的值*/
         $credentials = $request->only('mobile', 'password', 'phoneCode');
+        $isNewUser = 0;
         if(RateLimiter::instance()->increase('userLogin',$credentials['mobile'],3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
@@ -232,6 +233,7 @@ class AuthController extends Controller
                 $user->userData->email_status = 1;
                 $user->userData->save();
                 $user->save();
+                $isNewUser = 1;
                 //注册事件通知
                 event(new UserRegistered($user,'','APP'));
             }
@@ -271,6 +273,7 @@ class AuthController extends Controller
 
             $info = [];
             $info['token'] = $token;
+            $info['newUser'] = $isNewUser;
             $info['id'] = $user->id;
             $info['name'] = $user->name;
             $info['mobile'] = $user->mobile;
