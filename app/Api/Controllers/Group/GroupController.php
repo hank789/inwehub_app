@@ -521,7 +521,7 @@ class GroupController extends Controller
         $return = $submissions->toArray();
         $list = [];
         foreach ($submissions as $submission) {
-            $list[] = $submission->formatListItem($user);
+            $list[] = $submission->formatListItem($user, false);
         }
         $return['data'] = $list;
         return self::createJsonData(true, $return);

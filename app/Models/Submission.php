@@ -200,7 +200,7 @@ class Submission extends Model {
         return strip_tags($this->title,'<a><span>');
     }
 
-    public function formatListItem($user, $withGroup = true) {
+    public function formatListItem($user, $withGroupName = true) {
         $submission = $this;
         //发布文章
         $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
@@ -244,10 +244,13 @@ class Submission extends Model {
             'is_recommend'   => $submission->is_recommend,
             'is_joined_group'=> $groupMember?1:0,
             'submission_type' => $submission->type,
-            'group'    => $withGroup?$submission->group->toArray():null
+            'group'    => $submission->group->toArray()
         ];
         if ($sourceData['group']) {
             $sourceData['group']['name'] = str_limit($sourceData['group']['name'], 20);
+        }
+        if (!$withGroupName) {
+            unset($sourceData['group']['name']);
         }
         $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE;
         if ($submission->type == 'text') $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_SHARE;
