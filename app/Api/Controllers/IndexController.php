@@ -104,8 +104,8 @@ class IndexController extends Controller {
             $notice['url'] = $notice['url'][0]??'';
         }
         //当日热门圈子
-        $groupIds = RateLimiter::instance()->zRevrange('group-daily-hot-'.date('Ymd'),0,2);
         $hotGroups = [];
+        /*$groupIds = RateLimiter::instance()->zRevrange('group-daily-hot-'.date('Ymd'),0,2);
         foreach ($groupIds as $groupId => $hotScore) {
             $group = Group::find($groupId);
             $hotGroups[] = [
@@ -124,11 +124,11 @@ class IndexController extends Controller {
                     'avatar' => $group->user->avatar
                 ]
             ];
-        }
+        }*/
         //当前用户是否有圈子未读信息
         $user_group_unread = 0;
         $new_message = [];
-        if ($user->id) {
+        if ($user->id && false) {
             $groupMembers = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->orderBy('id','asc')->get();
             foreach ($groupMembers as $groupMember) {
                 $group = $groupMember->group;
@@ -302,7 +302,6 @@ class IndexController extends Controller {
                 case 0:
                     if ($user->id) {
                         $tags = $user->userTag()->orderBy('views','desc')->pluck('tag_id')->take(10)->toArray();
-                        $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'核心页面');
                     }
                     break;
                 case 1:

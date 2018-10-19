@@ -135,6 +135,9 @@ class AuthController extends Controller
             case 'change_phone':
                 //换绑手机号
                 break;
+            case 'login':
+                //登陆
+                break;
             default:
                 if(!$user){
                     throw new ApiException(ApiException::USER_NOT_FOUND);
@@ -195,6 +198,7 @@ class AuthController extends Controller
 
         /*只接收mobile和password的值*/
         $credentials = $request->only('mobile', 'password', 'phoneCode');
+        $isNewUser = 0;
         if(RateLimiter::instance()->increase('userLogin',$credentials['mobile'],3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
@@ -209,6 +213,30 @@ class AuthController extends Controller
                 throw new ApiException(ApiException::ARGS_YZM_ERROR);
             }
             $user = User::where('mobile',$credentials['mobile'])->first();
+            if (!$user) {
+                //密码登陆如果用户不存在自动创建用户
+                $registrar = new Registrar();
+                $user = $registrar->create([
+                    'name' => 'InweHub用户'.rand(10000,99999),
+                    'email' => null,
+                    'mobile' => $credentials['mobile'],
+                    'rc_uid' => 0,
+                    'title'  => '',
+                    'company' => '',
+                    'gender' => 0,
+                    'password' => time(),
+                    'status' => 1,
+                    'visit_ip' => $request->getClientIp(),
+                    'source' => User::USER_SOURCE_APP,
+                ]);
+                $user->attachRole(2); //默认注册为普通用户角色
+                $user->userData->email_status = 1;
+                $user->userData->save();
+                $user->save();
+                $isNewUser = 1;
+                //注册事件通知
+                event(new UserRegistered($user,'','APP'));
+            }
             $token = $JWTAuth->fromUser($user);
             $loginFrom = '短信验证码';
         } else {
@@ -245,6 +273,7 @@ class AuthController extends Controller
 
             $info = [];
             $info['token'] = $token;
+            $info['newUser'] = $isNewUser;
             $info['id'] = $user->id;
             $info['name'] = $user->name;
             $info['mobile'] = $user->mobile;
