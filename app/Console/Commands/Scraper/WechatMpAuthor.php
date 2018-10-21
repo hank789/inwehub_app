@@ -66,11 +66,11 @@ class WechatMpAuthor extends Command {
                             'last_qunfa_id' => $data['last_qunfa_id'],
                             'create_time' => date('Y-m-d H:i:s')
                         ]);
+                        $item->delete();
                     }
                 } else {
                     Artisan::call('scraper:wechat:author');
                 }
-                $item->delete();
             }
         }
     }
