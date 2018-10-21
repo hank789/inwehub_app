@@ -76,7 +76,7 @@ class NewSubmissionJob implements ShouldQueue
         $group = Group::find($submission->group_id);
 
         $group->increment('articles');
-        GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
+        GroupMember::where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
         RateLimiter::instance()->sClear('group_read_users:'.$group->id);
 
         feed()
