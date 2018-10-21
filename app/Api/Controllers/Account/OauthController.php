@@ -79,7 +79,7 @@ class OauthController extends Controller
                 $user = User::find($object->user_id);
                 $token = $JWTAuth->fromUser($user);
                 $user_id = $user->id;
-            } elseif ($user->id > 0 && $object->user_id != $user->id) {
+            } elseif ($user->id > 0 && $object->user_id>0 && $object->user_id != $user->id) {
                 if ($object->user->mobile) {
                     //微信认证已绑定其它手机号
                     return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
