@@ -35,9 +35,9 @@ class FixRecommendDate extends Command
      */
     public function handle()
     {
-        $recommends = RecommendRead::get();
+        $recommends = RecommendRead::where('rate','<=',0)->get();
         foreach ($recommends as $recommend) {
-            $recommend->created_at = $recommend->source->created_at;
+            $recommend->rate = $recommend->getRateWeight() + $recommend->source->rate;
             $recommend->save();
         }
     }
