@@ -110,7 +110,7 @@ class QuestionController extends AdminController
                 'sort' => 0,
                 'audit_status' => 0,
                 'rate' => $question->rate,
-                'created_at' => $question->created_at,
+                'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
                 'read_type' => $question->question_type == 1 ? RecommendRead::READ_TYPE_PAY_QUESTION : RecommendRead::READ_TYPE_FREE_QUESTION,
                 'data' => [
