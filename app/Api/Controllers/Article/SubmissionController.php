@@ -531,7 +531,7 @@ class SubmissionController extends Controller {
             ];
         }
         //seo信息
-        $keywords = array_unique(explode(',',$submission->data['keywords']));
+        $keywords = array_unique(explode(',',$submission->data['keywords']??''));
         $return['seo'] = [
             'title' => $submission->type == 'link' ? $submission->data['title'] : $submission->title,
             'description' => $submission->title,
