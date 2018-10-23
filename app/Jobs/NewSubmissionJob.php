@@ -69,6 +69,7 @@ class NewSubmissionJob implements ShouldQueue
                 }
             }
         }
+        $submission->increment('views');
 
         $user = User::find($submission->user_id);
 
