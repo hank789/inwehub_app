@@ -150,4 +150,8 @@ class Answer extends Model
         return (bcdiv($this->supports,$this->supports + $this->downvotes,2) * 100);
     }
 
+    public function calculationRate(){
+        $this->question->calculationRate();
+    }
+
 }
