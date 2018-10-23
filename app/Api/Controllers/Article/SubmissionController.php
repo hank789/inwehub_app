@@ -530,6 +530,14 @@ class SubmissionController extends Controller {
                 'answer_users'  => $answer_users
             ];
         }
+        //seo信息
+        $keywords = array_unique(explode(',',$submission->data['keywords']));
+        $return['seo'] = [
+            'title' => $submission->type == 'link' ? $submission->data['title'] : $submission->title,
+            'description' => $submission->title,
+            'keywords' => implode(',',array_slice($keywords,0,5)),
+            'published_time' => (new Carbon($submission->created_at))->toAtomString()
+        ];
 
         $this->logUserViewTags($user->id,$submission->tags()->get());
         $this->doing($user,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,$submission->type == 'link'?$submission->data['title']:$submission->title,
