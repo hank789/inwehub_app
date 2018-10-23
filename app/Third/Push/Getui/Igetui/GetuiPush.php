@@ -509,7 +509,7 @@ class GetuiPush
         $alertmsg = new DictionaryAlertMsg();
         $alertmsg->body = $data['body'];
         $alertmsg->actionLocKey = "ActionLockey";
-        $alertmsg->locKey = "LocKey";
+        $alertmsg->locKey = "点击查看";
         $alertmsg->locArgs = array("locargs");
         $alertmsg->launchImage = "launchimage";
 //        IOS8.2 支持
