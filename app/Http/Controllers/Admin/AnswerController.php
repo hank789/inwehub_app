@@ -102,6 +102,7 @@ class AnswerController extends AdminController
                 'source_type' => get_class($answer),
                 'sort' => 0,
                 'audit_status' => 0,
+                'rate' => $answer->question->rate,
                 'created_at' => $answer->created_at,
                 'updated_at' => Carbon::now(),
                 'read_type' => RecommendRead::READ_TYPE_FREE_QUESTION_ANSWER,
