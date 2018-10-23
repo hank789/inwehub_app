@@ -72,6 +72,7 @@ class ArticleToRecommend implements ShouldQueue
             'source_type' => get_class($submission),
             'tips' => $this->tips,
             'sort' => 0,
+            'rate' => $submission->rate,
             'audit_status' => 0,
             'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
             'created_at' => Carbon::now(),
