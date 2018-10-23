@@ -1360,8 +1360,7 @@ if (!function_exists('hotRate')) {
         }
         $dividend = (log10($Qviews)*4) + (($Qanswers * $Qscore)/2) + $Ascores;
         $divisor = pow((($Qage + 1) - ($Qage - $Qupdated)/2), 1.5);
-
-        return $dividend/$divisor;
+        return bcdiv($dividend,$divisor,10);
     }
 }
 
