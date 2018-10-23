@@ -157,6 +157,7 @@ class SubmissionController extends AdminController
             'tips' => $request->input('tips'),
             'sort' => 0,
             'audit_status' => 0,
+            'rate' => $article->rate,
             'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
