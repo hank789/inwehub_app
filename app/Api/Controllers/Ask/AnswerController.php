@@ -211,7 +211,7 @@ class AnswerController extends Controller
         $this->logUserViewTags($user->id,$question->tags()->get());
 
         //seo信息
-        $keywords = array_unique(explode(',',$question->data['keywords']));
+        $keywords = array_unique(explode(',',$question->data['keywords']??''));
         $seo = [
             'title' => $question->title,
             'description' => $answers_data['content']?$answer->getContentText():$question->title,
