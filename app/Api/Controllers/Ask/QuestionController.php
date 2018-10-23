@@ -221,7 +221,7 @@ class QuestionController extends Controller
         QuestionLogic::calculationQuestionRate($question->id);
 
         //seo信息
-        $keywords = array_unique(explode(',',$question->data['keywords']));
+        $keywords = array_unique(explode(',',$question->data['keywords']??''));
         $seo = [
             'title' => $question->title,
             'description' => $question->title,
