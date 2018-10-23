@@ -210,9 +210,19 @@ class AnswerController extends Controller
             '',config('app.mobile_url').'#/ask/offer/'.$answer->id);
         $this->logUserViewTags($user->id,$question->tags()->get());
 
+        //seo信息
+        $keywords = array_unique(explode(',',$question->data['keywords']));
+        $seo = [
+            'title' => $question->title,
+            'description' => $answers_data['content']?$answer->getContentText():$question->title,
+            'keywords' => implode(',',array_slice($keywords,0,5)),
+            'published_time' => (new Carbon($question->created_at))->toAtomString()
+        ];
+
         return self::createJsonData(true,[
             'question'=>$question_data,
             'feedback'=>$feedback_data,
+            'seo'=>$seo,
             'answer'=>$answers_data]);
 
     }

@@ -219,6 +219,15 @@ class QuestionController extends Controller
             '',config('app.mobile_url').'#/ask/offer/answers/'.$question->id);
         $this->logUserViewTags($user->id,$question->tags()->get());
         QuestionLogic::calculationQuestionRate($question->id);
+
+        //seo信息
+        $keywords = array_unique(explode(',',$question->data['keywords']));
+        $seo = [
+            'title' => $question->title,
+            'description' => $question->title,
+            'keywords' => implode(',',array_slice($keywords,0,5)),
+            'published_time' => (new Carbon($question->created_at))->toAtomString()
+        ];
         return self::createJsonData(true,[
             'is_followed_question'=>$is_followed_question,
             'my_answer_id' => $my_answer_id,
@@ -226,6 +235,7 @@ class QuestionController extends Controller
             'question'=>$question_data,
             'answers'=>$answers_data,
             'timeline'=>$timeline,
+            'seo' => $seo,
             'feedback'=>$feedback_data]);
 
     }
