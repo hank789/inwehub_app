@@ -95,7 +95,7 @@ class Kernel extends ConsoleKernel
         if (config('app.env') == 'production') {
             //10 8,12,14,16,18,20,22
             $schedule->command('scraper:wechat:gzh:posts')->cron('10 7,11,15,19,22 * * *')->withoutOverlapping();
-            $schedule->command('crontab:midnight:task')->cron('5 24,2,4,6 * * *');
+            $schedule->command('crontab:midnight:task')->cron('5 2,6 * * *');
             $schedule->command('scraper:atom')->cron('0 8,10,16,20 * * *');
             $schedule->command('scraper:rss')->cron('30 7,9,11,13,15,17,19,21,22,23 * * *');
             //$schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
@@ -104,10 +104,10 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:itjuzi:news')->cron('40 7,13,17,21 * * *');
             $schedule->command('scraper:sap:news')->cron('50 8,12,14,16,19,22 * * *');
             $schedule->command('scraper:indeed:jobs')->cron('55 7,10,13,15,17,21 * * *');
-            $schedule->command('crontab:report:daily:user-active')->hourly();
+            $schedule->command('crontab:report:daily:user-active')->hourlyAt(59);
             $schedule->command('crontab:report:daily:register')->dailyAt('09:00');
-            $schedule->command('crontab:report:daily:recommend')->cron('5 8,11,14,17,21,24 * * *');
-            $schedule->command('crontab:report:daily:read')->cron('5 8,11,14,17,21,24 * * *');
+            $schedule->command('crontab:report:daily:recommend')->cron('59 8,11,14,17,21,23 * * *');
+            $schedule->command('crontab:report:daily:read')->hourlyAt(59);
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
         $schedule->command('crontab:deal-overtime-task')->daily()->at('05:00')->withoutOverlapping();

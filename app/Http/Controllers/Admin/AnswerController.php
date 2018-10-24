@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Frontend\System\OperationNotify;
 use App\Models\Answer;
 use App\Models\RecommendRead;
 use Carbon\Carbon;
@@ -111,6 +112,12 @@ class AnswerController extends AdminController
                     'img'   => ''
                 ]
             ]);
+            $slackFields = [];
+            $slackFields[] = [
+                'title'=>'链接',
+                'value'=>config('app.mobile_url').'#/ask/offer/'.$answer->id
+            ];
+            event(new OperationNotify('用户'.formatSlackUser($request->user()).'新增精选['.$answer->question->title.']',$slackFields));
         }
         return $this->success(url()->previous(),'设为精选成功');
 

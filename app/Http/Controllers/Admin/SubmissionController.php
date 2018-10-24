@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\Frontend\System\OperationNotify;
 use App\Logic\TagsLogic;
 use App\Models\Groups\Group;
 use App\Models\Question;
@@ -177,6 +178,12 @@ class SubmissionController extends AdminController
             $recommend->save();
             Tag::multiAddByIds($tagsId,$article);
             $recommend->setKeywordTags();
+            $slackFields = [];
+            $slackFields[] = [
+                'title'=>'链接',
+                'value'=>config('app.mobile_url').'#/c/'.$article->category_id.'/'.$article->slug
+            ];
+            event(new OperationNotify('用户'.formatSlackUser($request->user()).'新增精选['.$recommend->data['title'].']',$slackFields));
         }
         return $this->success(url()->previous(),'设为精选成功');
 
