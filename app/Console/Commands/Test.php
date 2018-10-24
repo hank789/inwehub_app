@@ -49,13 +49,31 @@ class Test extends Command
      */
     public function handle()
     {
-        $data = MixpanelService::instance()->request(['events'],[
-            'event' => ['inwehub:wechat-register'],
-            'type'  => 'general',
-            'unit'  => 'day',
-            'interval' => 1
-        ]);
-        var_dump($data);
+        $ql = QueryList::getInstance();
+        $cookies = Setting()->get('scraper_jianyu360_cookie','');
+        $cookiesPcArr = explode('||',$cookies);
+        $content = $ql->post('https://www.jianyu360.com/front/pcAjaxReq',[
+            'pageNumber' => 1,
+            'reqType' => 'bidSearch',
+            'searchvalue' => 'SAP',
+            'area' => '',
+            'subtype' => '',
+            'publishtime' => '',
+            'selectType' => 'all',
+            'minprice' => '',
+            'maxprice' => '',
+            'industry' => '',
+            'tabularflag' => 'Y'
+        ],[
+            'timeout' => 60,
+            'headers' => [
+                'Host'    => 'www.jianyu360.com',
+                'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+                'Cookie'    => $cookiesPcArr[4]
+            ]
+        ])->getHtml();
+        var_dump($content);
         return;
         $submissions = Submission::whereIn('group_id',[56])->get();
         foreach ($submissions as $submission) {
