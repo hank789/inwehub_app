@@ -34,7 +34,7 @@ class SubmissionController extends AdminController
 
         /*问题标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
-            $query->where('title','like', '%'.$filter['word'].'%');
+            $query->where('data','like', '%'.$filter['word'].'%');
         }
         if (isset($filter['sortByRate']) && $filter['sortByRate']) {
             $query->orderBy('rate','desc');
