@@ -36,8 +36,7 @@ class MidnightTask extends Command
         $limit = RateLimiter::instance()->getValue('scraper_mp_freq',date('Y-m-d'));
         if ($limit) return;
         $spider = new MpSpider();
-        $mpInfo = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->first();
-        $wz_list = $spider->getGzhInfo($mpInfo->wx_hao);
+        $spider->refreshCookie();
     }
 
 }
