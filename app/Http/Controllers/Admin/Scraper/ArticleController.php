@@ -85,7 +85,7 @@ class ArticleController extends AdminController
         $title = $request->input('title');
         $tagsId = $request->input('tagIds',0);
         $tips = $request->input('tips');
-        dispatch(new ArticleToRecommend($articleId,$title,$tagsId,$tips));
+        dispatch(new ArticleToRecommend($articleId,$title,$tagsId,$tips,$request->user()->id));
         return $this->success(url()->previous(),'设为精选成功');
 
     }

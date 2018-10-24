@@ -1,10 +1,12 @@
 <?php namespace App\Jobs;
 
+use App\Events\Frontend\System\OperationNotify;
 use App\Models\Groups\Group;
 use App\Models\RecommendRead;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Tag;
+use App\Models\User;
 use App\Traits\SubmitSubmission;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -35,14 +37,17 @@ class ArticleToRecommend implements ShouldQueue
 
     public $tips;
 
+    public $operatorId;
 
 
-    public function __construct($id, $title, $tagsId, $tips)
+
+    public function __construct($id, $title, $tagsId, $tips, $operatorId = 0)
     {
         $this->id = $id;
         $this->title = $title;
         $this->tagsId = $tagsId;
         $this->tips = $tips;
+        $this->operatorId = $operatorId;
     }
 
     /**
@@ -101,6 +106,15 @@ class ArticleToRecommend implements ShouldQueue
                 }
             }*/
             $recommend->setKeywordTags();
+            if ($this->operatorId) {
+                $operator = User::find($this->operatorId);
+                $slackFields = [];
+                $slackFields[] = [
+                    'title'=>'链接',
+                    'value'=>config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+                ];
+                event(new OperationNotify('用户'.formatSlackUser($operator).'新增精选['.$recommend->data['title'].']',$slackFields));
+            }
         }
 
     }
