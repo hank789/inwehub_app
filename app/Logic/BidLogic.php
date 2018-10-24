@@ -160,7 +160,10 @@ class BidLogic {
                     'Cookie' => $cookie
                 ]);
                 return $r;
-            });
+            },false,[
+                '--proxy' => '127.0.0.1:1080',
+                '--proxy-type' => 'socks5'
+            ]);
         } catch (\Exception $e) {
             deleteProxyIp($ip);
             app('sentry')->captureException($e,['item'=>$item,'cookieApp'=>$cookie,'proxy'=>$ip]);
@@ -183,7 +186,10 @@ class BidLogic {
                     'Cookie' => $cookie
                 ]);
                 return $r;
-            });
+            },false,[
+                '--proxy' => '127.0.0.1:1080',
+                '--proxy-type' => 'socks5'
+            ]);
         } catch (\Exception $e) {
             deleteProxyIp($ip);
             app('sentry')->captureException($e,['item'=>$item,'cookiePc'=>$cookie,'proxy'=>$ip]);
