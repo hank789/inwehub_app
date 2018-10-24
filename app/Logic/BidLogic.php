@@ -62,9 +62,9 @@ class BidLogic {
             $item['bid_html_body'] = '';
             if ($cookiesAppArr) {
                 for ($i=0;$i<3;$i++) {
-                    $ips = getProxyIps(1);
-                    $ip = $ips[0];
-                    $content = self::getAppData($ql2,$item,$cookiesAppArr,$ip);
+                    //$ips = getProxyIps(1);
+                    //$ip = $ips[0];
+                    $content = self::getAppData($ql2,$item,$cookiesAppArr,'');
                     if ($content) {
                         $bid_html_body = $content->removeHead()->getHtml();
                         if ($bid_html_body != '<html></html>') {
@@ -100,9 +100,9 @@ class BidLogic {
                 event(new ExceptionNotify('抓取招标详情失败，对应app cookie已失效，请到后台设置',$fields));
                 sleep(rand(2,5));
                 for ($i=0;$i<3;$i++) {
-                    $ips = getProxyIps(1);
-                    $ip = $ips[0];
-                    $content = self::getPcData($ql2,$item,$cookiesPcArr,$ip);
+                    //$ips = getProxyIps(1);
+                    //$ip = $ips[0];
+                    $content = self::getPcData($ql2,$item,$cookiesPcArr,'');
                     if ($content) {
                         if ($content->getHtml() != '<html></html>') {
                             break;
@@ -160,10 +160,7 @@ class BidLogic {
                     'Cookie' => $cookie
                 ]);
                 return $r;
-            },false,[
-                '--proxy' => $ip,
-                '--proxy-type' => 'http'
-            ]);
+            });
         } catch (\Exception $e) {
             deleteProxyIp($ip);
             app('sentry')->captureException($e,['item'=>$item,'cookieApp'=>$cookie,'proxy'=>$ip]);
@@ -186,10 +183,7 @@ class BidLogic {
                     'Cookie' => $cookie
                 ]);
                 return $r;
-            },false,[
-                '--proxy' => $ip,
-                '--proxy-type' => 'http'
-            ]);
+            });
         } catch (\Exception $e) {
             deleteProxyIp($ip);
             app('sentry')->captureException($e,['item'=>$item,'cookiePc'=>$cookie,'proxy'=>$ip]);

@@ -70,7 +70,7 @@ class BidSearch extends Command {
         $cookiesAppArr = explode('||',$cookiesApp);
         $allCount = 0;
         $count = 0;
-        validateProxyIps();
+        //validateProxyIps();
         foreach ($keywords as $key=>$keywordConfig) {
             if ($count <= 6 && $key>=1) {
                 sleep((6-$count) * 10);
@@ -114,12 +114,12 @@ class BidSearch extends Command {
     }
 
     protected function getHtmlData($ql,$keyword,$cookiesPcArr) {
-        $ips = getProxyIps(1);
+        /*$ips = getProxyIps(1);
         if (!$ips) {
             event(new ExceptionNotify('代理IP已耗尽，请到后台设置', []));
             exit();
         }
-        $ip = $ips[0];
+        $ip = $ips[0];*/
         $cookie = $cookiesPcArr[rand(0,count($cookiesPcArr)-1)];
         try {
             //全文搜索返回全部500条信息
@@ -136,7 +136,7 @@ class BidSearch extends Command {
                 'industry' => '',
                 'tabularflag' => 'Y'
             ],[
-                'proxy' => $ip,
+                //'proxy' => $ip,
                 'timeout' => 6,
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
@@ -146,8 +146,8 @@ class BidSearch extends Command {
                 ]
             ])->getHtml();
         } catch (\Exception $e) {
-            deleteProxyIp($ip);
-            app('sentry')->captureException($e,['keyword'=>$keyword,'proxy'=>$ip,'cookiesPc'=>$cookie]);
+            //deleteProxyIp($ip);
+            app('sentry')->captureException($e,['keyword'=>$keyword,'cookiesPc'=>$cookie]);
             $content = null;
         }
         return $content;
