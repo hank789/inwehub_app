@@ -36,6 +36,8 @@ class MpSpider {
 
 
     public function getGzhInfo($wx_hao) {
+        $limit = RateLimiter::instance()->getValue('scraper_mp_freq',date('Y-m-d'));
+        if ($limit) return false;
         $url = $this->mpUrl.'/cgi-bin/searchbiz?action=search_biz&token='.$this->token.'&lang=zh_CN&f=json&ajax=1&random=0.930593749582243&query='.$wx_hao.'&begin=0&count=5';
         $data = $this->ql->get($url,null,[
             'cookies' => null,
@@ -102,6 +104,20 @@ class MpSpider {
             event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']文章抓取失败:'.$data));
         }
         return false;
+    }
+
+    public function refreshCookie() {
+        return $this->ql->get($this->mpUrl,null,[
+            'cookies' => null,
+            'headers' => [
+                'Host'   => 'mp.weixin.qq.com',
+                'X-Requested-With' => 'XMLHttpRequest',
+                'Accept' => 'application/json, text/javascript, */*; q=0.01',
+                'Accept-Language:' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+                'Cookie' => $this->cookie
+            ]
+        ])->getHtml();
     }
 
     /**
