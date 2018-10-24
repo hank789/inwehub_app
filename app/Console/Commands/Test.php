@@ -50,8 +50,8 @@ class Test extends Command
     public function handle()
     {
         $data = MixpanelService::instance()->request(['events'],[
-            'event' => ['inwehub:analysis:router:count'],
-            'type'  => 'unique',
+            'event' => ['inwehub:wechat-register'],
+            'type'  => 'general',
             'unit'  => 'day',
             'interval' => 1
         ]);

@@ -255,7 +255,7 @@ class WechatController extends Controller
             Session::put("wechat_userinfo",$userInfo);
         }
 
-        return redirect(config('wechat.oauth.callback_redirect_url').'?openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect.'&newUser='.$needCreateUser);
+        return redirect(config('wechat.oauth.callback_redirect_url').'?newUser='.$needCreateUser.'&openid='.$userInfo['id'].'&token='.$token.'&redirect='.$redirect);
     }
 
 
