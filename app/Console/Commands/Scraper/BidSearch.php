@@ -137,7 +137,7 @@ class BidSearch extends Command {
                 'tabularflag' => 'Y'
             ],[
                 'proxy' => $ip,
-                'timeout' => 60,
+                'timeout' => 6,
                 'headers' => [
                     'Host'    => 'www.jianyu360.com',
                     'Referer' => 'https://www.jianyu360.com/jylab/supsearch/index.html',
