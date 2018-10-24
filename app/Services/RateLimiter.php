@@ -102,8 +102,8 @@ class RateLimiter extends Singleton
         return true;
     }
 
-    public function sMembers($key) {
-        return $this->client->sMembers('inwehub:'.$key);
+    public function sMembers($key, $keyPrefix = 'inwehub:') {
+        return $this->client->sMembers($keyPrefix.$key);
     }
 
     public function sRem($key,$value,$keyPrefix = 'inwehub:') {
@@ -114,10 +114,10 @@ class RateLimiter extends Singleton
         return $this->client->sIsMember('inwehub:'.$key,$value);
     }
 
-    public function sClear($key){
-        $members = $this->sMembers($key);
+    public function sClear($key, $keyPrefix = 'inwehub:'){
+        $members = $this->sMembers($key,$keyPrefix);
         foreach ($members as $member) {
-            $this->sRem($key,$member);
+            $this->sRem($key,$member,$keyPrefix);
         }
     }
 
