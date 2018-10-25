@@ -19,6 +19,8 @@ git pull origin master
 @task('test-dev-m',['on' => ['web-test1']])
 cd /home/web/www/intervapp
 git pull origin dev
+php artisan opcache:clear
+php artisan opcache:optimize
 @endtask
 
 @task('test-dev-web',['on' => ['web-test1']])
@@ -37,6 +39,8 @@ git pull origin dev
 php artisan config:cache
 php artisan route:cache
 php artisan migrate
+php artisan opcache:clear
+php artisan opcache:optimize
 php artisan queue:restart
 @endtask
 
@@ -46,11 +50,15 @@ git pull origin master
 php artisan config:cache
 php artisan route:cache
 php artisan migrate
+php artisan opcache:clear
+php artisan opcache:optimize
 php artisan queue:restart
 @endtask
 
 @task('pro-m',['on' => ['web-pro','web-read']])
 cd /home/web/www/inwehub_app
 git pull origin master
+php artisan opcache:clear
+php artisan opcache:optimize
 @endtask
 
