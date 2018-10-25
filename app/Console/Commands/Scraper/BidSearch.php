@@ -80,7 +80,7 @@ class BidSearch extends Command {
 
             $count = 0;
             $data = null;
-            for ($i=0;$i<5;$i++) {
+            for ($i=0;$i<3;$i++) {
                 $content = $this->getHtmlData($ql,$keyword,$cookiesPcArr);
                 if ($content) {
                     $data = json_decode($content,true);
