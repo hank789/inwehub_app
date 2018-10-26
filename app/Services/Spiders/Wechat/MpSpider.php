@@ -107,7 +107,7 @@ class MpSpider {
     }
 
     public function refreshCookie() {
-        return $this->ql->get($this->mpUrl,null,[
+        return $this->ql->get($this->mpUrl.'/cgi-bin/home?t=home/index&token='.$this->token.'&lang=zh_CN',null,[
             'cookies' => null,
             'headers' => [
                 'Host'   => 'mp.weixin.qq.com',
