@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Doing;
+use App\Models\Question;
 use App\Models\RecommendRead;
 use App\Models\Scraper\BidInfo;
 use App\Models\Scraper\WechatMpInfo;
@@ -49,6 +50,15 @@ class Test extends Command
      */
     public function handle()
     {
+        $questions = Question::get();
+        foreach ($questions as $question) {
+            $tags = $question->tags->pluck('name')->toArray();
+            $data = $question->data;
+            $data['keywords'] = implode(',',$tags);
+            $question->data = $data;
+            $question->save();
+        }
+        return;
         $ql = QueryList::getInstance();
         $cookies = Setting()->get('scraper_jianyu360_cookie','');
         $cookiesPcArr = explode('||',$cookies);

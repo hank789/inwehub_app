@@ -560,6 +560,10 @@ class Question extends Model
                     $tags[] = $keyword;
                 }
             }
+            $data = $this->data;
+            $data['keywords'] = implode(',',$tags);
+            $this->data = $data;
+            $this->save();
             Tag::multiAddByName($tags,$this,1);
         } catch (\Exception $e) {
             \Log::info('setKeywordTagsError',$this->toArray());
