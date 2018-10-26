@@ -223,8 +223,8 @@ class QuestionController extends Controller
         //seo信息
         $keywords = array_unique(explode(',',$question->data['keywords']??''));
         $seo = [
-            'title' => $question->title,
-            'description' => $question->title,
+            'title' => strip_tags($question->title),
+            'description' => strip_tags($question->title),
             'keywords' => implode(',',array_slice($keywords,0,5)),
             'published_time' => (new Carbon($question->created_at))->toAtomString()
         ];

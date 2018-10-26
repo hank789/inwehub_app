@@ -533,8 +533,8 @@ class SubmissionController extends Controller {
         //seo信息
         $keywords = array_unique(explode(',',$submission->data['keywords']??''));
         $return['seo'] = [
-            'title' => $submission->type == 'link' ? $submission->data['title'] : $submission->title,
-            'description' => $submission->title,
+            'title' => strip_tags($submission->type == 'link' ? $submission->data['title'] : $submission->title),
+            'description' => strip_tags($submission->title),
             'keywords' => implode(',',array_slice($keywords,0,5)),
             'published_time' => (new Carbon($submission->created_at))->toAtomString()
         ];
