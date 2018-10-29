@@ -36,10 +36,12 @@ class Sitemap extends Command
     public function handle()
     {
         $sitemap = \App::make("sitemap");
+        $count = 0;
         $recommendReads = RecommendRead::where('audit_status',1)->get();
         foreach ($recommendReads as $recommendRead) {
             switch ($recommendRead->read_type) {
                 case RecommendRead::READ_TYPE_SUBMISSION:
+                    $count++;
                     $submission = Submission::find($recommendRead->source_id);
                     $url = 'https://www.inwehub.com/c/'.$submission->category_id.'/'.$submission->slug;
                     $sitemap->add($url, (new Carbon($submission->created_at))->toAtomString(), '1.0', 'monthly');
@@ -49,11 +51,13 @@ class Sitemap extends Command
         }
         $questions = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2)->get();
         foreach ($questions as $question) {
+            $count++;
             $url = 'https://www.inwehub.com/askCommunity/interaction/answers/'.$question->id;
             $sitemap->add($url, (new Carbon($question->created_at))->toAtomString(), '1.0', 'monthly');
             if ($question->question_type == 2) {
                 $answers = Answer::where('question_id',$question->id)->where('status',1)->get();
                 foreach ($answers as $answer) {
+                    $count++;
                     $url = 'https://www.inwehub.com/askCommunity/interaction/'.$answer->id;
                     $sitemap->add($url, (new Carbon($answer->created_at))->toAtomString(), '1.0', 'monthly');
                 }
@@ -61,6 +65,7 @@ class Sitemap extends Command
         }
 
         $sitemap->store('xml', 'sitemap');
+        $this->info('共生成地址：'.$count);
     }
 
 }
