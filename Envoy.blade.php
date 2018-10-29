@@ -58,3 +58,9 @@ php artisan opcache:clear
 php artisan opcache:optimize
 @endtask
 
+@task('pro-sitemap',['on' => ['web-read']])
+cd /home/web/www/inwehub_app
+php artisan sitemap:generate
+cp public/sitemap.xml /home/web/www/inwehub_www/web/dist_build/
+@endtask
+
