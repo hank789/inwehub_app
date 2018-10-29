@@ -41,7 +41,7 @@ class Sitemap extends Command
             switch ($recommendRead->read_type) {
                 case RecommendRead::READ_TYPE_SUBMISSION:
                     $submission = Submission::find($recommendRead->source_id);
-                    $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
+                    $url = 'https://www.inwehub.com/c/'.$submission->category_id.'/'.$submission->slug;
                     $sitemap->add($url, (new Carbon($submission->created_at))->toAtomString(), '1.0', 'monthly');
                     break;
             }
@@ -49,12 +49,12 @@ class Sitemap extends Command
         }
         $questions = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2)->get();
         foreach ($questions as $question) {
-            $url = config('app.mobile_url').'#/askCommunity/interaction/answers/'.$question->id;
+            $url = 'https://www.inwehub.com/askCommunity/interaction/answers/'.$question->id;
             $sitemap->add($url, (new Carbon($question->created_at))->toAtomString(), '1.0', 'monthly');
             if ($question->question_type == 2) {
                 $answers = Answer::where('question_id',$question->id)->where('status',1)->get();
                 foreach ($answers as $answer) {
-                    $url = config('app.mobile_url').'#/askCommunity/interaction/'.$answer->id;
+                    $url = 'https://www.inwehub.com/askCommunity/interaction/'.$answer->id;
                     $sitemap->add($url, (new Carbon($answer->created_at))->toAtomString(), '1.0', 'monthly');
                 }
             }
