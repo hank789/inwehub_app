@@ -10,21 +10,21 @@ use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\MpSpider;
 use Illuminate\Console\Command;
 
-class MidnightTask extends Command
+class RefreshCookieTask extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'crontab:midnight:task';
+    protected $signature = 'crontab:refresh:cookie:task';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '凌晨到6点的常规用于验证的任务';
+    protected $description = '刷新cookie的任务';
 
     /**
      * Execute the console command.

@@ -41,7 +41,8 @@
         "tightenco/collect": "^5.6",
         "tlapi/slack-laravel": "dev-master",
         "tymon/jwt-auth": "^0.5.10",
-        "zhuzhichao/ip-location-zh": "^2.2"
+        "zhuzhichao/ip-location-zh": "^2.2",
+        "laravelium/sitemap": "2.7.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

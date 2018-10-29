@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers\Group;
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\OperationNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
@@ -373,7 +374,7 @@ class GroupController extends Controller
                 'value' => $user->name
             ]
         ];
-        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', $fields));
+        event(new OperationNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', $fields));
         return self::createJsonData(true);
     }
 
@@ -441,7 +442,7 @@ class GroupController extends Controller
                 'value' => $user->name
             ]
         ];
-        event(new SystemNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为置顶', $fields));
+        event(new OperationNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为置顶', $fields));
         return self::createJsonData(true);
     }
 
