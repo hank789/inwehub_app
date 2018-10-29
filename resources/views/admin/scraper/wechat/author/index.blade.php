@@ -1,5 +1,9 @@
 @extends('admin/public/layout')
 @section('title')微信公众号管理@endsection
+@section('css')
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
+@endsection
 @section('content')
     <section class="content-header">
         <h1>
@@ -23,6 +27,7 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.scraper.wechat.author.index') }}" method="GET">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="group_id" id="group_id" value="" />
                                         <div class="col-xs-2">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                         </div>
@@ -30,8 +35,16 @@
                                             <input type="text" class="form-control" name="wx_hao" placeholder="公众号" value="{{ $filter['wx_hao'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
+                                            <select id="select_group_id" name="select_group_id">
+                                                <option value="0" {{ $filter['group_id'] == 0 ? '':'selected' }}>选择圈子</option>
+                                                @foreach($groups as $group)
+                                                    <option value="{{ $group['id'] }}" {{ $filter['group_id'] == $group['id'] ? 'selected':'' }}>{{ $group['name'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
                                             <select class="form-control" name="status">
-                                                <option value="-1">--状态--</option>
+                                                <option value="-2" {{ isset($filter['status']) && $filter['status']== -2 ? 'selected':'' }}>--状态--</option>
                                                 @foreach(trans_common_status('all') as $key => $status)
                                                     <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
                                                 @endforeach
@@ -126,7 +139,17 @@
 @endsection
 
 @section('script')
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('manage_scraper',"{{ route('admin.scraper.wechat.author.index') }}");
+        $("#select_group_id").select2({
+            theme:'bootstrap',
+            placeholder: "选择圈子",
+            tags:false
+        });
+
+        $("#select_group_id").change(function(){
+            $("#group_id").val($("#select_group_id").val());
+        });
     </script>
 @endsection
