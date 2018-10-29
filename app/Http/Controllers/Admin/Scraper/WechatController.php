@@ -28,6 +28,8 @@ class WechatController extends AdminController
     {
         $filter =  $request->all();
 
+        $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get()->toArray();
+
         $list = WechatMpList::all();
         $query = WechatMpInfo::query();
 
@@ -40,6 +42,12 @@ class WechatController extends AdminController
             $query->where('wx_hao', $filter['wx_hao']);
         }
 
+        if( isset($filter['group_id']) && $filter['group_id'] ){
+            $query->where('group_id', $filter['group_id']);
+        } else {
+            $filter['group_id'] = 0;
+        }
+
         /*问题状态过滤*/
         if( isset($filter['status']) && $filter['status'] > -1 ){
             $query->where('status','=',$filter['status']);
@@ -47,7 +55,7 @@ class WechatController extends AdminController
 
 
         $authors = $query->orderBy('create_time','desc')->paginate(20);
-        return view("admin.scraper.wechat.author.index")->with('authors',$authors)->with('filter',$filter)->with('pending',$list);
+        return view("admin.scraper.wechat.author.index")->with('authors',$authors)->with('filter',$filter)->with('pending',$list)->with('groups',$groups);
     }
 
     /**
