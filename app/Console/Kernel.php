@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
         Commands\Activity\CheckCoupon::class,
         Commands\User\RefreshUserLoginToken::class,
         Commands\InitEs::class,
+        Commands\Sitemap::class,
 
         //定时任务
         Commands\Crontab\CalcGroupHot::class,
@@ -31,7 +32,7 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\DailyRecommendReport::class,
         Commands\Crontab\DailyRegisterReport::class,
         Commands\Crontab\DailyReadReport::class,
-        Commands\Crontab\MidnightTask::class,
+        Commands\Crontab\RefreshCookieTask::class,
         //抓取脚本
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
@@ -95,7 +96,7 @@ class Kernel extends ConsoleKernel
         if (config('app.env') == 'production') {
             //10 8,12,14,16,18,20,22
             $schedule->command('scraper:wechat:gzh:posts')->cron('10 7,11,15,19,22 * * *')->withoutOverlapping();
-            $schedule->command('crontab:midnight:task')->cron('5 24,2,4,6 * * *');
+            $schedule->command('crontab:refresh:cookie:task')->hourly();
             $schedule->command('scraper:atom')->cron('0 8,10,16,20 * * *');
             $schedule->command('scraper:rss')->cron('30 7,9,11,13,15,17,19,21,22,23 * * *');
             //$schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
