@@ -38,6 +38,7 @@ class QuestionObserver implements ShouldQueue {
         if ($question->question_type == 1) {
             dispatch((new InvitationOvertimeAlertSystem($question->id,$overtime))->delay(Carbon::now()->addMinutes($overtime)));
         }
+        $question->setKeywordTags();
         if ($question->question_type == 2 && $question->hide == 0) {
             //关注提问者的用户通知
             /*$attention_users = Attention::where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->pluck('user_id')->toArray();

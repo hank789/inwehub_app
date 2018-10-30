@@ -460,7 +460,6 @@ class QuestionController extends Controller
             if ($newTagString) {
                 Tag::multiAddByName($newTagString,$question);
             }
-            $question->setKeywordTags();
 
             //订单和问题关联
             if($order){

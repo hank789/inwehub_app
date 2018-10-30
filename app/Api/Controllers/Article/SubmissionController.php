@@ -495,7 +495,7 @@ class SubmissionController extends Controller {
         $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
         $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
         $img = $return['data']['img']??'';
-        if (in_array($return['group']['is_joined'],[-1,0,2]) && $img) {
+        if (in_array($return['group']['is_joined'],[-1,0,2]) && $img && false) {
             if (is_array($img)) {
                 foreach ($img as &$item) {
                     $item .= '?x-oss-process=image/blur,r_20,s_20';
