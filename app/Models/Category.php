@@ -48,12 +48,6 @@ class Category extends Model
     {
         parent::boot();
 
-        /*添加事件监听*/
-        static::creating(function($category){
-            $category->parent_id = 0 ;
-            $category->grade = 1;
-        });
-
         /*监听删除事件*/
         static::deleting(function($category){
             $category->questions()->update(['category_id'=>0]);

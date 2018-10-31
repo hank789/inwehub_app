@@ -37,6 +37,7 @@ class UpdateQuestionRate implements ShouldQueue
     public function handle()
     {
         $question = Question::find($this->questionId);
+        if (!$question) return;
         $question->calculationRate();
     }
 }

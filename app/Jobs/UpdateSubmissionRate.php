@@ -37,6 +37,7 @@ class UpdateSubmissionRate implements ShouldQueue
     public function handle()
     {
         $submission = Submission::find($this->submissionId);
+        if (!$submission) return;
         $submission->calculationRate();
     }
 }

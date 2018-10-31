@@ -73,7 +73,8 @@ class Kernel extends ConsoleKernel
         Commands\FixData\AddTags::class,
         Commands\FixData\FixRecommendDate::class,
         Commands\FixData\FixRecommendTags::class,
-        Commands\FixData\FixAutoTags::class
+        Commands\FixData\FixAutoTags::class,
+        Commands\Init\ServiceCategories::class
 
     ];
 
