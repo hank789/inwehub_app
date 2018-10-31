@@ -82,7 +82,7 @@ class ProfileController extends Controller
         $info['is_company'] = $user->userData->is_company;
         $info['company_status'] = $user->userCompany->apply_status??0;
         $info['show_my_wallet'] = true;
-        if ($user->id == 79) {
+        if (in_array($user->id,[79,504])) {
             $info['show_my_wallet'] = false;
         }
         $info['show_ios_resume'] = true;

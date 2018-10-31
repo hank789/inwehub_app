@@ -703,7 +703,7 @@ class User extends Model implements AuthenticatableContract,
 
     //获取用户可用金额
     public function getAvailableTotalMoney(){
-        if ($this->id == 79) return 0;
+        if (in_array($this->id,[79,504])) return 0;
         $user_total_money = $this->userMoney->total_money;
         $lockMoney = $this->getLockMoney();
         $user_total_money -= $lockMoney;

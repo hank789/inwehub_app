@@ -319,10 +319,10 @@ class QuestionController extends Controller
         $tags['must_apple_pay'] = false;
 
         $user_money = UserMoney::find($user->id);
-        if($user_money && $user->id != 79){
+        if($user_money && !in_array($user->id,[79,504])){
             $tags['total_money'] = $user_money->total_money;
         }
-        if ($user->id == 79 || $expert_uuid) {
+        if (in_array($user->id,[79,504]) || $expert_uuid) {
             $tags['must_apple_pay'] = true;
         }
         $tags['pay_items'] = [
