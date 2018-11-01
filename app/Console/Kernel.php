@@ -74,7 +74,9 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixRecommendDate::class,
         Commands\FixData\FixRecommendTags::class,
         Commands\FixData\FixAutoTags::class,
-        Commands\Init\ServiceCategories::class
+        Commands\Init\ServiceCategories::class,
+        Commands\Init\ReviewProducts::class,
+        Commands\Init\ReviewSubmissions::class
 
     ];
 

@@ -1071,7 +1071,7 @@ if (!function_exists('saveImgToCdn')){
     function saveImgToCdn($imgUrl,$dir = 'avatar'){
         $parse_url = parse_url($imgUrl);
         if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
-            $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+            $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
             $ql = \QL\QueryList::getInstance();
             $gfw_urls = \App\Services\RateLimiter::instance()->sMembers('gfw_urls');
             if (in_array($parse_url['host'],[

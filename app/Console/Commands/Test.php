@@ -50,14 +50,16 @@ class Test extends Command
      */
     public function handle()
     {
-        $questions = Question::get();
-        foreach ($questions as $question) {
-            $tags = $question->tags->pluck('name')->toArray();
-            $data = $question->data;
-            $data['keywords'] = implode(',',$tags);
-            $question->data = $data;
-            $question->save();
-        }
+        $ql = QueryList::getInstance();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $html = $ql->browser('https://www.g2crowd.com/products/peoplesoft/reviews')->rules([
+            'name' => ['div.font-weight-bold.mt-half.mb-4th','text'],
+            'link' => ['a.pjax','href'],
+            'star' => ['div.stars.large','class'],
+            'datetime' => ['time','datetime'],
+            'body' => ['div.d-f>.f-1','text']
+        ])->range('div.mb-2.border-bottom')->query()->getData();
+        var_dump($html);
         return;
         $ql = QueryList::getInstance();
         $cookies = Setting()->get('scraper_jianyu360_cookie','');

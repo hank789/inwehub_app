@@ -4,12 +4,14 @@ use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
+use App\Models\Company\CompanyData;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
+use App\Models\Taggable;
 use App\Models\User;
 use App\Models\UserTag;
 use Illuminate\Http\Request;
@@ -88,17 +90,20 @@ class TagsController extends Controller {
         $data['review_count'] = $reviewInfo['review_count'];
         $data['review_average_rate'] = $reviewInfo['review_average_rate'];
         $data['related_tags'] = $tag->relationReviews(4);
-        $categories = $tag->categories()->where('type','enterprise_review')->get();
-        foreach ($categories as $category) {
-            //todo 计算排名
+        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
+        foreach ($categoryRels as $key=>$categoryRel) {
+            $category = Category::find($categoryRel->category_id);
             $data['categories'][] = [
                 'id' => $category->id,
                 'name' => $category->name,
-                'rate' => rand(1,10)
+                'rate' => $key+1
             ];
         }
-        //todo 关联公司
         $data['company_id'] = '';
+        $taggable = Taggable::where('tag_id',$tag->id)->where('taggable_type',CompanyData::class)->first();
+        if ($taggable) {
+            $data['company_id'] = $taggable->taggable_id;
+        }
         //推荐股问
         $recommendUsers = UserTag::where('tag_id',$tag->id)->orderBy('articles','desc')->take(5)->get();
         foreach ($recommendUsers as $recommendUser) {
