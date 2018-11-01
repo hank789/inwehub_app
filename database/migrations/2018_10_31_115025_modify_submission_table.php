@@ -14,7 +14,7 @@ class ModifySubmissionTable extends Migration
     public function up()
     {
         Schema::table('submissions', function (Blueprint $table) {
-            $table->dropColumn(['category_name',['resubmit_id']]);
+            $table->dropColumn(['category_name','resubmit_id']);
             $table->tinyInteger('hide')->after('top')->default(0);
             $table->tinyInteger('rate_star')->after('rate')->default(0);
         });
