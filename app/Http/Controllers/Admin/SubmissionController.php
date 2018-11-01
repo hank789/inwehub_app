@@ -135,6 +135,22 @@ class SubmissionController extends AdminController
         return $this->success(url()->previous(),'成功');
     }
 
+    //设为优质内容
+    public function setGood(Request $request) {
+        $articleId = $request->input('id');
+        $article = Submission::find($articleId);
+        if ($article->is_recommend) {
+            $article->is_recommend = 0;
+        } else {
+            $article->is_recommend = 1;
+        }
+        $article->save();
+        if ($article->is_recommend) {
+            return response('failed');
+        }
+        return response('success');
+    }
+
 
 
     /*文章推荐精选审核*/

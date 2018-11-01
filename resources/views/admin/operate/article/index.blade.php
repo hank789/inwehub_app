@@ -66,6 +66,7 @@
                                                     @if (!$submission->isRecommendRead())
                                                         <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $submission->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
+                                                    <a class="btn btn-default btn-sm btn-setgood" data-toggle="tooltip" title="{{ $submission->is_recommend ? '取消优质':'设为优质' }}" data-title="{{ $submission->is_recommend ? '取消优质':'设为优质' }}" data-source_id = "{{ $submission->id }}"><i class="fa {{ $submission->is_recommend ? 'fa-thumbs-down':'fa-thumbs-up' }}"></i></a>
                                                     <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
                                                     <select onchange="setSupportType({{ $submission->id }},this)">
                                                         <option value="1" @if($submission->support_type == 1) selected @endif> 赞|踩</option>
@@ -187,6 +188,27 @@
                     follow_btn.removeClass('disabled');
                     follow_btn.removeAttr('disabled');
                     $("#submission_" + source_id).css('display','none');
+                });
+            });
+            $(".btn-setgood").click(function(){
+                var title = $(this).data('title');
+                if(!confirm('确认' + title + '？')){
+                    return false;
+                }
+                $(this).button('loading');
+                var follow_btn = $(this);
+                var source_id = $(this).data('source_id');
+
+                $.post('/admin/submission/setgood',{id: source_id},function(msg){
+                    follow_btn.removeClass('disabled');
+                    follow_btn.removeAttr('disabled');
+                    if(msg == 'failed') {
+                        follow_btn.html('<i class="fa fa-thumbs-down"></i>');
+                        follow_btn.data('title','取消优质');
+                    } else {
+                        follow_btn.html('<i class="fa fa-thumbs-up"></i>');
+                        follow_btn.data('title','设为优质');
+                    }
                 });
             });
             $(".btn-setfav").click(function(){

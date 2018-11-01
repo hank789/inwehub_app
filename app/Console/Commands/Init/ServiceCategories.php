@@ -36,7 +36,7 @@ class ServiceCategories extends Command
             'name'      => '产品',
             'icon'      => null,
             'slug'      => 'enterprise_product',
-            'type'      => 'tags',
+            'type'      => 'enterprise_review',
             'sort'      => 0,
             'status'    => 1
         ]);
@@ -46,7 +46,7 @@ class ServiceCategories extends Command
             'name'      => '服务',
             'icon'      => null,
             'slug'      => 'enterprise_service',
-            'type'      => 'tags',
+            'type'      => 'enterprise_review',
             'sort'      => 0,
             'status'    => 1
         ]);
@@ -117,7 +117,7 @@ class ServiceCategories extends Command
                 'name'      => $key,
                 'icon'      => null,
                 'slug'      => 'enterprise_product_'.strtolower(str_replace(' ','_',$key)),
-                'type'      => 'tags',
+                'type'      => 'enterprise_review',
                 'sort'      => 0,
                 'status'    => 1
             ]);
@@ -131,7 +131,7 @@ class ServiceCategories extends Command
                 'name'      => $products,
                 'icon'      => null,
                 'slug'      => 'enterprise_product_'.strtolower(str_replace(' ','_',$products)),
-                'type'      => 'tags',
+                'type'      => 'enterprise_review',
                 'sort'      => 0,
                 'status'    => 1
             ]);
