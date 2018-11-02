@@ -45,8 +45,8 @@ class ProductController extends AdminController
             $query->where('tag_category_rel.category_id','=',$filter['category_id']);
         }
 
-        $tags = $query->orderBy('id','desc')->paginate(20);
-        return view("admin.tag.index")->with('tags',$tags)->with('filter',$filter);
+        $tags = $query->orderBy('tag_category_rel.id','desc')->paginate(20);
+        return view("admin.review.product.index")->with('tags',$tags)->with('filter',$filter);
 
 
     }
@@ -58,7 +58,7 @@ class ProductController extends AdminController
      */
     public function create()
     {
-        return view('admin.tag.create');
+        return view('admin.review.product.create');
     }
 
     /**
@@ -87,11 +87,13 @@ class ProductController extends AdminController
             if ($category_id<=0) continue;
             TagCategoryRel::create([
                 'tag_id' => $tag->id,
-                'category_id' => $category_id
+                'category_id' => $category_id,
+                'type' => TagCategoryRel::TYPE_REVIEW,
+                'status' => $request->input('status',1)
             ]);
         }
         TagsLogic::delCache();
-        return $this->success(route('admin.tag.index'),'标签创建成功');
+        return $this->success(route('admin.review.product.index'),'产品创建成功');
     }
 
     /**
@@ -111,14 +113,14 @@ class ProductController extends AdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id,$cid)
     {
-        $tag = Tag::find($id);
+        $tag = TagCategoryRel::where('tag_id',$id)->where('category_id',$cid)->first();
         if(!$tag){
            abort(404);
         }
-        $categories = $tag->categories->pluck('id')->toArray();
-        return view('admin.tag.edit')->with('tag',$tag)->with('tag_categories',$categories);
+        //$categories = $tag->categories->pluck('id')->toArray();
+        return view('admin.review.product.edit')->with('tag',$tag);
     }
 
     /**
@@ -128,16 +130,15 @@ class ProductController extends AdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, $cid)
     {
         $request->flash();
         $tag = Tag::find($id);
         if(!$tag){
-            return $this->error(route('admin.tag.index'),'话题不存在，请核实');
+            return $this->error(route('admin.review.product.index'),'产品不存在，请核实');
         }
         $this->validateRules['name'] = 'required|max:128|unique:tags,name,'.$id;
         $this->validate($request,$this->validateRules);
-        $oldCid = $tag->category_id;
         $tag->name = $request->input('name');
         $tag->summary = $request->input('summary');
         $tag->description = $request->input('description');
@@ -150,16 +151,31 @@ class ProductController extends AdminController
             $tag->logo = $img_url;
         }
         $tag->save();
-        TagCategoryRel::where('tag_id',$tag->id)->delete();
-        foreach ($request->input('category_id') as $category_id) {
+        $category_ids = $request->input('category_id');
+        $delete = true;
+        foreach ($category_ids as $category_id) {
             if ($category_id<=0) continue;
-            TagCategoryRel::create([
+            if ($category_id == $cid) $delete = false;
+
+            $newRel = TagCategoryRel::firstOrCreate([
                 'tag_id' => $tag->id,
                 'category_id' => $category_id
+            ],[
+                'tag_id' => $tag->id,
+                'category_id' => $category_id,
+                'type' => TagCategoryRel::TYPE_REVIEW,
+                'status' => $request->input('status',1)
             ]);
+            if ($newRel->status != $request->input('status',1)) {
+                $newRel->status = $request->input('status',1);
+                $newRel->save();
+            }
+        }
+        if ($delete) {
+            TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$cid)->where('reviews',0)->delete();
         }
         TagsLogic::delCache();
-        return $this->success(url()->previous(),'标签修改成功');
+        return $this->success(url()->previous(),'产品修改成功');
     }
 
     /*修改分类*/
@@ -168,14 +184,18 @@ class ProductController extends AdminController
         $categoryIds = $request->input('category_id',0);
         if($ids){
             $idArray = explode(",",$ids);
-            TagCategoryRel::whereIn('tag_id',$idArray)->delete();
+            TagCategoryRel::whereIn('tag_id',$idArray)->where('reviews',0)->delete();
             foreach ($idArray as $id) {
                 foreach ($categoryIds as $categoryId) {
                     if ($categoryId<=0) continue;
-                    TagCategoryRel::create([
+                    TagCategoryRel::firstOrCreate([
                         'tag_id' => $id,
                         'category_id' => $categoryId
-                    ]);
+                    ],
+                        [
+                            'tag_id' => $id,
+                            'category_id' => $categoryId
+                        ]);
                 }
             }
         }
@@ -194,7 +214,7 @@ class ProductController extends AdminController
     {
         $tagIds = $request->input('id');
         Tag::destroy($tagIds);
-        return $this->success(url()->previous(),'标签删除成功');
+        return $this->success(url()->previous(),'产品删除成功');
     }
 
 }

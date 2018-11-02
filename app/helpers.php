@@ -726,8 +726,8 @@ if (! function_exists('Setting')) {
 /*数据库Category表操作*/
 if (! function_exists('load_categories')) {
 
-    function load_categories( $type = 'all' , $root = false ){
-        return app('App\Models\Category')->loadFromCache($type,$root);
+    function load_categories( $type = 'all' , $root = false , $last = false){
+        return app('App\Models\Category')->loadFromCache($type,$root, $last);
     }
 
 }

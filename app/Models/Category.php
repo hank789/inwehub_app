@@ -128,7 +128,7 @@ class Category extends Model
     }
 
 
-    public static function loadFromCache($type='all', $root = false){
+    public static function loadFromCache($type='all', $root = false, $last = false){
 
         /*$globalCategories = Cache::rememberForever('global_all_categories',function() {
             return self::where('status','>',0)->orderBy('sort','asc')->orderBy('created_at','asc')->get();
@@ -136,6 +136,9 @@ class Category extends Model
         $query = self::where('status','>',0);
         if($root){
             $query->where('parent_id',0);
+        }
+        if ($last) {
+            $query->where('grade',0);
         }
         $globalCategories = $query->orderBy('sort','asc')->orderBy('created_at','asc')->get();
 

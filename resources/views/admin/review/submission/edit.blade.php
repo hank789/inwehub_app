@@ -7,8 +7,8 @@
 @section('content')
     <section class="content-header">
         <h1>
-            发现分享编辑
-            <small>编辑发现分享</small>
+            产品点评编辑
+            <small>编辑产品点评</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -38,6 +38,10 @@
                             <div class="form-group">
                                 <label>类型</label>
                                 <span>{{ $submission->type }}</span>
+                            </div>
+                            <div class="form-group">
+                                <label>评分</label>
+                                <input type="number" name="rate_star" class="form-control "  placeholder="评分" value="{{ old('rate_star',$submission->rate_star ) }}">
                             </div>
                             <div class="row">
                                 <div class="col-xs-12">
@@ -90,7 +94,7 @@
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script src="{{ asset('/js/global.js')}}"></script>
     <script type="text/javascript">
-        set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+        set_active_menu('manage_review',"{{ route('admin.review.submission.index') }}");
         $(function(){
             $("#author_id_select").select2({
                 theme:'bootstrap',

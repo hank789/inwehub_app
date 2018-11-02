@@ -72,7 +72,7 @@ class ReviewProducts extends Command
                                 'category_id' => $category->id,
                                 'logo' => saveImgToCdn($logo,'tags'),
                                 'summary' => $description,
-                                'description' => $description,
+                                'description' => $item['description'],
                                 'parent_id' => 0,
                                 'reviews' => $item['total']
                             ]);

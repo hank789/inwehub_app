@@ -22,4 +22,14 @@ class TagCategoryRel extends Model
 
     const TYPE_DEFAULT = 0;
     const TYPE_REVIEW = 1;
+
+    public function category()
+    {
+        return $this->belongsTo('App\Models\Category');
+    }
+
+    public function tag()
+    {
+        return $this->belongsTo('App\Models\Tag');
+    }
 }

@@ -52,6 +52,17 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-suitcase"></i> <span>服务点评</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_review">
+            <li><a href="{{ route('admin.review.product.index') }}"><i class="fa fa-circle-o"></i> 产品管理</a></li>
+            <li><a href="{{ route('admin.review.submission.index') }}"><i class="fa fa-circle-o"></i> 点评管理</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-suitcase"></i> <span>项目</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>

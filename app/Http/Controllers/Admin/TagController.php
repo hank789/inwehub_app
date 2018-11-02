@@ -153,10 +153,13 @@ class TagController extends AdminController
             $tag->logo = $img_url;
         }
         $tag->save();
-        TagCategoryRel::where('tag_id',$tag->id)->delete();
+        TagCategoryRel::where('tag_id',$tag->id)->where('reviews',0)->delete();
         foreach ($request->input('category_id') as $category_id) {
             if ($category_id<=0) continue;
-            TagCategoryRel::create([
+            TagCategoryRel::firstOrCreate([
+                'tag_id' => $tag->id,
+                'category_id' => $category_id
+            ],[
                 'tag_id' => $tag->id,
                 'category_id' => $category_id
             ]);
@@ -171,11 +174,14 @@ class TagController extends AdminController
         $categoryIds = $request->input('category_id',0);
         if($ids){
             $idArray = explode(",",$ids);
-            TagCategoryRel::whereIn('tag_id',$idArray)->delete();
+            TagCategoryRel::whereIn('tag_id',$idArray)->where('reviews',0)->delete();
             foreach ($idArray as $id) {
                 foreach ($categoryIds as $categoryId) {
                     if ($categoryId<=0) continue;
-                    TagCategoryRel::create([
+                    TagCategoryRel::firstOrCreate([
+                        'tag_id' => $id,
+                        'category_id' => $categoryId
+                    ],[
                         'tag_id' => $id,
                         'category_id' => $categoryId
                     ]);
