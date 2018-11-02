@@ -82,7 +82,7 @@ class ReviewProducts extends Command
                                 'tag_id' => $tag->id,
                                 'category_id' => $category->id,
                                 'review_average_rate' => $item['rate'],
-                                'review_rate_sum' => $item['total']*$item['rate'],
+                                'review_rate_sum' => floatval($item['total'])*floatval($item['rate']),
                                 'reviews' => $item['total'],
                                 'type' => TagCategoryRel::TYPE_REVIEW
                             ]);
