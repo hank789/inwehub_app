@@ -153,7 +153,7 @@ class TagsController extends Controller {
     public function productList(Request $request) {
         $category_id = $request->input('category_id',0);
         $orderBy = $request->input('orderBy',1);
-        $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW);
+        $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
         if ($category_id) {
             $query = $query->where('category_id',$category_id);
         }
@@ -231,7 +231,7 @@ class TagsController extends Controller {
             $list[] = [
                 'id' => $category->id,
                 'name' => $category->name,
-                'children_count' => Category::where('parent_id',$category->id)->count()
+                'children_count' => $category->grade ? Category::where('parent_id',$category->id)->count() : TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->where('category_id',$category->id)->count()
             ];
         }
         return self::createJsonData(true,$list);

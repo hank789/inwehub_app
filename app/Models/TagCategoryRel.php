@@ -16,7 +16,7 @@ class TagCategoryRel extends Model
 {
     protected $table = 'tag_category_rel';
 
-    protected $fillable = ['category_id', 'tag_id', 'reviews', 'type','review_average_rate','review_rate_sum'];
+    protected $fillable = ['category_id', 'status','tag_id', 'reviews', 'type','review_average_rate','review_rate_sum'];
 
     public $timestamps = false;
 
