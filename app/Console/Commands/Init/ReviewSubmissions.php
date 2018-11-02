@@ -70,6 +70,7 @@ class ReviewSubmissions extends Command
                 foreach ($data as $item) {
                     $link = RateLimiter::instance()->hGet('review-submission-url',$item['link']);
                     if ($link) continue;
+                    if (strlen($item['body']) <= 16) continue;
                     $this->info($item['link']);
                     RateLimiter::instance()->hSet('review-submission-url',$item['link'],1);
                     preg_match('/\d+/',$item['star'],$rate_star);
@@ -115,7 +116,7 @@ class ReviewSubmissions extends Command
             'link' => ['a.pjax','href'],
             'star' => ['div.stars.large','class'],
             'datetime' => ['time','datetime'],
-            'body' => ['div.d-f>.f-1','text']
+            'body' => ['div.d-f:gt(0)>.f-1','text']
         ])->range('div.mb-2.border-bottom')->query()->getData();
         return $html;
     }

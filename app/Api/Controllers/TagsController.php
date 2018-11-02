@@ -99,10 +99,14 @@ class TagsController extends Controller {
                 'rate' => $key+1
             ];
         }
-        $data['company_id'] = '';
+        $data['vendor'] = '';
         $taggable = Taggable::where('tag_id',$tag->id)->where('taggable_type',CompanyData::class)->first();
         if ($taggable) {
-            $data['company_id'] = $taggable->taggable_id;
+            $companyData = CompanyData::find($taggable->taggable_id);
+            $data['vendor'] = [
+                'id'=>$taggable->taggable_id,
+                'name'=>$companyData->name
+            ];
         }
         //推荐股问
         $recommendUsers = UserTag::where('tag_id',$tag->id)->orderBy('articles','desc')->take(5)->get();
