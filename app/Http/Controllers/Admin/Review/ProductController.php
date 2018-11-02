@@ -47,8 +47,6 @@ class ProductController extends AdminController
 
         $tags = $query->orderBy('tag_category_rel.id','desc')->paginate(20);
         return view("admin.review.product.index")->with('tags',$tags)->with('filter',$filter);
-
-
     }
 
     /**

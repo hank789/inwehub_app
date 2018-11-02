@@ -49,9 +49,7 @@
                                         <th>评分</th>
                                         <th>热度</th>
                                         <th>标签</th>
-                                        <th>类型</th>
                                         <th>浏览数</th>
-                                        <th>圈子</th>
                                         <th>发布者</th>
                                     </tr>
                                     @foreach($submissions as $submission)
@@ -85,9 +83,7 @@
                                                     {{ $tagInfo->name.',' }}
                                                 @endforeach
                                             </td>
-                                            <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->views }}</td>
-                                            <td>{{ $submission->group_id ? $submission->group->name:'' }}</td>
                                             <td>{{ $submission->owner->name }}</td>
                                         </tr>
                                     @endforeach

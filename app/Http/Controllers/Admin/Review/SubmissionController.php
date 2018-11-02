@@ -58,4 +58,14 @@ class SubmissionController extends AdminController
         $submission = Submission::find($id);
         return view("admin.review.submission.edit")->with('submission',$submission);
     }
+
+    public function create($id) {
+        $tag = Tag::find($id);
+        return view('admin.review.submission.create')->with('tag',$tag);
+    }
+
+    public function store(Request $request) {
+
+    }
+
 }

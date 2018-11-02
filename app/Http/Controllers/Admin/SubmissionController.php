@@ -97,6 +97,10 @@ class SubmissionController extends AdminController
             $object_data['related_question'] = $related_question;
         }
         $submission->title = $request->input('title');
+        $rate_star = $request->input('rate_star',-1);
+        if ($rate_star >= 0) {
+            $submission->rate_star = $rate_star;
+        }
         $submission->data = $object_data;
         $submission->save();
 

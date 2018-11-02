@@ -70,6 +70,7 @@
                                             <td width="30%">{{ $tag->summary }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
+                                                    <a class="btn btn-default" href="{{ route('admin.review.submission.create',['id'=>$tag->tag_id]) }}" data-toggle="tooltip" title="添加点评"><i class="fa fa-plus"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.review.product.edit',['id'=>$tag->tag_id,'cid'=>$tag->category_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                 </div>
                                             </td>

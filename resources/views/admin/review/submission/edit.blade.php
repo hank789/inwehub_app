@@ -1,5 +1,5 @@
 @extends('admin.public.layout')
-@section('title')发现分享编辑@endsection
+@section('title')编辑产品点评@endsection
 @section('css')
     <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
@@ -40,7 +40,7 @@
                                 <span>{{ $submission->type }}</span>
                             </div>
                             <div class="form-group">
-                                <label>评分</label>
+                                <label>评分(0~5)</label>
                                 <input type="number" name="rate_star" class="form-control "  placeholder="评分" value="{{ old('rate_star',$submission->rate_star ) }}">
                             </div>
                             <div class="row">
@@ -51,24 +51,6 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
-
-                            <div class="form-group @if ($errors->first('author_id')) has-error @endif">
-                                <label for="author_id_select" class="control-label">专栏作者</label>
-                                <div class="row">
-                                    <div class="col-sm-10">
-                                        <select id="author_id_select" name="author_id_select" class="form-control">
-                                            <option value="{{ $submission->author_id }}" selected> {{ $submission->author_id?'<span><img style="width: 30px;height: 20px;" src="' .($submission->author->avatar) .'" class="img-flag" />' . ($submission->author->name).'</span>':'' }} </option>
-                                        </select>
-                                        @if ($errors->first('author_id'))
-                                            <span class="help-block">{{ $errors->first('author_id') }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>关联问题ID</label>
-                                <input type="text" name="related_question" class="form-control "  placeholder="关联问题ID" value="{{ old('related_question',$submission->data['related_question']??'' ) }}">
                             </div>
 
                             <div class="form-group">
