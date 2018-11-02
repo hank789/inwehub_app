@@ -226,6 +226,7 @@ class Submission extends Model {
             'title'     => strip_tags($submission->title),
             'article_title' => $submission->data['title']??'',
             'rate_star' => $submission->rate_star,
+            'slug'      => $submission->slug,
             'img'       => $img,
             'files'       => $submission->data['files']??'',
             'domain'    => $submission->data['domain']??'',
