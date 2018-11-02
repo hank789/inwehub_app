@@ -33,7 +33,7 @@
                                         <div class="col-xs-3">
                                             <select class="form-control" name="category_id">
                                                 <option value="-1">不选择</option>
-                                                @include('admin.category.option',['type'=>'tags','select_id'=>$filter['category_id'],'root'=>false])
+                                                @include('admin.category.option',['type'=>'all','select_id'=>$filter['category_id'],'root'=>false])
                                             </select>
                                         </div>
                                         <div class="col-xs-2">

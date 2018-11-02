@@ -44,7 +44,7 @@
                                 <label>分类</label>
                                 <select id="category_id" name="category_id[]" class="form-control" multiple="multiple" >
                                     <option value="0">选择分类</option>
-                                    @foreach(load_categories('tags',false) as $category)
+                                    @foreach(load_categories('all',false) as $category)
                                         @if(in_array($category->id,$tag_categories))
                                             <option value="{{ $category->id }}" selected >{{ $category->name }}</option>
                                         @else
