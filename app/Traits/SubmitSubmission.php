@@ -29,16 +29,13 @@ trait SubmitSubmission
         if (strlen($slug) > 50) {
             $slug = substr($slug,0,50);
         }
-        $submissions = Submission::withTrashed()->where('slug', 'like', $slug.'%')->get();
-
-        if (!$submissions->contains('slug', $slug)) {
-            return $slug;
-        }
 
         $slugNumber = 1;
         $newSlug = $slug;
 
-        while ($submissions->contains('slug', $newSlug)) {
+        while (true) {
+            $submission = Submission::withTrashed()->where('slug', $newSlug)->first();
+            if (!$submission) return $newSlug;
             $newSlug = $slug.'-'.$slugNumber;
             $slugNumber++;
         }
