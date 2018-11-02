@@ -101,6 +101,7 @@ class ReviewSubmissions extends Command
                 }
                 if ($needBreak) break;
                 $this->info('page:'.$page);
+                if (config('app.env') != 'production' && $page >= 2) break;
                 $page++;
             }
         }

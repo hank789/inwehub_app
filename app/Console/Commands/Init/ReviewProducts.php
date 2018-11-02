@@ -95,6 +95,7 @@ class ReviewProducts extends Command
                 if ($needBreak) break;
                 $this->info('page:'.$page);
                 if ($page>=200) break;
+                if (config('app.env') != 'production' && $page >= 2) break;
                 $page++;
             }
         }
