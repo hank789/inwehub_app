@@ -93,7 +93,7 @@
                                             </td>
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->views }}</td>
-                                            <td>{{ $submission->group->name }}</td>
+                                            <td>{{ $submission->group_id ? $submission->group->name:'' }}</td>
                                             <td>{{ $submission->owner->name }}</td>
                                         </tr>
                                     @endforeach
