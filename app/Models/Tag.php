@@ -330,7 +330,7 @@ class Tag extends Model
         $tag = [];
         $tag['review_count'] = Submission::where('category_id',$id)->count();
         $sumRate = Submission::where('category_id',$id)->sum('rate_star');
-        $tag['review_average_rate'] = bcdiv($sumRate,$tag['review_count'],1);
+        $tag['review_average_rate'] = $tag['review_count']?bcdiv($sumRate,$tag['review_count'],1):0;
         return $tag;
     }
 
