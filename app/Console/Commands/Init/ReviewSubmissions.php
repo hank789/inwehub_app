@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
+use App\Services\BaiduTranslate;
 use App\Services\RateLimiter;
 use Illuminate\Console\Command;
 use QL\Ext\PhantomJs;
@@ -72,8 +73,9 @@ class ReviewSubmissions extends Command
                     $this->info($item['link']);
                     RateLimiter::instance()->hSet('review-submission-url',$item['link'],1);
                     preg_match('/\d+/',$item['star'],$rate_star);
+                    $title = BaiduTranslate::instance()->translate($item['body']);
                     $submission = Submission::create([
-                        'title'         => $item['body'],
+                        'title'         => $title,
                         'slug'          => $this->slug($tag->name),
                         'type'          => 'review',
                         'category_id'   => $tag->id,

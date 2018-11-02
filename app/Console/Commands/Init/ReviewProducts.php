@@ -7,6 +7,7 @@
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
+use App\Services\BaiduTranslate;
 use App\Services\RateLimiter;
 use Illuminate\Console\Command;
 use QL\Ext\PhantomJs;
@@ -65,12 +66,13 @@ class ReviewProducts extends Command
                         $tag = Tag::where('name',$item['name'])->first();
                         $item['total'] = str_replace(',','',trim($item['total'],'()'));
                         if(!$tag) {
+                            $description = BaiduTranslate::instance()->translate($item['description']);
                             $tag = Tag::create([
                                 'name' => $item['name'],
                                 'category_id' => $category->id,
                                 'logo' => saveImgToCdn($logo,'tags'),
-                                'summary' => $item['description'],
-                                'description' => $item['description'],
+                                'summary' => $description,
+                                'description' => $description,
                                 'parent_id' => 0,
                                 'reviews' => $item['total']
                             ]);

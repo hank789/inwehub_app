@@ -12,6 +12,7 @@ use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
 use App\Models\Taggable;
+use App\Services\BaiduTranslate;
 use App\Services\BosonNLPService;
 use App\Services\MixpanelService;
 use App\Services\QcloudService;
@@ -50,16 +51,9 @@ class Test extends Command
      */
     public function handle()
     {
-        $ql = QueryList::getInstance();
-        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        $html = $ql->browser('https://www.g2crowd.com/products/peoplesoft/reviews')->rules([
-            'name' => ['div.font-weight-bold.mt-half.mb-4th','text'],
-            'link' => ['a.pjax','href'],
-            'star' => ['div.stars.large','class'],
-            'datetime' => ['time','datetime'],
-            'body' => ['div.d-f>.f-1','text']
-        ])->range('div.mb-2.border-bottom')->query()->getData();
-        var_dump($html);
+        $s = 'Salesforce helps businesses of all sizes accelerate sales, automate tasks and make smarter decisions so you can grow your business faster. Salesforce CRM offers: - Lead & Contact Management - Sales Opportunity Management - Workflow Rules & Automation - Customizable Reports & Dashboards - Mobile Application';
+        $r = BaiduTranslate::instance()->translate($s);
+        var_dump($r);
         return;
         $ql = QueryList::getInstance();
         $cookies = Setting()->get('scraper_jianyu360_cookie','');
