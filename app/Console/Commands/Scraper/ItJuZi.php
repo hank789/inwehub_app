@@ -49,7 +49,7 @@ class ItJuZi extends Command {
         $ql = QueryList::getInstance();
         $ql2 = new QueryList();
         $cookie = '_ga=GA1.2.502552747.1537344894; gr_user_id=92ec759a-4af4-4baf-9109-efb8b7dcd108; MEIQIA_EXTRA_TRACK_ID=5e7b329c28eb11e7afd102fa39e25136; acw_tc=781bad0715403439658774326e436f2214a955dd9ae51c5e12d8ec75aa7876; Hm_lvt_1c587ad486cdb6b962e94fc2002edf89=1540343972';
-        $auth = 'bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3d3dy5pdGp1emkuY29tL2FwaS9hdXRob3JpemF0aW9ucyIsImlhdCI6MTU0MTE0MjkzMSwiZXhwIjoxNTQxMTUwMTMxLCJuYmYiOjE1NDExNDI5MzEsImp0aSI6IkptNGVJeUxUS0JsMmh4WEIiLCJzdWIiOjYzOTQyNiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.M0PdEo9vsqkihpEv5x243TiL_PNBG_jFjUwkcOKmuug';
+        $auth = 'bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3d3dy5pdGp1emkuY29tL2FwaS9hdXRob3JpemF0aW9ucyIsImlhdCI6MTU0MTE2MTExNywiZXhwIjoxNTQxMTY4MzE3LCJuYmYiOjE1NDExNjExMTcsImp0aSI6Inp3T3BWaktzbXIyYWlMemoiLCJzdWIiOjYzOTQyNiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.sBEse0RPBsbSRg8gUBswBz80dPd6vuP1bcGJOtaAOuE';
         $headers = [
             'Host'    => 'www.itjuzi.com',
             'Origin'  => 'https://www.itjuzi.com',
