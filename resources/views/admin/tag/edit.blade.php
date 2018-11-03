@@ -86,7 +86,7 @@
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         $(function(){
-            set_active_menu('manage_content',"{{ route('admin.tag.index') }}");
+            set_active_menu('manage_tags',"{{ route('admin.tag.index') }}");
             $('#category_id').select2();
             $('#tag_editor').summernote({
                 lang: 'zh-CN',

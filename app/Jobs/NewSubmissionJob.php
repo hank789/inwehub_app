@@ -97,6 +97,7 @@ class NewSubmissionJob implements ShouldQueue
                 }
                 $tag = Tag::find($submission->category_id);
                 $tag->increment('reviews');
+                $targetName = '在产品['.$tag->name.']';
                 break;
         }
         if ($submission->type != 'review') {
@@ -145,6 +146,7 @@ class NewSubmissionJob implements ShouldQueue
                 $attention_user = User::find($attention_uid);
                 if ($attention_user) $attention_user->notify((new FollowedUserNewSubmission($attention_uid,$submission))->delay(Carbon::now()->addMinutes(3)));
             }
+            $targetName = '在圈子['.$group->name.']';
         }
 
         $submission->setKeywordTags();
@@ -166,6 +168,6 @@ class NewSubmissionJob implements ShouldQueue
                     'color'     => 'good',
                     'fields' => $slackFields
                 ]
-            )->send($this->additionalSlackMsg.'用户'.formatSlackUser($user).'在圈子['.$group->name.']提交了新'.$typeName);
+            )->send($this->additionalSlackMsg.'用户'.formatSlackUser($user).$targetName.'提交了新'.$typeName);
     }
 }

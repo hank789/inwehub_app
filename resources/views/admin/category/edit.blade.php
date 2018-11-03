@@ -33,16 +33,6 @@
                                 </select>
                             </div>
 
-                            <div class="form-group" style="display: none">
-                                <label>栏目</label>
-                                <span class="text-muted">(允许显示的栏目)</span>
-                                <div class="checkbox">
-                                    @foreach( config('inwehub.category_types') as $key => $name )
-                                        <input type="checkbox" checked name="types[]" value="{{ $key }}" @if(str_contains($category->type,$key)) checked @endif > {{ $name }} &nbsp;&nbsp;
-                                    @endforeach
-                                </div>
-                            </div>
-
                             <div class="form-group @if($errors->has('sort')) has-error @endif">
                                 <label>排序</label>
                                 <span class="text-muted">(仅对当前层级分类有效)</span>
@@ -76,7 +66,7 @@
 @endsection
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_content',"{{ route('admin.category.index') }}");
+        set_active_menu('manage_tags',"{{ route('admin.category.index') }}");
         $(function(){
             var parent_id = "{{ $category->parent_id }}";
             $("#parent_id option").each(function(){

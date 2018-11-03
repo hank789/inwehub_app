@@ -8,7 +8,7 @@
 namespace App\Services;
 
 
-class BaiduTranslate
+class Translate
 {
 
     protected $app_id = '20181102000229044';

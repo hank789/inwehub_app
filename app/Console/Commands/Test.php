@@ -12,7 +12,7 @@ use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
 use App\Models\Taggable;
-use App\Services\BaiduTranslate;
+use App\Services\Translate;
 use App\Services\BosonNLPService;
 use App\Services\MixpanelService;
 use App\Services\QcloudService;

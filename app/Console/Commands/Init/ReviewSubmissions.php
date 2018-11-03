@@ -4,11 +4,15 @@
  * @date: 2017/6/21 下午8:59
  * @email: hank.huiwang@gmail.com
  */
+use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
+use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
-use App\Services\BaiduTranslate;
+use App\Models\User;
+use App\Services\Translate;
 use App\Services\RateLimiter;
 use Illuminate\Console\Command;
 use QL\Ext\PhantomJs;
@@ -44,6 +48,9 @@ class ReviewSubmissions extends Command
         $this->ql = QueryList::getInstance();
         $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
         $tagRels = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->get();
+        $role1 = Role::where('slug','operatorrobot')->first();
+        $userIds = RoleUser::where('role_id',$role1->id)->pluck('user_id')->toArray();
+
         foreach ($tagRels as $tagRel) {
             $slug = RateLimiter::instance()->hGet('review-tags-url',$tagRel->tag_id);
             if (!$slug) {
@@ -74,10 +81,13 @@ class ReviewSubmissions extends Command
                     $this->info($item['link']);
                     RateLimiter::instance()->hSet('review-submission-url',$item['link'],1);
                     preg_match('/\d+/',$item['star'],$rate_star);
-                    $title = BaiduTranslate::instance()->translate($item['body']);
+                    $title = $item['body'];
+                    if (config('app.env') == 'production' || $page <= 1) {
+                        $title = Translate::instance()->translate($item['body']);
+                    }
                     $submission = Submission::create([
                         'title'         => $title,
-                        'slug'          => $this->slug($tag->name),
+                        'slug'          => $this->slug($item['body']),
                         'type'          => 'review',
                         'category_id'   => $tag->id,
                         'group_id'      => 0,
@@ -86,7 +96,7 @@ class ReviewSubmissions extends Command
                         'rate_star'     => $rate_star[0]/2,
                         'hide'          => 0,
                         'status'        => config('app.env') == 'production'?0:1,
-                        'user_id'       => rand(1,127),
+                        'user_id'       => $userIds[rand(0,count($userIds))],
                         'views'         => 1,
                         'created_at'    => date('Y-m-d H:i:s',strtotime($item['datetime'])),
                         'data' => [
@@ -98,13 +108,14 @@ class ReviewSubmissions extends Command
                             'img' => []
                         ]
                     ]);
-                    Tag::multiSaveByIds($tag->id,$submission,'reviews');
-                    $submission->setKeywordTags();
-                    $submission->calculationRate();
+                    Tag::multiSaveByIds($tag->id,$submission);
+                    if ($submission->status == 1) {
+                        dispatch(new NewSubmissionJob($submission->id,true,'g2点评数据；'));
+                    }
                 }
                 if ($needBreak) break;
                 $this->info('page:'.$page);
-                if (config('app.env') != 'production' && $page >= 2) break;
+                //if (config('app.env') != 'production' && $page >= 2) break;
                 $page++;
             }
         }

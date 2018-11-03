@@ -63,6 +63,17 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-suitcase"></i> <span>分类&标签</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_tags">
+            <li><a href="{{ route('admin.category.index') }}"><i class="fa fa-circle-o"></i> 分类管理</a></li>
+            <li><a href="{{ route('admin.tag.index') }}"><i class="fa fa-circle-o"></i> 标签管理</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-suitcase"></i> <span>项目</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>
@@ -92,8 +103,6 @@
             <li><a href="{{ route('admin.question.index') }}"><i class="fa fa-circle-o"></i> 问题管理</a></li>
             <li><a href="{{ route('admin.answer.index') }}"><i class="fa fa-circle-o"></i> 回答管理</a></li>
             <li><a href="{{ route('admin.comment.index') }}"><i class="fa fa-circle-o"></i> 评论管理</a></li>
-            <li><a href="{{ route('admin.tag.index') }}"><i class="fa fa-circle-o"></i> 标签管理</a></li>
-            <li><a href="{{ route('admin.category.index') }}"><i class="fa fa-circle-o"></i> 分类管理</a></li>
         </ul>
     </li>
 

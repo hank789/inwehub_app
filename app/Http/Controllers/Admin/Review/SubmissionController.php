@@ -115,7 +115,7 @@ class SubmissionController extends AdminController
 
         Tag::multiSaveByIds($tagString,$submission);
         if ($submission->status == 1) {
-            $this->dispatch((new NewSubmissionJob($submission->id)));
+            $this->dispatch((new NewSubmissionJob($submission->id,true,'后台运营：'.formatSlackUser($request->user()).';')));
         }
 
         return $this->success(route('admin.review.submission.index'),'点评新建成功');

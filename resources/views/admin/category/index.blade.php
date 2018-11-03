@@ -71,6 +71,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('manage_content',"{{ route('admin.category.index') }}");
+        set_active_menu('manage_tags',"{{ route('admin.category.index') }}");
     </script>
 @endsection

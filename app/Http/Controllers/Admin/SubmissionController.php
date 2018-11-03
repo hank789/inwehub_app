@@ -130,7 +130,7 @@ class SubmissionController extends AdminController
         }
 
         if ($oldStatus == 0 && $newStatus == 1 && !isset($submission->data['keywords'])) {
-            $this->dispatch((new NewSubmissionJob($submission->id)));
+            $this->dispatch((new NewSubmissionJob($submission->id,true,'后台运营：'.formatSlackUser($request->user()).';')));
         }
 
         return $this->success(url()->previous(),'文章修改成功');
@@ -177,7 +177,7 @@ class SubmissionController extends AdminController
         $article->save();
 
         if ($oldStatus == 0 && $newStatus == 1 && !isset($article->data['keywords'])) {
-            $this->dispatch((new NewSubmissionJob($article->id)));
+            $this->dispatch((new NewSubmissionJob($article->id,true,'后台运营：'.formatSlackUser($request->user()).';')));
         }
 
         if ($article->status) {

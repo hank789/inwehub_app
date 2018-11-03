@@ -7,7 +7,7 @@
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
-use App\Services\BaiduTranslate;
+use App\Services\Translate;
 use App\Services\RateLimiter;
 use Illuminate\Console\Command;
 use QL\Ext\PhantomJs;
@@ -66,7 +66,10 @@ class ReviewProducts extends Command
                         $tag = Tag::where('name',$item['name'])->first();
                         $item['total'] = str_replace(',','',trim($item['total'],'()'));
                         if(!$tag) {
-                            $description = BaiduTranslate::instance()->translate($item['description']);
+                            $description = $item['description'];
+                            if (config('app.env') == 'production') {
+                                $description = Translate::instance()->translate($item['description']);
+                            }
                             $tag = Tag::create([
                                 'name' => $item['name'],
                                 'category_id' => $category->id,
@@ -97,7 +100,7 @@ class ReviewProducts extends Command
                 if ($needBreak) break;
                 $this->info('page:'.$page);
                 if ($page>=200) break;
-                if (config('app.env') != 'production' && $page >= 2) break;
+                //if (config('app.env') != 'production' && $page >= 2) break;
                 $page++;
             }
         }
@@ -114,6 +117,7 @@ class ReviewProducts extends Command
             'rate' => ['div.mr-4th','text'],
             'total' => ['div.as-fe','text']
         ])->range('div#product-list>div.mb-2')->query()->getData();
+        //var_dump($this->ql->browser($url)->getHtml());
         return $html;
     }
 
@@ -127,6 +131,7 @@ class ReviewProducts extends Command
             'rate' => ['div.mr-4th','text'],
             'total' => ['div.as-fe','text']
         ])->range('div.row.small-up-1.medium-up-2.large-up-3>div.column')->query()->getData();
+        //var_dump($this->ql->browser($url)->getHtml());
         return $html;
     }
 

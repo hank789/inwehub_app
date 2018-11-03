@@ -111,6 +111,6 @@
 @section('script')
     @include("admin.public.change_category_modal",['type'=>'tags','form_id'=>'item_form','form_action'=>route('admin.tag.changeCategories')])
     <script type="text/javascript">
-        set_active_menu('manage_content',"{{ route('admin.tag.index') }}");
+        set_active_menu('manage_tags',"{{ route('admin.tag.index') }}");
     </script>
 @endsection
