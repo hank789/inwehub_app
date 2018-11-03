@@ -163,6 +163,29 @@ class SubmissionController extends AdminController
         return response('success');
     }
 
+    //审核
+    public function setVeriy(Request $request) {
+        $articleId = $request->input('id');
+        $article = Submission::find($articleId);
+        $oldStatus = $article->status;
+        if ($article->status) {
+            $newStatus = 0;
+        } else {
+            $newStatus = 1;
+        }
+        $article->status = $newStatus;
+        $article->save();
+
+        if ($oldStatus == 0 && $newStatus == 1 && !isset($article->data['keywords'])) {
+            $this->dispatch((new NewSubmissionJob($article->id)));
+        }
+
+        if ($article->status) {
+            return response('failed');
+        }
+        return response('success');
+    }
+
 
 
     /*文章推荐精选审核*/

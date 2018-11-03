@@ -43,7 +43,6 @@
                             <div class="form-group">
                                 <label>分类</label>
                                 <select id="category_id" name="category_id[]" class="form-control" multiple="multiple" >
-                                    <option value="0">选择分类</option>
                                     @foreach(load_categories('enterprise_review',false,true) as $category)
                                         <option value="{{ $category->id }}" @if($category->id == $tag->category_id) selected @endif>{{ $category->name }}</option>
                                     @endforeach

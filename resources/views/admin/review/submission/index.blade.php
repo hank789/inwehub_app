@@ -65,8 +65,9 @@
                                                     @if (!$submission->isRecommendRead() && false)
                                                         <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $submission->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
+                                                    <a class="btn btn-default btn-sm btn-setveriy" data-toggle="tooltip" title="{{ $submission->status ? '设为待审核':'审核成功' }}" data-title="{{ $submission->status ? '设为待审核':'审核成功' }}" data-source_id = "{{ $submission->id }}"><i class="fa {{ $submission->status ? 'fa-lock':'fa-check-square-o' }}"></i></a>
                                                     <a class="btn btn-default btn-sm btn-setgood" data-toggle="tooltip" title="{{ $submission->is_recommend ? '取消优质':'设为优质' }}" data-title="{{ $submission->is_recommend ? '取消优质':'设为优质' }}" data-source_id = "{{ $submission->id }}"><i class="fa {{ $submission->is_recommend ? 'fa-thumbs-down':'fa-thumbs-up' }}"></i></a>
-                                                    @if ($submission->status == 0)
+                                                @if ($submission->status == 0)
                                                         <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
                                                     @endif
                                                     <select onchange="setSupportType({{ $submission->id }},this)">
@@ -205,6 +206,29 @@
                     }
                 });
             });
+
+            $(".btn-setveriy").click(function(){
+                var title = $(this).data('title');
+                if(!confirm('确认' + title + '？')){
+                    return false;
+                }
+                $(this).button('loading');
+                var follow_btn = $(this);
+                var source_id = $(this).data('source_id');
+
+                $.post('/admin/submission/setveriy',{id: source_id},function(msg){
+                    follow_btn.removeClass('disabled');
+                    follow_btn.removeAttr('disabled');
+                    if(msg == 'failed') {
+                        follow_btn.html('<i class="fa fa-lock"></i>');
+                        follow_btn.data('title','设为待审核');
+                    } else {
+                        follow_btn.html('<i class="fa fa-check-square-o"></i>');
+                        follow_btn.data('title','审核成功');
+                    }
+                });
+            });
+
             $(".btn-setfav").click(function(){
                 var source_id = $(this).data('source_id');
                 $("#id").val(source_id);

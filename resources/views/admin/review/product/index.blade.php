@@ -45,19 +45,17 @@
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
-                                        <th><input type="checkbox" class="checkbox-toggle" /></th>
                                         <th>ID</th>
                                         <th>图标</th>
                                         <th>名称</th>
                                         <th>分类</th>
                                         <th>点评数</th>
-                                        <th>评分</th>
                                         <th>简介</th>
+                                        <th>状态</th>
                                         <th>操作</th>
                                     </tr>
                                     @foreach($tags as $tag)
                                         <tr>
-                                            <td><input type="checkbox" name="id[]" value="{{ $tag->id }}"/></td>
                                             <td>{{ $tag->tag_id }}</td>
                                             <td> @if($tag->logo)
                                                     <img src="{{ $tag->logo }}"  style="width: 27px;"/>
@@ -66,10 +64,13 @@
                                             <td><a href="{{ route('ask.tag.index',['id'=>$tag->tag_id]) }}" target="_blank">{{ $tag->name }}</a></td>
                                             <td>{{ implode(',',$tag->tag->categories->pluck('name')->toArray()) }}</td>
                                             <td>{{ $tag->reviews }}</td>
-                                            <td>{{ $tag->review_average_rate }}</td>
                                             <td width="30%">{{ $tag->summary }}</td>
+                                            <td><span class="label @if($tag->status===0) label-warning  @else label-success @endif">{{ trans_common_status($tag->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
+                                                    @if ($tag->status == 0)
+                                                        <a class="btn btn-default btn-sm btn-setveriy" data-toggle="tooltip" title="{{ $tag->status ? '设为待审核':'审核成功' }}" data-title="{{ $tag->status ? '设为待审核':'审核成功' }}" data-source_id = "{{ $tag->id }}"><i class="fa {{ $tag->status ? 'fa-lock':'fa-check-square-o' }}"></i></a>
+                                                    @endif
                                                     <a class="btn btn-default" href="{{ route('admin.review.submission.create',['id'=>$tag->tag_id]) }}" data-toggle="tooltip" title="添加点评"><i class="fa fa-plus"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.review.product.edit',['id'=>$tag->tag_id,'cid'=>$tag->category_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                 </div>
@@ -107,5 +108,26 @@
     @include("admin.public.change_category_modal",['type'=>'tags','form_id'=>'item_form','form_action'=>route('admin.tag.changeCategories')])
     <script type="text/javascript">
         set_active_menu('manage_review',"{{ route('admin.review.product.index') }}");
+        $(".btn-setveriy").click(function(){
+            var title = $(this).data('title');
+            if(!confirm('确认' + title + '？')){
+                return false;
+            }
+            $(this).button('loading');
+            var follow_btn = $(this);
+            var source_id = $(this).data('source_id');
+
+            $.post('/admin/review/product/setveriy',{id: source_id},function(msg){
+                follow_btn.removeClass('disabled');
+                follow_btn.removeAttr('disabled');
+                if(msg == 'failed') {
+                    follow_btn.html('<i class="fa fa-lock"></i>');
+                    follow_btn.data('title','设为待审核');
+                } else {
+                    follow_btn.html('<i class="fa fa-check-square-o"></i>');
+                    follow_btn.data('title','审核成功');
+                }
+            });
+        });
     </script>
 @endsection

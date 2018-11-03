@@ -44,8 +44,8 @@ class ProductController extends AdminController
         if( $filter['category_id']> 0 ){
             $query->where('tag_category_rel.category_id','=',$filter['category_id']);
         }
-
-        $tags = $query->orderBy('tag_category_rel.id','desc')->paginate(20);
+        $fields = ['tag_category_rel.id','tag_category_rel.tag_id','tag_category_rel.category_id','tag_category_rel.status','tags.name','tags.logo','tags.reviews','tags.summary'];
+        $tags = $query->select($fields)->orderBy('tag_category_rel.id','desc')->paginate(20);
         return view("admin.review.product.index")->with('tags',$tags)->with('filter',$filter);
     }
 
@@ -200,6 +200,21 @@ class ProductController extends AdminController
         return $this->success(url()->previous(),'分类修改成功');
     }
 
+    //审核
+    public function setVeriy(Request $request) {
+        $articleId = $request->input('id');
+        $article = TagCategoryRel::find($articleId);
+        if ($article->status) {
+            $article->status = 0;
+        } else {
+            $article->status = 1;
+        }
+        $article->save();
+        if ($article->status) {
+            return response('failed');
+        }
+        return response('success');
+    }
 
 
     /**
