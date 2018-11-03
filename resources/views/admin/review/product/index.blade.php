@@ -1,9 +1,9 @@
 @extends('admin/public/layout')
-@section('title')点评产品管理@endsection
+@section('title')产品管理@endsection
 @section('content')
     <section class="content-header">
         <h1>
-            点评产品管理
+            产品管理
             <small>管理点的服务和产品</small>
         </h1>
     </section>

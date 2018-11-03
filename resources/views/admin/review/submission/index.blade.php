@@ -51,6 +51,7 @@
                                         <th>标签</th>
                                         <th>浏览数</th>
                                         <th>发布者</th>
+                                        <th>状态</th>
                                     </tr>
                                     @foreach($submissions as $submission)
                                         <tr id="submission_{{ $submission->id }}">
@@ -61,11 +62,13 @@
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-eye"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.review.submission.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
-                                                    @if (!$submission->isRecommendRead())
+                                                    @if (!$submission->isRecommendRead() && false)
                                                         <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $submission->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
                                                     <a class="btn btn-default btn-sm btn-setgood" data-toggle="tooltip" title="{{ $submission->is_recommend ? '取消优质':'设为优质' }}" data-title="{{ $submission->is_recommend ? '取消优质':'设为优质' }}" data-source_id = "{{ $submission->id }}"><i class="fa {{ $submission->is_recommend ? 'fa-thumbs-down':'fa-thumbs-up' }}"></i></a>
-                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
+                                                    @if ($submission->status == 0)
+                                                        <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
+                                                    @endif
                                                     <select onchange="setSupportType({{ $submission->id }},this)">
                                                         <option value="1" @if($submission->support_type == 1) selected @endif> 赞|踩</option>
                                                         <option value="2" @if($submission->support_type == 2) selected @endif> 看好|不看好</option>
@@ -85,6 +88,7 @@
                                             </td>
                                             <td>{{ $submission->views }}</td>
                                             <td>{{ $submission->owner->name }}</td>
+                                            <td><span class="label @if($submission->status===0) label-warning  @else label-success @endif">{{ trans_common_status($submission->status) }}</span> </td>
                                         </tr>
                                     @endforeach
                                 </table>

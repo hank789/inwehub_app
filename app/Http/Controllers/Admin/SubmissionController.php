@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Events\Frontend\System\OperationNotify;
+use App\Jobs\NewSubmissionJob;
 use App\Logic\TagsLogic;
 use App\Models\Groups\Group;
 use App\Models\Question;
@@ -85,9 +86,12 @@ class SubmissionController extends AdminController
             $img_url = Storage::disk('oss')->url($filePath);
         }
         $author_id = $request->input('author_id',-1);
+        $oldStatus = $submission->status;
+        $newStatus = $request->input('status',1);
         if ($author_id != -1) {
             $submission->author_id = $author_id;
         }
+        $submission->status = $newStatus;
 
         $object_data = $submission->data;
         if ($img_url) {
@@ -123,6 +127,10 @@ class SubmissionController extends AdminController
             if (!in_array($oldTag,$tags)) {
                 $submission->tags()->detach($oldTag);
             }
+        }
+
+        if ($oldStatus == 0 && $newStatus == 1 && !isset($submission->data['keywords'])) {
+            $this->dispatch((new NewSubmissionJob($submission->id)));
         }
 
         return $this->success(url()->previous(),'文章修改成功');

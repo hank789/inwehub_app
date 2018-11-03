@@ -95,6 +95,8 @@ class NewSubmissionJob implements ShouldQueue
                     $tagC->review_average_rate = bcdiv($tagC->reviews_rate_sum,$tagC->reviews,1);
                     $tagC->save();
                 }
+                $tag = Tag::find($submission->category_id);
+                $tag->increment('reviews');
                 break;
         }
         if ($submission->type != 'review') {

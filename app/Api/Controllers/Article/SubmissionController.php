@@ -200,7 +200,7 @@ class SubmissionController extends Controller {
             }
 
             /*添加标签*/
-            Tag::multiSaveByIds($tagString,$submission,$request->type == 'review'?'reviews':'');
+            Tag::multiSaveByIds($tagString,$submission);
             if ($newTagString) {
                 Tag::multiAddByName($newTagString,$submission);
             }

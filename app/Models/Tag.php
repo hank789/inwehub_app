@@ -188,7 +188,7 @@ class Tag extends Model
     }
 
     //通过tag id添加标签
-    public static function multiSaveByIds($tags,$taggable,$incrementFields = '')
+    public static function multiSaveByIds($tags,$taggable)
     {
         if (!is_array($tags)) {
             $tags = array_unique(explode(",",$tags));
@@ -212,9 +212,6 @@ class Tag extends Model
             if(!$taggable->tags->contains($tag->id))
             {
                 $taggable->tags()->attach($tag->id);
-                if ($incrementFields) {
-                    $tag->increment($incrementFields);
-                }
             }
         }
         return $tags;

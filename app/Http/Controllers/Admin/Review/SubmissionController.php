@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Admin\Review;
 
 use App\Events\Frontend\System\OperationNotify;
 use App\Http\Controllers\Admin\AdminController;
+use App\Jobs\NewSubmissionJob;
 use App\Logic\TagsLogic;
 use App\Models\Groups\Group;
 use App\Models\Question;
 use App\Models\RecommendRead;
 use App\Models\Submission;
 use App\Models\Tag;
+use App\Traits\SubmitSubmission;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\File;
 
 class SubmissionController extends AdminController
 {
+    use SubmitSubmission;
     /**
      * Display a listing of the resource.
      *
@@ -65,7 +68,57 @@ class SubmissionController extends AdminController
     }
 
     public function store(Request $request) {
+        $this->validate($request, [
+            'title' => 'required|between:1,6000',
+            'tags' => 'required',
+            'rate_star' => 'required',
+            'author_id' => 'required'
+        ]);
 
+        $img_url = '';
+        if($request->hasFile('img_url')){
+            $file = $request->file('img_url');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $filePath = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+        }
+
+        $data = [];
+        $data['img'] = [$img_url];
+        $data['category_ids'] = '';
+        $data['author_identity'] = '';
+
+        $data['current_address_name'] = $request->input('current_address_name');
+        $data['current_address_longitude'] = $request->input('current_address_longitude');
+        $data['current_address_latitude'] = $request->input('current_address_latitude');
+        $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
+
+        $submission = Submission::create([
+            'title'         => formatContentUrls($request->title),
+            'slug'          => $this->slug($request->title),
+            'type'          => 'review',
+            'category_id'   => $request->input('tags'),
+            'group_id'      => 0,
+            'public'        => 1,
+            'rate'          => firstRate(),
+            'rate_star'     => $request->input('rate_star',0),
+            'hide'          => $request->input('hide',0),
+            'status'        => $request->input('status',0),
+            'user_id'       => $request->input('author_id',0),
+            'data'          => $data,
+            'views'         => 1
+        ]);
+
+        $tagString = trim($request->input('tags'));
+        \Log::info('test',[$tagString]);
+
+        Tag::multiSaveByIds($tagString,$submission);
+        if ($submission->status == 1) {
+            $this->dispatch((new NewSubmissionJob($submission->id)));
+        }
+
+        return $this->success(route('admin.review.submission.index'),'点评新建成功');
     }
 
 }
