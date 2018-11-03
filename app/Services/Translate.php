@@ -8,12 +8,16 @@
 namespace App\Services;
 
 
+use Stichoza\GoogleTranslate\TranslateClient;
+
 class Translate
 {
 
     protected $app_id = '20181102000229044';
     protected $app_key = '1XCWk0jk4feYuR30SbDX';
     protected $url = 'http://api.fanyi.baidu.com/api/trans/vip/translate';
+
+    protected $googleClient;
 
     protected static $instance = null;
 
@@ -26,7 +30,11 @@ class Translate
 
     public function __construct()
     {
+        $this->googleClient = new TranslateClient('en', 'zh',['proxy'=>'socks5h://127.0.0.1:1080']);
+    }
 
+    public function googleApi($query,$from = 'en', $to = 'zh') {
+        return $this->googleClient->setSource($from)->setTarget($to)->translate($query);
     }
 
     //翻译入口
@@ -43,6 +51,9 @@ class Translate
         $args['sign'] = $this->buildSign($query, $this->app_id, $args['salt'], $this->app_key);
         $ret = $this->call($this->url, $args);
         $ret = json_decode($ret, true);
+        if (isset($ret['error_code'])) {
+            return $this->googleApi($query,$from,$to);
+        }
         return $ret['trans_result'][0]['dst'];
     }
 

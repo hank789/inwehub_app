@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Storage;
 use PHPHtmlParser\Dom;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
+use Stichoza\GoogleTranslate\TranslateClient;
 
 
 class Test extends Command
@@ -51,26 +52,20 @@ class Test extends Command
      */
     public function handle()
     {
-
-        $cookie = '_ga=GA1.2.502552747.1537344894; gr_user_id=92ec759a-4af4-4baf-9109-efb8b7dcd108; MEIQIA_EXTRA_TRACK_ID=5e7b329c28eb11e7afd102fa39e25136; acw_tc=781bad0715403439658774326e436f2214a955dd9ae51c5e12d8ec75aa7876; Hm_lvt_1c587ad486cdb6b962e94fc2002edf89=1540343972';
-        $auth = 'bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3d3dy5pdGp1emkuY29tL2FwaS9hdXRob3JpemF0aW9ucyIsImlhdCI6MTU0MTE0MjkzMSwiZXhwIjoxNTQxMTUwMTMxLCJuYmYiOjE1NDExNDI5MzEsImp0aSI6IkptNGVJeUxUS0JsMmh4WEIiLCJzdWIiOjYzOTQyNiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.M0PdEo9vsqkihpEv5x243TiL_PNBG_jFjUwkcOKmuug';
-        $headers = [
-            'Accept' => 'application/json, text/plain, */*',
-            'Accept-Encoding' => 'gzip, deflate, br',
-            'Accept-Language' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
-            'Authorization' => $auth,
-            'Host' => 'www.itjuzi.com',
-            'Upgrade-Insecure-Requests' => 1,
-            'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-            'Cookie'    => $cookie,
-        ];
-        $page = 1;
+        Translate::instance()->translate('hello');
+        return;
+        $tr = new TranslateClient('en', 'zh',['proxy'=>'socks5h://127.0.0.1:1080']);
+        $en = $tr->translate('Salesforce helps businesses of all sizes accelerate sales, automate tasks and make smarter decisions so you can grow your business faster. Salesforce CRM offers: - Lead & Contact Management - Sales Opportunity Management - Workflow Rules & Automation - Customizable Reports & Dashboards - Mobile Application');
+        var_dump($en);
+        return;
         $ql = QueryList::getInstance();
-        //$ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        $requestUrl = 'https://www.itjuzi.com/api/investevents/9973563';
-        $content = $ql->get('https://www.itjuzi.com/api/companies/33539253?type=basic')->getHtml();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $content = $ql->browser('https://www.g2crowd.com/categories/crm',false,[
+            '--proxy' => '127.0.0.1:1080',
+            '--proxy-type' => 'socks5'
+        ])->getHtml();
         //$company_description = $content->find('meta[name=Description]')->content;
-        var_dump(json_decode($content,true));
+        var_dump($content);
         //Storage::disk('local')->put('attachments/test4.html',$content);
         return;
         $ql = QueryList::getInstance();
