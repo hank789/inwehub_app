@@ -40,7 +40,7 @@ class Tag extends Model
 {
     use BelongsToCategoryTrait;
     protected $table = 'tags';
-    protected $fillable = ['name', 'logo', 'description','followers', 'category_id'];
+    protected $fillable = ['name', 'logo', 'summary','description','followers', 'category_id', 'reviews'];
 
 
     public static function boot()
@@ -300,8 +300,35 @@ class Tag extends Model
                         ->orderBy('followers','desc')->take($pageSize)->get();
     }
 
+
+    public function relationReviews($pageSize=25)
+    {
+        $return = [];
+        $related_tags = self::Where('parent_id','=',$this->parent_id)
+            ->orderBy('reviews','desc')->take($pageSize)->get();
+        foreach ($related_tags as $related_tag) {
+            $reviewInfo = Tag::getReviewInfo($related_tag->id);
+            $return[] = [
+                'id' => $related_tag->id,
+                'name' => $related_tag->name,
+                'logo' => $related_tag->logo,
+                'review_count' => $reviewInfo['review_count'],
+                'review_average_rate' => $reviewInfo['review_average_rate']
+            ];
+        }
+        return $return;
+    }
+
     public function countMorph() {
         return Taggable::where('tag_id',$this->id)->count();
+    }
+
+    public static function getReviewInfo($id) {
+        $tag = [];
+        $tag['review_count'] = Submission::where('category_id',$id)->count();
+        $sumRate = Submission::where('category_id',$id)->sum('rate_star');
+        $tag['review_average_rate'] = $tag['review_count']?bcdiv($sumRate,$tag['review_count'],1):0;
+        return $tag;
     }
 
 

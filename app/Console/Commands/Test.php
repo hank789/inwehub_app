@@ -12,6 +12,7 @@ use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
 use App\Models\Taggable;
+use App\Services\Translate;
 use App\Services\BosonNLPService;
 use App\Services\MixpanelService;
 use App\Services\QcloudService;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Storage;
 use PHPHtmlParser\Dom;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
+use Stichoza\GoogleTranslate\TranslateClient;
 
 
 class Test extends Command
@@ -50,14 +52,21 @@ class Test extends Command
      */
     public function handle()
     {
-        $questions = Question::get();
-        foreach ($questions as $question) {
-            $tags = $question->tags->pluck('name')->toArray();
-            $data = $question->data;
-            $data['keywords'] = implode(',',$tags);
-            $question->data = $data;
-            $question->save();
-        }
+        Translate::instance()->translate('hello');
+        return;
+        $tr = new TranslateClient('en', 'zh',['proxy'=>'socks5h://127.0.0.1:1080']);
+        $en = $tr->translate('Salesforce helps businesses of all sizes accelerate sales, automate tasks and make smarter decisions so you can grow your business faster. Salesforce CRM offers: - Lead & Contact Management - Sales Opportunity Management - Workflow Rules & Automation - Customizable Reports & Dashboards - Mobile Application');
+        var_dump($en);
+        return;
+        $ql = QueryList::getInstance();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $content = $ql->browser('https://www.g2crowd.com/categories/crm',false,[
+            '--proxy' => '127.0.0.1:1080',
+            '--proxy-type' => 'socks5'
+        ])->getHtml();
+        //$company_description = $content->find('meta[name=Description]')->content;
+        var_dump($content);
+        //Storage::disk('local')->put('attachments/test4.html',$content);
         return;
         $ql = QueryList::getInstance();
         $cookies = Setting()->get('scraper_jianyu360_cookie','');

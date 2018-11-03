@@ -174,6 +174,22 @@ Route::post('tag/verify',['as'=>'admin.tag.verify','uses'=>'TagController@verify
 /*标签管理*/
 Route::resource('tag', 'TagController',['except' => ['show','destroy'],'as'=>'admin']);
 
+//点评管理
+Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
+    Route::get('product/index',['as'=>'admin.review.product.index','uses'=>'ProductController@index']);
+    Route::get('product/create',['as'=>'admin.review.product.create','uses'=>'ProductController@create']);
+    Route::get('product/edit/{id}/{cid}',['as'=>'admin.review.product.edit','uses'=>'ProductController@edit'])->where(['id'=>'[0-9]+']);
+    Route::post('product/store',['as'=>'admin.review.product.store','uses'=>'ProductController@store']);
+    Route::post('product/destroy',['as'=>'admin.review.product.destroy','uses'=>'ProductController@destroy']);
+    Route::put('product/update/{id}/{cid}',['as'=>'admin.review.product.update','uses'=>'ProductController@update'])->where(['id'=>'[0-9]+']);
+    Route::post('product/setveriy',['as'=>'admin.review.product.setveriy','uses'=>'ProductController@setVeriy']);
+
+    Route::get('submission/index',['as'=>'admin.review.submission.index','uses'=>'SubmissionController@index']);
+    Route::get('submission/edit/{id}',['as'=>'admin.review.submission.edit','uses'=>'SubmissionController@edit'])->where(['id'=>'[0-9]+']);
+    Route::get('submission/create/{id}',['as'=>'admin.review.submission.create','uses'=>'SubmissionController@create'])->where(['id'=>'[0-9]+']);
+    Route::post('submission/store',['as'=>'admin.review.submission.store','uses'=>'SubmissionController@store']);
+
+});
 
 /*分类管理*/
 Route::resource('category', 'CategoryController',['except' => ['show'],'as'=>'admin']);
@@ -229,6 +245,9 @@ Route::post('rgcode/verify',['as'=>'admin.operate.rgcode.verify','uses'=>'Regist
 //发文管理
 Route::get('submission/index',['as'=>'admin.operate.article.index','uses'=>'SubmissionController@index']);
 Route::post('submission/verify_recommend',['as'=>'admin.operate.article.verify_recommend','uses'=>'SubmissionController@verifyRecommend']);
+Route::post('submission/setgood',['as'=>'admin.operate.article.setgood','uses'=>'SubmissionController@setGood']);
+Route::post('submission/setveriy',['as'=>'admin.operate.article.setveriy','uses'=>'SubmissionController@setVeriy']);
+
 Route::post('submission/destroy',['as'=>'admin.operate.article.destroy','uses'=>'SubmissionController@destroy']);
 Route::get('submission/edit/{id}',['as'=>'admin.operate.article.edit','uses'=>'SubmissionController@edit'])->where(['id'=>'[0-9]+']);
 Route::put('submission/update',['as'=>'admin.operate.article.update','uses'=>'SubmissionController@update']);

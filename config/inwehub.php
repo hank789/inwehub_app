@@ -61,8 +61,7 @@ return [
     'category_types' => [
         'questions' => '问题',
         'articles' => '文章',
-        'tags' => '话题',
-        'experts' => '专家',
+        'enterprise_review' => '点评'
     ],
     'user_info_valid_percent' => '90',//用户信息完整度要求百分比
 

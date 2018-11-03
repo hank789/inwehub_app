@@ -25,7 +25,7 @@ class CategoryController extends AdminController
      */
     public function index()
     {
-        $categories = Category::orderBy('sort','asc')->orderBy('created_at','asc')->paginate(config('inwehub.admin.page_size'));
+        $categories = Category::orderBy('sort','asc')->orderBy('created_at','desc')->paginate(config('inwehub.admin.page_size'));
         return view("admin.category.index")->with(compact('categories'));
     }
 
@@ -49,9 +49,16 @@ class CategoryController extends AdminController
     {
         $request->flash();
         $this->validate($request,$this->validateRules);
-        $types = $request->input("types",[]);
+        $types = $request->input("types",'articles');
         $formData = $request->all();
-        $formData['type'] = implode(",",$types);
+        $formData['type'] = $types;
+        if ($formData['parent_id']) {
+            $parent = Category::find($formData['parent_id']);
+            $formData['type'] = $parent->type;
+            $formData['grade'] = 0;
+            $parent->grade = 1;
+            $parent->save();
+        }
         Category::create($formData);
         Artisan::call('cache:clear');
         return $this->success(route('admin.category.index'),'分类添加成功');
@@ -90,14 +97,28 @@ class CategoryController extends AdminController
 
         $this->validateRules['slug'] = "required|max:255|unique:categories,slug,".$category->id;
 
+        $oldParentId = $category->parent_id;
         $this->validate($request,$this->validateRules);
         $category->name = $request->input('name');
         $category->slug = $request->input('slug');
         $category->sort = $request->input('sort');
         $category->status = $request->input('status');
-        $category->type = implode(",",$request->input('types'));
         $category->parent_id = $request->input('parent_id');
+        if ($request->input('parent_id')) {
+            $parent = Category::find($request->input('parent_id'));
+            $category->type = $parent->type;
+            $parent->grade = 1;
+            $parent->save();
+        }
         $category->save();
+        if ($oldParentId) {
+            $oldParent = Category::find($oldParentId);
+            $children = Category::where('parent_id',$oldParentId)->count();
+            if ($children <= 0) {
+                $oldParent->grade = 0;
+                $oldParent->save();
+            }
+        }
         Artisan::call('cache:clear');
         return $this->success(route('admin.category.index'),'分类添加成功');
 

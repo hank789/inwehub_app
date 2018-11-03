@@ -38,7 +38,7 @@
                                 <label>分类</label>
                                 <select id="category_id" name="category_id[]" class="form-control" multiple="multiple" >
                                     <option value="0">选择分类</option>
-                                    @foreach(load_categories('tags',false) as $category)
+                                    @foreach(load_categories('all',false) as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
                                 </select>
@@ -76,7 +76,7 @@
 
     <script type="text/javascript">
         $(function(){
-            set_active_menu('manage_content',"{{ route('admin.tag.index') }}");
+            set_active_menu('manage_tags',"{{ route('admin.tag.index') }}");
             $('#category_id').select2();
             $('#tag_editor').summernote({
                 lang: 'zh-CN',

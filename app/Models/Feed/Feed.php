@@ -95,6 +95,7 @@ class Feed extends Model
     const FEED_TYPE_ADOPT_ANSWER = 14;//采纳了回答
     const FEED_TYPE_SUBMIT_READHUB_SHARE = 15;//发布阅读分享
     const FEED_TYPE_SUBMIT_READHUB_LINK = 16;//发布链接分享
+    const FEED_TYPE_SUBMIT_READHUB_REVIEW = 17;//发布点评
 
 
 

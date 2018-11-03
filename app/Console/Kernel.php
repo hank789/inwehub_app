@@ -74,7 +74,10 @@ class Kernel extends ConsoleKernel
         Commands\FixData\FixRecommendDate::class,
         Commands\FixData\FixRecommendTags::class,
         Commands\FixData\FixAutoTags::class,
-        Commands\Init\ServiceCategories::class
+        Commands\Init\ServiceCategories::class,
+        Commands\Init\ReviewProducts::class,
+        Commands\Init\ReviewSubmissions::class,
+        Commands\Init\CalcProductReviews::class
 
     ];
 
@@ -103,7 +106,7 @@ class Kernel extends ConsoleKernel
             //$schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
             $schedule->command('scraper:bid:search')->cron('40 7,10,13,17,21 * * *');
             $schedule->command('scraper:google:news')->hourly();
-            $schedule->command('scraper:itjuzi:news')->cron('40 7,13,17,21 * * *');
+            $schedule->command('scraper:itjuzi:news')->hourlyAt(40);
             $schedule->command('scraper:sap:news')->cron('50 8,12,14,16,19,22 * * *');
             $schedule->command('scraper:indeed:jobs')->cron('55 7,10,13,15,17,21 * * *');
             $schedule->command('crontab:report:daily:user-active')->hourlyAt(59);

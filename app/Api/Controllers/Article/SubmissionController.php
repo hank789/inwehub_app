@@ -17,6 +17,7 @@ use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
+use App\Models\Taggable;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
@@ -46,14 +47,12 @@ class SubmissionController extends Controller {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
-        $category = Category::find($request->input('category_id',0));
-        if (!$category) {
-            if ($request->type == 'link') {
-                $category = Category::where('slug','channel_xwdt')->first();
-            } else {
-                $category = Category::where('slug','channel_gddj')->first();
-            }
+        if ($request->type == 'link') {
+            $category = Category::where('slug','channel_xwdt')->first();
+        } else {
+            $category = Category::where('slug','channel_gddj')->first();
         }
+        $category_id = $category->id;
 
         $tagString = $request->input('tags');
         $newTagString = $request->input('new_tags');
@@ -67,15 +66,34 @@ class SubmissionController extends Controller {
             }
         }
         $group_id = $request->input('group_id',0);
-        $group = Group::find($group_id);
-        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
-            if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
-                throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+        $public = 1;
+        if ($request->type != 'review') {
+            $group = Group::find($group_id);
+            if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+                if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+                    throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+                }
+                $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+                if (!$groupMember) {
+                    throw new ApiException(ApiException::BAD_REQUEST);
+                }
             }
-            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
-            if (!$groupMember) {
-                throw new ApiException(ApiException::BAD_REQUEST);
-            }
+            $public = $group->public;
+        }
+
+        //点评
+        if ($request->type == 'review') {
+            $this->validate($request, [
+                'title' => 'required|between:1,6000',
+                'category_ids' => 'required',
+                'tags' => 'required',
+                'rate_star' => 'required',
+                'identity' => 'required'
+            ]);
+            $data = $this->uploadImgs($request->input('photos'));
+            $data['category_ids'] = $request->input('category_ids');
+            $data['author_identity'] = $request->input('identity');
+            $category_id = $tagString;
         }
 
         if ($request->type == 'article') {
@@ -166,11 +184,12 @@ class SubmissionController extends Controller {
                 'title'         => formatContentUrls($request->title),
                 'slug'          => $this->slug($request->title),
                 'type'          => $request->type,
-                'category_name' => $category->name,
-                'category_id'   => $category->id,
-                'group_id'      => $request->input('group_id'),
-                'public'        => $group->public,
+                'category_id'   => $category_id,
+                'group_id'      => $group_id,
+                'public'        => $public,
                 'rate'          => firstRate(),
+                'rate_star'     => $request->input('rate_star',0),
+                'hide'          => $request->input('hide',0),
                 'status'        => $request->input('draft',0)?0:1,
                 'user_id'       => $user->id,
                 'data'          => $data,
@@ -179,6 +198,7 @@ class SubmissionController extends Controller {
             if ($request->type == 'link') {
                 Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
             }
+
             /*添加标签*/
             Tag::multiSaveByIds($tagString,$submission);
             if ($newTagString) {
@@ -427,28 +447,29 @@ class SubmissionController extends Controller {
             throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
         }
         $return = $submission->toArray();
+        if ($submission->group_id) {
+            $group = Group::find($submission->group_id);
+            $return['group'] = $group->toArray();
+            $return['group']['is_joined'] = 1;
+            $return['group']['name'] = str_limit($return['group']['name'], 20);
+            if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+                $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+                $return['group']['is_joined'] = -1;
+                if ($groupMember) {
+                    $return['group']['is_joined'] = $groupMember->audit_status;
+                }
+                if ($user->id == $group->user_id) {
+                    $return['group']['is_joined'] = 3;
+                }
+                $return['group']['subscribers'] = $group->getHotIndex();
 
-        $group = Group::find($submission->group_id);
-        $return['group'] = $group->toArray();
-        $return['group']['is_joined'] = 1;
-        $return['group']['name'] = str_limit($return['group']['name'], 20);
-        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
-            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
-            $return['group']['is_joined'] = -1;
-            if ($groupMember) {
-                $return['group']['is_joined'] = $groupMember->audit_status;
+                if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
+                    //私有圈子
+                    return self::createJsonData(true,$return);
+                }
+            } else {
+                $return['group']['subscribers'] = $group->getHotIndex() + User::count();
             }
-            if ($user->id == $group->user_id) {
-                $return['group']['is_joined'] = 3;
-            }
-            $return['group']['subscribers'] = $group->getHotIndex();
-
-            if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
-                //私有圈子
-                return self::createJsonData(true,$return);
-            }
-        } else {
-            $return['group']['subscribers'] = $group->getHotIndex() + User::count();
         }
 
         $submission->increment('views');
@@ -488,6 +509,15 @@ class SubmissionController extends Controller {
         $return += $submission->getSupportTypeTip();
         $return['support_percent'] = $submission->getSupportPercent();
         $return['tags'] = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
+        foreach ($return['tags'] as &$tag) {
+            $tag['review_count'] = 0;
+            $tag['review_average_rate'] = 0;
+            if (isset($submission->data['category_ids'])) {
+                $reviewInfo = Tag::getReviewInfo($tag['id']);
+                $tag['review_count'] = $reviewInfo['review_count'];
+                $tag['review_average_rate'] = $reviewInfo['review_average_rate'];
+            }
+        }
         $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;
         $return['bookmarks'] = Collection::where('source_id',$submission->id)
             ->where('source_type',Submission::class)->count();
@@ -495,7 +525,7 @@ class SubmissionController extends Controller {
         $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
         $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
         $img = $return['data']['img']??'';
-        if (in_array($return['group']['is_joined'],[-1,0,2]) && $img && false) {
+        if (false && in_array($return['group']['is_joined'],[-1,0,2]) && $img) {
             if (is_array($img)) {
                 foreach ($img as &$item) {
                     $item .= '?x-oss-process=image/blur,r_20,s_20';
@@ -530,6 +560,19 @@ class SubmissionController extends Controller {
                 'answer_users'  => $answer_users
             ];
         }
+        if ($submission->hide) {
+            //匿名
+            $return['owner']['avatar'] = config('image.user_default_avatar');
+            $return['owner']['name'] = '匿名';
+            $return['owner']['id'] = '';
+            $return['owner']['uuid'] = '';
+            $return['owner']['is_expert'] = 0;
+        }
+        if ($submission->type == 'review') {
+            $tag = Tag::find($submission->category_id);
+            $return['related_tags'] = $tag->relationReviews(4);
+        }
+
         //seo信息
         $keywords = array_unique(explode(',',$submission->data['keywords']??''));
         $return['seo'] = [

@@ -1,5 +1,5 @@
 @extends('admin.public.layout')
-@section('title')发现分享编辑@endsection
+@section('title')新建产品点评@endsection
 @section('css')
     <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
@@ -7,8 +7,8 @@
 @section('content')
     <section class="content-header">
         <h1>
-            发现分享编辑
-            <small>编辑发现分享</small>
+            新建产品点评
+            <small>新建产品点评</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -24,37 +24,36 @@
                     <div class="box-header">
                         <h3 class="box-title">基本信息</h3>
                     </div>
-                    <form role="form" name="editForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.operate.article.update',['id'=>$submission->id]) }}">
-                        <input name="_method" type="hidden" value="PUT">
-                        <input type="hidden" id="author_id" name="author_id" value="{{ $submission->author_id }}" />
-                        <input type="hidden" id="tags" name="tags" value="{{ $submission->tags->implode('id',',') }}" />
+                    <form role="form" name="editForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.review.submission.store') }}">
+                        <input type="hidden" id="tags" name="tags" value="{{ $tag->id }}" />
+                        <input type="hidden" id="author_id" name="author_id" value="" />
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>标题</label>
-                                <textarea name="title" class="form-control" placeholder="标题" style="height: 200px;">{{ old('title',$submission->title) }}</textarea>
+                                <textarea name="title" class="form-control" placeholder="标题" style="height: 200px;">{{ old('title','') }}</textarea>
                             </div>
 
                             <div class="form-group">
-                                <label>类型</label>
-                                <span>{{ $submission->type }}</span>
+                                <label>评分(0~5)</label>
+                                <input type="number" name="rate_star" class="form-control "  placeholder="评分" value="{{ old('rate_star',0 ) }}">
                             </div>
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <select id="select_tags" name="select_tags" class="form-control" multiple="multiple" >
-                                        @foreach($submission->tags as $tag)
+                            <div class="form-group">
+                                <label for="author_id_select" class="control-label">产品</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                    <select id="select_tags" name="select_tags" class="form-control" >
                                             <option value="{{ $tag->id }}" selected="selected">{{ $tag->name }}</option>
-                                        @endforeach
                                     </select>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="form-group @if ($errors->first('author_id')) has-error @endif">
-                                <label for="author_id_select" class="control-label">专栏作者</label>
+                                <label for="author_id_select" class="control-label">发布者</label>
                                 <div class="row">
                                     <div class="col-sm-10">
                                         <select id="author_id_select" name="author_id_select" class="form-control">
-                                            <option value="{{ $submission->author_id }}" selected> {{ $submission->author_id?'<span><img style="width: 30px;height: 20px;" src="' .($submission->author->avatar) .'" class="img-flag" />' . ($submission->author->name).'</span>':'' }} </option>
                                         </select>
                                         @if ($errors->first('author_id'))
                                             <span class="help-block">{{ $errors->first('author_id') }}</span>
@@ -62,22 +61,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>关联问题ID</label>
-                                <input type="text" name="related_question" class="form-control "  placeholder="关联问题ID" value="{{ old('related_question',$submission->data['related_question']??'' ) }}">
-                            </div>
 
                             <div class="form-group">
                                 <label>封面图片</label>
                                 <input type="file" name="img_url" />
-                                <div style="margin-top: 10px;">
-                                    <img src="{{ old('img_url',is_array($submission->data['img'])?($submission->data['img']?$submission->data['img'][0]:''):$submission->data['img']) }}" width="100"/>
+                            </div>
+
+                            <div class="form-group @if ($errors->first('status')) has-error @endif">
+                                <label>审核状态</label>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="status" value="0"  /> 待审核
+                                    </label>&nbsp;&nbsp;
+                                    <label>
+                                        <input type="radio" name="status" value="1" checked /> 已审核
+                                    </label>
                                 </div>
                             </div>
 
+
                         </div>
                         <div class="box-footer">
-                            <button type="submit" class="btn btn-primary">保存</button>
+                            <button type="submit" class="btn btn-primary">新建</button>
                         </div>
                     </form>
                 </div>
@@ -90,11 +95,11 @@
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script src="{{ asset('/js/global.js')}}"></script>
     <script type="text/javascript">
-        set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+        set_active_menu('manage_review',"{{ route('admin.review.submission.index') }}");
         $(function(){
             $("#author_id_select").select2({
                 theme:'bootstrap',
-                placeholder: "专栏作者",
+                placeholder: "点评发布者",
                 templateResult: function(state) {
                     if (!state.id) {
                         return state.text;

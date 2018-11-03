@@ -117,7 +117,7 @@ class Submission extends Model {
      * @var array
      */
     protected $fillable = [
-        'data', 'title', 'slug','author_id', 'type', 'category_id', 'category_name', 'rate','group_id',
+        'data', 'title', 'slug','author_id', 'type', 'category_id', 'hide', 'rate','group_id','rate_star',
         'upvotes', 'downvotes', 'user_id', 'views', 'data', 'approved_at','public','is_recommend', 'support_type',
         'deleted_at', 'comments_number', 'status','	created_at', 'updated_at'
     ];
@@ -143,9 +143,11 @@ class Submission extends Model {
             Support::where('supportable_id',$submission->id)
                 ->where('supportable_type','App\Models\Submission')
                 ->delete();
-            $group = Group::find($submission->group_id);
-            if ($group->subscribers >= 1) {
-                $group->decrement('subscribers');
+            if ($submission->group_id) {
+                $group = Group::find($submission->group_id);
+                if ($group->subscribers >= 1) {
+                    $group->decrement('subscribers');
+                }
             }
             //删除推荐
             RecommendRead::where('source_type','=',get_class($submission))->where('source_id','=',$submission->id)->delete();
@@ -200,7 +202,7 @@ class Submission extends Model {
         return strip_tags($this->title,'<a><span>');
     }
 
-    public function formatListItem($user, $withGroupName = true) {
+    public function formatListItem($user, $withGroup = true) {
         $submission = $this;
         //发布文章
         $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
@@ -219,12 +221,14 @@ class Submission extends Model {
             ->where('source_id',$submission->id)
             ->where('source_type',Submission::class)
             ->exists();
-        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+        $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
 
         $img = $submission->data['img']??'';
         $sourceData = [
             'title'     => strip_tags($submission->title),
             'article_title' => $submission->data['title']??'',
+            'rate_star' => $submission->rate_star,
+            'slug'      => $submission->slug,
             'img'       => $img,
             'files'       => $submission->data['files']??'',
             'domain'    => $submission->data['domain']??'',
@@ -244,31 +248,35 @@ class Submission extends Model {
             'is_recommend'   => $submission->is_recommend,
             'is_joined_group'=> $groupMember?1:0,
             'submission_type' => $submission->type,
-            'group'    => $submission->group->toArray()
+            'group'    => $withGroup?$submission->group->toArray():''
         ];
         if ($sourceData['group']) {
             $sourceData['group']['name'] = str_limit($sourceData['group']['name'], 20);
         }
-        if (!$withGroupName) {
-            unset($sourceData['group']['name']);
-        }
+
         $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE;
+        $title = $submission->user->name.'发布了'.($submission->type == 'article' ? '文章':'分享');
+        $top = $submission->top;
         if ($submission->type == 'text') $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_SHARE;
         if ($submission->type == 'link') {
             $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_LINK;
             $sourceData['link_url'] = $submission->data['url'];
         }
+        if ($submission->type == 'review') {
+            $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_REVIEW;
+            $title = $submission->hide?'匿名':$submission->user->name;
+        }
 
         $item = [
             'id' => $submission->id,
-            'title' => $submission->user->name.'发布了'.($submission->type == 'article' ? '文章':'分享'),
-            'top' => $submission->top,
+            'title' => $title,
+            'top' => $top,
             'user'  => [
-                'id'    => $submission->user->id ,
-                'uuid'  => $submission->user->uuid,
-                'name'  => $submission->user->name,
-                'is_expert' => $submission->user->is_expert,
-                'avatar'=> $submission->user->avatar
+                'id'    => $submission->hide?'':$submission->user->id ,
+                'uuid'  => $submission->hide?'':$submission->user->uuid,
+                'name'  => $submission->hide?'匿名':$submission->user->name,
+                'is_expert' => $submission->hide?0:$submission->user->is_expert,
+                'avatar'=> $submission->hide?config('image.user_default_avatar'):$submission->user->avatar
             ],
             'feed'  => $sourceData,
             'url'   => $url,
@@ -429,6 +437,8 @@ class Submission extends Model {
                 $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).';'.QuillLogic::parseText($this->data['description'])),1);
             } elseif ($this->type == 'text') {
                 $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title)),1);
+            } elseif ($this->type == 'review') {
+                $keywords = $this->tags->pluck('name')->toArray();
             } else {
                 $parse_url = parse_url($this->data['url']);
                 $gfw_urls = RateLimiter::instance()->sMembers('gfw_urls');

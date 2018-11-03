@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Events\Frontend\System\OperationNotify;
+use App\Jobs\NewSubmissionJob;
 use App\Logic\TagsLogic;
 use App\Models\Groups\Group;
 use App\Models\Question;
@@ -85,9 +86,12 @@ class SubmissionController extends AdminController
             $img_url = Storage::disk('oss')->url($filePath);
         }
         $author_id = $request->input('author_id',-1);
+        $oldStatus = $submission->status;
+        $newStatus = $request->input('status',1);
         if ($author_id != -1) {
             $submission->author_id = $author_id;
         }
+        $submission->status = $newStatus;
 
         $object_data = $submission->data;
         if ($img_url) {
@@ -97,6 +101,10 @@ class SubmissionController extends AdminController
             $object_data['related_question'] = $related_question;
         }
         $submission->title = $request->input('title');
+        $rate_star = $request->input('rate_star',-1);
+        if ($rate_star >= 0) {
+            $submission->rate_star = $rate_star;
+        }
         $submission->data = $object_data;
         $submission->save();
 
@@ -121,6 +129,10 @@ class SubmissionController extends AdminController
             }
         }
 
+        if ($oldStatus == 0 && $newStatus == 1 && !isset($submission->data['keywords'])) {
+            $this->dispatch((new NewSubmissionJob($submission->id,true,'后台运营：'.formatSlackUser($request->user()).';')));
+        }
+
         return $this->success(url()->previous(),'文章修改成功');
     }
 
@@ -133,6 +145,45 @@ class SubmissionController extends AdminController
         $submission->support_type = $request->input('support_type');
         $submission->save();
         return $this->success(url()->previous(),'成功');
+    }
+
+    //设为优质内容
+    public function setGood(Request $request) {
+        $articleId = $request->input('id');
+        $article = Submission::find($articleId);
+        if ($article->is_recommend) {
+            $article->is_recommend = 0;
+        } else {
+            $article->is_recommend = 1;
+        }
+        $article->save();
+        if ($article->is_recommend) {
+            return response('failed');
+        }
+        return response('success');
+    }
+
+    //审核
+    public function setVeriy(Request $request) {
+        $articleId = $request->input('id');
+        $article = Submission::find($articleId);
+        $oldStatus = $article->status;
+        if ($article->status) {
+            $newStatus = 0;
+        } else {
+            $newStatus = 1;
+        }
+        $article->status = $newStatus;
+        $article->save();
+
+        if ($oldStatus == 0 && $newStatus == 1 && !isset($article->data['keywords'])) {
+            $this->dispatch((new NewSubmissionJob($article->id,true,'后台运营：'.formatSlackUser($request->user()).';')));
+        }
+
+        if ($article->status) {
+            return response('failed');
+        }
+        return response('success');
     }
 
 

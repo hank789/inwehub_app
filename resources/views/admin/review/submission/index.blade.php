@@ -1,13 +1,13 @@
 @extends('admin/public/layout')
 
-@section('title')发现分享@endsection
+@section('title')产品点评@endsection
 @section('css')
     <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
 @endsection
 @section('content')
     <section class="content-header">
-        <h1>发现分享</h1>
+        <h1>产品点评</h1>
     </section>
     <section class="content">
         <div class="row">
@@ -17,7 +17,7 @@
                             <div class="row">
                                 <div class="col-xs-12">
                                     <div class="row">
-                                        <form name="searchForm" action="{{ route('admin.operate.article.index') }}">
+                                        <form name="searchForm" action="{{ route('admin.review.submission.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <div class="col-xs-2">
                                                 <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
@@ -46,13 +46,12 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>标题</th>
-                                        <th>封面图片</th>
+                                        <th>评分</th>
                                         <th>热度</th>
                                         <th>标签</th>
-                                        <th>类型</th>
                                         <th>浏览数</th>
-                                        <th>圈子</th>
                                         <th>发布者</th>
+                                        <th>状态</th>
                                     </tr>
                                     @foreach($submissions as $submission)
                                         <tr id="submission_{{ $submission->id }}">
@@ -62,12 +61,15 @@
                                                 <br>{{ $submission->created_at }}
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-eye"></i></a>
-                                                    <a class="btn btn-default" href="{{ route('admin.operate.article.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
-                                                    @if (!$submission->isRecommendRead())
+                                                    <a class="btn btn-default" href="{{ route('admin.review.submission.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
+                                                    @if (!$submission->isRecommendRead() && false)
                                                         <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $submission->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
+                                                    <a class="btn btn-default btn-sm btn-setveriy" data-toggle="tooltip" title="{{ $submission->status ? '设为待审核':'审核成功' }}" data-title="{{ $submission->status ? '设为待审核':'审核成功' }}" data-source_id = "{{ $submission->id }}"><i class="fa {{ $submission->status ? 'fa-lock':'fa-check-square-o' }}"></i></a>
                                                     <a class="btn btn-default btn-sm btn-setgood" data-toggle="tooltip" title="{{ $submission->is_recommend ? '取消优质':'设为优质' }}" data-title="{{ $submission->is_recommend ? '取消优质':'设为优质' }}" data-source_id = "{{ $submission->id }}"><i class="fa {{ $submission->is_recommend ? 'fa-thumbs-down':'fa-thumbs-up' }}"></i></a>
-                                                    <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
+                                                @if ($submission->status == 0)
+                                                        <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $submission->id }}"><i class="fa fa-trash-o"></i></a>
+                                                    @endif
                                                     <select onchange="setSupportType({{ $submission->id }},this)">
                                                         <option value="1" @if($submission->support_type == 1) selected @endif> 赞|踩</option>
                                                         <option value="2" @if($submission->support_type == 2) selected @endif> 看好|不看好</option>
@@ -77,13 +79,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                @if ($submission->data['img'] && is_array($submission->data['img']))
-                                                    @foreach($submission->data['img'] as $img)
-                                                        <img width="100" height="100" src="{{ $img }}">
-                                                    @endforeach
-                                                @elseif ($submission->data['img'])
-                                                    <img width="100" height="100" src="{{ $submission->data['img'] ??'' }}">
-                                                @endif
+                                                {{ $submission->rate_star }}
                                             </td>
                                             <td>{{ $submission->rate }}</td>
                                             <td>
@@ -91,10 +87,9 @@
                                                     {{ $tagInfo->name.',' }}
                                                 @endforeach
                                             </td>
-                                            <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->views }}</td>
-                                            <td>{{ $submission->group_id ? $submission->group->name:'' }}</td>
                                             <td>{{ $submission->owner->name }}</td>
+                                            <td><span class="label @if($submission->status===0) label-warning  @else label-success @endif">{{ trans_common_status($submission->status) }}</span> </td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -161,7 +156,7 @@
 @section('script')
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
-        set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+        set_active_menu('manage_review',"{{ route('admin.review.submission.index') }}");
         function setSupportType(id,obj) {
             $.post('/admin/submission/setSupportType',{id: id, support_type: obj.value},function(msg){
 
@@ -211,6 +206,29 @@
                     }
                 });
             });
+
+            $(".btn-setveriy").click(function(){
+                var title = $(this).data('title');
+                if(!confirm('确认' + title + '？')){
+                    return false;
+                }
+                $(this).button('loading');
+                var follow_btn = $(this);
+                var source_id = $(this).data('source_id');
+
+                $.post('/admin/submission/setveriy',{id: source_id},function(msg){
+                    follow_btn.removeClass('disabled');
+                    follow_btn.removeAttr('disabled');
+                    if(msg == 'failed') {
+                        follow_btn.html('<i class="fa fa-lock"></i>');
+                        follow_btn.data('title','设为待审核');
+                    } else {
+                        follow_btn.html('<i class="fa fa-check-square-o"></i>');
+                        follow_btn.data('title','审核成功');
+                    }
+                });
+            });
+
             $(".btn-setfav").click(function(){
                 var source_id = $(this).data('source_id');
                 $("#id").val(source_id);

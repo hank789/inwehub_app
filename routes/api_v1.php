@@ -309,6 +309,13 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], functio
     //提建议，谈工作，贺新春
     Route::post('getThreeAc','TagsController@getThreeAc');
 
+    //产品详情
+    Route::post('product','TagsController@productInfo');
+    Route::post('productReviewList','TagsController@productReviewList');
+    Route::post('productList','TagsController@productList');
+    Route::post('getRecommendReview','TagsController@getRecommendReview');
+    Route::post('getProductCategories','TagsController@getProductCategories');
+
 });
 
 //上传图片

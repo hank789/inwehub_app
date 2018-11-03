@@ -2,13 +2,18 @@
 use App\Logic\TagsLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Category;
 use App\Models\Collection;
+use App\Models\Company\CompanyData;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
+use App\Models\TagCategoryRel;
+use App\Models\Taggable;
 use App\Models\User;
+use App\Models\UserTag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 
@@ -69,6 +74,167 @@ class TagsController extends Controller {
         $data['followed_users'] = $attentionUsers;
         $this->logUserViewTags($loginUser->id,[$tag]);
         return self::createJsonData(true,$data);
+    }
+
+    //产品服务详情
+    public function productInfo(Request $request) {
+        $validateRules = [
+            'tag_name' => 'required'
+        ];
+
+        $this->validate($request,$validateRules);
+        $tag_name = $request->input('tag_name');
+        $tag = Tag::getTagByName($tag_name);
+        $reviewInfo = Tag::getReviewInfo($tag->id);
+        $data = $tag->toArray();
+        $data['review_count'] = $reviewInfo['review_count'];
+        $data['review_average_rate'] = $reviewInfo['review_average_rate'];
+        $data['related_tags'] = $tag->relationReviews(4);
+        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
+        foreach ($categoryRels as $key=>$categoryRel) {
+            $category = Category::find($categoryRel->category_id);
+            $data['categories'][] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'rate' => $key+1
+            ];
+        }
+        $data['vendor'] = '';
+        $taggable = Taggable::where('tag_id',$tag->id)->where('taggable_type',CompanyData::class)->first();
+        if ($taggable) {
+            $companyData = CompanyData::find($taggable->taggable_id);
+            $data['vendor'] = [
+                'id'=>$taggable->taggable_id,
+                'name'=>$companyData->name
+            ];
+        }
+        //推荐股问
+        $recommendUsers = UserTag::where('tag_id',$tag->id)->orderBy('articles','desc')->take(5)->get();
+        foreach ($recommendUsers as $recommendUser) {
+            $userTags = $recommendUser->user->userTag()->orderBy('articles','desc')->pluck('tag_id');
+            $skillTag = Tag::find($userTags[0]);
+            $data['recommend_users'][] = [
+                'name' => $recommendUser->user->name,
+                'id'   => $recommendUser->user_id,
+                'uuid' => $recommendUser->user->uuid,
+                'is_expert' => $recommendUser->user->is_expert,
+                'avatar_url' => $recommendUser->user->avatar,
+                'skill' => $skillTag->name
+            ];
+        }
+        return self::createJsonData(true,$data);
+    }
+
+    //产品点评列表
+    public function productReviewList(Request $request) {
+        $validateRules = [
+            'tag_name' => 'required'
+        ];
+
+        $this->validate($request,$validateRules);
+        $tag_name = $request->input('tag_name');
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+
+        $tag = Tag::getTagByName($tag_name);
+        $user = $request->user();
+
+        $query = Submission::where('category_id',$tag->id)->where('status',1);
+        $submissions = $query->orderBy('is_recommend','desc')->orderBy('id','desc')->simplePaginate($perPage);
+        $return = $submissions->toArray();
+        $list = [];
+        foreach ($submissions as $submission) {
+            $list[] = $submission->formatListItem($user, false);
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
+    }
+
+    //产品列表
+    public function productList(Request $request) {
+        $category_id = $request->input('category_id',0);
+        $orderBy = $request->input('orderBy',1);
+        $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
+        if ($category_id) {
+            $query = $query->where('category_id',$category_id);
+        }
+        switch ($orderBy) {
+            case 1:
+                $query = $query->orderBy('review_average_rate','desc');
+                break;
+            case 2:
+                $query = $query->orderBy('review_average_rate','asc');
+                break;
+        }
+        $tags = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $return = $tags->toArray();
+        $list = [];
+        foreach ($tags as $tag) {
+            $model = Tag::find($tag->tag_id);
+            $info = Tag::getReviewInfo($model->id);
+            $list[] = [
+                'id' => $model->id,
+                'name' => $model->name,
+                'logo' => $model->logo,
+                'review_count' => $info['review_count'],
+                'review_average_rate' => $info['review_average_rate']
+            ];
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
+    }
+
+    //精华点评列表
+    public function getRecommendReview(Request $request) {
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+        $submissions = Submission::where('type','review')->where('is_recommend',1)->orderBy('rate','desc')->simplePaginate($perPage);
+        $return = $submissions->toArray();
+        $list = [];
+        foreach ($submissions as $submission) {
+            $reviewInfo = Tag::getReviewInfo($submission->category_id);
+            $tag = Tag::find($submission->category_id);
+            $list[] = [
+                'id' => $submission->id,
+                'title' => $submission->title,
+                'rate_star' => $submission->rate_star,
+                'created_at' => $submission->created_at,
+                'url' => '/c/'.$submission->category_id.'/'.$submission->slug,
+                'user'  => [
+                    'id'    => $submission->hide?'':$submission->user->id ,
+                    'uuid'  => $submission->hide?'':$submission->user->uuid,
+                    'name'  => $submission->hide?'匿名':$submission->user->name,
+                    'is_expert' => $submission->hide?0:$submission->user->is_expert,
+                    'avatar'=> $submission->hide?config('image.user_default_avatar'):$submission->user->avatar
+                ],
+                'tag' => [
+                    'id' => $submission->category_id,
+                    'name' => $tag->name,
+                    'logo' => $tag->logo,
+                    'review_count' => $reviewInfo['review_count'],
+                    'review_average_rate' => $reviewInfo['review_average_rate'],
+                ]
+            ];
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
+    }
+
+    //获取产品分类列表
+    public function getProductCategories(Request $request) {
+        $parent_id = $request->input('parent_id',0);
+        if (!$parent_id) {
+            $categories = Category::whereIn('slug',['enterprise_product','enterprise_service'])->get();
+        } else {
+            $categories = Category::where('parent_id',$parent_id)->get();
+        }
+        $list = [];
+        foreach ($categories as $category) {
+            $list[] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'children_count' => $category->grade ? Category::where('parent_id',$category->id)->count() : TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->where('category_id',$category->id)->count()
+            ];
+        }
+        return self::createJsonData(true,$list);
     }
 
     //标签相关用户
