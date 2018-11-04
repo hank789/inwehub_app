@@ -52,6 +52,29 @@ class Test extends Command
      */
     public function handle()
     {
+        $ql = QueryList::getInstance();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $tags = Tag::where('category_id','>=',43)->where('summary','')->get();
+        foreach ($tags as $tag) {
+            $slug = strtolower($tag->name);
+            $slug = str_replace(' ','-',$slug);
+            $url = 'https://www.g2crowd.com/products/'.$slug.'/details';
+            $content = $ql->browser($url);
+            $desc = $content->find('div.column.xlarge-8.xxlarge-9>div.row>div.xlarge-8.column>p')->eq(1)->text();
+            if (empty($desc)) {
+                $desc = $content->find('div.column.xlarge-7.xxlarge-8>p')->text();
+                if (empty($desc)) {
+                    $desc = $content->find('p.pt-half.product-show-description')->text();
+                    //$desc = $content->find('div.column.large-8>p')->text();
+                }
+            }
+            if (empty($desc)) continue;
+            $summary = Translate::instance()->translate($desc);
+            $tag->summary = $summary;
+            $tag->description = $desc;
+            $tag->save();
+        }
+        return;
         Translate::instance()->translate('hello');
         return;
         $tr = new TranslateClient('en', 'zh',['proxy'=>'socks5h://127.0.0.1:1080']);
