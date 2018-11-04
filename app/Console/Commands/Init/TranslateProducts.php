@@ -47,10 +47,14 @@ class TranslateProducts extends Command
     {
         $this->ql = QueryList::getInstance();
         $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        $tags = Tag::where('category_id','>=',43)->where('summary','')->get();
+        $tags = Tag::where('category_id','>=',43)->where('summary','')->orderBy('id','desc')->get();
         foreach ($tags as $tag) {
             $slug = strtolower($tag->name);
             $slug = str_replace(' ','-',$slug);
+            $slug = str_replace('.','-',$slug);
+            $slug = str_replace('(','-',$slug);
+            $slug = str_replace(')','-',$slug);
+
             $url = 'https://www.g2crowd.com/products/'.$slug.'/details';
             $content = $this->ql->browser($url);
             $desc = $content->find('div.column.xlarge-8.xxlarge-9>div.row>div.xlarge-8.column>p')->eq(1)->text();
