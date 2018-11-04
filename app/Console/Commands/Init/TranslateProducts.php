@@ -56,8 +56,8 @@ class TranslateProducts extends Command
             $slug = str_replace(')','-',$slug);
             $slug = str_replace(',','',$slug);
             $slug = str_replace('-&amp;','',$slug);
-            $slug = str_replace('---;','-',$slug);
-            $slug = str_replace('+;','-',$slug);
+            $slug = str_replace('---','-',$slug);
+            $slug = str_replace('+','-',$slug);
 
             $slug = trim($slug,'-');
             $url = 'https://www.g2crowd.com/products/'.$slug.'/details';
@@ -77,6 +77,7 @@ class TranslateProducts extends Command
             $tag->description = $desc;
             $tag->save();
         }
+        $this->info('完成');
 
     }
 
