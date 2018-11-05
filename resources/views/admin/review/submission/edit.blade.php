@@ -34,6 +34,13 @@
                                 <textarea name="title" class="form-control" placeholder="标题" style="height: 200px;">{{ old('title',$submission->title) }}</textarea>
                             </div>
 
+                            @if (isset($submission->data['origin_title']))
+                                <div class="form-group">
+                                    <label>原英文</label>
+                                    <textarea name="origin_title" class="form-control" placeholder="标题" style="height: 200px;">{{ $submission->data['origin_title'] }}</textarea>
+                                </div>
+                            @endif
+
                             <div class="form-group">
                                 <label>评分(0~5)</label>
                                 <input type="number" name="rate_star" class="form-control "  placeholder="评分" value="{{ old('rate_star',$submission->rate_star ) }}">

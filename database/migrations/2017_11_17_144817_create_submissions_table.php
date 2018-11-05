@@ -17,7 +17,7 @@ class CreateSubmissionsTable extends Migration
             $table->increments('id');
             $table->string('slug');
             $table->string('title',6000);
-            $table->string('type');
+            $table->string('type',16)->index();
             $table->json('data');
             $table->string('category_name')->index();
             $table->string('rate',12)->index()->default(0);
