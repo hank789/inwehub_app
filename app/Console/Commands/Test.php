@@ -53,7 +53,18 @@ class Test extends Command
      */
     public function handle()
     {
-
+        $ql = QueryList::getInstance();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $html = $ql->browser('https://www.g2crowd.com/products/salesforce-crm/reviews?page=1')->rules([
+            'name' => ['div.font-weight-bold.mt-half.mb-4th','text'],
+            'link' => ['a.pjax','href'],
+            'star' => ['div.stars.large','class'],
+            'datetime' => ['time','datetime'],
+            'body' => ['div.d-f:gt(0)>.f-1','text']
+        ])->range('div.mb-2.border-bottom')->query()->getData();
+        Storage::disk('local')->put('attachments/test4.html',json_encode($html));
+        var_dump($html);
+        return;
         TagCategoryRel::sum('reviews');
         $ql = QueryList::getInstance();
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));

@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Services\Translate;
 use App\Services\RateLimiter;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
 use App\Traits\SubmitSubmission;
@@ -50,6 +51,7 @@ class ReviewSubmissions extends Command
         $tagRels = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->get();
         $role1 = Role::where('slug','operatorrobot')->first();
         $userIds = RoleUser::where('role_id',$role1->id)->pluck('user_id')->toArray();
+        $authors = [];
 
         foreach ($tagRels as $tagRel) {
             $slug = RateLimiter::instance()->hGet('review-tags-url',$tagRel->tag_id);
@@ -77,7 +79,7 @@ class ReviewSubmissions extends Command
                 foreach ($data as $item) {
                     $link = RateLimiter::instance()->hGet('review-submission-url',$item['link']);
                     if ($link) continue;
-                    if (strlen($item['body']) <= 16) continue;
+                    if (strlen($item['body']) <= 50) continue;
                     $this->info($item['link']);
                     RateLimiter::instance()->hSet('review-submission-url',$item['link'],1);
                     preg_match('/\d+/',$item['star'],$rate_star);
@@ -96,7 +98,7 @@ class ReviewSubmissions extends Command
                         'rate_star'     => $rate_star[0]/2,
                         'hide'          => 0,
                         'status'        => config('app.env') == 'production'?0:1,
-                        'user_id'       => $userIds[rand(0,count($userIds))],
+                        'user_id'       => config('app.env') == 'production'?504:$userIds[rand(0,count($userIds))],
                         'views'         => 1,
                         'created_at'    => date('Y-m-d H:i:s',strtotime($item['datetime'])),
                         'data' => [
@@ -105,6 +107,7 @@ class ReviewSubmissions extends Command
                             'current_address_latitude' => '',
                             'category_ids' => [$tag->category_id],
                             'author_identity' => '',
+                            'origin_author' => $item['name'],
                             'img' => []
                         ]
                     ]);
@@ -112,6 +115,7 @@ class ReviewSubmissions extends Command
                     if ($submission->status == 1) {
                         dispatch(new NewSubmissionJob($submission->id,true,'g2点评数据；'));
                     }
+                    $authors[$item['name']][] = $submission->id;
                 }
                 if ($needBreak) break;
                 $this->info('page:'.$page);
@@ -119,6 +123,8 @@ class ReviewSubmissions extends Command
                 $page++;
             }
         }
+
+        Cache::forever('review_submissions',$authors);
     }
 
     protected function reviewData($slug,$page) {
