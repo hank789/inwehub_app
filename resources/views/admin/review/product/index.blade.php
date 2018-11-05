@@ -22,10 +22,10 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.review.product.index') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <div class="col-xs-3">
+                                        <div class="col-xs-2">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                         </div>
-                                        <div class="col-xs-3">
+                                        <div class="col-xs-2">
                                             <select class="form-control" name="category_id">
                                                 <option value="-1">不选择</option>
                                                 @include('admin.category.option',['type'=>'enterprise_review','select_id'=>$filter['category_id'],'root'=>false, 'last'=>true])
@@ -36,6 +36,14 @@
                                                 <option value="0">排序</option>
                                                 <option value="reviews|asc" @if( isset($filter['order_by']) && $filter['order_by']=='reviews|asc') selected @endif >点评升序</option>
                                                 <option value="reviews|desc" @if( isset($filter['order_by']) && $filter['order_by']=='reviews|desc') selected @endif >点评降序</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <select class="form-control" name="status">
+                                                <option value="-1">--状态--</option>
+                                                @foreach(trans_authentication_status('all') as $key => $status)
+                                                    <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                         <div class="col-xs-2">
