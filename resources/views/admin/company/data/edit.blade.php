@@ -53,7 +53,7 @@
                                 <input type="text" name="latitude" class="form-control "  placeholder="43.12" value="{{ old('latitude',$company->latitude) }}">
                             </div>
                             <div class="form-group @if ($errors->first('tags')) has-error @endif">
-                                <label for="tags" class="control-label">标签</label>
+                                <label for="tags" class="control-label">产品</label>
                                 <div class="row">
                                     <div class="col-sm-10">
                                         <select id="tags" name="tags" class="form-control" multiple="multiple" >
@@ -96,7 +96,7 @@
         $(function(){
             $("#tags").select2({
                 theme:'bootstrap',
-                placeholder: "标签",
+                placeholder: "产品",
                 ajax: {
                     url: '/manager/ajax/loadTags',
                     dataType: 'json',
@@ -104,7 +104,7 @@
                     data: function (params) {
                         return {
                             word: params.term,
-                            type: 1
+                            type: 7
                         };
                     },
                     processResults: function (data) {
