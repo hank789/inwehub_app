@@ -54,6 +54,7 @@ class TranslateProducts extends Command
             $slug = str_replace('.','-',$slug);
             $slug = str_replace('(','-',$slug);
             $slug = str_replace(')','-',$slug);
+            $slug = str_replace("'",'-',$slug);
             $slug = str_replace(',','',$slug);
             $slug = str_replace('™','',$slug);
             $slug = str_replace('®','',$slug);
