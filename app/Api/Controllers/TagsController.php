@@ -15,6 +15,7 @@ use App\Models\Taggable;
 use App\Models\User;
 use App\Models\UserTag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
 /**
@@ -221,18 +222,10 @@ class TagsController extends Controller {
     //获取产品分类列表
     public function getProductCategories(Request $request) {
         $parent_id = $request->input('parent_id',0);
-        if (!$parent_id) {
-            $categories = Category::whereIn('slug',['enterprise_product','enterprise_service'])->get();
-        } else {
-            $categories = Category::where('parent_id',$parent_id)->get();
-        }
-        $list = [];
-        foreach ($categories as $category) {
-            $list[] = [
-                'id' => $category->id,
-                'name' => $category->name,
-                'children_count' => $category->grade ? Category::where('parent_id',$category->id)->count() : TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->where('category_id',$category->id)->count()
-            ];
+        $list = Cache::get('product_categories_list_'.$parent_id);
+        if (!$list) {
+            $list = Category::getProductCategories($parent_id);
+            Cache::forever('product_categories_list_'.$parent_id,$list);
         }
         return self::createJsonData(true,$list);
     }
