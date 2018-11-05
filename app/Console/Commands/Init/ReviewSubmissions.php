@@ -77,7 +77,7 @@ class ReviewSubmissions extends Command
                 foreach ($data as $item) {
                     $link = RateLimiter::instance()->hGet('review-submission-url',$item['link']);
                     if ($link) continue;
-                    if (strlen($item['body']) <= 16) continue;
+                    if (strlen($item['body']) <= 50) continue;
                     $this->info($item['link']);
                     RateLimiter::instance()->hSet('review-submission-url',$item['link'],1);
                     preg_match('/\d+/',$item['star'],$rate_star);
@@ -96,7 +96,7 @@ class ReviewSubmissions extends Command
                         'rate_star'     => $rate_star[0]/2,
                         'hide'          => 0,
                         'status'        => config('app.env') == 'production'?0:1,
-                        'user_id'       => $userIds[rand(0,count($userIds))],
+                        'user_id'       => config('app.env') == 'production'?504:$userIds[rand(0,count($userIds))],
                         'views'         => 1,
                         'created_at'    => date('Y-m-d H:i:s',strtotime($item['datetime'])),
                         'data' => [
@@ -105,6 +105,7 @@ class ReviewSubmissions extends Command
                             'current_address_latitude' => '',
                             'category_ids' => [$tag->category_id],
                             'author_identity' => '',
+                            'origin_author' => $item['name'],
                             'img' => []
                         ]
                     ]);
