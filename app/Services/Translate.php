@@ -13,8 +13,10 @@ use Stichoza\GoogleTranslate\TranslateClient;
 class Translate
 {
 
-    protected $app_id = '20181102000229044';
-    protected $app_key = '1XCWk0jk4feYuR30SbDX';
+    //protected $app_id = '20181102000229044';
+    //protected $app_key = '1XCWk0jk4feYuR30SbDX';
+    protected $app_id = '20181105000230297';
+    protected $app_key = 'ULNO5BhZMlcHIMCYmzzA';
     protected $url = 'http://api.fanyi.baidu.com/api/trans/vip/translate';
 
     protected $googleClient;
