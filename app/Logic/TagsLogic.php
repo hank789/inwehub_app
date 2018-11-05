@@ -49,8 +49,12 @@ class TagsLogic {
                 //领域
                 $category_name = Category::where('slug','region')->get()->pluck('slug')->toArray();
                 break;
+            case 7:
+                //产品服务
+                $category_name = Category::where('slug','like','enterprise_%')->get()->pluck('slug')->toArray();
+                break;
             case 'all':
-                $category_name = Category::where('slug','like','question_%')->get()->pluck('slug')->toArray();
+                $category_name = Category::where('slug','like','question_%')->where('grade',0)->get()->pluck('slug')->toArray();
                 $loadDefaultTags = true;
                 break;
         }

@@ -54,11 +54,9 @@
                                         <th>公司名</th>
                                         <th>LOGO</th>
                                         <th>地址</th>
-                                        <th>geohash</th>
                                         <th>人员数</th>
-                                        <th>标签</th>
+                                        <th>产品</th>
                                         <th>审核状态</th>
-                                        <th>更新时间</th>
                                         <th>操作</th>
                                     </tr>
                                     @foreach($companies as $item)
@@ -70,11 +68,9 @@
                                                 <img width="100" height="100" src="{{ $item->logo }}">
                                             </td>
                                             <td>{{ $item->address_province }}</td>
-                                            <td>{{ $item->geohash }}</td>
                                             <td>{{ $item->getPeopleNumber() }}</td>
                                             <td>{{ implode(',',$item->tags()->pluck('name')->toArray()) }}</td>
                                             <td><span class="label @if($item->audit_status===0) label-warning @elseif($item->audit_status===1) label-success  @else label-danger @endif">{{ trans_authentication_status($item->audit_status) }}</span> </td>
-                                            <td>{{ $item->updated_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.company.data.edit',['id'=>$item->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
