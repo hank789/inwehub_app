@@ -44,8 +44,16 @@ class ProductController extends AdminController
         if( $filter['category_id']> 0 ){
             $query->where('tag_category_rel.category_id','=',$filter['category_id']);
         }
-        $fields = ['tag_category_rel.id','tag_category_rel.tag_id','tag_category_rel.category_id','tag_category_rel.status','tags.name','tags.logo','tags.reviews','tags.summary'];
-        $tags = $query->select($fields)->orderBy('tag_category_rel.id','desc')->paginate(20);
+
+        if ($filter['orderBy'] && $filter['order_by']) {
+            $orderBy = explode('|',$filter['order_by']);
+            $query->orderBy('tag_category_rel.'.$orderBy[0],$orderBy[1]);
+        } else {
+            $query->orderBy('tag_category_rel.id','desc');
+        }
+
+        $fields = ['tag_category_rel.id','tag_category_rel.tag_id','tag_category_rel.category_id','tag_category_rel.status','tag_category_rel.reviews','tags.name','tags.logo','tags.summary'];
+        $tags = $query->select($fields)->paginate(20);
         return view("admin.review.product.index")->with('tags',$tags)->with('filter',$filter);
     }
 
