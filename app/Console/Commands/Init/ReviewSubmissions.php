@@ -110,6 +110,7 @@ class ReviewSubmissions extends Command
                             'category_ids' => [$tag->category_id],
                             'author_identity' => '',
                             'origin_author' => $item['name'],
+                            'origin_title'  => $item['body'],
                             'img' => []
                         ]
                     ]);
