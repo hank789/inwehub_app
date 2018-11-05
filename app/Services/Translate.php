@@ -42,21 +42,24 @@ class Translate
     //翻译入口
     public function translate($query, $from = 'en', $to = 'zh')
     {
+        $baiduQuery = str_replace("\n",'<br>',$query);
         $args = array(
-            'q' => $query,
+            'q' => $baiduQuery,
             'appid' => $this->app_id,
             'salt' => rand(10000,99999),
             'from' => $from,
             'to' => $to,
 
         );
-        $args['sign'] = $this->buildSign($query, $this->app_id, $args['salt'], $this->app_key);
+        $args['sign'] = $this->buildSign($baiduQuery, $this->app_id, $args['salt'], $this->app_key);
         $ret = $this->call($this->url, $args);
         $ret = json_decode($ret, true);
         if (isset($ret['error_code'])) {
             return $this->googleApi($query,$from,$to);
         }
-        return $ret['trans_result'][0]['dst'];
+        $trans = str_replace("<br>","\n",$ret['trans_result'][0]['dst']);
+        $trans = str_replace("<BR>","\n",$trans);
+        return $trans;
     }
 
     //加密
