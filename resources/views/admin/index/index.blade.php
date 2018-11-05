@@ -2,7 +2,7 @@
 
 @section('title') 首页 @endsection
 
-
+@permission('admin.index.all')
 @section('content')
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -770,3 +770,4 @@
     });
 </script>
 @endsection
+@endpermission
