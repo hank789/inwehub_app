@@ -53,6 +53,16 @@ class Test extends Command
      */
     public function handle()
     {
+        $submissions = Submission::where('type','review')->get();
+        foreach ($submissions as $submission) {
+            $title = trim($submission->title);
+            $title = trim($title,'“”');
+            $title = trim($title);
+            if (strlen($title) <= 50) $submission->forceDelete();
+            $submission->title = $title;
+            $submission->save();
+        }
+        return;
         $ql = QueryList::getInstance();
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         $html = $ql->browser('https://www.g2crowd.com/products/salesforce-crm/reviews?page=1')->rules([
