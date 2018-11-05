@@ -58,9 +58,12 @@ class Test extends Command
             $title = trim($submission->title);
             $title = trim($title,'“”');
             $title = trim($title);
-            if (strlen($title) <= 50) $submission->forceDelete();
-            $submission->title = $title;
-            $submission->save();
+            if (strlen($title) <= 50) {
+                $submission->forceDelete();
+            } else {
+                $submission->title = $title;
+                $submission->save();
+            }
         }
         return;
         $ql = QueryList::getInstance();
