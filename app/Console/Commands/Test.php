@@ -55,7 +55,11 @@ class Test extends Command
     {
         $submissions = Submission::where('type','review')->get();
         foreach ($submissions as $submission) {
-            $submission->title = trim($submission->title,'“”');
+            $title = trim($submission->title);
+            $title = trim($title,'“”');
+            $title = trim($title);
+            if (strlen($title) <= 50) $submission->forceDelete();
+            $submission->title = $title;
             $submission->save();
         }
         return;

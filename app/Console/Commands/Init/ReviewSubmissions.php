@@ -80,6 +80,7 @@ class ReviewSubmissions extends Command
                     $link = RateLimiter::instance()->hGet('review-submission-url',$item['link']);
                     if ($link) continue;
                     $item['body'] = trim($item['body'],'"');
+                    $item['body'] = trim($item['body']);
                     if (strlen($item['body']) <= 50) continue;
                     $this->info($item['link']);
                     RateLimiter::instance()->hSet('review-submission-url',$item['link'],1);
