@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Services\Translate;
 use App\Services\RateLimiter;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
 use App\Traits\SubmitSubmission;
@@ -50,6 +51,7 @@ class ReviewSubmissions extends Command
         $tagRels = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->get();
         $role1 = Role::where('slug','operatorrobot')->first();
         $userIds = RoleUser::where('role_id',$role1->id)->pluck('user_id')->toArray();
+        $authors = [];
 
         foreach ($tagRels as $tagRel) {
             $slug = RateLimiter::instance()->hGet('review-tags-url',$tagRel->tag_id);
@@ -113,6 +115,7 @@ class ReviewSubmissions extends Command
                     if ($submission->status == 1) {
                         dispatch(new NewSubmissionJob($submission->id,true,'g2点评数据；'));
                     }
+                    $authors[$item['name']][] = $submission->id;
                 }
                 if ($needBreak) break;
                 $this->info('page:'.$page);
@@ -120,6 +123,8 @@ class ReviewSubmissions extends Command
                 $page++;
             }
         }
+
+        Cache::forever('review_submissions',$authors);
     }
 
     protected function reviewData($slug,$page) {
