@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Attention;
 use App\Models\Doing;
 use App\Models\Question;
 use App\Models\RecommendRead;
@@ -53,6 +54,7 @@ class Test extends Command
      */
     public function handle()
     {
+        Attention::where('source_type',Tag::class)->delete();
         $cIds = [
             51,
             57,
@@ -61,7 +63,8 @@ class Test extends Command
             87,
             88,89,90,91,92,93,94,95,96,97,98,99,106,107,108,109,110,111,112,113,114,115
         ];
-        TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->whereIn('category_id',$cIds)->update(['status'=>0]);
+        TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->whereIn('category_id',$cIds)->update(['reviews'=>0,'review_average_rate'=>0,'review_rate_sum'=>0]);
+        Tag::where('id','>=',1)->update(['reviews'=>0,'followers'=>0]);
         return;
         $ql = QueryList::getInstance();
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));

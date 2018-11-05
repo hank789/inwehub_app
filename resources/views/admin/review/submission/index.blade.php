@@ -26,6 +26,14 @@
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                             </div>
                                             <div class="col-xs-2">
+                                                <select class="form-control" name="status">
+                                                    <option value="-1">--状态--</option>
+                                                    @foreach(trans_authentication_status('all') as $key => $status)
+                                                        <option value="{{ $key }}" @if( isset($filter['status']) && $filter['status']==$key) selected @endif >{{ $status }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-xs-2">
                                                 <div>
                                                     <label><input type="checkbox" name="sortByRate" value="1" @if ( $filter['sortByRate']??0) checked @endif >热度排序</label>
                                                 </div>
