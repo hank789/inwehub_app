@@ -60,7 +60,6 @@ class CategoryController extends AdminController
             $parent->save();
         }
         Category::create($formData);
-        Artisan::call('cache:clear');
         return $this->success(route('admin.category.index'),'分类添加成功');
     }
 
@@ -119,7 +118,6 @@ class CategoryController extends AdminController
                 $oldParent->save();
             }
         }
-        Artisan::call('cache:clear');
         return $this->success(route('admin.category.index'),'分类添加成功');
 
 
@@ -134,7 +132,6 @@ class CategoryController extends AdminController
     public function destroy(Request $request)
     {
         Category::destroy($request->input('ids'));
-        Artisan::call('cache:clear');
         return $this->success(route('admin.category.index'),'分类删除成功');
     }
 }
