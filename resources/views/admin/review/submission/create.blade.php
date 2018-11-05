@@ -67,6 +67,18 @@
                                 <input type="file" name="img_url" />
                             </div>
 
+                            <div class="form-group @if ($errors->first('hide')) has-error @endif">
+                                <label>是否匿名</label>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="hide" value="1"  /> 匿名发布
+                                    </label>&nbsp;&nbsp;
+                                    <label>
+                                        <input type="radio" name="hide" value="0" checked /> 公开
+                                    </label>
+                                </div>
+                            </div>
+
                             <div class="form-group @if ($errors->first('status')) has-error @endif">
                                 <label>审核状态</label>
                                 <div class="radio">

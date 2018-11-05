@@ -32,6 +32,13 @@
                                             </select>
                                         </div>
                                         <div class="col-xs-2">
+                                            <select class="form-control" name="order_by">
+                                                <option value="0">排序</option>
+                                                <option value="reviews|asc" @if( isset($filter['order_by']) && $filter['order_by']=='reviews|asc') selected @endif >点评升序</option>
+                                                <option value="reviews|desc" @if( isset($filter['order_by']) && $filter['order_by']=='reviews|desc') selected @endif >点评降序</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
                                             <button type="submit" class="btn btn-primary">搜索</button>
                                         </div>
                                     </form>
@@ -63,7 +70,7 @@
                                             </td>
                                             <td><a href="{{ route('ask.tag.index',['id'=>$tag->tag_id]) }}" target="_blank">{{ $tag->name }}</a></td>
                                             <td>{{ implode(',',$tag->tag->categories->pluck('name')->toArray()) }}</td>
-                                            <td>{{ $tag->reviews }}</td>
+                                            <td>{{ $tag->reviews.'|'.$tag->category->name }}</td>
                                             <td width="30%">{{ $tag->summary }}</td>
                                             <td><span class="label @if($tag->status===0) label-warning  @else label-success @endif">{{ trans_common_status($tag->status) }}</span> </td>
                                             <td>

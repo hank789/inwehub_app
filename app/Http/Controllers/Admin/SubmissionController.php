@@ -106,6 +106,7 @@ class SubmissionController extends AdminController
             $submission->rate_star = $rate_star;
         }
         $submission->data = $object_data;
+        $submission->hide = $request->input('hide',0);
         $submission->save();
 
         $tagString = trim($request->input('tags'));

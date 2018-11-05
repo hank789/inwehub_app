@@ -65,6 +65,18 @@
                                 </div>
                             </div>
 
+                            <div class="form-group @if ($errors->first('hide')) has-error @endif">
+                                <label>是否匿名</label>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="hide" value="1" @if($submission->hide==1) checked @endif  /> 匿名发布
+                                    </label>&nbsp;&nbsp;
+                                    <label>
+                                        <input type="radio" name="hide" value="0" @if($submission->hide==0) checked @endif /> 公开
+                                    </label>
+                                </div>
+                            </div>
+
                             <div class="form-group @if ($errors->first('status')) has-error @endif">
                                 <label>审核状态</label>
                                 <div class="radio">
