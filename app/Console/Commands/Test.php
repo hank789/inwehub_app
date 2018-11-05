@@ -58,6 +58,15 @@ class Test extends Command
      */
     public function handle()
     {
+        $tags = Tag::whereNotNull('description')->where('created_at','>=','2018-10-03 21:03:37')->get();
+        foreach ($tags as $tag) {
+            if (str_contains($tag->description,"\n")) {
+                $desc = Translate::instance()->translate($tag->description);
+                $tag->summary = $desc;
+                $tag->save();
+            }
+        }
+        return;
         $this->ql = QueryList::getInstance();
         $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
         $slug = '/products/salesforce-crm/reviews';
