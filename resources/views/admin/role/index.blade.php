@@ -54,7 +54,6 @@
                                             <td>{{ $role->slug }}</td>
                                             <td>{{ $role->description }}</td>
                                             <td>{{ $role->created_at }}</td>
-                                            <td>{{ $role->updated_at }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" href="{{ route('admin.role.edit',['id'=>$role->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>

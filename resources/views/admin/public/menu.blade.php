@@ -1,5 +1,7 @@
 <ul class="sidebar-menu" id="root_menu">
     <li class="header">管理菜单</li>
+
+    @permission('admin.index.all')
     <li><a href="{{ route('admin.index.index') }}"><i class="fa fa-dashboard"></i> <span>运营监控</span> </a></li>
 
     <li class="treeview">
@@ -49,6 +51,7 @@
             <li><a href="{{ route('admin.company.data.people') }}"><i class="fa fa-circle-o"></i> 企业相关人员</a></li>
         </ul>
     </li>
+    @endpermission
 
     <li class="treeview">
         <a href="#">
@@ -61,6 +64,7 @@
         </ul>
     </li>
 
+    @permission('admin.index.all')
     <li class="treeview">
         <a href="#">
             <i class="fa fa-suitcase"></i> <span>分类&标签</span>
@@ -247,4 +251,6 @@
     <li><a href="{{ route('auth.feed.index') }}" target="_blank"><i class="fa fa-circle-o text-info"></i> <span>动态流</span></a></li>
     <li><a href="https://www.inwehub.com/" target="_blank"><i class="fa fa-circle-o text-success"></i> <span>官网</span></a></li>
     <li><a href="{{ route('admin.tool.clearCache') }}"><i class="fa fa-circle-o text-info"></i> <span>清空缓存</span></a></li>
+
+    @endpermission
 </ul>

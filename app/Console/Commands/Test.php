@@ -11,6 +11,7 @@ use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
+use App\Models\TagCategoryRel;
 use App\Models\Taggable;
 use App\Services\Translate;
 use App\Services\BosonNLPService;
@@ -52,6 +53,8 @@ class Test extends Command
      */
     public function handle()
     {
+
+        TagCategoryRel::sum('reviews');
         $ql = QueryList::getInstance();
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         $tags = Tag::where('category_id','>=',43)->where('summary','')->get();
