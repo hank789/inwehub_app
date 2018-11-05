@@ -53,18 +53,15 @@ class Test extends Command
      */
     public function handle()
     {
-        $submissions = Submission::where('type','review')->get();
-        foreach ($submissions as $submission) {
-            $title = trim($submission->title);
-            $title = trim($title,'“”');
-            $title = trim($title);
-            if (strlen($title) <= 50) {
-                $submission->forceDelete();
-            } else {
-                $submission->title = $title;
-                $submission->save();
-            }
-        }
+        $cIds = [
+            51,
+            57,
+            85,
+            86,
+            87,
+            88,89,90,91,92,93,94,95,96,97,98,99,106,107,108,109,110,111,112,113,114,115
+        ];
+        TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->whereIn('category_id',$cIds)->update(['status'=>0]);
         return;
         $ql = QueryList::getInstance();
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));
