@@ -50,6 +50,7 @@
                                         <th>热度</th>
                                         <th>标签</th>
                                         <th>浏览数</th>
+                                        <th>匿名</th>
                                         <th>发布者</th>
                                         <th>状态</th>
                                     </tr>
@@ -88,6 +89,7 @@
                                                 @endforeach
                                             </td>
                                             <td>{{ $submission->views }}</td>
+                                            <td> {{ $submission->hide ? '匿名':'公开' }}</td>
                                             <td>{{ $submission->owner->name }}</td>
                                             <td><span class="label @if($submission->status===0) label-warning  @else label-success @endif">{{ trans_common_status($submission->status) }}</span> </td>
                                         </tr>
