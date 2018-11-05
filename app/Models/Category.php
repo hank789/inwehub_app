@@ -127,6 +127,31 @@ class Category extends Model
         return $childTree;
     }
 
+    public static function getProductCategories($parent_id) {
+        if (!$parent_id) {
+            $categories = Category::whereIn('slug',['enterprise_product','enterprise_service'])->get();
+        } else {
+            $categories = Category::where('parent_id',$parent_id)->get();
+        }
+        $list = [];
+        foreach ($categories as $category) {
+            $children = [];
+            if ($category->grade == 1) {
+                //具有子分类
+                $children = self::getProductCategories($category->id);
+                $children_count =  Category::where('parent_id',$category->id)->count();
+            } else {
+                $children_count = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->where('category_id',$category->id)->count();
+            }
+            $list[] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'children_count' => $children_count,
+                'children' => $children
+            ];
+        }
+        return $list;
+    }
 
     public static function loadFromCache($type='all', $root = false, $last = false){
 
