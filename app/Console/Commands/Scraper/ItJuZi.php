@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Groups\Group;
 use App\Models\Submission;
 use App\Models\Tag;
+use App\Services\RateLimiter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use QL\QueryList;
@@ -29,6 +30,11 @@ class ItJuZi extends Command {
      * @var string
      */
     protected $description = '抓取IT橘子信息';
+
+    protected $ql;
+
+    protected $itjuzi_auth;
+
     /**
      * Create a new command instance.
      *
@@ -46,10 +52,10 @@ class ItJuZi extends Command {
     {
         $group = Group::find(56);
         $category = Category::where('slug','company_invest')->first();
-        $ql = QueryList::getInstance();
+        $this->ql = QueryList::getInstance();
+        $this->getItJuziAuth();
+
         $ql2 = new QueryList();
-        $cookie = '_ga=GA1.2.502552747.1537344894; gr_user_id=92ec759a-4af4-4baf-9109-efb8b7dcd108; MEIQIA_EXTRA_TRACK_ID=5e7b329c28eb11e7afd102fa39e25136; acw_tc=781bad0715403439658774326e436f2214a955dd9ae51c5e12d8ec75aa7876; Hm_lvt_1c587ad486cdb6b962e94fc2002edf89=1540343972';
-        $auth = 'bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3d3dy5pdGp1emkuY29tL2FwaS9hdXRob3JpemF0aW9ucyIsImlhdCI6MTU0MTE2MTExNywiZXhwIjoxNTQxMTY4MzE3LCJuYmYiOjE1NDExNjExMTcsImp0aSI6Inp3T3BWaktzbXIyYWlMemoiLCJzdWIiOjYzOTQyNiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.sBEse0RPBsbSRg8gUBswBz80dPd6vuP1bcGJOtaAOuE';
         $headers = [
             'Host'    => 'www.itjuzi.com',
             'Origin'  => 'https://www.itjuzi.com',
@@ -59,36 +65,22 @@ class ItJuZi extends Command {
             'Accept-Encoding' => 'gzip, deflate, br',
             'Accept-Language' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-            'Cookie'    => $cookie,
-            'Authorization' => $auth
+            'Authorization' => $this->itjuzi_auth
         ];
 
         $page = 1;
         while (true) {
-            $requestUrl = 'https://www.itjuzi.com/api/investevents';
-            $content = $ql->post($requestUrl,[
-                'city' => '',
-                'equity_ratio' => '',
-                'ipo_platform' => '',
-                'page' => $page,
-                'per_page' => 20,
-                'prov' => '',
-                'round' => '',
-                'scope' => '企业服务',
-                'selected' => '',
-                'status' => '',
-                'sub_scope' => '',
-                'time' => '',
-                'total'=>0,
-                'type'=>1,
-                'valuation'=>'',
-                'valuations' =>''
-            ],[
-                'timeout' => 10,
-                'headers' => $headers
-            ])->getHtml();
-
-            $data = json_decode($content, true);
+            try {
+                $data = $this->getListData($page,$headers);
+            } catch (\Exception $e) {
+                if ($e->getCode() == 400) {
+                    $this->getItJuziAuth();
+                    $data = $this->getListData($page,$headers);
+                } else {
+                    app('sentry')->captureException($e);
+                    return;
+                }
+            }
 
             if ($data['status'] == 'success') {
                 $pageInfo = $data['data'];
@@ -100,7 +92,7 @@ class ItJuZi extends Command {
                     $guid = 'company_invest_'.$item['id'];
                     $company = Submission::where('slug',$guid)->withTrashed()->first();
                     if (!$company) {
-                        $content = $ql->get('https://www.itjuzi.com/api/investevents/'.$item['id'],null,[
+                        $content = $this->ql->get('https://www.itjuzi.com/api/investevents/'.$item['id'],null,[
                             'timeout' => 10,
                             'headers' => $headers
                         ])->getHtml();
@@ -169,10 +161,50 @@ class ItJuZi extends Command {
                 if ($page >= 4) return;
                 sleep(5);
             } else {
-                var_dump($content);
+                var_dump($data);
                 event(new ExceptionNotify('抓取IT橘子企业服务信息失败:'.$data['msg']));
                 return;
             }
         }
+    }
+
+    protected function getListData($page, $headers) {
+        $requestUrl = 'https://www.itjuzi.com/api/investevents';
+        $content = $this->ql->post($requestUrl,[
+            'city' => '',
+            'equity_ratio' => '',
+            'ipo_platform' => '',
+            'page' => $page,
+            'per_page' => 20,
+            'prov' => '',
+            'round' => '',
+            'scope' => '企业服务',
+            'selected' => '',
+            'status' => '',
+            'sub_scope' => '',
+            'time' => '',
+            'total'=>0,
+            'type'=>1,
+            'valuation'=>'',
+            'valuations' =>''
+        ],[
+            'timeout' => 10,
+            'headers' => $headers
+        ])->getHtml();
+
+        return json_decode($content, true);
+    }
+
+    protected function getItJuziAuth() {
+        $itjuzi_auth = RateLimiter::instance()->getValue('itjuzi','token');
+        if (!$itjuzi_auth) {
+            $result = $this->ql->post('https://www.itjuzi.com/api/authorizations',[
+                'account' => "hank.wang@inwehub.com",
+                'password' => "wanghui8831"
+            ])->getHtml();
+            $resultArr = json_decode($result,true);
+            $itjuzi_auth = $resultArr['data']['token'];
+        }
+        $this->itjuzi_auth = $itjuzi_auth;
     }
 }
