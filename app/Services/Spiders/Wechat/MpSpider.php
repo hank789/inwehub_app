@@ -38,6 +38,8 @@ class MpSpider {
     public function getGzhInfo($wx_hao) {
         $limit = RateLimiter::instance()->getValue('scraper_mp_freq',date('Y-m-d'));
         if ($limit) return false;
+        $scraper_mp_count = RateLimiter::instance()->getValue('scraper_mp_count',date('Ymd'));
+        if ($scraper_mp_count >= 104) return false;
         $url = $this->mpUrl.'/cgi-bin/searchbiz?action=search_biz&token='.$this->token.'&lang=zh_CN&f=json&ajax=1&random=0.930593749582243&query='.$wx_hao.'&begin=0&count=5';
         $data = $this->ql->get($url,null,[
             'cookies' => null,
