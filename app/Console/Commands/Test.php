@@ -20,6 +20,7 @@ use App\Services\MixpanelService;
 use App\Services\QcloudService;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\WechatSpider;
+use App\Traits\SubmitSubmission;
 use GuzzleHttp\Exception\ConnectException;
 use function GuzzleHttp\Psr7\parse_query;
 use Illuminate\Console\Command;
@@ -33,6 +34,7 @@ use Stichoza\GoogleTranslate\TranslateClient;
 
 class Test extends Command
 {
+    use SubmitSubmission;
     /**
      * The name and signature of the console command.
      *
@@ -47,6 +49,8 @@ class Test extends Command
      */
     protected $description = 'Display an inspiring quote';
 
+    protected $ql;
+
     /**
      * Execute the console command.
      *
@@ -54,7 +58,96 @@ class Test extends Command
      */
     public function handle()
     {
-        $submissions = Submission::where('type','review')->where('id','>=',23886)->get();
+        $this->ql = QueryList::getInstance();
+        $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $slug = '/products/salesforce-crm/reviews';
+        $tag = Tag::find(39739);
+        $page=1;
+        $needBreak = false;
+        while (true) {
+            $data = $this->reviewData($slug,$page);
+            if ($data->count() <= 0) {
+                sleep(5);
+                $data = $this->reviewData($slug,$page);
+            }
+            if ($data->count() <= 0 && $page == 1) {
+                $this->info('tag:抓取点评失败');
+                break;
+            }
+            if ($data->count() <= 0) {
+                $this->info('tag:无数据，page:'.$page);
+                break;
+            }
+            foreach ($data as $item) {
+                $item['body'] = trim($item['body']);
+                $item['body'] = trim($item['body'],'"');
+                $item['body'] = trim($item['body']);
+                if (strlen($item['body']) <= 50) continue;
+                $this->info($item['link']);
+                RateLimiter::instance()->hSet('review-submission-url',$item['link'],1);
+
+                $sslug = app('pinyin')->abbr(strip_tags($item['body']));
+                if (empty($sslug)) {
+                    $sslug = 1;
+                }
+                if (strlen($sslug) > 50) {
+                    $sslug = substr($sslug,0,50);
+                }
+
+                $submission = Submission::withTrashed()->where('slug', $sslug)->first();
+                if ($submission) {
+                    if (!isset($submission->data['origin_title'])) {
+                        $this->info($submission->id);
+                        $title = Translate::instance()->translate($item['body']);
+                        $sdata = $submission->data;
+                        $sdata['origin_title'] = $item['body'];
+                        $submission->data = $sdata;
+                        $submission->title = $title;
+                        $submission->save();
+                    }
+                    continue;
+                }
+
+                preg_match('/\d+/',$item['star'],$rate_star);
+                $title = $item['body'];
+                if (config('app.env') == 'production' || $page <= 1) {
+                    $title = Translate::instance()->translate($item['body']);
+                }
+                $submission = Submission::create([
+                    'title'         => $title,
+                    'slug'          => $this->slug($item['body']),
+                    'type'          => 'review',
+                    'category_id'   => $tag->id,
+                    'group_id'      => 0,
+                    'public'        => 1,
+                    'rate'          => firstRate(),
+                    'rate_star'     => $rate_star[0]/2,
+                    'hide'          => 0,
+                    'status'        => 0,
+                    'user_id'       => 504,
+                    'views'         => 1,
+                    'created_at'    => date('Y-m-d H:i:s',strtotime($item['datetime'])),
+                    'data' => [
+                        'current_address_name' => '',
+                        'current_address_longitude' => '',
+                        'current_address_latitude' => '',
+                        'category_ids' => [$tag->category_id],
+                        'author_identity' => '',
+                        'origin_author' => $item['name'],
+                        'origin_title'  => $item['body'],
+                        'img' => []
+                    ]
+                ]);
+                Tag::multiSaveByIds($tag->id,$submission);
+                $authors[$item['name']][] = $submission->id;
+            }
+            if ($needBreak) break;
+            $this->info('page:'.$page);
+            $page++;
+        }
+        return;
+
+        $submissions = Submission::where('type','review')->where('id','<=',19332)->get();
         foreach ($submissions as $submission) {
             $submission->title = Translate::instance()->translate($submission->data['origin_title']);
             $submission->save();
@@ -409,5 +502,16 @@ class Test extends Command
     public function getHtmlData($i) {
         if ($i == 4) return $i;
         return null;
+    }
+
+    protected function reviewData($slug,$page) {
+        $html = $this->ql->browser('https://www.g2crowd.com'.$slug.'?page='.$page)->rules([
+            'name' => ['div.font-weight-bold.mt-half.mb-4th','text'],
+            'link' => ['a.pjax','href'],
+            'star' => ['div.stars.large','class'],
+            'datetime' => ['time','datetime'],
+            'body' => ['div.d-f:gt(0)>.f-1','text']
+        ])->range('div.mb-2.border-bottom')->query()->getData();
+        return $html;
     }
 }
