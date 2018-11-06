@@ -58,12 +58,13 @@ class Test extends Command
      */
     public function handle()
     {
-        $tags = Tag::whereNotNull('description')->where('created_at','>=','2018-10-03 21:03:37')->get();
-        foreach ($tags as $tag) {
-            if (str_contains($tag->description,"\n")) {
-                $desc = Translate::instance()->translate($tag->description);
-                $tag->summary = $desc;
-                $tag->save();
+        $submissions = Submission::where('type','review')->get();
+        foreach ($submissions as $submission) {
+            if (str_contains($submission->title,"< BR>")) {
+                $title = str_replace("“< BR>","\n",$submission->title);
+                $title = str_replace("< BR>","\n",$title);
+                $submission->title = $title;
+                $submission->save();
             }
         }
         return;
