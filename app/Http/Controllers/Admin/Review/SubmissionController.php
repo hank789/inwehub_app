@@ -60,6 +60,32 @@ class SubmissionController extends AdminController
         return view("admin.review.submission.index")->with('submissions',$submissions)->with('filter',$filter)->with('tags',$tags);
     }
 
+    public function export(Request $request) {
+        $query = Submission::where('type','review');
+
+        $cellData = [];
+        $cellData[] = ['ID','标题','评分','产品'];
+        $page = 1;
+        $submissions = $query->orderBy('id','desc')->simplePaginate(100,['*'],'page',$page);
+        while ($submissions->count() > 0) {
+            foreach ($submissions as $submission) {
+                $cellData[] = [
+                    $submission->id,
+                    $submission->data['origin_title'],
+                    $submission->rate_star,
+                    implode(',',$submission->tags->pluck('name')->toArray())
+                ];
+            }
+            $page ++;
+            $submissions = $query->orderBy('id','desc')->simplePaginate(100,['*'],'page',$page);
+        }
+        Excel::create('点评',function($excel) use ($cellData){
+            $excel->sheet('score', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->export('xlsx');
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

@@ -27,7 +27,7 @@
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                             </div>
                                             <div class="col-xs-2">
-                                                <select id="select_tags" name="select_tags" class="form-control" multiple="multiple" >
+                                                <select id="select_tags" name="select_tags" class="form-control" >
                                                     @if (isset($filter['tags']))
                                                         @foreach( $filter['tags'] as $tag)
                                                             <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>

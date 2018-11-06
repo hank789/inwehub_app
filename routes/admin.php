@@ -188,6 +188,8 @@ Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
     Route::get('submission/edit/{id}',['as'=>'admin.review.submission.edit','uses'=>'SubmissionController@edit'])->where(['id'=>'[0-9]+']);
     Route::get('submission/create/{id}',['as'=>'admin.review.submission.create','uses'=>'SubmissionController@create'])->where(['id'=>'[0-9]+']);
     Route::post('submission/store',['as'=>'admin.review.submission.store','uses'=>'SubmissionController@store']);
+    Route::get('submission/export',['as'=>'admin.review.submission.export','uses'=>'SubmissionController@export']);
+
 
 });
 
