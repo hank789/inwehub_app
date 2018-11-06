@@ -13,10 +13,18 @@ use Stichoza\GoogleTranslate\TranslateClient;
 class Translate
 {
 
+    //hank账户
     //protected $app_id = '20181102000229044';
     //protected $app_key = '1XCWk0jk4feYuR30SbDX';
-    protected $app_id = '20181105000230297';
-    protected $app_key = 'ULNO5BhZMlcHIMCYmzzA';
+
+    //荷塘账户
+    //protected $app_id = '20181105000230297';
+    //protected $app_key = 'ULNO5BhZMlcHIMCYmzzA';
+
+    //妹猪账户
+    protected $app_id = '20181106000230500';
+    protected $app_key = 'YZZfWRpLxGzkwXLccSjY';
+
     protected $url = 'http://api.fanyi.baidu.com/api/trans/vip/translate';
 
     protected $googleClient;

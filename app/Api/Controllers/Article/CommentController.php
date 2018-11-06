@@ -40,7 +40,7 @@ class CommentController extends Controller {
 
         $submission = Submission::find($request->submission_id);
         $group = Group::find($submission->group_id);
-        if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+        if ($submission->group_id && $group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
             $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group_id)->first();
             $is_joined = -1;
             if ($groupMember) {
