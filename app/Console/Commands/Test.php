@@ -65,6 +65,7 @@ class Test extends Command
                 $title = str_replace("“","",$title);
                 $title = str_replace("“< BR>","\n",$title);
                 $title = str_replace("< BR>","\n",$title);
+                $title = str_replace("amp;","",$title);
                 $submission->title = $title;
                 $submission->save();
             }

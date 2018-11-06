@@ -102,8 +102,7 @@ class DataController extends AdminController
             }
             Cache::put($cacheKey,$data,30);
         }
-
-
         return view("admin.data.views")->with('filter',$filter)->with('data',$data)->with('labelTimes',$labelTimes);
     }
+
 }
