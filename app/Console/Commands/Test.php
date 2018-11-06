@@ -61,8 +61,11 @@ class Test extends Command
         $submissions = Submission::where('type','review')->get();
         foreach ($submissions as $submission) {
             if (str_contains($submission->title,"< BR>")) {
-                $title = str_replace("“< BR>","\n",$submission->title);
+                $title = str_replace("”","",$submission->title);
+                $title = str_replace("“","",$title);
+                $title = str_replace("“< BR>","\n",$title);
                 $title = str_replace("< BR>","\n",$title);
+                $title = str_replace("amp;","",$title);
                 $submission->title = $title;
                 $submission->save();
             }

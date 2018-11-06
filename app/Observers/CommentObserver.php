@@ -136,14 +136,16 @@ class CommentObserver implements ShouldQueue {
                 $submission->increment('comments_number');
                 $submission_user = User::find($submission->user_id);
                 $group = Group::find($submission->group_id);
-                if (!$group->public) {
+                if ($submission->group_id && !$group->public) {
                     //私密圈子的分享只通知圈子内的人
                     $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
                 }
-                $fields[] = [
-                    'title' => '圈子',
-                    'value' => $group->name
-                ];
+                if ($submission->group_id) {
+                    $fields[] = [
+                        'title' => '圈子',
+                        'value' => $group->name
+                    ];
+                }
                 $fields[] = [
                     'title' => '标题',
                     'value' => strip_tags($submission->title)

@@ -197,7 +197,7 @@ class TagsController extends Controller {
                 'id' => $submission->id,
                 'title' => $submission->title,
                 'rate_star' => $submission->rate_star,
-                'created_at' => $submission->created_at,
+                'created_at' => (string)$submission->created_at,
                 'slug' => $submission->slug,
                 'url' => '/c/'.$submission->category_id.'/'.$submission->slug,
                 'user'  => [

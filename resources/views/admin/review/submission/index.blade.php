@@ -19,11 +19,21 @@
                                     <div class="row">
                                         <form name="searchForm" action="{{ route('admin.review.submission.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" id="tags" name="tags" value="" />
                                             <div class="col-xs-2">
                                                 <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                             </div>
                                             <div class="col-xs-2">
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <select id="select_tags" name="select_tags" class="form-control" multiple="multiple" >
+                                                    @if (isset($filter['tags']))
+                                                        @foreach( $filter['tags'] as $tag)
+                                                            <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
                                             </div>
                                             <div class="col-xs-2">
                                                 <select class="form-control" name="status">
@@ -172,7 +182,37 @@
 
             });
         }
+
         $(function(){
+
+            $("#select_tags").select2({
+                theme:'bootstrap',
+                placeholder: "产品",
+                ajax: {
+                    url: '/manager/ajax/loadTags',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            word: params.term,
+                            type: 7
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength:2,
+                tags:false
+            });
+
+            $("#select_tags").change(function(){
+                $("#tags").val($("#select_tags").val());
+            });
+
             $("#select_tags_id").select2({
                 theme:'bootstrap',
                 placeholder: "标签"

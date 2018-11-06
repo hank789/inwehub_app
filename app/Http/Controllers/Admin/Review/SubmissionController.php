@@ -40,6 +40,12 @@ class SubmissionController extends AdminController
             $query->where('status',$filter['status']);
         }
 
+        if( isset($filter['tags']) && $filter['tags'] >0 ){
+            $query->where('category_id',$filter['tags']);
+            $tag = Tag::find($filter['tags']);
+            $filter['tags'] = [$tag];
+        }
+
         /*问题标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('data','like', '%'.$filter['word'].'%');

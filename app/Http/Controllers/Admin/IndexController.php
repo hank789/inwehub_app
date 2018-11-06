@@ -37,6 +37,9 @@ class IndexController extends AdminController
     {
         $data = Cache::remember('admin_index_dashboard',30,function () {
             $totalUserNum = User::count();
+            $totalUserNumHasPhone = User::whereNotNull('mobile')->count();
+            $totalUserNumHasEmail = $totalUserNum - User::where('email','')->count();
+
             $totalQuestionNum = Question::count();
             $totalFeedbackNum = Feedback::count();
             $totalAnswerNum = Answer::count();
@@ -147,6 +150,8 @@ class IndexController extends AdminController
             $searchCount = array_slice($searchCount,0,100,true);
             return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
                     'totalAnswerNum',
+                    'totalUserNumHasPhone',
+                    'totalUserNumHasEmail',
                     //'userInfoCompleteTime',
                     'userInfoCompletePercent',
                     //'questionAvaConfirmTime',
