@@ -28,7 +28,7 @@ class TagsController extends Controller {
 
     public function load(Request $request){
         $validateRules = [
-            'tag_type' => 'required|in:1,2,3,4,5,6'
+            'tag_type' => 'required|in:1,2,3,4,5,6,8'
         ];
 
         $this->validate($request,$validateRules);
