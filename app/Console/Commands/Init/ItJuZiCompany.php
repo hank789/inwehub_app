@@ -171,7 +171,8 @@ class ItJuZiCompany extends Command {
             'total'=>0,
         ],[
             'timeout' => 10,
-            'headers' => $headers
+            'headers' => $headers,
+            'proxy' => 'socks5h://127.0.0.1:1080'
         ])->getHtml();
 
         return json_decode($content, true);
@@ -183,7 +184,7 @@ class ItJuZiCompany extends Command {
             $result = $this->ql->post('https://www.itjuzi.com/api/authorizations',[
                 'account' => "wanghui198831@126.com",
                 'password' => "Wanghui8831"
-            ])->getHtml();
+            ],['proxy' => 'socks5h://127.0.0.1:1080'])->getHtml();
             $resultArr = json_decode($result,true);
             $itjuzi_auth = $resultArr['data']['token'];
         }
