@@ -127,6 +127,21 @@ class Category extends Model
         return $childTree;
     }
 
+    public static function getChildrenIds($parent_id) {
+        $categories = Category::where('parent_id',$parent_id)->get();
+        $list = [];
+        foreach ($categories as $category) {
+            if ($category->grade == 1) {
+                //具有子分类
+                $children = self::getChildrenIds($category->id);
+                $list = array_merge($list,$children);
+            }
+            $list[] = $category->id;
+
+        }
+        return $list;
+    }
+
     public static function getProductCategories($parent_id) {
         if (!$parent_id) {
             $categories = Category::whereIn('slug',['enterprise_product','enterprise_service'])->get();
