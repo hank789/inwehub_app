@@ -45,16 +45,19 @@ class TagRoles extends Command
      */
     public function handle()
     {
-        $category = Category::create([
-            'parent_id' => 0,
-            'grade'     => 0,
-            'name'      => '用户角色',
-            'icon'      => null,
-            'slug'      => 'role',
-            'type'      => 'role',
-            'sort'      => 0,
-            'status'    => 1
-        ]);
+        $category = Category::where('slug','role')->first();
+        if (!$category) {
+            $category = Category::create([
+                'parent_id' => 0,
+                'grade'     => 0,
+                'name'      => '用户角色',
+                'icon'      => null,
+                'slug'      => 'role',
+                'type'      => 'role',
+                'sort'      => 0,
+                'status'    => 1
+            ]);
+        }
         $roles = [
             '终端用户',
             '管理人员',
@@ -66,23 +69,30 @@ class TagRoles extends Command
             '行业研究员',
         ];
         foreach ($roles as $role) {
-            $tag = Tag::create([
-                'name' => $role,
-                'category_id' => $category->id,
-                'logo' => '',
-                'summary' => $role,
-                'description' => '',
-                'parent_id' => 0,
-                'reviews' => 0
-            ]);
-            TagCategoryRel::create([
-                'tag_id' => $tag->id,
-                'category_id' => $category->id,
-                'review_average_rate' => 0,
-                'review_rate_sum' => 0,
-                'reviews' => 0,
-                'type' => TagCategoryRel::TYPE_DEFAULT
-            ]);
+            $tag = Tag::where('name',$role)->first();
+            if (!$tag) {
+                $tag = Tag::create([
+                    'name' => $role,
+                    'category_id' => $category->id,
+                    'logo' => '',
+                    'summary' => $role,
+                    'description' => '',
+                    'parent_id' => 0,
+                    'reviews' => 0
+                ]);
+            }
+            $tagRel = TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$category->id)->first();
+            if (!$tagRel) {
+                TagCategoryRel::create([
+                    'tag_id' => $tag->id,
+                    'category_id' => $category->id,
+                    'review_average_rate' => 0,
+                    'review_rate_sum' => 0,
+                    'reviews' => 0,
+                    'type' => TagCategoryRel::TYPE_DEFAULT
+                ]);
+            }
+
         }
         $this->info('完成');
 
