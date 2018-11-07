@@ -78,7 +78,8 @@ class Kernel extends ConsoleKernel
         Commands\Init\ReviewProducts::class,
         Commands\Init\ReviewSubmissions::class,
         Commands\Init\CalcProductReviews::class,
-        Commands\Init\TranslateProducts::class
+        Commands\Init\TranslateProducts::class,
+        Commands\Init\TagRoles::class
 
     ];
 
