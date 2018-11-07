@@ -120,7 +120,7 @@ class TagsController extends Controller {
                 'uuid' => $recommendUser->user->uuid,
                 'is_expert' => $recommendUser->user->is_expert,
                 'avatar_url' => $recommendUser->user->avatar,
-                'skill' => $skillTag->name
+                'skill' => $skillTag?$skillTag->name:''
             ];
         }
         return self::createJsonData(true,$data);
