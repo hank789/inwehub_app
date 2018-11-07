@@ -199,8 +199,8 @@ class ItJuZi extends Command {
         $itjuzi_auth = RateLimiter::instance()->getValue('itjuzi','token');
         if (!$itjuzi_auth) {
             $result = $this->ql->post('https://www.itjuzi.com/api/authorizations',[
-                'account' => "hank.wang@inwehub.com",
-                'password' => "wanghui8831"
+                'account' => "wanghui198831@126.com",
+                'password' => "Wanghui8831"
             ])->getHtml();
             $resultArr = json_decode($result,true);
             $itjuzi_auth = $resultArr['data']['token'];
