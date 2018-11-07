@@ -92,8 +92,11 @@ class ProductController extends AdminController
             $img_url = Storage::disk('oss')->url($filePath);
             $data['logo'] = $img_url;
         }
+        $category_ids = $request->input('category_id');
+        unset($data['category_id']);
+        $data['category_id'] = $category_ids[0];
         $tag = Tag::create($data);
-        foreach ($request->input('category_id') as $category_id) {
+        foreach ($category_ids as $category_id) {
             if ($category_id<=0) continue;
             TagCategoryRel::create([
                 'tag_id' => $tag->id,
