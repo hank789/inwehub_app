@@ -54,6 +54,8 @@ Route::group(['namespace'=>'Share'], function() {
 Route::group(['namespace'=>'Account'], function() {
     //用户个人名片
     Route::any('profile/resumeInfo','ProfileController@resumeInfo');
+    Route::post('profile/infoByUuid','ProfileController@infoByUuid');
+
 });
 
 //榜单

@@ -141,7 +141,8 @@ class Category extends Model
                 $children = self::getProductCategories($category->id);
                 $children_count =  Category::where('parent_id',$category->id)->count();
             } else {
-                $children_count = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->where('category_id',$category->id)->count();
+                //$children_count = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->where('category_id',$category->id)->count();
+                $children_count = 0;
             }
             $list[] = [
                 'id' => $category->id,

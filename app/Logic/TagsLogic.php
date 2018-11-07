@@ -53,6 +53,10 @@ class TagsLogic {
                 //产品服务
                 $category_name = Category::where('slug','like','enterprise_%')->get()->pluck('slug')->toArray();
                 break;
+            case 8:
+                // 用户角色
+                $category_name = ['role'];
+                break;
             case 'all':
                 $category_name = Category::where('slug','like','question_%')->where('grade',0)->get()->pluck('slug')->toArray();
                 $loadDefaultTags = true;

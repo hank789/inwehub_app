@@ -28,7 +28,7 @@ class TagsController extends Controller {
 
     public function load(Request $request){
         $validateRules = [
-            'tag_type' => 'required|in:1,2,3,4,5,6'
+            'tag_type' => 'required|in:1,2,3,4,5,6,8'
         ];
 
         $this->validate($request,$validateRules);
@@ -120,7 +120,7 @@ class TagsController extends Controller {
                 'uuid' => $recommendUser->user->uuid,
                 'is_expert' => $recommendUser->user->is_expert,
                 'avatar_url' => $recommendUser->user->avatar,
-                'skill' => $skillTag->name
+                'skill' => $skillTag?$skillTag->name:''
             ];
         }
         return self::createJsonData(true,$data);
@@ -223,10 +223,10 @@ class TagsController extends Controller {
     //获取产品分类列表
     public function getProductCategories(Request $request) {
         $parent_id = $request->input('parent_id',0);
-        $list = Cache::get('product_categories_list_'.$parent_id);
+        $list = Cache::get('tags:product_categories_list_'.$parent_id);
         if (!$list) {
             $list = Category::getProductCategories($parent_id);
-            Cache::forever('product_categories_list_'.$parent_id,$list);
+            Cache::forever('tags:product_categories_list_'.$parent_id,$list);
         }
         return self::createJsonData(true,$list);
     }
