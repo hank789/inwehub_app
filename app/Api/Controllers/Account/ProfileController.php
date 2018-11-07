@@ -205,6 +205,76 @@ class ProfileController extends Controller
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
 
+
+    public function infoByUuid(Request $request,JWTAuth $JWTAuth) {
+        $validateRules = [
+            'uuid' => 'required|min:10',
+        ];
+        $this->validate($request,$validateRules);
+        $uuid = $request->input('uuid');
+        $user = User::where('uuid',$uuid)->first();
+        if (empty($user)) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $jwtToken = $JWTAuth->getToken();
+        $loginUser = '';
+        if($jwtToken){
+            try{
+                $loginUser = $JWTAuth->toUser($JWTAuth->getToken());
+            } catch (\Exception $e){
+
+            }
+        }
+        $is_self = false;
+        $is_followed = 0;
+        if($loginUser && $loginUser->id == $user->id){
+            $is_self = true;
+        }elseif($loginUser) {
+            $attention = Attention::where("user_id",'=',$loginUser->id)->where('source_type','=',get_class($user))->where('source_id','=',$user->id)->first();
+            if ($attention){
+                $is_followed = 1;
+            }
+        }
+
+        $info = [];
+        $info['id'] = $user->id;
+        $info['uuid'] = $user->uuid;
+        $info['name'] = $user->name;
+        $info['realname'] = $is_self?$user->realname:'';
+        $info['mobile'] = $user->mobile;
+        $info['email'] = $user->email;
+        $info['avatar_url'] = $user->avatar;
+        $info['gender'] = $user->gender;
+        $info['birthday'] = $user->birthday;
+        $info['province']['key'] = $user->province;
+        $info['province']['name'] = CityData::getProvinceName($user->province)?:$user->province;
+        $info['city']['key'] = $user->city;
+        $info['city']['name'] = CityData::getCityName($user->province,$user->city)?:$user->city;
+
+        $info['hometown_province']['key'] = $user->hometown_province;
+        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province)?:$user->hometown_province;
+        $info['hometown_city']['key'] = $user->hometown_city;
+        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city)?:$user->hometown_city;
+
+        $info['company'] = $user->company;
+        $info['title'] = $user->title;
+        $info['description'] = $user->description;
+        $info['status'] = $user->status;
+        $info['address_detail'] = $user->address_detail;
+        $info['industry_tags'] = TagsLogic::formatTags($user->industryTags());
+        if(empty($info['industry_tags'])) $info['industry_tags'] = '';
+        $info['skill_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get());
+        $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+        $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
+
+        $data = [
+            'info'   => $info,
+            'is_followed' => $is_followed,
+        ];
+
+        return self::createJsonData(true,$data);
+    }
+
     //用户个人名片
     public function resumeInfo(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
