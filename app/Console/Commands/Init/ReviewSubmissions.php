@@ -87,9 +87,14 @@ class ReviewSubmissions extends Command
                     RateLimiter::instance()->hSet('review-submission-url',$item['link'],1);
                     preg_match('/\d+/',$item['star'],$rate_star);
                     $title = $item['body'];
-                    if (config('app.env') == 'production' || $page <= 1) {
-                        $title = Translate::instance()->translate($item['body']);
+                    try {
+                        if (config('app.env') == 'production' || $page <= 1) {
+                            $title = Translate::instance()->translate($item['body']);
+                        }
+                    } catch (\Exception $e) {
+                        $title = '';
                     }
+
                     $submission = Submission::create([
                         'title'         => $title,
                         'slug'          => $this->slug($item['body']),
