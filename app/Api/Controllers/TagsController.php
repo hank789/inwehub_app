@@ -158,7 +158,9 @@ class TagsController extends Controller {
         if ($category_id) {
             $category = Category::find($category_id);
             if ($category->grade == 1) {
-                $query = $query->whereIn('category_id',Category::getChildrenIds($category_id));
+                $children = Category::getChildrenIds($category_id);
+                $children[] = $category_id;
+                $query = $query->whereIn('category_id',array_unique($children));
             } else {
                 $query = $query->where('category_id',$category_id);
             }
