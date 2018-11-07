@@ -54,7 +54,7 @@ class CalcProductReviews extends Command
             }
             $tagRel->reviews = $count;
             $tagRel->review_rate_sum = $rates;
-            $tagRel->review_average_rate = bcdiv($rates,$count,1);
+            $tagRel->review_average_rate = $count?bcdiv($rates,$count,1):0;
             $tagRel->save();
             $tagIds[$tagRel->tag_id] = $tagRel->tag_id;
         }

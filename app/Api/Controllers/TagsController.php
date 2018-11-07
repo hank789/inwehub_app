@@ -156,7 +156,12 @@ class TagsController extends Controller {
         $orderBy = $request->input('orderBy',1);
         $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
         if ($category_id) {
-            $query = $query->where('category_id',$category_id);
+            $category = Category::find($category_id);
+            if ($category->grade == 1) {
+                $query = $query->whereIn('category_id',Category::getChildrenIds($category_id));
+            } else {
+                $query = $query->where('category_id',$category_id);
+            }
         }
         switch ($orderBy) {
             case 1:

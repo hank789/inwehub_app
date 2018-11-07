@@ -120,6 +120,8 @@ class ReviewSubmissions extends Command
                             'img' => []
                         ]
                     ]);
+                    $submission->created_at = date('Y-m-d H:i:s',strtotime($item['datetime']));
+                    $submission->save();
                     Tag::multiSaveByIds($tag->id,$submission);
                     if ($submission->status == 1) {
                         dispatch(new NewSubmissionJob($submission->id,true,'g2点评数据；'));
