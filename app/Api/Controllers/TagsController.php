@@ -223,10 +223,10 @@ class TagsController extends Controller {
     //获取产品分类列表
     public function getProductCategories(Request $request) {
         $parent_id = $request->input('parent_id',0);
-        $list = Cache::get('product_categories_list_'.$parent_id);
+        $list = Cache::get('tags:product_categories_list_'.$parent_id);
         if (!$list) {
             $list = Category::getProductCategories($parent_id);
-            Cache::forever('product_categories_list_'.$parent_id,$list);
+            Cache::forever('tags:product_categories_list_'.$parent_id,$list);
         }
         return self::createJsonData(true,$list);
     }

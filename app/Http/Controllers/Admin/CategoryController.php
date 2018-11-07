@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Logic\TagsLogic;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -60,6 +61,7 @@ class CategoryController extends AdminController
             $parent->save();
         }
         Category::create($formData);
+        TagsLogic::delCache();
         return $this->success(route('admin.category.index'),'分类添加成功');
     }
 
@@ -118,6 +120,7 @@ class CategoryController extends AdminController
                 $oldParent->save();
             }
         }
+        TagsLogic::delCache();
         return $this->success(route('admin.category.index'),'分类添加成功');
 
 
@@ -132,6 +135,7 @@ class CategoryController extends AdminController
     public function destroy(Request $request)
     {
         Category::destroy($request->input('ids'));
+        TagsLogic::delCache();
         return $this->success(route('admin.category.index'),'分类删除成功');
     }
 }
