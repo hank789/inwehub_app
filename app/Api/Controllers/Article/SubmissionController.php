@@ -205,8 +205,8 @@ class SubmissionController extends Controller {
                 Tag::multiAddByName($newTagString,$submission);
             }
             UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
-            if ($data['author_identity']) {
-                UserTag::multiIncrement($user->id,[Tag::find($data['author_identity'])],'role');
+            if ($request->input('identity')) {
+                UserTag::multiIncrement($user->id,[Tag::find($request->input('identity'))],'role');
             }
             if ($submission->status == 1) {
                 $this->dispatch((new NewSubmissionJob($submission->id)));
