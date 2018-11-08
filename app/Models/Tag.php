@@ -304,7 +304,7 @@ class Tag extends Model
     public function relationReviews($pageSize=25)
     {
         $return = [];
-        $related_tags = self::Where('parent_id','=',$this->parent_id)
+        $related_tags = self::Where('category_id','=',$this->category_id)
             ->orderBy('reviews','desc')->take($pageSize)->get();
         foreach ($related_tags as $related_tag) {
             $reviewInfo = Tag::getReviewInfo($related_tag->id);
