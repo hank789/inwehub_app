@@ -87,7 +87,7 @@
                                                         <a class="btn btn-default btn-sm btn-setveriy" data-toggle="tooltip" title="{{ $tag->status ? '设为待审核':'审核成功' }}" data-title="{{ $tag->status ? '设为待审核':'审核成功' }}" data-source_id = "{{ $tag->id }}"><i class="fa {{ $tag->status ? 'fa-lock':'fa-check-square-o' }}"></i></a>
                                                     @endif
                                                     <a class="btn btn-default" href="{{ route('admin.review.submission.create',['id'=>$tag->tag_id]) }}" data-toggle="tooltip" title="添加点评"><i class="fa fa-plus"></i></a>
-                                                    <a class="btn btn-default" href="{{ route('admin.review.product.edit',['id'=>$tag->tag_id,'cid'=>$tag->category_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.review.product.edit',['id'=>$tag->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                         <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除产品" data-source_id = "{{ $tag->id }}"><i class="fa fa-trash-o"></i></a>
                                                 </div>
                                             </td>

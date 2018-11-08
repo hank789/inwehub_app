@@ -178,10 +178,10 @@ Route::resource('tag', 'TagController',['except' => ['show','destroy'],'as'=>'ad
 Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
     Route::get('product/index',['as'=>'admin.review.product.index','uses'=>'ProductController@index']);
     Route::get('product/create',['as'=>'admin.review.product.create','uses'=>'ProductController@create']);
-    Route::get('product/edit/{id}/{cid}',['as'=>'admin.review.product.edit','uses'=>'ProductController@edit'])->where(['id'=>'[0-9]+']);
+    Route::get('product/edit/{id}',['as'=>'admin.review.product.edit','uses'=>'ProductController@edit'])->where(['id'=>'[0-9]+']);
     Route::post('product/store',['as'=>'admin.review.product.store','uses'=>'ProductController@store']);
     Route::post('product/destroy',['as'=>'admin.review.product.destroy','uses'=>'ProductController@destroy']);
-    Route::put('product/update/{id}/{cid}',['as'=>'admin.review.product.update','uses'=>'ProductController@update'])->where(['id'=>'[0-9]+']);
+    Route::put('product/update/{id}',['as'=>'admin.review.product.update','uses'=>'ProductController@update'])->where(['id'=>'[0-9]+']);
     Route::post('product/setveriy',['as'=>'admin.review.product.setveriy','uses'=>'ProductController@setVeriy']);
 
     Route::get('submission/index',['as'=>'admin.review.submission.index','uses'=>'SubmissionController@index']);

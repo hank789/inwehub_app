@@ -126,9 +126,9 @@ class ProductController extends AdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id,$cid)
+    public function edit($id)
     {
-        $tag = TagCategoryRel::where('tag_id',$id)->where('category_id',$cid)->first();
+        $tag = TagCategoryRel::find($id);
         if(!$tag){
            abort(404);
         }
@@ -143,14 +143,15 @@ class ProductController extends AdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id, $cid)
+    public function update(Request $request, $id)
     {
         $request->flash();
-        $tag = Tag::find($id);
-        if(!$tag){
+        $tagRel = TagCategoryRel::find($id);
+        if(!$tagRel){
             return $this->error(route('admin.review.product.index'),'产品不存在，请核实');
         }
-        $this->validateRules['name'] = 'required|max:128|unique:tags,name,'.$id;
+        $tag = Tag::find($tagRel->tag_id);
+        $this->validateRules['name'] = 'required|max:128|unique:tags,name,'.$tag->id;
         $this->validate($request,$this->validateRules);
         $tag->name = $request->input('name');
         $tag->summary = $request->input('summary');
@@ -168,7 +169,7 @@ class ProductController extends AdminController
         $delete = true;
         foreach ($category_ids as $category_id) {
             if ($category_id<=0) continue;
-            if ($category_id == $cid) $delete = false;
+            if ($category_id == $id) $delete = false;
 
             $newRel = TagCategoryRel::firstOrCreate([
                 'tag_id' => $tag->id,
@@ -185,7 +186,7 @@ class ProductController extends AdminController
             }
         }
         if ($delete) {
-            TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$cid)->where('reviews',0)->delete();
+            TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$id)->where('reviews',0)->delete();
         }
         TagsLogic::delCache();
         return $this->success(url()->previous(),'产品修改成功');
