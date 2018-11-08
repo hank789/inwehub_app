@@ -174,7 +174,7 @@ class TagsController extends Controller {
                 $query = $query->orderBy('reviews','desc');
                 break;
             default:
-                $query = $query->orderBy('review_average_rate','desc');
+                $query = $query->orderBy('id','desc');
                 break;
         }
         $tags = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
