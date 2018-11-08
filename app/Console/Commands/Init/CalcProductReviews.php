@@ -47,7 +47,9 @@ class CalcProductReviews extends Command
             $count = 0;
             $rates = 0;
             foreach ($submissions as $submission) {
-                $this->info($submission->data['category_ids']);
+                if (!is_array($submission->data['category_ids'])) {
+                    $this->info($submission->id);
+                }
                 if (is_array($submission->data['category_ids']) && in_array($tagRel->category_id,$submission->data['category_ids'])) {
                     $count++;
                     $rates+=$submission->rate_star;

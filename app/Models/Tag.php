@@ -325,8 +325,8 @@ class Tag extends Model
 
     public static function getReviewInfo($id) {
         $tag = [];
-        $tag['review_count'] = Submission::where('category_id',$id)->count();
-        $sumRate = Submission::where('category_id',$id)->sum('rate_star');
+        $tag['review_count'] = Submission::where('category_id',$id)->where('status',1)->count();
+        $sumRate = Submission::where('category_id',$id)->where('status',1)->sum('rate_star');
         $tag['review_average_rate'] = $tag['review_count']?bcdiv($sumRate,$tag['review_count'],1):0;
         $tag['review_average_rate'] = floatval($tag['review_average_rate']);
         return $tag;
