@@ -43,7 +43,7 @@ class CalcProductReviews extends Command
         $tagRels = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->get();
         $tagIds = [];
         foreach ($tagRels as $tagRel) {
-            $submissions = Submission::where('category_id',$tagRel->category_id)->get();
+            $submissions = Submission::where('category_id',$tagRel->tag_id)->get();
             $count = 0;
             $rates = 0;
             foreach ($submissions as $submission) {
