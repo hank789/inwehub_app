@@ -167,24 +167,27 @@ class ProductController extends AdminController
         $tag->save();
         $category_ids = $request->input('category_id');
         $delete = true;
-        foreach ($category_ids as $category_id) {
-            if ($category_id<=0) continue;
-            if ($category_id == $id) $delete = false;
+        if ($category_ids) {
+            foreach ($category_ids as $category_id) {
+                if ($category_id<=0) continue;
+                if ($category_id == $id) $delete = false;
 
-            $newRel = TagCategoryRel::firstOrCreate([
-                'tag_id' => $tag->id,
-                'category_id' => $category_id
-            ],[
-                'tag_id' => $tag->id,
-                'category_id' => $category_id,
-                'type' => TagCategoryRel::TYPE_REVIEW,
-                'status' => $request->input('status',1)
-            ]);
-            if ($newRel->status != $request->input('status',1)) {
-                $newRel->status = $request->input('status',1);
-                $newRel->save();
+                $newRel = TagCategoryRel::firstOrCreate([
+                    'tag_id' => $tag->id,
+                    'category_id' => $category_id
+                ],[
+                    'tag_id' => $tag->id,
+                    'category_id' => $category_id,
+                    'type' => TagCategoryRel::TYPE_REVIEW,
+                    'status' => $request->input('status',1)
+                ]);
+                if ($newRel->status != $request->input('status',1)) {
+                    $newRel->status = $request->input('status',1);
+                    $newRel->save();
+                }
             }
         }
+
         if ($delete) {
             TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$id)->where('reviews',0)->delete();
         }
