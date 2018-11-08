@@ -58,18 +58,24 @@ class Test extends Command
      */
     public function handle()
     {
-        $submissions = Submission::where('type','review')->get();
-        foreach ($submissions as $submission) {
-            if (str_contains($submission->title,"< BR>")) {
-                $title = str_replace("”","",$submission->title);
-                $title = str_replace("“","",$title);
-                $title = str_replace("“< BR>","\n",$title);
-                $title = str_replace("< BR>","\n",$title);
-                $title = str_replace("amp;","",$title);
-                $submission->title = $title;
-                $submission->save();
+        $page = 1;
+        $submissions = Submission::where('type','review')->simplePaginate(100,['*'],'page',$page);
+        while ($submissions->count() > 0) {
+            foreach ($submissions as $submission) {
+                if (str_contains($submission->title,"< BR>")) {
+                    $title = str_replace("”","",$submission->title);
+                    $title = str_replace("“","",$title);
+                    $title = str_replace("“< BR>","\n",$title);
+                    $title = str_replace("< BR>","\n",$title);
+                    $title = str_replace("amp;","",$title);
+                    $submission->title = $title;
+                    $submission->save();
+                }
             }
+            $page++;
+            $submissions = Submission::where('type','review')->simplePaginate(100,['*'],'page',$page);
         }
+
         return;
         $this->ql = QueryList::getInstance();
         $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
