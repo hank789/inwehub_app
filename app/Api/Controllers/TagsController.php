@@ -141,7 +141,7 @@ class TagsController extends Controller {
         $user = $request->user();
 
         $query = Submission::where('category_id',$tag->id)->where('status',1);
-        $submissions = $query->orderBy('is_recommend','desc')->orderBy('id','desc')->simplePaginate($perPage);
+        $submissions = $query->orderBy('is_recommend','desc')->orderBy('id','desc')->paginate($perPage);
         $return = $submissions->toArray();
         $list = [];
         foreach ($submissions as $submission) {
