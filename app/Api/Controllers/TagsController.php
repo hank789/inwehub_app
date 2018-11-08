@@ -173,6 +173,9 @@ class TagsController extends Controller {
             case 2:
                 $query = $query->orderBy('reviews','desc');
                 break;
+            default:
+                $query = $query->orderBy('review_average_rate','desc');
+                break;
         }
         $tags = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $tags->toArray();
@@ -203,7 +206,7 @@ class TagsController extends Controller {
             $tag = Tag::find($submission->category_id);
             $list[] = [
                 'id' => $submission->id,
-                'title' => $submission->title,
+                'title' => strip_tags($submission->title),
                 'rate_star' => $submission->rate_star,
                 'created_at' => (string)$submission->created_at,
                 'slug' => $submission->slug,
