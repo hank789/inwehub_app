@@ -93,6 +93,9 @@ class SubmissionController extends Controller {
             $data = $this->uploadImgs($request->input('photos'));
             $data['category_ids'] = $request->input('category_ids');
             $data['author_identity'] = $request->input('identity');
+            if (!is_array($data['author_identity'])) {
+                $data['author_identity'] = [$data['author_identity']];
+            }
             $category_id = $tagString;
         }
 
