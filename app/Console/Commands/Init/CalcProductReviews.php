@@ -40,14 +40,15 @@ class CalcProductReviews extends Command
      */
     public function handle()
     {
-        $tagRels = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->get();
+        $tagRels = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->get();
         $tagIds = [];
         foreach ($tagRels as $tagRel) {
-            $submissions = Submission::where('category_id',$tagRel->tag_id)->get();
+            $submissions = Submission::where('category_id',$tagRel->tag_id)->where('status',1)->get();
             $count = 0;
             $rates = 0;
             foreach ($submissions as $submission) {
-                if (in_array($tagRel->category_id,$submission->data['category_ids'])) {
+                $this->info($submission->data['category_ids']);
+                if (is_array($submission->data['category_ids']) && in_array($tagRel->category_id,$submission->data['category_ids'])) {
                     $count++;
                     $rates+=$submission->rate_star;
                 }
