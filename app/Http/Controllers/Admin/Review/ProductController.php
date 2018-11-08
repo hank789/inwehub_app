@@ -189,7 +189,7 @@ class ProductController extends AdminController
         }
 
         if ($delete) {
-            TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$id)->where('reviews',0)->delete();
+            TagCategoryRel::where('id',$id)->where('reviews',0)->delete();
         }
         TagsLogic::delCache();
         return $this->success(url()->previous(),'产品修改成功');
