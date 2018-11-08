@@ -515,13 +515,12 @@ class SubmissionController extends Controller {
         $return += $submission->getSupportTypeTip();
         $return['support_percent'] = $submission->getSupportPercent();
         $return['tags'] = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
-        foreach ($return['tags'] as &$tag) {
-            $tag['review_count'] = 0;
-            $tag['review_average_rate'] = 0;
+        foreach ($return['tags'] as $key=>$tag) {
+            $return['tags'][$key]['review_average_rate'] = 0;
             if (isset($submission->data['category_ids'])) {
                 $reviewInfo = Tag::getReviewInfo($tag['id']);
-                $tag['review_count'] = $reviewInfo['review_count'];
-                $tag['review_average_rate'] = $reviewInfo['review_average_rate'];
+                $return['tags'][$key]['reviews'] = $reviewInfo['review_count'];
+                $return['tags'][$key]['review_average_rate'] = $reviewInfo['review_average_rate'];
             }
         }
         $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;

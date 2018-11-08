@@ -27,6 +27,8 @@ class ModifySubmissionTable extends Migration
             $table->integer('review_rate_sum')->after('category_id')->default(0);
             $table->float('review_average_rate')->after('category_id')->default(0);
             $table->integer('status')->after('category_id')->index()->default(1);
+            $table->dateTime('updated_at')->after('category_id')->nullable();
+
         });
     }
 
