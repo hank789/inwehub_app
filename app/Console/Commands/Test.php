@@ -62,16 +62,17 @@ class Test extends Command
         $submissions = Submission::where('type','review')->simplePaginate(100,['*'],'page',$page);
         while ($submissions->count() > 0) {
             foreach ($submissions as $submission) {
-                if (str_contains($submission->title,"< BR>")) {
-                    $title = str_replace("”","",$submission->title);
-                    $title = str_replace("“","",$title);
-                    $title = str_replace("“< BR>","\n",$title);
-                    $title = str_replace("< BR>","\n",$title);
-                    $title = str_replace("amp;","",$title);
+                $title = str_replace("”","",$submission->title);
+                $title = str_replace("“","",$title);
+                $title = str_replace("“< BR>","\n",$title);
+                $title = str_replace("< BR>","\n",$title);
+                $title = str_replace("amp;","",$title);
+                if ($title != $submission->title) {
                     $submission->title = $title;
                     $submission->save();
                 }
             }
+            $this->info($page);
             $page++;
             $submissions = Submission::where('type','review')->simplePaginate(100,['*'],'page',$page);
         }
