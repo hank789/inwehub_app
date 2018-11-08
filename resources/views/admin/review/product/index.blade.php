@@ -70,7 +70,7 @@
                                         <th>操作</th>
                                     </tr>
                                     @foreach($tags as $tag)
-                                        <tr>
+                                        <tr id="submission_{{ $tag->id }}">
                                             <td>{{ $tag->tag_id }}</td>
                                             <td> @if($tag->logo)
                                                     <img src="{{ $tag->logo }}"  style="width: 27px;"/>
@@ -88,6 +88,7 @@
                                                     @endif
                                                     <a class="btn btn-default" href="{{ route('admin.review.submission.create',['id'=>$tag->tag_id]) }}" data-toggle="tooltip" title="添加点评"><i class="fa fa-plus"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.review.product.edit',['id'=>$tag->tag_id,'cid'=>$tag->category_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                        <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除产品" data-source_id = "{{ $tag->id }}"><i class="fa fa-trash-o"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -142,6 +143,20 @@
                     follow_btn.html('<i class="fa fa-check-square-o"></i>');
                     follow_btn.data('title','审核成功');
                 }
+            });
+        });
+        $(".btn-delete").click(function(){
+            if(!confirm('确认删除该产品？')){
+                return false;
+            }
+            $(this).button('loading');
+            var follow_btn = $(this);
+            var source_id = $(this).data('source_id');
+
+            $.post('/admin/review/product/destroy',{ids: source_id},function(msg){
+                follow_btn.removeClass('disabled');
+                follow_btn.removeAttr('disabled');
+                $("#submission_" + source_id).css('display','none');
             });
         });
     </script>
