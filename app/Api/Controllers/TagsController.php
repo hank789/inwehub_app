@@ -91,13 +91,14 @@ class TagsController extends Controller {
         $data['review_count'] = $reviewInfo['review_count'];
         $data['review_average_rate'] = $reviewInfo['review_average_rate'];
         $data['related_tags'] = $tag->relationReviews(4);
-        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
+        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->orderBy('review_average_rate','desc')->get();
         foreach ($categoryRels as $key=>$categoryRel) {
             $category = Category::find($categoryRel->category_id);
+            $rate = TagCategoryRel::where('category_id',$category->id)->where('review_average_rate','>',$categoryRel->review_average_rate)->count();
             $data['categories'][] = [
                 'id' => $category->id,
                 'name' => $category->name,
-                'rate' => $key+1
+                'rate' => $rate?:1
             ];
         }
         $data['vendor'] = '';
