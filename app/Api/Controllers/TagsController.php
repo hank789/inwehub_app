@@ -180,11 +180,13 @@ class TagsController extends Controller {
         $tags = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $tags->toArray();
         $list = [];
+        $used = [];
         foreach ($tags as $tag) {
-            if (!isset($list[$tag->tag_id])) {
+            if (!isset($used[$tag->tag_id])) {
                 $model = Tag::find($tag->tag_id);
                 $info = Tag::getReviewInfo($model->id);
-                $list[$tag->tag_id] = [
+                $used[$tag->tag_id] = $tag->tag_id;
+                $list[] = [
                     'id' => $model->id,
                     'name' => $model->name,
                     'logo' => $model->logo,
