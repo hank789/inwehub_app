@@ -88,11 +88,16 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 $body = $source->getContentText();
                 break;
             case 'App\Models\Submission':
+                $titleType = $source->type == 'link' ? '文章':'分享';
+                $url = '/c/'.$source->category_id.'/'.$source->slug;
+                if ($source->type == 'review') {
+                    $titleType = '点评';
+                    $url = '/dianping/comment/'.$source->slug;
+                }
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_READ;
-                $title = $this->support->user->name.'赞了您的'.($source->type == 'link' ? '文章':'分享');
+                $title = $this->support->user->name.'赞了您的'.$titleType;
                 $avatar = $this->support->user->avatar;
                 $body = $source->formatTitle();
-                $url = '/c/'.$source->category_id.'/'.$source->slug;
                 break;
             case 'App\Models\Comment':
                 $answer = $source->source;
@@ -138,10 +143,16 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 $body = $source->getContentText();
                 break;
             case 'App\Models\Submission':
-                $object_type = 'readhub_submission_upvoted';
-                $title = $this->support->user->name.'赞了您的'.($source->type == 'link' ? '文章':'分享');
-                $body = $source->formatTitle();
+                $titleType = $source->type == 'link' ? '文章':'分享';
                 $object_id = '/c/'.$source->category_id.'/'.$source->slug;
+                if ($source->type == 'review') {
+                    $titleType = '点评';
+                    $object_id = '/dianping/comment/'.$source->slug;
+                }
+                $object_type = 'readhub_submission_upvoted';
+                $title = $this->support->user->name.'赞了您的'.$titleType;
+                $body = $source->formatTitle();
+
                 break;
             case 'App\Models\Comment':
                 $answer = $source->source;
