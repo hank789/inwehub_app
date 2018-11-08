@@ -181,15 +181,17 @@ class TagsController extends Controller {
         $return = $tags->toArray();
         $list = [];
         foreach ($tags as $tag) {
-            $model = Tag::find($tag->tag_id);
-            $info = Tag::getReviewInfo($model->id);
-            $list[] = [
-                'id' => $model->id,
-                'name' => $model->name,
-                'logo' => $model->logo,
-                'review_count' => $info['review_count'],
-                'review_average_rate' => $info['review_average_rate']
-            ];
+            if (!isset($list[$tag->tag_id])) {
+                $model = Tag::find($tag->tag_id);
+                $info = Tag::getReviewInfo($model->id);
+                $list[$tag->tag_id] = [
+                    'id' => $model->id,
+                    'name' => $model->name,
+                    'logo' => $model->logo,
+                    'review_count' => $info['review_count'],
+                    'review_average_rate' => $info['review_average_rate']
+                ];
+            }
         }
         $return['data'] = $list;
         return self::createJsonData(true, $return);
