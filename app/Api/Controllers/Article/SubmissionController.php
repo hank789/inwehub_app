@@ -87,7 +87,7 @@ class SubmissionController extends Controller {
                 'title' => 'required|between:1,6000',
                 'category_ids' => 'required',
                 'tags' => 'required',
-                'rate_star' => 'required',
+                'rate_star' => 'required|min:1',
                 'identity' => 'required'
             ]);
             $data = $this->uploadImgs($request->input('photos'));
