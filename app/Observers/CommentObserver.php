@@ -157,13 +157,19 @@ class CommentObserver implements ShouldQueue {
 
                 $user = $comment->user;
                 $notifyUids = [];
+                $notifyUrl = '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id;
+                $notifyType = $submission->type == 'link' ? '文章':'分享';
+                if ($submission->type == 'review') {
+                    $notifyUrl = '/dianping/comment/'.$submission->slug.'?comment='.$comment->id;
+                    $notifyType = '点评';
+                }
                 if ($comment->parent_id > 0 && $comment->parent->user_id != $comment->user_id) {
                     $parent_comment = $comment->parent;
                     $notifyUids[$parent_comment->user_id] = $parent_comment->user_id;
                     $notifyUser = User::find($parent_comment->user_id);
                     $notifyUser->notify(new CommentReplied($parent_comment->user_id,
                         [
-                            'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
+                            'url'    => $notifyUrl,
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
                             'title'  => $user->name.'回复了你的评论',
@@ -179,10 +185,10 @@ class CommentObserver implements ShouldQueue {
                     $notifyUser = User::find($submission->user_id);
                     $notifyUser->notify(new SubmissionReplied($submission->user_id,
                         [
-                            'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
+                            'url'    => $notifyUrl,
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
-                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'分享'),
+                            'title'  => $user->name.'回复了'.$notifyType,
                             'comment_id' => $comment->id,
                             'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
@@ -196,10 +202,10 @@ class CommentObserver implements ShouldQueue {
                     $notifyUser = User::find($submission->author_id);
                     $notifyUser->notify(new SubmissionReplied($submission->author_id,
                         [
-                            'url'    => '/c/'.$submission->category_id.'/'.$submission->slug.'?comment='.$comment->id,
+                            'url'    => $notifyUrl,
                             'name'   => $user->name,
                             'avatar' => $user->avatar,
-                            'title'  => $user->name.'回复了'.($submission->type == 'link' ? '文章':'分享'),
+                            'title'  => $user->name.'回复了'.$notifyType,
                             'comment_id' => $comment->id,
                             'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
