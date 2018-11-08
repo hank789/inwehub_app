@@ -171,7 +171,9 @@ class SystemController extends Controller {
 
     public function appVersion(Request $request){
         $app_uuid = $request->input('app_uuid');
-        if($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,60 * 60 * 2,1)){
+        $current_version = $request->input('current_version');
+        $last = AppVersion::where('status',1)->orderBy('app_version','desc')->first();
+        if($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,60 * 60 * 2,1) && $current_version==$last->app_version){
             return self::createJsonData(true,[
                 'app_version'           => 0,
                 'is_ios_force'          => 0,
@@ -182,7 +184,7 @@ class SystemController extends Controller {
                 'android_force_update_url' => ''
             ]);
         }
-        $last = AppVersion::where('status',1)->orderBy('app_version','desc')->first();
+
 
         $ios_force_update_url = 'https://www.pgyer.com/FLBT';
         $android_force_update_url = 'https://www.pgyer.com/mpKs';
