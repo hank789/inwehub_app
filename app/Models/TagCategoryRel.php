@@ -16,12 +16,20 @@ class TagCategoryRel extends Model
 {
     protected $table = 'tag_category_rel';
 
-    protected $fillable = ['category_id', 'status','tag_id', 'reviews', 'type','review_average_rate','review_rate_sum'];
+    protected $fillable = ['category_id', 'status','tag_id', 'reviews', 'type','review_average_rate','review_rate_sum','updated_at'];
 
     public $timestamps = false;
 
     const TYPE_DEFAULT = 0;
     const TYPE_REVIEW = 1;
+
+    public static function boot() {
+        parent::boot();
+
+        static::saving(function($tag){
+            $tag->updated_at = date('Y-m-d H:i:s');
+        });
+    }
 
     public function category()
     {
