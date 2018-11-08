@@ -120,10 +120,15 @@ class ItJuZiCompany extends Command {
                         $tag = Tag::where('name',$item['name'])->first();
                         $category_id = isset($categories[$item['sub_scope']])?$categories[$item['sub_scope']]:115;
                         if(!$tag) {
+                            try {
+                                $logo = saveImgToCdn($item['logo'],'tags');
+                            } catch (\Exception $e) {
+                                $logo = '';
+                            }
                             $tag = Tag::create([
                                 'name' => $item['name'],
                                 'category_id' => $category_id,
-                                'logo' => saveImgToCdn($item['logo'],'tags'),
+                                'logo' => $logo,
                                 'summary' => $item['des'],
                                 'description' => $item['slogan'],
                                 'parent_id' => 0,
