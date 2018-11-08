@@ -46,6 +46,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\ItJuZi::class,
         Commands\Scraper\SapNews::class,
         Commands\Scraper\Indeed::class,
+        Commands\Scraper\DoubanUser::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,

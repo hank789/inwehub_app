@@ -240,8 +240,8 @@ class ProductController extends AdminController
      */
     public function destroy(Request $request)
     {
-        $tagIds = $request->input('id');
-        Tag::destroy($tagIds);
+        $tagIds = $request->input('ids');
+        TagCategoryRel::where('status',0)->destroy($tagIds);
         return $this->success(url()->previous(),'产品删除成功');
     }
 
