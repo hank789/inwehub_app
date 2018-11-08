@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box box-default">
-                    <form role="form" name="tagForm" id="tag_form" method="POST" enctype="multipart/form-data" action="{{ route('admin.review.product.update',['id'=>$tag->tag_id,'cid'=>$tag->category_id]) }}">
+                    <form role="form" name="tagForm" id="tag_form" method="POST" enctype="multipart/form-data" action="{{ route('admin.review.product.update',['id'=>$tag->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" name="_token" id="editor_token" value="{{ csrf_token() }}">
                         <div class="box-body">

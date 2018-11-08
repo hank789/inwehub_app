@@ -171,7 +171,7 @@ class SystemController extends Controller {
 
     public function appVersion(Request $request){
         $app_uuid = $request->input('app_uuid');
-        if($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,5,1)){
+        if($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,60 * 60 * 2,1)){
             return self::createJsonData(true,[
                 'app_version'           => 0,
                 'is_ios_force'          => 0,
@@ -196,7 +196,11 @@ class SystemController extends Controller {
         $app_version = $last->app_version??'1.0.0';
         $is_ios_force = $last->is_ios_force??0;
         $is_android_force = $last->is_android_force??0;
-        $update_msg = $last->update_msg??'1、大额提现t+1到账。\n2、变现进度做了优化。\n3、修复了一些bug。';
+        $update_msg = '';
+        $msgArr = explode("\n",$last->update_msg);
+        foreach ($msgArr as $item) {
+            $update_msg = $update_msg.'<p style="text-align:left">'.$item.'</p>';
+        }
         $package_url = $last->package_url??'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/app_version/com.inwehub.InwehubApp.wgt';
         return self::createJsonData(true,[
             'app_version'           => $app_version,
