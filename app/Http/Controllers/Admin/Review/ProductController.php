@@ -17,7 +17,7 @@ class ProductController extends AdminController
 {
     /*权限验证规则*/
     protected $validateRules = [
-        'name' => 'required|max:128|unique:tags',
+        'name' => 'required|max:128',
         'url' => 'sometimes|max:128',
         'summary' => 'sometimes|max:255',
         'description' => 'sometimes|max:65535',
@@ -95,15 +95,21 @@ class ProductController extends AdminController
         $category_ids = $request->input('category_id');
         unset($data['category_id']);
         $data['category_id'] = $category_ids[0];
-        $tag = Tag::create($data);
+        $tag = Tag::where('name',$request->input('name'))->first();
+        if (!$tag) {
+            $tag = Tag::create($data);
+        }
         foreach ($category_ids as $category_id) {
             if ($category_id<=0) continue;
-            TagCategoryRel::create([
-                'tag_id' => $tag->id,
-                'category_id' => $category_id,
-                'type' => TagCategoryRel::TYPE_REVIEW,
-                'status' => $request->input('status',1)
-            ]);
+            $rel = TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$category_id)->first();
+            if (!$rel) {
+                TagCategoryRel::create([
+                    'tag_id' => $tag->id,
+                    'category_id' => $category_id,
+                    'type' => TagCategoryRel::TYPE_REVIEW,
+                    'status' => $request->input('status',1)
+                ]);
+            }
         }
         TagsLogic::delCache();
         return $this->success(route('admin.review.product.index'),'产品创建成功');
@@ -187,12 +193,13 @@ class ProductController extends AdminController
                 }
             }
         }
-
+        $returnUrl = url()->previous();
         if ($delete) {
             TagCategoryRel::where('id',$id)->where('reviews',0)->delete();
+            $returnUrl = route('admin.review.product.index');
         }
         TagsLogic::delCache();
-        return $this->success(url()->previous(),'产品修改成功');
+        return $this->success($returnUrl,'产品修改成功');
     }
 
     /*修改分类*/
