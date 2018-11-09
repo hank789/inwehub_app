@@ -45,6 +45,11 @@ class TagsController extends Controller {
             $user = new \stdClass();
             $user->id = 0;
             $user->name = '游客';
+            $user->mobile = '';
+        }
+
+        if ($tag_type == 8 && empty($user->mobile)) {
+            throw new ApiException(ApiException::TOKEN_INVALID);
         }
 
         $word = $request->input('word');
