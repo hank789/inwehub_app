@@ -107,6 +107,11 @@ class SubmissionController extends AdminController
         }
         $submission->data = $object_data;
         $submission->hide = $request->input('hide',0);
+        $newUserId = $request->input('user_id');
+        if ($newUserId && $newUserId != $submission->user_id) {
+            $submission->user_id = $newUserId;
+        }
+
         $submission->save();
 
         $tagString = trim($request->input('tags'));
