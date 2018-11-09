@@ -33,8 +33,6 @@ class RefreshCookieTask extends Command
      */
     public function handle()
     {
-        $limit = RateLimiter::instance()->getValue('scraper_mp_freq',date('Y-m-d'));
-        if ($limit) return;
         $spider = new MpSpider();
         $spider->refreshCookie();
     }

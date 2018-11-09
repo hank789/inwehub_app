@@ -35,7 +35,7 @@ class DailyReadReport extends Command
     public function handle()
     {
         $data = MixpanelService::instance()->request(['events'],[
-            'event' => ['inwehub:discover_detail','inwehub:ask-offer-answers','inwehub:ask-offer-detail','inwehub:read_page_detail'],
+            'event' => ['inwehub:discover_detail','inwehub:ask-offer-answers','inwehub:ask-offer-detail','inwehub:read_page_detail','inwehub:dianping-add','inwehub:ask','inwehub:discover_add'],
             'type'  => 'general',
             'unit'  => 'day',
             'interval' => 1
@@ -44,6 +44,7 @@ class DailyReadReport extends Command
         $current = $data['data']['values']["inwehub:discover_detail"][$today] + $data['data']['values']["inwehub:ask-offer-answers"][$today] +
             $data['data']['values']["inwehub:ask-offer-detail"][$today] + $data['data']['values']["inwehub:read_page_detail"][$today];
         event(new OperationNotify('今日总阅读数：'.$current));
+        event(new OperationNotify('今日发布页面打开数:'.$data['data']['values']["inwehub:ask"][$today].'(提问);'.$data['data']['values']["inwehub:discover_add"][$today].'(分享);'.$data['data']['values']["inwehub:dianping-add"][$today].'(点评)'));
     }
 
 }
