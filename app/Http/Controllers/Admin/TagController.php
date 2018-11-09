@@ -18,7 +18,7 @@ class TagController extends AdminController
     protected $validateRules = [
         'name' => 'required|max:128|unique:tags',
         'url' => 'sometimes|max:128',
-        'summary' => 'sometimes|max:255',
+        'summary' => 'sometimes',
         'description' => 'sometimes|max:65535',
     ];
 
