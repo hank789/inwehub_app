@@ -155,7 +155,7 @@ class TagsController extends Controller {
     public function productList(Request $request) {
         $category_id = $request->input('category_id',0);
         $orderBy = $request->input('orderBy',1);
-        $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
+        $query = TagCategoryRel::select(['tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
         if ($category_id) {
             $category = Category::find($category_id);
             if ($category->grade == 1) {
@@ -177,23 +177,19 @@ class TagsController extends Controller {
                 $query = $query->orderBy('updated_at','desc');
                 break;
         }
-        $tags = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
+        $tags = $query->distinct()->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $tags->toArray();
         $list = [];
-        $used = [];
         foreach ($tags as $tag) {
-            if (!isset($used[$tag->tag_id])) {
-                $model = Tag::find($tag->tag_id);
-                $info = Tag::getReviewInfo($model->id);
-                $used[$tag->tag_id] = $tag->tag_id;
-                $list[] = [
-                    'id' => $model->id,
-                    'name' => $model->name,
-                    'logo' => $model->logo,
-                    'review_count' => $info['review_count'],
-                    'review_average_rate' => $info['review_average_rate']
-                ];
-            }
+            $model = Tag::find($tag->tag_id);
+            $info = Tag::getReviewInfo($model->id);
+            $list[] = [
+                'id' => $model->id,
+                'name' => $model->name,
+                'logo' => $model->logo,
+                'review_count' => $info['review_count'],
+                'review_average_rate' => $info['review_average_rate']
+            ];
         }
         $return['data'] = $list;
         return self::createJsonData(true, $return);
