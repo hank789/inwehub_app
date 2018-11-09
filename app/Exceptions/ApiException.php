@@ -131,8 +131,8 @@ class ApiException extends Exception
 
     public static $errorMessages = [
         //全局响应吗
-        self::TOKEN_EXPIRED=>'token已过期',
-        self::TOKEN_INVALID => 'token无效',
+        self::TOKEN_EXPIRED=>'需登录后才能操作',
+        self::TOKEN_INVALID => '需登录后才能操作',
         self::BAD_REQUEST => '非法的请求',
         self::REQUEST_FAIL => '请求失败',
         self::AUTH_FAIL => '验证失败',
