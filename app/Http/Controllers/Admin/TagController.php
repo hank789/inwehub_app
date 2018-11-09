@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Logic\TagsLogic;
+use App\Models\Category;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use Illuminate\Http\Request;
@@ -88,9 +89,11 @@ class TagController extends AdminController
         $tag = Tag::create($data);
         foreach ($request->input('category_id') as $category_id) {
             if ($category_id<=0) continue;
+            $category = Category::find($category_id);
             TagCategoryRel::create([
                 'tag_id' => $tag->id,
-                'category_id' => $category_id
+                'category_id' => $category_id,
+                'type' => $category->type == 'enterprise_review'?TagCategoryRel::TYPE_REVIEW:TagCategoryRel::TYPE_DEFAULT
             ]);
         }
         TagsLogic::delCache();
@@ -156,12 +159,14 @@ class TagController extends AdminController
         TagCategoryRel::where('tag_id',$tag->id)->where('reviews',0)->delete();
         foreach ($request->input('category_id') as $category_id) {
             if ($category_id<=0) continue;
+            $category = Category::find($category_id);
             TagCategoryRel::firstOrCreate([
                 'tag_id' => $tag->id,
                 'category_id' => $category_id
             ],[
                 'tag_id' => $tag->id,
-                'category_id' => $category_id
+                'category_id' => $category_id,
+                'type' => $category->type == 'enterprise_review'?TagCategoryRel::TYPE_REVIEW:TagCategoryRel::TYPE_DEFAULT
             ]);
         }
         TagsLogic::delCache();
