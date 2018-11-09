@@ -98,6 +98,9 @@ class ProductController extends AdminController
         $tag = Tag::where('name',$request->input('name'))->first();
         if (!$tag) {
             $tag = Tag::create($data);
+        } else {
+            unset($data['name']);
+            $tag->update($data);
         }
         foreach ($category_ids as $category_id) {
             if ($category_id<=0) continue;
