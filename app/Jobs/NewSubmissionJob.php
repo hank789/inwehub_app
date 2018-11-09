@@ -91,7 +91,7 @@ class NewSubmissionJob implements ShouldQueue
                 foreach ($submission->data['category_ids'] as $category_id) {
                     $tagC = TagCategoryRel::where('tag_id',$submission->category_id)->where('category_id',$category_id)->first();
                     $tagC->reviews += 1;
-                    $tagC->reviews_rate_sum += $submission->rate_star;
+                    $tagC->review_rate_sum += $submission->rate_star;
                     $tagC->review_average_rate = bcdiv($tagC->reviews_rate_sum,$tagC->reviews,1);
                     $tagC->save();
                 }
@@ -147,9 +147,10 @@ class NewSubmissionJob implements ShouldQueue
                 if ($attention_user) $attention_user->notify((new FollowedUserNewSubmission($attention_uid,$submission))->delay(Carbon::now()->addMinutes(3)));
             }
             $targetName = '在圈子['.$group->name.']';
+
+            $submission->setKeywordTags();
         }
 
-        $submission->setKeywordTags();
         $submission->calculationRate();
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         $channel = config('slack.ask_activity_channel');
