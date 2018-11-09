@@ -304,7 +304,8 @@ class Tag extends Model
     public function relationReviews($pageSize=25)
     {
         $return = [];
-        $related_tags = TagCategoryRel::Where('category_id','=',$this->category_id)->where('type',TagCategoryRel::TYPE_REVIEW)
+        $category_ids = TagCategoryRel::where('tag_id',$this->id)->pluck('category_id')->toArray();
+        $related_tags = TagCategoryRel::WhereIn('category_id',$category_ids)->where('type',TagCategoryRel::TYPE_REVIEW)
             ->where('tag_id','!=',$this->id)
             ->orderBy('reviews','desc')->take($pageSize)->get();
         foreach ($related_tags as $related_tag) {
