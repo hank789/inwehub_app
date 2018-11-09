@@ -180,7 +180,7 @@ class ProductController extends AdminController
         if ($category_ids) {
             foreach ($category_ids as $category_id) {
                 if ($category_id<=0) continue;
-                if ($category_id == $id) $delete = false;
+                if ($category_id == $tagRel->category_id) $delete = false;
 
                 $newRel = TagCategoryRel::firstOrCreate([
                     'tag_id' => $tag->id,
