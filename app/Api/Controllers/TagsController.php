@@ -1,4 +1,5 @@
 <?php namespace App\Api\Controllers;
+use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Answer;
 use App\Models\Attention;
@@ -17,6 +18,7 @@ use App\Models\UserTag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -26,13 +28,24 @@ use Illuminate\Support\Facades\Config;
 
 class TagsController extends Controller {
 
-    public function load(Request $request){
+    public function load(Request $request, JWTAuth $JWTAuth){
         $validateRules = [
             'tag_type' => 'required|in:1,2,3,4,5,6,8'
         ];
 
         $this->validate($request,$validateRules);
         $tag_type = $request->input('tag_type');
+
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+            if ($tag_type == 8 && empty($user->mobile)) {
+                throw new ApiException(ApiException::USER_NEED_VALID_PHONE);
+            }
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
 
         $word = $request->input('word');
 
