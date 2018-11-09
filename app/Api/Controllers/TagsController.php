@@ -82,7 +82,7 @@ class TagsController extends Controller {
         $validateRules = [
             'tag_name' => 'required'
         ];
-
+        $user = $request->user();
         $this->validate($request,$validateRules);
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
@@ -111,7 +111,7 @@ class TagsController extends Controller {
             ];
         }
         //推荐股问
-        $recommendUsers = UserTag::where('tag_id',$tag->id)->orderBy('articles','desc')->take(5)->get();
+        $recommendUsers = UserTag::where('tag_id',$tag->id)->where('user_id','!=',$user->id)->orderBy('articles','desc')->take(5)->get();
         foreach ($recommendUsers as $recommendUser) {
             $userTags = $recommendUser->user->userTag()->orderBy('articles','desc')->pluck('tag_id');
             $skillTag = Tag::find($userTags[0]);
