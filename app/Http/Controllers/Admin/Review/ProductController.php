@@ -19,7 +19,7 @@ class ProductController extends AdminController
     protected $validateRules = [
         'name' => 'required|max:128',
         'url' => 'sometimes|max:128',
-        'summary' => 'sometimes|max:255',
+        'summary' => 'sometimes',
         'description' => 'sometimes|max:65535',
     ];
 
@@ -175,6 +175,7 @@ class ProductController extends AdminController
         }
         $tag->save();
         $category_ids = $request->input('category_id');
+        $returnUrl = url()->previous();
         $delete = true;
         if ($category_ids) {
             foreach ($category_ids as $category_id) {
@@ -195,11 +196,10 @@ class ProductController extends AdminController
                     $newRel->save();
                 }
             }
-        }
-        $returnUrl = url()->previous();
-        if ($delete) {
-            TagCategoryRel::where('id',$id)->where('reviews',0)->delete();
-            $returnUrl = route('admin.review.product.index');
+            if ($delete) {
+                TagCategoryRel::where('id',$id)->where('reviews',0)->delete();
+                $returnUrl = route('admin.review.product.index');
+            }
         }
         TagsLogic::delCache();
         return $this->success($returnUrl,'产品修改成功');
