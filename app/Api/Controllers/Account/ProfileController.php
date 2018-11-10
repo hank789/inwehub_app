@@ -45,162 +45,166 @@ class ProfileController extends Controller
          * @var User
          */
         $user = $request->user();
+        $data = Cache::get('user_info_'.$user->id);
 
-        $info = [];
-        $info['id'] = $user->id;
-        $info['uuid'] = $user->uuid;
-        $info['name'] = $user->name;
-        $info['realname'] = $user->realname;
-        $info['current_day_signed'] = RateLimiter::instance()->getValue('sign:'.$user->id,date('Ymd'))?1:0;
-        $info['mobile'] = $user->mobile;
-        $info['email'] = $user->email;
-        $info['rc_code'] = $user->rc_code;
-        $info['avatar_url'] = $user->avatar;
-        $info['gender'] = $user->gender;
-        $info['birthday'] = $user->birthday;
-        $info['province']['key'] = $user->province;
-        $info['province']['name'] = CityData::getProvinceName($user->province)?:$user->province;
-        $info['city']['key'] = $user->city;
-        $info['city']['name'] = CityData::getCityName($user->province,$user->city)?:$user->city;
+        if (!$data) {
+            $info = [];
+            $info['id'] = $user->id;
+            $info['uuid'] = $user->uuid;
+            $info['name'] = $user->name;
+            $info['realname'] = $user->realname;
+            $info['current_day_signed'] = RateLimiter::instance()->getValue('sign:'.$user->id,date('Ymd'))?1:0;
+            $info['mobile'] = $user->mobile;
+            $info['email'] = $user->email;
+            $info['rc_code'] = $user->rc_code;
+            $info['avatar_url'] = $user->avatar;
+            $info['gender'] = $user->gender;
+            $info['birthday'] = $user->birthday;
+            $info['province']['key'] = $user->province;
+            $info['province']['name'] = CityData::getProvinceName($user->province)?:$user->province;
+            $info['city']['key'] = $user->city;
+            $info['city']['name'] = CityData::getCityName($user->province,$user->city)?:$user->city;
 
-        $info['hometown_province']['key'] = $user->hometown_province;
-        $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province)?:$user->hometown_province;
-        $info['hometown_city']['key'] = $user->hometown_city;
-        $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city)?:$user->hometown_city;
+            $info['hometown_province']['key'] = $user->hometown_province;
+            $info['hometown_province']['name'] = CityData::getProvinceName($user->hometown_province)?:$user->hometown_province;
+            $info['hometown_city']['key'] = $user->hometown_city;
+            $info['hometown_city']['name'] = CityData::getCityName($user->hometown_province,$user->hometown_city)?:$user->hometown_city;
 
-        $info['company'] = $user->company;
-        $info['title'] = $user->title;
-        $info['description'] = $user->description;
-        $info['status'] = $user->status;
-        $info['address_detail'] = $user->address_detail;
-        $info['industry_tags'] = TagsLogic::formatTags($user->industryTags());
-        if(empty($info['industry_tags'])) $info['industry_tags'] = '';
-        $info['skill_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get());
-        $info['region_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userRegionTag()->pluck('tag_id'))->get());
-        $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
-        $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
-        $info['is_company'] = $user->userData->is_company;
-        $info['company_status'] = $user->userCompany->apply_status??0;
-        $info['show_my_wallet'] = true;
-        if (in_array($user->id,[79,504])) {
-            $info['show_my_wallet'] = false;
-        }
-        $info['show_ios_resume'] = true;
-        if(config('app.env') == 'production'){
-            //ios正在审核,暂时不显示个人名片
-            $info['show_ios_resume'] = true;
-        }
-
-        $info['expert_apply_status'] = 0;
-        $info['expert_apply_tips'] = '点击前往认证';
-        if(!empty($user->authentication)){
-            if($user->authentication->status == 0){
-                $info['expert_apply_status'] = 1;
-                $info['expert_apply_tips'] = '认证处理中!';
-            }elseif($user->authentication->status == 1){
-                $info['expert_apply_status'] = 2;
-                $info['expert_apply_tips'] = '身份已认证!';
-            }else{
-                $info['expert_apply_status'] = 3;
-                $info['expert_apply_tips'] = '认证失败,重新认证';
+            $info['company'] = $user->company;
+            $info['title'] = $user->title;
+            $info['description'] = $user->description;
+            $info['status'] = $user->status;
+            $info['address_detail'] = $user->address_detail;
+            $info['industry_tags'] = TagsLogic::formatTags($user->industryTags());
+            if(empty($info['industry_tags'])) $info['industry_tags'] = '';
+            $info['skill_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get());
+            $info['region_tags'] = TagsLogic::formatTags(Tag::whereIn('id',$user->userRegionTag()->pluck('tag_id'))->get());
+            $info['is_expert'] = ($user->authentication && $user->authentication->status === 1) ? 1 : 0;
+            $info['expert_level'] = $info['is_expert'] === 1 ? $user->authentication->getLevelName():'';
+            $info['is_company'] = $user->userData->is_company;
+            $info['company_status'] = $user->userCompany->apply_status??0;
+            $info['show_my_wallet'] = true;
+            if (in_array($user->id,[79,504])) {
+                $info['show_my_wallet'] = false;
             }
+            $info['show_ios_resume'] = true;
+            if(config('app.env') == 'production'){
+                //ios正在审核,暂时不显示个人名片
+                $info['show_ios_resume'] = true;
+            }
+
+            $info['expert_apply_status'] = 0;
+            $info['expert_apply_tips'] = '点击前往认证';
+            if(!empty($user->authentication)){
+                if($user->authentication->status == 0){
+                    $info['expert_apply_status'] = 1;
+                    $info['expert_apply_tips'] = '认证处理中!';
+                }elseif($user->authentication->status == 1){
+                    $info['expert_apply_status'] = 2;
+                    $info['expert_apply_tips'] = '身份已认证!';
+                }else{
+                    $info['expert_apply_status'] = 3;
+                    $info['expert_apply_tips'] = '认证失败,重新认证';
+                }
+            }
+
+            $info['followers'] = $user->attentions()->count();
+            $info['followed_number'] = $user->followers()->count();
+            $info['popularity'] = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->where('user_id','!=',$user->id)->count();
+            $info['publishes'] = $user->userData->questions
+                + $user->userData->answers + Submission::where('user_id',$user->id)->count()
+                + Comment::where('user_id',$user->id)->count();
+            $info['collections'] = $user->collections()->count();
+            $info['groups'] = GroupMember::where('user_id',$user->id)->count();
+            $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
+            $info['total_score'] = '综合评分暂无';
+
+            $info['submission_karma'] = $user->submission_karma;
+            $info['comment_karma'] = $user->comment_karma;
+
+
+            $info_percent = $user->getInfoCompletePercent(true);
+            $info['account_info_complete_percent'] = $info_percent['score'];
+
+            $infos = '';
+            if($info_percent['unfilled']){
+                $infos = '请完善'.User::getFieldHumanName($info_percent['unfilled'][0]).(count($info_percent['unfilled'])>1?'等':'').'信息';
+            }
+
+
+            $info['account_info_valid_percent'] = config('inwehub.user_info_valid_percent');
+            $info['total_money'] = 0;
+            $user_money = UserMoney::find($user->id);
+            if($user_money){
+                $info['total_money'] = $user_money->total_money;
+            }
+            $info['questions'] = $user->userData->questions;
+            $info['answers'] = $user->userData->answers;
+            //加上承诺待回答的
+            $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
+            $info['tasks'] = $user->tasks->where('status',0)->count();
+            $info['projects'] = $user->companyProjects->where('status','!=',0)->count();
+            $info['user_level'] = $user->userData->user_level;
+            $info['user_credits'] = $user->userData->credits;
+            $info['user_coins'] = $user->userData->coins;
+            $info['my_activity_enroll'] = Collection::where('user_id',$user->id)->where('source_type','App\Models\Article')->count();
+
+            $info['newbie_unfinish_tasks']= ['readhub_comment'=>false,'ask'=>false,'complete_userinfo'=>false,'show_guide'=>true];
+            $newbie_readhub_comment_task = Task::where('user_id',$user->id)->where('source_type','newbie_readhub_comment')->where('status',1)->first();
+            if ($newbie_readhub_comment_task) {
+                $info['newbie_unfinish_tasks']['readhub_comment'] = true;
+            }
+            $newbie_ask_task = Task::where('user_id',$user->id)->where('source_type','newbie_ask')->where('status',1)->first();
+            if ($newbie_ask_task) {
+                $info['newbie_unfinish_tasks']['ask'] = true;
+            }
+
+            $newbie_complete_userinfo_task = Task::where('user_id',$user->id)->where('source_type','newbie_complete_userinfo')->where('status',1)->first();
+            if ($newbie_complete_userinfo_task) {
+                $info['newbie_unfinish_tasks']['complete_userinfo'] = true;
+            }
+            if ($user->attentions()->count()>=1 || $info['region_tags'] || $info['groups']) {
+                $info['newbie_unfinish_tasks']['show_guide'] = false;
+            }
+
+            $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
+            $job_desc = '';
+            if($jobs->count()){
+                $job_desc = $jobs[0].($jobs->count()>1?'等':'').$jobs->count().'个工作';
+            }
+
+            $projects = $user->projects()->orderBy('begin_time','desc')->pluck('project_name');
+            $project_desc = '';
+            if($projects->count()){
+                $project_desc = $projects[0].($projects->count()>1?'等':'').$projects->count().'个项目';
+            }
+
+            $edus = $user->edus()->orderBy('begin_time','desc')->pluck('school');
+            $edu_desc = '';
+            if ($edus->count()) {
+                $edu_desc = $edus[0].($edus->count()>1?'等':'').$edus->count().'所学校';
+            }
+
+            $trains = $user->trains()->orderBy('get_time','desc')->pluck('certificate');
+            $train_desc = '';
+            if ($trains->count()) {
+                $train_desc = $trains[0].($trains->count()>1?'等':'').$trains->count().'个认证';
+            }
+            $need_report = $request->input('need_report',0);
+            if ($need_report) {
+                $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'核心页面');
+            }
+
+            $data = [
+                'info'   => $info,
+                'infos'  => $infos,
+                'jobs'   => $job_desc,
+                'projects' => $project_desc,
+                'edus'   => $edu_desc,
+                'trains'  => $train_desc
+            ];
+            Cache::put('user_info_'.$user->id,$data,120);
         }
-
-        $info['followers'] = $user->attentions()->count();
-        $info['followed_number'] = $user->followers()->count();
-        $info['popularity'] = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->where('user_id','!=',$user->id)->count();
-        $info['publishes'] = $user->userData->questions
-            + $user->userData->answers + Submission::where('user_id',$user->id)->count()
-            + Comment::where('user_id',$user->id)->count();
-        $info['collections'] = $user->collections()->count();
-        $info['groups'] = GroupMember::where('user_id',$user->id)->count();
-        $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
-        $info['total_score'] = '综合评分暂无';
-
-        $info['submission_karma'] = $user->submission_karma;
-        $info['comment_karma'] = $user->comment_karma;
-
-
-        $info_percent = $user->getInfoCompletePercent(true);
-        $info['account_info_complete_percent'] = $info_percent['score'];
-
-        $infos = '';
-        if($info_percent['unfilled']){
-            $infos = '请完善'.User::getFieldHumanName($info_percent['unfilled'][0]).(count($info_percent['unfilled'])>1?'等':'').'信息';
-        }
-
-
-        $info['account_info_valid_percent'] = config('inwehub.user_info_valid_percent');
-        $info['total_money'] = 0;
-        $user_money = UserMoney::find($user->id);
-        if($user_money){
-            $info['total_money'] = $user_money->total_money;
-        }
-        $info['questions'] = $user->userData->questions;
-        $info['answers'] = $user->userData->answers;
-        //加上承诺待回答的
-        $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
-        $info['tasks'] = $user->tasks->where('status',0)->count();
-        $info['projects'] = $user->companyProjects->where('status','!=',0)->count();
-        $info['user_level'] = $user->userData->user_level;
-        $info['user_credits'] = $user->userData->credits;
-        $info['user_coins'] = $user->userData->coins;
-        $info['my_activity_enroll'] = Collection::where('user_id',$user->id)->where('source_type','App\Models\Article')->count();
-
-        $info['newbie_unfinish_tasks']= ['readhub_comment'=>false,'ask'=>false,'complete_userinfo'=>false,'show_guide'=>true];
-        $newbie_readhub_comment_task = Task::where('user_id',$user->id)->where('source_type','newbie_readhub_comment')->where('status',1)->first();
-        if ($newbie_readhub_comment_task) {
-            $info['newbie_unfinish_tasks']['readhub_comment'] = true;
-        }
-        $newbie_ask_task = Task::where('user_id',$user->id)->where('source_type','newbie_ask')->where('status',1)->first();
-        if ($newbie_ask_task) {
-            $info['newbie_unfinish_tasks']['ask'] = true;
-        }
-
-        $newbie_complete_userinfo_task = Task::where('user_id',$user->id)->where('source_type','newbie_complete_userinfo')->where('status',1)->first();
-        if ($newbie_complete_userinfo_task) {
-            $info['newbie_unfinish_tasks']['complete_userinfo'] = true;
-        }
-        if ($user->attentions()->count()>=1 || $info['region_tags'] || $info['groups']) {
-            $info['newbie_unfinish_tasks']['show_guide'] = false;
-        }
-
-        $jobs = $user->jobs()->orderBy('begin_time','desc')->pluck('company');
-        $job_desc = '';
-        if($jobs->count()){
-            $job_desc = $jobs[0].($jobs->count()>1?'等':'').$jobs->count().'个工作';
-        }
-
-        $projects = $user->projects()->orderBy('begin_time','desc')->pluck('project_name');
-        $project_desc = '';
-        if($projects->count()){
-            $project_desc = $projects[0].($projects->count()>1?'等':'').$projects->count().'个项目';
-        }
-
-        $edus = $user->edus()->orderBy('begin_time','desc')->pluck('school');
-        $edu_desc = '';
-        if ($edus->count()) {
-            $edu_desc = $edus[0].($edus->count()>1?'等':'').$edus->count().'所学校';
-        }
-
-        $trains = $user->trains()->orderBy('get_time','desc')->pluck('certificate');
-        $train_desc = '';
-        if ($trains->count()) {
-            $train_desc = $trains[0].($trains->count()>1?'等':'').$trains->count().'个认证';
-        }
-        $need_report = $request->input('need_report',0);
-        if ($need_report) {
-            $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'核心页面');
-        }
-
-        $data = [
-            'info'   => $info,
-            'infos'  => $infos,
-            'jobs'   => $job_desc,
-            'projects' => $project_desc,
-            'edus'   => $edu_desc,
-            'trains'  => $train_desc
-        ];
 
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
@@ -571,6 +575,7 @@ class ProfileController extends Controller
 
         UserTag::multiDetachByField($user->id,Tag::whereIn('id',$user->userSkillTag()->pluck('tag_id'))->get(),'skills');
         UserTag::multiIncrement($user->id,$tags,'skills');
+        UserCache::delUserInfoCache($user->id);
         self::$needRefresh = true;
         return self::createJsonData(true);
     }
@@ -594,6 +599,7 @@ class ProfileController extends Controller
             'value'=>implode(',',array_column($tags->toArray(),'name'))
         ];
         event(new SystemNotify('用户'.$user->id.'['.$user->name.']添加了领域标签',$fields));
+        UserCache::delUserInfoCache($user->id);
         self::$needRefresh = true;
         return self::createJsonData(true);
     }
@@ -609,6 +615,7 @@ class ProfileController extends Controller
         $tags = Tag::whereIn('id',$tagids)->get();
         UserTag::multiDetachByField($user->id,$tags,'skills');
         self::$needRefresh = true;
+        UserCache::delUserInfoCache($user->id);
         return self::createJsonData(true);
     }
 
