@@ -173,43 +173,49 @@ class TagsController extends Controller {
     public function productList(Request $request) {
         $category_id = $request->input('category_id',0);
         $orderBy = $request->input('orderBy',1);
-        $query = TagCategoryRel::select(['tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
-        if ($category_id) {
-            $category = Category::find($category_id);
-            if ($category->grade == 1) {
-                $children = Category::getChildrenIds($category_id);
-                $children[] = $category_id;
-                $query = $query->whereIn('category_id',array_unique($children));
-            } else {
-                $query = $query->where('category_id',$category_id);
+        $page = $request->input('page',1);
+        $cacheKey = 'tags:product_list_'.$category_id.'_'.$orderBy.'_'.$page;
+        $return = Cache::get($cacheKey);
+        if (!$return) {
+            $query = TagCategoryRel::select(['tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
+            if ($category_id) {
+                $category = Category::find($category_id);
+                if ($category->grade == 1) {
+                    $children = Category::getChildrenIds($category_id);
+                    $children[] = $category_id;
+                    $query = $query->whereIn('category_id',array_unique($children));
+                } else {
+                    $query = $query->where('category_id',$category_id);
+                }
             }
+            switch ($orderBy) {
+                case 1:
+                    $query = $query->orderBy('review_average_rate','desc');
+                    break;
+                case 2:
+                    $query = $query->orderBy('reviews','desc');
+                    break;
+                default:
+                    $query = $query->orderBy('updated_at','desc');
+                    break;
+            }
+            $tags = $query->distinct()->simplePaginate(Config::get('inwehub.api_data_page_size'));
+            $return = $tags->toArray();
+            $list = [];
+            foreach ($tags as $tag) {
+                $model = Tag::find($tag->tag_id);
+                $info = Tag::getReviewInfo($model->id);
+                $list[] = [
+                    'id' => $model->id,
+                    'name' => $model->name,
+                    'logo' => $model->logo,
+                    'review_count' => $info['review_count'],
+                    'review_average_rate' => $info['review_average_rate']
+                ];
+            }
+            $return['data'] = $list;
+            Cache::put($cacheKey,$return,30);
         }
-        switch ($orderBy) {
-            case 1:
-                $query = $query->orderBy('review_average_rate','desc');
-                break;
-            case 2:
-                $query = $query->orderBy('reviews','desc');
-                break;
-            default:
-                $query = $query->orderBy('updated_at','desc');
-                break;
-        }
-        $tags = $query->distinct()->simplePaginate(Config::get('inwehub.api_data_page_size'));
-        $return = $tags->toArray();
-        $list = [];
-        foreach ($tags as $tag) {
-            $model = Tag::find($tag->tag_id);
-            $info = Tag::getReviewInfo($model->id);
-            $list[] = [
-                'id' => $model->id,
-                'name' => $model->name,
-                'logo' => $model->logo,
-                'review_count' => $info['review_count'],
-                'review_average_rate' => $info['review_average_rate']
-            ];
-        }
-        $return['data'] = $list;
         return self::createJsonData(true, $return);
     }
 

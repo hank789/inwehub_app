@@ -26,7 +26,7 @@ class CreateSubmissionsTable extends Migration
             $table->integer('resubmit_id')->unsigned()->index()->nullable();
 
             $table->integer('user_id')->unsigned()->index();
-            $table->integer('category_id')->unsigned();
+            $table->integer('category_id')->unsigned()->index();
 
             $table->integer('upvotes')->default(0);
             $table->integer('downvotes')->default(0);

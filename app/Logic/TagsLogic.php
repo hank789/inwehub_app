@@ -141,6 +141,12 @@ class TagsLogic {
         if ($keys) Redis::connection()->del($keys);
     }
 
+    public static function delProductCache() {
+        $prefix = config('cache.prefix');
+        $keys = Redis::connection()->keys($prefix.':tags:product_list_*');
+        if ($keys) Redis::connection()->del($keys);
+    }
+
     public static function formatTags($tags){
         $data = [];
         foreach($tags as $tag){

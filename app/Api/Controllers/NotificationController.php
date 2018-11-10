@@ -238,7 +238,7 @@ class NotificationController extends Controller
                 ],
                 'im_messages' => $im_list
             ];
-            Cache::put('user_notification_count_'.$user->id,$data,60);
+            Cache::put('user_notification_count_'.$user->id,$data,120);
         }
 
 

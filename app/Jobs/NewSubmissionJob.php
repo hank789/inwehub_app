@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Logic\QuillLogic;
+use App\Logic\TagsLogic;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
@@ -23,7 +24,6 @@ use App\Models\Groups\GroupMember;
 use App\Notifications\FollowedUserNewSubmission;
 use App\Notifications\NewSubmission;
 use App\Traits\UsernameMentions;
-
 
 class NewSubmissionJob implements ShouldQueue
 {
@@ -98,6 +98,7 @@ class NewSubmissionJob implements ShouldQueue
                 $tag = Tag::find($submission->category_id);
                 $tag->increment('reviews');
                 $targetName = '在产品['.$tag->name.']';
+                TagsLogic::delProductCache();
                 break;
         }
         if ($submission->type != 'review') {
