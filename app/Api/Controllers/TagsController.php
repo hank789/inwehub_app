@@ -158,7 +158,7 @@ class TagsController extends Controller {
         $tag = Tag::getTagByName($tag_name);
         $user = $request->user();
 
-        $query = Submission::where('category_id',$tag->id)->where('status',1);
+        $query = Submission::where('status',1)->where('category_id',$tag->id);
         $submissions = $query->orderBy('is_recommend','desc')->orderBy('id','desc')->paginate($perPage);
         $return = $submissions->toArray();
         $list = [];
@@ -222,7 +222,7 @@ class TagsController extends Controller {
     //精华点评列表
     public function getRecommendReview(Request $request) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
-        $submissions = Submission::where('type','review')->where('is_recommend',1)->orderBy('rate','desc')->simplePaginate($perPage);
+        $submissions = Submission::where('is_recommend',1)->where('status',1)->where('type','review')->orderBy('rate','desc')->simplePaginate($perPage);
         $return = $submissions->toArray();
         $list = [];
         foreach ($submissions as $submission) {
