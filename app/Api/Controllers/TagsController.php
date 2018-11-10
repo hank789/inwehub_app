@@ -214,7 +214,7 @@ class TagsController extends Controller {
                 ];
             }
             $return['data'] = $list;
-            Cache::put($cacheKey,$return,30);
+            Cache::forever($cacheKey,$return);
         }
         return self::createJsonData(true, $return);
     }
