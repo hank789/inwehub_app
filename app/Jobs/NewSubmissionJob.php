@@ -92,7 +92,7 @@ class NewSubmissionJob implements ShouldQueue
                     $tagC = TagCategoryRel::where('tag_id',$submission->category_id)->where('category_id',$category_id)->first();
                     $tagC->reviews += 1;
                     $tagC->review_rate_sum += $submission->rate_star;
-                    $tagC->review_average_rate = bcdiv($tagC->reviews_rate_sum,$tagC->reviews,1);
+                    $tagC->review_average_rate = bcdiv($tagC->review_rate_sum,$tagC->reviews,1);
                     $tagC->save();
                 }
                 $tag = Tag::find($submission->category_id);
