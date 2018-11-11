@@ -39,17 +39,16 @@ class TagsController extends Controller {
         try {
             $user = $JWTAuth->parseToken()->authenticate();
             if ($tag_type == 8 && empty($user->mobile)) {
-                throw new ApiException(ApiException::USER_NEED_VALID_PHONE);
+                return self::createJsonData(false,[],ApiException::USER_NEED_VALID_PHONE,ApiException::$errorMessages[ApiException::USER_NEED_VALID_PHONE]);
             }
         } catch (\Exception $e) {
             $user = new \stdClass();
             $user->id = 0;
             $user->name = '游客';
             $user->mobile = '';
-        }
-
-        if ($tag_type == 8 && empty($user->mobile)) {
-            throw new ApiException(ApiException::TOKEN_INVALID);
+            if ($tag_type == 8) {
+                throw new ApiException(ApiException::TOKEN_INVALID);
+            }
         }
 
         $word = $request->input('word');
