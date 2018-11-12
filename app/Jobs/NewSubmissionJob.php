@@ -99,6 +99,10 @@ class NewSubmissionJob implements ShouldQueue
                 $tag->increment('reviews');
                 $targetName = '在产品['.$tag->name.']';
                 TagsLogic::delProductCache();
+                if (isset($submission->data['real_author']) && $submission->data['real_author']) {
+                    $real_author = User::find($submission->data['real_author']);
+                    $this->additionalSlackMsg .= '运营人员：'.formatSlackUser($real_author).';';
+                }
                 break;
         }
         if ($submission->type != 'review') {
