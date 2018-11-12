@@ -235,14 +235,21 @@ class FollowController extends Controller
 
         $ids = $request->input('ids');
         $user = $request->user();
+        $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
         $fields = [];
+        if ($ids) {
+            //产生一条私信
+            $message = $user->messages()->create([
+                'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
+            ]);
+        }
         foreach ($ids as $id) {
             $source = User::where('uuid','=',$id.'')->first();
             if(empty($source)){
                 $source  = User::findOrFail($id);
             }
             if ($source->id == $user->id) continue;
-            $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($source))->where('source_id','=',$id)->first();
+            $attention = Attention::where("user_id",'=',$user->id)->where('source_id','=',$id)->where('source_type','=',get_class($source))->first();
             if($attention){
                 continue;
             }
@@ -267,11 +274,7 @@ class FollowController extends Controller
                 $source->notify(new NewUserFollowing($source->id,$attention,false));
 
                 $this->credit($user->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source),false);
-                //产生一条私信
-                $message = $user->messages()->create([
-                    'data' => ['text'=>'我已经关注你为好友，以后请多多交流~'],
-                ]);
-                $room_ids = RoomUser::select('room_id')->where('user_id',$user->id)->get()->pluck('room_id')->toArray();
+
                 $roomUser = RoomUser::where('user_id',$source->id)->whereIn('room_id',$room_ids)->first();
                 if ($roomUser) {
                     $room_id = $roomUser->room_id;
