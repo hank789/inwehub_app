@@ -128,7 +128,7 @@ class TagsController extends Controller {
             ];
         }
         //推荐股问
-        $recommendUsers = UserTag::where('tag_id',$tag->id)->where('user_id','!=',$user->id)->orderBy('articles','desc')->take(5)->get();
+        $recommendUsers = UserTag::where('tag_id',$tag->id)->where('user_id','!=',$user->id)->orderBy('skills','desc')->take(5)->get();
         foreach ($recommendUsers as $recommendUser) {
             $userTags = $recommendUser->user->userTag()->orderBy('skills','desc')->pluck('tag_id');
             $skillTag = Tag::find($userTags[0]);
