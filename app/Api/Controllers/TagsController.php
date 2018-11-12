@@ -62,12 +62,6 @@ class TagsController extends Controller {
         if ($limit) {
             $data['tags'] = array_slice($data['tags'],0,$limit);
         }
-        if ($user->isRole('operator')) {
-            $data['tags'][] = [
-                'value' => -1,
-                'text'  => '点评运营人员'
-            ];
-        }
 
         return self::createJsonData(true,$data);
     }

@@ -98,7 +98,7 @@ class SubmissionController extends Controller {
             if (!is_array($data['author_identity'])) {
                 $data['author_identity'] = [$data['author_identity']];
             }
-            if ($request->input('identity') == -1) {
+            if ($request->input('hide',0) && $user->isRole('operator')) {
                 //点评运营人员
                 $data['real_author'] = $user->id;
                 $role = Role::where('slug','dianpingrobot')->first();
