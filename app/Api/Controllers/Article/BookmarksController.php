@@ -63,6 +63,7 @@ class BookmarksController extends Controller {
             'source_id'   => $submission->id,
             'source_type' => get_class($submission),
             'subject'  => '',
+            'status' => $submission->type == 'review' ? 2 : 1
         ];
 
         $collect = Collection::create($data);

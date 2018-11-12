@@ -442,6 +442,7 @@ class FollowController extends Controller
             'questions' => 'App\Models\Question',
             'users' => 'App\Models\User',
             'tags' => 'App\Models\Tag',
+            'products' => 'App\Models\Tag'
         ];
 
         if(!isset($sourceClassMap[$source_type])){
@@ -491,6 +492,13 @@ class FollowController extends Controller
                     $item['text'] = $info->name;
                     $item['tag_logo'] = $info->logo;
                     $item['tag_summary'] = $info->summary;
+                    break;
+                case 'products':
+                    $tagInfo = Tag::getReviewInfo($info->id);
+                    $item['name'] = $info->name;
+                    $item['logo'] = $info->logo;
+                    $item['review_count'] = $tagInfo['review_count'];
+                    $item['review_average_rate'] = $tagInfo['review_average_rate'];
                     break;
             }
             $data[] = $item;

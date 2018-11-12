@@ -33,7 +33,7 @@ class Collection extends Model
     use BelongsToUserTrait;
 
     protected $table = 'collections';
-    protected $fillable = ['user_id','source_id','source_type','subject'];
+    protected $fillable = ['user_id','source_id','source_type','subject','status'];
 
     const COLLECT_STATUS_PENDING = 1;//待审核
     const COLLECT_STATUS_VERIFY = 2;//审核通过

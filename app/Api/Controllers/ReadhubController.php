@@ -18,7 +18,7 @@ class ReadhubController extends Controller
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $uuid = $request->input('uuid');
-        $type = $request->input('type','all');
+        $type = $request->input('type',1);
         $loginUser = $request->user();
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
@@ -29,16 +29,17 @@ class ReadhubController extends Controller
             $user = $request->user();
         }
 
-        $query = Submission::where('user_id',$user->id);
+        $query = Submission::where('user_id',$user->id)->where('status',1);
         if ($user->id != $loginUser->id) {
             $query = $query->where('public',1);
         }
-        if ($type != 'all') {
-            if (in_array($type,['link','text','article'])) {
-                $query = $query->where('type',$type);
-            }
-        } else {
-            $query = $query->where('status',1);
+        switch ($type) {
+            case 2:
+                $query = $query->where('type','review');
+                break;
+            default:
+                $query = $query->where('type','!=','review');
+                break;
         }
 
         if($top_id){
@@ -50,8 +51,16 @@ class ReadhubController extends Controller
 
         $list = [];
         foreach($submissions as $submission){
-            $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-            $group = Group::find($submission->group_id);
+            if ($submission->type == 'review') {
+                $comment_url = '/dianping/comment/'.$submission->slug;
+                $tags = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
+                $category_name = $tags[0]['name'];
+            } else {
+                $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+                $group = Group::find($submission->group_id);
+                $category_name = $group->name;
+            }
+
             $list[] = [
                 'id' => $submission->id,
                 'type' => $submission->type,
@@ -64,7 +73,7 @@ class ReadhubController extends Controller
                 'submission_url' => $submission->data['url']??$comment_url,
                 'comment_url'    => $comment_url,
                 'domain'         => $submission->data['domain']??'',
-                'category_name'  => $group->name,
+                'category_name'  => $category_name,
                 'created_at'     => (string) $submission->created_at
             ];
         }

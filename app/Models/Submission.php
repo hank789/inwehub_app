@@ -196,7 +196,7 @@ class Submission extends Model {
     }
 
     public function formatTitle(){
-        return strip_tags($this->title);
+        return formatHtml(strip_tags($this->title));
     }
 
     public function partHtmlTitle(){
