@@ -38,6 +38,7 @@ class Sitemap extends Command
         $sitemap = \App::make("sitemap");
         $count = 0;
         $recommendReads = RecommendRead::where('audit_status',1)->get();
+        $urls = [];
         foreach ($recommendReads as $recommendRead) {
             switch ($recommendRead->read_type) {
                 case RecommendRead::READ_TYPE_SUBMISSION:
@@ -45,6 +46,7 @@ class Sitemap extends Command
                     $submission = Submission::find($recommendRead->source_id);
                     $url = 'https://www.inwehub.com/c/'.$submission->category_id.'/'.$submission->slug;
                     $sitemap->add($url, (new Carbon($submission->created_at))->toAtomString(), '1.0', 'monthly');
+                    $urls[] = $url;
                     break;
             }
 
@@ -54,18 +56,32 @@ class Sitemap extends Command
             $count++;
             $url = 'https://www.inwehub.com/askCommunity/interaction/answers/'.$question->id;
             $sitemap->add($url, (new Carbon($question->created_at))->toAtomString(), '1.0', 'monthly');
+            $urls[] = $url;
             if ($question->question_type == 2) {
                 $answers = Answer::where('question_id',$question->id)->where('status',1)->get();
                 foreach ($answers as $answer) {
                     $count++;
                     $url = 'https://www.inwehub.com/askCommunity/interaction/'.$answer->id;
                     $sitemap->add($url, (new Carbon($answer->created_at))->toAtomString(), '1.0', 'monthly');
+                    $urls[] = $url;
                 }
             }
         }
 
         $sitemap->store('xml', 'sitemap');
         $this->info('共生成地址：'.$count);
+        $api = 'http://data.zz.baidu.com/urls?site=https://www.inwehub.com&token=0DLhRcKq3ET6EcQt';
+        $ch = curl_init();
+        $options =  array(
+            CURLOPT_URL => $api,
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POSTFIELDS => implode("\n", $urls),
+            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+        );
+        curl_setopt_array($ch, $options);
+        $result = curl_exec($ch);
+        var_dump($result);
     }
 
 }
