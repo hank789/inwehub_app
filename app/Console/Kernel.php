@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\DailyRegisterReport::class,
         Commands\Crontab\DailyReadReport::class,
         Commands\Crontab\RefreshCookieTask::class,
+        Commands\Crontab\DailySubmitUrls::class,
         //抓取脚本
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
@@ -117,6 +118,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('crontab:report:daily:register')->dailyAt('09:00');
             $schedule->command('crontab:report:daily:recommend')->cron('59 8,11,14,17,21,23 * * *');
             $schedule->command('crontab:report:daily:read')->hourlyAt(59);
+            $schedule->command('crontab:submit:daily:urls')->dailyAt('21:00');
         }
         $schedule->command('crontab:awake-user')->twiceDaily(9,19);
         $schedule->command('crontab:deal-overtime-task')->daily()->at('05:00')->withoutOverlapping();

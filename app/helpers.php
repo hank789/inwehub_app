@@ -1876,3 +1876,19 @@ if (!function_exists('convertWechatTempLinkToForever')) {
 }
 
 
+if (!function_exists('submitUrlsToSpider')) {
+    function submitUrlsToSpider(array $urls) {
+        $api = 'http://data.zz.baidu.com/urls?site=https://www.inwehub.com&token=0DLhRcKq3ET6EcQt';
+        $ch = curl_init();
+        $options =  array(
+            CURLOPT_URL => $api,
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POSTFIELDS => implode("\n", $urls),
+            CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+        );
+        curl_setopt_array($ch, $options);
+        return curl_exec($ch);
+    }
+}
+
