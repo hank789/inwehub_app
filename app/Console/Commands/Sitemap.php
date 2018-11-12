@@ -70,8 +70,11 @@ class Sitemap extends Command
 
         $sitemap->store('xml', 'sitemap');
         $this->info('共生成地址：'.$count);
-        $result = submitUrlsToSpider($urls);
-        var_dump($result);
+        $newUrls = array_chunk($urls,2000);
+        foreach ($newUrls as $newUrl) {
+            $result = submitUrlsToSpider($newUrl);
+            var_dump($result);
+        }
     }
 
 }
