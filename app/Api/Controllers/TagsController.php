@@ -229,7 +229,7 @@ class TagsController extends Controller {
             $tag = Tag::find($submission->category_id);
             $list[] = [
                 'id' => $submission->id,
-                'title' => strip_tags($submission->title),
+                'title' => formatHtml(strip_tags($submission->title)),
                 'rate_star' => $submission->rate_star,
                 'created_at' => (string)$submission->created_at,
                 'slug' => $submission->slug,
