@@ -132,13 +132,14 @@ class TagsController extends Controller {
         foreach ($recommendUsers as $recommendUser) {
             $userTags = $recommendUser->user->userTag()->orderBy('skills','desc')->pluck('tag_id');
             $skillTag = Tag::find($userTags[0]);
+            if (!$skillTag) continue;
             $data['recommend_users'][] = [
                 'name' => $recommendUser->user->name,
                 'id'   => $recommendUser->user_id,
                 'uuid' => $recommendUser->user->uuid,
                 'is_expert' => $recommendUser->user->is_expert,
                 'avatar_url' => $recommendUser->user->avatar,
-                'skill' => $skillTag?$skillTag->name:''
+                'skill' => $skillTag->name
             ];
         }
         return self::createJsonData(true,$data);
