@@ -57,7 +57,6 @@ class Category extends Model
         });
     }
 
-
     /**
      * 获取用户问题
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
