@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Review;
 use App\Http\Controllers\Admin\AdminController;
 use App\Logic\TagsLogic;
 use App\Models\Category;
+use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use Illuminate\Http\Request;
@@ -159,6 +160,8 @@ class ProductController extends AdminController
         if(!$tagRel){
             return $this->error(route('admin.review.product.index'),'产品不存在，请核实');
         }
+        $oldStatus = $tagRel->status;
+        $newStatus = $request->input('status');
         $tag = Tag::find($tagRel->tag_id);
         $this->validateRules['name'] = 'required|max:128|unique:tags,name,'.$tag->id;
         $this->validate($request,$this->validateRules);
@@ -200,6 +203,25 @@ class ProductController extends AdminController
                 TagCategoryRel::where('id',$id)->where('reviews',0)->delete();
                 $returnUrl = route('admin.review.product.index');
             }
+        }
+        if ($newStatus == 1 && $oldStatus == 0) {
+            $submissions = Submission::where('category_id',$tagRel->tag_id)->where('status',1)->get();
+            $count = 0;
+            $rates = 0;
+            foreach ($submissions as $submission) {
+                if (is_array($submission->data['category_ids']) && in_array($tagRel->category_id,$submission->data['category_ids'])) {
+                    $count++;
+                    $rates+=$submission->rate_star;
+                }
+            }
+            $tagRel->reviews = $count;
+            $tagRel->review_rate_sum = $rates;
+            $tagRel->review_average_rate = $count?bcdiv($rates,$count,1):0;
+            $tagRel->save();
+            $info = Tag::getReviewInfo($tagRel->tag_id);
+            Tag::where('id',$tagRel->tag_id)->update([
+                'reviews' => $info['review_count']
+            ]);
         }
         TagsLogic::delCache();
         return $this->success($returnUrl,'产品修改成功');
