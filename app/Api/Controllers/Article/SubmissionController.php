@@ -14,6 +14,8 @@ use App\Models\DownVote;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Question;
+use App\Models\Role;
+use App\Models\RoleUser;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
@@ -42,8 +44,8 @@ class SubmissionController extends Controller {
     public function store(Request $request)
     {
         $user = $request->user();
-
-        if (RateLimiter::instance()->increase('submission:store',$user->id,5)) {
+        $user_id = $user->id;
+        if (RateLimiter::instance()->increase('submission:store',$user_id,5)) {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
@@ -73,7 +75,7 @@ class SubmissionController extends Controller {
                 if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
                     throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
                 }
-                $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+                $groupMember = GroupMember::where('user_id',$user_id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
                 if (!$groupMember) {
                     throw new ApiException(ApiException::BAD_REQUEST);
                 }
@@ -95,6 +97,13 @@ class SubmissionController extends Controller {
             $data['author_identity'] = $request->input('identity');
             if (!is_array($data['author_identity'])) {
                 $data['author_identity'] = [$data['author_identity']];
+            }
+            if ($request->input('identity') == -1) {
+                //点评运营人员
+                $data['real_author'] = $user->id;
+                $role = Role::where('slug','dianpingrobot')->first();
+                $roleUsers = RoleUser::where('role_id',$role->id)->pluck('user_id')->toArray();
+                $user_id = array_random($roleUsers);
             }
             $category_id = $tagString;
         }
@@ -194,7 +203,7 @@ class SubmissionController extends Controller {
                 'rate_star'     => $request->input('rate_star',0),
                 'hide'          => $request->input('hide',0),
                 'status'        => $request->input('draft',0)?0:1,
-                'user_id'       => $user->id,
+                'user_id'       => $user_id,
                 'data'          => $data,
                 'views'         => 1
             ]);
@@ -207,9 +216,9 @@ class SubmissionController extends Controller {
             if ($newTagString) {
                 Tag::multiAddByName($newTagString,$submission);
             }
-            UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
-            if ($request->input('identity')) {
-                UserTag::multiIncrement($user->id,[Tag::find($request->input('identity'))],'role');
+            UserTag::multiIncrement($user_id,$submission->tags()->get(),'articles');
+            if ($request->input('identity') && $request->input('identity') != -1) {
+                UserTag::multiIncrement($user_id,[Tag::find($request->input('identity'))],'role');
             }
             if ($submission->status == 1) {
                 $this->dispatch((new NewSubmissionJob($submission->id)));
