@@ -482,8 +482,11 @@ class IndexController extends Controller {
                     $type = 2;
                     $submission = Submission::find($comment->source_id);
                     if (!$submission) continue;
-                    $origin_title = ($submission->type == 'link'?'文章:':'动态:').$submission->formatTitle();
+                    $origin_title = ($submission->type == 'review'?'点评:':'动态:').$submission->formatTitle();
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+                    if ($submission->type == 'review') {
+                        $comment_url = '/dianping/comment/'.$submission->slug;
+                    }
                     break;
             }
             $return[] = [
