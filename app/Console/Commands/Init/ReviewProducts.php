@@ -20,7 +20,7 @@ class ReviewProducts extends Command
      *
      * @var string
      */
-    protected $signature = 'init:service:review-products';
+    protected $signature = 'init:service:review-products {cid?}';
 
     /**
      * The console command description.
@@ -40,7 +40,13 @@ class ReviewProducts extends Command
     {
         $this->ql = QueryList::getInstance();
         $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        $categories = Category::where('type','enterprise_review')->where('grade',0)->get();
+        $cid = $this->argument('cid');
+        if ($cid) {
+            $this->info($cid);
+            $categories = Category::where('id',$cid)->get();
+        } else {
+            $categories = Category::where('type','enterprise_review')->where('grade',0)->get();
+        }
         foreach ($categories as $category) {
             $slug = str_replace('enterprise_product_','',$category->slug);
             $slug = str_replace('enterprise_service_','',$slug);

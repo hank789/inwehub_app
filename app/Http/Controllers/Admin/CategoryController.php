@@ -26,7 +26,7 @@ class CategoryController extends AdminController
      */
     public function index()
     {
-        $categories = Category::orderBy('sort','asc')->orderBy('created_at','desc')->paginate(config('inwehub.admin.page_size'));
+        $categories = Category::orderBy('created_at','desc')->paginate(config('inwehub.admin.page_size'));
         return view("admin.category.index")->with(compact('categories'));
     }
 
