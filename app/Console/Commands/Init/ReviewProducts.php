@@ -4,6 +4,7 @@
  * @date: 2017/6/21 下午8:59
  * @email: hank.huiwang@gmail.com
  */
+use App\Logic\TagsLogic;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
@@ -95,7 +96,8 @@ class ReviewProducts extends Command
                                 'review_average_rate' => $item['rate'],
                                 'review_rate_sum' => floatval($item['total'])*floatval($item['rate']),
                                 'reviews' => $item['total'],
-                                'type' => TagCategoryRel::TYPE_REVIEW
+                                'type' => TagCategoryRel::TYPE_REVIEW,
+                                'status' => 0
                             ]);
                         }
                     }
@@ -110,6 +112,7 @@ class ReviewProducts extends Command
                 $page++;
             }
         }
+        $this->info('完成');
     }
 
     protected function rules1($slug,$page) {
