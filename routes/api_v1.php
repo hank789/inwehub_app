@@ -270,6 +270,14 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     Route::post('search/submission','SearchController@submission');
     //搜索圈子
     Route::post('search/group','SearchController@group');
+    //搜索点评
+    Route::post('search/reviews','SearchController@reviews');
+    //搜索产品
+    Route::post('search/tagProduct','SearchController@tagProduct');
+    //搜索分类
+    Route::post('search/productCategory','SearchController@productCategory');
+    //搜索公司
+    Route::post('search/company','SearchController@company');
 });
 //搜索问答
 Route::post('search/question','SearchController@question');

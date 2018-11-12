@@ -59,6 +59,7 @@ class Test extends Command
     public function handle()
     {
         $page = 1;
+        Submission::where('id','>=',1)->searchable();
         $submissions = Submission::where('type','review')->simplePaginate(100,['*'],'page',$page);
         while ($submissions->count() > 0) {
             foreach ($submissions as $submission) {

@@ -2,13 +2,16 @@
 
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Attention;
+use App\Models\Category;
 use App\Models\Collection;
+use App\Models\Company\CompanyData;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
+use App\Models\TagCategoryRel;
 use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -113,6 +116,110 @@ class SearchController extends Controller
         return self::createJsonData(true, $return);
     }
 
+    public function tagProduct(Request $request) {
+        $validateRules = [
+            'search_word' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $loginUser = $request->user();
+        $tags = Tag::search($request->input('search_word'))->where('type',TagCategoryRel::TYPE_REVIEW)
+            ->where('status',1)
+            ->orderBy('reviews', 'desc')
+            ->paginate(Config::get('inwehub.api_data_page_size'));
+        $data = [];
+        foreach ($tags as $tag) {
+            $info = Tag::getReviewInfo($tag->id);
+            $data[] = [
+                'id' => $tag->id,
+                'name' => $tag->name,
+                'logo' => $tag->logo,
+                'review_count' => $info['review_count'],
+                'review_average_rate' => $info['review_average_rate']
+            ];
+        }
+        $return = $tags->toArray();
+        $return['data'] = $data;
+        $this->searchNotify($loginUser,$request->input('search_word'),'在栏目[产品]',',搜索结果'.$tags->total());
+        return self::createJsonData(true, $return);
+    }
+
+    public function reviews(Request $request) {
+        $validateRules = [
+            'search_word' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $query = Submission::search($request->input('search_word'))->where('status',1)->where('product_type',2);
+        $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $return = $submissions->toArray();
+        $data = [];
+        foreach ($submissions as $submission) {
+            $data[] = $submission->formatListItem($user,false);
+        }
+        $return['data'] = $data;
+        $this->searchNotify($user,$request->input('search_word'),'在栏目[点评]',',搜索结果'.$submissions->total());
+        return self::createJsonData(true, $return);
+    }
+
+    public function productCategory(Request $request) {
+        $validateRules = [
+            'search_word' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $word = $request->input('search_word');
+        $user = $request->user();
+        $categories = Category::where('type','enterprise_review')->where('status',1)
+            ->where('name','like',"%$word%")
+            ->orderBy('id', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $return = $categories->toArray();
+        $data = [];
+        foreach ($categories as $category) {
+            $data[] = [
+                'id' => $category->id,
+                'name' => $category->name
+            ];
+        }
+        $return['data'] = $data;
+        $this->searchNotify($user,$word,'在栏目[分类]',',搜索结果'.$categories->total());
+        return self::createJsonData(true, $return);
+    }
+
+    public function company(Request $request) {
+        $validateRules = [
+            'search_word' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $word = $request->input('search_word');
+        $user = $request->user();
+        $companies = CompanyData::where('audit_status',1)
+            ->where('name','like',"%$word%")
+            ->orderBy('id', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        $return = $companies->toArray();
+        $userData = $user->userData;
+        $data = [];
+        foreach ($companies as $company) {
+            $tags = $company->tags()->pluck('name')->toArray();
+            if (!is_numeric($userData->longitude) || !is_numeric($userData->latitude)) {
+                $distance = '未知';
+            } else {
+                $distance = getDistanceByLatLng($company->longitude,$company->latitude,$userData->longitude,$userData->latitude);
+                $distance = bcadd($distance,0,0);
+            }
+            $data[] = [
+                'id' => $company->id,
+                'name' => $company->name,
+                'logo' => $company->logo,
+                'address_province' => $company->address_province,
+                'tags' => $tags,
+                //'distance' => $distance,
+                'distance_format' => distanceFormat($distance),
+            ];
+        }
+        $return['data'] = $data;
+        $this->searchNotify($user,$word,'在栏目[公司]',',搜索结果'.$companies->total());
+        return self::createJsonData(true, $return);
+    }
+
     public function question(Request $request,JWTAuth $JWTAuth)
     {
         $validateRules = [
@@ -144,14 +251,15 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $userGroups = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
+        $userPrivateGroups = false;
+        /*$userGroups = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
         $userPrivateGroups = [];
         foreach ($userGroups as $groupId) {
             $group = Group::find($groupId);
             if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
-        }
+        }*/
 
-        $query = Submission::search($request->input('search_word'))->where('status',1);
+        $query = Submission::search($request->input('search_word'))->where('status',1)->where('product_type',1);
         if ($userPrivateGroups && false) {
             $query = $query->Where(function ($query) use ($userPrivateGroups) {
                 $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);

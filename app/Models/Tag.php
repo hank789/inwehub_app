@@ -8,6 +8,7 @@ use App\Models\Relations\BelongsToCategoryTrait;
 use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
+use Laravel\Scout\Searchable;
 
 /**
  * App\Models\Tag
@@ -38,7 +39,7 @@ use Illuminate\Support\Facades\App;
  */
 class Tag extends Model
 {
-    use BelongsToCategoryTrait;
+    use BelongsToCategoryTrait, Searchable;
     protected $table = 'tags';
     protected $fillable = ['name', 'logo', 'summary','description','followers', 'category_id', 'reviews'];
 
@@ -236,11 +237,33 @@ class Tag extends Model
         return $tag;
     }
 
-    /*搜索*/
-    public static function search($word)
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
     {
-        $list = self::where('name','like',"%$word%");
-        return $list;
+        $rel = TagCategoryRel::where('tag_id',$this->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->first();
+        $status = 1;
+        $type = TagCategoryRel::TYPE_DEFAULT;
+        if ($rel) {
+          $status = 1;
+          $type = TagCategoryRel::TYPE_REVIEW;
+        } else {
+            $rel = TagCategoryRel::where('tag_id',$this->id)->where('type',TagCategoryRel::TYPE_REVIEW)->first();
+            if ($rel) {
+                $status = 0;
+                $type = TagCategoryRel::TYPE_REVIEW;
+            }
+        }
+        return [
+            'name' => $this->name,
+            'status' => $status,
+            'reviews' => $this->reviews,
+            'type' => $type
+        ];
+
     }
 
 

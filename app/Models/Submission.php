@@ -186,6 +186,7 @@ class Submission extends Model {
         }
         return [
             'title' => $title,
+            'product_type'  => $this->type=='review'?2:1,
             'status' => $this->status,
             'public' => $this->public,
             'group_id' => $this->group_id,
