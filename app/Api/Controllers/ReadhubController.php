@@ -51,8 +51,16 @@ class ReadhubController extends Controller
 
         $list = [];
         foreach($submissions as $submission){
-            $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
-            $group = Group::find($submission->group_id);
+            if ($submission->type == 'review') {
+                $comment_url = '/dianping/comment/'.$submission->slug;
+                $tags = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
+                $category_name = $tags[0]['name'];
+            } else {
+                $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+                $group = Group::find($submission->group_id);
+                $category_name = $group->name;
+            }
+
             $list[] = [
                 'id' => $submission->id,
                 'type' => $submission->type,
@@ -65,7 +73,7 @@ class ReadhubController extends Controller
                 'submission_url' => $submission->data['url']??$comment_url,
                 'comment_url'    => $comment_url,
                 'domain'         => $submission->data['domain']??'',
-                'category_name'  => $group->name,
+                'category_name'  => $category_name,
                 'created_at'     => (string) $submission->created_at
             ];
         }

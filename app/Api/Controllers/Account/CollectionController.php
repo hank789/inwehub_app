@@ -77,7 +77,8 @@ class CollectionController extends Controller
         $sourceClassMap = [
             'questions' => 'App\Models\Question',
             'answers' => 'App\Models\Answer',
-            'readhubSubmission' => 'App\Models\Submission'
+            'readhubSubmission' => 'App\Models\Submission',
+            'reviews' => 'App\Models\Submission'
         ];
 
         if(!isset($sourceClassMap[$source_type])){
@@ -92,12 +93,16 @@ class CollectionController extends Controller
 
         $query = $user->collections()->where('source_type','=',$sourceClassMap[$source_type]);
 
+        if ($source_type == 'readhubSubmission') {
+            $query = $query->where('status',1);
+        } elseif ($source_type == 'reviews') {
+            $query = $query->where('status',2);
+        }
+
         if($top_id){
             $query = $query->where('id','>',$top_id);
         }elseif($bottom_id){
             $query = $query->where('id','<',$bottom_id);
-        }else{
-            $query = $query->where('id','>',0);
         }
 
         $attentions = $query->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
@@ -138,6 +143,10 @@ class CollectionController extends Controller
                     if (!is_array($item['img'])) {
                         $item['img'] = [$item['img']];
                     }
+                    break;
+                case 'reviews':
+                    $submission = $model::find($attention->source_id);
+                    $item = $submission->formatListItem($user, false);
                     break;
             }
             $data[] = $item;
