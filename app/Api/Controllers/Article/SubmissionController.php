@@ -69,6 +69,7 @@ class SubmissionController extends Controller {
         }
         $group_id = $request->input('group_id',0);
         $public = 1;
+        $hide = $request->input('hide',0);
         if ($request->type != 'review') {
             $group = Group::find($group_id);
             if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
@@ -104,6 +105,7 @@ class SubmissionController extends Controller {
                 $role = Role::where('slug','dianpingrobot')->first();
                 $roleUsers = RoleUser::where('role_id',$role->id)->pluck('user_id')->toArray();
                 $user_id = array_random($roleUsers);
+                $hide = 0;
             }
             $category_id = $tagString;
         }
@@ -201,7 +203,7 @@ class SubmissionController extends Controller {
                 'public'        => $public,
                 'rate'          => firstRate(),
                 'rate_star'     => $request->input('rate_star',0),
-                'hide'          => $request->input('hide',0),
+                'hide'          => $hide,
                 'status'        => $request->input('draft',0)?0:1,
                 'user_id'       => $user_id,
                 'data'          => $data,
