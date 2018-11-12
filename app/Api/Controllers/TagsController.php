@@ -128,17 +128,18 @@ class TagsController extends Controller {
             ];
         }
         //推荐股问
-        $recommendUsers = UserTag::where('tag_id',$tag->id)->where('user_id','!=',$user->id)->orderBy('articles','desc')->take(5)->get();
+        $recommendUsers = UserTag::where('tag_id',$tag->id)->where('user_id','!=',$user->id)->orderBy('skills','desc')->take(5)->get();
         foreach ($recommendUsers as $recommendUser) {
             $userTags = $recommendUser->user->userTag()->orderBy('skills','desc')->pluck('tag_id');
             $skillTag = Tag::find($userTags[0]);
+            if (!$skillTag) continue;
             $data['recommend_users'][] = [
                 'name' => $recommendUser->user->name,
                 'id'   => $recommendUser->user_id,
                 'uuid' => $recommendUser->user->uuid,
                 'is_expert' => $recommendUser->user->is_expert,
                 'avatar_url' => $recommendUser->user->avatar,
-                'skill' => $skillTag?$skillTag->name:''
+                'skill' => $skillTag->name
             ];
         }
         return self::createJsonData(true,$data);
