@@ -136,6 +136,7 @@ class TagsController extends Controller {
         $skillTags = TagsLogic::loadTags(5,'')['tags'];
         foreach ($recommendUsers as $recommendUser) {
             $userTags = UserTag::where('user_id',$recommendUser->user_id)->whereIn('tag_id',array_column($skillTags,'value'))->orderBy('skills','desc')->pluck('tag_id');
+            if (!isset($userTags[0])) continue;
             $skillTag = Tag::find($userTags[0]);
             if (!$skillTag) continue;
             $data['recommend_users'][] = [
