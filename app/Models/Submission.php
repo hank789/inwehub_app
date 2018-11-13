@@ -286,6 +286,14 @@ class Submission extends Model {
         if ($submission->type == 'review') {
             $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_REVIEW;
             $title = $submission->hide?'匿名':$submission->user->name;
+            foreach ($sourceData['tags'] as $key=>$tag) {
+                $sourceData['tags'][$key]['review_average_rate'] = 0;
+                if (isset($submission->data['category_ids'])) {
+                    $reviewInfo = Tag::getReviewInfo($tag['id']);
+                    $sourceData['tags'][$key]['reviews'] = $reviewInfo['review_count'];
+                    $sourceData['tags'][$key]['review_average_rate'] = $reviewInfo['review_average_rate'];
+                }
+            }
         }
 
         $item = [
