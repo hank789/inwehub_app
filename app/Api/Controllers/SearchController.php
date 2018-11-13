@@ -199,7 +199,7 @@ class SearchController extends Controller
         $data = [];
         foreach ($companies as $company) {
             $tags = $company->tags()->pluck('name')->toArray();
-            if (!is_numeric($userData->longitude) || !is_numeric($userData->latitude)) {
+            if (!is_numeric($userData->longitude) || !is_numeric($userData->latitude) || !is_numeric($company->latitude) || !is_numeric($company->longitude)) {
                 $distance = '未知';
             } else {
                 $distance = getDistanceByLatLng($company->longitude,$company->latitude,$userData->longitude,$userData->latitude);

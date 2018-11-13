@@ -584,9 +584,13 @@ class SubmissionController extends Controller {
             $return['owner']['uuid'] = '';
             $return['owner']['is_expert'] = 0;
         }
+        $actionName = Doing::ACTION_VIEW_SUBMISSION;
+        $actionUrl = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         if ($submission->type == 'review') {
             $tag = Tag::find($submission->category_id);
             $return['related_tags'] = $tag->relationReviews(4);
+            $actionName = Doing::ACTION_VIEW_DIANPING_REVIEW_INFO;
+            $actionUrl = config('app.mobile_url').'#/dianping/comment/'.$submission->slug;
         }
 
         //seo信息
@@ -599,8 +603,8 @@ class SubmissionController extends Controller {
         ];
 
         $this->logUserViewTags($user->id,$submission->tags()->get());
-        $this->doing($user,Doing::ACTION_VIEW_SUBMISSION,get_class($submission),$submission->id,$submission->type == 'link'?$submission->data['title']:$submission->title,
-            '',0,0,'',config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug);
+        $this->doing($user,$actionName,get_class($submission),$submission->id,$submission->type == 'link'?$submission->data['title']:$submission->title,
+            '',0,0,'',$actionUrl);
         return self::createJsonData(true,$return);
     }
 
