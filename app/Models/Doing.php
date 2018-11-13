@@ -68,7 +68,6 @@ class Doing extends Model
     const ACTION_VIEW_DIANPING_INDEX = 'view_dianping_index';
     const ACTION_VIEW_DIANPING_PRODUCT_INFO = 'view_dianping_product_info';
     const ACTION_VIEW_DIANPING_REVIEW_INFO = 'view_dianping_review_info';
-    const ACTION_VIEW_DIANPING_REVIEW_COMMENT = 'view_dianping_review_info';
 
 
 

@@ -125,7 +125,6 @@ class CommentObserver implements ShouldQueue {
                 break;
             case 'App\Models\Submission':
                 //动态
-                $title = '动态';
                 if (Redis::connection()->hget('user.'.$comment->user_id.'.data', 'commentsCount') <= 2) {
                     TaskLogic::finishTask('newbie_readhub_comment',0,'newbie_readhub_comment',[$comment->user_id]);
                 }
@@ -150,10 +149,6 @@ class CommentObserver implements ShouldQueue {
                     'title' => '标题',
                     'value' => strip_tags($submission->title)
                 ];
-                $fields[] = [
-                    'title' => '地址',
-                    'value' => config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
-                ];
 
                 $user = $comment->user;
                 $notifyUids = [];
@@ -163,6 +158,10 @@ class CommentObserver implements ShouldQueue {
                     $notifyUrl = '/dianping/comment/'.$submission->slug.'?comment='.$comment->id;
                     $notifyType = '点评';
                 }
+                $fields[] = [
+                    'title' => '地址',
+                    'value' => config('app.mobile_url').'#'.$notifyUrl
+                ];
                 if ($comment->parent_id > 0 && $comment->parent->user_id != $comment->user_id) {
                     $parent_comment = $comment->parent;
                     $notifyUids[$parent_comment->user_id] = $parent_comment->user_id;
@@ -241,7 +240,7 @@ class CommentObserver implements ShouldQueue {
                     'color'  => 'good',
                     'fields' => $fields
                 ]
-            )->send('用户'.$comment->user->id.'['.$comment->user->name.']评论了'.$title);
+            )->send('用户'.$comment->user->id.'['.$comment->user->name.']评论了'.$notifyType);
     }
 
 

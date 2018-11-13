@@ -122,9 +122,12 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $tags = Tag::search($request->input('search_word'))->where('type',TagCategoryRel::TYPE_REVIEW)
-            ->where('status',1)
-            ->orderBy('reviews', 'desc')
+        $query = Tag::search($request->input('search_word'));
+        if (config('app.env') == 'production') {
+            $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
+                ->where('status',1);
+        }
+        $tags = $query->orderBy('reviews', 'desc')
             ->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($tags as $tag) {

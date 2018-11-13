@@ -6,6 +6,7 @@ use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Company\CompanyData;
+use App\Models\Doing;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
@@ -129,6 +130,7 @@ class TagsController extends Controller {
         }
         //推荐股问
         $recommendUsers = UserTag::where('tag_id',$tag->id)->where('user_id','!=',$user->id)->orderBy('skills','desc')->take(5)->get();
+        $skillTags = TagsLogic::loadTags(5,'');
         foreach ($recommendUsers as $recommendUser) {
             $userTags = $recommendUser->user->userTag()->orderBy('skills','desc')->pluck('tag_id');
             $skillTag = Tag::find($userTags[0]);
@@ -142,6 +144,8 @@ class TagsController extends Controller {
                 'skill' => $skillTag->name
             ];
         }
+        $this->doing($user,Doing::ACTION_VIEW_DIANPING_PRODUCT_INFO,'',0,$tag->name,'',0,0,'',config('app.mobile_url').'#/dianping/product/'.$tag->name);
+
         return self::createJsonData(true,$data);
     }
 
@@ -252,6 +256,7 @@ class TagsController extends Controller {
             ];
         }
         $return['data'] = $list;
+        $this->doing($request->user(),Doing::ACTION_VIEW_DIANPING_INDEX,'',0,'');
         return self::createJsonData(true, $return);
     }
 
