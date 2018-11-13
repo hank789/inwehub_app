@@ -147,7 +147,7 @@ class TagsController extends Controller {
                 'skill' => $skillTag->name
             ];
         }
-        $this->doing($user,Doing::ACTION_VIEW_DIANPING_PRODUCT_INFO,'',0,$tag->name,'',0,0,'',config('app.mobile_url').'#/dianping/product/'.$tag->name);
+        $this->doing($user,Doing::ACTION_VIEW_DIANPING_PRODUCT_INFO,'',0,$tag->name,'',0,0,'',config('app.mobile_url').'#/dianping/product/'.rawurlencode($tag->name));
 
         return self::createJsonData(true,$data);
     }

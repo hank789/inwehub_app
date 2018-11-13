@@ -184,7 +184,8 @@ class Submission extends Model {
             //elasticsearch的索引长度为32766
             $title = str_limit($title,$str_length/1.6,'');
         }
-        return [
+
+        $fields = [
             'title' => $title,
             'product_type'  => $this->type=='review'?2:1,
             'status' => $this->status,
@@ -192,7 +193,10 @@ class Submission extends Model {
             'group_id' => $this->group_id,
             'rate' => $this->rate
         ];
-
+        if (config('app.env') != 'production') {
+            unset($fields['product_type']);
+        }
+        return $fields;
     }
 
     public function formatTitle(){
