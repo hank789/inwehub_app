@@ -152,7 +152,12 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $query = Submission::search($request->input('search_word'))->where('status',1)->where('product_type',2);
+        $query = Submission::search($request->input('search_word'))->where('status',1);
+        if (config('app.env') == 'production') {
+            $query = $query->where('product_type',2);
+        } else {
+            $query = $query->where('type','review');
+        }
         $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $return = $submissions->toArray();
         $data = [];
@@ -262,13 +267,9 @@ class SearchController extends Controller
             if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
         }*/
 
-        $query = Submission::search($request->input('search_word'))->where('status',1)->where('product_type',1);
-        if ($userPrivateGroups && false) {
-            $query = $query->Where(function ($query) use ($userPrivateGroups) {
-                $query->where('public',1)->orWhereIn('group_id',$userPrivateGroups);
-            });
-        } else {
-            //$query = $query->where('public',1);
+        $query = Submission::search($request->input('search_word'))->where('status',1);
+        if (config('app.env') == 'production') {
+            $query = $query->where('product_type',1);
         }
         $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $return = $submissions->toArray();
