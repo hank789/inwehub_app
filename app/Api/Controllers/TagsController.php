@@ -136,6 +136,7 @@ class TagsController extends Controller {
         $skillTags = TagsLogic::loadTags(5,'')['tags'];
         foreach ($recommendUsers as $recommendUser) {
             $userTags = UserTag::where('user_id',$recommendUser->user_id)->whereIn('tag_id',array_column($skillTags,'value'))->orderBy('skills','desc')->pluck('tag_id');
+            if (!isset($userTags[0])) continue;
             $skillTag = Tag::find($userTags[0]);
             if (!$skillTag) continue;
             $data['recommend_users'][] = [
@@ -147,7 +148,7 @@ class TagsController extends Controller {
                 'skill' => $skillTag->name
             ];
         }
-        $this->doing($user,Doing::ACTION_VIEW_DIANPING_PRODUCT_INFO,'',0,$tag->name,'',0,0,'',config('app.mobile_url').'#/dianping/product/'.$tag->name);
+        $this->doing($user,Doing::ACTION_VIEW_DIANPING_PRODUCT_INFO,'',0,$tag->name,'',0,0,'',config('app.mobile_url').'#/dianping/product/'.rawurlencode($tag->name));
 
         return self::createJsonData(true,$data);
     }

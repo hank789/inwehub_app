@@ -257,13 +257,17 @@ class Tag extends Model
                 $type = TagCategoryRel::TYPE_REVIEW;
             }
         }
-        return [
+        $fields =  [
             'name' => $this->name,
             'status' => $status,
             'reviews' => $this->reviews,
             'type' => $type
         ];
-
+        if (config('app.env') != 'production') {
+            unset($fields['status']);
+            unset($fields['type']);
+        }
+        return $fields;
     }
 
 
