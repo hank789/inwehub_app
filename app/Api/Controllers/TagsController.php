@@ -110,7 +110,9 @@ class TagsController extends Controller {
         $data['review_average_rate'] = $reviewInfo['review_average_rate'];
         $data['related_tags'] = $tag->relationReviews(4);
         $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->orderBy('review_average_rate','desc')->get();
+        $cids = [];
         foreach ($categoryRels as $key=>$categoryRel) {
+            $cids[] = $categoryRel->category_id;
             $category = Category::find($categoryRel->category_id);
             $rate = TagCategoryRel::where('category_id',$category->id)->where('review_average_rate','>',$categoryRel->review_average_rate)->count();
             $data['categories'][] = [
@@ -129,10 +131,11 @@ class TagsController extends Controller {
             ];
         }
         //推荐股问
-        $recommendUsers = UserTag::where('tag_id',$tag->id)->where('user_id','!=',$user->id)->orderBy('skills','desc')->take(5)->get();
-        $skillTags = TagsLogic::loadTags(5,'');
+        $releatedTags = TagCategoryRel::whereIn('category_id',$cids)->pluck('tag_id')->toArray();
+        $recommendUsers = UserTag::whereIn('tag_id',$releatedTags)->where('user_id','!=',$user->id)->orderBy('skills','desc')->take(5)->get();
+        $skillTags = TagsLogic::loadTags(5,'')['tags'];
         foreach ($recommendUsers as $recommendUser) {
-            $userTags = $recommendUser->user->userTag()->orderBy('skills','desc')->pluck('tag_id');
+            $userTags = UserTag::where('user_id',$recommendUser->user_id)->whereIn('tag_id',array_column($skillTags,'value'))->orderBy('skills','desc')->pluck('tag_id');
             $skillTag = Tag::find($userTags[0]);
             if (!$skillTag) continue;
             $data['recommend_users'][] = [
