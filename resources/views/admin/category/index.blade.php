@@ -10,21 +10,34 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box">
-                    <form role="form" name="item_form" id="item_form" method="post">
-                        <input name="_method" type="hidden" value="DELETE">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
                         <div class="box-header">
                             <div class="row">
-                                <div class="col-xs-12">
+                                <div class="col-xs-3">
                                     <div class="btn-group">
                                         <a href="{{ route('admin.category.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="添加分类"><i class="fa fa-plus"></i></a>
-                                        <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('item_form','{{  route('admin.category.destroy',['id'=>0]) }}','删除选中分类会同时删除其子分类，确认继续操作？')"><i class="fa fa-trash-o"></i></button>
+                                        <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('itemForm','{{  route('admin.category.destroy',['id'=>0]) }}','删除选中分类会同时删除其子分类，确认继续操作？')"><i class="fa fa-trash-o"></i></button>
+                                    </div>
+                                </div>
+                                <div class="col-xs-9">
+                                    <div class="row">
+                                        <form name="searchForm" action="{{ route('admin.category.index') }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <div class="col-xs-4">
+                                                <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <button type="submit" class="btn btn-primary">搜索</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="box-body  no-padding">
+                            <form name="itemForm" id="item_form" method="POST">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
@@ -57,11 +70,11 @@
                                     @endforeach
                                 </table>
                             </div>
+                            </form>
                         </div>
                         <div class="box-footer clearfix">
                             {!! str_replace('/?', '?', $categories->render()) !!}
                         </div>
-                    </form>
                 </div>
             </div>
         </div>

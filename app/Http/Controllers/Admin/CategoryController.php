@@ -16,6 +16,7 @@ class CategoryController extends AdminController
     protected $validateRules = [
         'name' => 'required|max:255',
         'slug' => 'required|max:255|unique:categories',
+        'sort' => 'required|integer'
     ];
 
 
@@ -24,10 +25,15 @@ class CategoryController extends AdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::orderBy('created_at','desc')->paginate(config('inwehub.admin.page_size'));
-        return view("admin.category.index")->with(compact('categories'));
+        $filter =  $request->all();
+        $query = Category::orderBy('created_at','desc');
+        if( isset($filter['word']) && $filter['word'] ){
+            $query->where('name','like', '%'.$filter['word'].'%');
+        }
+        $categories = $query->paginate(config('inwehub.admin.page_size'));
+        return view("admin.category.index")->with(compact('categories','filter'));
     }
 
     /**
