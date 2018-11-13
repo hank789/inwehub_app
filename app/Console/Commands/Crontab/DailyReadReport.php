@@ -35,15 +35,19 @@ class DailyReadReport extends Command
     public function handle()
     {
         $data = MixpanelService::instance()->request(['events'],[
-            'event' => ['inwehub:discover_detail','inwehub:ask-offer-answers','inwehub:ask-offer-detail','inwehub:read_page_detail','inwehub:dianping-add','inwehub:ask','inwehub:discover_add'],
+            'event' => ['inwehub:discover_detail','inwehub:dianping-product-detail','inwehub:dianping-comment-detail','inwehub:ask-offer-answers','inwehub:ask-offer-detail','inwehub:read_page_detail','inwehub:dianping-add','inwehub:ask','inwehub:discover_add'],
             'type'  => 'general',
             'unit'  => 'day',
             'interval' => 1
         ]);
         $today = date('Y-m-d');
         $current = $data['data']['values']["inwehub:discover_detail"][$today] + $data['data']['values']["inwehub:ask-offer-answers"][$today] +
-            $data['data']['values']["inwehub:ask-offer-detail"][$today] + $data['data']['values']["inwehub:read_page_detail"][$today];
-        event(new OperationNotify('今日总阅读数：'.$current));
+            $data['data']['values']["inwehub:ask-offer-detail"][$today] + $data['data']['values']["inwehub:read_page_detail"][$today] + $data['data']['values']["inwehub:dianping-product-detail"][$today] +
+            $data['data']['values']["inwehub:dianping-comment-detail"][$today];
+        $message = '今日总阅读数：'.$current.';文章('.$data['data']['values']["inwehub:discover_detail"][$today].');
+        问答('.($data['data']['values']["inwehub:ask-offer-answers"][$today] + $data['data']['values']["inwehub:ask-offer-detail"][$today]).');
+        外链('.$data['data']['values']["inwehub:read_page_detail"][$today].');点评产品页('.$data['data']['values']["inwehub:dianping-product-detail"][$today].');点评详情页('.$data['data']['values']["inwehub:dianping-comment-detail"][$today].')';
+        event(new OperationNotify($message));
         event(new OperationNotify('今日发布页面打开数:'.$data['data']['values']["inwehub:ask"][$today].'(提问);'.$data['data']['values']["inwehub:discover_add"][$today].'(分享);'.$data['data']['values']["inwehub:dianping-add"][$today].'(点评)'));
     }
 
