@@ -122,9 +122,12 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $tags = Tag::search($request->input('search_word'))->where('type',TagCategoryRel::TYPE_REVIEW)
-            ->where('status',1)
-            ->orderBy('reviews', 'desc')
+        $query = Tag::search($request->input('search_word'));
+        if (config('app.env') == 'production') {
+            $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
+                ->where('status',1);
+        }
+        $tags = $query->orderBy('reviews', 'desc')
             ->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
         foreach ($tags as $tag) {
@@ -199,7 +202,7 @@ class SearchController extends Controller
         $data = [];
         foreach ($companies as $company) {
             $tags = $company->tags()->pluck('name')->toArray();
-            if (!is_numeric($userData->longitude) || !is_numeric($userData->latitude)) {
+            if (!is_numeric($userData->longitude) || !is_numeric($userData->latitude) || !is_numeric($company->latitude) || !is_numeric($company->longitude)) {
                 $distance = '未知';
             } else {
                 $distance = getDistanceByLatLng($company->longitude,$company->latitude,$userData->longitude,$userData->latitude);

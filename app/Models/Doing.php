@@ -65,6 +65,12 @@ class Doing extends Model
     const ACTION_VIEW_GROUP_LIST = 'view_group_list';
     const ACTION_VIEW_NOTIFICATION_LIST = 'view_notification_list';
     const ACTION_VIEW_MY_INFO = 'view_my_info';
+    const ACTION_VIEW_DIANPING_INDEX = 'view_dianping_index';
+    const ACTION_VIEW_DIANPING_PRODUCT_INFO = 'view_dianping_product_info';
+    const ACTION_VIEW_DIANPING_REVIEW_INFO = 'view_dianping_review_info';
+
+
+
 
 
     public static $actionName = [
@@ -86,7 +92,10 @@ class Doing extends Model
         self::ACTION_VIEW_QUESTION_LIST => '浏览社区问答页',
         self::ACTION_VIEW_GROUP_LIST => '浏览社区圈子页',
         self::ACTION_VIEW_NOTIFICATION_LIST => '浏览通知页',
-        self::ACTION_VIEW_MY_INFO => '浏览我的页面'
+        self::ACTION_VIEW_MY_INFO => '浏览我的页面',
+        self::ACTION_VIEW_DIANPING_INDEX => '浏览点评首页',
+        self::ACTION_VIEW_DIANPING_PRODUCT_INFO => '浏览点评产品页',
+        self::ACTION_VIEW_DIANPING_REVIEW_INFO => '浏览点评详情页'
     ];
 
     public function source()
