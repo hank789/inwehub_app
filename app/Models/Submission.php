@@ -7,6 +7,7 @@
 
 use App\Jobs\UpdateSubmissionKeywords;
 use App\Logic\QuillLogic;
+use App\Logic\TagsLogic;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
@@ -155,6 +156,21 @@ class Submission extends Model {
             Taggable::where('taggable_type','=',get_class($submission))->where('taggable_id','=',$submission->id)->delete();
             /*删除动态*/
             Doing::where('source_type','=',get_class($submission))->where('source_id','=',$submission->id)->delete();
+            if ($submission->type == 'review') {
+                foreach ($submission->data['category_ids'] as $category_id) {
+                    $tagC = TagCategoryRel::where('tag_id',$submission->category_id)->where('category_id',$category_id)->first();
+                    $tagC->reviews -= 1;
+                    $tagC->review_rate_sum -= $submission->rate_star;
+                    if ($tagC->review_rate_sum < 0) {
+                        $tagC->review_rate_sum = 0;
+                    }
+                    $tagC->review_average_rate = $tagC->reviews?bcdiv($tagC->review_rate_sum,$tagC->reviews,1):0;
+                    $tagC->save();
+                }
+                $tag = Tag::find($submission->category_id);
+                $tag->decrement('reviews');
+                TagsLogic::delProductCache();
+            }
         });
     }
 
