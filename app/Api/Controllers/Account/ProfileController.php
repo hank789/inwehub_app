@@ -203,7 +203,7 @@ class ProfileController extends Controller
                 'edus'   => $edu_desc,
                 'trains'  => $train_desc
             ];
-            Cache::put('user_info_'.$user->id,$data,120);
+            Cache::forever('user_info_'.$user->id,$data);
         }
 
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
