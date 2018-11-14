@@ -129,7 +129,7 @@ class CompanyData extends Model
             if ($longitude) {
                 $hash = GeoHash::instance()->encode($latitude,$longitude);
             }
-            $data = self::create([
+            $exist = self::create([
                 'name' => $companyName,
                 'logo' => '',
                 'address_province' => $address_province,
@@ -139,16 +139,18 @@ class CompanyData extends Model
                 'geohash'          => $hash,
                 'audit_status'     => 1
             ]);
-            CompanyDataUser::create([
-                'company_data_id' => $data->id,
-                'user_id'         => $user_id,
-                'audit_status'    => 1,
-                'is_show'         => $isShow,
-                'status'          => $userCompanyStatus
-            ]);
+            if ($userCompanyStatus != -1) {
+                CompanyDataUser::create([
+                    'company_data_id' => $exist->id,
+                    'user_id'         => $user_id,
+                    'audit_status'    => 1,
+                    'is_show'         => $isShow,
+                    'status'          => $userCompanyStatus
+                ]);
+            }
             $user = User::find($user_id);
             event(new SystemNotify('用户'.$user->id.'['.$user->name.']维护了新公司['.$companyName.']'));
-        } else {
+        } elseif ($userCompanyStatus != -1) {
             $existUser = CompanyDataUser::where('company_data_id',$exist->id)->where('user_id',$user_id)->first();
             if (!$existUser) {
                 CompanyDataUser::create([
@@ -166,6 +168,7 @@ class CompanyData extends Model
                 $existUser->save();
             }
         }
+        return $exist;
     }
 
 }

@@ -127,7 +127,7 @@ class ApiException extends Exception
     const GROUP_NOT_EXIST = 6106;
     const GROUP_UNDER_AUDIT = 6107;
     const GROUP_NOT_JOINED = 6108;
-
+    const PRODUCT_TAG_ALREADY_EXIST = 6109;
 
     public static $errorMessages = [
         //全局响应吗
@@ -233,7 +233,8 @@ class ApiException extends Exception
         self::GROUP_EXIST => '圈子已存在',
         self::GROUP_NOT_EXIST => '圈子不存在',
         self::GROUP_UNDER_AUDIT => '圈子正在审核中',
-        self::GROUP_NOT_JOINED => '成为圈成员，查看所有分享'
+        self::GROUP_NOT_JOINED => '成为圈成员，查看所有分享',
+        self::PRODUCT_TAG_ALREADY_EXIST => '产品已存在'
     ];
 
 
