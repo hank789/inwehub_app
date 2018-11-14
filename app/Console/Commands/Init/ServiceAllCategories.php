@@ -126,12 +126,20 @@ class ServiceAllCategories extends Command
                 $this->error($categoryItem->slug);
                 $prefix = 'enterprise_product_';
             }
+
+
             $url = 'https://www.g2crowd.com/categories/'.$slug;
             $html = $this->ql->browser($url);
             $data = $html->rules([
                 'name' => ['a','text'],
                 'link' => ['a','href']
             ])->range('div.paper.mb-2>div')->query()->getData();
+            if ($data->count() <= 0) {
+                $data = $html->rules([
+                    'name' => ['a','text'],
+                    'link' => ['a','href']
+                ])->range('ul.list--plain>li')->query()->getData();
+            }
             if ($data->count() > 0) {
                 foreach ($data as $item) {
                     $name = formatHtml($item['name']);
@@ -216,10 +224,17 @@ class ServiceAllCategories extends Command
     }
 
     protected function addChildren($v,$categoryItem,$prefix) {
-        $data = $this->ql->browser('https://www.g2crowd.com'.$v['link'])->rules([
+        $html = $this->ql->browser('https://www.g2crowd.com'.$v['link']);
+        $data = $html->rules([
             'name' => ['a','text'],
             'link' => ['a','href']
         ])->range('div.paper.mb-2>div')->query()->getData();
+        if ($data->count() <= 0) {
+            $data = $html->rules([
+                'name' => ['a','text'],
+                'link' => ['a','href']
+            ])->range('ul.list--plain>li')->query()->getData();
+        }
         if ($data->count() > 0) {
             foreach ($data as $item) {
                 $name = formatHtml($item['name']);
