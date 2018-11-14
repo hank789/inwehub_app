@@ -151,6 +151,7 @@ class ServiceAllCategories extends Command
                         ]);
                     }
                     $this->addChildren($item,$children,$prefix);
+                    RateLimiter::instance()->hSet('g2_category_finished',$children->slug,1);
                 }
             }
             RateLimiter::instance()->hSet('g2_category_finished',$categoryItem->slug,1);
@@ -238,7 +239,9 @@ class ServiceAllCategories extends Command
                     ]);
                 }
                 $this->addChildren($item,$children,$prefix);
+                RateLimiter::instance()->hSet('g2_category_finished',$children->slug,1);
             }
         }
+        RateLimiter::instance()->hSet('g2_category_finished',$categoryItem->slug,1);
     }
 }
