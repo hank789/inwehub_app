@@ -95,10 +95,7 @@ class RateLimiter extends Singleton
     }
 
     public function hClear($event) {
-        $keys = $this->hGetAll($event);
-        foreach ($keys as $key=>$val) {
-            $this->client->hDel($event,$key);
-        }
+        $this->client->delete($event);
     }
 
     public function sAdd($key,$value,$expire = 60) {
