@@ -150,7 +150,7 @@ class ServiceAllCategories extends Command
                 foreach ($data as $item) {
                     $name = formatHtml($item['name']);
                     $slug2 = str_replace('/categories/','',$item['link']);
-                    $children = Category::where('slug',$prefix.$slug2)->first();
+                    $children = Category::whereIn('slug',['enterprise_product_'.$slug2,'enterprise_service_'.$slug2])->first();
                     if (!$children) {
                         $this->info($item['name']);
                         $children = Category::create([
@@ -195,7 +195,7 @@ class ServiceAllCategories extends Command
             $slug = str_replace('&','-',$slug);
             $slug = str_replace('/','-',$slug);
         }
-        $category = Category::where('slug',$softwarePrefix.$slug)->first();
+        $category = Category::whereIn('slug',['enterprise_product_'.$slug,'enterprise_service_'.$slug])->first();
         if (!$category) {
             $this->info($name);
             $category = Category::create([
@@ -211,16 +211,24 @@ class ServiceAllCategories extends Command
         }
         foreach ($item['list'] as $item2) {
             $slug2 = str_replace('/categories/','',$item2['link']);
-            $children = Category::where('slug',$softwarePrefix.$slug2)->first();
+            $children = Category::whereIn('slug',['enterprise_product_'.$slug2,'enterprise_service_'.$slug2])->first();
             if (!$children) {
                 $name2 = formatHtml($item2['name']);
                 $this->info($name2);
+                if (str_contains($category->slug,'enterprise_product_')) {
+                    $prefix = 'enterprise_product_';
+                } elseif (str_contains($category->slug,'enterprise_service_')) {
+                    $prefix = 'enterprise_service_';
+                } else {
+                    $this->error($category->slug);
+                    $prefix = 'enterprise_product_';
+                }
                 $children = Category::create([
                     'parent_id' => $category->id,
                     'grade'     => 1,
                     'name'      => config('app.env') == 'production'?Translate::instance()->translate($name2):$name2,
                     'icon'      => $name2,
-                    'slug'      => $softwarePrefix.$slug2,
+                    'slug'      => $prefix.$slug2,
                     'type'      => 'enterprise_review',
                     'sort'      => 0,
                     'status'    => 1
@@ -247,7 +255,7 @@ class ServiceAllCategories extends Command
             foreach ($data as $item) {
                 $name = formatHtml($item['name']);
                 $slug2 = str_replace('/categories/','',$item['link']);
-                $children = Category::where('slug',$prefix.$slug2)->first();
+                $children = Category::whereIn('slug',['enterprise_product_'.$slug2,'enterprise_service_'.$slug2])->first();
                 if (!$children) {
                     $this->info($item['name']);
                     $children = Category::create([
