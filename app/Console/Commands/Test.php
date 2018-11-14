@@ -58,6 +58,33 @@ class Test extends Command
      */
     public function handle()
     {
+        $this->ql = QueryList::getInstance();
+        $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $url = 'https://www.g2crowd.com/categories/sales';
+        $html = $this->ql->browser($url);
+        $data = $html->rules([
+            'name' => ['a','text'],
+            'link' => ['a','href']
+        ])->range('div.paper.mb-2>div')->query()->getData();
+        var_dump($data);
+        return;
+        //抓取g2所有产品分类
+        $url = 'https://www.g2crowd.com/categories?category_type=service';
+        $html = $this->ql->browser($url);
+        $data = $html->rules([
+            'name' => ['h4.color-secondary','text'],
+            'list' => ['h4~div.ml-2','html']
+        ])->range('div.newspaper-columns__list-item.pb-1')->query()->getData(function ($item) {
+            if (!isset($item['list'])) return $item;
+            $item['list'] = $this->ql->html($item['list'])->rules([
+                'name' => ['a.text-medium','text'],
+                'link' => ['a.text-medium','href']
+            ])->range('')->query()->getData();
+            return $item;
+        });
+        var_dump($data);
+        Storage::disk('local')->put('attachments/test5.html',json_encode($data));
+        return;
         $page = 1;
         Submission::where('id','>=',1)->searchable();
         $submissions = Submission::where('type','review')->simplePaginate(100,['*'],'page',$page);

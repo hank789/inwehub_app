@@ -14,21 +14,21 @@ use Illuminate\Console\Command;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
 
-class ReviewProducts extends Command
+class ReviewAllProducts extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'init:service:review-products {cid?}';
+    protected $signature = 'init:service:review-products-all {cid?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '初始化点评产品';
+    protected $description = '初始化所有点评产品';
 
     protected $ql;
 
@@ -46,9 +46,12 @@ class ReviewProducts extends Command
             $this->info($cid);
             $categories = Category::where('id',$cid)->get();
         } else {
-            $categories = Category::where('type','enterprise_review')->where('grade',0)->get();
+            $categories = Category::where('type','enterprise_review')->where('parent_id','>',0)->where('grade',0)->get();
         }
         foreach ($categories as $category) {
+            if (RateLimiter::instance()->hGet('g2_product_finished',$category->slug)) {
+                continue;
+            }
             $slug = str_replace('enterprise_product_','',$category->slug);
             $slug = str_replace('enterprise_service_','',$slug);
             $page=1;
@@ -63,6 +66,9 @@ class ReviewProducts extends Command
                     $data = $this->rules2($slug);
                     if ($data->count() <= 0) {
                         $data = $this->rules2($slug);
+                    }
+                    if ($data->count() > 0) {
+                        $this->error($category->slug);
                     }
                     $needBreak = true;
                 }
@@ -121,6 +127,7 @@ class ReviewProducts extends Command
                 //if (config('app.env') != 'production' && $page >= 2) break;
                 $page++;
             }
+            RateLimiter::instance()->hSet('g2_product_finished',$category->slug,1);
         }
         $this->info('完成');
     }
