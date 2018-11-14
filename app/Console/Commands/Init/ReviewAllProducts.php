@@ -32,6 +32,9 @@ class ReviewAllProducts extends Command
 
     protected $ql;
 
+    protected $scraperCount = 0;
+
+
     /**
      * Execute the console command.
      *
@@ -133,6 +136,7 @@ class ReviewAllProducts extends Command
     }
 
     protected function rules1($slug,$page) {
+        $this->reInitQl();
         $url = 'https://www.g2crowd.com/categories/'.$slug.'?order=g2_score&page='.$page.'#product-list';
         $html = $this->ql->browser($url)->rules([
             'name' => ['h5','text'],
@@ -143,11 +147,13 @@ class ReviewAllProducts extends Command
             'rate' => ['div.mr-4th','text'],
             'total' => ['div.as-fe','text']
         ])->range('div#product-list>div.mb-2')->query()->getData();
+        $this->scraperCount++;
         //var_dump($this->ql->browser($url)->getHtml());
         return $html;
     }
 
     protected function rules2($slug) {
+        $this->reInitQl();
         $url = 'https://www.g2crowd.com/categories/'.$slug;
         $html = $this->ql->browser($url)->rules([
             'name' => ['div.ellipsis--2-lines','text'],
@@ -157,8 +163,19 @@ class ReviewAllProducts extends Command
             'rate' => ['div.mr-4th','text'],
             'total' => ['div.as-fe','text']
         ])->range('div.row.small-up-1.medium-up-2.large-up-3>div.column')->query()->getData();
+        $this->scraperCount++;
         //var_dump($this->ql->browser($url)->getHtml());
         return $html;
+    }
+
+    protected function reInitQl() {
+        if ($this->scraperCount >= 100) {
+            $this->scraperCount = 0;
+            $this->ql->__destruct();
+            unset($this->ql);
+            $this->ql = QueryList::getInstance();
+            $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        }
     }
 
 }

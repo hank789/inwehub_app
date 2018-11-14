@@ -32,6 +32,8 @@ class ServiceAllCategories extends Command
 
     protected $mapping;
 
+    protected $scraperCount = 0;
+
     /**
      * Execute the console command.
      *
@@ -75,6 +77,7 @@ class ServiceAllCategories extends Command
         //抓取g2所有产品分类
         $url = 'https://www.g2crowd.com/categories?category_type=software';
         $html = $this->ql->browser($url);
+        $this->scraperCount++;
         $data = $html->rules([
             'name' => ['h4.color-secondary','text'],
             'list' => ['h4~div.ml-2','html']
@@ -106,6 +109,7 @@ class ServiceAllCategories extends Command
             ])->range('')->query()->getData();
             return $item;
         });
+        $this->scraperCount++;
         $this->info('抓取服务分类');
         foreach ($data as $item) {
             $this->addC($item,$servicePrefix);
@@ -129,7 +133,9 @@ class ServiceAllCategories extends Command
 
 
             $url = 'https://www.g2crowd.com/categories/'.$slug;
+            $this->reInitQl();
             $html = $this->ql->browser($url);
+            $this->scraperCount++;
             $data = $html->rules([
                 'name' => ['a','text'],
                 'link' => ['a','href']
@@ -224,7 +230,9 @@ class ServiceAllCategories extends Command
     }
 
     protected function addChildren($v,$categoryItem,$prefix) {
+        $this->reInitQl();
         $html = $this->ql->browser('https://www.g2crowd.com'.$v['link']);
+        $this->scraperCount++;
         $data = $html->rules([
             'name' => ['a','text'],
             'link' => ['a','href']
@@ -258,5 +266,15 @@ class ServiceAllCategories extends Command
             }
         }
         RateLimiter::instance()->hSet('g2_category_finished',$categoryItem->slug,1);
+    }
+
+    protected function reInitQl() {
+        if ($this->scraperCount >= 100) {
+            $this->scraperCount = 0;
+            $this->ql->__destruct();
+            unset($this->ql);
+            $this->ql = QueryList::getInstance();
+            $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        }
     }
 }
