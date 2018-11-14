@@ -73,7 +73,20 @@
                             </form>
                         </div>
                         <div class="box-footer clearfix">
-                            {!! str_replace('/?', '?', $categories->render()) !!}
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="btn-group">
+                                        <a href="{{ route('admin.category.create') }}" class="btn btn-default btn-sm" data-toggle="tooltip" title="添加分类"><i class="fa fa-plus"></i></a>
+                                        <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="删除选中项" onclick="confirm_submit('itemForm','{{  route('admin.category.destroy',['id'=>0]) }}','删除选中分类会同时删除其子分类，确认继续操作？')"><i class="fa fa-trash-o"></i></button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="text-right">
+                                        <span class="total-num">共 {{ $categories->total() }} 条数据</span>
+                                        {!! str_replace('/?', '?', $categories->appends($filter)->render()) !!}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                 </div>
             </div>
