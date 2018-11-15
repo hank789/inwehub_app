@@ -83,7 +83,7 @@ class ReviewAllProducts extends Command
                         $this->info($item['name'].';'.$item['total'].';'.$item['rate']);
                         if(!$tag) {
                             $description = $item['description'];
-                            if (config('app.env') == 'production') {
+                            if (false && config('app.env') == 'production') {
                                 $description = Translate::instance()->translate($item['description']);
                             }
                             $tag = Tag::create([
@@ -95,17 +95,19 @@ class ReviewAllProducts extends Command
                                 'parent_id' => 0,
                                 'reviews' => $item['total']
                             ]);
+                            RateLimiter::instance()->hSet('tag_pending_translate',$tag->id,1);
                         } elseif (empty($tag->logo)) {
                             $tag->logo = saveImgToCdn($logo,'tags');
                             $tag->category_id = $category->id;
                             $description = $item['description'];
-                            if (config('app.env') == 'production') {
+                            if (false && config('app.env') == 'production') {
                                 $description = Translate::instance()->translate($item['description']);
                             }
                             $tag->summary = $description;
                             $tag->description = $item['description'];
                             $tag->reviews = $item['total'];
                             $tag->save();
+                            RateLimiter::instance()->hSet('tag_pending_translate',$tag->id,1);
                         } else {
                             try {
                                 $logoInfo = getimagesize($tag->logo);
