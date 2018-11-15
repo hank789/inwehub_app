@@ -51,7 +51,7 @@
                                             <td style="white-space: normal;">
                                                 <a class="btn-viewinfo" href="{{ $article->source_url }}" target="_blank">{{ str_limit(strip_tags($article->title)) }}</a>
                                                 <br>圈子：{{ $article->group->name }}
-                                                <br>公司：{{ $article->company }},地区：{{ $article->city }},关键词：{{ $article->tags }}
+                                                <br>公司：{{ $article->company }},地区：{{ $article->city }},关键词：{{ $article->tags }}，日期：{{ $article->created_at }}
                                                 <br>{{ $article->summary }}
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default btn-sm" data-toggle="tooltip" title="查看文章" href="{{ $article->source_url }}" target="_blank"><i class="fa fa-eye"></i></a>
