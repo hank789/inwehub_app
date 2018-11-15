@@ -50,6 +50,10 @@ class ProductController extends AdminController
             $query->where('status',$filter['status']);
         }
 
+        if( isset($filter['id']) && $filter['id'] ){
+            $query->where('tag_id',$filter['id']);
+        }
+
         if (isset($filter['order_by']) && $filter['order_by']) {
             $orderBy = explode('|',$filter['order_by']);
             $query->orderBy('tag_category_rel.'.$orderBy[0],$orderBy[1]);
