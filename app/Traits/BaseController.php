@@ -293,6 +293,7 @@ trait BaseController {
     protected function uploadImgs($photos,$dir='submissions'){
         $list = [];
         if ($photos) {
+            if (!is_array($photos)) $photos = [$photos];
             foreach ($photos as $base64) {
                 $url = explode(';',$base64);
                 if(count($url) <=1){

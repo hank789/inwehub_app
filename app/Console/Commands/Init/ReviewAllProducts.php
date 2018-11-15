@@ -14,23 +14,26 @@ use Illuminate\Console\Command;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
 
-class ReviewProducts extends Command
+class ReviewAllProducts extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'init:service:review-products {cid?}';
+    protected $signature = 'init:service:review-products-all {cid?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '初始化点评产品';
+    protected $description = '初始化所有点评产品';
 
     protected $ql;
+
+    protected $scraperCount = 0;
+
 
     /**
      * Execute the console command.
@@ -46,9 +49,12 @@ class ReviewProducts extends Command
             $this->info($cid);
             $categories = Category::where('id',$cid)->get();
         } else {
-            $categories = Category::where('type','enterprise_review')->where('grade',0)->get();
+            $categories = Category::where('type','enterprise_review')->where('parent_id','>',0)->where('grade',0)->get();
         }
         foreach ($categories as $category) {
+            if (RateLimiter::instance()->hGet('g2_product_finished',$category->slug)) {
+                continue;
+            }
             $slug = str_replace('enterprise_product_','',$category->slug);
             $slug = str_replace('enterprise_service_','',$slug);
             $page=1;
@@ -63,6 +69,9 @@ class ReviewProducts extends Command
                     $data = $this->rules2($slug);
                     if ($data->count() <= 0) {
                         $data = $this->rules2($slug);
+                    }
+                    if ($data->count() > 0) {
+                        $this->error($category->slug);
                     }
                     $needBreak = true;
                 }
@@ -96,6 +105,13 @@ class ReviewProducts extends Command
                             $tag->summary = $description;
                             $tag->description = $item['description'];
                             $tag->save();
+                        } else {
+                            $logoInfo = getimagesize($tag->logo);
+                            if (empty($logoInfo)) {
+                                $file_name = str_replace('.png','.svg',$tag->logo);
+                                //svg
+                                dispatch((new \App\Jobs\UploadFile($file_name,base64_encode(file_get_contents($tag->logo)))));
+                            }
                         }
                         RateLimiter::instance()->hSet('review-tags-url',$tag->id,$item['link']);
                         $tagRel = TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$category->id)->first();
@@ -121,11 +137,13 @@ class ReviewProducts extends Command
                 //if (config('app.env') != 'production' && $page >= 2) break;
                 $page++;
             }
+            RateLimiter::instance()->hSet('g2_product_finished',$category->slug,1);
         }
         $this->info('完成');
     }
 
     protected function rules1($slug,$page) {
+        $this->reInitQl();
         $url = 'https://www.g2crowd.com/categories/'.$slug.'?order=g2_score&page='.$page.'#product-list';
         $html = $this->ql->browser($url)->rules([
             'name' => ['h5','text'],
@@ -136,11 +154,13 @@ class ReviewProducts extends Command
             'rate' => ['div.mr-4th','text'],
             'total' => ['div.as-fe','text']
         ])->range('div#product-list>div.mb-2')->query()->getData();
+        $this->scraperCount++;
         //var_dump($this->ql->browser($url)->getHtml());
         return $html;
     }
 
     protected function rules2($slug) {
+        $this->reInitQl();
         $url = 'https://www.g2crowd.com/categories/'.$slug;
         $html = $this->ql->browser($url)->rules([
             'name' => ['div.ellipsis--2-lines','text'],
@@ -150,8 +170,19 @@ class ReviewProducts extends Command
             'rate' => ['div.mr-4th','text'],
             'total' => ['div.as-fe','text']
         ])->range('div.row.small-up-1.medium-up-2.large-up-3>div.column')->query()->getData();
+        $this->scraperCount++;
         //var_dump($this->ql->browser($url)->getHtml());
         return $html;
+    }
+
+    protected function reInitQl() {
+        if ($this->scraperCount >= 100) {
+            $this->scraperCount = 0;
+            $this->ql->__destruct();
+            unset($this->ql);
+            $this->ql = QueryList::getInstance();
+            $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        }
     }
 
 }

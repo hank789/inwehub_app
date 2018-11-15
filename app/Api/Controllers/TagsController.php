@@ -177,6 +177,46 @@ class TagsController extends Controller {
         return self::createJsonData(true, $return);
     }
 
+    //提交产品
+    public function submitProduct(Request $request) {
+        $validateRules = [
+            'name' => 'required|min:1',
+            'logo' => 'required',
+            'category_ids' => 'required',
+            'company' => 'required|min:1',
+            'summary' => 'required|min:1',
+        ];
+        $this->validate($request,$validateRules);
+        $tag = Tag::where('name',$request->input('name'))->first();
+        if ($tag) {
+            return self::createJsonData(true,['name'=>$tag->name],ApiException::PRODUCT_TAG_ALREADY_EXIST,'产品已存在');
+        }
+        $user = $request->user();
+        $logo = $this->uploadImgs($request->input('logo'),'tags');
+        $company = CompanyData::initCompanyData($request->input('company'),$user->id,-1);
+        $category_ids = $request->input('category_ids');
+        $tag = Tag::create([
+            'name' => $request->input('name'),
+            'logo' => $logo['img'][0],
+            'category_id' => $category_ids[0],
+            'summary' => $request->input('summary')
+        ]);
+        foreach ($category_ids as $category_id) {
+            if ($category_id<=0) continue;
+            $rel = TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$category_id)->first();
+            if (!$rel) {
+                TagCategoryRel::create([
+                    'tag_id' => $tag->id,
+                    'category_id' => $category_id,
+                    'type' => TagCategoryRel::TYPE_REVIEW,
+                    'status' => 0
+                ]);
+            }
+        }
+        Tag::multiAddByIds($tag->id,$company);
+        return self::createJsonData(true);
+    }
+
     //产品列表
     public function productList(Request $request) {
         $category_id = $request->input('category_id',0);
@@ -207,7 +247,7 @@ class TagsController extends Controller {
                     $query = $query->orderBy('updated_at','desc');
                     break;
             }
-            $tags = $query->distinct()->simplePaginate(Config::get('inwehub.api_data_page_size'));
+            $tags = $query->distinct()->groupBy('tag_id')->simplePaginate(Config::get('inwehub.api_data_page_size'));
             $return = $tags->toArray();
             $list = [];
             foreach ($tags as $tag) {
