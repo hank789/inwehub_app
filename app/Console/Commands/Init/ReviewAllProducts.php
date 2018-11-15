@@ -78,9 +78,9 @@ class ReviewAllProducts extends Command
                 if ($data->count()) {
                     foreach ($data as $item) {
                         $logo = $item['logo']?:$item['logo1'];
-                        $this->info($logo);
                         $tag = Tag::where('name',$item['name'])->first();
                         $item['total'] = str_replace(',','',trim($item['total'],'()'));
+                        $this->info($item['name'].';'.$item['total'].';'.$item['rate']);
                         if(!$tag) {
                             $description = $item['description'];
                             if (config('app.env') == 'production') {
@@ -104,6 +104,7 @@ class ReviewAllProducts extends Command
                             }
                             $tag->summary = $description;
                             $tag->description = $item['description'];
+                            $tag->reviews = $item['total'];
                             $tag->save();
                         } else {
                             try {
@@ -112,6 +113,8 @@ class ReviewAllProducts extends Command
                                     $file_name = str_replace('.png','.svg',$tag->logo);
                                     //svg
                                     dispatch((new \App\Jobs\UploadFile($file_name,base64_encode(file_get_contents($tag->logo)))));
+                                    $tag->logo = $file_name;
+                                    $tag->save();
                                 }
                             } catch (\Exception $e) {
                                 $this->error('error:'.$tag->id);
