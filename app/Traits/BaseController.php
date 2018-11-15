@@ -141,11 +141,11 @@ trait BaseController {
                     'action' => $action,
                     'source_id' => $source_id,
                     'source_type' => $source_type,
-                    'subject' => $subject,
-                    'content' => $content,
+                    'subject' => '',
+                    'content' => '',
                     'refer_id' => $refer_id,
                     'refer_user_id' => $refer_user_id,
-                    'refer_content' => $refer_content,
+                    'refer_content' => '',
                     'created_at' => date('Y-m-d H:i:s')
                 ]));
             } catch (\Exception $e) {
