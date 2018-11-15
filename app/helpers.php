@@ -1074,20 +1074,26 @@ if (!function_exists('saveImgToCdn')){
             $imgType = 'png';
             if (strrchr($parse_url['path'],'.svg') == '.svg') {
                 $imgType = 'svg';
+            }elseif (strrchr($parse_url['path'],'.gif') == '.gif') {
+                $imgType = 'gif';
             }
             $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$imgType;
             $ql = \QL\QueryList::getInstance();
             $gfw_urls = \App\Services\RateLimiter::instance()->sMembers('gfw_urls');
+            $otherArgs = [
+                'headers' => [
+                    'Referer' => $parse_url['host']
+                ]
+            ];
             try {
                 if (in_array($parse_url['host'],[
                         'lh4.googleusercontent.com',
                         'lh3.googleusercontent.com'
-                    ]) || str_contains($parse_url['host'],'googleusercontent.com') || in_array($parse_url['host'],$gfw_urls)) {
+                    ]) || str_contains($parse_url['host'],'googleusercontent.com') || str_contains($parse_url['host'],'medium.com') || in_array($parse_url['host'],$gfw_urls)) {
                     //判断是否需要翻墙
-                    $content = curlShadowsocks($imgUrl);
-                } else {
-                    $content = $ql->get($imgUrl)->getHtml();
+                    $otherArgs['proxy'] = 'socks5h://127.0.0.1:1080';
                 }
+                $content = $ql->get($imgUrl,null,$otherArgs)->getHtml();
 
                 dispatch((new \App\Jobs\UploadFile($file_name,base64_encode($content))));
                 return Storage::url($file_name);
