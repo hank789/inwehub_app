@@ -94,6 +94,10 @@ class RateLimiter extends Singleton
         return $this->client->hGetAll('inwehub:'.$event);
     }
 
+    public function hDel($event,$key) {
+        return $this->client->hDel('inwehub:'.$event,$key);
+    }
+
     public function hClear($event) {
         $keys = $this->hGetAll($event);
         foreach ($keys as $key=>$val) {
