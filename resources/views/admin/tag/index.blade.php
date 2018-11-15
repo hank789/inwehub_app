@@ -24,6 +24,9 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.tag.index') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <div class="col-xs-2 hidden-xs">
+                                            <input type="text" class="form-control" name="id" placeholder="id" value="{{ $filter['id'] or '' }}"/>
+                                        </div>
                                         <div class="col-xs-3">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                         </div>

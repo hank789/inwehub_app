@@ -49,6 +49,10 @@ class TagController extends AdminController
             $query->where('category_id','=',$filter['category_id']);
         }
 
+        if( isset($filter['id']) && $filter['id'] ){
+            $query->where('id',$filter['id']);
+        }
+
         $tags = $query->orderBy('updated_at','desc')->paginate(20);
         return view("admin.tag.index")->with('tags',$tags)->with('filter',$filter);
 

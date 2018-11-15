@@ -32,6 +32,9 @@ class CategoryController extends AdminController
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('name','like', '%'.$filter['word'].'%');
         }
+        if( isset($filter['id']) && $filter['id'] ){
+            $query->where('id',$filter['id']);
+        }
         $categories = $query->paginate(config('inwehub.admin.page_size'));
         return view("admin.category.index")->with(compact('categories','filter'));
     }
