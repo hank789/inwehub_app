@@ -62,10 +62,18 @@ class Test extends Command
         $keys = RateLimiter::instance()->hGetAll('tag_pending_translate');
         foreach ($keys as $id=>$v) {
             $this->info($id);
-            $tag = Tag::find($id);
-            $tag->summary = Translate::instance()->translate($tag->description);
-            $tag->save();
-            RateLimiter::instance()->hDel('tag_pending_translate',$id);
+            try {
+                $tag = Tag::find($id);
+                $tag->summary = Translate::instance()->translate($tag->description);
+                $tag->save();
+                RateLimiter::instance()->hDel('tag_pending_translate',$id);
+            } catch (\Exception $e) {
+                $m = $e->getMessage();
+                $this->error($m);
+                if (!str_contains($m,'413 Request Entity Too Large')) {
+                    return;
+                }
+            }
         }
         $this->info('finish');
         return;
