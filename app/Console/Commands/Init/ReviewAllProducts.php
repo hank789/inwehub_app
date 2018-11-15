@@ -181,7 +181,7 @@ class ReviewAllProducts extends Command
     }
 
     protected function reInitQl() {
-        if ($this->scraperCount >= 100) {
+        if ($this->scraperCount >= 80) {
             $this->scraperCount = 0;
             $this->ql->__destruct();
             unset($this->ql);
