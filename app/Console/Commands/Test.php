@@ -61,11 +61,13 @@ class Test extends Command
     {
         $keys = RateLimiter::instance()->hGetAll('tag_pending_translate');
         foreach ($keys as $id=>$v) {
+            $this->info($id);
             $tag = Tag::find($id);
             $tag->summary = Translate::instance()->translate($tag->description);
             $tag->save();
             RateLimiter::instance()->hDel('tag_pending_translate',$id);
         }
+        $this->info('finish');
         return;
         $s = [
             'CRM & Related',
