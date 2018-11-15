@@ -106,12 +106,17 @@ class ReviewAllProducts extends Command
                             $tag->description = $item['description'];
                             $tag->save();
                         } else {
-                            $logoInfo = getimagesize($tag->logo);
-                            if (empty($logoInfo)) {
-                                $file_name = str_replace('.png','.svg',$tag->logo);
-                                //svg
-                                dispatch((new \App\Jobs\UploadFile($file_name,base64_encode(file_get_contents($tag->logo)))));
+                            try {
+                                $logoInfo = getimagesize($tag->logo);
+                                if (empty($logoInfo)) {
+                                    $file_name = str_replace('.png','.svg',$tag->logo);
+                                    //svg
+                                    dispatch((new \App\Jobs\UploadFile($file_name,base64_encode(file_get_contents($tag->logo)))));
+                                }
+                            } catch (\Exception $e) {
+                                $this->error('error:'.$tag->id);
                             }
+
                         }
                         RateLimiter::instance()->hSet('review-tags-url',$tag->id,$item['link']);
                         $tagRel = TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$category->id)->first();
