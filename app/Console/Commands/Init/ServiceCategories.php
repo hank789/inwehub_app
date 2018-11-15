@@ -163,7 +163,7 @@ class ServiceCategories extends Command
                 'status'    => 1
             ]);
             foreach ($products as $key=>$product) {
-                $this->addC($parentP,$key,$product);
+                $this->addC($parentP,$key,$product,$prefix);
             }
         } else {
             $name = explode('=',$products);
