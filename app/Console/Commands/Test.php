@@ -59,6 +59,14 @@ class Test extends Command
      */
     public function handle()
     {
+        $keys = RateLimiter::instance()->hGetAll('tag_pending_translate');
+        foreach ($keys as $id=>$v) {
+            $tag = Tag::find($id);
+            $tag->summary = Translate::instance()->translate($tag->description);
+            $tag->save();
+            RateLimiter::instance()->hDel('tag_pending_translate',$id);
+        }
+        return;
         $s = [
             'CRM & Related',
             'Sales Software',
