@@ -65,7 +65,8 @@ class Indeed extends Command {
             $offset = 0;
             while (true) {
                 $this->info($offset);
-                $requestUrl = $baseUrl.'/jobs?q=title%3A'.urlencode($keyword).'&jt=fulltime&sort=date&limit='.$limit.'&sr=directhire&radius=0&start='.$offset;
+                //$requestUrl = $baseUrl.'/jobs?q=title%3A'.urlencode($keyword).'&jt=fulltime&sort=date&limit='.$limit.'&sr=directhire&radius=0&start='.$offset;
+                $requestUrl = $baseUrl.'/jobs?q=title%3A'.urlencode($keyword).'&sort=date&limit='.$limit.'&start='.$offset;
                 $isBreak = false;
                 $content = $ql->browser($requestUrl,false,[
                     '--proxy' => '127.0.0.1:1080',
