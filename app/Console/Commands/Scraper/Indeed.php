@@ -67,7 +67,10 @@ class Indeed extends Command {
                 $this->info($offset);
                 $requestUrl = $baseUrl.'/jobs?q=title%3A'.urlencode($keyword).'&jt=fulltime&sort=date&limit='.$limit.'&sr=directhire&radius=0&start='.$offset;
                 $isBreak = false;
-                $content = $ql->browser($requestUrl)->rules([
+                $content = $ql->browser($requestUrl,false,[
+                    '--proxy' => '127.0.0.1:1080',
+                    '--proxy-type' => 'socks5'
+                ])->rules([
                     'title' => ['h2.jobtitle>a','text'],
                     'uuid'  => ['h2.jobtitle','id'],
                     'link'  => ['h2.jobtitle>a','href'],
