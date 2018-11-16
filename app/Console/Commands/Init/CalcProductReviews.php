@@ -40,26 +40,32 @@ class CalcProductReviews extends Command
      */
     public function handle()
     {
-        $tagRels = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->get();
+        $page = 1;
+        $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
+        $tagRels = $query->orderBy('id','desc')->simplePaginate(100,['*'],'page',$page);
         $tagIds = [];
-        foreach ($tagRels as $tagRel) {
-            $submissions = Submission::where('category_id',$tagRel->tag_id)->where('status',1)->get();
-            $count = 0;
-            $rates = 0;
-            foreach ($submissions as $submission) {
-                if (!is_array($submission->data['category_ids'])) {
-                    $this->info($submission->id);
+        while ($tagRels->count() > 0) {
+            foreach ($tagRels as $tagRel) {
+                $submissions = Submission::where('category_id',$tagRel->tag_id)->where('status',1)->get();
+                $count = 0;
+                $rates = 0;
+                foreach ($submissions as $submission) {
+                    if (!is_array($submission->data['category_ids'])) {
+                        $this->info($submission->id);
+                    }
+                    if (is_array($submission->data['category_ids']) && in_array($tagRel->category_id,$submission->data['category_ids'])) {
+                        $count++;
+                        $rates+=$submission->rate_star;
+                    }
                 }
-                if (is_array($submission->data['category_ids']) && in_array($tagRel->category_id,$submission->data['category_ids'])) {
-                    $count++;
-                    $rates+=$submission->rate_star;
-                }
+                $tagRel->reviews = $count;
+                $tagRel->review_rate_sum = $rates;
+                $tagRel->review_average_rate = $count?bcdiv($rates,$count,1):0;
+                $tagRel->save();
+                $tagIds[$tagRel->tag_id] = $tagRel->tag_id;
             }
-            $tagRel->reviews = $count;
-            $tagRel->review_rate_sum = $rates;
-            $tagRel->review_average_rate = $count?bcdiv($rates,$count,1):0;
-            $tagRel->save();
-            $tagIds[$tagRel->tag_id] = $tagRel->tag_id;
+            $page ++;
+            $tagRels = $query->orderBy('id','desc')->simplePaginate(100,['*'],'page',$page);
         }
         foreach ($tagIds as $tagId) {
             $info = Tag::getReviewInfo($tagId);
