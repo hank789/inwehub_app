@@ -221,7 +221,6 @@ class TagsController extends Controller {
     public function feedbackProduct(Request $request) {
         $validateRules = [
             'product' => 'required|min:1',
-            'images' => 'required',
             'type' => 'required',
             'content' => 'required|min:1',
         ];
