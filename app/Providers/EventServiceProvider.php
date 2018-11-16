@@ -32,6 +32,7 @@ class EventServiceProvider extends ServiceProvider
         \App\Listeners\Frontend\Question\QuestionEventListener::class,
         \App\Listeners\Frontend\Answer\AnswerEventListener::class,
         \App\Listeners\Frontend\WechatEventListener::class,
+        \App\Listeners\Frontend\NotificationEventListener::class,
 
         /*
          * Auth Subscribers
