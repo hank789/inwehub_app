@@ -90,7 +90,7 @@ class BidToSubmission implements ShouldQueue
             'group_id'      => $group->id,
             'public'        => $group->public,
             'rate'          => firstRate(),
-            'user_id'       => $group->user_id,
+            'user_id'       => 2575,
             'support_type'  => $support_type?:1,
             'data'          => $data,
             'views'         => 1

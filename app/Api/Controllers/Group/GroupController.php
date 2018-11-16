@@ -3,6 +3,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\OperationNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\RecommendGroupSubmission;
 use App\Jobs\UploadFile;
 use App\Models\Attention;
 use App\Models\Collection;
@@ -18,6 +19,7 @@ use App\Models\Support;
 use App\Models\User;
 use App\Notifications\SubmissionRecommend;
 use App\Services\RateLimiter;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -375,6 +377,7 @@ class GroupController extends Controller
             ]
         ];
         event(new OperationNotify('圈主'.formatSlackUser($user).'设置圈子['.$group->name.']分享为推荐', $fields));
+        dispatch((new RecommendGroupSubmission($user->id,$submission->id))->delay(Carbon::now()->addMinutes(5)));
         return self::createJsonData(true);
     }
 

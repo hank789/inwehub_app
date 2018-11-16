@@ -31,7 +31,7 @@ use PHPHtmlParser\Dom;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
 use Stichoza\GoogleTranslate\TranslateClient;
-
+use Excel;
 
 class Test extends Command
 {

@@ -2,6 +2,7 @@
 
 namespace App\Api\Controllers;
 
+use App\Events\Frontend\Notification\MarkAsRead;
 use App\Exceptions\ApiException;
 use App\Logic\TaskLogic;
 use App\Models\Doing;
@@ -68,27 +69,7 @@ class NotificationController extends Controller
     {
         $notification_type = $request->input('notification_type',0);
         $user = $request->user();
-        $query = Notification::where('notifiable_id',$user->id)->where('notifiable_type',get_class($user))->whereNull('read_at');
-        if ($notification_type) {
-            $query = $query->where('notification_type',$notification_type);
-        } else {
-            //全部已读
-            $im_rooms = Room::where('source_type',User::class)->where(function ($query) use ($user) {$query->where('user_id',$user->id)->orWhere('source_id',$user->id);})->get();
-            foreach ($im_rooms as $im_room) {
-                $last_msg_id = MessageRoom::where('room_id',$im_room->id)->max('message_id');
-                $roomUser = RoomUser::firstOrCreate([
-                    'user_id' => $user->id,
-                    'room_id' => $im_room->id
-                ],[
-                    'user_id' => $user->id,
-                    'room_id' => $im_room->id
-                ]);
-                $roomUser->last_msg_id = $last_msg_id;
-                $roomUser->save();
-            }
-        }
-        $query->update(['read_at' => Carbon::now()]);
-        Cache::delete('user_notification_count_'.$user->id);
+        event(new MarkAsRead($user->id,$notification_type));
         return self::createJsonData(true);
     }
 

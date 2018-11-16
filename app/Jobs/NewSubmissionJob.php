@@ -136,7 +136,7 @@ class NewSubmissionJob implements ShouldQueue
                 $group->user->notify((new NewSubmission($group->user_id,$submission))->delay(Carbon::now()->addMinutes(3)));
             }
             //圈主发布的内容通知圈子成员
-            if ($submission->user_id == $group->user_id && $members) {
+            if (false && $submission->user_id == $group->user_id && $members) {
                 foreach ($members as $muid) {
                     if (isset($notified_uids[$muid])) continue;
                     $notified_uids[$muid] = $muid;
