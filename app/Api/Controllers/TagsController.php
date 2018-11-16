@@ -1,4 +1,5 @@
 <?php namespace App\Api\Controllers;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Answer;
@@ -217,6 +218,39 @@ class TagsController extends Controller {
         return self::createJsonData(true);
     }
 
+    public function feedbackProduct(Request $request) {
+        $validateRules = [
+            'product' => 'required|min:1',
+            'images' => 'required',
+            'type' => 'required',
+            'content' => 'required|min:1',
+        ];
+        $this->validate($request,$validateRules);
+        $tag = Tag::where('name',$request->input('product'))->first();
+        if (!$tag) {
+            return self::createJsonData(true,[],ApiException::PRODUCT_TAG_NOT_EXIST,'产品不存在');
+        }
+        $user = $request->user();
+        $fields = [];
+        $fields[] = [
+            'title'=>'类型',
+            'value'=>$request->input('type')
+        ];
+        $fields[] = [
+            'title'=>'内容',
+            'value'=>$request->input('content')
+        ];
+        if ($request->input('images')) {
+            $logo = $this->uploadImgs($request->input('images'),'tags');
+            $fields[] = [
+                'title'=>'图片',
+                'value'=>implode(',',$logo['img'])
+            ];
+        }
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']反馈产品['.$request->input('product').']',$fields));
+        return self::createJsonData(true);
+    }
+
     //产品列表
     public function productList(Request $request) {
         $category_id = $request->input('category_id',0);
@@ -247,7 +281,7 @@ class TagsController extends Controller {
                     $query = $query->orderBy('updated_at','desc');
                     break;
             }
-            $tags = $query->distinct()->groupBy('tag_id')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+            $tags = $query->distinct()->simplePaginate(Config::get('inwehub.api_data_page_size'));
             $return = $tags->toArray();
             $list = [];
             foreach ($tags as $tag) {
