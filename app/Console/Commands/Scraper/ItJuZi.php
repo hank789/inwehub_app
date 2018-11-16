@@ -150,7 +150,7 @@ class ItJuZi extends Command {
                             'public'        => $group->public,
                             'rate'          => firstRate(),
                             'status'        => 1,
-                            'user_id'       => $group->user_id,
+                            'user_id'       => 2571,
                             'data'          => $data,
                             'views'         => 1,
                         ]);
