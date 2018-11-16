@@ -621,7 +621,7 @@ class FollowController extends Controller
     //推荐一批用户
     public function recommendUserList(Request $request) {
         $user = $request->user();
-        $tags = $user->attentions()->where('source_type','App\Models\Tag')->pluck('source_id')->toArray();
+        $tags = $user->userTags()->pluck('tag_id')->toArray();
         $attentionUsers = $user->attentions()->where('source_type','App\Models\User')->pluck('source_id')->toArray();
 
         $query = UserTag::select('user_id');
