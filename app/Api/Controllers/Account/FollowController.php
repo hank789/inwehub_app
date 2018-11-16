@@ -90,7 +90,9 @@ class FollowController extends Controller
                 UserTag::multiDecrement($loginUser->id,$source->tags()->get(),'questions');
                 event(new SystemNotify('用户'.$loginUser->id.'['.$loginUser->name.']取消关注了问题',$fields));
             } elseif ($source_type == 'tag') {
-                $source->decrement('followers');
+                if ($source->followers > 0) {
+                    $source->decrement('followers');
+                }
                 $fields = [];
                 $fields[] = [
                     'title' => '标签',
