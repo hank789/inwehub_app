@@ -1,4 +1,5 @@
 <?php namespace App\Api\Controllers;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
 use App\Models\Answer;
@@ -214,6 +215,39 @@ class TagsController extends Controller {
             }
         }
         Tag::multiAddByIds($tag->id,$company);
+        return self::createJsonData(true);
+    }
+
+    public function feedbackProduct(Request $request) {
+        $validateRules = [
+            'product' => 'required|min:1',
+            'images' => 'required',
+            'type' => 'required',
+            'content' => 'required|min:1',
+        ];
+        $this->validate($request,$validateRules);
+        $tag = Tag::where('name',$request->input('product'))->first();
+        if (!$tag) {
+            return self::createJsonData(true,[],ApiException::PRODUCT_TAG_NOT_EXIST,'产品不存在');
+        }
+        $user = $request->user();
+        $fields = [];
+        $fields[] = [
+            'title'=>'类型',
+            'value'=>$request->input('type')
+        ];
+        $fields[] = [
+            'title'=>'内容',
+            'value'=>$request->input('content')
+        ];
+        if ($request->input('images')) {
+            $logo = $this->uploadImgs($request->input('images'),'tags');
+            $fields[] = [
+                'title'=>'图片',
+                'value'=>implode(',',$logo['img'])
+            ];
+        }
+        event(new SystemNotify('用户'.$user->id.'['.$user->name.']反馈产品['.$request->input('product').']',$fields));
         return self::createJsonData(true);
     }
 

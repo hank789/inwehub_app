@@ -128,6 +128,8 @@ class ApiException extends Exception
     const GROUP_UNDER_AUDIT = 6107;
     const GROUP_NOT_JOINED = 6108;
     const PRODUCT_TAG_ALREADY_EXIST = 6109;
+    const PRODUCT_TAG_NOT_EXIST = 6109;
+
 
     public static $errorMessages = [
         //全局响应吗

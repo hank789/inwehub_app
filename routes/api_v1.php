@@ -326,7 +326,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], functio
     Route::post('getRecommendReview','TagsController@getRecommendReview');
     Route::post('getProductCategories','TagsController@getProductCategories');
     Route::post('submitProduct','TagsController@submitProduct');
-
+    Route::post('feedbackProduct','TagsController@feedbackProduct');
 
 });
 
