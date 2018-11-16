@@ -50,6 +50,7 @@ class RecommendGroupSubmission implements ShouldQueue
             if (isset($notified_uids[$muid])) continue;
             $notified_uids[$muid] = $muid;
             $mUser = User::find($muid);
+            $submission->data['sourceViews'] = 1;
             $mUser->notify((new NewSubmission($muid,$submission)));
         }
     }
