@@ -215,7 +215,7 @@ class TagsController extends Controller {
             }
         }
         Tag::multiAddByIds($tag->id,$company);
-        return self::createJsonData(true);
+        return self::createJsonData(true,$tag->toArray());
     }
 
     public function feedbackProduct(Request $request) {
