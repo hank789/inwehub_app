@@ -646,12 +646,14 @@ class FollowController extends Controller
             $query1 = $query1->whereNotIn('user_id',$attentionUsers);
             $addressBookUids = array_diff($addressBookUids,$attentionUsers);
         }
-        if ($addressBookUids) {
-            $query = $query->whereIn('user_id',$addressBookUids);
-            $query1 = $query1->whereIn('user_id',$addressBookUids);
-        }
+
         if ($tags) {
-            $query = $query->whereIn('tag_id',$tags)->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
+            $query = $query->whereIn('tag_id',$tags);
+            if ($addressBookUids) {
+                $query = $query->orWhereIn('user_id',$addressBookUids);
+                $query1 = $query1->orWhereIn('user_id',$addressBookUids);
+            }
+            $query = $query->orderBy('skills','desc')->orderBy('answers','desc')->distinct();
             $query1 = $query1->orderBy(DB::raw('RAND()'))->distinct();
             $query = $query->union($query1);
             $userTags = $query->simplePaginate(10);
