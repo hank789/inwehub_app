@@ -119,7 +119,7 @@ class TagsController extends Controller {
             $data['categories'][] = [
                 'id' => $category->id,
                 'name' => $category->name,
-                'rate' => $rate?:1
+                'rate' => $rate?($rate-1):1
             ];
         }
         $data['vendor'] = '';
