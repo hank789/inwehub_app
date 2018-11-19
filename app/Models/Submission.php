@@ -22,6 +22,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Scout\Searchable;
 use QL\QueryList;
 
@@ -456,9 +457,6 @@ class Submission extends Model {
     //设置关键词标签
     public function setKeywordTags() {
         try {
-            if (config('app.env') != 'production') {
-                return;
-            }
             if (isset($this->data['domain']) && $this->data['domain'] == 'mp.weixin.qq.com') {
                 $content = getWechatUrlBodyText($this->data['url']);
                 $keywords = array_column(BosonNLPService::instance()->keywords($this->title.';'.$content),1);
@@ -536,6 +534,62 @@ class Submission extends Model {
             app('sentry')->captureException($e,$this->toArray());
             dispatch((new UpdateSubmissionKeywords($this->id))->delay(Carbon::now()->addSeconds(300)));
         }
+    }
+
+    public function getRelatedProducts() {
+        if ($this->type == 'review') {
+            $tag = Tag::find($this->category_id);
+            $related_tags = $tag->relationReviews(4);
+        } else {
+            $related_tags = Cache::get('submission_related_products_'.$this->id);
+            if ($related_tags === null && isset($this->data['keywords'])) {
+                $keywords = explode(',',$this->data['keywords']);
+                $related_tags = [];
+                foreach ($keywords as $keyword) {
+                    $rels = Tag::where('name',$keyword)->get();
+                    foreach ($rels as $rel) {
+                        $tagRel = TagCategoryRel::where('tag_id',$rel->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->first();
+                        if ($tagRel) {
+                            $info = Tag::getReviewInfo($rel->id);
+                            $related_tags[] = [
+                                'id' => $rel->id,
+                                'name' => $rel->name,
+                                'logo' => $rel->logo,
+                                'review_count' => $info['review_count'],
+                                'review_average_rate' => $info['review_average_rate']
+                            ];
+                            if (count($related_tags) >= 4) break;
+                        }
+                    }
+                    if (count($related_tags) >= 4) break;
+                }
+                if (count($related_tags) < 4) {
+                    $used = array_column($related_tags,'id');
+                    foreach ($keywords as $keyword) {
+                        $rels = Tag::where('name','like','%'.$keyword.'%')->orderBy('reviews','desc')->take(10)->get();
+                        foreach ($rels as $rel) {
+                            if (!in_array($rel->id,$used)) {
+                                $tagRel = TagCategoryRel::where('tag_id',$rel->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->first();
+                                if ($tagRel) {
+                                    $info = Tag::getReviewInfo($rel->id);
+                                    $related_tags[] = [
+                                        'id' => $rel->id,
+                                        'name' => $rel->name,
+                                        'logo' => $rel->logo,
+                                        'review_count' => $info['review_count'],
+                                        'review_average_rate' => $info['review_average_rate']
+                                    ];
+                                    if (count($related_tags) >= 4) break;
+                                }
+                            }
+                        }
+                        if (count($related_tags) >= 4) break;
+                    }
+                }
+                Cache::forever('submission_related_products_'.$this->id,$related_tags);
+            }
+        }
+        return $related_tags;
     }
 
 }

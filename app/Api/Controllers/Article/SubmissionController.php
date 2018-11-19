@@ -3,7 +3,6 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\NewSubmissionJob;
-use App\Jobs\UploadFile;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
 use App\Models\Attention;
@@ -19,7 +18,6 @@ use App\Models\RoleUser;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
-use App\Models\Taggable;
 use App\Models\User;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
@@ -28,7 +26,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
 
 /**
@@ -576,6 +573,7 @@ class SubmissionController extends Controller {
                 'answer_users'  => $answer_users
             ];
         }
+
         if ($submission->hide) {
             //匿名
             $return['owner']['avatar'] = config('image.user_default_avatar');
@@ -586,9 +584,8 @@ class SubmissionController extends Controller {
         }
         $actionName = Doing::ACTION_VIEW_SUBMISSION;
         $actionUrl = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
+        $return['related_tags'] = $submission->getRelatedTags();
         if ($submission->type == 'review') {
-            $tag = Tag::find($submission->category_id);
-            $return['related_tags'] = $tag->relationReviews(4);
             $actionName = Doing::ACTION_VIEW_DIANPING_REVIEW_INFO;
             $actionUrl = config('app.mobile_url').'#/dianping/comment/'.$submission->slug;
         }

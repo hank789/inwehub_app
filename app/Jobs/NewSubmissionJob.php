@@ -155,13 +155,15 @@ class NewSubmissionJob implements ShouldQueue
 
             $submission->setKeywordTags();
         }
-
         $submission->calculationRate();
+        $submission->getRelatedProducts();
         $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         $channel = config('slack.ask_activity_channel');
         if ($this->notifyAutoChannel) {
             $channel = config('slack.auto_channel');
         }
+
+
         return \Slack::to($channel)
             ->disableMarkdown()
             ->attach(

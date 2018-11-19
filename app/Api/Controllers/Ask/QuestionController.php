@@ -1,14 +1,12 @@
 <?php namespace App\Api\Controllers\Ask;
 
 use App\Api\Controllers\Controller;
-use App\Events\Frontend\Question\AutoInvitation;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\Question\ConfirmOvertime;
 use App\Jobs\QuestionRefund;
 use App\Logic\PayQueryLogic;
 use App\Logic\QuestionLogic;
-use App\Logic\TagsLogic;
 use App\Logic\TaskLogic;
 use App\Models\Activity\Coupon;
 use App\Models\Answer;
@@ -228,6 +226,7 @@ class QuestionController extends Controller
             'keywords' => implode(',',array_slice($keywords,0,5)),
             'published_time' => (new Carbon($question->created_at))->toAtomString()
         ];
+        $related_products = $question->getRelatedProducts();
         return self::createJsonData(true,[
             'is_followed_question'=>$is_followed_question,
             'my_answer_id' => $my_answer_id,
@@ -236,6 +235,7 @@ class QuestionController extends Controller
             'answers'=>$answers_data,
             'timeline'=>$timeline,
             'seo' => $seo,
+            'related_products' => $related_products,
             'feedback'=>$feedback_data]);
 
     }
