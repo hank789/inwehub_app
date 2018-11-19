@@ -267,7 +267,7 @@ class SearchController extends Controller
             if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
         }*/
 
-        $query = Submission::search($request->input('search_word'))->where('status',1);
+        $query = Submission::search($request->input('search_word'))->where('status',1)->where('public',1);
         if (config('app.env') == 'production') {
             $query = $query->where('product_type',1);
         }
