@@ -584,7 +584,7 @@ class SubmissionController extends Controller {
         }
         $actionName = Doing::ACTION_VIEW_SUBMISSION;
         $actionUrl = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
-        $return['related_tags'] = $submission->getRelatedTags();
+        $return['related_tags'] = $submission->getRelatedProducts();
         if ($submission->type == 'review') {
             $actionName = Doing::ACTION_VIEW_DIANPING_REVIEW_INFO;
             $actionUrl = config('app.mobile_url').'#/dianping/comment/'.$submission->slug;
