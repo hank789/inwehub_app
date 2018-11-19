@@ -246,7 +246,7 @@ class Submission extends Model {
 
         $img = $submission->data['img']??'';
         $sourceData = [
-            'title'     => strip_tags($submission->title),
+            'title'     => formatHtml(strip_tags($submission->title)),
             'article_title' => $submission->data['title']??'',
             'rate_star' => $submission->rate_star,
             'slug'      => $submission->slug,
