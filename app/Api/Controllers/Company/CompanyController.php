@@ -9,6 +9,7 @@ use App\Models\Company\CompanyData;
 use App\Models\Company\CompanyDataUser;
 use App\Models\Company\CompanyService;
 use App\Models\Tag;
+use App\Models\TagCategoryRel;
 use App\Services\BaiduMap;
 use App\Services\GeoHash;
 use App\Services\RateLimiter;
@@ -240,7 +241,7 @@ class CompanyController extends Controller {
     //企业相关人员
     public function dataPeople(Request $request){
         $loginUser = $request->user();
-        $companyUsers = CompanyDataUser::where('audit_status',1)->where('company_data_id',$request->input('id'))->simplePaginate(30);
+        $companyUsers = CompanyDataUser::where('audit_status',1)->where('company_data_id',$request->input('id'))->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $companyUsers->toArray();
         $return['data'] = [];
         foreach ($companyUsers as $user) {
@@ -260,6 +261,30 @@ class CompanyController extends Controller {
                 'is_expert' => $user->user->is_expert,
                 'status_info' => $user->statusInfo()
             ];
+        }
+        return self::createJsonData(true,$return);
+    }
+
+    public function dataProduct(Request $request) {
+        $validateRules = [
+            'id' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $company = CompanyData::find($request->input('id'));
+        $tags = $company->tags;
+        $return = [];
+        foreach ($tags as $tag) {
+            $rel = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->first();
+            if ($rel) {
+                $info = Tag::getReviewInfo($tag->id);
+                $return['data'][] = [
+                    'id' => $tag->id,
+                    'name' => $tag->name,
+                    'logo' => $tag->logo,
+                    'review_count' => $info['review_count'],
+                    'review_average_rate' => $info['review_average_rate']
+                ];
+            }
         }
         return self::createJsonData(true,$return);
     }

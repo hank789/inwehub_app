@@ -463,6 +463,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix' => 'company','nam
     Route::post('dataInfo','CompanyController@dataInfo');
     //企业相关人员
     Route::post('dataPeople','CompanyController@dataPeople');
+    //企业产品服务
+    Route::post('dataProduct','CompanyController@dataProduct');
     //申请企业相关人员
     Route::post('applyDataPeople','CompanyController@applyDataPeople');
     //申请添加企业
