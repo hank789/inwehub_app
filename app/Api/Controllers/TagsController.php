@@ -256,6 +256,10 @@ class TagsController extends Controller {
         $orderBy = $request->input('orderBy',1);
         $page = $request->input('page',1);
         $cacheKey = 'tags:product_list_'.$category_id.'_'.$orderBy.'_'.$page;
+        $preCacheKey = '';
+        if ($page > 1) {
+            $preCacheKey = 'tags:product_list_'.$category_id.'_'.$orderBy.'_'.($page-1);
+        }
         $return = Cache::get($cacheKey);
         if (!$return) {
             $query = TagCategoryRel::select(['tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
@@ -280,12 +284,16 @@ class TagsController extends Controller {
                     $query = $query->orderBy('updated_at','desc');
                     break;
             }
-            $tags = $query->distinct()->simplePaginate(Config::get('inwehub.api_data_page_size'));
+            $tags = $query->distinct()->groupBy('tag_id')->simplePaginate(Config::get('inwehub.api_data_page_size'));
             $return = $tags->toArray();
             $list = [];
             $used = [];
+            $preCache = $preCacheKey?Cache::get($preCacheKey):'';
+            if ($preCache) {
+                $used = array_column($preCache['data'],'id');
+            }
             foreach ($tags as $tag) {
-                if (isset($used[$tag->tag_id])) continue;
+                if (in_array($tag->tag_id, $used)) continue;
                 $model = Tag::find($tag->tag_id);
                 $info = Tag::getReviewInfo($model->id);
                 $used[$tag->tag_id] = $tag->tag_id;
