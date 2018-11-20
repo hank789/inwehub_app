@@ -625,7 +625,10 @@ class FollowController extends Controller
         $user = $request->user();
         $tags = $user->userTags()->pluck('tag_id')->toArray();
         $attentionUsers = $user->attentions()->where('source_type','App\Models\User')->pluck('source_id')->toArray();
-
+        $ignores = RateLimiter::instance()->sMembers('ignore_recommend_user_'.$user->id);
+        if ($ignores) {
+            $attentionUsers = array_merge($attentionUsers,$ignores);
+        }
         $query = UserTag::select('user_id');
         $query1 = UserTag::select('user_id');
 
@@ -700,7 +703,10 @@ class FollowController extends Controller
         $user = $request->user();
         $tags = $user->userTags()->pluck('tag_id')->toArray();
         $attentionUsers = $user->attentions()->where('source_type','App\Models\User')->pluck('source_id')->toArray();
-
+        $ignores = RateLimiter::instance()->sMembers('ignore_recommend_user_'.$user->id);
+        if ($ignores) {
+            $attentionUsers = array_merge($attentionUsers,$ignores);
+        }
         $addressBookUids = [];
         if ($user->mobile) {
             //查找通讯录
@@ -813,6 +819,17 @@ class FollowController extends Controller
         }
 
         return self::createJsonData(true,$data);
+    }
+
+    public function ignoreRecommendUser(Request $request) {
+        $validateRules = [
+            'user_id' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user_id = $request->input('user_id');
+        $loginUser = $request->user();
+        RateLimiter::instance()->sAdd('ignore_recommend_user_'.$loginUser->id,$user_id,0);
+        return self::createJsonData(true);
     }
 
 }

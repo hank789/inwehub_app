@@ -164,6 +164,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     Route::post('follow/recommendUserList',['uses'=>'FollowController@recommendUserList']);
     //值得关注的人
     Route::post('follow/getRecommendUsers',['uses'=>'FollowController@getRecommendUsers']);
+    //不再推荐某人
+    Route::post('follow/ignoreRecommendUser',['uses'=>'FollowController@ignoreRecommendUser']);
 
     /*我的关注*/
     Route::post('followed/{source_type}',['uses'=>'FollowController@attentions'])->where(['source_type'=>'(questions|tags|users|products)']);
