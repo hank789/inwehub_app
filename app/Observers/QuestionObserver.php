@@ -7,11 +7,8 @@
 
 use App\Jobs\Question\InvitationOvertimeAlertSystem;
 use App\Logic\QuestionLogic;
-use App\Models\Attention;
 use App\Models\Feed\Feed;
 use App\Models\Question;
-use App\Models\User;
-use App\Notifications\FollowedUserAsked;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -39,6 +36,8 @@ class QuestionObserver implements ShouldQueue {
             dispatch((new InvitationOvertimeAlertSystem($question->id,$overtime))->delay(Carbon::now()->addMinutes($overtime)));
         }
         $question->setKeywordTags();
+        $question->getRelatedProducts();
+
         if ($question->question_type == 2 && $question->hide == 0) {
             //关注提问者的用户通知
             /*$attention_users = Attention::where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->pluck('user_id')->toArray();

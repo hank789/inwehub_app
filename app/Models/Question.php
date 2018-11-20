@@ -539,10 +539,7 @@ class Question extends Model
     //设置关键词标签
     public function setKeywordTags() {
         try {
-            if (config('app.env') != 'production') {
-                return;
-            }
-            $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title),10),1);
+            $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title)),1);
             $tags = [];
             foreach ($keywords as $keyword) {
                 $keyword = formatKeyword($keyword);
@@ -564,11 +561,62 @@ class Question extends Model
             $data['keywords'] = implode(',',$tags);
             $this->data = $data;
             $this->save();
-            Tag::multiAddByName($tags,$this,1);
+            Tag::multiAddByName(array_slice($tags,0,10),$this,1);
         } catch (\Exception $e) {
             \Log::info('setKeywordTagsError',$this->toArray());
             app('sentry')->captureException($e,$this->toArray());
         }
+    }
+
+    public function getRelatedProducts() {
+        $related_tags = Cache::get('question_related_products_'.$this->id);
+        if ($related_tags === null && isset($this->data['keywords'])) {
+            $keywords = explode(',', $this->data['keywords']);
+            $related_tags = [];
+            foreach ($keywords as $keyword) {
+                $rels = Tag::where('name', $keyword)->get();
+                foreach ($rels as $rel) {
+                    $tagRel = TagCategoryRel::where('tag_id', $rel->id)->where('type', TagCategoryRel::TYPE_REVIEW)->where('status', 1)->first();
+                    if ($tagRel) {
+                        $info = Tag::getReviewInfo($rel->id);
+                        $related_tags[] = [
+                            'id' => $rel->id,
+                            'name' => $rel->name,
+                            'logo' => $rel->logo,
+                            'review_count' => $info['review_count'],
+                            'review_average_rate' => $info['review_average_rate']
+                        ];
+                        if (count($related_tags) >= 4) break;
+                    }
+                }
+                if (count($related_tags) >= 4) break;
+            }
+            if (count($related_tags) < 4) {
+                $used = array_column($related_tags, 'id');
+                foreach ($keywords as $keyword) {
+                    $rels = Tag::where('name', 'like', '%' . $keyword . '%')->orderBy('reviews', 'desc')->take(10)->get();
+                    foreach ($rels as $rel) {
+                        if (!in_array($rel->id, $used)) {
+                            $tagRel = TagCategoryRel::where('tag_id', $rel->id)->where('type', TagCategoryRel::TYPE_REVIEW)->where('status', 1)->first();
+                            if ($tagRel) {
+                                $info = Tag::getReviewInfo($rel->id);
+                                $related_tags[] = [
+                                    'id' => $rel->id,
+                                    'name' => $rel->name,
+                                    'logo' => $rel->logo,
+                                    'review_count' => $info['review_count'],
+                                    'review_average_rate' => $info['review_average_rate']
+                                ];
+                                if (count($related_tags) >= 4) break;
+                            }
+                        }
+                    }
+                    if (count($related_tags) >= 4) break;
+                }
+            }
+            Cache::forever('question_related_products_' . $this->id, $related_tags);
+        }
+        return $related_tags;
     }
 
 
