@@ -99,7 +99,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         $schedule->command('backup:clean')->daily()->at('01:00');
-        $schedule->command('backup:run')->twiceDaily();
+        $schedule->command('backup:run')->twiceDaily(1,16);
         $schedule->command('pay:settlement')->daily()->at('00:10')->withoutOverlapping();
         $schedule->command('user:check:rg_code')->daily()->at('00:30');
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
