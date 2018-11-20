@@ -695,4 +695,124 @@ class FollowController extends Controller
         }
         return self::createJsonData(true,$data);
     }
+
+    public function getRecommendUsers(Request $request) {
+        $user = $request->user();
+        $tags = $user->userTags()->pluck('tag_id')->toArray();
+        $attentionUsers = $user->attentions()->where('source_type','App\Models\User')->pluck('source_id')->toArray();
+
+        $addressBookUids = [];
+        if ($user->mobile) {
+            //查找通讯录
+            $addressBookUids = AddressBook::where('phone',$user->mobile)->get()->pluck('user_id')->toArray();
+            $addressBookUids = array_unique($addressBookUids);
+        }
+
+        $attentionUsers[] = $user->id;
+        $attentionUsers = array_unique(array_merge($attentionUsers,getSystemUids()));
+        $banUsers = User::where('status',-1)->get()->pluck('id')->toArray();
+        if ($banUsers) {
+            $attentionUsers = array_unique(array_merge($attentionUsers,$banUsers));
+        }
+
+        if ($attentionUsers) {
+            $addressBookUids = array_diff($addressBookUids,$attentionUsers);
+        }
+        $data = [];
+        //通讯录
+        if ($addressBookUids) {
+            foreach ($addressBookUids as $addressBookUid) {
+                $info = User::find($addressBookUid);
+                $item = [];
+                $item['id'] = $info->id;
+                $item['uuid'] = $info->uuid;
+                $item['name'] = $info->name;
+                $item['avatar_url'] = $info->avatar;
+                $item['is_expert'] = $info->is_expert;
+                $item['is_followed'] = 0;
+                $item['description'] = '通讯录好友';
+                $data[] = $item;
+                if (count($data) >= 9) break;
+            }
+        }
+        //关注他的人
+        if (count($data) < 9) {
+            $attentions = Attention::where('source_id',$user->id)->where('source_type',User::class)->pluck('user_id')->toArray();
+            $attentions = array_diff($attentions,$attentionUsers);
+            $attentions = array_diff($attentions,$addressBookUids);
+            foreach ($attentions as $attention) {
+                $info = User::find($attention);
+                $item = [];
+                $item['id'] = $info->id;
+                $item['uuid'] = $info->uuid;
+                $item['name'] = $info->name;
+                $item['avatar_url'] = $info->avatar;
+                $item['is_expert'] = $info->is_expert;
+                $item['is_followed'] = 0;
+                $item['description'] = 'Ta悄悄关注了你';
+                $data[] = $item;
+                if (count($data) >= 9) break;
+            }
+        }
+        //共同好友
+        if (count($data) < 9) {
+            $attentionEachs = Attention::whereIn('source_id',$attentionUsers)->where('source_type',User::class)->pluck('user_id')->toArray();
+            $used = array_column($data,'id');
+            $attentions = array_diff($attentionEachs,$used);
+            foreach ($attentions as $attention) {
+                $info = User::find($attention);
+                $item = [];
+                $item['id'] = $info->id;
+                $item['uuid'] = $info->uuid;
+                $item['name'] = $info->name;
+                $item['avatar_url'] = $info->avatar;
+                $item['is_expert'] = $info->is_expert;
+                $item['is_followed'] = 0;
+                $item['description'] = 'Ta悄悄关注了你';
+                $data[] = $item;
+                if (count($data) >= 9) break;
+            }
+        }
+        //相同标签
+        if (count($data) < 9) {
+            $userTags = UserTag::whereIn('tag_id',$tags)->where('user_id','!=',$user->id)->orderBy('articles','desc')->pluck('user_id')->toArray();
+            $used = array_column($data,'id');
+            $attentions = array_diff($userTags,$used);
+            foreach ($attentions as $attention) {
+                $info = User::find($attention);
+                $item = [];
+                $item['id'] = $info->id;
+                $item['uuid'] = $info->uuid;
+                $item['name'] = $info->name;
+                $item['avatar_url'] = $info->avatar;
+                $item['is_expert'] = $info->is_expert;
+                $item['is_followed'] = 0;
+                $item['description'] = '你可能会喜欢Ta的分享';
+                $data[] = $item;
+                if (count($data) >= 9) break;
+            }
+        }
+        //领域优秀分享者
+        if (count($data) < 9) {
+            $userTags = UserTag::where('user_id','!=',$user->id)->orderBy('articles','desc')->get()->toArray();
+            $used = array_column($data,'id');
+            foreach ($userTags as $userTag) {
+                if (in_array($userTag->user_id,$used)) continue;
+                $info = User::find($userTag->user_id);
+                $item = [];
+                $item['id'] = $info->id;
+                $item['uuid'] = $info->uuid;
+                $item['name'] = $info->name;
+                $item['avatar_url'] = $info->avatar;
+                $item['is_expert'] = $info->is_expert;
+                $item['is_followed'] = 0;
+                $item['description'] = $userTag->tag->name.'领域优秀分享者';
+                $data[] = $item;
+                if (count($data) >= 9) break;
+            }
+        }
+
+        return self::createJsonData(true,$data);
+    }
+
 }
