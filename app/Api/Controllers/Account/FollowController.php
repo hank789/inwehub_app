@@ -702,7 +702,8 @@ class FollowController extends Controller
     public function getRecommendUsers(Request $request) {
         $user = $request->user();
         $tags = $user->userTags()->pluck('tag_id')->toArray();
-        $attentionUsers = $user->attentions()->where('source_type','App\Models\User')->pluck('source_id')->toArray();
+        $attentionUserIds = $user->attentions()->where('source_type','App\Models\User')->pluck('source_id')->toArray();
+        $attentionUsers = $attentionUserIds;
         $ignores = RateLimiter::instance()->sMembers('ignore_recommend_user_'.$user->id);
         if ($ignores) {
             $attentionUsers = array_merge($attentionUsers,$ignores);
@@ -762,11 +763,12 @@ class FollowController extends Controller
         }
         //共同好友
         if (count($data) < 9) {
-            $attentionEachs = Attention::whereIn('source_id',$attentionUsers)->where('source_type',User::class)->pluck('user_id')->toArray();
+            $attentionEachs = Attention::whereIn('source_id',array_diff($attentionUserIds,getSystemUids()))->where('source_type',User::class)->get()->toArray();
             $used = array_column($data,'id');
-            $attentions = array_diff($attentionEachs,$used);
-            foreach ($attentions as $attention) {
-                $info = User::find($attention);
+            foreach ($attentionEachs as $attention) {
+                if (in_array($attention['user_id'],$used)) continue;
+                $info = User::find($attention['user_id']);
+                $eachUser = User::find($attention['source_id']);
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -774,7 +776,7 @@ class FollowController extends Controller
                 $item['avatar_url'] = $info->avatar;
                 $item['is_expert'] = $info->is_expert;
                 $item['is_followed'] = 0;
-                $item['description'] = 'Ta悄悄关注了你';
+                $item['description'] = '你们有共同好友：'.$eachUser->name;
                 $data[] = $item;
                 if (count($data) >= 9) break;
             }

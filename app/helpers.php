@@ -1902,3 +1902,13 @@ if (!function_exists('submitUrlsToSpider')) {
     }
 }
 
+if (!function_exists('formatElasticSearchTitle')) {
+    function formatElasticSearchTitle($title) {
+        $cs = ['+','-','=','&&','||','>','<','!','(',')','{','}','[',']','^','"','~','*','?',':','\\','/'];
+        foreach ($cs as $c) {
+            $title = str_replace($c, ' ',$title);
+        }
+        return $title;
+    }
+}
+
