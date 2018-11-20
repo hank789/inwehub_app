@@ -120,6 +120,7 @@ class ProductController extends AdminController
             }
         }
         TagsLogic::delCache();
+        TagsLogic::delRelatedProductsCache();
         return $this->success(route('admin.review.product.index'),'产品创建成功');
     }
 
