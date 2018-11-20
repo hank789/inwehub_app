@@ -8,6 +8,7 @@ use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Notification as NotificationModel;
 use App\Models\Submission;
+use App\Services\RateLimiter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -48,15 +49,9 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
         $groupMember = GroupMember::where('user_id',$this->user_id)->where('group_id',$group->id)->first();
         if (!$groupMember) return [];
         if (!$groupMember->is_notify) return [];
-        if ($this->user_id == $group->user_id) {
-            //通知圈主
-            $this->title = '您的圈子['.$group->name.']有新'.($this->submission->type == 'link' ? '文章':'分享').'发布';
-        } elseif ($this->submission->user_id == $group->user_id){
-            //圈主发布的文章
-            $this->title = '圈子['.$group->name.']发布了新'.($this->submission->type == 'link' ? '文章':'分享');
-        } else {
-            return [];
-        }
+        $limit = RateLimiter::instance()->increase('push_notify_user_submission',$this->user_id,60*60*24);
+        if ($limit == RateLimiter::STATUS_BAD) return [];
+        $this->title = '圈子['.$group->name.']发布了新'.($this->submission->type == 'link' ? '文章':'分享');
         $via = ['database', 'broadcast'];
         if ($notifiable->checkCanDisturbNotify()){
             $via[] = PushChannel::class;
