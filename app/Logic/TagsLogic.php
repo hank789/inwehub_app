@@ -99,7 +99,7 @@ class TagsLogic {
             if (trim($word)) {
                 $tagQuery = $tagQuery->where('name','like','%'.$word.'%');
             }
-            $tags2 = $tagQuery->select('tags.*')->take(100)->get();
+            $tags2 = $tagQuery->select('tags.id','tags.name')->distinct()->take(100)->get();
 
             foreach ($tags2 as $tag) {
                 $tags[] = [

@@ -60,10 +60,13 @@ class Test extends Command
      */
     public function handle()
     {
-        $arr = [5];
+        $arr = [3,3,3];
+        $arr1 = [4,2,3];
         $t = varianceCalc($arr);
-        $w = new WilsonScoreNorm($t['average'],count($arr));
-        var_dump($w->score());
+        $t1 = varianceCalc($arr1);
+        var_dump(WilsonScoreNorm::instance($t['average'],count($arr))->score());
+        var_dump(WilsonScoreNorm::instance($t1['average'],count($arr1))->score());
+
         return;
         $keys = RateLimiter::instance()->hGetAll('tag_pending_translate');
         foreach ($keys as $id=>$v) {
