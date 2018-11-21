@@ -79,6 +79,7 @@ Route::post('oauth/{type}/callback',['uses'=>'Account\OauthController@callback']
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
     Route::get('profile/info','ProfileController@info');
+    Route::post('profile/info','ProfileController@info');
 
     //修改用户头像
     Route::post('profile/updateAvatar','ProfileController@postAvatar');
@@ -391,6 +392,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
     //标记通知为已读
     Route::post('notification/mark_as_read','NotificationController@markAsRead');
     //统计
+    Route::get('notification/count','NotificationController@count');
     Route::post('notification/count','NotificationController@count');
     //推送设置
     Route::post('notification/push/update','NotificationController@pushSettings');
