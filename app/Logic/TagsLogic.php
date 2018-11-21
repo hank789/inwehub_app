@@ -43,6 +43,8 @@ class TagsLogic {
             case 5:
                 //用户擅长，包括问题分类[question]和产品类型[product_type]
                 $category_name = Category::where('slug','like','question_%')->get()->pluck('slug')->toArray();
+                $category_name2 = Category::where('type','enterprise_review')->where('grade',0)->get()->pluck('slug')->toArray();
+                $category_name = array_merge($category_name,$category_name2);
                 $loadDefaultTags = true;
                 break;
             case 6:
@@ -138,6 +140,14 @@ class TagsLogic {
     public static function delCache() {
         $prefix = config('cache.prefix');
         $keys = Redis::connection()->keys($prefix.':tags:*');
+        if ($keys) Redis::connection()->del($keys);
+    }
+
+    public static function delRelatedProductsCache() {
+        $prefix = config('cache.prefix');
+        $keys = Redis::connection()->keys($prefix.':submission_related_products_*');
+        if ($keys) Redis::connection()->del($keys);
+        $keys = Redis::connection()->keys($prefix.':question_related_products_*');
         if ($keys) Redis::connection()->del($keys);
     }
 

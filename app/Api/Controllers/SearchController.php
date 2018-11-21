@@ -122,7 +122,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $loginUser = $request->user();
-        $query = Tag::search($request->input('search_word'));
+        $query = Tag::search(formatElasticSearchTitle($request->input('search_word')));
         if (config('app.env') == 'production') {
             $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
                 ->where('status',1);
@@ -152,7 +152,7 @@ class SearchController extends Controller
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $query = Submission::search($request->input('search_word'))->where('status',1);
+        $query = Submission::search(formatElasticSearchTitle($request->input('search_word')))->where('status',1);
         if (config('app.env') == 'production') {
             $query = $query->where('product_type',2);
         } else {
@@ -267,7 +267,7 @@ class SearchController extends Controller
             if ($group->public == 0) $userPrivateGroups[$groupId] = $groupId;
         }*/
 
-        $query = Submission::search($request->input('search_word'))->where('status',1)->where('public',1);
+        $query = Submission::search(formatElasticSearchTitle($request->input('search_word')))->where('status',1)->where('public',1);
         if (config('app.env') == 'production') {
             $query = $query->where('product_type',1);
         }

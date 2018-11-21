@@ -4,6 +4,7 @@
  * @date: 2017/6/21 下午8:59
  * @email: hank.huiwang@gmail.com
  */
+use App\Logic\TagsLogic;
 use App\Models\Category;
 use App\Models\Submission;
 use App\Models\Tag;
@@ -46,22 +47,7 @@ class CalcProductReviews extends Command
         $tagIds = [];
         while ($tagRels->count() > 0) {
             foreach ($tagRels as $tagRel) {
-                $submissions = Submission::where('category_id',$tagRel->tag_id)->where('status',1)->get();
-                $count = 0;
-                $rates = 0;
-                foreach ($submissions as $submission) {
-                    if (!is_array($submission->data['category_ids'])) {
-                        $this->info($submission->id);
-                    }
-                    if (is_array($submission->data['category_ids']) && in_array($tagRel->category_id,$submission->data['category_ids'])) {
-                        $count++;
-                        $rates+=$submission->rate_star;
-                    }
-                }
-                $tagRel->reviews = $count;
-                $tagRel->review_rate_sum = $rates;
-                $tagRel->review_average_rate = $count?bcdiv($rates,$count,1):0;
-                $tagRel->save();
+                $tagRel->calcRate();
                 $tagIds[$tagRel->tag_id] = $tagRel->tag_id;
             }
             $page ++;
@@ -73,7 +59,7 @@ class CalcProductReviews extends Command
                 'reviews' => $info['review_count']
             ]);
         }
-
+        TagsLogic::delProductCache();
     }
 
 }

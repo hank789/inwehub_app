@@ -34,6 +34,9 @@ class ReadhubController extends Controller
             $query = $query->where('public',1);
         }
         switch ($type) {
+            case 3:
+                $query = $query->where('type','article');
+                break;
             case 2:
                 $query = $query->where('type','review');
                 break;
