@@ -60,6 +60,26 @@ class Test extends Command
      */
     public function handle()
     {
+        $data = file_get_contents('https://cdn.inwehub.com/tags/2018/11/15423122375Wtb3YC.png');
+        $data1 = file_get_contents('https://cdn.inwehub.com/tags/2018/11/15412595109Mjhz0q.png');
+        $data2 = file_get_contents('https://cdn.inwehub.com/tags/2018/11/1542308337clNpDMS.png');
+        $list = [$data,$data1,$data2];
+        $page = 1;
+        $query = TagCategoryRel::where('type',1);
+        $tags = $query->simplePaginate(100,['*'],'page',$page);
+        while ($tags->count() > 0) {
+            foreach ($tags as $tag) {
+                $item = Tag::find($tag->tag_id);
+                $logo = file_get_contents($item->logo);
+                if (in_array($logo,$list)) {
+                    $this->info($item->id);
+                    RateLimiter::instance()->sAdd('default_product_logo',$item->id,60*60*24);
+                }
+            }
+            $page ++;
+            $tags = $query->simplePaginate(100,['*'],'page',$page);
+        }
+        return;
         $arr = [3,3,3];
         $arr1 = [4,2,3];
         $t = varianceCalc($arr);
