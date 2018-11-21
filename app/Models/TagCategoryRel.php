@@ -58,6 +58,8 @@ class TagCategoryRel extends Model
         if ($this->reviews > 0) {
             $info = varianceCalc($rates);
             $this->review_average_rate = WilsonScoreNorm::instance($info['average'],$this->reviews)->score();
+        } else {
+            $this->review_average_rate = 0;
         }
         $this->save();
     }

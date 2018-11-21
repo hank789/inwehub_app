@@ -4,6 +4,7 @@
  * @date: 2017/6/21 下午8:59
  * @email: hank.huiwang@gmail.com
  */
+use App\Logic\TagsLogic;
 use App\Models\Category;
 use App\Models\Submission;
 use App\Models\Tag;
@@ -58,7 +59,7 @@ class CalcProductReviews extends Command
                 'reviews' => $info['review_count']
             ]);
         }
-
+        TagsLogic::delProductCache();
     }
 
 }
