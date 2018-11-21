@@ -766,7 +766,7 @@ class FollowController extends Controller
             $attentionEachs = Attention::whereIn('source_id',array_diff($attentionUserIds,getSystemUids()))->where('source_type',User::class)->get()->toArray();
             $used = array_column($data,'id');
             foreach ($attentionEachs as $attention) {
-                if (in_array($attention['user_id'],$used)) continue;
+                if (in_array($attention['user_id'],$used) || in_array($attention['user_id'],$attentionUsers)) continue;
                 $info = User::find($attention['user_id']);
                 $eachUser = User::find($attention['source_id']);
                 $item = [];
@@ -787,6 +787,7 @@ class FollowController extends Controller
             $used = array_column($data,'id');
             $attentions = array_diff($userTags,$used);
             foreach ($attentions as $attention) {
+                if (in_array($attention,$used) || in_array($attention,$attentionUsers)) continue;
                 $info = User::find($attention);
                 $item = [];
                 $item['id'] = $info->id;
@@ -805,7 +806,7 @@ class FollowController extends Controller
             $userTags = UserTag::where('user_id','!=',$user->id)->orderBy('articles','desc')->get()->toArray();
             $used = array_column($data,'id');
             foreach ($userTags as $userTag) {
-                if (in_array($userTag->user_id,$used)) continue;
+                if (in_array($userTag->user_id,$used) || in_array($userTag->user_id,$attentionUsers)) continue;
                 $info = User::find($userTag->user_id);
                 $item = [];
                 $item['id'] = $info->id;

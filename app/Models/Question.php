@@ -574,6 +574,8 @@ class Question extends Model
             $keywords = explode(',', $this->data['keywords']);
             $related_tags = [];
             foreach ($keywords as $keyword) {
+                $ignoreKeywords = ['科技','信息','公司','有限','科技公司','有限公司','信息科技'];
+                if (in_array($keyword,$ignoreKeywords)) continue;
                 $rels = Tag::where('name', $keyword)->get();
                 foreach ($rels as $rel) {
                     $tagRel = TagCategoryRel::where('tag_id', $rel->id)->where('type', TagCategoryRel::TYPE_REVIEW)->where('status', 1)->first();
@@ -594,6 +596,8 @@ class Question extends Model
             if (count($related_tags) < 4) {
                 $used = array_column($related_tags, 'id');
                 foreach ($keywords as $keyword) {
+                    $ignoreKeywords = ['科技','信息','公司','有限','科技公司','有限公司','信息科技'];
+                    if (in_array($keyword,$ignoreKeywords)) continue;
                     $rels = Tag::where('name', 'like', '%' . $keyword . '%')->orderBy('reviews', 'desc')->take(10)->get();
                     foreach ($rels as $rel) {
                         if (!in_array($rel->id, $used)) {
