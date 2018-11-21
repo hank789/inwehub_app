@@ -78,7 +78,7 @@ Route::post('oauth/{type}/callback',['uses'=>'Account\OauthController@callback']
 //用户信息
 Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], function() {
     //用户信息
-    Route::post('profile/info','ProfileController@info');
+    Route::get('profile/info','ProfileController@info');
 
     //修改用户头像
     Route::post('profile/updateAvatar','ProfileController@postAvatar');
