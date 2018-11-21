@@ -43,6 +43,8 @@ class TagsLogic {
             case 5:
                 //用户擅长，包括问题分类[question]和产品类型[product_type]
                 $category_name = Category::where('slug','like','question_%')->get()->pluck('slug')->toArray();
+                $category_name2 = Category::where('type','enterprise_review')->where('grade',0)->get()->pluck('slug')->toArray();
+                $category_name = array_merge($category_name,$category_name2);
                 $loadDefaultTags = true;
                 break;
             case 6:
@@ -72,11 +74,12 @@ class TagsLogic {
             if(trim($word)){
                 $query = $query->where('name','like','%'.$word.'%');
             }
+            $result = $query->take(100)->get();
             $item = [];
             $children = [];
             $item[$tagKey] = $category->id;
             $item['text'] = $category->name;
-            foreach($query->get() as $val){
+            foreach($result as $val){
                 $children[] = [
                     $tagKey => $val->id,
                     'text'  => $val->name
@@ -96,7 +99,7 @@ class TagsLogic {
             if (trim($word)) {
                 $tagQuery = $tagQuery->where('name','like','%'.$word.'%');
             }
-            $tags2 = $tagQuery->select('tags.*')->get();
+            $tags2 = $tagQuery->select('tags.*')->take(100)->get();
 
             foreach ($tags2 as $tag) {
                 $tags[] = [

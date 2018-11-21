@@ -100,6 +100,7 @@ class NewSubmissionJob implements ShouldQueue
                     $real_author = User::find($submission->data['real_author']);
                     $this->additionalSlackMsg .= '运营人员：'.formatSlackUser($real_author).';';
                 }
+                $url = config('app.mobile_url').'#/dianping/comment/'.$submission->slug;
                 break;
         }
         if ($submission->type != 'review') {
@@ -149,17 +150,15 @@ class NewSubmissionJob implements ShouldQueue
                 if ($attention_user) $attention_user->notify((new FollowedUserNewSubmission($attention_uid,$submission))->delay(Carbon::now()->addMinutes(3)));
             }
             $targetName = '在圈子['.$group->name.']';
-
+            $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
             $submission->setKeywordTags();
         }
         $submission->calculationRate();
         $submission->getRelatedProducts();
-        $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
         $channel = config('slack.ask_activity_channel');
         if ($this->notifyAutoChannel) {
             $channel = config('slack.auto_channel');
         }
-
 
         return \Slack::to($channel)
             ->disableMarkdown()
