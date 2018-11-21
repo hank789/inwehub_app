@@ -14,6 +14,6 @@ use Illuminate\Http\Request;
 */
 
 // RESTful API version 1.
-Route::group([], function () {
+Route::group(['middleware'=>\Barryvdh\Cors\HandleCors::class], function () {
     require base_path('routes/api_v1.php');
 });
