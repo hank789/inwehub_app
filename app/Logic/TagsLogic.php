@@ -43,8 +43,6 @@ class TagsLogic {
             case 5:
                 //用户擅长，包括问题分类[question]和产品类型[product_type]
                 $category_name = Category::where('slug','like','question_%')->get()->pluck('slug')->toArray();
-                $category_name2 = Category::where('type','enterprise_review')->where('grade',0)->get()->pluck('slug')->toArray();
-                $category_name = array_merge($category_name,$category_name2);
                 $loadDefaultTags = true;
                 break;
             case 6:
