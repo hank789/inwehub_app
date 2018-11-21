@@ -70,11 +70,17 @@ class Test extends Command
         while ($tags->count() > 0) {
             foreach ($tags as $tag) {
                 $item = Tag::find($tag->tag_id);
-                $logo = file_get_contents($item->logo);
-                if (in_array($logo,$list)) {
-                    $this->info($item->id);
+                try {
+                    $logo = file_get_contents($item->logo);
+                    if (in_array($logo,$list)) {
+                        $this->info($item->id);
+                        RateLimiter::instance()->sAdd('default_product_logo',$item->id,60*60*24);
+                    }
+                } catch (\Exception $e) {
+                    $this->info($item->id.';'.$e->getMessage());
                     RateLimiter::instance()->sAdd('default_product_logo',$item->id,60*60*24);
                 }
+
             }
             $page ++;
             $tags = $query->simplePaginate(100,['*'],'page',$page);
