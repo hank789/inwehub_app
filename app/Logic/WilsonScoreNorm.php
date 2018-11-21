@@ -10,6 +10,7 @@ namespace App\Logic;
 /**
  * Class WilsonScoreNorm
  * https://stackoverrun.com/cn/q/2192534
+ * http://www.goproblems.com/test/wilson/wilson.php?v1=0&v2=0&v3=0&v4=1&v5=1
  * https://www.jianshu.com/p/4d2b45918958
  * @package App\Logic
  */

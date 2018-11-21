@@ -46,7 +46,9 @@ class RecommendGroupSubmission implements ShouldQueue
         if (!$submission) return;
         if ($submission->status == 0 || empty($submission->group_id) || $submission->is_recommend <= 0) return;
         $members = GroupMember::where('group_id',$submission->group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
-        $submission->data['sourceViews'] = 1;
+        $data = $submission->data;
+        $data['sourceViews'] = 1;
+        $submission->data = $data;
         foreach ($members as $muid) {
             $mUser = User::find($muid);
             $mUser->notify((new NewSubmission($muid,$submission)));
