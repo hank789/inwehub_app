@@ -1912,3 +1912,46 @@ if (!function_exists('formatElasticSearchTitle')) {
     }
 }
 
+
+if (!function_exists('imdbRank')) {
+    /**
+     * @param $average_rating ; 该项的投票平均分
+     * @param $votes_number ;该项的投票人数
+     * @param $minimum_votes ;总的最低投票数
+     * @param $correctly_votes_rate ;总的平均分
+     * @return float|int
+     */
+    function imdbRank($average_rating, $votes_number, $minimum_votes, $correctly_votes_rate) {
+        return ($votes_number / ($votes_number + $minimum_votes)) * $average_rating + ($minimum_votes / (
+                    $votes_number + $minimum_votes)) * $correctly_votes_rate;
+    }
+}
+
+
+if (!function_exists('fiveStarCovertToUpAndDown')) {
+    function fiveStarCovertToUpAndDown($oneNum,$twoNum,$threeNum,$fourNum,$fiveNum) {
+        $upvotes = $oneNum * 0 + $twoNum * 0.25 + $threeNum * 0.5 + $fourNum * 0.75 + $fiveNum * 1;
+        $downvotes = $oneNum * 1 + $twoNum * 0.75 + $threeNum * 0.5 + $fourNum * 0.25 + $fiveNum * 0;
+        return [
+            'up' => $upvotes,
+            'down' => $downvotes
+        ];
+    }
+}
+
+
+
+function varianceCalc($arr) {
+    $length = count($arr);
+    if ($length == 0) {
+        return array(0,0);
+    }
+    $average = array_sum($arr)/$length;
+    $count = 0;
+    foreach ($arr as $v) {
+        $count += pow($average-$v, 2);
+    }
+    $variance = $count/$length;
+    return array('variance' => $variance, 'square' => sqrt($variance), 'average' => $average);
+}
+

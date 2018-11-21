@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Logic\WilsonScoreNorm;
 use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Doing;
@@ -59,6 +60,11 @@ class Test extends Command
      */
     public function handle()
     {
+        $arr = [5];
+        $t = varianceCalc($arr);
+        $w = new WilsonScoreNorm($t['average'],count($arr));
+        var_dump($w->score());
+        return;
         $keys = RateLimiter::instance()->hGetAll('tag_pending_translate');
         foreach ($keys as $id=>$v) {
             $this->info($id);
