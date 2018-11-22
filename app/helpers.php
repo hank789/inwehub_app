@@ -1908,8 +1908,9 @@ if (!function_exists('formatElasticSearchTitle')) {
     function formatElasticSearchTitle($title) {
         $cs = ['+','-','=','&&','||','>','<','!','(',')','{','}','[',']','^','"','~','*','?',':','\\','/'];
         foreach ($cs as $c) {
-            $title = str_replace($c, ' ',$title);
+            $title = str_replace($c, "\\".$c,$title);
         }
+        $title = str_replace(' ', "*",$title);
         return $title;
     }
 }
