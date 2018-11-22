@@ -42,7 +42,7 @@ class DownVoteController extends Controller
 
         $loginUser = $request->user();
 
-        if (RateLimiter::instance()->increase('downvote:'.$source_type,$loginUser->id,10,5)){
+        if (RateLimiter::instance()->increase('downvote:'.$source_type,$source_id.'_'.$loginUser->id,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 
