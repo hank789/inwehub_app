@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 /**
  * App\Models\Question
@@ -571,10 +572,10 @@ class Question extends Model
     public function getRelatedProducts() {
         $related_tags = Cache::get('question_related_products_'.$this->id);
         if ($related_tags === null && isset($this->data['keywords'])) {
+            $ignoreKeywords = Config::get('inwehub.ignore_product_keywords');
             $keywords = explode(',', $this->data['keywords']);
             $related_tags = [];
             foreach ($keywords as $keyword) {
-                $ignoreKeywords = ['科技','信息','公司','有限','科技公司','有限公司','信息科技'];
                 if (in_array($keyword,$ignoreKeywords)) continue;
                 $rels = Tag::where('name', $keyword)->get();
                 foreach ($rels as $rel) {

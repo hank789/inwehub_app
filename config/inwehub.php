@@ -8,6 +8,7 @@ return [
     'admin' => [
         'page_size' => 15,  //后台分页列表显示数目
     ],
+    'ignore_product_keywords' => ['科技','信息','公司','有限','科技公司','有限公司','信息科技','软件','企业'],
     'api_data_page_size' => 15,//api数据每页返回多少条目
     'user_actions' => [   //积分操作动作
         'login'    => '登录',
