@@ -749,9 +749,11 @@ class FollowController extends Controller
             $attentions = Attention::where('source_id',$user->id)->where('source_type',User::class)->pluck('user_id')->toArray();
             $attentions = array_diff($attentions,$attentionUsers);
             $attentions = array_diff($attentions,$addressBookUids);
+            $count = 0;
             foreach ($attentions as $attention) {
                 $info = User::find($attention);
                 if (!$info) continue;
+                $count++;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -761,19 +763,21 @@ class FollowController extends Controller
                 $item['is_followed'] = 0;
                 $item['description'] = 'Ta悄悄关注了你';
                 $data[] = $item;
-                if (count($data) >= 9) break;
+                if (count($data) >= 9 || $count >= 3) break;
             }
         }
         //共同好友
         if (count($data) < 9) {
             $attentionEachs = Attention::whereIn('source_id',array_diff($attentionUserIds,getSystemUids()))->where('source_type',User::class)->get()->toArray();
             $used = array_column($data,'id');
+            $count = 0;
             foreach ($attentionEachs as $attention) {
                 if (in_array($attention['user_id'],$used) || in_array($attention['user_id'],$attentionUsers)) continue;
                 $info = User::find($attention['user_id']);
                 if (!$info) continue;
                 $eachUser = User::find($attention['source_id']);
                 if (!$eachUser) continue;
+                $count++;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -783,7 +787,7 @@ class FollowController extends Controller
                 $item['is_followed'] = 0;
                 $item['description'] = '你们有共同好友：'.$eachUser->name;
                 $data[] = $item;
-                if (count($data) >= 9) break;
+                if (count($data) >= 9 || $count >= 3) break;
             }
         }
         //相同标签
@@ -791,10 +795,12 @@ class FollowController extends Controller
             $userTags = UserTag::whereIn('tag_id',$tags)->where('user_id','!=',$user->id)->orderBy('articles','desc')->pluck('user_id')->toArray();
             $used = array_column($data,'id');
             $attentions = array_diff($userTags,$used);
+            $count = 0;
             foreach ($attentions as $attention) {
                 if (in_array($attention,$used) || in_array($attention,$attentionUsers)) continue;
                 $info = User::find($attention);
                 if (!$info) continue;
+                $count++;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -804,7 +810,7 @@ class FollowController extends Controller
                 $item['is_followed'] = 0;
                 $item['description'] = '你可能会喜欢Ta的分享';
                 $data[] = $item;
-                if (count($data) >= 9) break;
+                if (count($data) >= 9 || $count >= 2) break;
             }
         }
         //领域优秀分享者

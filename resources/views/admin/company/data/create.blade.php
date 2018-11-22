@@ -30,7 +30,7 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>公司名称</label>
-                                <input type="text" name="name" class="form-control "  placeholder="公司名称" value="{{ old('name','') }}">
+                                <input type="text" name="name" class="form-control "  placeholder="公司名称" value="{{ old('name','https://cdn.inwehub.com/system/company_default.png') }}">
                             </div>
 
                             <div class="form-group">
