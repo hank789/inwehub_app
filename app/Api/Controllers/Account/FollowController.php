@@ -815,7 +815,7 @@ class FollowController extends Controller
         }
         //领域优秀分享者
         if (count($data) < 9) {
-            $userTags = UserTag::where('user_id','!=',$user->id)->orderBy('articles','desc')->get()->toArray();
+            $userTags = UserTag::where('user_id','!=',$user->id)->orderBy('articles','desc')->take(10)->get();
             $used = array_column($data,'id');
             foreach ($userTags as $userTag) {
                 if (in_array($userTag->user_id,$used) || in_array($userTag->user_id,$attentionUsers)) continue;
