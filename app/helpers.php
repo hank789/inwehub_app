@@ -1495,7 +1495,7 @@ if (!function_exists('getSystemUids')) {
 
 if (!function_exists('getContentUrls')) {
     function getContentUrls($content){
-        preg_match_all('/(http|https):[\/]{2}[A-Za-z0-9,:\\._\\?#%&+\\-=\/]*/',strip_tags(strip_html_tags(['a'],$content,true)),$urls);
+        preg_match_all('/(http|https):[\/]{2}[A-Za-z0-9,:\\._\\?#%&+\\-=\/()]*/',strip_tags(strip_html_tags(['a'],$content,true)),$urls);
         return $urls[0];
     }
 }
