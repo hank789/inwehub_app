@@ -593,7 +593,7 @@ class Submission extends Model {
                 Cache::forever('submission_related_products_'.$this->id,$related_tags);
             }
         }
-        return $related_tags;
+        return $related_tags?:[];
     }
 
 }

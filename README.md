@@ -70,6 +70,13 @@ server {
         proxy_set_header X-Forwarded-For $remote_addr;
     }
     location / {
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
+        add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
+    
+        if ($request_method = 'OPTIONS') {
+            return 200;
+        }
         index  index.php index.html index.htm;
 	    try_files $uri $uri/ /index.php?$query_string;
     }
