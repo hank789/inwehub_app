@@ -131,7 +131,7 @@ class CompanyData extends Model
             }
             $exist = self::create([
                 'name' => $companyName,
-                'logo' => '',
+                'logo' => 'https://cdn.inwehub.com/system/company_default.png',
                 'address_province' => $address_province,
                 'address_detail'   => $address_detail,
                 'longitude'        => $longitude,

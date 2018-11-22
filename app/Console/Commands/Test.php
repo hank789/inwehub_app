@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Logic\WilsonScoreNorm;
 use App\Models\Attention;
 use App\Models\Category;
+use App\Models\Company\CompanyData;
 use App\Models\Doing;
 use App\Models\Question;
 use App\Models\RecommendRead;
@@ -60,16 +61,27 @@ class Test extends Command
      */
     public function handle()
     {
+        $companies = CompanyData::get();
+        foreach ($companies as $company) {
+            if (empty($company->logo)) {
+                $this->info($company->name);
+                $company->logo = 'https://cdn.inwehub.com/system/company_default.png';
+                $company->save();
+            }
+        }
+        return;
+        $items = RateLimiter::instance()->sMembers('default_product_logo');
         $data = file_get_contents('https://cdn.inwehub.com/tags/2018/11/15423122375Wtb3YC.png');
         $data1 = file_get_contents('https://cdn.inwehub.com/tags/2018/11/15412595109Mjhz0q.png');
         $data2 = file_get_contents('https://cdn.inwehub.com/tags/2018/11/1542308337clNpDMS.png');
         $list = [$data,$data1,$data2];
         $page = 1;
-        $query = TagCategoryRel::where('type',1);
+        $query = TagCategoryRel::where('type',1)->orderBy('id','desc');
         $tags = $query->simplePaginate(100,['*'],'page',$page);
         while ($tags->count() > 0) {
             foreach ($tags as $tag) {
                 $item = Tag::find($tag->tag_id);
+                if ($item->logo == 'https://cdn.inwehub.com/system/product_default.png') continue;
                 try {
                     $logo = file_get_contents($item->logo);
                     if (in_array($logo,$list)) {
