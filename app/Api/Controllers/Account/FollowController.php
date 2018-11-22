@@ -730,6 +730,7 @@ class FollowController extends Controller
         if ($addressBookUids) {
             foreach ($addressBookUids as $addressBookUid) {
                 $info = User::find($addressBookUid);
+                if (!$info) continue;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -749,6 +750,7 @@ class FollowController extends Controller
             $attentions = array_diff($attentions,$addressBookUids);
             foreach ($attentions as $attention) {
                 $info = User::find($attention);
+                if (!$info) continue;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -768,7 +770,9 @@ class FollowController extends Controller
             foreach ($attentionEachs as $attention) {
                 if (in_array($attention['user_id'],$used) || in_array($attention['user_id'],$attentionUsers)) continue;
                 $info = User::find($attention['user_id']);
+                if (!$info) continue;
                 $eachUser = User::find($attention['source_id']);
+                if (!$eachUser) continue;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -789,6 +793,7 @@ class FollowController extends Controller
             foreach ($attentions as $attention) {
                 if (in_array($attention,$used) || in_array($attention,$attentionUsers)) continue;
                 $info = User::find($attention);
+                if (!$info) continue;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -808,6 +813,7 @@ class FollowController extends Controller
             foreach ($userTags as $userTag) {
                 if (in_array($userTag->user_id,$used) || in_array($userTag->user_id,$attentionUsers)) continue;
                 $info = User::find($userTag->user_id);
+                if (!$info) continue;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
