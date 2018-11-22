@@ -30,12 +30,12 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>公司名称</label>
-                                <input type="text" name="name" class="form-control "  placeholder="公司名称" value="{{ old('name','https://cdn.inwehub.com/system/company_default.png') }}">
+                                <input type="text" name="name" class="form-control "  placeholder="公司名称" value="{{ old('name','') }}">
                             </div>
 
                             <div class="form-group">
                                 <label>Logo图片地址</label>
-                                <input type="text" name="logo" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('logo','') }}">
+                                <input type="text" name="logo" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('logo','https://cdn.inwehub.com/system/company_default.png') }}">
                             </div>
                             <div class="form-group">
                                 <label>所在省市</label>
