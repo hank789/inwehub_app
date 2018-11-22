@@ -727,11 +727,13 @@ class FollowController extends Controller
             $addressBookUids = array_diff($addressBookUids,$attentionUsers);
         }
         $data = [];
+        $usedIds = [];
         //通讯录
         if ($addressBookUids) {
             foreach ($addressBookUids as $addressBookUid) {
                 $info = User::find($addressBookUid);
                 if (!$info) continue;
+                $usedIds[] = $info->id;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
@@ -753,6 +755,7 @@ class FollowController extends Controller
             foreach ($attentions as $attention) {
                 $info = User::find($attention);
                 if (!$info) continue;
+                $usedIds[] = $info->id;
                 $count++;
                 $item = [];
                 $item['id'] = $info->id;
@@ -768,7 +771,7 @@ class FollowController extends Controller
         }
         //共同好友
         if (count($data) < 9) {
-            $attentionEachs = Attention::whereIn('source_id',array_diff($attentionUserIds,getSystemUids()))->where('source_type',User::class)->get()->toArray();
+            $attentionEachs = Attention::whereIn('source_id',array_diff($attentionUserIds,getSystemUids()))->where('source_type',User::class)->take(30)->get()->toArray();
             $used = array_column($data,'id');
             $count = 0;
             foreach ($attentionEachs as $attention) {
@@ -777,6 +780,8 @@ class FollowController extends Controller
                 if (!$info) continue;
                 $eachUser = User::find($attention['source_id']);
                 if (!$eachUser) continue;
+                if (in_array($info->id,$usedIds)) continue;
+                $usedIds[] = $info->id;
                 $count++;
                 $item = [];
                 $item['id'] = $info->id;
@@ -792,7 +797,7 @@ class FollowController extends Controller
         }
         //相同标签
         if (count($data) < 9) {
-            $userTags = UserTag::whereIn('tag_id',$tags)->where('user_id','!=',$user->id)->orderBy('articles','desc')->pluck('user_id')->toArray();
+            $userTags = UserTag::whereIn('tag_id',$tags)->where('user_id','!=',$user->id)->orderBy('articles','desc')->take(30)->pluck('user_id')->toArray();
             $used = array_column($data,'id');
             $attentions = array_diff($userTags,$used);
             $count = 0;
@@ -800,6 +805,8 @@ class FollowController extends Controller
                 if (in_array($attention,$used) || in_array($attention,$attentionUsers)) continue;
                 $info = User::find($attention);
                 if (!$info) continue;
+                if (in_array($info->id,$usedIds)) continue;
+                $usedIds[] = $info->id;
                 $count++;
                 $item = [];
                 $item['id'] = $info->id;
@@ -815,12 +822,14 @@ class FollowController extends Controller
         }
         //领域优秀分享者
         if (count($data) < 9) {
-            $userTags = UserTag::where('user_id','!=',$user->id)->orderBy('articles','desc')->take(10)->get();
+            $userTags = UserTag::where('user_id','!=',$user->id)->orderBy('articles','desc')->take(20)->get();
             $used = array_column($data,'id');
             foreach ($userTags as $userTag) {
                 if (in_array($userTag->user_id,$used) || in_array($userTag->user_id,$attentionUsers)) continue;
                 $info = User::find($userTag->user_id);
                 if (!$info) continue;
+                if (in_array($info->id,$usedIds)) continue;
+                $usedIds[] = $info->id;
                 $item = [];
                 $item['id'] = $info->id;
                 $item['uuid'] = $info->uuid;
