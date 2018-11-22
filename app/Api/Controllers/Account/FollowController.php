@@ -670,6 +670,7 @@ class FollowController extends Controller
         $data = [];
         foreach($userTags as $userTag){
             $info = User::find($userTag->user_id);
+            if (!$info) continue;
             $tag = $info->userTag()->whereIn('tag_id',$tags)->orderBy('skills','desc')->first();
             $item = [];
             if ($tag) {
