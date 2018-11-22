@@ -64,7 +64,7 @@ class FollowController extends Controller
             $subject = $source->name;
         }
 
-        if (RateLimiter::instance()->increase('follow:'.$source_type,$loginUser->id,$limit_expire,5)){
+        if (RateLimiter::instance()->increase('follow:'.$source_type,$source_id.'_'.$loginUser->id,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
 

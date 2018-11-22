@@ -115,7 +115,7 @@ class SubmissionVotesController extends Controller {
         $user = $request->user();
         $submission = Submission::find($request->submission_id);
 
-        if (RateLimiter::instance()->increase('support:submission',$submission->id.'_'.$user->id,5)) {
+        if (RateLimiter::instance()->increase('support:submission',$submission->id.'_'.$user->id,1)) {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $group = Group::find($submission->group_id);
@@ -182,7 +182,7 @@ class SubmissionVotesController extends Controller {
         $user = $request->user();
         $submission = Submission::find($request->submission_id);
 
-        if (RateLimiter::instance()->increase('down:submission',$submission->id.'_'.$user->id,5)) {
+        if (RateLimiter::instance()->increase('down:submission',$submission->id.'_'.$user->id,1)) {
             throw new ApiException(ApiException::VISIT_LIMIT);
         }
         $group = Group::find($submission->group_id);
