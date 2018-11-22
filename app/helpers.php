@@ -1076,6 +1076,8 @@ if (!function_exists('saveImgToCdn')){
                 $imgType = 'svg';
             }elseif (strrchr($parse_url['path'],'.gif') == '.gif') {
                 $imgType = 'gif';
+            }elseif (strrchr($parse_url['path'],'.ico') == '.ico') {
+                $imgType = 'ico';
             }
             $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$imgType;
             $ql = \QL\QueryList::getInstance();
