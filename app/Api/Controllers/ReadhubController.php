@@ -31,7 +31,7 @@ class ReadhubController extends Controller
 
         $query = Submission::where('user_id',$user->id)->where('status',1);
         if ($user->id != $loginUser->id) {
-            $query = $query->where('public',1);
+            $query = $query->where('public',1)->where('hide',0);
         }
         switch ($type) {
             case 3:
