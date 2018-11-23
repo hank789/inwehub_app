@@ -178,6 +178,10 @@ class AnswerController extends Controller
 
         $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
         $currentUserAnswer = Answer::where('question_id',$question->id)->where('user_id',$user->id)->where('status',1)->first();
+        $qData = $question->data;
+        if (!isset($qData['img'])) {
+            $qData['img'] = [];
+        }
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
@@ -194,7 +198,7 @@ class AnswerController extends Controller
             'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
             'hide' => $question->hide,
             'price' => $question->price,
-            'data'  => $question->data,
+            'data'  => $qData,
             'status' => $question->status,
             'status_description' => $question->statusFormatDescription($user->id),
             'status_short_tip' => $question->statusShortTip($user->id),
