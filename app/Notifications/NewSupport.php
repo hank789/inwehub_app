@@ -100,11 +100,23 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 $body = $source->formatTitle();
                 break;
             case 'App\Models\Comment':
-                $answer = $source->source;
-                $url = '/ask/offer/'.$answer->id;
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_TASK;
-                $title = $this->support->user->name.'赞了您的评论';
                 $avatar = $this->support->user->avatar;
+
+                $sourceS = $source->source;
+                switch ($source->source_type) {
+                    case 'App\Models\Answer':
+                        $url = '/ask/offer/'.$sourceS->id;
+                        break;
+                    case 'App\Models\Submission':
+                        $url = '/c/'.$sourceS->category_id.'/'.$sourceS->slug;
+                        if ($sourceS->type == 'review') {
+                            $url = '/dianping/comment/'.$sourceS->slug;
+                        }
+                        break;
+                }
+
+                $title = $this->support->user->name.'赞了您的评论';
                 $body = $source->content;
                 break;
             default:
