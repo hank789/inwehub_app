@@ -155,9 +155,21 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
 
                 break;
             case 'App\Models\Comment':
-                $answer = $source->source;
-                $object_type = 'free_answer_new_support';
-                $object_id = $answer->id;
+                $sourceS = $source->source;
+                switch ($source->source_type) {
+                    case 'App\Models\Answer':
+                        $object_type = 'free_answer_new_support';
+                        $object_id = $sourceS->id;
+                        break;
+                    case 'App\Models\Submission':
+                        $object_id = '/c/'.$sourceS->category_id.'/'.$sourceS->slug;
+                        if ($sourceS->type == 'review') {
+                            $object_id = '/dianping/comment/'.$sourceS->slug;
+                        }
+                        $object_type = 'readhub_submission_upvoted';
+                        break;
+                }
+
                 $title = $this->support->user->name.'赞了您的评论';
                 $body = $source->content;
                 break;
