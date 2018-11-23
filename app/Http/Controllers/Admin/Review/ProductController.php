@@ -219,14 +219,14 @@ class ProductController extends AdminController
                     $rates+=$submission->rate_star;
                 }
             }
-            $tagRel->reviews = $count;
-            $tagRel->review_rate_sum = $rates;
-            $tagRel->review_average_rate = $count?bcdiv($rates,$count,1):0;
-            $tagRel->save();
+            $tagRel->calcRate();
             $info = Tag::getReviewInfo($tagRel->tag_id);
             Tag::where('id',$tagRel->tag_id)->update([
                 'reviews' => $info['review_count']
             ]);
+        }
+        if ($newStatus != $oldStatus) {
+            TagsLogic::delRelatedProductsCache();
         }
         TagsLogic::delCache();
         return $this->success($returnUrl,'产品修改成功');
