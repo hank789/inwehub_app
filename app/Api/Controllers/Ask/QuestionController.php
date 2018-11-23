@@ -157,7 +157,10 @@ class QuestionController extends Controller
 
 
         $attention_question_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($question->user))->where('source_id','=',$question->user_id)->first();
-
+        $qData = $question->data;
+        if (!isset($qData['img'])) {
+            $qData['img'] = [];
+        }
         $question_data = [
             'id' => $question->id,
             'user_id' => $question->user_id,
@@ -170,7 +173,7 @@ class QuestionController extends Controller
             'is_expert' => $question->hide ? 0 : ($question->user->userData->authentication_status == 1 ? 1 : 0),
             'is_followed' => $question->hide ? 0 : ($attention_question_user?1:0),
             'user_description' => $question->hide ? '':$question->user->description,
-            'data' => $question->data,
+            'data' => $qData,
             'description'  => $question->title,
             'tags' => $question->tags()->wherePivot('is_display',1)->get()->toArray(),
             'hide' => $question->hide,
