@@ -61,6 +61,24 @@ class Test extends Command
      */
     public function handle()
     {
+        $keys = RateLimiter::instance()->hGetAll('tag_pending_translate');
+        foreach ($keys as $id=>$v) {
+            $this->info($id);
+            try {
+                $tag = Tag::find($id);
+                $tag->summary = Translate::instance()->translate($tag->description);
+                $tag->save();
+                RateLimiter::instance()->hDel('tag_pending_translate',$id);
+            } catch (\Exception $e) {
+                $m = $e->getMessage();
+                $this->error($m);
+                if (!str_contains($m,'413 Request Entity Too Large')) {
+                    return;
+                }
+            }
+        }
+        $this->info('finish');
+        return;
         $companies = CompanyData::get();
         foreach ($companies as $company) {
             if (empty($company->logo)) {
@@ -105,24 +123,6 @@ class Test extends Command
         var_dump(WilsonScoreNorm::instance($t['average'],count($arr))->score());
         var_dump(WilsonScoreNorm::instance($t1['average'],count($arr1))->score());
 
-        return;
-        $keys = RateLimiter::instance()->hGetAll('tag_pending_translate');
-        foreach ($keys as $id=>$v) {
-            $this->info($id);
-            try {
-                $tag = Tag::find($id);
-                $tag->summary = Translate::instance()->translate($tag->description);
-                $tag->save();
-                RateLimiter::instance()->hDel('tag_pending_translate',$id);
-            } catch (\Exception $e) {
-                $m = $e->getMessage();
-                $this->error($m);
-                if (!str_contains($m,'413 Request Entity Too Large')) {
-                    return;
-                }
-            }
-        }
-        $this->info('finish');
         return;
         $s = [
             'CRM & Related',
