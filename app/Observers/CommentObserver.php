@@ -46,7 +46,7 @@ class CommentObserver implements ShouldQueue {
         $members = [];
         switch ($comment->source_type) {
             case 'App\Models\Article':
-                $title = '活动';
+                $notifyType = '活动';
                 $fields[] = [
                     'title' => '活动标题',
                     'value' => $source->title,
@@ -60,7 +60,7 @@ class CommentObserver implements ShouldQueue {
                 event(new CreditEvent($source->user_id,Credit::KEY_PRO_OPPORTUNITY_COMMENTED,Setting()->get('coins_'.Credit::KEY_PRO_OPPORTUNITY_COMMENTED),Setting()->get('credits_'.Credit::KEY_PRO_OPPORTUNITY_COMMENTED),$comment->id,'项目机遇被回复'));
                 break;
             case 'App\Models\Answer':
-                $title = '回答';
+                $notifyType = '回答';
                 $fields[] = [
                     'title' => '回答内容',
                     'value' => $source->getContentText(),

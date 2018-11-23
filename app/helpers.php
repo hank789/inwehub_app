@@ -1911,7 +1911,7 @@ if (!function_exists('formatElasticSearchTitle')) {
             $title = str_replace($c, "\\".$c,$title);
         }
         $title = str_replace(' ', "*",$title);
-        return $title;
+        return strtolower($title);
     }
 }
 
