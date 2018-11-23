@@ -258,7 +258,7 @@ class Tag extends Model
             }
         }
         $fields =  [
-            'name' => $this->name,
+            'name' => strtolower($this->name),
             'status' => $status,
             'reviews' => $this->reviews,
             'type' => $type

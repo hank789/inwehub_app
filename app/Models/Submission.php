@@ -204,7 +204,7 @@ class Submission extends Model {
         }
 
         $fields = [
-            'title' => $title,
+            'title' => strtolower($title),
             'product_type'  => $this->type=='review'?2:1,
             'status' => $this->status,
             'public' => $this->public,
