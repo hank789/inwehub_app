@@ -379,7 +379,7 @@ class ProfileController extends Controller
         $info['follow_user_number'] = $user->attentions()->where('source_type',User::class)->count();
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
 
-        $info['submission_count'] = Submission::where('user_id',$user->id)->where('public',1)->whereNull('deleted_at')->count();
+        $info['submission_count'] = Submission::where('user_id',$user->id)->where('public',1)->where('hide',0)->whereNull('deleted_at')->count();
         $info['comment_count'] = Comment::where('user_id',$user->id)->count();
         $info['feed_count'] = Feed::where('user_id',$user->id)->where('is_anonymous',0)->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER)->count();
         $info['article_count'] = Submission::where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->count();
