@@ -543,7 +543,7 @@ class Question extends Model
             $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title)),1);
             $tags = [];
             foreach ($keywords as $keyword) {
-                $keyword = formatKeyword($keyword);
+                $keyword = formatHtml(formatKeyword($keyword));
                 if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
                     continue;
                 }

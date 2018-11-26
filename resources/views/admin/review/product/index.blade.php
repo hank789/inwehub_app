@@ -1,5 +1,9 @@
 @extends('admin/public/layout')
 @section('title')产品管理@endsection
+@section('css')
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
+@endsection
 @section('content')
     <section class="content-header">
         <h1>
@@ -22,15 +26,18 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.review.product.index') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" id="category_id" name="category_id" value="" />
                                         <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="id" placeholder="id" value="{{ $filter['id'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-2">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                         </div>
-                                        <div class="col-xs-2">
-                                            <select class="form-control" name="category_id">
-                                                <option value="-1">不选择</option>
+                                        <div class="col-xs-4">
+                                            <select id="select_tags" name="select_tags" class="form-control" >
+                                                @if ($filter['category_id'] == -1)
+                                                    <option value="-1" selected>不选择</option>
+                                                @endif
                                                 @include('admin.category.option',['type'=>'enterprise_review','select_id'=>$filter['category_id'],'root'=>false, 'last'=>true])
                                             </select>
                                         </div>
@@ -124,9 +131,21 @@
 @endsection
 
 @section('script')
-    @include("admin.public.change_category_modal",['type'=>'tags','form_id'=>'item_form','form_action'=>route('admin.tag.changeCategories')])
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('manage_review',"{{ route('admin.review.product.index') }}");
+
+        $("#select_tags").select2({
+            theme:'bootstrap',
+            placeholder: "分类",
+            minimumInputLength:2,
+            tags:false
+        });
+
+        $("#select_tags").change(function(){
+            $("#category_id").val($("#select_tags").val());
+        });
+
         $(".btn-setveriy").click(function(){
             var title = $(this).data('title');
             if(!confirm('确认' + title + '？')){

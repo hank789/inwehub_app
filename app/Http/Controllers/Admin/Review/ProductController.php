@@ -38,7 +38,7 @@ class ProductController extends AdminController
 
         /*问题标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
-            $query->where('name','like', '%'.$filter['word'].'%');
+            $query->where('name','like', $filter['word'].'%');
         }
 
         /*分类过滤*/
