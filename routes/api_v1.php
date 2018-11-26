@@ -360,6 +360,7 @@ Route::post('system/htmlToImage','SystemController@htmlToImage')->middleware('jw
 
 
 //检测app版本
+Route::get('system/version','SystemController@appVersion');
 Route::post('system/version','SystemController@appVersion');
 
 //支付参数
