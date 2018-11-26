@@ -522,7 +522,15 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::get('product/reviewInfo','ProductController@reviewInfo')->middleware(['jwt.weappAuth']);
     Route::get('product/reviewCommentList','ProductController@reviewCommentList')->middleware(['jwt.weappAuth']);
     Route::post('product/storeReview','ProductController@storeReview')->middleware(['jwt.weappAuth']);
+});
 
+//微信小程序
+Route::group(['prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function() {
+    //企业点评
+    Route::post('product/upvoteReview','Article\SubmissionVotesController@upVote')->middleware(['jwt.weappAuth']);
+    Route::post('product/downvoteReview','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
+    Route::post('product/upvoteComment','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
+    Route::post('product/support/comment',['uses'=>'SupportController@store'])->middleware(['jwt.weappAuth']);
 });
 
 Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespace'=>'Weapp'], function() {
