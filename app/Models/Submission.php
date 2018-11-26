@@ -501,7 +501,7 @@ class Submission extends Model {
             $tags = [];
             $keywords = array_unique($keywords);
             foreach ($keywords as $keyword) {
-                $keyword = formatKeyword($keyword);
+                $keyword = formatHtml(formatKeyword($keyword));
                 if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
                     continue;
                 }
