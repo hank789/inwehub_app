@@ -56,14 +56,14 @@ class WeApp
      * @param $encryptedData
      * @param $iv
      * @return string
-     * @throws \Exception
      */
     public function getUserInfo($encryptedData, $iv){
         $pc = new WXBizDataCrypt($this->appid, $this->sessionKey);
         $decodeData = "";
         $errCode = $pc->decryptData($encryptedData, $iv, $decodeData);
         if ($errCode !=0 ) {
-            throw new WeAppException('encryptedData 解密失败');
+            return [];
+            //throw new WeAppException('encryptedData 解密失败');
         }
         return json_decode($decodeData,true);
     }
