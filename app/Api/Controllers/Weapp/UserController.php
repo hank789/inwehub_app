@@ -5,6 +5,7 @@
  * @email: hank.huiwang@gmail.com
  */
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
@@ -33,12 +34,10 @@ class UserController extends controller {
         switch ($oauthType) {
             case UserOauth::AUTH_TYPE_WEAPP:
                 //项目招募助手-默认
-                $source = User::USER_SOURCE_WEAPP;
                 break;
             case UserOauth::AUTH_TYPE_WEAPP_ASK:
-                //精选推荐
+                //企业点评服务
                 $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
-                $source = User::USER_SOURCE_WEAPP_ASK;
                 break;
         }
 
@@ -60,8 +59,8 @@ class UserController extends controller {
         $user_id = 0;
 
         if (!$oauthData) {
-            if (isset($return['unionId'])) {
-                $oauthData = UserOauth::where('unionid',$return['unionId'])->first();
+            if (isset($userInfo['unionId'])) {
+                $oauthData = UserOauth::where('unionid',$userInfo['unionId'])->first();
                 if ($oauthData) {
                     $user_id = $oauthData->user_id;
                 }
@@ -71,42 +70,21 @@ class UserController extends controller {
                     'auth_type'=>$oauthType,
                     'user_id'=> $user_id,
                     'openid'   => $userInfo['openid'],
-                    'unionid'  => $return['unionId']??null,
-                    'nickname'=>$return['nickName'],
-                    'avatar'=>$return['avatarUrl'],
+                    'unionid'  => $userInfo['unionId']??null,
+                    'nickname'=>$return['nickName']??'',
+                    'avatar'=>$return['avatarUrl']??'',
                     'access_token'=>$userInfo['session_key'],
                     'refresh_token'=>'',
                     'expires_in'=>$userInfo['expires_in']??7200,
                     'full_info'=>$return,
                     'scope'=>'authorization_code',
-                    'status' => 0
+                    'status' => 1
                 ]
             );
         } else {
             $user_id = $oauthData->user_id;
         }
-        //如系统中不存在该用户，创建新用户
-        if (empty($user_id) && false) {
-            $registrar = new Registrar();
-            $new_user = $registrar->create([
-                'name' => $oauthData->nickname,
-                'email' => null,
-                'mobile' => null,
-                'rc_uid' => 0,
-                'title'  => '',
-                'company' => '',
-                'gender' => $return['gender'],
-                'password' => time(),
-                'status' => 1,
-                'source' => $source,
-            ]);
-            $user_id = $new_user->id;
-            $oauthData->user_id = $new_user->id;
-            $oauthData->save();
-            $new_user->attachRole(2); //默认注册为普通用户角色
-            $new_user->avatar = $oauthData->avatar;
-            $new_user->save();
-        }
+
         $info = [
             'id' => $user_id,
             'oauth_id' => $oauthData->id,
@@ -129,6 +107,88 @@ class UserController extends controller {
         }
         event(new SystemNotify('用户登录: '.$oauthData->user_id.'['.$oauthData->nickname.'];设备:小程序登陆-'.$oauthType));
         return self::createJsonData(true,['token'=>$token,'userInfo'=>$info]);
+    }
+
+    public function updateUserInfo(Request $request,JWTAuth $JWTAuth) {
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($request->input('nickname')) {
+            $oauth->update([
+                'nickname' => $request->input('nickname'),
+                'avatar' => $request->input('avatar'),
+                'full_info' => $request->all()
+            ]);
+        }
+        $info = [
+            'id' => $oauth->user_id,
+            'oauth_id' => $oauth->id,
+            'status'=>$oauth->status,
+            'avatarUrl'=>$oauth->avatar,
+            'name'=>$oauth->nickname,
+            'company'=>'',
+            'mobile' => '',
+            'email'  => ''
+        ];
+        if ($oauth->user_id) {
+            $user = User::find($oauth->user_id);
+            $info['title'] = $user->title;
+            $info['company'] = $user->company;
+            $info['mobile'] = $user->mobile;
+            $info['email'] = $user->email;
+        }
+        return self::createJsonData(true,$info);
+    }
+
+    public function updatePhone(Request $request,JWTAuth $JWTAuth) {
+        $validateRules = [
+            'phone'   => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        $phone = $request->input('phone');
+        $phoneUser = User::where('mobile')->first();
+        if (!$oauth->user_id) {
+            if ($phoneUser) {
+                $oauth->user_id = $phoneUser->id;
+                $oauth->save();
+            } else {
+                $registrar = new Registrar();
+                $new_user = $registrar->create([
+                    'name' => $oauth->nickname,
+                    'email' => null,
+                    'mobile' => $phone,
+                    'rc_uid' => 0,
+                    'title'  => '',
+                    'company' => '',
+                    'gender' => $oauth->full_info['gender']??0,
+                    'password' => time(),
+                    'status' => 1,
+                    'source' => User::USER_SOURCE_WEAPP_DB,
+                ]);
+                $oauth->user_id = $new_user->id;
+                $oauth->save();
+                $new_user->attachRole(2); //默认注册为普通用户角色
+                $new_user->avatar = $oauth->avatar;
+                $new_user->save();
+                event(new UserRegistered($new_user,$oauth->id,'微信小程序-点评'));
+            }
+        } else {
+            $user = User::find($oauth->user_id);
+            if (empty($user->mobile)) {
+                $user->mobile = $phone;
+                $user->save();
+            }
+        }
+        $info = [
+            'id' => $oauth->user_id,
+            'oauth_id' => $oauth->id,
+            'status'=>$oauth->status,
+            'avatarUrl'=>$oauth->avatar,
+            'name'=>$oauth->nickname,
+            'company'=>'',
+            'mobile' => $phone,
+            'email'  => ''
+        ];
+        return self::createJsonData(true,$info);
     }
 
     public function getUserInfo(JWTAuth $JWTAuth){

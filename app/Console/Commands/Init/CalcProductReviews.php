@@ -5,16 +5,9 @@
  * @email: hank.huiwang@gmail.com
  */
 use App\Logic\TagsLogic;
-use App\Models\Category;
-use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
-use App\Services\Translate;
-use App\Services\RateLimiter;
 use Illuminate\Console\Command;
-use QL\Ext\PhantomJs;
-use QL\QueryList;
-use App\Traits\SubmitSubmission;
 
 class CalcProductReviews extends Command
 {

@@ -219,21 +219,7 @@ class Tag extends Model
     }
 
     public static function getTagByName($tagName){
-        $tags = self::where('name',$tagName)->get();
-        $ignores = [
-            8,//拒绝回答
-            30,//活动报名
-            31,//项目机遇
-            33,//动态频道
-            34,//小哈公社
-            35,//观点洞见
-            36,//新闻动态
-
-        ];
-        foreach ($tags as $tag) {
-            if (in_array($tag->category_id,$ignores)) continue;
-        }
-        if (!isset($tag)) throw new ApiException(ApiException::BAD_REQUEST);
+        $tag = self::where('name',$tagName)->first();
         return $tag;
     }
 

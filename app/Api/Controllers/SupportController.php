@@ -11,6 +11,7 @@ use App\Models\Support;
 use App\Models\UserTag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\JWTAuth;
 
 class SupportController extends Controller
 {
@@ -21,7 +22,7 @@ class SupportController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store($source_type,Request $request)
+    public function store($source_type,Request $request, JWTAuth $JWTAuth)
     {
         $validateRules = [
             'id' => 'required|integer'
@@ -40,8 +41,19 @@ class SupportController extends Controller
         if(!$source){
             abort(404);
         }
-
-        $loginUser = $request->user();
+        if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+            $oauth = $JWTAuth->parseToken()->toUser();
+            if ($oauth->user_id) {
+                $loginUser = $oauth->user;
+            } else {
+                throw new ApiException(ApiException::USER_WEIXIN_NEED_REGISTER);
+            }
+            if (empty($loginUser->mobile)) {
+                throw new ApiException(ApiException::USER_NEED_VALID_PHONE);
+            }
+        } else {
+            $loginUser = $request->user();
+        }
 
         if (RateLimiter::instance()->increase('support:'.$source_type,$source_id.'_'.$loginUser->id,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);

@@ -360,6 +360,7 @@ Route::post('system/htmlToImage','SystemController@htmlToImage')->middleware('jw
 
 
 //检测app版本
+Route::get('system/version','SystemController@appVersion');
 Route::post('system/version','SystemController@appVersion');
 
 //支付参数
@@ -485,6 +486,9 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('user/wxinfo','UserController@getWxUserInfo');
     //获取用户信息
     Route::post('user/info','UserController@getUserInfo')->middleware(['jwt.weappAuth']);
+    //更新用户信息
+    Route::post('user/updateUserInfo','UserController@updateUserInfo')->middleware(['jwt.weappAuth']);
+    Route::post('user/updatePhone','UserController@updatePhone')->middleware(['jwt.weappAuth']);
     //存储表单提交的formId
     Route::post('user/saveFormId','UserController@saveFormId')->middleware(['jwt.weappAuth']);
     //获取二维码
@@ -509,6 +513,24 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('demand/detail','DemandController@detail')->middleware(['jwt.weappAuth']);
     //订阅
     Route::post('demand/subscribe','DemandController@subscribe')->middleware(['jwt.weappAuth']);
+
+    //企业点评
+    Route::post('search/tagProduct','SearchController@tagProduct')->middleware(['jwt.weappAuth']);
+    Route::get('search/getCommonTagProduct','SearchController@getCommonTagProduct')->middleware(['jwt.weappAuth']);
+    Route::get('product/info','ProductController@info')->middleware(['jwt.weappAuth']);
+    Route::post('product/reviewList','ProductController@reviewList')->middleware(['jwt.weappAuth']);
+    Route::get('product/reviewInfo','ProductController@reviewInfo')->middleware(['jwt.weappAuth']);
+    Route::get('product/reviewCommentList','ProductController@reviewCommentList')->middleware(['jwt.weappAuth']);
+    Route::post('product/storeReview','ProductController@storeReview')->middleware(['jwt.weappAuth']);
+});
+
+//微信小程序
+Route::group(['prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function() {
+    //企业点评
+    Route::post('product/upvoteReview','Article\SubmissionVotesController@upVote')->middleware(['jwt.weappAuth']);
+    Route::post('product/downvoteReview','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
+    Route::post('product/upvoteComment','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
+    Route::post('product/support/comment',['uses'=>'SupportController@store'])->middleware(['jwt.weappAuth']);
 });
 
 Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespace'=>'Weapp'], function() {

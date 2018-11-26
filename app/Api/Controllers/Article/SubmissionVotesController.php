@@ -13,6 +13,7 @@ use App\Models\UserTag;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Tymon\JWTAuth\JWTAuth;
 
 /**
  * @author: wanghui
@@ -106,13 +107,24 @@ class SubmissionVotesController extends Controller {
      * for the submission model.
      *
      */
-    public function upVote(Request $request)
+    public function upVote(Request $request, JWTAuth $JWTAuth)
     {
         $this->validate($request, [
             'submission_id' => 'required|integer',
         ]);
-
-        $user = $request->user();
+        if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+            $oauth = $JWTAuth->parseToken()->toUser();
+            if ($oauth->user_id) {
+                $user = $oauth->user;
+            } else {
+                throw new ApiException(ApiException::USER_WEIXIN_NEED_REGISTER);
+            }
+            if (empty($user->mobile)) {
+                throw new ApiException(ApiException::USER_NEED_VALID_PHONE);
+            }
+        } else {
+            $user = $request->user();
+        }
         $submission = Submission::find($request->submission_id);
 
         if (RateLimiter::instance()->increase('support:submission',$submission->id.'_'.$user->id,1)) {
@@ -173,13 +185,24 @@ class SubmissionVotesController extends Controller {
             'support_percent'=>$submission->getSupportPercent()],ApiException::SUCCESS,'点赞成功');
     }
 
-    public function downVote(Request $request)
+    public function downVote(Request $request, JWTAuth $JWTAuth)
     {
         $this->validate($request, [
             'submission_id' => 'required|integer',
         ]);
-
-        $user = $request->user();
+        if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+            $oauth = $JWTAuth->parseToken()->toUser();
+            if ($oauth->user_id) {
+                $user = $oauth->user;
+            } else {
+                throw new ApiException(ApiException::USER_WEIXIN_NEED_REGISTER);
+            }
+            if (empty($user->mobile)) {
+                throw new ApiException(ApiException::USER_NEED_VALID_PHONE);
+            }
+        } else {
+            $user = $request->user();
+        }
         $submission = Submission::find($request->submission_id);
 
         if (RateLimiter::instance()->increase('down:submission',$submission->id.'_'.$user->id,1)) {

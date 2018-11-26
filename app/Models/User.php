@@ -167,6 +167,7 @@ class User extends Model implements AuthenticatableContract,
     const USER_SOURCE_WEAPP_ASK = 3;//用户来源:微信小程序-推荐自动注册
     const USER_SOURCE_WEB = 4;//用户来源:网站
     const USER_SOURCE_DOUBAN = 5;//用户来源:豆瓣抓取
+    const USER_SOURCE_WEAPP_DB = 6;//用户来源:微信小程序-点评
 
     public static function boot()
     {
@@ -249,7 +250,8 @@ class User extends Model implements AuthenticatableContract,
                 return '精选推荐';
             case self::USER_SOURCE_WEB:
                 return '官网';
-                break;
+            case self::USER_SOURCE_WEAPP_DB:
+                return '企业服务点评';
         }
         return 'APP';
     }

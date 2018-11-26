@@ -69,7 +69,7 @@ class UserOauth extends Model
     const AUTH_TYPE_WEIXIN = 'weixinapp';
     const AUTH_TYPE_WEAPP  = 'weapp';//微信小程序-项目招募助手
     const AUTH_TYPE_WEIXIN_GZH  = 'weixin_gzh';//微信公众号
-    const AUTH_TYPE_WEAPP_ASK  = 'weapp_ask';//微信小程序-精选推荐
+    const AUTH_TYPE_WEAPP_ASK  = 'weapp_ask';//微信小程序-点评
 
 
 }
