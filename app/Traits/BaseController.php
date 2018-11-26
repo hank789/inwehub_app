@@ -7,6 +7,7 @@
 use App\Events\Frontend\Answer\Answered;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\NewSubmissionJob;
 use App\Jobs\SaveActivity;
 use App\Jobs\UpdateSubmissionRate;
 use App\Jobs\UploadFile;
@@ -15,14 +16,26 @@ use App\Logic\QuillLogic;
 use App\Logic\TaskLogic;
 use App\Models\Answer;
 use App\Models\Attention;
+use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Comment;
+use App\Models\Company\CompanyData;
 use App\Models\Credit;
 use App\Models\Doing;
+use App\Models\DownVote;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Notification;
 use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
+use App\Models\Role;
+use App\Models\RoleUser;
+use App\Models\Submission;
 use App\Models\Support;
+use App\Models\Tag;
+use App\Models\TagCategoryRel;
+use App\Models\Taggable;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserTag;
@@ -343,9 +356,6 @@ trait BaseController {
         return $list;
     }
 
-
-
-
     protected function storeAnswer(User $loginUser, $description, Request $request) {
         if(RateLimiter::instance()->increase('question:answer:create',$loginUser->id,3,1)){
             throw new ApiException(ApiException::VISIT_LIMIT);
@@ -541,4 +551,379 @@ trait BaseController {
 
         throw new ApiException(ApiException::ERROR);
     }
+
+    protected function getTagProductInfo(Tag $tag) {
+        $reviewInfo = Tag::getReviewInfo($tag->id);
+        $data = $tag->toArray();
+        $data['review_count'] = $reviewInfo['review_count'];
+        $data['review_average_rate'] = $reviewInfo['review_average_rate'];
+        $data['related_tags'] = $tag->relationReviews(4);
+        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
+        $cids = [];
+        foreach ($categoryRels as $key=>$categoryRel) {
+            $cids[] = $categoryRel->category_id;
+            $category = Category::find($categoryRel->category_id);
+            $rate = TagCategoryRel::where('category_id',$category->id)->where('review_average_rate','>',$categoryRel->review_average_rate)->count();
+            $data['categories'][] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'rate' => $rate+1
+            ];
+        }
+        $data['vendor'] = '';
+        $taggable = Taggable::where('tag_id',$tag->id)->where('taggable_type',CompanyData::class)->first();
+        if ($taggable) {
+            $companyData = CompanyData::find($taggable->taggable_id);
+            $data['vendor'] = [
+                'id'=>$taggable->taggable_id,
+                'name'=>$companyData->name
+            ];
+        }
+        //推荐股问
+        /*$releatedTags = TagCategoryRel::whereIn('category_id',$cids)->pluck('tag_id')->toArray();
+        $recommendUsers = UserTag::whereIn('tag_id',$releatedTags)->where('user_id','!=',$user->id)->orderBy('skills','desc')->take(5)->get();
+        $skillTags = TagsLogic::loadTags(5,'')['tags'];
+        foreach ($recommendUsers as $recommendUser) {
+            $userTags = UserTag::where('user_id',$recommendUser->user_id)->whereIn('tag_id',array_column($skillTags,'value'))->orderBy('skills','desc')->pluck('tag_id');
+            if (!isset($userTags[0])) continue;
+            $skillTag = Tag::find($userTags[0]);
+            if (!$skillTag) continue;
+            $data['recommend_users'][] = [
+                'name' => $recommendUser->user->name,
+                'id'   => $recommendUser->user_id,
+                'uuid' => $recommendUser->user->uuid,
+                'is_expert' => $recommendUser->user->is_expert,
+                'avatar_url' => $recommendUser->user->avatar,
+                'skill' => $skillTag->name
+            ];
+        }*/
+        return $data;
+    }
+
+    protected function formatSubmissionInfo(Submission $submission, $user) {
+        $return = $submission->toArray();
+        if ($submission->group_id) {
+            $group = Group::find($submission->group_id);
+            $return['group'] = $group->toArray();
+            $return['group']['is_joined'] = 1;
+            $return['group']['name'] = str_limit($return['group']['name'], 20);
+            if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+                $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+                $return['group']['is_joined'] = -1;
+                if ($groupMember) {
+                    $return['group']['is_joined'] = $groupMember->audit_status;
+                }
+                if ($user->id == $group->user_id) {
+                    $return['group']['is_joined'] = 3;
+                }
+                $return['group']['subscribers'] = $group->getHotIndex();
+
+                if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
+                    //私有圈子
+                    return self::createJsonData(true,$return);
+                }
+            } else {
+                $return['group']['subscribers'] = $group->getHotIndex() + User::count();
+            }
+        }
+
+        $submission->increment('views');
+        $this->calculationSubmissionRate($submission->id);
+
+        $upvote = Support::where('user_id',$user->id)
+            ->where('supportable_id',$submission->id)
+            ->where('supportable_type',Submission::class)
+            ->exists();
+        $downvote = DownVote::where('user_id',$user->id)
+            ->where('source_id',$submission->id)
+            ->where('source_type',Submission::class)
+            ->exists();
+        $bookmark = Collection::where('user_id',$user->id)
+            ->where('source_id',$submission->id)
+            ->where('source_type',Submission::class)
+            ->exists();
+        $support_uids = Support::where('supportable_id',$submission->id)
+            ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
+        $supporters = [];
+        if ($support_uids) {
+            foreach ($support_uids as $support_uid) {
+                $supporter = User::find($support_uid);
+                $supporters[] = [
+                    'name' => $supporter->name,
+                    'uuid' => $supporter->uuid
+                ];
+            }
+        }
+        $attention_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
+        $return['is_followed_author'] = $attention_user ?1 :0;
+        $return['is_upvoted'] = $upvote ? 1 : 0;
+        $return['is_downvoted'] = $downvote ? 1 : 0;
+        $return['is_bookmark'] = $bookmark ? 1: 0;
+        $return['supporter_list'] = $supporters;
+        $return['support_description'] = $downvote?$submission->getDownvoteRateDesc():$submission->getSupportRateDesc($upvote);
+        $return += $submission->getSupportTypeTip();
+        $return['support_percent'] = $submission->getSupportPercent();
+        $return['tags'] = $submission->tags()->wherePivot('is_display',1)->get()->toArray();
+        foreach ($return['tags'] as $key=>$tag) {
+            $return['tags'][$key]['review_average_rate'] = 0;
+            if (isset($submission->data['category_ids'])) {
+                $reviewInfo = Tag::getReviewInfo($tag['id']);
+                $return['tags'][$key]['reviews'] = $reviewInfo['review_count'];
+                $return['tags'][$key]['review_average_rate'] = $reviewInfo['review_average_rate'];
+            }
+        }
+        $return['is_commented'] = $submission->comments()->where('user_id',$user->id)->exists() ? 1: 0;
+        $return['bookmarks'] = Collection::where('source_id',$submission->id)
+            ->where('source_type',Submission::class)->count();
+        $return['data']['current_address_name'] = $return['data']['current_address_name']??'';
+        $return['data']['current_address_longitude'] = $return['data']['current_address_longitude']??'';
+        $return['data']['current_address_latitude']  = $return['data']['current_address_latitude']??'';
+        $img = $return['data']['img']??'';
+        if (false && in_array($return['group']['is_joined'],[-1,0,2]) && $img) {
+            if (is_array($img)) {
+                foreach ($img as &$item) {
+                    $item .= '?x-oss-process=image/blur,r_20,s_20';
+                }
+            } else {
+                $img .= '?x-oss-process=image/blur,r_20,s_20';
+            }
+        }
+        $return['data']['img'] = $img;
+        $return['related_question'] = null;
+        if (isset($return['data']['related_question']) && $return['data']['related_question']) {
+            $related_question = Question::find($return['data']['related_question']);
+            $answer_uids = Answer::where('question_id',$related_question->id)->take(3)->pluck('user_id')->toArray();
+            $answer_users = [];
+            foreach ($answer_uids as $answer_uid) {
+                $answer_user = User::find($answer_uid);
+                $answer_users[] = [
+                    'uuid' => $answer_user->uuid,
+                    'avatar' => $answer_user->avatar
+                ];
+            }
+            $return['related_question'] = [
+                'id' => $related_question->id,
+                'question_type' => $related_question->question_type,
+                'price'      => $related_question->price,
+                'title'  => $related_question->title,
+                'tags' => $related_question->tags()->wherePivot('is_display',1)->get()->toArray(),
+                'status' => $related_question->status,
+                'status_description' => $related_question->price.'元',
+                'follow_number' => $related_question->followers,
+                'answer_number' => $related_question->answers,
+                'answer_users'  => $answer_users
+            ];
+        }
+
+        if ($submission->hide) {
+            //匿名
+            $return['owner']['avatar'] = config('image.user_default_avatar');
+            $return['owner']['name'] = '匿名';
+            $return['owner']['id'] = '';
+            $return['owner']['uuid'] = '';
+            $return['owner']['is_expert'] = 0;
+        }
+        $return['related_tags'] = $submission->getRelatedProducts();
+        //seo信息
+        $keywords = array_unique(explode(',',$submission->data['keywords']??''));
+        $return['seo'] = [
+            'title' => strip_tags($submission->type == 'link' ? $submission->data['title'] : $submission->title),
+            'description' => strip_tags($submission->title),
+            'keywords' => implode(',',array_slice($keywords,0,5)),
+            'published_time' => (new Carbon($submission->created_at))->toAtomString()
+        ];
+        return $return;
+    }
+
+    protected function storeSubmission(Request $request,$user) {
+        $user_id = $user->id;
+        if (RateLimiter::instance()->increase('submission:store',$user_id,5)) {
+            throw new ApiException(ApiException::VISIT_LIMIT);
+        }
+
+        if ($request->type == 'link') {
+            $category = Category::where('slug','channel_xwdt')->first();
+        } else {
+            $category = Category::where('slug','channel_gddj')->first();
+        }
+        $category_id = $category->id;
+
+        $tagString = $request->input('tags');
+        $newTagString = $request->input('new_tags');
+        if ($newTagString) {
+            if (is_array($newTagString)) {
+                foreach ($newTagString as $s) {
+                    if (strlen($s) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+                }
+            } else {
+                if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
+            }
+        }
+        $group_id = $request->input('group_id',0);
+        $public = 1;
+        $hide = $request->input('hide',0);
+        if ($request->type != 'review') {
+            $group = Group::find($group_id);
+            if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
+                if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
+                    throw new ApiException(ApiException::GROUP_UNDER_AUDIT);
+                }
+                $groupMember = GroupMember::where('user_id',$user_id)->where('group_id',$group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
+                if (!$groupMember) {
+                    throw new ApiException(ApiException::BAD_REQUEST);
+                }
+            }
+            $public = $group->public;
+        }
+
+        //点评
+        if ($request->type == 'review') {
+            $this->validate($request, [
+                'title' => 'required|between:1,6000',
+                'category_ids' => 'required',
+                'tags' => 'required',
+                'rate_star' => 'required|min:1',
+                'identity' => 'required'
+            ]);
+            $data = $this->uploadImgs($request->input('photos'));
+            $data['category_ids'] = $request->input('category_ids');
+            $data['author_identity'] = $request->input('identity');
+            if (!is_array($data['author_identity'])) {
+                $data['author_identity'] = [$data['author_identity']];
+            }
+            if ($request->input('hide',0) && $user->isRole('operator')) {
+                //点评运营人员
+                $data['real_author'] = $user->id;
+                $role = Role::where('slug','dianpingrobot')->first();
+                $roleUsers = RoleUser::where('role_id',$role->id)->pluck('user_id')->toArray();
+                $user_id = array_random($roleUsers);
+                $hide = 0;
+            }
+            $category_id = $tagString;
+        }
+
+        if ($request->type == 'article') {
+            $this->validate($request, [
+                'title' => 'required|between:1,6000',
+                'description' => 'required',
+                'group_id' => 'required|integer'
+            ]);
+            $description = QuillLogic::parseImages($request->input('description'));
+            if ($description === false){
+                $description = $request->input('description');
+            }
+            $img_url = $this->uploadImgs($request->input('photos'));
+            $data = [
+                'description'   => $description,
+                'img'           => $img_url['img']?$img_url['img'][0]:''
+            ];
+        }
+
+        if ($request->type == 'link') {
+            $this->validate($request, [
+                'url'   => 'required|url',
+                'title' => 'required|between:1,6000',
+                'group_id' => 'required|integer'
+            ]);
+
+            //检查url是否重复
+            $exist_submission_id = Redis::connection()->hget('voten:submission:url',$request->url);
+            if ($exist_submission_id && false){
+                $exist_submission = Submission::find($exist_submission_id);
+                if (!$exist_submission) {
+                    throw new ApiException(ApiException::ARTICLE_URL_ALREADY_EXIST);
+                }
+                $exist_submission_url = '/c/'.$exist_submission->category_id.'/'.$exist_submission->slug;
+                return self::createJsonData(false,['exist_url'=>$exist_submission_url],ApiException::ARTICLE_URL_ALREADY_EXIST,"您提交的网址已经存在");
+            }
+            try {
+                $img_url = $this->uploadImgs($request->input('photos'));
+
+                $data = [
+                    'url'           => $request->url,
+                    'title'         => Cache::get('url_title_'.$request->url,''),
+                    'description'   => null,
+                    'type'          => 'link',
+                    'embed'         => null,
+                    'img'           => ($img_url['img']?$img_url['img'][0]:'')?:Cache::get('url_img_'.$request->url,''),
+                    'thumbnail'     => null,
+                    'providerName'  => null,
+                    'publishedTime' => null,
+                    'domain'        => domain($request->url),
+                ];
+                Redis::connection()->hset('voten:submission:url',$request->url,1);
+            } catch (\Exception $e) {
+                $data = [
+                    'url'           => $request->url,
+                    'title'         => $request->title,
+                    'description'   => null,
+                    'type'          => 'link',
+                    'embed'         => null,
+                    'img'           => null,
+                    'thumbnail'     => null,
+                    'providerName'  => null,
+                    'publishedTime' => null,
+                    'domain'        => domain($request->url),
+                ];
+            }
+        }
+
+        if ($request->type == 'text') {
+            $this->validate($request, [
+                'title' => 'required|between:1,6000',
+                'group_id' => 'required|integer'
+            ]);
+
+            $data = $this->uploadImgs($request->input('photos'));
+        }
+        if ($request->input('files')) {
+            $data['files'] = $this->uploadFile($request->input('files'));
+        }
+
+        try {
+            $data['current_address_name'] = $request->input('current_address_name');
+            $data['current_address_longitude'] = $request->input('current_address_longitude');
+            $data['current_address_latitude'] = $request->input('current_address_latitude');
+            $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
+            $title = formatHtml($request->title);
+            $submission = Submission::create([
+                'title'         => formatContentUrls($title),
+                'slug'          => $this->slug($title),
+                'type'          => $request->type,
+                'category_id'   => $category_id,
+                'group_id'      => $group_id,
+                'public'        => $public,
+                'rate'          => firstRate(),
+                'rate_star'     => $request->input('rate_star',0),
+                'hide'          => $hide,
+                'status'        => $request->input('draft',0)?0:1,
+                'user_id'       => $user_id,
+                'data'          => $data,
+                'views'         => 1
+            ]);
+            if ($request->type == 'link') {
+                Redis::connection()->hset('voten:submission:url',$request->url, $submission->id);
+            }
+
+            /*添加标签*/
+            Tag::multiSaveByIds($tagString,$submission);
+            if ($newTagString) {
+                Tag::multiAddByName($newTagString,$submission);
+            }
+            UserTag::multiIncrement($user_id,$submission->tags()->get(),'articles');
+            if ($request->input('identity') && $request->input('identity') != -1) {
+                UserTag::multiIncrement($user_id,[Tag::find($request->input('identity'))],'role');
+            }
+            if ($submission->status == 1) {
+                $this->dispatch((new NewSubmissionJob($submission->id)));
+            }
+
+        } catch (\Exception $exception) {
+            app('sentry')->captureException($exception);
+            throw new ApiException(ApiException::ERROR);
+        }
+        self::$needRefresh = true;
+        return $submission;
+    }
+
 }

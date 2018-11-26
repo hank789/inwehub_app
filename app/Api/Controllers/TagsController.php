@@ -105,52 +105,8 @@ class TagsController extends Controller {
         $this->validate($request,$validateRules);
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
-        $reviewInfo = Tag::getReviewInfo($tag->id);
-        $data = $tag->toArray();
-        $data['review_count'] = $reviewInfo['review_count'];
-        $data['review_average_rate'] = $reviewInfo['review_average_rate'];
-        $data['related_tags'] = $tag->relationReviews(4);
-        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
-        $cids = [];
-        foreach ($categoryRels as $key=>$categoryRel) {
-            $cids[] = $categoryRel->category_id;
-            $category = Category::find($categoryRel->category_id);
-            $rate = TagCategoryRel::where('category_id',$category->id)->where('review_average_rate','>',$categoryRel->review_average_rate)->count();
-            $data['categories'][] = [
-                'id' => $category->id,
-                'name' => $category->name,
-                'rate' => $rate+1
-            ];
-        }
-        $data['vendor'] = '';
-        $taggable = Taggable::where('tag_id',$tag->id)->where('taggable_type',CompanyData::class)->first();
-        if ($taggable) {
-            $companyData = CompanyData::find($taggable->taggable_id);
-            $data['vendor'] = [
-                'id'=>$taggable->taggable_id,
-                'name'=>$companyData->name
-            ];
-        }
-        //推荐股问
-        $releatedTags = TagCategoryRel::whereIn('category_id',$cids)->pluck('tag_id')->toArray();
-        $recommendUsers = UserTag::whereIn('tag_id',$releatedTags)->where('user_id','!=',$user->id)->orderBy('skills','desc')->take(5)->get();
-        $skillTags = TagsLogic::loadTags(5,'')['tags'];
-        foreach ($recommendUsers as $recommendUser) {
-            $userTags = UserTag::where('user_id',$recommendUser->user_id)->whereIn('tag_id',array_column($skillTags,'value'))->orderBy('skills','desc')->pluck('tag_id');
-            if (!isset($userTags[0])) continue;
-            $skillTag = Tag::find($userTags[0]);
-            if (!$skillTag) continue;
-            $data['recommend_users'][] = [
-                'name' => $recommendUser->user->name,
-                'id'   => $recommendUser->user_id,
-                'uuid' => $recommendUser->user->uuid,
-                'is_expert' => $recommendUser->user->is_expert,
-                'avatar_url' => $recommendUser->user->avatar,
-                'skill' => $skillTag->name
-            ];
-        }
+        $data = $this->getTagProductInfo($tag);
         $this->doing($user,Doing::ACTION_VIEW_DIANPING_PRODUCT_INFO,'',0,$tag->name,'',0,0,'',config('app.mobile_url').'#/dianping/product/'.rawurlencode($tag->name));
-
         return self::createJsonData(true,$data);
     }
 

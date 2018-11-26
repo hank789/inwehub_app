@@ -34,12 +34,10 @@ class UserController extends controller {
         switch ($oauthType) {
             case UserOauth::AUTH_TYPE_WEAPP:
                 //项目招募助手-默认
-                $source = User::USER_SOURCE_WEAPP;
                 break;
             case UserOauth::AUTH_TYPE_WEAPP_ASK:
-                //精选推荐
+                //企业点评服务
                 $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
-                $source = User::USER_SOURCE_WEAPP_ASK;
                 break;
         }
 
@@ -146,30 +144,37 @@ class UserController extends controller {
         ];
         $this->validate($request,$validateRules);
         $oauth = $JWTAuth->parseToken()->toUser();
+        $phone = $request->input('phone');
+        $phoneUser = User::where('mobile')->first();
         if (!$oauth->user_id) {
-            $registrar = new Registrar();
-            $new_user = $registrar->create([
-                'name' => $oauth->nickname,
-                'email' => null,
-                'mobile' => $request->input('phone'),
-                'rc_uid' => 0,
-                'title'  => '',
-                'company' => '',
-                'gender' => $oauth->full_info['gender']??0,
-                'password' => time(),
-                'status' => 1,
-                'source' => User::USER_SOURCE_WEAPP_DB,
-            ]);
-            $oauth->user_id = $new_user->id;
-            $oauth->save();
-            $new_user->attachRole(2); //默认注册为普通用户角色
-            $new_user->avatar = $oauth->avatar;
-            $new_user->save();
-            event(new UserRegistered($new_user,$oauth->id,'微信小程序-点评'));
+            if ($phoneUser) {
+                $oauth->user_id = $phoneUser->id;
+                $oauth->save();
+            } else {
+                $registrar = new Registrar();
+                $new_user = $registrar->create([
+                    'name' => $oauth->nickname,
+                    'email' => null,
+                    'mobile' => $phone,
+                    'rc_uid' => 0,
+                    'title'  => '',
+                    'company' => '',
+                    'gender' => $oauth->full_info['gender']??0,
+                    'password' => time(),
+                    'status' => 1,
+                    'source' => User::USER_SOURCE_WEAPP_DB,
+                ]);
+                $oauth->user_id = $new_user->id;
+                $oauth->save();
+                $new_user->attachRole(2); //默认注册为普通用户角色
+                $new_user->avatar = $oauth->avatar;
+                $new_user->save();
+                event(new UserRegistered($new_user,$oauth->id,'微信小程序-点评'));
+            }
         } else {
             $user = User::find($oauth->user_id);
             if (empty($user->mobile)) {
-                $user->mobile = $request->input('phone');
+                $user->mobile = $phone;
                 $user->save();
             }
         }
@@ -180,7 +185,7 @@ class UserController extends controller {
             'avatarUrl'=>$oauth->avatar,
             'name'=>$oauth->nickname,
             'company'=>'',
-            'mobile' => $request->input('phone'),
+            'mobile' => $phone,
             'email'  => ''
         ];
         return self::createJsonData(true,$info);

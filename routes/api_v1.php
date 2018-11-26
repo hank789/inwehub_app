@@ -488,6 +488,7 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('user/info','UserController@getUserInfo')->middleware(['jwt.weappAuth']);
     //更新用户信息
     Route::post('user/updateUserInfo','UserController@updateUserInfo')->middleware(['jwt.weappAuth']);
+    Route::post('user/updatePhone','UserController@updatePhone')->middleware(['jwt.weappAuth']);
     //存储表单提交的formId
     Route::post('user/saveFormId','UserController@saveFormId')->middleware(['jwt.weappAuth']);
     //获取二维码
@@ -516,6 +517,11 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     //企业点评
     Route::post('search/tagProduct','SearchController@tagProduct')->middleware(['jwt.weappAuth']);
     Route::get('search/getCommonTagProduct','SearchController@getCommonTagProduct')->middleware(['jwt.weappAuth']);
+    Route::get('product/info','ProductController@info')->middleware(['jwt.weappAuth']);
+    Route::post('product/reviewList','ProductController@reviewList')->middleware(['jwt.weappAuth']);
+    Route::get('product/reviewInfo','ProductController@reviewInfo')->middleware(['jwt.weappAuth']);
+    Route::get('product/reviewCommentList','ProductController@reviewCommentList')->middleware(['jwt.weappAuth']);
+    Route::post('product/storeReview','ProductController@storeReview')->middleware(['jwt.weappAuth']);
 
 });
 
