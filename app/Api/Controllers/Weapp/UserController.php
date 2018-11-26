@@ -5,6 +5,7 @@
  * @email: hank.huiwang@gmail.com
  */
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\Auth\UserRegistered;
 use App\Exceptions\ApiException;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
@@ -85,28 +86,7 @@ class UserController extends controller {
         } else {
             $user_id = $oauthData->user_id;
         }
-        //如系统中不存在该用户，创建新用户
-        if (empty($user_id) && false) {
-            $registrar = new Registrar();
-            $new_user = $registrar->create([
-                'name' => $oauthData->nickname,
-                'email' => null,
-                'mobile' => null,
-                'rc_uid' => 0,
-                'title'  => '',
-                'company' => '',
-                'gender' => $return['gender']??0,
-                'password' => time(),
-                'status' => 1,
-                'source' => $source,
-            ]);
-            $user_id = $new_user->id;
-            $oauthData->user_id = $new_user->id;
-            $oauthData->save();
-            $new_user->attachRole(2); //默认注册为普通用户角色
-            $new_user->avatar = $oauthData->avatar;
-            $new_user->save();
-        }
+
         $info = [
             'id' => $user_id,
             'oauth_id' => $oauthData->id,
@@ -140,7 +120,70 @@ class UserController extends controller {
                 'full_info' => $request->all()
             ]);
         }
-        return self::createJsonData(true);
+        $info = [
+            'id' => $oauth->user_id,
+            'oauth_id' => $oauth->id,
+            'status'=>$oauth->status,
+            'avatarUrl'=>$oauth->avatar,
+            'name'=>$oauth->nickname,
+            'company'=>'',
+            'mobile' => '',
+            'email'  => ''
+        ];
+        if ($oauth->user_id) {
+            $user = User::find($oauth->user_id);
+            $info['title'] = $user->title;
+            $info['company'] = $user->company;
+            $info['mobile'] = $user->mobile;
+            $info['email'] = $user->email;
+        }
+        return self::createJsonData(true,$info);
+    }
+
+    public function updatePhone(Request $request,JWTAuth $JWTAuth) {
+        $validateRules = [
+            'phone'   => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if (!$oauth->user_id) {
+            $registrar = new Registrar();
+            $new_user = $registrar->create([
+                'name' => $oauth->nickname,
+                'email' => null,
+                'mobile' => $request->input('phone'),
+                'rc_uid' => 0,
+                'title'  => '',
+                'company' => '',
+                'gender' => $oauth->full_info['gender']??0,
+                'password' => time(),
+                'status' => 1,
+                'source' => User::USER_SOURCE_WEAPP_DB,
+            ]);
+            $oauth->user_id = $new_user->id;
+            $oauth->save();
+            $new_user->attachRole(2); //默认注册为普通用户角色
+            $new_user->avatar = $oauth->avatar;
+            $new_user->save();
+            event(new UserRegistered($new_user,$oauth->id,'微信小程序-点评'));
+        } else {
+            $user = User::find($oauth->user_id);
+            if (empty($user->mobile)) {
+                $user->mobile = $request->input('phone');
+                $user->save();
+            }
+        }
+        $info = [
+            'id' => $oauth->user_id,
+            'oauth_id' => $oauth->id,
+            'status'=>$oauth->status,
+            'avatarUrl'=>$oauth->avatar,
+            'name'=>$oauth->nickname,
+            'company'=>'',
+            'mobile' => $request->input('phone'),
+            'email'  => ''
+        ];
+        return self::createJsonData(true,$info);
     }
 
     public function getUserInfo(JWTAuth $JWTAuth){

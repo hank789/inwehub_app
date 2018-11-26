@@ -512,6 +512,11 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('demand/detail','DemandController@detail')->middleware(['jwt.weappAuth']);
     //订阅
     Route::post('demand/subscribe','DemandController@subscribe')->middleware(['jwt.weappAuth']);
+
+    //企业点评
+    Route::post('search/tagProduct','SearchController@tagProduct')->middleware(['jwt.weappAuth']);
+    Route::get('search/getCommonTagProduct','SearchController@getCommonTagProduct')->middleware(['jwt.weappAuth']);
+
 });
 
 Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespace'=>'Weapp'], function() {
