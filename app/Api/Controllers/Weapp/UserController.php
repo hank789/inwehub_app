@@ -79,7 +79,7 @@ class UserController extends controller {
                     'expires_in'=>$userInfo['expires_in']??7200,
                     'full_info'=>$return,
                     'scope'=>'authorization_code',
-                    'status' => 0
+                    'status' => 1
                 ]
             );
         } else {
@@ -129,6 +129,18 @@ class UserController extends controller {
         }
         event(new SystemNotify('用户登录: '.$oauthData->user_id.'['.$oauthData->nickname.'];设备:小程序登陆-'.$oauthType));
         return self::createJsonData(true,['token'=>$token,'userInfo'=>$info]);
+    }
+
+    public function updateUserInfo(Request $request,JWTAuth $JWTAuth) {
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($request->input('nickname')) {
+            $oauth->update([
+                'nickname' => $request->input('nickname'),
+                'avatar' => $request->input('avatar'),
+                'full_info' => $request->all()
+            ]);
+        }
+        return self::createJsonData(true);
     }
 
     public function getUserInfo(JWTAuth $JWTAuth){
