@@ -54,11 +54,15 @@ class ProductController extends AdminController
             $query->where('tag_id',$filter['id']);
         }
 
+        if (isset($filter['onlyZh']) && $filter['onlyZh']) {
+            $query->whereRaw('length(name)!=char_length(name)');
+        }
+
         if (isset($filter['order_by']) && $filter['order_by']) {
             $orderBy = explode('|',$filter['order_by']);
             $query->orderBy('tag_category_rel.'.$orderBy[0],$orderBy[1]);
         } else {
-            $query->orderBy('tag_category_rel.id','desc');
+            $query->orderBy('tag_category_rel.tag_id','desc');
         }
 
         $fields = ['tag_category_rel.id','tag_category_rel.tag_id','tag_category_rel.category_id','tag_category_rel.status','tag_category_rel.reviews','tags.name','tags.logo','tags.summary'];
@@ -235,25 +239,36 @@ class ProductController extends AdminController
     /*修改分类*/
     public function changeCategories(Request $request){
         $ids = $request->input('ids','');
-        $categoryIds = $request->input('category_id',0);
+        $categoryIds = explode(',',$request->input('category_id',0));
         if($ids){
             $idArray = explode(",",$ids);
-            TagCategoryRel::whereIn('tag_id',$idArray)->where('reviews',0)->delete();
             foreach ($idArray as $id) {
+                $tag = Tag::find($id);
+                $cids = $tag->categories->pluck('id')->toArray();
                 foreach ($categoryIds as $categoryId) {
                     if ($categoryId<=0) continue;
+                    foreach ($cids as $key=>$cid) {
+                        if ($categoryId == $cid) {
+                            unset($cids[$key]);
+                        }
+                    }
                     TagCategoryRel::firstOrCreate([
                         'tag_id' => $id,
                         'category_id' => $categoryId
                     ],
                         [
                             'tag_id' => $id,
-                            'category_id' => $categoryId
+                            'category_id' => $categoryId,
+                            'type' => TagCategoryRel::TYPE_REVIEW
                         ]);
+                }
+                \Log::info('test',$cids);
+                if (count($cids)) {
+                    TagCategoryRel::where('tag_id',$id)->whereIn('category_id',$cids)->delete();
                 }
             }
         }
-        return $this->success(url()->previous(),'分类修改成功');
+        return response('success');
     }
 
     //审核
