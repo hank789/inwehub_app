@@ -1068,7 +1068,7 @@ if (!function_exists('string')){
 }
 
 if (!function_exists('saveImgToCdn')){
-    function saveImgToCdn($imgUrl,$dir = 'avatar'){
+    function saveImgToCdn($imgUrl,$dir = 'avatar', $isIco = false){
         $parse_url = parse_url($imgUrl);
         if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
             $imgType = 'png';
@@ -1076,7 +1076,7 @@ if (!function_exists('saveImgToCdn')){
                 $imgType = 'svg';
             }elseif (strrchr($parse_url['path'],'.gif') == '.gif') {
                 $imgType = 'gif';
-            }elseif (strrchr($parse_url['path'],'.ico') == '.ico') {
+            }elseif ($isIco || strrchr($parse_url['path'],'.ico') == '.ico') {
                 $imgType = 'ico';
             }
             $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$imgType;
@@ -1160,6 +1160,7 @@ if (!function_exists('getUrlInfo')) {
                 else {
                     $ql->get($url,null,['timeout'=>15]);
                 }
+                $isIco = false;
                 $image = $ql->find('meta[property=og:image]')->content;
                 if (!$image) {
                     $image = $ql->find('meta[name=image]')->content;
@@ -1180,9 +1181,16 @@ if (!function_exists('getUrlInfo')) {
                                         $image = $ql->find('img.aligncenter')->src;
                                     } else {
                                         $image = $urlArr['scheme'].'://'.$urlArr['host'].'/favicon.ico';
+                                        $isIco = true;
                                     }
+                                } else {
+                                    $isIco = true;
                                 }
+                            } else {
+                                $isIco = true;
                             }
+                        } else {
+                            $isIco = true;
                         }
                     }
                 }
@@ -1218,7 +1226,7 @@ if (!function_exists('getUrlInfo')) {
             if ($temp && $withImageUrl && !$img_url) {
                 try {
                     //保存图片
-                    $img_url = saveImgToCdn($temp,$dir);
+                    $img_url = saveImgToCdn($temp,$dir,$isIco);
                     //非微信文章
                     if ($useCache) {
                         Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
