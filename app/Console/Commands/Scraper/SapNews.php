@@ -77,7 +77,12 @@ class SapNews extends Command {
                 ])->range('ul.dm-contentList>li')->query()->getData();
                 $page++;
                 $isBreak = false;
-                if (count($list) <= 0 || empty($list)) break;
+                if (count($list) <= 0 || empty($list)) {
+                    if ($page <= 1) {
+                        event(new ExceptionNotify('抓取'.$url1.'失败'));
+                    }
+                    break;
+                }
                 foreach ($list as $item) {
                     $exist_submission_id = Redis::connection()->hget('voten:submission:url', $item['link']);
                     if ($exist_submission_id) continue;
@@ -167,7 +172,12 @@ class SapNews extends Command {
                 ])->range('article.post-listing')->query()->getData();
                 $page++;
                 $isBreak = false;
-                if (count($list) <= 0 || empty($list)) break;
+                if (count($list) <= 0 || empty($list)) {
+                    if ($page <= 1) {
+                        event(new ExceptionNotify('抓取'.$url2.'失败'));
+                    }
+                    break;
+                }
                 foreach ($list as $item) {
                     $exist_submission_id = Redis::connection()->hget('voten:submission:url', $item['link']);
                     if ($exist_submission_id) continue;

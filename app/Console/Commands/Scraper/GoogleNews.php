@@ -85,6 +85,10 @@ class GoogleNews extends Command {
                     'description' => ['p.HO8did.Baotjf','text'],
                     'image' => ['img.tvs3Id.dIH98c','src']
                 ])->range('div.NiLAwe.R7GTQ.keNKEd.j7vNaf')->query()->getData();
+                if (count($list) <= 0 || empty($list)) {
+                    event(new ExceptionNotify('抓取'.$info['url'].'失败'));
+                    break;
+                }
                 foreach ($list as &$item) {
                     $exist_submission_id = Redis::connection()->hget('voten:submission:url',$item['link']);
                     if ($exist_submission_id) continue;
