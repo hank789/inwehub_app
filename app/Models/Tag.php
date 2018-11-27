@@ -320,7 +320,9 @@ class Tag extends Model
         $category_ids = TagCategoryRel::where('tag_id',$this->id)->pluck('category_id')->toArray();
         $related_tags = TagCategoryRel::WhereIn('category_id',$category_ids)->where('type',TagCategoryRel::TYPE_REVIEW)
             ->where('tag_id','!=',$this->id)
+            ->select('tag_id')->distinct()
             ->orderBy('reviews','desc')->take($pageSize)->get();
+        $used = [];
         foreach ($related_tags as $related_tag) {
             $reviewInfo = Tag::getReviewInfo($related_tag->tag_id);
             $tag = Tag::find($related_tag->tag_id);
