@@ -50,7 +50,7 @@ class SapNews extends Command {
         $group_id = 51;
         $url1 = 'https://blogs.sap.com';
         $url2 = 'https://blogs.saphana.com/blog';
-        $limitViews = 50;
+        $limitViews = 500;
         $limitDays = 7;
         $ql = QueryList::getInstance();
         $category = Category::where('slug','sap_blog')->first();
