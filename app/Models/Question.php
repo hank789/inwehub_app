@@ -575,10 +575,12 @@ class Question extends Model
             $ignoreKeywords = Config::get('inwehub.ignore_product_keywords');
             $keywords = explode(',', $this->data['keywords']);
             $related_tags = [];
+            $used = [];
             foreach ($keywords as $keyword) {
                 if (in_array($keyword,$ignoreKeywords)) continue;
                 $rels = Tag::where('name', $keyword)->get();
                 foreach ($rels as $rel) {
+                    if (isset($used[$rel->id])) continue;
                     $tagRel = TagCategoryRel::where('tag_id', $rel->id)->where('type', TagCategoryRel::TYPE_REVIEW)->where('status', 1)->first();
                     if ($tagRel) {
                         $info = Tag::getReviewInfo($rel->id);
@@ -589,13 +591,13 @@ class Question extends Model
                             'review_count' => $info['review_count'],
                             'review_average_rate' => $info['review_average_rate']
                         ];
+                        $used[$rel->id] = $rel->id;
                         if (count($related_tags) >= 4) break;
                     }
                 }
                 if (count($related_tags) >= 4) break;
             }
             if (count($related_tags) < 4) {
-                $used = array_column($related_tags, 'id');
                 foreach ($keywords as $keyword) {
                     $ignoreKeywords = ['科技','信息','公司','有限','科技公司','有限公司','信息科技'];
                     if (in_array($keyword,$ignoreKeywords)) continue;
@@ -612,6 +614,7 @@ class Question extends Model
                                     'review_count' => $info['review_count'],
                                     'review_average_rate' => $info['review_average_rate']
                                 ];
+                                $used[$rel->id] = $rel->id;
                                 if (count($related_tags) >= 4) break;
                             }
                         }

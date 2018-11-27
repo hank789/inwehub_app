@@ -545,12 +545,14 @@ class Submission extends Model {
             $ignoreKeywords = Config::get('inwehub.ignore_product_keywords');
             $related_tags = Cache::get('submission_related_products_'.$this->id);
             if ($related_tags === null && isset($this->data['keywords'])) {
+                $used = [];
                 $keywords = explode(',',$this->data['keywords']);
                 $related_tags = [];
                 foreach ($keywords as $keyword) {
                     if (in_array($keyword,$ignoreKeywords)) continue;
                     $rels = Tag::where('name',$keyword)->get();
                     foreach ($rels as $rel) {
+                        if (isset($used[$rel->id])) continue;
                         $tagRel = TagCategoryRel::where('tag_id',$rel->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->first();
                         if ($tagRel) {
                             $info = Tag::getReviewInfo($rel->id);
@@ -561,13 +563,13 @@ class Submission extends Model {
                                 'review_count' => $info['review_count'],
                                 'review_average_rate' => $info['review_average_rate']
                             ];
+                            $used[$rel->id] = $rel->id;
                             if (count($related_tags) >= 4) break;
                         }
                     }
                     if (count($related_tags) >= 4) break;
                 }
                 if (count($related_tags) < 4) {
-                    $used = array_column($related_tags,'id');
                     foreach ($keywords as $keyword) {
                         if (in_array($keyword,$ignoreKeywords)) continue;
                         $rels = Tag::where('name','like','%'.$keyword.'%')->orderBy('reviews','desc')->take(10)->get();
@@ -583,6 +585,7 @@ class Submission extends Model {
                                         'review_count' => $info['review_count'],
                                         'review_average_rate' => $info['review_average_rate']
                                     ];
+                                    $used[$rel->id] = $rel->id;
                                     if (count($related_tags) >= 4) break;
                                 }
                             }
