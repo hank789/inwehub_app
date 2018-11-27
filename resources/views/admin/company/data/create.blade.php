@@ -35,8 +35,9 @@
 
                             <div class="form-group">
                                 <label>Logo图片地址</label>
-                                <input type="text" name="logo" class="form-control "  placeholder="http://www.inwehub.com" value="{{ old('logo','https://cdn.inwehub.com/system/company_default.png') }}">
+                                <input type="file" name="logo" />
                             </div>
+
                             <div class="form-group">
                                 <label>所在省市</label>
                                 <input type="text" name="address_province" class="form-control "  placeholder="上海黄浦" value="{{ old('address_province','') }}">

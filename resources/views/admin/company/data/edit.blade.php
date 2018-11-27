@@ -34,7 +34,12 @@
                             </div>
                             <div class="form-group">
                                 <label>Logo图片地址</label>
-                                <input type="text" name="logo" class="form-control "  placeholder="" value="{{ old('logo',$company->logo) }}">
+                                <input type="file" name="logo" />
+                                @if($company->logo)
+                                    <div style="margin-top: 10px;">
+                                        <img src="{{ $company->logo }}" />
+                                    </div>
+                                @endif
                             </div>
                             <div class="form-group">
                                 <label>所在省市</label>
