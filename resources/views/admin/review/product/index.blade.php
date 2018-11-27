@@ -95,7 +95,7 @@
                                             <td>{{ implode(',',$tag->tag->categories->pluck('name')->toArray()) }} <a class="btn-edit_category" data-source_id = "{{ $tag->tag_id }}" data-title="{{ $tag->tag->name }}" data-categories="{{ implode(',',$tag->tag->categories->pluck('id')->toArray()) }}" data-toggle="tooltip" title="修改分类"><i class="fa fa-edit"></i></a></td>
                                             <td>{{ $tag->reviews.'|'.$tag->category->name }}</td>
                                             <td width="30%">{{ $tag->summary }}</td>
-                                            <td><span class="label @if($tag->status===0) label-warning  @else label-success @endif">{{ trans_common_status($tag->status) }}</span> </td>
+                                            <td><span class="label @if($tag->status===0) label-warning  @else label-success @endif">{{ trans_common_status($tag->status) }}</span>{{ $tag->created_at }} </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     @if ($tag->status == 0)
