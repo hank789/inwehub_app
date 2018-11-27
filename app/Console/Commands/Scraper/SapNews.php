@@ -50,7 +50,7 @@ class SapNews extends Command {
         $group_id = 51;
         $url1 = 'https://blogs.sap.com';
         $url2 = 'https://blogs.saphana.com/blog';
-        $limitViews = 500;
+        $limitViews = 50;
         $limitDays = 7;
         $ql = QueryList::getInstance();
         $category = Category::where('slug','sap_blog')->first();
@@ -72,7 +72,7 @@ class SapNews extends Command {
                     'link'  => ['div.dm-contentListItem__title>a','href'],
                     'author' => ['div.dm-user__heading>a','text'],
                     'dateTime' => ['span.dm-user__date','text'],
-                    'description' => ['div.dm-content-list-item__text dm-content-list-item__text--ellipsis','text'],
+                    'description' => ['div.dm-content-list-item__text.dm-content-list-item__text--ellipsis','text'],
                     'image' => ['img.avatar.avatar-66.photo.avatar-default','src']
                 ])->range('ul.dm-contentList>li')->query()->getData();
                 $page++;
@@ -89,11 +89,12 @@ class SapNews extends Command {
                             break;
                         }
                     }
-                    $this->info($item['title']);
+
                     $count++;
                     $isBreak = false;
                     $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('div.entry-title.single>span.blog-date-info')->eq(1)->text();
                     $views = trim(str_replace('Views','',$views));
+                    $this->info($item['title'].';'.$views);
                     if ($views < $limitViews) continue;
                     $totalViews[] = $views;
                     sleep(1);
@@ -105,7 +106,7 @@ class SapNews extends Command {
                             $item['image'] = 'https://cdn.inwehub.com/groups/2018/09/1537341872OLqcb91.png';
                         }
                         $item['title'] = formatHtml($item['title']);
-                        $item['description'] = formatHtml($item['description']);
+                        $item['description'] = formatHtml(str_replace('Read More »','',$item['description']));
 
                         $data = [
                             'url' => $item['link'],
