@@ -8,13 +8,14 @@ use App\Models\Company\CompanyDataUser;
 use App\Models\Tag;
 use App\Services\GeoHash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class DataController extends AdminController
 {
 
     protected $validateRules = [
         'name' => 'required|max:255',
-        'logo' => 'required',
         'address_province' => 'required|max:255',
         'address_detail' => 'required',
         'longitude' => 'required',
@@ -77,11 +78,17 @@ class DataController extends AdminController
         $hash = $geohash->encode($request->input('latitude'), $request->input('longitude'));
         $data = $request->all();
         $data['geohash'] = $hash;
-        $logo = formatCdnUrl($request->input('logo'));
-        if (!$logo) {
-            return $this->error(route('admin.company.data.create'),'logo地址必须为cdn地址');
+        if($request->hasFile('logo')){
+            $file = $request->file('logo');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'company/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $data['logo'] = $img_url;
+        } else {
+            $data['logo'] = 'https://cdn.inwehub.com/system/company_default.png';
         }
-        $data['logo'] = $logo;
+
         $company = CompanyData::create($data);
         /*添加标签*/
         $tagString = $request->input('tags_id');
@@ -109,17 +116,19 @@ class DataController extends AdminController
         }
 
         $this->validate($request,$this->validateRules);
-        $logo = formatCdnUrl($request->input('logo'));
-        if (!$logo) {
-            return $this->error(route('admin.company.data.edit',['id'=>$id]),'logo地址必须为cdn地址');
+        if($request->hasFile('logo')){
+            $file = $request->file('logo');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'company/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $company->logo = $img_url;
         }
-        $data['logo'] = $logo;
         $geohash = new GeoHash();
         $hash = $geohash->encode($request->input('latitude'), $request->input('longitude'));
 
         $company->name = $request->input('name');
         $company->audit_status = $request->input('audit_status');
-        $company->logo = $logo;
         $company->address_province = $request->input('address_province');
         $company->address_detail = $request->input('address_detail');
         $company->longitude = $request->input('longitude');
