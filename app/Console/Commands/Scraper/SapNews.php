@@ -68,13 +68,13 @@ class SapNews extends Command {
             $page = 1;
             while (true) {
                 $list = $ql->get($url1.'/page/'.$page.'/',[],['proxy' => 'socks5h://127.0.0.1:1080'])->rules([
-                    'title' => ['h2.entry-title>a','text'],
-                    'link'  => ['h2.entry-title>a','href'],
-                    'author' => ['span.by-author.vcard.profile>a.url.fn.n','text'],
-                    'dateTime' => ['time.entry-date','datetime'],
-                    'description' => ['div.entry-summary','text'],
+                    'title' => ['div.dm-contentListItem__title>a','text'],
+                    'link'  => ['div.dm-contentListItem__title>a','href'],
+                    'author' => ['div.dm-user__heading>a','text'],
+                    'dateTime' => ['span.dm-user__date','text'],
+                    'description' => ['div.dm-content-list-item__text dm-content-list-item__text--ellipsis','text'],
                     'image' => ['img.avatar.avatar-66.photo.avatar-default','src']
-                ])->range('article.post.type-post.status-publish.format-standard.hentry')->query()->getData();
+                ])->range('ul.dm-contentList>li')->query()->getData();
                 $page++;
                 $isBreak = false;
                 if (count($list) <= 0 || empty($list)) break;
