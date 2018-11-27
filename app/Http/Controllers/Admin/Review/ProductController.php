@@ -65,7 +65,7 @@ class ProductController extends AdminController
             $query->orderBy('tag_category_rel.tag_id','desc');
         }
 
-        $fields = ['tag_category_rel.id','tag_category_rel.tag_id','tag_category_rel.category_id','tag_category_rel.status','tag_category_rel.reviews','tags.name','tags.logo','tags.summary'];
+        $fields = ['tag_category_rel.id','tag_category_rel.tag_id','tag_category_rel.category_id','tag_category_rel.status','tag_category_rel.reviews','tags.name','tags.logo','tags.summary','tags.created_at'];
         $tags = $query->select($fields)->paginate(20);
         return view("admin.review.product.index")->with('tags',$tags)->with('filter',$filter);
     }

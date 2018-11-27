@@ -1,5 +1,9 @@
 @extends('admin/public/layout')
 @section('title')编辑分类@endsection
+@section('css')
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
+@endsection
 @section('content')
     <section class="content-header">
         <h1>编辑分类</h1>
@@ -10,6 +14,7 @@
                 <div class="box box-primary">
                     <form role="form" name="editForm" method="POST" action="{{ route('admin.category.update',['id'=>$category->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
+                        <input type="hidden" id="parent_id" name="parent_id" value="{{ $category->parent_id }}" />
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="box-body">
                             <div class="form-group @if($errors->has('name')) has-error @endif">
@@ -27,7 +32,7 @@
 
                             <div class="form-group">
                                 <label>选择父级分类</label>
-                                <select name="parent_id" class="form-control">
+                                <select name="select_tags" id="select_tags" class="form-control">
                                     <option value="0">选择父级分类</option>
                                     @include('admin.category.option',['type'=>'all','select_id'=>$category->parent_id,'root'=>false])
                                 </select>
@@ -65,14 +70,20 @@
     </section>
 @endsection
 @section('script')
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('manage_tags',"{{ route('admin.category.index') }}");
         $(function(){
             var parent_id = "{{ $category->parent_id }}";
-            $("#parent_id option").each(function(){
-                if( $(this).val() == parent_id ){
-                    $(this).attr("selected","selected");
-                }
+            $("#select_tags").select2({
+                theme:'bootstrap',
+                placeholder: "分类",
+                minimumInputLength:2,
+                tags:false
+            });
+
+            $("#select_tags").change(function(){
+                $("#parent_id").val($("#select_tags").val());
             });
         });
     </script>

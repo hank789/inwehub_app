@@ -2,6 +2,10 @@
 @section('title')
     添加分类
 @endsection
+@section('css')
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
+@endsection
 @section('content')
     <section class="content-header">
         <h1>
@@ -15,6 +19,7 @@
                 <div class="box box-default">
                     <form role="form" name="addForm" method="POST"  action="{{ route('admin.category.store') }}">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" id="parent_id" name="parent_id" value="" />
                         <div class="box-body">
 
                             <div class="form-group @if($errors->has('name')) has-error @endif">
@@ -32,7 +37,7 @@
 
                             <div class="form-group">
                                 <label>选择父级分类</label>
-                                <select name="parent_id" class="form-control">
+                                <select name="select_tags" id="select_tags" class="form-control">
                                     <option value="0">选择父级分类</option>
                                     @include('admin.category.option',['type'=>'all','select_id'=>0, 'root'=>false])
                                 </select>
@@ -69,9 +74,20 @@
 @endsection
 
 @section('script')
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         $(function(){
             set_active_menu('manage_tags',"{{ route('admin.category.index') }}");
+            $("#select_tags").select2({
+                theme:'bootstrap',
+                placeholder: "分类",
+                minimumInputLength:2,
+                tags:false
+            });
+
+            $("#select_tags").change(function(){
+                $("#parent_id").val($("#select_tags").val());
+            });
         });
     </script>
 @endsection
