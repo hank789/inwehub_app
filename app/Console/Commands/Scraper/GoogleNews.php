@@ -98,6 +98,7 @@ class GoogleNews extends Command {
                         if ($dateTime <= strtotime('-3 days')) continue;
                     }
                     sleep(1);
+                    $this->info($item['title']);
                     try {
                         $urlHtml = curlShadowsocks('https://news.google.com/'.$item['link']);
                         $item['href'] = $ql->setHtml($urlHtml)->find('div.m2L3rb.eLNT1d')->children('a')->attr('href');

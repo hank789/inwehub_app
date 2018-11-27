@@ -59,7 +59,7 @@ class CommentController extends Controller {
             'content'          => formatContentUrls($request->body),
             'user_id'       => $user->id,
             'parent_id'     => $request->parent_id,
-            'level'         => $parentComment ? 0 : ($parentComment->level + 1),
+            'level'         => $parentComment ? ($parentComment->level + 1) : 0,
             'source_id' => $submission->id,
             'source_type' => get_class($submission),
             'to_user_id'  => 0,
