@@ -273,6 +273,15 @@ class CompanyController extends Controller {
         $company = CompanyData::find($request->input('id'));
         $tags = $company->tags;
         $return = [];
+        $return['current_page'] = 1;
+        $return['from'] = null;
+        $return['to'] = null;
+        $return['per_page'] = 15;
+        $return['next_page_url'] = null;
+        $return['data'] = [];
+        if ($request->input('page',1)>1) {
+            return self::createJsonData(true,$return);
+        }
         foreach ($tags as $tag) {
             $rel = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->first();
             if ($rel) {

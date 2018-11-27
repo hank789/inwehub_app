@@ -50,7 +50,7 @@ class SapNews extends Command {
         $group_id = 51;
         $url1 = 'https://blogs.sap.com';
         $url2 = 'https://blogs.saphana.com/blog';
-        $limitViews = 500;
+        $limitViews = 50;
         $limitDays = 7;
         $ql = QueryList::getInstance();
         $category = Category::where('slug','sap_blog')->first();
@@ -68,13 +68,13 @@ class SapNews extends Command {
             $page = 1;
             while (true) {
                 $list = $ql->get($url1.'/page/'.$page.'/',[],['proxy' => 'socks5h://127.0.0.1:1080'])->rules([
-                    'title' => ['h2.entry-title>a','text'],
-                    'link'  => ['h2.entry-title>a','href'],
-                    'author' => ['span.by-author.vcard.profile>a.url.fn.n','text'],
-                    'dateTime' => ['time.entry-date','datetime'],
-                    'description' => ['div.entry-summary','text'],
+                    'title' => ['div.dm-contentListItem__title>a','text'],
+                    'link'  => ['div.dm-contentListItem__title>a','href'],
+                    'author' => ['div.dm-user__heading>a','text'],
+                    'dateTime' => ['span.dm-user__date','text'],
+                    'description' => ['div.dm-content-list-item__text.dm-content-list-item__text--ellipsis','text'],
                     'image' => ['img.avatar.avatar-66.photo.avatar-default','src']
-                ])->range('article.post.type-post.status-publish.format-standard.hentry')->query()->getData();
+                ])->range('ul.dm-contentList>li')->query()->getData();
                 $page++;
                 $isBreak = false;
                 if (count($list) <= 0 || empty($list)) break;
@@ -89,11 +89,12 @@ class SapNews extends Command {
                             break;
                         }
                     }
-                    $this->info($item['title']);
+
                     $count++;
                     $isBreak = false;
                     $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('div.entry-title.single>span.blog-date-info')->eq(1)->text();
                     $views = trim(str_replace('Views','',$views));
+                    $this->info($item['title'].';'.$views);
                     if ($views < $limitViews) continue;
                     $totalViews[] = $views;
                     sleep(1);
@@ -105,7 +106,7 @@ class SapNews extends Command {
                             $item['image'] = 'https://cdn.inwehub.com/groups/2018/09/1537341872OLqcb91.png';
                         }
                         $item['title'] = formatHtml($item['title']);
-                        $item['description'] = formatHtml($item['description']);
+                        $item['description'] = formatHtml(str_replace('Read More »','',$item['description']));
 
                         $data = [
                             'url' => $item['link'],
