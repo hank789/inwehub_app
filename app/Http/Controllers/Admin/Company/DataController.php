@@ -72,7 +72,6 @@ class DataController extends AdminController
 
     public function store(Request $request)
     {
-        $request->flash();
         $this->validate($request,$this->validateRules);
         $geohash = new GeoHash();
         $hash = $geohash->encode($request->input('latitude'), $request->input('longitude'));
@@ -108,7 +107,6 @@ class DataController extends AdminController
      */
     public function update(Request $request)
     {
-        $request->flash();
         $id = $request->input('id');
         $company = CompanyData::find($id);
         if(!$company){

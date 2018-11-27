@@ -24,7 +24,7 @@
                     <div class="box-header">
                         <h3 class="box-title">基本信息</h3>
                     </div>
-                    <form role="form" name="addForm" method="POST" action="{{ route('admin.company.data.store') }}">
+                    <form role="form" name="addForm" enctype="multipart/form-data" method="POST" action="{{ route('admin.company.data.store') }}">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <input type="hidden" id="tags_id" name="tags_id" value="" />
                         <div class="box-body">
