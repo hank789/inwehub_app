@@ -224,14 +224,14 @@ class CompanyController extends Controller {
             $distance = getDistanceByLatLng($company->longitude,$company->latitude,$longitude,$latitude);
             $distance = bcadd($distance,0,0);
         }
-        $tags = $company->tags()->pluck('name')->toArray();
+        //$tags = $company->tags()->pluck('name')->toArray();
         $return = [
             'id' => $company->id,
             'name' => $company->name,
             'logo' => $company->logo,
             'address_province' => $company->address_province,
             'address_detail' => $company->address_detail,
-            'tags' => $tags,
+            'tags' => [],
             'distance' => $distance,
             'distance_format' => distanceFormat($distance)
         ];

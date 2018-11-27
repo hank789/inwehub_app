@@ -143,9 +143,9 @@ class Category extends Model
 
     public static function getProductCategories($parent_id) {
         if (!$parent_id) {
-            $categories = Category::whereIn('slug',['enterprise_product','enterprise_service'])->get();
+            $categories = Category::where('status',1)->whereIn('slug',['enterprise_product','enterprise_service'])->get();
         } else {
-            $categories = Category::where('parent_id',$parent_id)->get();
+            $categories = Category::where('status',1)->where('parent_id',$parent_id)->get();
         }
         $list = [];
         foreach ($categories as $category) {
@@ -153,7 +153,7 @@ class Category extends Model
             if ($category->grade == 1) {
                 //具有子分类
                 $children = self::getProductCategories($category->id);
-                $children_count =  Category::where('parent_id',$category->id)->count();
+                $children_count =  Category::where('status',1)->where('parent_id',$category->id)->count();
             } else {
                 //$children_count = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->where('category_id',$category->id)->count();
                 $children_count = 0;
