@@ -286,6 +286,12 @@ class CompanyController extends Controller {
                 ];
             }
         }
+        $return['current_page'] = 1;
+        $return['from'] = 1;
+        $return['to'] = count($return['data']);
+        $return['per_page'] = count($return['data']);
+        $return['next_page_url'] = null;
+
         return self::createJsonData(true,$return);
     }
 
