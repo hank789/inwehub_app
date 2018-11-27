@@ -23,7 +23,7 @@
                     <div class="box-header">
                         <h3 class="box-title">基本信息</h3>
                     </div>
-                    <form role="form" name="editForm" method="POST" action="{{ route('admin.company.data.update',['id'=>$company->id]) }}">
+                    <form role="form" name="editForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.company.data.update',['id'=>$company->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <input type="hidden" id="tags_id" name="tags_id" value="" />
