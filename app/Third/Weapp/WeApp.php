@@ -51,6 +51,10 @@ class WeApp
         return $userInfo;
 	}
 
+	public function setSessionKey($sessionKey) {
+	    $this->sessionKey = $sessionKey;
+    }
+
     /**
      * Created by vicleos
      * @param $encryptedData
