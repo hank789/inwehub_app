@@ -363,7 +363,7 @@ class ProfileController extends Controller
 
         $info['questions'] = $is_self?$user->userData->questions:($user->questions->where('question_type',1)->where('is_recommend',1)->where('hide',0)->count() + $user->questions->where('question_type',2)->where('hide',0)->count());
         $info['answers'] = $user->userData->answers;
-        $authSupport = Submission::where('author_id',$user->id)->sum('upvotes');
+        $authSupport = Submission::where('status',1)->where('author_id',$user->id)->sum('upvotes');
         $info['supports'] = $user->answers->sum('supports') + $user->submissions->sum('upvotes') + $authSupport;
         //加上承诺待回答的
         $info['answers'] += Answer::where('user_id',$user->id)->where('status',3)->count();
@@ -379,16 +379,15 @@ class ProfileController extends Controller
         $info['follow_user_number'] = $user->attentions()->where('source_type',User::class)->count();
         $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
 
-        $info['submission_count'] = Submission::where('user_id',$user->id)->where('public',1)->where('hide',0)->whereNull('deleted_at')->count();
+        $info['submission_count'] = Submission::where('status',1)->where('user_id',$user->id)->where('public',1)->where('hide',0)->whereNull('deleted_at')->count();
         $info['comment_count'] = Comment::where('user_id',$user->id)->count();
         $info['feed_count'] = Feed::where('user_id',$user->id)->where('is_anonymous',0)->where('feed_type','!=',Feed::FEED_TYPE_FOLLOW_USER)->count();
-        $info['article_count'] = Submission::where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->count();
-        $info['article_comment_count'] = Submission::where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->sum('comments_number');
-        $info['article_upvote_count'] = Submission::where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->sum('upvotes');
+        $info['article_count'] = Submission::where('status',1)->where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->count();
+        $info['article_comment_count'] = Submission::where('status',1)->where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->sum('comments_number');
+        $info['article_upvote_count'] = Submission::where('status',1)->where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->sum('upvotes');
 
         $info['publishes'] = $info['answers'] + $info['questions'] + $info['submission_count'] + $info['comment_count'];
         $info['group_number'] = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->count();
-
         $projects = [];
         $jobs = [];
         $edus = [];
