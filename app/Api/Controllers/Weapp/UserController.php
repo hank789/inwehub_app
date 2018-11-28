@@ -138,13 +138,22 @@ class UserController extends controller {
         return self::createJsonData(true,$info);
     }
 
-    public function updatePhone(Request $request,JWTAuth $JWTAuth) {
+    public function updatePhone(Request $request,JWTAuth $JWTAuth, WeApp $wxxcx) {
         $validateRules = [
-            'phone'   => 'required'
+            'encryptedData'   => 'required',
+            'iv' => 'required'
         ];
         $this->validate($request,$validateRules);
+        $encryptedData = request('encryptedData', '');
+        $iv = request('iv', '');
+        switch ($request->input('inwehub_user_device')) {
+            case 'weapp_dianping':
+                $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
+                break;
+        }
+        $return = $wxxcx->getUserInfo($encryptedData, $iv);
         $oauth = $JWTAuth->parseToken()->toUser();
-        $phone = $request->input('phone');
+        $phone = $return['purePhoneNumber'];
         $phoneUser = User::where('mobile')->first();
         if (!$oauth->user_id) {
             if ($phoneUser) {
