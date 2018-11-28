@@ -85,7 +85,7 @@
                                         <th>操作</th>
                                     </tr>
                                     @foreach($tags as $tag)
-                                        <tr class="product_edit_category_{{ $tag->tag_id }}">
+                                        <tr id="submission_{{ $tag->id }}" class="product_edit_category_{{ $tag->tag_id }}">
                                             <td>{{ $tag->tag_id }}</td>
                                             <td> @if($tag->logo)
                                                     <img src="{{ $tag->logo }}"  style="width: 27px;"/>
