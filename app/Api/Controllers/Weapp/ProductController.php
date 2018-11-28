@@ -30,6 +30,9 @@ class ProductController extends Controller {
         $oauth = $JWTAuth->parseToken()->toUser();
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
+        if (!$tag) {
+            throw new ApiException(ApiException::PRODUCT_TAG_NOT_EXIST);
+        }
         $data = $this->getTagProductInfo($tag);
         event(new SystemNotify('小程序用户'.$oauth->user_id.'['.$oauth->nickname.']查看产品详情:'.$tag->name));
         return self::createJsonData(true,$data);
@@ -46,6 +49,9 @@ class ProductController extends Controller {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
 
         $tag = Tag::getTagByName($tag_name);
+        if (!$tag) {
+            throw new ApiException(ApiException::PRODUCT_TAG_NOT_EXIST);
+        }
         $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
             $user = $oauth->user;
@@ -110,6 +116,12 @@ class ProductController extends Controller {
         $orderBy = $request->input('order_by',1);
 
         $submission = Submission::where('slug',$request->submission_slug)->first();
+        if (!$submission) {
+            throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
+        }
+        if ($submission->type != 'review') {
+            throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
+        }
 
         $query = $submission->comments()
             ->where('parent_id', 0);
