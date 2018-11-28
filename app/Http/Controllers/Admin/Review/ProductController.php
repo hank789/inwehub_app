@@ -297,8 +297,8 @@ class ProductController extends AdminController
     public function destroy(Request $request)
     {
         $tagIds = $request->input('ids');
-        TagCategoryRel::where('status',0)->where('id',$tagIds)->delete();
-        return $this->success(url()->previous(),'产品删除成功');
+        TagCategoryRel::where('id',$tagIds)->delete();
+        return response('success');
     }
 
 }
