@@ -48,6 +48,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\SapNews::class,
         Commands\Scraper\Indeed::class,
         Commands\Scraper\DoubanUser::class,
+        Commands\Scraper\WallstreetcnNews::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,
@@ -109,6 +110,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:wechat:gzh:posts')->cron('10 7,11,15,19,22 * * *')->withoutOverlapping();
             $schedule->command('crontab:refresh:cookie:task')->hourly();
             $schedule->command('scraper:atom')->cron('0 8,10,16,20 * * *');
+            $schedule->command('scraper:wallstreetcn:news')->cron('30 8,10,16,20 * * *');
             $schedule->command('scraper:rss')->cron('30 7,9,11,13,15,17,19,21,22,23 * * *');
             //$schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
             $schedule->command('scraper:bid:search')->cron('40 7,10,13,17,21 * * *');

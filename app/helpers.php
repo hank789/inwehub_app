@@ -1101,7 +1101,7 @@ if (!function_exists('saveImgToCdn')){
                 return Storage::url($file_name);
             } catch (Exception $e) {
                 app('sentry')->captureException($e);
-                return '';
+                return 'https://cdn.inwehub.com/system/group_18@3x.png';
             }
 
         }

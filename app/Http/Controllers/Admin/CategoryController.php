@@ -68,6 +68,8 @@ class CategoryController extends AdminController
             $formData['grade'] = 0;
             $parent->grade = 1;
             $parent->save();
+        } else {
+            $formData['parent_id'] = 0;
         }
         Category::create($formData);
         TagsLogic::delCache();
@@ -119,6 +121,8 @@ class CategoryController extends AdminController
             $category->type = $parent->type;
             $parent->grade = 1;
             $parent->save();
+        } else {
+            $formData['parent_id'] = 0;
         }
         $category->save();
         if ($oldParentId) {
