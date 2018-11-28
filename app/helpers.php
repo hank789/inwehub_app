@@ -1123,6 +1123,7 @@ if (!function_exists('getUrlInfo')) {
         if ($img_url && $withImageUrl) {
             return ['title'=>$title,'img_url'=>$img_url];
         }
+        $isIco = false;
         try {
             $temp = '';
             $useCache = false;
@@ -1160,7 +1161,6 @@ if (!function_exists('getUrlInfo')) {
                 else {
                     $ql->get($url,null,['timeout'=>15]);
                 }
-                $isIco = false;
                 $image = $ql->find('meta[property=og:image]')->content;
                 if (!$image) {
                     $image = $ql->find('meta[name=image]')->content;
