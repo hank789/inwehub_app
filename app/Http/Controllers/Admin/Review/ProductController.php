@@ -38,7 +38,7 @@ class ProductController extends AdminController
 
         /*问题标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
-            $query->where('name','like', $filter['word'].'%');
+            $query->where('name','like', $filter['word'].'%')->orderByRaw('case when name like "'.$filter['word'].'" then 0 else 2 end');
         }
 
         /*分类过滤*/
@@ -61,7 +61,7 @@ class ProductController extends AdminController
         if (isset($filter['order_by']) && $filter['order_by']) {
             $orderBy = explode('|',$filter['order_by']);
             $query->orderBy('tag_category_rel.'.$orderBy[0],$orderBy[1]);
-        } else {
+        } elseif (!(isset($filter['word']) && $filter['word'])){
             $query->orderBy('tag_category_rel.tag_id','desc');
         }
 

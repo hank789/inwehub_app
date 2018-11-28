@@ -36,7 +36,9 @@ class TagController extends AdminController
 
         /*问题标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
-            $query->where('name','like', '%'.$filter['word'].'%');
+            $query->where('name','like', '%'.$filter['word'].'%')->orderByRaw('case when name like "'.$filter['word'].'" then 0 else 2 end');
+        } else {
+            $query->orderBy('updated_at','desc');
         }
 
         /*时间过滤*/
@@ -53,7 +55,7 @@ class TagController extends AdminController
             $query->where('id',$filter['id']);
         }
 
-        $tags = $query->orderBy('updated_at','desc')->paginate(20);
+        $tags = $query->paginate(20);
         return view("admin.tag.index")->with('tags',$tags)->with('filter',$filter);
 
 
