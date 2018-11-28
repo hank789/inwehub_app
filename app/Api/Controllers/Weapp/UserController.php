@@ -16,6 +16,7 @@ use App\Services\RateLimiter;
 use App\Third\Weapp\WeApp;
 use Illuminate\Http\Request;
 use App\Services\Registrar;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
@@ -96,6 +97,7 @@ class UserController extends controller {
             'email'  => ''
         ];
         $token = $JWTAuth->fromUser($oauthData);
+        Cache::set('weapp_session_key_'.$oauthData->id,$userInfo['session_key'],60*24*3);
 
         if ($oauthData->user_id) {
             $user = User::find($oauthData->user_id);
@@ -151,8 +153,10 @@ class UserController extends controller {
                 $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
                 break;
         }
-        $return = $wxxcx->getUserInfo($encryptedData, $iv);
         $oauth = $JWTAuth->parseToken()->toUser();
+        $sessionKey = Cache::get('weapp_session_key_'.$oauth->id);
+        $wxxcx->setSessionKey($sessionKey);
+        $return = $wxxcx->getUserInfo($encryptedData, $iv);
         $phone = $return['purePhoneNumber'];
         $phoneUser = User::where('mobile')->first();
         if (!$oauth->user_id) {
