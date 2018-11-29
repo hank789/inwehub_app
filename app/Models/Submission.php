@@ -537,6 +537,11 @@ class Submission extends Model {
         }
     }
 
+    public function updateRelatedProducts() {
+        Cache::delete('submission_related_products_'.$this->id);
+        $this->getRelatedProducts();
+    }
+
     public function getRelatedProducts() {
         if ($this->type == 'review') {
             $tag = Tag::find($this->category_id);

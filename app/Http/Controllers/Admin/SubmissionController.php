@@ -134,6 +134,9 @@ class SubmissionController extends AdminController
                 $submission->tags()->detach($oldTag);
             }
         }
+        if (array_diff($oldTags,$tags)) {
+            $submission->updateRelatedProducts();
+        }
 
         if ($oldStatus == 0 && $newStatus == 1 && !isset($submission->data['keywords'])) {
             $this->dispatch((new NewSubmissionJob($submission->id,true,'后台运营：'.formatSlackUser($request->user()).';')));
