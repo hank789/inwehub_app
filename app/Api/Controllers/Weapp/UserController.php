@@ -158,7 +158,7 @@ class UserController extends controller {
         $wxxcx->setSessionKey($sessionKey);
         $return = $wxxcx->getUserInfo($encryptedData, $iv);
         $phone = $return['purePhoneNumber'];
-        $phoneUser = User::where('mobile')->first();
+        $phoneUser = User::where('mobile',$phone)->first();
         if (!$oauth->user_id) {
             if ($phoneUser) {
                 $oauth->user_id = $phoneUser->id;
