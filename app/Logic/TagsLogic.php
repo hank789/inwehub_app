@@ -60,7 +60,7 @@ class TagsLogic {
                 $category_name = ['role'];
                 break;
             case 'all':
-                $category_name = Category::where('slug','like','question_%')->where('grade',0)->get()->pluck('slug')->toArray();
+                $category_name = Category::where('grade',0)->get()->pluck('slug')->toArray();
                 $loadDefaultTags = true;
                 break;
         }
