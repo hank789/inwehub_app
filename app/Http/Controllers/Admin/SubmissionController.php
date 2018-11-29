@@ -139,7 +139,7 @@ class SubmissionController extends AdminController
         }
         if (isset($tagModel)) {
             $sData = $submission->data;
-            $sData['keywords'] = $keywords;
+            $sData['keywords'] = implode(',',array_unique(explode(',',$keywords)));
             $submission->data = $sData;
             $submission->save();
             $submission->updateRelatedProducts();
