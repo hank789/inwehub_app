@@ -37,19 +37,20 @@ class TagsController extends Controller {
 
         $this->validate($request,$validateRules);
         $tag_type = $request->input('tag_type');
-
-        try {
-            $user = $JWTAuth->parseToken()->authenticate();
-            if ($tag_type == 8 && empty($user->mobile)) {
-                return self::createJsonData(false,[],ApiException::USER_NEED_VALID_PHONE,ApiException::$errorMessages[ApiException::USER_NEED_VALID_PHONE]);
-            }
-        } catch (\Exception $e) {
-            $user = new \stdClass();
-            $user->id = 0;
-            $user->name = '游客';
-            $user->mobile = '';
-            if ($tag_type == 8) {
-                throw new ApiException(ApiException::TOKEN_INVALID);
+        if ($request->input('inwehub_user_device') != 'weapp_dianping') {
+            try {
+                $user = $JWTAuth->parseToken()->authenticate();
+                if ($tag_type == 8 && empty($user->mobile)) {
+                    return self::createJsonData(false,[],ApiException::USER_NEED_VALID_PHONE,ApiException::$errorMessages[ApiException::USER_NEED_VALID_PHONE]);
+                }
+            } catch (\Exception $e) {
+                $user = new \stdClass();
+                $user->id = 0;
+                $user->name = '游客';
+                $user->mobile = '';
+                if ($tag_type == 8) {
+                    throw new ApiException(ApiException::TOKEN_INVALID);
+                }
             }
         }
 
