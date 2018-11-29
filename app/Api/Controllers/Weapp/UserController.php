@@ -113,10 +113,10 @@ class UserController extends controller {
 
     public function updateUserInfo(Request $request,JWTAuth $JWTAuth) {
         $oauth = $JWTAuth->parseToken()->toUser();
-        if ($request->input('nickname')) {
+        if ($request->input('nickName')) {
             $oauth->update([
-                'nickname' => $request->input('nickname'),
-                'avatar' => $request->input('avatar'),
+                'nickname' => $request->input('nickName'),
+                'avatar' => $request->input('avatarUrl'),
                 'full_info' => $request->all()
             ]);
         }
