@@ -117,6 +117,7 @@ class SubmissionController extends AdminController
         $tagString = trim($request->input('tags'));
         \Log::info('test',[$tagString]);
 
+        $keywords = $submission->data['keywords']??'';
         /*更新标签*/
         $oldTags = $submission->tags->pluck('id')->toArray();
         if (!is_array($tagString)) {
@@ -127,6 +128,8 @@ class SubmissionController extends AdminController
         foreach ($tags as $tag) {
             if (!in_array($tag,$oldTags)) {
                 $submission->tags()->attach($tag);
+                $tagModel = Tag::find($tag);
+                $keywords = $tagModel->name.','.$keywords;
             }
         }
         foreach ($oldTags as $oldTag) {
@@ -135,6 +138,8 @@ class SubmissionController extends AdminController
             }
         }
         if (array_diff($oldTags,$tags)) {
+            $submission->data['keywords'] = $keywords;
+            $submission->save();
             $submission->updateRelatedProducts();
         }
 
