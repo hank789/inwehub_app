@@ -10,6 +10,7 @@ use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
+use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -23,7 +24,7 @@ use Tymon\JWTAuth\JWTAuth;
  */
 
 class ProductController extends Controller {
-
+    use SubmitSubmission;
     //产品服务详情
     public function info(Request $request, JWTAuth $JWTAuth) {
         $validateRules = [
