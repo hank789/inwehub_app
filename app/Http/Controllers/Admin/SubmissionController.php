@@ -138,7 +138,9 @@ class SubmissionController extends AdminController
             }
         }
         if (array_diff($oldTags,$tags)) {
-            $submission->data['keywords'] = $keywords;
+            $sData = $submission->data;
+            $sData['keywords'] = $keywords;
+            $submission->data = $sData;
             $submission->save();
             $submission->updateRelatedProducts();
         }
