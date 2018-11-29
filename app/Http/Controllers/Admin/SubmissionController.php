@@ -137,7 +137,7 @@ class SubmissionController extends AdminController
                 $submission->tags()->detach($oldTag);
             }
         }
-        if (array_diff($oldTags,$tags)) {
+        if (isset($tagModel)) {
             $sData = $submission->data;
             $sData['keywords'] = $keywords;
             $submission->data = $sData;
