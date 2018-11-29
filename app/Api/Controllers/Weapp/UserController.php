@@ -187,8 +187,13 @@ class UserController extends controller {
         } else {
             $user = User::find($oauth->user_id);
             if (empty($user->mobile)) {
-                $user->mobile = $phone;
-                $user->save();
+                if ($phoneUser) {
+                    $oauth->user_id = $phoneUser->id;
+                    $oauth->save();
+                } else {
+                    $user->mobile = $phone;
+                    $user->save();
+                }
             }
         }
         $info = [
