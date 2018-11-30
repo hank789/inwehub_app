@@ -244,7 +244,7 @@ class Submission extends Model {
             ->where('source_id',$submission->id)
             ->where('source_type',Submission::class)
             ->exists();
-        $isBookmark = $user->isCollected(get_class($submission),$submission->id);
+        $isBookmark = $user->id?$user->isCollected(get_class($submission),$submission->id):0;
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
 
         $img = $submission->data['img']??'';
