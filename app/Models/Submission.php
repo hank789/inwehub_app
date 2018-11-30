@@ -244,6 +244,7 @@ class Submission extends Model {
             ->where('source_id',$submission->id)
             ->where('source_type',Submission::class)
             ->exists();
+        $isBookmark = $user->isCollected(get_class($submission),$submission->id);
         $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$submission->group_id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
 
         $img = $submission->data['img']??'';
@@ -268,6 +269,7 @@ class Submission extends Model {
             'supporter_list' => $supporters,
             'is_upvoted'     => $upvote ? 1 : 0,
             'is_downvoted'   => $downvote ? 1 : 0,
+            'is_bookmark'    => $isBookmark ? 1 : 0,
             'is_recommend'   => $submission->is_recommend,
             'is_joined_group'=> $groupMember?1:0,
             'submission_type' => $submission->type,
@@ -552,8 +554,10 @@ class Submission extends Model {
             if ($related_tags === null && isset($this->data['keywords'])) {
                 $used = [];
                 $keywords = explode(',',$this->data['keywords']);
+                $tagNames = $this->tags->pluck('name')->toArray();
+                $tagNames = array_unique(array_merge($tagNames,$keywords));
                 $related_tags = [];
-                foreach ($keywords as $keyword) {
+                foreach ($tagNames as $keyword) {
                     if (in_array($keyword,$ignoreKeywords)) continue;
                     $rels = Tag::where('name',$keyword)->get();
                     foreach ($rels as $rel) {
@@ -575,7 +579,7 @@ class Submission extends Model {
                     if (count($related_tags) >= 4) break;
                 }
                 if (count($related_tags) < 4) {
-                    foreach ($keywords as $keyword) {
+                    foreach ($tagNames as $keyword) {
                         if (in_array($keyword,$ignoreKeywords)) continue;
                         $rels = Tag::where('name','like','%'.$keyword.'%')->orderBy('reviews','desc')->take(10)->get();
                         foreach ($rels as $rel) {
