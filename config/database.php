@@ -53,7 +53,8 @@ return [
             'strict' => false,
             'engine' => null,
             'dump'   => [
-                'dump_binary_path' => env('MYSQL_DUMP_PATH')
+                'dump_binary_path' => env('MYSQL_DUMP_PATH'),
+                'exclude_tables' => ['app_notifications','app_scraper_bid_info','app_scraper_news_info']
             ]
         ],
         'inwehub_read' => [
