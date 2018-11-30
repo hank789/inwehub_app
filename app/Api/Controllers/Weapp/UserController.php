@@ -113,10 +113,10 @@ class UserController extends controller {
 
     public function updateUserInfo(Request $request,JWTAuth $JWTAuth) {
         $oauth = $JWTAuth->parseToken()->toUser();
-        if ($request->input('nickname')) {
+        if ($request->input('nickName')) {
             $oauth->update([
-                'nickname' => $request->input('nickname'),
-                'avatar' => $request->input('avatar'),
+                'nickname' => $request->input('nickName'),
+                'avatar' => $request->input('avatarUrl'),
                 'full_info' => $request->all()
             ]);
         }
@@ -158,7 +158,7 @@ class UserController extends controller {
         $wxxcx->setSessionKey($sessionKey);
         $return = $wxxcx->getUserInfo($encryptedData, $iv);
         $phone = $return['purePhoneNumber'];
-        $phoneUser = User::where('mobile')->first();
+        $phoneUser = User::where('mobile',$phone)->first();
         if (!$oauth->user_id) {
             if ($phoneUser) {
                 $oauth->user_id = $phoneUser->id;
@@ -187,8 +187,13 @@ class UserController extends controller {
         } else {
             $user = User::find($oauth->user_id);
             if (empty($user->mobile)) {
-                $user->mobile = $phone;
-                $user->save();
+                if ($phoneUser) {
+                    $oauth->user_id = $phoneUser->id;
+                    $oauth->save();
+                } else {
+                    $user->mobile = $phone;
+                    $user->save();
+                }
             }
         }
         $info = [

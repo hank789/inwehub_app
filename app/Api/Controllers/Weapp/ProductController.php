@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\UploadFile;
 use App\Models\Category;
 use App\Models\Company\CompanyData;
 use App\Models\Doing;
@@ -9,8 +10,11 @@ use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
+use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
 
 /**
@@ -20,7 +24,7 @@ use Tymon\JWTAuth\JWTAuth;
  */
 
 class ProductController extends Controller {
-
+    use SubmitSubmission;
     //产品服务详情
     public function info(Request $request, JWTAuth $JWTAuth) {
         $validateRules = [
@@ -152,6 +156,42 @@ class ProductController extends Controller {
         }
         $submission = $this->storeSubmission($request,$user);
         return self::createJsonData(true,$submission->toArray());
+    }
+
+    public function addReviewImage(Request $request,JWTAuth $JWTAuth){
+        $validateRules = [
+            'id' => 'required|integer',
+            'image_file'=> 'required|image'
+        ];
+        $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+        $data = $request->all();
+        $submission = Submission::find($data['id']);
+        if ($submission->user_id != $user->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $data = $submission->data;
+        $image_file = 'image_file';
+        if($request->hasFile($image_file)){
+            $file_0 = $request->file($image_file);
+            $extension = strtolower($file_0->getClientOriginalExtension());
+            $extArray = array('png', 'gif', 'jpeg', 'jpg');
+            if(in_array($extension, $extArray)){
+                $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+                dispatch((new UploadFile($file_name,base64_encode(File::get($file_0)))));
+                //Storage::disk('oss')->put($file_name,File::get($file_0));
+                $img_url = Storage::disk('oss')->url($file_name);
+                $data['img'][] = $img_url;
+            }
+        }
+        $submission->data = $data;
+        $submission->save();
+        return self::createJsonData(true,['id'=>$submission->id]);
     }
 
 }
