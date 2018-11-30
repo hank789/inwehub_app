@@ -574,9 +574,11 @@ class Question extends Model
         if ($related_tags === null && isset($this->data['keywords'])) {
             $ignoreKeywords = Config::get('inwehub.ignore_product_keywords');
             $keywords = explode(',', $this->data['keywords']);
+            $tagNames = $this->tags->pluck('name')->toArray();
+            $tagNames = array_unique(array_merge($tagNames,$keywords));
             $related_tags = [];
             $used = [];
-            foreach ($keywords as $keyword) {
+            foreach ($tagNames as $keyword) {
                 if (in_array($keyword,$ignoreKeywords)) continue;
                 $rels = Tag::where('name', $keyword)->get();
                 foreach ($rels as $rel) {
@@ -598,7 +600,7 @@ class Question extends Model
                 if (count($related_tags) >= 4) break;
             }
             if (count($related_tags) < 4) {
-                foreach ($keywords as $keyword) {
+                foreach ($tagNames as $keyword) {
                     $ignoreKeywords = ['科技','信息','公司','有限','科技公司','有限公司','信息科技'];
                     if (in_array($keyword,$ignoreKeywords)) continue;
                     $rels = Tag::where('name', 'like', '%' . $keyword . '%')->orderBy('reviews', 'desc')->take(10)->get();

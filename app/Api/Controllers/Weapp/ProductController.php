@@ -134,7 +134,7 @@ class ProductController extends Controller {
         } else {
             $query = $query->orderBy('supports', 'desc');
         }
-        $comments = $query->simplePaginate(20);
+        $comments = $query->simplePaginate($request->input('perPage',20));
         $return = $comments->toArray();
         $return['total'] = $submission->comments_number;
         foreach ($return['data'] as &$item) {
