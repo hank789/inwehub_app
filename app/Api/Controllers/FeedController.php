@@ -77,9 +77,9 @@ class FeedController extends Controller
                 //他的动态
                 $search_user = User::where('uuid', $request->input('uuid'))->first();
                 if (!$search_user) throw new ApiException(ApiException::BAD_REQUEST);
-                $query = $query->where('user_id', $search_user->id)->where('public',1);
+                $query = $query->where('user_id', $search_user->id);
                 if ($search_user->id != $user->id) {
-                    $query = $query->where('is_anonymous',0);
+                    $query = $query->where('public',1)->where('is_anonymous',0);
                 }
                 break;
             case 6:
