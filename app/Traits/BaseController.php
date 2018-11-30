@@ -915,7 +915,7 @@ trait BaseController {
                 UserTag::multiIncrement($user_id,[Tag::find($request->input('identity'))],'role');
             }
             if ($submission->status == 1) {
-                $this->dispatch((new NewSubmissionJob($submission->id)));
+                $this->dispatch((new NewSubmissionJob($submission->id,false,$request->input('inwehub_user_device')== 'weapp_dianping'?'小程序':'')));
             }
 
         } catch (\Exception $exception) {

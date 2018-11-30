@@ -86,7 +86,7 @@ class ProductController extends Controller {
         } else {
             $user = new \stdClass();
             $user->id = 0;
-            $user->name = '游客';
+            $user->name = $oauth->nickname;
         }
         $submission = Submission::where('slug',$request->slug)->first();
         if (!$submission) {
