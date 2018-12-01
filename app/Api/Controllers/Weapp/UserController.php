@@ -61,8 +61,8 @@ class UserController extends controller {
 
         if (!$oauthData) {
             $unionId = null;
-            if (isset($userInfo['unionId']) && $userInfo['unionId']) {
-                $unionId = $userInfo['unionId'];
+            if (isset($userInfo['unionid']) && $userInfo['unionid']) {
+                $unionId = $userInfo['unionid'];
             } elseif (isset($return['unionId']) && $return['unionId']) {
                 $unionId = $return['unionId'];
             }
