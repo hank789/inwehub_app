@@ -174,6 +174,7 @@ class UserController extends controller {
                     'company' => '',
                     'gender' => $oauth->full_info['gender']??0,
                     'password' => time(),
+                    'visit_ip' => $request->getClientIp(),
                     'status' => 1,
                     'source' => User::USER_SOURCE_WEAPP_DB,
                 ]);
