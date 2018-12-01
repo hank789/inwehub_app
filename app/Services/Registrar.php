@@ -57,7 +57,7 @@ class Registrar {
                 'credits' => 0,
                 'registered_at' => Carbon::now(),
                 'last_visit' => Carbon::now(),
-                'last_login_ip' => $data['visit_ip'],
+                'last_login_ip' => $data['visit_ip']??'',
             ]);
             UserMoney::create([
                 'user_id' => $user->id,
