@@ -230,7 +230,7 @@ class SapNews extends Command {
                             'public' => $group->public,
                             'rate' => firstRate(),
                             'status' => 1,
-                            'user_id' => $group->user_id,
+                            'user_id' => 2568,
                             'data' => $data,
                             'views' => 1,
                         ]);
