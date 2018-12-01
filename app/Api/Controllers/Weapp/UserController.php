@@ -68,7 +68,7 @@ class UserController extends controller {
             }
 
             if ($unionId) {
-                $oauthData = UserOauth::where('unionid',$unionId)->first();
+                $oauthData = UserOauth::where('unionid',$unionId)->where('user_id','>',0)->first();
                 if ($oauthData) {
                     $user_id = $oauthData->user_id;
                 }
