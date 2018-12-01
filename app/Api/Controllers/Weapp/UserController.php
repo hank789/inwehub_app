@@ -60,8 +60,15 @@ class UserController extends controller {
         $user_id = 0;
 
         if (!$oauthData) {
-            if (isset($userInfo['unionId'])) {
-                $oauthData = UserOauth::where('unionid',$userInfo['unionId'])->first();
+            $unionId = null;
+            if (isset($userInfo['unionId']) && $userInfo['unionId']) {
+                $unionId = $userInfo['unionId'];
+            } elseif (isset($return['unionId']) && $return['unionId']) {
+                $unionId = $return['unionId'];
+            }
+
+            if ($unionId) {
+                $oauthData = UserOauth::where('unionid',$unionId)->first();
                 if ($oauthData) {
                     $user_id = $oauthData->user_id;
                 }
@@ -71,7 +78,7 @@ class UserController extends controller {
                     'auth_type'=>$oauthType,
                     'user_id'=> $user_id,
                     'openid'   => $userInfo['openid'],
-                    'unionid'  => $userInfo['unionId']??null,
+                    'unionid'  => $unionId,
                     'nickname'=>$return['nickName']??'',
                     'avatar'=>$return['avatarUrl']??'',
                     'access_token'=>$userInfo['session_key'],
