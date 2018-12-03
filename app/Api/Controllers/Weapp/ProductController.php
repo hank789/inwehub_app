@@ -97,7 +97,7 @@ class ProductController extends Controller {
         }
         $actionName = Doing::ACTION_VIEW_DIANPING_REVIEW_INFO;
         $actionUrl = config('app.mobile_url').'#/dianping/comment/'.$submission->slug;
-        $return = $this->formatSubmissionInfo($submission,$user);
+        $return = $this->formatSubmissionInfo($request,$submission,$user);
 
         $this->logUserViewTags($user->id,$submission->tags()->get());
         $this->doing($user,$actionName,get_class($submission),$submission->id,$submission->type == 'link'?$submission->data['title']:$submission->title,

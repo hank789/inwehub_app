@@ -600,7 +600,7 @@ trait BaseController {
         return $data;
     }
 
-    protected function formatSubmissionInfo(Submission $submission, $user) {
+    protected function formatSubmissionInfo(Request $request,Submission $submission, $user) {
         $return = $submission->toArray();
         if ($submission->group_id) {
             $group = Group::find($submission->group_id);
@@ -625,6 +625,9 @@ trait BaseController {
             } else {
                 $return['group']['subscribers'] = $group->getHotIndex() + User::count();
             }
+        }
+        if ($request->input('inwehub_user_device') == 'www' && $return['type'] == 'article') {
+            $return['data']['description'] = QuillLogic::parseHtml($return['data']['description']);
         }
 
         $submission->increment('views');
