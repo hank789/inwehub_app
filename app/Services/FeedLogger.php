@@ -161,8 +161,12 @@ class FeedLogger
 
         if ($this->tagIds) {
             $activity->tags = '';
-            foreach ($this->tagIds as $tagId) {
-                $activity->tags.='['.$tagId.']';
+            if (is_array($this->tagIds)) {
+                foreach ($this->tagIds as $tagId) {
+                    $activity->tags.='['.$tagId.']';
+                }
+            } else {
+                $activity->tags = $this->tagIds;
             }
         }
 

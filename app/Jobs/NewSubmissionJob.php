@@ -158,7 +158,7 @@ class NewSubmissionJob implements ShouldQueue
                 ->setGroup($submission->group_id)
                 ->setPublic($submission->public)
                 ->anonymous($submission->hide)
-                ->tags($submission->tags()->pluck('tag_id')->toArray())
+                ->tags($submission->category_id)
                 ->withProperties([
                     'submission_title'=>$submission->title
                 ])
