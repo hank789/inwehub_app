@@ -487,7 +487,6 @@ class QuestionController extends Controller {
                     feed()
                         ->causedBy($loginUser)
                         ->performedOn($source)
-                        ->tags($source->tags()->pluck('tag_id')->toArray())
                         ->log($loginUser->name.'关注了问答', Feed::FEED_TYPE_FOLLOW_FREE_QUESTION);
                     $this->credit($loginUser->id,Credit::KEY_NEW_FOLLOW,$attention->id,get_class($source));
                     if ($source->hide == 0) {
