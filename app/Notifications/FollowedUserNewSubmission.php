@@ -68,11 +68,18 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
      */
     public function toArray($notifiable)
     {
+        if ($this->submission->type=='review') {
+            $typeName = '点评';
+            $url = '/dianping/comment/'.$this->submission->slug;
+        } else {
+            $typeName = '分享';
+            $url = '/c/'.$this->submission->category_id.'/'.$this->submission->slug;
+        }
         return [
-            'url'    => '/c/'.$this->submission->category_id.'/'.$this->submission->slug,
+            'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'avatar' => $this->submission->owner->avatar,
-            'title'  => '您关注的@'.$this->submission->owner->name.'发布了新'.($this->submission->type == 'link' ? '文章':'分享'),
+            'title'  => '您关注的@'.$this->submission->owner->name.'发布了新'.$typeName,
             'body'   => strip_tags($this->submission->title),
             'extra_body' => ''
         ];
@@ -80,10 +87,17 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
 
     public function toPush($notifiable)
     {
+        if ($this->submission->type=='review') {
+            $typeName = '点评';
+            $url = '/dianping/comment/'.$this->submission->slug;
+        } else {
+            $typeName = '分享';
+            $url = '/c/'.$this->submission->category_id.'/'.$this->submission->slug;
+        }
         return [
-            'title' => '您关注的@'.$this->submission->owner->name.'发布了新'.($this->submission->type == 'link' ? '文章':'分享'),
+            'title' => '您关注的@'.$this->submission->owner->name.'发布了新'.$typeName,
             'body'  => strip_tags($this->submission->title),
-            'payload' => ['object_type'=>'readhub_new_submission','object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug],
+            'payload' => ['object_type'=>'readhub_new_submission','object_id'=>$url],
         ];
     }
 

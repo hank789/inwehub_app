@@ -114,7 +114,6 @@ class NewSubmissionJob implements ShouldQueue
                 ->performedOn($submission)
                 ->setGroup($submission->group_id)
                 ->setPublic($submission->public)
-                ->tags($submission->tags()->pluck('tag_id')->toArray())
                 ->withProperties([
                     'submission_title'=>$submission->title
                 ])
@@ -152,6 +151,30 @@ class NewSubmissionJob implements ShouldQueue
             $targetName = '在圈子['.$group->name.']';
             $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
             $submission->setKeywordTags();
+        } else {
+            feed()
+                ->causedBy($user)
+                ->performedOn($submission)
+                ->setGroup($submission->group_id)
+                ->setPublic($submission->public)
+                ->anonymous($submission->hide)
+                ->tags($submission->tags()->pluck('tag_id')->toArray())
+                ->withProperties([
+                    'submission_title'=>$submission->title
+                ])
+                ->log($user->name.'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_REVIEW);
+            if (!$submission->hide) {
+                //关注的用户接收通知
+                $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();
+                //提到了人，还未去重
+                $notified_uids = $this->handleSubmissionMentions($submission,[]);
+                $notified_uids[$submission->user_id] = $submission->user_id;
+                foreach ($attention_users as $attention_uid) {
+                    if (isset($notified_uids[$attention_uid])) continue;
+                    $attention_user = User::find($attention_uid);
+                    if ($attention_user) $attention_user->notify((new FollowedUserNewSubmission($attention_uid,$submission))->delay(Carbon::now()->addMinutes(3)));
+                }
+            }
         }
         $submission->calculationRate();
         $submission->getRelatedProducts();
