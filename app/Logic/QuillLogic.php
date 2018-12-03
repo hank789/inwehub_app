@@ -6,7 +6,7 @@
  */
 use App\Jobs\UploadFile;
 use Illuminate\Support\Facades\Storage;
-use DBlackborough\Quill\Render;
+
 class QuillLogic {
 
     public static function parseImages($json_content,$formatLink=true){
@@ -59,7 +59,7 @@ class QuillLogic {
 
     public static function parseHtml($json_content){
         try {
-            $quill = new Render($json_content, 'HTML');
+            $quill = new \App\Third\Quill\Render($json_content, 'HTML');
             return $quill->render();
         } catch (\Exception $e) {
             return $json_content;

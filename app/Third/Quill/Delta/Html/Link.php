@@ -19,7 +19,7 @@ class Link extends Delta
      * @param string $insert
      * @param array $attributes
      */
-    public function __construct(string $insert, array $attributes = [])
+    public function __construct($insert, array $attributes = [])
     {
         $this->insert = $insert;
         $this->attributes = $attributes;
@@ -34,6 +34,13 @@ class Link extends Delta
      */
     public function render(): string
     {
-        return "<{$this->tag} href=\"{$this->attributes['link']}\">{$this->escape($this->insert)}</{$this->tag}>";
+        if (is_array($this->insert)) {
+            if (isset($this->insert['image'])) {
+                $insert = "<img src=\"{$this->escape($this->insert['image'])}\" />";
+            }
+        } else {
+         $insert = $this->escape($this->insert);
+        }
+        return "<{$this->tag} href=\"{$this->attributes['link']}\">{$insert}</{$this->tag}>";
     }
 }
