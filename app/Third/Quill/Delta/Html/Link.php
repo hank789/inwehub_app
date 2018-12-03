@@ -41,6 +41,6 @@ class Link extends Delta
         } else {
          $insert = $this->escape($this->insert);
         }
-        return "<{$this->tag} href=\"{$this->attributes['link']}\">{$insert}</{$this->tag}>";
+        return "<{$this->tag} href=\"{$this->attributes['link']}\" target=\"_blank\">{$insert}</{$this->tag}>";
     }
 }
