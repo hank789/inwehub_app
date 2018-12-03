@@ -95,7 +95,6 @@ class SupportObserver implements ShouldQueue {
                     feed()
                         ->causedBy($support->user)
                         ->performedOn($source)
-                        ->tags($question->tags()->pluck('tag_id')->toArray())
                         ->log($support->user->name.'赞了'.$feed_question_title, $feed_type);
 
 
