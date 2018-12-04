@@ -145,19 +145,37 @@ class RecommendReadController extends AdminController
     }
 
     public function changeTags(Request $request) {
-        $ids = $request->input('rids','');
-        $tagsId = $request->input('tagIds',0);
-        if($ids){
-            $idArray = explode(",",$ids);
-            foreach ($idArray as $id) {
-                $recommendation = RecommendRead::find($id);
-                $article = $recommendation->source;
-                Tag::multiAddByIds($tagsId,$article);
-                $recommendation->tags()->detach();
-                $recommendation->setKeywordTags();
+        $id = $request->input('id','');
+        $tags = explode(',',$request->input('tagIds',0));
+        $recommend = RecommendRead::find($id);
+        $article = $recommend->source;
+        $keywords = $article->data['keywords']??'';
+
+        /*更新标签*/
+        $oldTags = $article->tags->pluck('id')->toArray();
+        foreach ($tags as $tag) {
+            if (!in_array($tag,$oldTags)) {
+                $article->tags()->attach($tag);
+                $tagModel = Tag::find($tag);
+                $keywords = $tagModel->name.','.$keywords;
             }
         }
-        return $this->success(url()->previous(),'标签修改成功');
+        foreach ($oldTags as $oldTag) {
+            if (!in_array($oldTag,$tags)) {
+                $article->tags()->detach($oldTag);
+            }
+        }
+        if (isset($tagModel)) {
+            $sData = $article->data;
+            $sData['keywords'] = implode(',',array_unique(explode(',',$keywords)));
+            $article->data = $sData;
+            $article->save();
+            $article->updateRelatedProducts();
+        }
+
+        $recommend->tags()->detach();
+        $recommend->setKeywordTags();
+        return response('success');
     }
 
     /**

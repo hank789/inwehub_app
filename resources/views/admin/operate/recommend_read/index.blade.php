@@ -21,7 +21,6 @@
                                 <div class="btn-group">
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="通过审核" onclick="confirm_submit('item_form','{{  route('admin.operate.recommendRead.verify') }}','确认审核通过选中项？')"><i class="fa fa-check-square-o"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="取消推荐选中项" onclick="confirm_submit('item_form','{{  route('admin.operate.recommendRead.cancel_verify') }}','确认取消推荐选中项？')"><i class="fa fa-lock"></i></button>
-                                    <button class="btn btn-default btn-sm" title="移动标签"  data-toggle="modal" data-target="#change_tags_modal" ><i data-toggle="tooltip" title="移动标签" class="fa fa-bars" aria-hidden="true"></i></button>
                                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="删除推荐" onclick="confirm_submit('item_form','{{  route('admin.operate.recommendRead.destroy',['id'=>0]) }}', '确认删除选中项？')"><i class="fa fa-trash-o"></i></button>
                                 </div>
                             </div>
@@ -71,6 +70,9 @@
                                         <th>排序</th>
                                         <th>标签</th>
                                     </tr>
+                                    @php
+                                    $pageTags = []
+                                    @endphp
                                     @foreach($recommendations as $item)
                                         <tr>
                                             <td><input type="checkbox" value="{{ $item->id }}" name="ids[]"/></td>
@@ -98,9 +100,11 @@
                                             <td>{{ $item->rate }}</td>
                                             <td>{{ $item->sort }}</td>
                                             <td>
-                                                @foreach($item->tags as $tagInfo)
-                                                    {{ $tagInfo->name.',' }}
-                                                @endforeach
+                                                @php
+                                                    $pageTags += $item->tags->pluck('name','id')->toArray()
+                                                @endphp
+                                                {{ implode(',',$item->tags->pluck('name')->toArray()) }}
+                                                <a class="btn-edit_category" data-source_id = "{{ $item->id }}" data-title="{{ $item->data['title'] }}" data-categories="{{ implode(',',$item->tags->pluck('id')->toArray()) }}" data-toggle="tooltip" title="修改标签"><i class="fa fa-edit"></i></a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -122,37 +126,35 @@
             </div>
         </div>
     </section>
-    <div class="modal fade" id="change_tags_modal" tabindex="-1"  role="dialog" aria-labelledby="change_tags_modal">
+
+    <div class="modal fade" id="set_fav_modal" tabindex="-1"  role="dialog" aria-labelledby="set_fav_modal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="exampleModalLabel">赋予标签</h4>
+                    <h4 class="modal-title" id="exampleModalLabel">修改标签-<span id="title"></span></h4>
                 </div>
                 <div class="modal-body">
-                    <form role="form" name="categoryForm" id="change_tags_from" method="POST" action="{{ route('admin.operate.recommendRead.changeTags') }}">
-                        {{ csrf_field() }}
-                        <input type="hidden" name="tagIds" id="tagIds" />
-                        <input type="hidden" name="rids" id="rids" />
-                        <div class="box-body">
-                            <div class="form-group">
-                                <label for="select_tags_id" class="control-label">将选中项目移动到:</label>
-                                <div class="row">
-                                    <div class="col-sm-10">
-                                        <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
-                                            @foreach($tags as $tag)
-                                                <option value="{{ $tag['id'] }}">{{ $tag['text'] }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                    <input type="hidden" name="tagIds" id="tagIds" />
+                    <input type="hidden" name="id" id="id" />
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="select_tags_id" class="control-label">分类:</label>
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
+                                        @foreach($pageTags as $key=>$name)
+                                            <option value="{{ $key }}">{{ $name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="change_tags_submit">确认</button>
+                    <button type="button" class="btn btn-primary" id="set_fav_submit">确认</button>
                 </div>
             </div>
         </div>
@@ -214,14 +216,6 @@
             $("#tags").val($("#select_tags").val());
         });
 
-        $("#select_tags_id").select2({
-            theme:'bootstrap',
-            placeholder: "标签"
-        });
-
-        $("#select_tags_id").change(function(){
-            $("#tagIds").val($("#select_tags_id").val());
-        });
 
         $("#change_tags_submit").click(function(){
             var ids = new Array();
@@ -237,6 +231,52 @@
             }else{
                 alert("您没有选中任何内容");
             }
+        });
+
+        $("#select_tags_id").select2({
+            theme:'bootstrap',
+            placeholder: "标签",
+            ajax: {
+                url: '/manager/ajax/loadTags',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        word: params.term,
+                        type: 'all'
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength:2,
+            tags:false
+        });
+
+        $("#select_tags_id").change(function(){
+            $("#tagIds").val($("#select_tags_id").val());
+        });
+
+        $(".btn-edit_category").click(function(){
+            var source_id = $(this).data('source_id');
+            var cs = $(this).data('categories');
+            $("#id").val(source_id);
+            $("#title").html($(this).data('title'));
+            $("#select_tags_id").val(cs.toString().split(','));
+            $('#select_tags_id').trigger('change');
+            $('#set_fav_modal').modal('show');
+        });
+
+        $("#set_fav_submit").click(function(){
+            var id = $("#id").val();
+            $.post('/admin/recommendRead/changeTags',{id: id,tagIds: $("#tagIds").val()},function(msg){
+                window.location.reload()
+            });
+            $('#set_fav_modal').modal('hide');
         });
     </script>
 @endsection
