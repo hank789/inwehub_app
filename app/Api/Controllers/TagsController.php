@@ -1,4 +1,5 @@
 <?php namespace App\Api\Controllers;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\TagsLogic;
@@ -172,6 +173,7 @@ class TagsController extends Controller {
             }
         }
         Tag::multiAddByIds($tag->id,$company);
+        event(new ImportantNotify('用户'.formatSlackUser($user).'提交了产品['.$tag->name.']'));
         return self::createJsonData(true,$tag->toArray());
     }
 
@@ -203,7 +205,7 @@ class TagsController extends Controller {
                 'value'=>implode(',',$logo['img'])
             ];
         }
-        event(new SystemNotify('用户'.$user->id.'['.$user->name.']反馈产品['.$request->input('product').']',$fields));
+        event(new ImportantNotify('用户'.$user->id.'['.$user->name.']反馈产品['.$request->input('product').']',$fields));
         return self::createJsonData(true);
     }
 

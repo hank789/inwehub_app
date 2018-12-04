@@ -9,7 +9,7 @@
 /**
  * Class ErrorNotify.
  */
-class SystemNotify
+class ImportantNotify
 {
 
     public $message;

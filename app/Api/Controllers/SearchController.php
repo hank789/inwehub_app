@@ -1,15 +1,13 @@
 <?php namespace App\Api\Controllers;
 
-use App\Events\Frontend\System\SystemNotify;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Models\Attention;
 use App\Models\Category;
-use App\Models\Collection;
 use App\Models\Company\CompanyData;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Question;
 use App\Models\Submission;
-use App\Models\Support;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\User;
@@ -22,7 +20,7 @@ class SearchController extends Controller
 {
 
     protected function searchNotify($user,$searchWord,$typeName='',$searchResult=''){
-        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'.$searchResult));
+        event(new ImportantNotify('用户'.$user->id.'['.$user->name.']'.$typeName.'搜索['.$searchWord.']'.$searchResult));
         RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
         RateLimiter::instance()->hIncrBy('search-user-count-'.$user->id,$searchWord,1);
     }
