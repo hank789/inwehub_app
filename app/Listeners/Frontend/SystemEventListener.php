@@ -3,6 +3,7 @@
 namespace App\Listeners\Frontend;
 use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\FuncZan;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Events\Frontend\System\OperationNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Credit as CreditModel;
@@ -94,6 +95,23 @@ class SystemEventListener implements ShouldQueue
     public function operationNotify($event) {
         try {
             \Slack::to(config('slack.operation_channel'))
+                ->attach(
+                    [
+                        'fields' => $event->fields
+                    ]
+                )
+                ->send($event->message);
+        } catch (\Exception $e) {
+            app('sentry')->captureException($e);
+        }
+    }
+
+    /**
+     * @param ImportantNotify $event
+     */
+    public function importantNotify($event) {
+        try {
+            \Slack::to(config('slack.important_channel'))
                 ->attach(
                     [
                         'fields' => $event->fields
@@ -229,6 +247,10 @@ class SystemEventListener implements ShouldQueue
         $events->listen(
             OperationNotify::class,
             'App\Listeners\Frontend\SystemEventListener@operationNotify'
+        );
+        $events->listen(
+            ImportantNotify::class,
+            'App\Listeners\Frontend\SystemEventListener@importantNotify'
         );
     }
 }

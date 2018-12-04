@@ -70,12 +70,19 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
      */
     public function toArray($notifiable)
     {
+        if ($this->submission->type=='review') {
+            $typeName = '点评';
+            $url = '/dianping/comment/'.$this->submission->slug;
+        } else {
+            $typeName = '分享';
+            $url = '/c/'.$this->submission->category_id.'/'.$this->submission->slug;
+        }
         return [
-            'url'    => '/c/'.$this->submission->category_id.'/'.$this->submission->slug,
+            'url'    => $url,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'name'   => $this->submission->owner->name,
             'avatar' => $this->submission->owner->avatar,
-            'title'  => $this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你',
+            'title'  => $this->submission->owner->name.'在'.$typeName.'中提到了你',
             'body'   => strip_tags($this->submission->title),
             'submission_id' => $this->submission->id,
             'extra_body' => ''
@@ -84,18 +91,32 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
 
     public function toPush($notifiable)
     {
+        if ($this->submission->type=='review') {
+            $typeName = '点评';
+            $url = '/dianping/comment/'.$this->submission->slug;
+        } else {
+            $typeName = '分享';
+            $url = '/c/'.$this->submission->category_id.'/'.$this->submission->slug;
+        }
         return [
-            'title' => $this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你',
+            'title' => $this->submission->owner->name.'在'.$typeName.'中提到了你',
             'body'  => strip_tags($this->submission->title),
             'payload' => [
                 'object_type'=>'readhub_username_mentioned',
-                'object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug
+                'object_id'=>$url
             ],
         ];
     }
 
     public function toWechatNotice($notifiable){
-        $first = '您好，'.$this->submission->owner->name.'在'.($this->submission->type=='link'?'文章':'分享').'中提到了你';
+        if ($this->submission->type=='review') {
+            $typeName = '点评';
+            $url = '/dianping/comment/'.$this->submission->slug;
+        } else {
+            $typeName = '分享';
+            $url = '/c/'.$this->submission->category_id.'/'.$this->submission->slug;
+        }
+        $first = '您好，'.$this->submission->owner->name.'在'.$typeName.'中提到了你';
         $keyword2 = date('Y-m-d H:i:s',strtotime($this->submission->created_at));
         $keyword3 = '';
         $remark = strip_tags($this->submission->title);
@@ -103,10 +124,10 @@ class UsernameSubmissionMentioned extends Notification implements ShouldBroadcas
         if (config('app.env') != 'production') {
             $template_id = '_781d_63IgFjtv7FeyghCdVuYeRs9xZSfPLqhQdi-ZQ';
         }
-        $target_url = config('app.mobile_url').'#/c/'.$this->submission->category_id.'/'.$this->submission->slug;
+        $target_url = config('app.mobile_url').'#'.$url;
         return [
             'first'    => $first,
-            'keyword1' => '分享',
+            'keyword1' => $typeName,
             'keyword2' => $keyword2,
             'keyword3' => $keyword3,
             'remark'   => $remark,

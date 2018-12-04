@@ -64,6 +64,9 @@ class OauthController extends Controller
                     return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$oauthGzhData->nickname,'avatar'=>$oauthGzhData->user->avatar,'name'=>$oauthGzhData->user->name,'is_expert'=>$oauthGzhData->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
                 } elseif ($bindType == 1){
                     return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$oauthGzhData->nickname,'avatar'=>$oauthGzhData->user->avatar,'name'=>$oauthGzhData->user->name,'is_expert'=>$oauthGzhData->user->is_expert],ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
+                } elseif ($bindType == 3) {
+                    $oauthGzhData->user_id = $user->id;
+                    $oauthGzhData->save();
                 }
             } elseif ($user->id > 0 && $oauthGzhData->user_id == $user->id) {
                 event(new UserLoggedIn($user,'App内微信'));
@@ -85,6 +88,9 @@ class OauthController extends Controller
                     return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_OAUTH_BIND_OTHERS);
                 } elseif ($bindType == 1){
                     return self::createJsonData(true,['token'=>'','newUser'=>$newUser, 'wechat_name'=>$object->nickname,'avatar'=>$object->user->avatar,'name'=>$object->user->name,'is_expert'=>$object->user->is_expert],ApiException::USER_WECHAT_EXIST_NOT_BIND_PHONE);
+                } elseif ($bindType == 3) {
+                    $object->user_id = $user->id;
+                    $object->save();
                 }
             } elseif ($user->id > 0 && $object->user_id == $user->id) {
                 event(new UserLoggedIn($user,'App内微信'));
@@ -111,6 +117,14 @@ class OauthController extends Controller
             'full_info'=>isset($data['full_info']) ? json_encode($data['full_info']):'',
             'scope'=>$data['scope']
         ]);
+        if ($bindType == 3) {
+            //导入微信头像和昵称
+            if (str_contains($user->name,'手机用户')) {
+                $user->name = $oauthData->nickname;
+                $user->avatar = saveImgToCdn($oauthData->avatar);
+                $user->save();
+            }
+        }
         if ($token && $user) {
             //登陆事件通知
             event(new UserLoggedIn($user,'App内微信'));

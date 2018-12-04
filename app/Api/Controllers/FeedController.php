@@ -43,10 +43,12 @@ class FeedController extends Controller
                 $followers = $user->attentions()->where('source_type', '=', get_class($user))->pluck('source_id')->toArray();
                 //包括自己
                 $followers[] = $user->id;
+                $attentionTags = $user->attentions()->where('source_type', '=', Tag::class)->pluck('source_id')->toArray();
                 $query = $query->where('public',1)->whereIn('user_id', $followers);
                 $groupIds = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('group_id')->toArray();
-                if ($groupIds) {
-                    $query = $query->orWhereIn('group_id',$groupIds);
+                if ($groupIds || $attentionTags) {
+                    $query = $query->orWhereIn('group_id',$groupIds)->orWhereIn('tags',$attentionTags);
+
                 }
                 $this->doing($user,Doing::ACTION_VIEW_FEED_FOLLOW,'',0,'核心页面');
                 break;

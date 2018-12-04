@@ -247,6 +247,7 @@ class Feed extends Model
                 ];
                 break;
             case self::FEED_TYPE_SUBMIT_READHUB_ARTICLE:
+            case self::FEED_TYPE_SUBMIT_READHUB_REVIEW:
                 //发布文章
                 $submission = Submission::find($this->source_id);
                 if (!$submission) return null;

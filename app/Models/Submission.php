@@ -273,7 +273,7 @@ class Submission extends Model {
             'is_recommend'   => $submission->is_recommend,
             'is_joined_group'=> $groupMember?1:0,
             'submission_type' => $submission->type,
-            'group'    => $withGroup?$submission->group->toArray():''
+            'group'    => $withGroup&&$submission->group_id?$submission->group->toArray():''
         ];
         if ($sourceData['group']) {
             $sourceData['group']['name'] = str_limit($sourceData['group']['name'], 20);
@@ -314,7 +314,7 @@ class Submission extends Model {
             'feed'  => $sourceData,
             'url'   => $url,
             'feed_type'  => $feed_type,
-            'created_at' => (string)$submission->created_at
+            'created_at' => $submission->created_at->diffForHumans()
         ];
         return $item;
     }

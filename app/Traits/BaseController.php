@@ -5,6 +5,7 @@
  * @email: hank.huiwang@gmail.com
  */
 use App\Events\Frontend\Answer\Answered;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\NewSubmissionJob;
@@ -145,7 +146,11 @@ trait BaseController {
                     'value'=>$link
                 ];
             }
-            event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
+            if (strpos($action,'share') === 0) {
+                event(new ImportantNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
+            } else {
+                event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
+            }
         }
         if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user->id.'_'.$source_id)){
             try {

@@ -7,7 +7,7 @@
 
 namespace App\Api\Controllers\Weapp;
 use App\Api\Controllers\Controller;
-use App\Events\Frontend\System\SystemNotify;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Services\RateLimiter;
@@ -18,7 +18,7 @@ use Tymon\JWTAuth\JWTAuth;
 class SearchController extends controller
 {
     protected function searchNotify($oauth,$searchWord,$typeName='',$searchResult=''){
-        event(new SystemNotify('小程序用户'.$oauth->user_id.'['.$oauth->nickname.']'.$typeName.'搜索['.$searchWord.']'.$searchResult));
+        event(new ImportantNotify('小程序用户'.$oauth->user_id.'['.$oauth->nickname.']'.$typeName.'搜索['.$searchWord.']'.$searchResult));
         RateLimiter::instance()->hIncrBy('search-word-count',$searchWord,1);
         RateLimiter::instance()->hIncrBy('search-user-count-'.$oauth->user_id,$searchWord,1);
     }

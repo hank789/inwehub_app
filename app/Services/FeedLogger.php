@@ -53,7 +53,7 @@ class FeedLogger
 
     }
 
-    public function tags(array $tagIds){
+    public function tags($tagIds){
         $this->tagIds = $tagIds;
         return $this;
     }
@@ -161,8 +161,12 @@ class FeedLogger
 
         if ($this->tagIds) {
             $activity->tags = '';
-            foreach ($this->tagIds as $tagId) {
-                $activity->tags.='['.$tagId.']';
+            if (is_array($this->tagIds)) {
+                foreach ($this->tagIds as $tagId) {
+                    $activity->tags.='['.$tagId.']';
+                }
+            } else {
+                $activity->tags = $this->tagIds;
             }
         }
 

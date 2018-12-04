@@ -103,9 +103,9 @@ class CommentController extends Controller {
         if ($orderBy == 1) {
             $query = $query->orderBy('created_at', 'desc');
         } else {
-            $query = $query->orderBy('supports', 'desc');
+            $query = $query->orderBy('supports', 'desc')->orderBy('created_at', 'desc');
         }
-        $comments = $query->simplePaginate(20);
+        $comments = $query->simplePaginate($request->input('perPage',20));
         $return = $comments->toArray();
         $return['total'] = $submission->comments_number;
         foreach ($return['data'] as &$item) {
