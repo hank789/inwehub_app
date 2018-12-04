@@ -33,6 +33,7 @@ return [
     'user_chat_channel' => env('SLACK_USER_CHAT_CHANNEL','#app_ask_activity'),
     'auto_channel' => env('SLACK_AUTO_CHANNEL','#app_ask_activity'),
     'operation_channel' => env('SLACK_OPERATION_CHANNEL','#prd_operation_notice'),
+    'important_channel' => env('SLACK_IMPORTANT_CHANNEL','#prd_important_notice'),
 
     /*
     |-------------------------------------------------------------

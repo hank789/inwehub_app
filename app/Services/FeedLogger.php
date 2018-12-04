@@ -53,7 +53,7 @@ class FeedLogger
 
     }
 
-    public function tags(array $tagIds){
+    public function tags($tagIds){
         $this->tagIds = $tagIds;
         return $this;
     }
