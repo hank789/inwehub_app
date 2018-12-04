@@ -314,7 +314,7 @@ class Submission extends Model {
             'feed'  => $sourceData,
             'url'   => $url,
             'feed_type'  => $feed_type,
-            'created_at' => (string)$submission->created_at
+            'created_at' => $submission->created_at->diffForHumans()
         ];
         return $item;
     }
