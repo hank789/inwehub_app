@@ -117,7 +117,7 @@ class NewSubmissionJob implements ShouldQueue
                 ->withProperties([
                     'submission_title'=>$submission->title
                 ])
-                ->log($user->name.'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+                ->log(($submission->hide?'匿名':$user->name).'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
 
             $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
 
@@ -162,7 +162,7 @@ class NewSubmissionJob implements ShouldQueue
                 ->withProperties([
                     'submission_title'=>$submission->title
                 ])
-                ->log($user->name.'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_REVIEW);
+                ->log(($submission->hide?'匿名':$user->name).'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_REVIEW);
             if (!$submission->hide) {
                 //关注的用户接收通知
                 $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();
