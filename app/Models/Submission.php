@@ -273,6 +273,7 @@ class Submission extends Model {
             'is_bookmark'    => $isBookmark ? 1 : 0,
             'is_recommend'   => $submission->is_recommend,
             'is_joined_group'=> $groupMember?1:0,
+            'is_group_owner' => $submission->group_id?($submission->group->user_id==$user->id?1:0):0,
             'submission_type' => $submission->type,
             'group'    => $withGroup&&$submission->group_id?$submission->group->toArray():''
         ];

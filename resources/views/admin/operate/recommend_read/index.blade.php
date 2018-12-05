@@ -67,7 +67,7 @@
                                         <th>标签语</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
-                                        <th>排序</th>
+                                        <th>文章ID</th>
                                         <th>标签</th>
                                     </tr>
                                     @php
@@ -98,7 +98,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ $item->rate }}</td>
-                                            <td>{{ $item->sort }}</td>
+                                            <td>{{ $item->source_id }}</td>
                                             <td>
                                                 @php
                                                     $pageTags += $item->tags->pluck('name','id')->toArray()

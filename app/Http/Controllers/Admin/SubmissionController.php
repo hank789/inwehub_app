@@ -32,6 +32,9 @@ class SubmissionController extends AdminController
         if( isset($filter['user_id']) &&  $filter['user_id'] > 0 ){
             $query->where('user_id','=',$filter['user_id']);
         }
+        if( isset($filter['id']) &&  $filter['id'] > 0 ){
+            $query->where('id','=',$filter['id']);
+        }
         if (isset($filter['group_id']) && $filter['group_id']) {
             $query->where('group_id','=',$filter['group_id']);
         }

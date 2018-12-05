@@ -20,6 +20,9 @@
                                         <form name="searchForm" action="{{ route('admin.operate.article.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <div class="col-xs-2">
+                                                <input type="text" class="form-control" name="id" placeholder="文章id" value="{{ $filter['id'] or '' }}"/>
+                                            </div>
+                                            <div class="col-xs-2">
                                                 <input type="text" class="form-control" name="user_id" placeholder="UID" value="{{ $filter['user_id'] or '' }}"/>
                                             </div>
                                             <div class="col-xs-2">
