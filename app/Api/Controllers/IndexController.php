@@ -71,32 +71,6 @@ class IndexController extends Controller {
             }
         }
 
-        //随机7个专家
-        $cache_experts = Cache::get('home_experts');
-        if (!$cache_experts){
-            $experts = Authentication::where('status',1)->pluck('user_id')->toArray();
-            shuffle($experts);
-            $cache_experts = [];
-            $expert_uids = array_slice($experts,0,7);
-            foreach ($expert_uids as $key=>$expert_uid) {
-                $expert_user = User::find($expert_uid);
-                $cache_experts[$key]['id'] = $expert_uid;
-                $cache_experts[$key]['name'] = $expert_user->name;
-                $cache_experts[$key]['title'] = $expert_user->title;
-                $cache_experts[$key]['uuid'] = $expert_user->uuid;
-                $cache_experts[$key]['work_years'] = $expert_user->getWorkYears();
-                $cache_experts[$key]['avatar_url'] = $expert_user->avatar;
-                $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($expert_user))->where('source_id','=',$expert_user->id)->first();
-                $cache_experts[$key]['is_followed'] = $attention?1:0;
-            }
-            Cache::put('home_experts',$cache_experts,60*24);
-        } else {
-            foreach ($cache_experts as $key=>$cache_expert) {
-                $attention = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$cache_experts[$key]['id'])->first();
-                $cache_experts[$key]['is_followed'] = $attention?1:0;
-            }
-        }
-
         //轮播图
         $notices = Notice::where('status',1)->orderBy('sort','desc')->take(5)->get()->toArray();
         foreach ($notices as &$notice) {
@@ -162,7 +136,7 @@ class IndexController extends Controller {
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
-            'recommend_experts' => $cache_experts,
+            'recommend_experts' => [],
             'hot_groups' => $hotGroups,
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message

@@ -250,7 +250,7 @@ class TagsController extends Controller {
                     $query = $query->orderBy('updated_at','desc');
                     break;
             }
-            $tags = $query->distinct()->groupBy('tag_id')->simplePaginate(Config::get('inwehub.api_data_page_size'));
+            $tags = $query->distinct()->groupBy('tag_id')->simplePaginate(30);
             $return = $tags->toArray();
             $list = [];
             $used = [];
