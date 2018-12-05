@@ -650,10 +650,8 @@ trait BaseController {
             ->where('source_id',$submission->id)
             ->where('source_type',Submission::class)
             ->exists();
-        $support_uids = Support::where('supportable_id',$submission->id)
-            ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
 
-        $attention_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
+        $attention_user = Attention::where("user_id",'=',$user->id)->where('source_id','=',$submission->user_id)->where('source_type','=',get_class($user))->first();
         $return['is_followed_author'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_downvoted'] = $downvote ? 1 : 0;
