@@ -173,6 +173,7 @@ class Submission extends Model {
                 $tag->decrement('reviews');
                 TagsLogic::delProductCache();
             }
+            Cache::delete('submission_related_products_'.$submission->id);
         });
     }
 
