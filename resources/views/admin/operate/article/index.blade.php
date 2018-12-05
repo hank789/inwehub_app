@@ -26,6 +26,9 @@
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                             </div>
                                             <div class="col-xs-2">
+                                                <input type="text" class="form-control" name="group_id" placeholder="圈子ID" value="{{ $filter['group_id'] or '' }}"/>
+                                            </div>
+                                            <div class="col-xs-2">
                                                 <div>
                                                     <label><input type="checkbox" name="sortByRate" value="1" @if ( $filter['sortByRate']??0) checked @endif >热度排序</label>
                                                 </div>

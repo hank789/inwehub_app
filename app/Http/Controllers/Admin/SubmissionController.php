@@ -32,7 +32,9 @@ class SubmissionController extends AdminController
         if( isset($filter['user_id']) &&  $filter['user_id'] > 0 ){
             $query->where('user_id','=',$filter['user_id']);
         }
-
+        if (isset($filter['group_id']) && $filter['group_id']) {
+            $query->where('group_id','=',$filter['group_id']);
+        }
         /*问题标题过滤*/
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('data','like', '%'.$filter['word'].'%');
