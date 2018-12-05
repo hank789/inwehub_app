@@ -8,6 +8,7 @@ use App\Events\Frontend\Answer\Answered;
 use App\Events\Frontend\System\ImportantNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\LogUserViewTags;
 use App\Jobs\NewSubmissionJob;
 use App\Jobs\SaveActivity;
 use App\Jobs\UpdateSubmissionRate;
@@ -621,7 +622,7 @@ trait BaseController {
                 if ($user->id == $group->user_id) {
                     $return['group']['is_joined'] = 3;
                 }
-                $return['group']['subscribers'] = $group->getHotIndex();
+                //$return['group']['subscribers'] = $group->getHotIndex();
 
                 if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
                     //私有圈子
@@ -634,8 +635,7 @@ trait BaseController {
         if ($request->input('inwehub_user_device') == 'www' && $return['type'] == 'article') {
             $return['data']['description'] = QuillLogic::parseHtml($return['data']['description']);
         }
-
-        $submission->increment('views');
+        $this->dispatch(new LogUserViewTags($user->id,$submission));
         $this->calculationSubmissionRate($submission->id);
 
         $upvote = Support::where('user_id',$user->id)
@@ -652,22 +652,13 @@ trait BaseController {
             ->exists();
         $support_uids = Support::where('supportable_id',$submission->id)
             ->where('supportable_type',Submission::class)->take(20)->pluck('user_id');
-        $supporters = [];
-        if ($support_uids) {
-            foreach ($support_uids as $support_uid) {
-                $supporter = User::find($support_uid);
-                $supporters[] = [
-                    'name' => $supporter->name,
-                    'uuid' => $supporter->uuid
-                ];
-            }
-        }
+
         $attention_user = Attention::where("user_id",'=',$user->id)->where('source_type','=',get_class($user))->where('source_id','=',$submission->user_id)->first();
         $return['is_followed_author'] = $attention_user ?1 :0;
         $return['is_upvoted'] = $upvote ? 1 : 0;
         $return['is_downvoted'] = $downvote ? 1 : 0;
         $return['is_bookmark'] = $bookmark ? 1: 0;
-        $return['supporter_list'] = $supporters;
+        $return['supporter_list'] = [];
         $return['support_description'] = $downvote?$submission->getDownvoteRateDesc():$submission->getSupportRateDesc($upvote);
         $return += $submission->getSupportTypeTip();
         $return['support_percent'] = $submission->getSupportPercent();

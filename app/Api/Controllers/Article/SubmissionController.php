@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\LogUserViewTags;
 use App\Jobs\NewSubmissionJob;
 use App\Logic\QuillLogic;
 use App\Models\Answer;
@@ -282,7 +283,6 @@ class SubmissionController extends Controller {
         }
         $return = $this->formatSubmissionInfo($request,$submission,$user);
 
-        $this->logUserViewTags($user->id,$submission->tags()->get());
         $this->doing($user,$actionName,get_class($submission),$submission->id,$submission->type == 'link'?$submission->data['title']:$submission->title,
             '',0,0,'',$actionUrl);
         return self::createJsonData(true,$return);
