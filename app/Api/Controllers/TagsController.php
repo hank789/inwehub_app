@@ -18,6 +18,7 @@ use App\Models\TagCategoryRel;
 use App\Models\Taggable;
 use App\Models\User;
 use App\Models\UserTag;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -108,6 +109,12 @@ class TagsController extends Controller {
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
         $data = $this->getTagProductInfo($tag);
+        $data['seo'] = [
+            'title' => $tag->name,
+            'description' => $tag->summary,
+            'keywords' => implode(',',array_column($data['categories'],'name')+array_column($data['vendor']?:[],'name')),
+            'published_time' => (new Carbon($tag->created_at))->toAtomString()
+        ];
         $this->doing($user,Doing::ACTION_VIEW_DIANPING_PRODUCT_INFO,'',0,$tag->name,'',0,0,'',config('app.mobile_url').'#/dianping/product/'.rawurlencode($tag->name));
         return self::createJsonData(true,$data);
     }
