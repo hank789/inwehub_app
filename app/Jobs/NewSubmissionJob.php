@@ -163,6 +163,10 @@ class NewSubmissionJob implements ShouldQueue
                     'submission_title'=>$submission->title
                 ])
                 ->log(($submission->hide?'匿名':$user->name).'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_REVIEW);
+            $data = $submission->data;
+            $data['keywords'] = implode(',',$submission->tags->pluck('name')->toArray());
+            $submission->data = $data;
+            $submission->save();
             if (!$submission->hide) {
                 //关注的用户接收通知
                 $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();
