@@ -33,7 +33,14 @@ class ProductController extends Controller {
         $this->validate($request,$validateRules);
         $oauth = $JWTAuth->parseToken()->toUser();
         $tag_name = $request->input('tag_name');
-        $tag = Tag::getTagByName($tag_name);
+        if (is_numeric($tag_name)) {
+            $tag = Tag::find($tag_name);
+            if (!$tag) {
+                $tag = Tag::getTagByName($tag_name);
+            }
+        } else {
+            $tag = Tag::getTagByName($tag_name);
+        }
         if (!$tag) {
             throw new ApiException(ApiException::PRODUCT_TAG_NOT_EXIST);
         }
