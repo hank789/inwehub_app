@@ -67,8 +67,7 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
             CreditModel::KEY_COMMUNITY_ASK_FOLLOWED,
             CreditModel::KEY_COMMUNITY_ANSWER_INVITED,
             CreditModel::KEY_NEW_UPVOTE,
-            CreditModel::KEY_READHUB_NEW_SUBMISSION,
-            CreditModel::KEY_READHUB_SUBMISSION_COMMENT,
+            CreditModel::KEY_READHUB_NEW_SUBMISSION
         ];
         if (!in_array($this->creditLog->action,$notBroadcasts)) {
             $via[] = 'broadcast';
