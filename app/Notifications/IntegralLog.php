@@ -53,6 +53,7 @@ class IntegralLog extends Notification implements ShouldQueue,ShouldBroadcast
             CreditModel::KEY_COMMUNITY_ANSWER_COMMENT,
             CreditModel::KEY_READHUB_SUBMISSION_COMMENT,
             CreditModel::KEY_RATE_ANSWER_GOOD,
+            CreditModel::KEY_NEW_COMMENT,
             CreditModel::KEY_RATE_ANSWER_BAD,
             CreditModel::KEY_ANSWER_UPVOTE,
             CreditModel::KEY_COMMUNITY_ANSWER_UPVOTE,
