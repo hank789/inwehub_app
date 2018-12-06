@@ -563,6 +563,14 @@ trait BaseController {
         $data = $tag->toArray();
         $data['review_count'] = $reviewInfo['review_count'];
         $data['review_average_rate'] = $reviewInfo['review_average_rate'];
+        $submissions = Submission::selectRaw('count(*) as total,rate_star')->where('status',1)->where('category_id',$tag->id)->groupBy('rate_star')->get();
+        foreach ($submissions as $submission) {
+            $data['review_rate_info'][] = [
+                'rate_star' => $submission->rate_star,
+                'count'=> $submission->total
+            ];
+        }
+
         $data['related_tags'] = $tag->relationReviews(4);
         $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
         $cids = [];
