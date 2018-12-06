@@ -626,7 +626,7 @@ trait BaseController {
 
                 if ($group->public == 0 && in_array($return['group']['is_joined'],[-1,0,2]) ) {
                     //私有圈子
-                    return self::createJsonData(true,$return);
+                    return $return;
                 }
             } else {
                 $return['group']['subscribers'] = $group->getHotIndex() + User::count();
