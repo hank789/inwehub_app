@@ -67,6 +67,15 @@ class AtomPosts extends Command
                 $image_url   = '';
                 $author_name = '';
                 $author_link = '';
+                $published_at = new DateTime();
+                if (strlen((string)$value->published) > 0) {
+                    $published_at = new DateTime($value->published);
+                } elseif (strlen((string)$value->updated) > 0) {
+                    $published_at = new DateTime($value->updated);
+                }
+                if ($published_at->getTimestamp() <= strtotime('-7 days')) {
+                    continue;
+                }
 
                 $dom = new Dom();
                 $dom->load($value->content);
@@ -96,13 +105,6 @@ class AtomPosts extends Command
                 if ($value->author) {
                     $author_name = $value->author->name;
                     $author_link = $value->author->uri;
-                }
-
-                $published_at = new DateTime();
-                if (strlen((string)$value->published) > 0) {
-                    $published_at = new DateTime($value->published);
-                } elseif (strlen((string)$value->updated) > 0) {
-                    $published_at = new DateTime($value->updated);
                 }
 
                 if (empty($image_url)) {
