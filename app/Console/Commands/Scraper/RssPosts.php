@@ -63,6 +63,9 @@ class RssPosts extends Command
                 $author       = '';
                 $article_tags = [];
                 $this->info($value->title);
+                if (strtotime($value->pubDate) <= strtotime('-7 days')) {
+                    continue;
+                }
                 $dom = new Dom();
                 $dom->load($value->description);
 
