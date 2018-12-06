@@ -566,10 +566,8 @@ trait BaseController {
         $submissions = Submission::selectRaw('count(*) as total,rate_star')->where('status',1)->where('category_id',$tag->id)->groupBy('rate_star')->get();
         foreach ($submissions as $submission) {
             $data['review_rate_info'][] = [
-                [
-                    'rate_star' => $submission->rate_star,
-                    'count'=> $submission->total
-                ]
+                'rate_star' => $submission->rate_star,
+                'count'=> $submission->total
             ];
         }
 
