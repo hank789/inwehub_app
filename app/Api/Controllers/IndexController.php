@@ -411,6 +411,7 @@ class IndexController extends Controller {
 
     public function myCommentList(Request $request){
         $uuid = $request->input('uuid');
+        $loginUser = $request->user();
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
             if (!$user) {
@@ -460,7 +461,7 @@ class IndexController extends Controller {
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                     if ($submission->type == 'review') {
                         $comment_url = '/dianping/comment/'.$submission->slug;
-                    } elseif ($user->uuid != $uuid && !$submission->group->public) {
+                    } elseif ($user->uuid != $loginUser->uuid && !$submission->group->public) {
                         continue;
                     }
                     break;
