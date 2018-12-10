@@ -429,11 +429,11 @@ class IndexController extends Controller {
         }
         $comments = $user->comments()->orderBy('id','desc')->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = [];
-
         $origin_title = '';
         $comment_url = '';
         $type = 1;
         foreach ($comments as $comment) {
+            $continue = false;
             switch ($comment->source_type) {
                 case 'App\Models\Article':
                     $source = $comment->source;
@@ -452,6 +452,7 @@ class IndexController extends Controller {
                     }
                     break;
                 case 'App\Models\Readhub\Comment':
+                    $continue = true;
                     continue;
                     $type = 2;
                     $readhub_comment = Comment::find($comment->source_id);
@@ -463,24 +464,30 @@ class IndexController extends Controller {
                 case 'App\Models\Submission':
                     $type = 2;
                     $submission = Submission::find($comment->source_id);
-                    if (!$submission) continue;
+                    if (!$submission) {
+                        $continue = true;
+                        continue;
+                    }
                     $origin_title = ($submission->type == 'review'?'点评:':'动态:').$submission->formatTitle();
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                     if ($submission->type == 'review') {
                         $comment_url = '/dianping/comment/'.$submission->slug;
                     } elseif ($user->uuid != $loginUser->uuid && !$submission->group->public) {
+                        $continue = true;
                         continue;
                     }
                     break;
             }
-            $return[] = [
-                'id' => $comment->id,
-                'type'    => $type,
-                'content' => $comment->formatContent(),
-                'origin_title' => $origin_title,
-                'comment_url'  => $comment_url,
-                'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
-            ];
+            if (!$continue) {
+                $return[] = [
+                    'id' => $comment->id,
+                    'type'    => $type,
+                    'content' => $comment->formatContent(),
+                    'origin_title' => $origin_title,
+                    'comment_url'  => $comment_url,
+                    'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
+                ];
+            }
         }
         $list = $comments->toArray();
         $list['data'] = $return;
