@@ -409,9 +409,16 @@ class IndexController extends Controller {
         return self::createJsonData(true, $result);
     }
 
-    public function myCommentList(Request $request){
+    public function myCommentList(Request $request, JWTAuth $JWTAuth){
         $uuid = $request->input('uuid');
-        $loginUser = $request->user();
+        try{
+            $loginUser = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $loginUser = new \stdClass();
+            $loginUser->id = 0;
+            $loginUser->name = '游客';
+            $loginUser->uuid = 0;
+        }
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
             if (!$user) {
