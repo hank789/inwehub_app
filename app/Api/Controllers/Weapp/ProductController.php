@@ -82,6 +82,26 @@ class ProductController extends Controller {
         return self::createJsonData(true, $return);
     }
 
+    public function myReviewList(Request $request, JWTAuth $JWTAuth) {
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            return self::createJsonData(true,Submission::where('user_id',-1)->paginate(Config::get('inwehub.api_data_page_size'))->toArray());
+        }
+        if (empty($user->mobile)) {
+            return self::createJsonData(true,Submission::where('user_id',-1)->paginate(Config::get('inwehub.api_data_page_size'))->toArray());
+        }
+        $submissions = Submission::where('user_id',$user->id)->where('type','review')->orderBy('id','DESC')->paginate(Config::get('inwehub.api_data_page_size'));
+        $return = $submissions->toArray();
+        $list = [];
+        foreach ($submissions as $submission) {
+            $list[] = $submission->formatListItem($user, false);
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
+    }
+
     public function reviewInfo(Request $request, JWTAuth $JWTAuth) {
         $this->validate($request, [
             'slug' => 'required',
