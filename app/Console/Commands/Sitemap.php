@@ -44,22 +44,8 @@ class Sitemap extends Command
             $date = '2016-12-12 00:00:00';
         }
         $this->info($date);
-        $recommendReads = RecommendRead::where('audit_status',1)->orderBy('id','desc')->get();
         $urls = [];
-        foreach ($recommendReads as $recommendRead) {
-            switch ($recommendRead->read_type) {
-                case RecommendRead::READ_TYPE_SUBMISSION:
-                    $count++;
-                    $submission = Submission::find($recommendRead->source_id);
-                    $url = 'https://www.inwehub.com/c/'.$submission->category_id.'/'.$submission->slug;
-                    $sitemap->add($url, (new Carbon($submission->created_at))->toAtomString(), '1.0', 'monthly');
-                    if (strtotime($recommendRead->created_at) >= strtotime($date)) {
-                        $urls[] = $url;
-                    }
-                    break;
-            }
 
-        }
         $questions = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2)->orderBy('id','desc')->get();
         foreach ($questions as $question) {
             $count++;
@@ -79,6 +65,22 @@ class Sitemap extends Command
                     }
                 }
             }
+        }
+
+        $recommendReads = RecommendRead::where('audit_status',1)->orderBy('id','desc')->get();
+        foreach ($recommendReads as $recommendRead) {
+            switch ($recommendRead->read_type) {
+                case RecommendRead::READ_TYPE_SUBMISSION:
+                    $count++;
+                    $submission = Submission::find($recommendRead->source_id);
+                    $url = 'https://www.inwehub.com/c/'.$submission->category_id.'/'.$submission->slug;
+                    $sitemap->add($url, (new Carbon($submission->created_at))->toAtomString(), '1.0', 'monthly');
+                    if (strtotime($recommendRead->created_at) >= strtotime($date)) {
+                        $urls[] = $url;
+                    }
+                    break;
+            }
+
         }
 
         //点评产品详情
