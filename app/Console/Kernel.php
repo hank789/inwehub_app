@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel
         Commands\User\RefreshUserLoginToken::class,
         Commands\InitEs::class,
         Commands\Sitemap::class,
+        Commands\SitemapProduct::class,
 
         //定时任务
         Commands\Crontab\CalcGroupHot::class,
@@ -121,6 +122,8 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:indeed:jobs')->cron('55 7,10,13,15,17,21 * * *');
             $schedule->command('crontab:report:daily:user-active')->hourlyAt(59);
             $schedule->command('crontab:report:daily:register')->dailyAt('09:00');
+            $schedule->command('sitemap:generate')->dailyAt('23:00');
+            $schedule->command('sitemap:generate:product')->dailyAt('23:00');
             $schedule->command('crontab:report:daily:recommend')->cron('59 8,11,14,17,21,23 * * *');
             $schedule->command('crontab:report:daily:read')->hourlyAt(59);
             $schedule->command('crontab:refresh:www:cache')->twiceDaily(12,19);
