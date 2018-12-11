@@ -9,6 +9,7 @@ use App\Models\Answer;
 use App\Models\Question;
 use App\Models\RecommendRead;
 use App\Models\Submission;
+use App\Models\TagCategoryRel;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -19,7 +20,7 @@ class Sitemap extends Command
      *
      * @var string
      */
-    protected $signature = 'sitemap:generate';
+    protected $signature = 'sitemap:generate {date?}';
 
     /**
      * The console command description.
@@ -37,7 +38,13 @@ class Sitemap extends Command
     {
         $sitemap = \App::make("sitemap");
         $count = 0;
-        $recommendReads = RecommendRead::where('audit_status',1)->get();
+        $date = $this->argument('date');
+        //$date = '2018-12-03 00:00:00';
+        if (!$date) {
+            $date = '2016-12-12 00:00:00';
+        }
+        $this->info($date);
+        $recommendReads = RecommendRead::where('audit_status',1)->orderBy('id','desc')->get();
         $urls = [];
         foreach ($recommendReads as $recommendRead) {
             switch ($recommendRead->read_type) {
@@ -46,25 +53,63 @@ class Sitemap extends Command
                     $submission = Submission::find($recommendRead->source_id);
                     $url = 'https://www.inwehub.com/c/'.$submission->category_id.'/'.$submission->slug;
                     $sitemap->add($url, (new Carbon($submission->created_at))->toAtomString(), '1.0', 'monthly');
-                    $urls[] = $url;
+                    if (strtotime($recommendRead->created_at) >= strtotime($date)) {
+                        $urls[] = $url;
+                    }
                     break;
             }
 
         }
-        $questions = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2)->get();
+        $questions = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2)->orderBy('id','desc')->get();
         foreach ($questions as $question) {
             $count++;
             $url = 'https://www.inwehub.com/askCommunity/interaction/answers/'.$question->id;
             $sitemap->add($url, (new Carbon($question->created_at))->toAtomString(), '1.0', 'monthly');
-            $urls[] = $url;
+            if (strtotime($question->created_at) >= strtotime($date)) {
+                $urls[] = $url;
+            }
             if ($question->question_type == 2) {
                 $answers = Answer::where('question_id',$question->id)->where('status',1)->get();
                 foreach ($answers as $answer) {
                     $count++;
                     $url = 'https://www.inwehub.com/askCommunity/interaction/'.$answer->id;
                     $sitemap->add($url, (new Carbon($answer->created_at))->toAtomString(), '1.0', 'monthly');
+                    if (strtotime($answer->created_at) >= strtotime($date)) {
+                        $urls[] = $url;
+                    }
+                }
+            }
+        }
+
+        //点评产品详情
+        $page = 1;
+        $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->orderBy('tag_id','desc')->groupBy('tag_id');
+        $tags = $query->simplePaginate(100);
+        while ($tags->count > 0) {
+            foreach ($tags as $tag) {
+                $count++;
+                $url = 'https://www.inwehub.com/dianping/product/'.rawurlencode($tag->tag->name);
+                $sitemap->add($url, (new Carbon($tag->tag->created_at))->toAtomString(), '1.0', 'monthly');
+                if (strtotime($tag->tag->created_at) >= strtotime($date)) {
                     $urls[] = $url;
                 }
+                $page ++;
+                $tags = $query->simplePaginate(100,['*'],'page',$page);
+            }
+        }
+        //点评详情
+        $query = Submission::where('type','review')->where('status',1)->orderBy('id','desc');
+        $reviewSubmissions = $query->simplePaginate(100);
+        while ($reviewSubmissions->count > 0) {
+            foreach ($reviewSubmissions as $reviewSubmission) {
+                $count++;
+                $url = 'https://www.inwehub.com/dianping/comment/'.$reviewSubmission->slug;
+                $sitemap->add($url, (new Carbon($reviewSubmission->created_at))->toAtomString(), '1.0', 'monthly');
+                if (strtotime($reviewSubmission->created_at) >= strtotime($date)) {
+                    $urls[] = $url;
+                }
+                $page ++;
+                $reviewSubmissions = $query->simplePaginate(100,['*'],'page',$page);
             }
         }
 

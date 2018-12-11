@@ -312,7 +312,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Withdraw'], 
 //加载标签
 Route::post('tags/load','TagsController@load');
 //标签
-Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], function() {
+Route::group(['prefix'=>'tags'], function() {
 
     //标签详情
     Route::post('tagInfo','TagsController@tagInfo');
@@ -331,8 +331,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'prefix'=>'tags'], functio
     Route::post('productList','TagsController@productList');
     Route::post('getRecommendReview','TagsController@getRecommendReview');
     Route::post('getProductCategories','TagsController@getProductCategories');
-    Route::post('submitProduct','TagsController@submitProduct');
-    Route::post('feedbackProduct','TagsController@feedbackProduct');
+    Route::post('submitProduct','TagsController@submitProduct')->middleware('jwt.auth');
+    Route::post('feedbackProduct','TagsController@feedbackProduct')->middleware('jwt.auth');
 
 });
 
@@ -533,6 +533,8 @@ Route::group(['prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function
     Route::post('product/downvoteReview','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
     Route::post('product/upvoteComment','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
     Route::post('product/support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware(['jwt.weappAuth']);
+    Route::get('product/myReview','ReadhubController@mySubmission')->middleware(['jwt.weappAuth']);
+
 });
 
 Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespace'=>'Weapp'], function() {

@@ -10,11 +10,12 @@ use App\Models\Submission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Tymon\JWTAuth\JWTAuth;
 
 class ReadhubController extends Controller
 {
 
-    public function mySubmission(Request $request){
+    public function mySubmission(Request $request,JWTAuth $JWTAuth){
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
         $uuid = $request->input('uuid');
@@ -27,6 +28,19 @@ class ReadhubController extends Controller
             }
         } else {
             $user = $request->user();
+        }
+
+        if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+            $oauth = $JWTAuth->parseToken()->toUser();
+            if ($oauth->user_id) {
+                $user = $oauth->user;
+                $loginUser = $user;
+            } else {
+                return self::createJsonData(true,Submission::where('user_id',-1)->paginate(Config::get('inwehub.api_data_page_size'))->toArray());
+            }
+            if (empty($user->mobile)) {
+                return self::createJsonData(true,Submission::where('user_id',-1)->paginate(Config::get('inwehub.api_data_page_size'))->toArray());
+            }
         }
 
         $query = Submission::where('user_id',$user->id);
