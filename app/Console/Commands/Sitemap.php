@@ -98,9 +98,9 @@ class Sitemap extends Command
                 if (strtotime($tag->tag->created_at) >= strtotime($date)) {
                     $urls[] = $url;
                 }
-                $page ++;
-                $tags = $query->simplePaginate(100,['*'],'page',$page);
             }
+            $page ++;
+            $tags = $query->simplePaginate(100,['*'],'page',$page);
         }
         //点评详情
         $query = Submission::where('type','review')->where('status',1)->orderBy('id','desc');
@@ -114,9 +114,9 @@ class Sitemap extends Command
                 if (strtotime($reviewSubmission->created_at) >= strtotime($date)) {
                     $urls[] = $url;
                 }
-                $page ++;
-                $reviewSubmissions = $query->simplePaginate(100,['*'],'page',$page);
             }
+            $page ++;
+            $reviewSubmissions = $query->simplePaginate(100,['*'],'page',$page);
         }
 
         $sitemap->store('xml', 'sitemap');
