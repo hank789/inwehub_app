@@ -793,6 +793,7 @@ trait BaseController {
             $data = $this->uploadImgs($request->input('photos'));
             $data['category_ids'] = $request->input('category_ids');
             $data['author_identity'] = $request->input('identity');
+            $data['from_source'] = $request->input('inwehub_user_device');
             if (!is_array($data['author_identity'])) {
                 $data['author_identity'] = [$data['author_identity']];
             }
