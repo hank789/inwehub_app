@@ -90,17 +90,8 @@ class JobsController extends AdminController
     public function destroy(Request $request)
     {
         $ids = $request->input('ids');
-        $ignoreIds = $request->input('ignoreIds',[]);
         if ($ids) {
-            $ids = array_unique($ids);
-            $ignoreIds = array_unique($ignoreIds);
-            if ($ignoreIds) {
-                foreach ($ids as $key=>$id) {
-                    if (in_array($id,$ignoreIds)) {
-                        unset($ids[$key]);
-                    }
-                }
-            }
+            $ids = explode(',',$ids);
             Jobs::whereIn('id',$ids)->where('status',1)->update(['status'=>3]);
         }
         return $this->success(url()->previous(),'成功');

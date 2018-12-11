@@ -46,6 +46,9 @@
                                     <tr>
                                         <th>标题</th>
                                     </tr>
+                                    @php
+                                        $jobIds = ''
+                                    @endphp
                                     @foreach($articles as $article)
                                         <tr id="submission_{{ $article->id }}">
                                             <td style="white-space: normal;">
@@ -62,6 +65,9 @@
                                                         <a class="btn btn-default btn-sm btn-delete" data-toggle="tooltip" title="删除文章" data-source_id = "{{ $article->id }}"><i class="fa fa-trash-o"></i></a>
                                                     @endif
                                                 </div>
+                                                @php
+                                                    $jobIds .= ','.$article->id
+                                                @endphp
                                             </td>
                                         </tr>
                                     @endforeach
@@ -73,7 +79,7 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="btn-group">
-                                        <a href="javascript:void(0)" onclick="deleteRead()" class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除已读">删除已读</a>
+                                        <a href="javascript:void(0)" onclick="deleteRead()" class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除当前页">删除当前页待发布</a>
                                     </div>
                                 </div>
                                 <div class="col-sm-9">
@@ -144,6 +150,7 @@
         set_active_menu('operations',"{{ route('admin.scraper.jobs.index') }}");
         var readArticle = [];
         var publishArticle = [];
+        var jobIds = "{{$jobIds}}";
         function setSupportType(id,obj) {
             $.post('/admin/scraper/jobs/setSupportType',{id: id, support_type: obj.value},function(msg){
 
@@ -157,14 +164,11 @@
             $('#article_html').css('display','none');
         }
         function deleteRead() {
-            if(!confirm('确认删除已读信息？')){
+            if(!confirm('确认删除当前页信息？')){
                 return false;
             }
-            $.post('/admin/scraper/jobs/destroy',{ids: readArticle, ignoreIds: publishArticle},function(msg){
-                readArticle.forEach(function (item, index) {
-                    $("#submission_" + item).css('display','none');
-                });
-                readArticle = [];
+            $.post('/admin/scraper/jobs/destroy',{ids: jobIds},function(msg){
+                window.location.reload()
             });
         }
         $(function(){

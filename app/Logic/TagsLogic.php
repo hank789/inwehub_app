@@ -72,7 +72,7 @@ class TagsLogic {
         foreach($question_c_arr as $category){
             $query = $category->tags();
             if(trim($word)){
-                $query = $query->where('name','like','%'.$word.'%');
+                $query = $query->where('name','like','%'.$word.'%')->orderByRaw('case when name like "'.$word.'" then 0 else 2 end');
             }
             $result = $query->take(100)->get();
             $item = [];
