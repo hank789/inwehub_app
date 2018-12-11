@@ -69,6 +69,7 @@
                                         <th>标签</th>
                                         <th>浏览数</th>
                                         <th>匿名</th>
+                                        <th>来源</th>
                                         <th>发布者</th>
                                         <th>状态</th>
                                     </tr>
@@ -108,6 +109,7 @@
                                             </td>
                                             <td>{{ $submission->views }}</td>
                                             <td> {{ $submission->hide ? '匿名':'公开' }}</td>
+                                            <td>{{ $submission->data['from_source']??'' }}</td>
                                             <td>{{ $submission->owner->name }}</td>
                                             <td><span class="label @if($submission->status===0) label-warning  @else label-success @endif">{{ trans_common_status($submission->status) }}</span> </td>
                                         </tr>
