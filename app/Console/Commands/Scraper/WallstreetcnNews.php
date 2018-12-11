@@ -5,6 +5,7 @@
  * @email:    hank.HuiWang@gmail.com
  */
 
+use App\Events\Frontend\System\OperationNotify;
 use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
 use App\Models\Submission;
@@ -33,6 +34,8 @@ class WallstreetcnNews extends Command {
     protected $apiBase = 'https://api-prod.wallstreetcn.com/apiv1/content/themes/stream/';
 
     protected $category;
+
+    protected $articleCount;
     /**
      * Create a new command instance.
      *
@@ -86,6 +89,7 @@ class WallstreetcnNews extends Command {
                 $nextCursor = $this->doScraper($this->apiBase.$url.'?limit=20&cursor='.$nextCursor.'&type=newest',$url2['group'],$url2['author']);
             }
         }
+        event(new OperationNotify('抓取了华尔街见闻'.$this->articleCount.'篇文章'));
     }
 
     public function doScraper($url,$group_id,$author) {
@@ -140,6 +144,7 @@ class WallstreetcnNews extends Command {
                 'data' => $data,
                 'views' => 1,
             ]);
+            $this->articleCount++;
             Redis::connection()->hset('voten:submission:url', $item['resource']['source_uri'], $submission->id);
             dispatch((new NewSubmissionJob($submission->id,true)));
         }
