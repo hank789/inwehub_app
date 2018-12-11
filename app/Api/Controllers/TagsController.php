@@ -71,17 +71,24 @@ class TagsController extends Controller {
         return self::createJsonData(true,$data);
     }
 
-    public function tagInfo(Request $request){
+    public function tagInfo(Request $request, JWTAuth $JWTAuth){
         $validateRules = [
             'tag_name' => 'required'
         ];
 
         $this->validate($request,$validateRules);
-        $loginUser = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+            $user->mobile = '';
+        }
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
         $is_followed = 0;
-        $followAttention = Attention::where('user_id',$loginUser->id)->where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->first();
+        $followAttention = Attention::where('user_id',$user->id)->where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->first();
         if ($followAttention) $is_followed = 1;
         $attentions = Attention::where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->simplePaginate(10);
         $attentionUsers = [];
@@ -95,16 +102,23 @@ class TagsController extends Controller {
         $data = $tag->toArray();
         $data['is_followed'] = $is_followed;
         $data['followed_users'] = $attentionUsers;
-        $this->logUserViewTags($loginUser->id,[$tag]);
+        $this->logUserViewTags($user->id,[$tag]);
         return self::createJsonData(true,$data);
     }
 
     //产品服务详情
-    public function productInfo(Request $request) {
+    public function productInfo(Request $request, JWTAuth $JWTAuth) {
         $validateRules = [
             'tag_name' => 'required'
         ];
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+            $user->mobile = '';
+        }
         $this->validate($request,$validateRules);
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
@@ -120,7 +134,7 @@ class TagsController extends Controller {
     }
 
     //产品点评列表
-    public function productReviewList(Request $request) {
+    public function productReviewList(Request $request,JWTAuth $JWTAuth) {
         $validateRules = [
             'tag_name' => 'required'
         ];
@@ -130,7 +144,14 @@ class TagsController extends Controller {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
 
         $tag = Tag::getTagByName($tag_name);
-        $user = $request->user();
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+            $user->mobile = '';
+        }
 
         $query = Submission::where('status',1)->where('category_id',$tag->id);
         $submissions = $query->orderBy('is_recommend','desc')->orderBy('id','desc')->paginate($perPage);
