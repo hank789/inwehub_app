@@ -46,7 +46,7 @@ class Sitemap extends Command
         $this->info($date);
         $urls = [];
 
-        $questions = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2)->orderBy('id','desc')->get();
+        /*$questions = Question::where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2)->orderBy('id','desc')->get();
         foreach ($questions as $question) {
             $count++;
             $url = 'https://www.inwehub.com/askCommunity/interaction/answers/'.$question->id;
@@ -81,12 +81,12 @@ class Sitemap extends Command
                     break;
             }
 
-        }
+        }*/
 
         //点评产品详情
         $page = 1;
         $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->orderBy('tag_id','desc');
-        $tags = $query->simplePaginate(100);
+        $tags = $query->simplePaginate(100,['*'],'page',$page);
         $tagIds = [];
         while ($tags->count() > 0) {
             foreach ($tags as $tag) {
@@ -103,9 +103,9 @@ class Sitemap extends Command
             $tags = $query->simplePaginate(100,['*'],'page',$page);
         }
         //点评详情
-        $query = Submission::where('type','review')->where('status',1)->orderBy('id','desc');
-        $reviewSubmissions = $query->simplePaginate(100);
         $page = 1;
+        $query = Submission::where('type','review')->where('status',1)->orderBy('id','desc');
+        $reviewSubmissions = $query->simplePaginate(100,['*'],'page',$page);
         while ($reviewSubmissions->count() > 0) {
             foreach ($reviewSubmissions as $reviewSubmission) {
                 $count++;
