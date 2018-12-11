@@ -59,6 +59,118 @@ class SearchController extends Controller
         return self::createJsonData(true,['suggest'=>$suggest]);
     }
 
+    public function all(Request $request) {
+        $validateRules = [
+            'search_word' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $word = $request->input('search_word');
+        $perPage = 3;
+        $return = [
+            'submission' => [
+                'total' => 0,
+                'list'  => []
+            ],
+            'question' => [
+                'total' => 0,
+                'list'  => []
+            ],
+            'group' => [
+                'total' => 0,
+                'list'  => []
+            ],
+            'product' => [
+                'total' => 0,
+                'list'  => []
+            ],
+            'review' => [
+                'total' => 0,
+                'list'  => []
+            ]
+        ];
+        //搜索分享
+        $query = Submission::search(formatElasticSearchTitle($word))->where('status',1)->where('public',1);
+        if (config('app.env') == 'production') {
+            $query = $query->where('product_type',1);
+        }
+        $submissions = $query->orderBy('rate', 'desc')->paginate($perPage);
+        $return['submission']['total'] = $submissions->total();
+        foreach ($submissions as $submission) {
+            $return['submission']['list'][] = $submission->formatListItem($user);
+        }
+        //搜索问答
+        $questions = Question::search($word)->where(function($query) {$query->where('is_recommend',1)->where('question_type',1)->orWhere('question_type',2);})->orderBy('rate', 'desc')->paginate($perPage);
+        $return['question']['total'] = $questions->total();
+        foreach ($questions as $question) {
+            $return['question']['list'][] = $question->formatListItem();
+        }
+        //搜索圈子
+        $groups = Group::search($word)->where('audit_status',Group::AUDIT_STATUS_SUCCESS)->orderBy('subscribers', 'desc')->paginate($perPage);
+        $return['group']['total'] = $groups->total();
+        foreach ($groups as $group) {
+            $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->first();
+            $is_joined = -1;
+            if ($groupMember) {
+                $is_joined = $groupMember->audit_status;
+            }
+            if ($user->id == $group->user_id) {
+                $is_joined = 3;
+            }
+            $return['group']['list'][] = [
+                'id' => $group->id,
+                'name' => $group->name,
+                'description' => $group->description,
+                'logo' => $group->logo,
+                'public' => $group->public,
+                'subscribers' => $group->getHotIndex(),
+                'articles'    => $group->articles,
+                'is_joined'  => $is_joined,
+                'owner' => [
+                    'id' => $group->user->id,
+                    'uuid' => $group->user->uuid,
+                    'name' => $group->user->name,
+                    'avatar' => $group->user->avatar,
+                    'description' => $group->user->description,
+                    'is_expert' => $group->user->is_expert
+                ]
+            ];
+        }
+        //搜索产品
+        $query = Tag::search(formatElasticSearchTitle($word));
+        if (config('app.env') == 'production') {
+            $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
+                ->where('status',1);
+        }
+        $tags = $query->orderBy('reviews', 'desc')
+            ->paginate($perPage);
+        $return['product']['total'] = $tags->total();
+        foreach ($tags as $tag) {
+            $info = Tag::getReviewInfo($tag->id);
+            $return['product']['list'][] = [
+                'id' => $tag->id,
+                'name' => $tag->name,
+                'logo' => $tag->logo,
+                'review_count' => $info['review_count'],
+                'review_average_rate' => $info['review_average_rate']
+            ];
+        }
+        //搜索点评
+        $query = Submission::search(formatElasticSearchTitle($word))->where('status',1);
+        if (config('app.env') == 'production') {
+            $query = $query->where('product_type',2);
+        } else {
+            $query = $query->where('type','review');
+        }
+        $submissions = $query->orderBy('rate', 'desc')->paginate($perPage);
+        $return['review']['total'] = $submissions->total();
+        foreach ($submissions as $submission) {
+            $return['review']['list'][] = $submission->formatListItem($user,false);
+        }
+        $this->searchNotify($user,$word,'综合',$return['review']['total']+$return['product']['total']+$return['group']['total']+$return['question']['total']+$return['submission']['total']);
+        return self::createJsonData(true,$return);
+    }
+
     public function user(Request $request)
     {
         $validateRules = [

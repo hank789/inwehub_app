@@ -268,6 +268,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Task'], func
 });
 //搜索模块
 Route::group(['middleware' => ['jwt.auth','ban.user']], function() {
+    //综合搜索
+    Route::post('search/all','SearchController@all');
     //搜索用户
     Route::post('search/user','SearchController@user');
     //搜索标签
