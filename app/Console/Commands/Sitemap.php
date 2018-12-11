@@ -87,7 +87,7 @@ class Sitemap extends Command
         $page = 1;
         $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->orderBy('tag_id','desc')->groupBy('tag_id');
         $tags = $query->simplePaginate(100);
-        while ($tags->count > 0) {
+        while ($tags->count() > 0) {
             foreach ($tags as $tag) {
                 $count++;
                 $url = 'https://www.inwehub.com/dianping/product/'.rawurlencode($tag->tag->name);
@@ -102,7 +102,7 @@ class Sitemap extends Command
         //点评详情
         $query = Submission::where('type','review')->where('status',1)->orderBy('id','desc');
         $reviewSubmissions = $query->simplePaginate(100);
-        while ($reviewSubmissions->count > 0) {
+        while ($reviewSubmissions->count() > 0) {
             foreach ($reviewSubmissions as $reviewSubmission) {
                 $count++;
                 $url = 'https://www.inwehub.com/dianping/comment/'.$reviewSubmission->slug;
