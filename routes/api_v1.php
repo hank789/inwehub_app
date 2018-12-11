@@ -533,6 +533,8 @@ Route::group(['prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function
     Route::post('product/downvoteReview','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
     Route::post('product/upvoteComment','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
     Route::post('product/support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware(['jwt.weappAuth']);
+    Route::get('product/myReview','ReadhubController@mySubmission')->middleware(['jwt.weappAuth']);
+
 });
 
 Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespace'=>'Weapp'], function() {
