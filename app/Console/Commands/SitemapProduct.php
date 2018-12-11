@@ -64,7 +64,7 @@ class SitemapProduct extends Command
             $tags = $query->simplePaginate(500,['*'],'page',$page);
         }
 
-        $sitemap->store('xml', 'sitemap_product');
+        $sitemap->store('xml', 'sitemap_product2018');
         $this->info('共生成地址：'.$count);
         $newUrls = array_chunk($urls,2000);
         foreach ($newUrls as $newUrl) {

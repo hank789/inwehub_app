@@ -100,7 +100,7 @@ class Sitemap extends Command
             $reviewSubmissions = $query->simplePaginate(100,['*'],'page',$page);
         }
 
-        $sitemap->store('xml', 'sitemap');
+        $sitemap->store('xml', 'sitemap2018');
         $this->info('共生成地址：'.$count);
         $newUrls = array_chunk($urls,2000);
         foreach ($newUrls as $newUrl) {
