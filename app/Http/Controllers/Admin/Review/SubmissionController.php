@@ -46,6 +46,9 @@ class SubmissionController extends AdminController
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('data','like', '%'.$filter['word'].'%');
         }
+        if (isset($filter['showWeapp']) && $filter['showWeapp']) {
+            $query->where('data','like','%weapp_dianping%');
+        }
         if (isset($filter['sortByRate']) && $filter['sortByRate']) {
             $query->orderBy('rate','desc');
         }

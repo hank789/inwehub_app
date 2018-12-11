@@ -46,6 +46,8 @@
                                             <div class="col-xs-2">
                                                 <div>
                                                     <label><input type="checkbox" name="sortByRate" value="1" @if ( $filter['sortByRate']??0) checked @endif >热度排序</label>
+                                                    <label><input type="checkbox" name="showWeapp" value="1" @if ( $filter['showWeapp']??0) checked @endif >小程序</label>
+
                                                 </div>
                                             </div>
                                             <div class="col-xs-1">
