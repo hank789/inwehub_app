@@ -304,6 +304,14 @@ class TagsController extends Controller {
         $submissions = Submission::where('is_recommend',1)->where('status',1)->where('type','review')->orderBy('rate','desc')->simplePaginate($perPage);
         $return = $submissions->toArray();
         $list = [];
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+            $user->mobile = '';
+        }
         foreach ($submissions as $submission) {
             $reviewInfo = Tag::getReviewInfo($submission->category_id);
             $tag = Tag::find($submission->category_id);
@@ -331,7 +339,7 @@ class TagsController extends Controller {
             ];
         }
         $return['data'] = $list;
-        $this->doing($request->user(),Doing::ACTION_VIEW_DIANPING_INDEX,'',0,'');
+        $this->doing($user,Doing::ACTION_VIEW_DIANPING_INDEX,'',0,'');
         return self::createJsonData(true, $return);
     }
 
