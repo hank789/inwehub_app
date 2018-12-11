@@ -85,10 +85,13 @@ class Sitemap extends Command
 
         //点评产品详情
         $page = 1;
-        $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->orderBy('tag_id','desc')->groupBy('tag_id');
+        $query = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->orderBy('tag_id','desc');
         $tags = $query->simplePaginate(100);
+        $tagIds = [];
         while ($tags->count() > 0) {
             foreach ($tags as $tag) {
+                if (isset($tagIds[$tag->tag_id])) continue;
+                $tagIds[$tag->tag_id] = $tag->tag_id;
                 $count++;
                 $url = 'https://www.inwehub.com/dianping/product/'.rawurlencode($tag->tag->name);
                 $sitemap->add($url, (new Carbon($tag->tag->created_at))->toAtomString(), '1.0', 'monthly');
@@ -102,6 +105,7 @@ class Sitemap extends Command
         //点评详情
         $query = Submission::where('type','review')->where('status',1)->orderBy('id','desc');
         $reviewSubmissions = $query->simplePaginate(100);
+        $page = 1;
         while ($reviewSubmissions->count() > 0) {
             foreach ($reviewSubmissions as $reviewSubmission) {
                 $count++;
