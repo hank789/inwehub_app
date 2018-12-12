@@ -245,6 +245,7 @@ class Tag extends Model
         }
         $fields =  [
             'name' => strtolower($this->name),
+            'keywords' => strip_tags($this->description),
             'status' => $status,
             'reviews' => $this->reviews,
             'type' => $type
@@ -252,6 +253,7 @@ class Tag extends Model
         if (config('app.env') != 'production') {
             unset($fields['status']);
             unset($fields['type']);
+            unset($fields['keywords']);
         }
         return $fields;
     }

@@ -1,7 +1,6 @@
 @extends('admin/public/layout')
 
 @section('css')
-    <link href="{{ asset('/static/js/summernote/summernote.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
 @endsection
@@ -57,8 +56,8 @@
                             </div>
 
                             <div class="form-group @if ($errors->has('description')) has-error @endif">
-                                <label for="name">详细介绍(可不填)</label>
-                                <div id="tag_editor">{!! old('description',$tag->tag->description) !!}</div>
+                                <label for="name">关键词(供搜索用,多个以逗号隔开)</label>
+                                <textarea name="description" class="form-control" placeholder="关键词" style="height: 80px;">{{ old('description',$tag->tag->description) }}</textarea>
                                 @if ($errors->has('description')) <p class="help-block">{{ $errors->first('description') }}</p> @endif
                             </div>
 
@@ -76,7 +75,6 @@
 
                         </div>
                         <div class="box-footer">
-                            <input type="hidden" id="tag_editor_content"  name="description" value="{{ old('description',$tag->tag->description) }}" />
                             <button type="submit" class="btn btn-primary editor-submit" >保存</button>
                             <button type="reset" class="btn btn-success">重置</button>
                         </div>
@@ -88,29 +86,11 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('/static/js/summernote/summernote.min.js') }}"></script>
-    <script src="{{ asset('/static/js/summernote/lang/summernote-zh-CN.min.js') }}"></script>
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         $(function(){
             set_active_menu('manage_review',"{{ route('admin.review.product.index') }}");
             $('#category_id').select2();
-            $('#tag_editor').summernote({
-                lang: 'zh-CN',
-                height: 300,
-                placeholder:'完善话题详情',
-                toolbar: [ {!! config('inwehub.summernote.blog') !!} ],
-                callbacks: {
-                    onChange:function (contents, $editable) {
-                        var code = $(this).summernote("code");
-                        $("#tag_editor_content").val(code);
-                    },
-                    onImageUpload: function(files) {
-                        upload_editor_image(files[0],'tag_editor');
-                    }
-                }
-            });
-
         });
     </script>
 @endsection
