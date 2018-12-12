@@ -176,7 +176,7 @@ class ProductController extends AdminController
         $this->validate($request,$this->validateRules);
         $tag->name = $request->input('name');
         $tag->summary = $request->input('summary');
-        $tag->description = $request->input('description');
+        $tag->description = strip_tags($request->input('description'));
         if($request->hasFile('logo')){
             $file = $request->file('logo');
             $extension = $file->getClientOriginalExtension();

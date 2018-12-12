@@ -49,6 +49,7 @@
                                         <th>排序</th>
                                         <th>名称</th>
                                         <th>父类id</th>
+                                        <th>是否父分类</th>
                                         <th>标示</th>
                                         <th>创建时间</th>
                                         <th>状态</th>
@@ -61,6 +62,7 @@
                                             <td>{{ $category->sort }}</td>
                                             <td>{{ $category->name }}</td>
                                             <td>{{ $category->parent_id }}</td>
+                                            <td>{{ $category->grade }}</td>
                                             <td>{{ $category->slug }}</td>
                                             <td>{{ $category->created_at }}</td>
                                             <td><span class="label @if($category->status===0) label-danger  @else label-success @endif">{{ trans_common_status($category->status) }}</span> </td>
