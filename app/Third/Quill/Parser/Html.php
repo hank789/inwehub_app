@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Third\Quill\Parser;
 
+use App\Third\Quill\Delta\Html\Align;
 use App\Third\Quill\Delta\Html\Bold;
 use App\Third\Quill\Delta\Html\Compound;
 use App\Third\Quill\Delta\Html\CompoundImage;
@@ -54,6 +55,7 @@ class Html extends Parse implements ParserSplitInterface, ParserAttributeInterfa
         $this->class_delta_link = Link::class;
         $this->class_delta_strike = Strike::class;
         $this->class_delta_video = Video::class;
+        $this->class_delta_align = Align::class;
     }
 
     /**

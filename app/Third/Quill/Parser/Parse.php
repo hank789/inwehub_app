@@ -174,7 +174,9 @@ abstract class Parse implements ParserInterface
                                     case Options::ATTRIBUTE_UNDERLINE:
                                         $this->attributeUnderline($quill);
                                         break;
-
+                                    case Options::ATTRIBUTE_ALIGN:
+                                        $this->deltas[] = new $this->class_delta_align($quill['insert'], $quill['attributes']);
+                                        break;
                                     default:
                                         $this->insert($quill);
                                         break;
