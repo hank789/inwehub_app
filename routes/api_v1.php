@@ -321,9 +321,9 @@ Route::group(['prefix'=>'tags'], function() {
     //标签用户
     Route::post('users','TagsController@users');
     //标签问答
-    Route::post('questions','TagsController@questions');
+    Route::post('questions','TagsController@questions')->middleware('jwt.auth');
     //标签动态
-    Route::post('submissions','TagsController@submissions');
+    Route::post('submissions','TagsController@submissions')->middleware('jwt.auth');
     //提建议，谈工作，贺新春
     Route::post('getThreeAc','TagsController@getThreeAc');
 
