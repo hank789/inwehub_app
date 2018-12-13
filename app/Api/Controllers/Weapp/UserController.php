@@ -144,6 +144,7 @@ class UserController extends controller {
             $info['mobile'] = $user->mobile;
             $info['email'] = $user->email;
         }
+        event(new SystemNotify('用户完成微信认证: '.$oauth->user_id.'['.$oauth->nickname.'];设备:小程序'));
         return self::createJsonData(true,$info);
     }
 
@@ -214,6 +215,7 @@ class UserController extends controller {
             'mobile' => $phone,
             'email'  => ''
         ];
+        event(new SystemNotify('用户完成手机认证: '.$oauth->user_id.'['.$oauth->nickname.'];设备:小程序'));
         return self::createJsonData(true,$info);
     }
 
