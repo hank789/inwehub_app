@@ -55,7 +55,7 @@ class SearchController extends controller
             $return['data'] = $data;
         }
 
-        $this->searchNotify($oauth,$request->input('search_word'),'在栏目[产品]',',搜索结果'.$return['total']);
+        $this->searchNotify($oauth,$request->input('search_word'),'在栏目[产品]',',搜索结果'.$return['total']??$return['to']);
         return self::createJsonData(true, $return);
     }
 
