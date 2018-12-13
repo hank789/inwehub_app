@@ -59,7 +59,14 @@ class ProductController extends Controller {
         $tag_name = $request->input('tag_name');
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
 
-        $tag = Tag::getTagByName($tag_name);
+        if (is_numeric($tag_name)) {
+            $tag = Tag::find($tag_name);
+            if (!$tag) {
+                $tag = Tag::getTagByName($tag_name);
+            }
+        } else {
+            $tag = Tag::getTagByName($tag_name);
+        }
         if (!$tag) {
             throw new ApiException(ApiException::PRODUCT_TAG_NOT_EXIST);
         }
