@@ -239,67 +239,12 @@ class TagsController extends Controller {
 
     //产品列表
     public function productList(Request $request) {
-        $category_id = $request->input('category_id',0);
-        $orderBy = $request->input('orderBy',1);
-        $page = $request->input('page',1);
-        $cacheKey = 'tags:product_list_'.$category_id.'_'.$orderBy.'_'.$page;
-        $preCacheKey = '';
-        if ($page > 1) {
-            $preCacheKey = 'tags:product_list_'.$category_id.'_'.$orderBy.'_'.($page-1);
-        }
-        $return = Cache::get($cacheKey);
-        if (!$return) {
-            $query = TagCategoryRel::select(['tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
-            if ($category_id) {
-                $category = Category::find($category_id);
-                if ($category->grade == 1) {
-                    $children = Category::getChildrenIds($category_id);
-                    $children[] = $category_id;
-                    $query = $query->whereIn('category_id',array_unique($children));
-                } else {
-                    $query = $query->where('category_id',$category_id);
-                }
-            }
-            switch ($orderBy) {
-                case 1:
-                    $query = $query->orderBy('review_average_rate','desc');
-                    break;
-                case 2:
-                    $query = $query->orderBy('reviews','desc');
-                    break;
-                default:
-                    $query = $query->orderBy('updated_at','desc');
-                    break;
-            }
-            $tags = $query->distinct()->groupBy('tag_id')->simplePaginate(30);
-            $return = $tags->toArray();
-            $list = [];
-            $used = [];
-            $preCache = $preCacheKey?Cache::get($preCacheKey):'';
-            if ($preCache) {
-                $used = array_column($preCache['data'],'id');
-            }
-            foreach ($tags as $tag) {
-                if (in_array($tag->tag_id, $used)) continue;
-                $model = Tag::find($tag->tag_id);
-                $info = Tag::getReviewInfo($model->id);
-                $used[$tag->tag_id] = $tag->tag_id;
-                $list[] = [
-                    'id' => $model->id,
-                    'name' => $model->name,
-                    'logo' => $model->logo,
-                    'review_count' => $info['review_count'],
-                    'review_average_rate' => $info['review_average_rate']
-                ];
-            }
-            $return['data'] = $list;
-            Cache::forever($cacheKey,$return);
-        }
+        $return = $this->tagProductList($request);
         return self::createJsonData(true, $return);
     }
 
     //精华点评列表
-    public function getRecommendReview(Request $request) {
+    public function getRecommendReview(Request $request,JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $submissions = Submission::where('is_recommend',1)->where('status',1)->where('type','review')->orderBy('rate','desc')->simplePaginate($perPage);
         $return = $submissions->toArray();
