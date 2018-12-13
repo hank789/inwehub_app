@@ -64,73 +64,85 @@ class TagsLogic {
                 $loadDefaultTags = true;
                 break;
         }
-
-        $level = 2;
-        $question_c = Category::whereIn('slug',$category_name)->get()->pluck('id')->toArray();
-        $question_c_arr = Category::whereIn('parent_id',$question_c)->where('status',1)->orderBy('sort','asc')->get();
         $tags = [];
-        foreach($question_c_arr as $category){
-            $query = $category->tags();
-            if(trim($word)){
-                $query = $query->where('name','like','%'.$word.'%')->orderByRaw('case when name like "'.$word.'" then 0 else 2 end');
-            }
-            $result = $query->take(100)->get();
-            $item = [];
-            $children = [];
-            $item[$tagKey] = $category->id;
-            $item['text'] = $category->name;
-            foreach($result as $val){
-                $children[] = [
-                    $tagKey => $val->id,
-                    'text'  => $val->name
-                ];
-            }
-            $item['children'] = $children;
-            $tags[] = $item;
-
-        }
-        if(empty($tags)){
+        if ($tag_type == 'allC') {
             $level = 1;
-            //一维
-            if ($loadDefaultTags) {
-                $question_c[] = 0;
-            }
-            $tagQuery = TagCategoryRel::whereIn('tag_category_rel.category_id',$question_c)->leftJoin('tags','tag_id','=','tags.id');
-            if (trim($word)) {
-                $tagQuery = $tagQuery->where('name','like','%'.$word.'%');
-            }
-            $tags2 = $tagQuery->select('tags.id','tags.name')->distinct()->take(100)->get();
-
-            foreach ($tags2 as $tag) {
+            $tagsAll = Tag::where('name','like',$word.'%')->orderByRaw('case when name like "'.$word.'" then 0 else 2 end')->take(100)->get();
+            foreach ($tagsAll as $tag) {
                 $tags[] = [
                     $tagKey => $tag->id,
                     'text'  => $tag->name
                 ];
             }
-        }
-        //如果热门排序
-        if ($sort == 1) {
-            $tagIds = array_column($tags,$tagKey);
-            $query =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))
-                ->whereIn('tag_id',$tagIds);
-
-            $taggables = $query->groupBy('tag_id')
-                ->orderBy('total_num','desc')
-                ->get();
-            $tags = [];
-            foreach ($taggables as $taggable) {
-                $tagInfo = Tag::find($taggable->tag_id);
-                $tags[] = [
-                    $tagKey => $tagInfo->id,
-                    'text'  => $tagInfo->name
-                ];
-            }
         } else {
-            usort($tags, function ($a, $b) {
-                if (strlen($a['text'])==strlen($b['text'])) return 0;
-                return (strlen($a['text'])<strlen($b['text']))?-1:1;
-            });
+            $level = 2;
+            $question_c = Category::whereIn('slug',$category_name)->get()->pluck('id')->toArray();
+            $question_c_arr = Category::whereIn('parent_id',$question_c)->where('status',1)->orderBy('sort','asc')->get();
+
+            foreach($question_c_arr as $category){
+                $query = $category->tags();
+                if(trim($word)){
+                    $query = $query->where('name','like','%'.$word.'%')->orderByRaw('case when name like "'.$word.'" then 0 else 2 end');
+                }
+                $result = $query->take(100)->get();
+                $item = [];
+                $children = [];
+                $item[$tagKey] = $category->id;
+                $item['text'] = $category->name;
+                foreach($result as $val){
+                    $children[] = [
+                        $tagKey => $val->id,
+                        'text'  => $val->name
+                    ];
+                }
+                $item['children'] = $children;
+                $tags[] = $item;
+
+            }
+            if(empty($tags)){
+                $level = 1;
+                //一维
+                if ($loadDefaultTags) {
+                    $question_c[] = 0;
+                }
+                $tagQuery = TagCategoryRel::whereIn('tag_category_rel.category_id',$question_c)->leftJoin('tags','tag_id','=','tags.id');
+                if (trim($word)) {
+                    $tagQuery = $tagQuery->where('name','like','%'.$word.'%');
+                }
+                $tags2 = $tagQuery->select('tags.id','tags.name')->distinct()->take(100)->get();
+
+                foreach ($tags2 as $tag) {
+                    $tags[] = [
+                        $tagKey => $tag->id,
+                        'text'  => $tag->name
+                    ];
+                }
+            }
+            //如果热门排序
+            if ($sort == 1) {
+                $tagIds = array_column($tags,$tagKey);
+                $query =  Taggable::select('tag_id',DB::raw('COUNT(id) as total_num'))
+                    ->whereIn('tag_id',$tagIds);
+
+                $taggables = $query->groupBy('tag_id')
+                    ->orderBy('total_num','desc')
+                    ->get();
+                $tags = [];
+                foreach ($taggables as $taggable) {
+                    $tagInfo = Tag::find($taggable->tag_id);
+                    $tags[] = [
+                        $tagKey => $tagInfo->id,
+                        'text'  => $tagInfo->name
+                    ];
+                }
+            } else {
+                usort($tags, function ($a, $b) {
+                    if (strlen($a['text'])==strlen($b['text'])) return 0;
+                    return (strlen($a['text'])<strlen($b['text']))?-1:1;
+                });
+            }
         }
+
         $data = [];
         $data['tags'] = $tags;
         $data['level'] = $level;
