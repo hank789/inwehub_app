@@ -48,4 +48,6 @@ class Options
     public const ATTRIBUTE_SCRIPT_SUPER = 'super';
     public const ATTRIBUTE_STRIKE = 'strike';
     public const ATTRIBUTE_UNDERLINE = 'underline';
+    public const ATTRIBUTE_ALIGN = 'align';
+
 }
