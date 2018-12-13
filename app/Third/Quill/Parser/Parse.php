@@ -185,9 +185,6 @@ abstract class Parse implements ParserInterface
                         } else {
                             $this->compoundInsert($quill);
                         }
-                        if ($quill['insert']&&($quill['insert']=="\n" || $quill['insert']=="\n\n" || $quill['insert']=="\n\n\n")) {
-                            $this->insert(['insert'=>$quill['insert'],'attributes'=>[]]);
-                        }
                     } else {
                         if (is_string($quill['insert']) === true) {
                             $this->extendedInsert($quill);
