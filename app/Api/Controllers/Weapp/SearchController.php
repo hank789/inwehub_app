@@ -29,27 +29,33 @@ class SearchController extends controller
         ];
         $this->validate($request,$validateRules);
         $oauth = $JWTAuth->parseToken()->toUser();
-        $query = Tag::search(formatElasticSearchTitle($request->input('search_word')));
-        if (config('app.env') == 'production') {
-            $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
-                ->where('status',1);
+        $word = $request->input('search_word');
+        if ($word == '点评送咖啡') {
+            $return = $this->tagProductList($request);
+        } else {
+            $query = Tag::search(formatElasticSearchTitle($word));
+            if (config('app.env') == 'production') {
+                $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
+                    ->where('status',1);
+            }
+            $tags = $query->orderBy('reviews', 'desc')
+                ->paginate(Config::get('inwehub.api_data_page_size'));
+            $data = [];
+            foreach ($tags as $tag) {
+                $info = Tag::getReviewInfo($tag->id);
+                $data[] = [
+                    'id' => $tag->id,
+                    'name' => $tag->name,
+                    'logo' => $tag->logo,
+                    'review_count' => $info['review_count'],
+                    'review_average_rate' => $info['review_average_rate']
+                ];
+            }
+            $return = $tags->toArray();
+            $return['data'] = $data;
         }
-        $tags = $query->orderBy('reviews', 'desc')
-            ->paginate(Config::get('inwehub.api_data_page_size'));
-        $data = [];
-        foreach ($tags as $tag) {
-            $info = Tag::getReviewInfo($tag->id);
-            $data[] = [
-                'id' => $tag->id,
-                'name' => $tag->name,
-                'logo' => $tag->logo,
-                'review_count' => $info['review_count'],
-                'review_average_rate' => $info['review_average_rate']
-            ];
-        }
-        $return = $tags->toArray();
-        $return['data'] = $data;
-        $this->searchNotify($oauth,$request->input('search_word'),'在栏目[产品]',',搜索结果'.$tags->total());
+
+        $this->searchNotify($oauth,$request->input('search_word'),'在栏目[产品]',',搜索结果'.$return['total']);
         return self::createJsonData(true, $return);
     }
 
