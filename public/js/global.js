@@ -221,7 +221,8 @@ $(function(){
                 delay: 250,
                 data: function (params) {
                     return {
-                        word: params.term
+                        word: params.term,
+                        type: 'allC'
                     };
                 },
                 processResults: function (data) {
