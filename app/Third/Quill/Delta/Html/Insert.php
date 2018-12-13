@@ -46,7 +46,7 @@ class Insert extends Delta
         }
 
         if ($add_span === false) {
-            $html .= $this->escape($this->insert);
+            $html .= str_replace("\n",'<br>',$this->escape($this->insert));
         } else {
             $html .= '<span';
             foreach($this->attributes as $attribute => $value) {
