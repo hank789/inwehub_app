@@ -156,7 +156,7 @@ class Html extends Parse implements ParserSplitInterface, ParserAttributeInterfa
             }
         } else {
             $inserts[] = [
-                'insert' => str_replace("\n", '<br>', $insert),
+                'insert' => $insert,
                 'close' => false,
                 'new_line' => false,
                 'pre_new_line' => false
