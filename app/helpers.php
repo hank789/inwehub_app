@@ -1988,6 +1988,7 @@ function searchKeys($text,$keysArr_1D,$similar = ""){
     foreach($textArr_1D as $val){
         $textArr_2D[]['text'] = $val;
     }
+    $data = [];
 //切割关键词成一维数组
 //转换成二维数组
     $keysArr_2D = array();
@@ -2025,6 +2026,7 @@ function searchKeys($text,$keysArr_1D,$similar = ""){
  * 数组去重方法
  */
 function array_unique_fb($array2D){
+    $temp = [];
     foreach ($array2D as $v){
         $v = join(",",$v); //降维,也可以用implode,将一维数组转换为用逗号连接的字符串
         $temp[] = $v;

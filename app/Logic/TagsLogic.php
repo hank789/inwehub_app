@@ -190,7 +190,10 @@ class TagsLogic {
         if (strlen($content)>6) {
             $tags = RateLimiter::instance()->hGetAll('product_tags');
             $res = searchKeys($content,$tags,100);
-            return array_column($res,0);
+            if ($res) {
+                return array_column($res,0);
+            }
+            return [];
         }
         return [];
     }
