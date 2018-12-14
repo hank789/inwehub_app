@@ -87,7 +87,8 @@ class Kernel extends ConsoleKernel
         Commands\Init\CalcProductReviews::class,
         Commands\Init\TranslateProducts::class,
         Commands\Init\TagRoles::class,
-        Commands\Init\ItJuZiCompany::class
+        Commands\Init\ItJuZiCompany::class,
+        Commands\Init\TagProductDict::class
 
     ];
 

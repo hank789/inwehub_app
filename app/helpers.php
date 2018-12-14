@@ -1966,3 +1966,73 @@ function varianceCalc($arr) {
     return array('variance' => $variance, 'square' => sqrt($variance), 'average' => $average);
 }
 
+/**
+ * 自动识别关键词方法
+ * @param String $text 需要查询的文本
+ * @param Array $keysStr 用来标记的关键词字符串
+ * @param Int $similar 可以插入的关键词相似度 默认60%
+ * @return Array
+ */
+function searchKeys($text,$keysArr_1D,$similar = ""){
+//关键词相似度
+    $similar = $similar == null ? 60 : $similar;
+//组装特殊字符，并替换
+    //$Exp = str_replace(array(":","。",'"',"/","-","_","=","~","`","(",")","*","&","^","%","$","#","@","!",":","：","、","“","．","”",";","】","【","[","]","|",'\/'," ","　","＇","＂","＜","＞","?","／","］","［","！","＠","＃","＄","％","＾","＆","＊","（","）","＿","＋","＝","－","／","＊","－","＋","．","｀","～","；","：","＇","＂","｜","＼"),"",strip_tags($text));
+    $Exp = str_replace(array(":","。",'"',"_","=","~","`","*","&","^","%","$","#","@","!",":","：","、","“","．","”",";","】","【","[","]","|",'\/',"＇","＂","＜","＞","?","／","］","［","！","＠","＃","＄","％","＾","＆","＊","（","）","＿","＋","＝","－","／","＊","－","．","｀","～","；","：","＇","＂","｜","＼"),"",strip_tags($text));
+    $Exps = str_replace("，",",",$Exp);
+
+//将切割的文字组装成数组
+    $textArr_1D = explode(",",$Exps);
+//将内容转换成二维数组
+    $textArr_2D = array();
+    foreach($textArr_1D as $val){
+        $textArr_2D[]['text'] = $val;
+    }
+//切割关键词成一维数组
+//转换成二维数组
+    $keysArr_2D = array();
+    foreach ($keysArr_1D as $val) {
+        //长度小于4的过滤掉
+        if (strlen($val) <= 4) continue;
+        $keysArr_2D[]['keys'] = $val;
+    }
+//开始匹配关键词
+    foreach ($textArr_2D as $t_k => $t_v) {
+        foreach ($keysArr_2D as $k_k => $k_v) {
+//判断关键词不为空
+            if($k_v['keys'] != ""){
+//根据文本相似度
+                if(similar_text($t_v['text'],$k_v['keys'],$percent)){
+//当相似度大于等于**时插入到数组
+                    if($percent >= $similar){
+                        $data[]['keys'] = $k_v['keys'].$percent."%";
+                    }
+                }
+//不区分大小写寻找相同字符
+                if(stristr($t_v['text'],$k_v['keys']) != false){
+                    $data[]['keys'] = $k_v['keys'];
+                }
+//区分大小写寻找相同字符
+                if(strpos($t_v['text'],$k_v['keys']) != false){
+                    $data[]['keys'] = $k_v['keys'];
+                }
+            }
+        }
+    }
+    return array_unique_fb($data);
+}
+/**
+ * 数组去重方法
+ */
+function array_unique_fb($array2D){
+    foreach ($array2D as $v){
+        $v = join(",",$v); //降维,也可以用implode,将一维数组转换为用逗号连接的字符串
+        $temp[] = $v;
+    }
+    $temp = array_unique($temp); //去掉重复的字符串,也就是重复的一维数组
+    foreach ($temp as $k => $v){
+        $temp[$k] = explode(",",$v); //再将拆开的数组重新组装
+    }
+    return $temp;
+}
+

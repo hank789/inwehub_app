@@ -462,14 +462,19 @@ class Submission extends Model {
     //设置关键词标签
     public function setKeywordTags() {
         try {
+            $content = '';
             if (isset($this->data['domain']) && $this->data['domain'] == 'mp.weixin.qq.com') {
                 $content = getWechatUrlBodyText($this->data['url']);
-                $keywords = array_column(BosonNLPService::instance()->keywords($this->title.';'.$content),1);
+                $content = $this->title.';'.$content;
+                $keywords = array_column(BosonNLPService::instance()->keywords($content),1);
             } elseif ($this->type == 'article') {
-                $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title).';'.QuillLogic::parseText($this->data['description'])),1);
+                $content = strip_tags($this->title).';'.QuillLogic::parseText($this->data['description']);
+                $keywords = array_column(BosonNLPService::instance()->keywords($content),1);
             } elseif ($this->type == 'text') {
-                $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title)),1);
+                $content = strip_tags($this->title);
+                $keywords = array_column(BosonNLPService::instance()->keywords($content),1);
             } elseif ($this->type == 'review') {
+                $content = '';
                 $keywords = $this->tags->pluck('name')->toArray();
             } else {
                 $parse_url = parse_url($this->data['url']);
@@ -483,6 +488,7 @@ class Submission extends Model {
                 }
                 $metas = $ql->find('meta[name=keywords]')->content;
                 if ($metas) {
+                    $content = $metas;
                     $metas = trim($metas);
                     $metas = str_replace('，',',',$metas);
                     $metas = str_replace('、',',',$metas);
@@ -494,6 +500,7 @@ class Submission extends Model {
                 }
                 $description = strip_tags($this->title).';'.$ql->find('meta[name=description]')->content;
                 if ($description) {
+                    $content .= $description;
                     $keywords_description = array_column(BosonNLPService::instance()->keywords($description),1);
                     if (isset($keywords)) {
                         $keywords = array_merge($keywords,$keywords_description);
@@ -502,7 +509,8 @@ class Submission extends Model {
                     }
                 }
             }
-            $tags = [];
+            //和我们的产品进行一次匹配
+            $tags = TagsLogic::getContentTags($content);
             $keywords = array_unique($keywords);
             foreach ($keywords as $keyword) {
                 $keyword = formatHtml(formatKeyword($keyword));
@@ -521,6 +529,7 @@ class Submission extends Model {
                 }
             }
             $data = $this->data;
+            $tags = array_unique($tags);
             $data['keywords'] = implode(',',$tags);
             $this->data = $data;
             $this->save();

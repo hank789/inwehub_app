@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\Question\ConfirmOvertimeAlertSystem;
+use App\Logic\TagsLogic;
 use App\Models\Feed\Feed;
 use App\Models\Pay\Order;
 use App\Models\Relations\BelongsToCategoryTrait;
@@ -540,8 +541,9 @@ class Question extends Model
     //设置关键词标签
     public function setKeywordTags() {
         try {
-            $keywords = array_column(BosonNLPService::instance()->keywords(strip_tags($this->title)),1);
-            $tags = [];
+            $content = strip_tags($this->title);
+            $keywords = array_column(BosonNLPService::instance()->keywords($content),1);
+            $tags = TagsLogic::getContentTags($content);
             foreach ($keywords as $keyword) {
                 $keyword = formatHtml(formatKeyword($keyword));
                 if (RateLimiter::instance()->hGet('ignore_tags',$keyword)) {
@@ -559,6 +561,7 @@ class Question extends Model
                 }
             }
             $data = $this->data;
+            $tags = array_unique($tags);
             $data['keywords'] = implode(',',$tags);
             $this->data = $data;
             $this->save();
