@@ -640,7 +640,7 @@ trait BaseController {
                 $return['group']['subscribers'] = $group->getHotIndex() + User::count();
             }
         }
-        if ($request->input('inwehub_user_device') == 'www' && $return['type'] == 'article' && str_contains($request->header('Referer'),'my/discover/add/'.$submission->slug)) {
+        if ($request->input('inwehub_user_device') == 'www' && $return['type'] == 'article') {
             $return['data']['description'] = QuillLogic::parseHtml($return['data']['description']);
         }
         $this->dispatch(new LogUserViewTags($user->id,$submission));
