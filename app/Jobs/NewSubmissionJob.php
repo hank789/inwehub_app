@@ -93,7 +93,8 @@ class NewSubmissionJob implements ShouldQueue
                     $tagC->calcRate();
                 }
                 $tag = Tag::find($submission->category_id);
-                $tag->increment('reviews');
+                $tag->reviews += 1;
+                $tag->save();
                 $targetName = '在产品['.$tag->name.']';
                 TagsLogic::delProductCache();
                 if (isset($submission->data['real_author']) && $submission->data['real_author']) {
