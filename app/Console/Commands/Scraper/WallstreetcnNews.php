@@ -146,7 +146,7 @@ class WallstreetcnNews extends Command {
             ]);
             $this->articleCount++;
             Redis::connection()->hset('voten:submission:url', $item['resource']['source_uri'], $submission->id);
-            dispatch((new NewSubmissionJob($submission->id,true)));
+            dispatch((new NewSubmissionJob($submission->id,true,'华尔街见闻:')));
         }
         return $nextCursor;
     }
