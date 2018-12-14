@@ -245,7 +245,7 @@ class Tag extends Model
         }
         $fields =  [
             'name' => strtolower($this->name),
-            'keywords' => strip_tags($this->description),
+            'keywords' => strtolower(strip_tags($this->description)),
             'status' => $status,
             'reviews' => $this->reviews,
             'type' => $type
