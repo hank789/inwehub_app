@@ -111,6 +111,7 @@ class ProductController extends AdminController
             unset($data['name']);
             $tag->update($data);
         }
+        TagsLogic::cacheProductTags($tag);
         foreach ($category_ids as $category_id) {
             if ($category_id<=0) continue;
             $rel = TagCategoryRel::where('tag_id',$tag->id)->where('category_id',$category_id)->first();
@@ -186,6 +187,7 @@ class ProductController extends AdminController
             $tag->logo = $img_url;
         }
         $tag->save();
+        TagsLogic::cacheProductTags($tag);
         $category_ids = $request->input('category_id');
         $returnUrl = url()->previous();
         $delete = true;

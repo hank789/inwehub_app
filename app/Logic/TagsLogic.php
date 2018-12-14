@@ -3,6 +3,7 @@ use App\Models\Category;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
+use App\Services\RateLimiter;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -179,6 +180,19 @@ class TagsLogic {
             ];
         }
         return $data;
+    }
+
+    public static function cacheProductTags(Tag $tag) {
+        RateLimiter::instance()->hSet('product_tags',$tag->id,$tag->name);
+    }
+
+    public static function getContentTags($content) {
+        if (strlen($content)>6) {
+            $tags = RateLimiter::instance()->hGetAll('product_tags');
+            $res = searchKeys($content,$tags,100);
+            return array_column($res,0);
+        }
+        return [];
     }
 
 }
