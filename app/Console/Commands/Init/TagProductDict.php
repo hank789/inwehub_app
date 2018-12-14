@@ -42,7 +42,7 @@ class TagProductDict extends Command
         $tags = $query->select($fields)->simplePaginate($perPage,['*'],'page',$page);
         while ($tags->count() > 0) {
             foreach ($tags as $tag) {
-                TagsLogic::cacheProductTags($tag);
+                TagsLogic::cacheProductTags($tag->tag);
             }
             $page ++;
             $tags = $query->select($fields)->simplePaginate($perPage,['*'],'page',$page);
