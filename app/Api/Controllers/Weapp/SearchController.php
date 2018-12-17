@@ -46,15 +46,18 @@ class SearchController extends controller
                 if ($key === 0 && strtolower($tag->name)!=strtolower($word)) {
                     $match = Tag::getTagByName($word);
                     if ($match) {
-                        $ids[$match->id] = $match->id;
-                        $info = Tag::getReviewInfo($match->id);
-                        $data[] = [
-                            'id' => $match->id,
-                            'name' => $match->name,
-                            'logo' => $match->logo,
-                            'review_count' => $info['review_count'],
-                            'review_average_rate' => $info['review_average_rate']
-                        ];
+                        $matchRel = TagCategoryRel::select(['tag_id'])->where('tag_id',$match->id)->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->first();
+                        if ($matchRel) {
+                            $ids[$match->id] = $match->id;
+                            $info = Tag::getReviewInfo($match->id);
+                            $data[] = [
+                                'id' => $match->id,
+                                'name' => $match->name,
+                                'logo' => $match->logo,
+                                'review_count' => $info['review_count'],
+                                'review_average_rate' => $info['review_average_rate']
+                            ];
+                        }
                     }
                 }
                 if (isset($ids[$tag->id])) continue;
