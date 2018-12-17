@@ -75,6 +75,11 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label>创建时间</label>
+                                <input type="text" name="created_at" class="form-control "  placeholder="创建时间" value="{{ old('created_at',$submission->created_at ) }}">
+                            </div>
+
                         </div>
                         <div class="box-footer">
                             <button type="submit" class="btn btn-primary">保存</button>
