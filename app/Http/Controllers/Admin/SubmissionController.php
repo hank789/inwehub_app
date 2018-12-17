@@ -116,7 +116,9 @@ class SubmissionController extends AdminController
         if ($newUserId && $newUserId != $submission->user_id) {
             $submission->user_id = $newUserId;
         }
-
+        if ($request->input('created_at') && strtotime($request->input('created_at')) >= strtotime('2015-12-12')) {
+            $submission->created_at = $request->input('created_at');
+        }
         $submission->save();
 
         $tagString = trim($request->input('tags'));
