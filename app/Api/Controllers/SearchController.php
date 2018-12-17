@@ -240,7 +240,24 @@ class SearchController extends Controller
         $tags = $query->orderBy('reviews', 'desc')
             ->paginate(Config::get('inwehub.api_data_page_size'));
         $data = [];
-        foreach ($tags as $tag) {
+        $ids = [];
+        foreach ($tags as $key=>$tag) {
+            if ($key === 0 && strtolower($tag->name)!=strtolower($request->input('search_word'))) {
+                $match = Tag::getTagByName($request->input('search_word'));
+                if ($match) {
+                    $ids[$match->id] = $match->id;
+                    $info = Tag::getReviewInfo($match->id);
+                    $data[] = [
+                        'id' => $match->id,
+                        'name' => $match->name,
+                        'logo' => $match->logo,
+                        'review_count' => $info['review_count'],
+                        'review_average_rate' => $info['review_average_rate']
+                    ];
+                }
+            }
+            if (isset($ids[$tag->id])) continue;
+            $ids[$tag->id] = $tag->id;
             $info = Tag::getReviewInfo($tag->id);
             $data[] = [
                 'id' => $tag->id,
