@@ -162,6 +162,9 @@ class RecommendReadController extends AdminController
         }
         foreach ($oldTags as $oldTag) {
             if (!in_array($oldTag,$tags)) {
+                $tagModel = Tag::find($oldTag);
+                $keywords = str_replace($tagModel->name,'',$keywords);
+                $keywords = str_replace(',,',',',$keywords);
                 $article->tags()->detach($oldTag);
             }
         }
