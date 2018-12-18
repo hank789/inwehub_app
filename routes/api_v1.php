@@ -631,6 +631,7 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('list','HomeController@feed');
     //存储文章
     Route::post('store','SubmissionController@store')->middleware('user.phone');
+    Route::post('uploadImage','SubmissionController@uploadImage')->middleware('user.phone');
     //更新文章
     Route::post('update','SubmissionController@update');
     //设置点赞类型
