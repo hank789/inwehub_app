@@ -110,15 +110,17 @@ class NewSubmissionJob implements ShouldQueue
             $group->increment('articles');
             GroupMember::where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
             RateLimiter::instance()->sClear('group_read_users:'.$group->id);
-            feed()
-                ->causedBy($user)
-                ->performedOn($submission)
-                ->setGroup($submission->group_id)
-                ->setPublic($submission->public)
-                ->withProperties([
-                    'submission_title'=>$submission->title
-                ])
-                ->log(($submission->hide?'匿名':$user->name).'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+            if (!$this->notifyAutoChannel) {
+                feed()
+                    ->causedBy($user)
+                    ->performedOn($submission)
+                    ->setGroup($submission->group_id)
+                    ->setPublic($submission->public)
+                    ->withProperties([
+                        'submission_title'=>$submission->title
+                    ])
+                    ->log(($submission->hide?'匿名':$user->name).'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
+            }
 
             $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
 
