@@ -96,7 +96,7 @@ class JobToSubmission implements ShouldQueue
         $article->topic_id = $submission->id;
         $article->status = 2;
         $article->save();
-        (new NewSubmissionJob($submission->id))->handle();
+        (new NewSubmissionJob($submission->id,true))->handle();
         RateLimiter::instance()->sClear('group_read_users:'.$group->id);
         Redis::connection()->hset('voten:submission:url',$url, $submission->id);
 
