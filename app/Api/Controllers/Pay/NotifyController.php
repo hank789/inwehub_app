@@ -65,7 +65,7 @@ class NotifyController extends Controller
         $endpoint = ItunesReceiptValidator::PRODUCTION_URL;
         $user = $request->user();
         //苹果审核测试账户用沙箱支付
-        if (in_array($user->id,[79,504])){
+        if (in_array($user->id,[504])){
             $endpoint = ItunesReceiptValidator::SANDBOX_URL;
         }
         /*$pending_version = AppVersion::where('status',0)->orderBy('app_version','desc')->first();
