@@ -53,6 +53,10 @@ class RateLimiter extends Singleton
         $this->client->del($key);
     }
 
+    public function del($key) {
+        $this->client->del('inwehub:'.$key);
+    }
+
     public function increase($event, $target, $expire = 60, $times = 1)
     {
         $key = $this->key($event, $target);

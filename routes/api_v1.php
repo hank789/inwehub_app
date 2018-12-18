@@ -335,6 +335,7 @@ Route::group(['prefix'=>'tags'], function() {
     Route::post('getProductCategories','TagsController@getProductCategories');
     Route::post('submitProduct','TagsController@submitProduct')->middleware('jwt.auth');
     Route::post('feedbackProduct','TagsController@feedbackProduct')->middleware('jwt.auth');
+    Route::get('hotProduct','TagsController@hotProduct');
 
 });
 

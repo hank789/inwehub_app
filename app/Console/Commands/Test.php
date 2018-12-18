@@ -28,6 +28,7 @@ use GuzzleHttp\Exception\ConnectException;
 use function GuzzleHttp\Psr7\parse_query;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 use PHPHtmlParser\Dom;
 use QL\Ext\PhantomJs;
@@ -61,6 +62,9 @@ class Test extends Command
      */
     public function handle()
     {
+        $keys = Redis::connection()->keys('inwehub:group-daily-hot-*');
+        if ($keys) Redis::connection()->del($keys);
+        return;
         $keys = RateLimiter::instance()->hGetAll('tag_pending_translate');
         foreach ($keys as $id=>$v) {
             $this->info($id);

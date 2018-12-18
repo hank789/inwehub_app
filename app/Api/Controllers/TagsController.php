@@ -18,6 +18,7 @@ use App\Models\TagCategoryRel;
 use App\Models\Taggable;
 use App\Models\User;
 use App\Models\UserTag;
+use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -235,6 +236,24 @@ class TagsController extends Controller {
         }
         event(new ImportantNotify('用户'.$user->id.'['.$user->name.']反馈产品['.$request->input('product').']',$fields));
         return self::createJsonData(true);
+    }
+
+    public function hotProduct(Request $request) {
+        $hotProducts = [];
+        $limit = $request->input('limit',10);
+        $ids = RateLimiter::instance()->zRevrange('product-daily-hot-'.date('Ymd'),0,$limit-1);
+        foreach ($ids as $id => $hotScore) {
+            $tag = Tag::find($id);
+            $info = Tag::getReviewInfo($tag->id);
+            $hotProducts[] = [
+                'id' => $tag->id,
+                'name' => $tag->name,
+                'logo' => $tag->logo,
+                'review_count' => $info['review_count'],
+                'review_average_rate' => $info['review_average_rate']
+            ];
+        }
+        return self::createJsonData(true,$hotProducts);
     }
 
     //产品列表

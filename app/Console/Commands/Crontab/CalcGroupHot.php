@@ -12,6 +12,7 @@ use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\Submission;
 use App\Models\Support;
+use App\Models\TagCategoryRel;
 use App\Services\RateLimiter;
 use Illuminate\Console\Command;
 
@@ -39,6 +40,8 @@ class CalcGroupHot extends Command
     public function handle()
     {
         $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get();
+        //删除昨日
+        RateLimiter::instance()->del('group-daily-hot-'.date('Ymd',strtotime('-1 day')));
         foreach ($groups as $group) {
             //当日圈子分享点赞数
             $submissionIds = Submission::where('group_id',$group->id)->pluck('id')->toArray();
@@ -71,6 +74,24 @@ class CalcGroupHot extends Command
             }
             $score = $upvotes + $comments + $submissions + $members + $messages;
             RateLimiter::instance()->zAdd('group-daily-hot-'.date('Ymd'),$score,$group->id);
+        }
+        //今日热门产品
+        RateLimiter::instance()->del('product-daily-hot-'.date('Ymd',strtotime('-1 day')));
+        $products = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->where('reviews','>=',1)->get();
+        foreach ($products as $product) {
+            //当日点评数
+            $submissions = Submission::where('category_id',$product->tag_id)
+                ->whereBetween('created_at',[date('Y-m-d 00:00:00'),date('Y-m-d 23:59:59')])
+                ->count();
+            //当日点赞数
+            $submissionIds = Submission::where('category_id',$product->tag_id)->pluck('id')->toArray();
+            $upvotes = Support::whereIn('supportable_id',$submissionIds)
+                ->where('supportable_type',Submission::class)
+                ->whereBetween('created_at',[date('Y-m-d 00:00:00'),date('Y-m-d 23:59:59')])
+                ->count();
+
+            $score = $submissions + $upvotes;
+            RateLimiter::instance()->zAdd('product-daily-hot-'.date('Ymd'),$score,$product->tag_id);
         }
     }
 
