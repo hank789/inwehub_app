@@ -1154,7 +1154,7 @@ if (!function_exists('getUrlInfo')) {
                     $ql->use(\QL\Ext\PhantomJs::class,config('services.phantomjs.path'));
                     $ql->browser($url);
 
-                } elseif (in_array($urlArr['host'],$gfw_urls)) {
+                } elseif (in_array($urlArr['host'],$gfw_urls) && config('app.env') == 'production') {
                     $html = curlShadowsocks($url);
                     $ql->setHtml($html);
                 }
