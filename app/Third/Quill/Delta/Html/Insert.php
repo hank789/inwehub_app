@@ -16,10 +16,10 @@ class Insert extends Delta
     /**
      * Set the initial properties for the delta
      *
-     * @param string $insert
+     * @param string|array $insert
      * @param array $attributes
      */
-    public function __construct(string $insert, array $attributes = [])
+    public function __construct($insert, array $attributes = [])
     {
         $this->tag = null;
 
@@ -44,7 +44,14 @@ class Insert extends Delta
         if ($this->preNewLine() === true) {
             $html .= "<br />\n";
         }
-        $insert = str_replace("\n","<br>",$this->escape($this->insert));
+        $insert = '';
+        if (is_array($this->insert)) {
+            if (isset($this->insert['image'])) {
+                $insert = "<img src=\"{$this->escape($this->insert['image'])}\" />";
+            }
+        } else {
+            $insert = str_replace("\n","<br>",$this->escape($this->insert));
+        }
 
         if ($add_span === false) {
             $html .= $insert;
