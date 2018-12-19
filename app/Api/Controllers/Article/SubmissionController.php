@@ -74,7 +74,7 @@ class SubmissionController extends Controller {
         }
         $oldStatus = $submission->status;
 
-        $description = QuillLogic::parseImages($request->input('description'));
+        $description = QuillLogic::parseImages($request->input('description'),false);
         if ($description === false){
             $description = $request->input('description');
         }
