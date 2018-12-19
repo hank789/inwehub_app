@@ -34,6 +34,7 @@ class Link extends Delta
      */
     public function render(): string
     {
+        $insert = '';
         if (is_array($this->insert)) {
             if (isset($this->insert['image'])) {
                 $insert = "<img src=\"{$this->escape($this->insert['image'])}\" />";
