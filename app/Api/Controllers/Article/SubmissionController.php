@@ -74,7 +74,7 @@ class SubmissionController extends Controller {
         }
         $oldStatus = $submission->status;
 
-        $description = QuillLogic::parseImages($request->input('description'));
+        $description = QuillLogic::parseImages($request->input('description'),false);
         if ($description === false){
             $description = $request->input('description');
         }
@@ -94,6 +94,26 @@ class SubmissionController extends Controller {
 
         self::$needRefresh = true;
         return self::createJsonData(true);
+    }
+
+    public function uploadImage(Request $request){
+        $validateRules = [
+            'id' => 'required|integer',
+            'photos'=> 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $data = $request->all();
+        $submission = Submission::find($data['id']);
+        if ($submission->user_id != $user->id) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $data = $submission->data;
+        $img = $this->uploadImgs($request->input('photos'));
+        $data['img'] += $img['img'];
+        $submission->data = $data;
+        $submission->save();
+        return self::createJsonData(true,['id'=>$submission->id]);
     }
 
     public function thirdApiStore(Request $request) {
