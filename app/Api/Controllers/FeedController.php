@@ -116,8 +116,14 @@ class FeedController extends Controller
             //推荐
             $alertMsg = '为您推荐了'.Config::get('inwehub.api_data_page_size').'条信息';
         } else {
+            $query = $query->distinct()->orderBy('id','desc');
+            $feeds = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
             if ($last_seen) {
-                $newCount = $query->where('id','>',$last_seen)->distinct()->count();
+                $ids = $query->take(100)->pluck('id')->toArray();
+                $newCount = array_search($last_seen,$ids);
+                if ($newCount === false) {
+                    $newCount = '99+';
+                }
                 if ($newCount) {
                     $alertMsg = '更新了'.$newCount.'条信息';
                 } else {
@@ -126,8 +132,6 @@ class FeedController extends Controller
             } else {
                 $alertMsg = '已为您更新';
             }
-            $feeds = $query->distinct()->orderBy('id','desc')
-                ->simplePaginate(Config::get('inwehub.api_data_page_size'));
         }
 
         $return = $feeds->toArray();
