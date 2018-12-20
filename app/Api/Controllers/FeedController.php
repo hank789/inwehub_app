@@ -23,6 +23,7 @@ class FeedController extends Controller
         $user = $request->user();
         $search_type = $request->input('search_type',2);
         $page = $request->input('page',1);
+        $alertMsg = '';
         $last_seen = RateLimiter::instance()->hGet('user_feed_last_seen',$user->id);
         $query = Feed::query();
         switch ($search_type) {
@@ -114,23 +115,27 @@ class FeedController extends Controller
         }
         if ($search_type == 6) {
             //推荐
-            $alertMsg = '为您推荐了'.Config::get('inwehub.api_data_page_size').'条信息';
+            if ($page == 1) {
+                $alertMsg = '为您推荐了'.Config::get('inwehub.api_data_page_size').'条信息';
+            }
         } else {
             $query = $query->distinct()->orderBy('id','desc');
             $feeds = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
-            if ($last_seen) {
-                $ids = $query->take(100)->pluck('id')->toArray();
-                $newCount = array_search($last_seen,$ids);
-                if ($newCount === false) {
-                    $newCount = '99+';
-                }
-                if ($newCount) {
-                    $alertMsg = '更新了'.$newCount.'条信息';
+            if ($page == 1) {
+                if ($last_seen) {
+                    $ids = $query->take(100)->pluck('id')->toArray();
+                    $newCount = array_search($last_seen,$ids);
+                    if ($newCount === false) {
+                        $newCount = '99+';
+                    }
+                    if ($newCount) {
+                        $alertMsg = '更新了'.$newCount.'条信息';
+                    } else {
+                        $alertMsg = '暂无新信息';
+                    }
                 } else {
-                    $alertMsg = '暂无新信息';
+                    $alertMsg = '已为您更新';
                 }
-            } else {
-                $alertMsg = '已为您更新';
             }
         }
 
