@@ -85,7 +85,7 @@ trait SubmitSubmission
                     //非本地地址，存储到本地
                     if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
                         $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-                        dispatch((new UploadFile($file_name,base64_encode(file_get_contents($base64)))));
+                        dispatch((new UploadFile($file_name,base64_encode(file_get_contents_curl($base64)))));
                         //Storage::disk('oss')->put($file_name,file_get_contents($base64));
                         $img_url = Storage::disk('oss')->url($file_name);
                         $list[] = $img_url;
