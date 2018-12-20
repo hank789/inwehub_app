@@ -421,8 +421,8 @@ class IndexController extends Controller {
         }
         $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
-        foreach ($result['data'] as &$item) {
-            if ($page == 1 && $last_seen < $item['id']) {
+        foreach ($result['data'] as $key=>&$item) {
+            if ($page == 1 && $key == 0) {
                 $last_seen = $item['id'];
             }
             $item = $this->formatRecommendReadItem($item);
