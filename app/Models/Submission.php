@@ -290,6 +290,8 @@ class Submission extends Model {
             $sourceData['link_url'] = $submission->data['url'];
         }
         if ($submission->type == 'review') {
+            $url = '/dianping/comment/'.$submission->slug;
+            $sourceData['comment_url'] = $url;
             $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_REVIEW;
             $title = $submission->hide?'匿名':$submission->user->name;
             foreach ($sourceData['tags'] as $key=>$tag) {

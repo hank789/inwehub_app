@@ -349,10 +349,14 @@ class IndexController extends Controller {
     public function recommendRead(Request $request, JWTAuth $JWTAuth) {
         $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
         $orderBy = $request->input('orderBy',1);
+        $page = $request->input('page',1);
+        $alertMsg = '';
+        $last_seen= '';
         $recommendType = $request->input('recommendType',1);
         $query = RecommendRead::where('audit_status',1);
         try {
             $user = $JWTAuth->parseToken()->authenticate();
+            $last_seen = RateLimiter::instance()->hGet('user_recommend_last_seen',$user->id);
             //按领域推荐
             if ($recommendType == 2) {
                 $filterTag = $request->input('tagFilter','');
@@ -399,13 +403,34 @@ class IndexController extends Controller {
                 $query = $query->orderBy('id','desc');
                 break;
         }
-
-
+        if ($page == 1 && $recommendType == 1) {
+            if ($last_seen) {
+                $ids = $query->take(100)->pluck('id')->toArray();
+                $newCount = array_search($last_seen,$ids);
+                if ($newCount === false) {
+                    $newCount = '99+';
+                }
+                if ($newCount) {
+                    $alertMsg = '更新了'.$newCount.'条信息';
+                } else {
+                    $alertMsg = '暂无新信息';
+                }
+            } else {
+                $alertMsg = '已为您更新';
+            }
+        }
         $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
-        foreach ($result['data'] as &$item) {
+        foreach ($result['data'] as $key=>&$item) {
+            if ($page == 1 && $key == 0) {
+                $last_seen = $item['id'];
+            }
             $item = $this->formatRecommendReadItem($item);
         }
+        if ($page == 1 && $recommendType == 1) {
+            RateLimiter::instance()->hSet('user_recommend_last_seen',$user->id,$last_seen);
+        }
+        $result['alert_msg'] = $alertMsg;
         return self::createJsonData(true, $result);
     }
 

@@ -11,6 +11,7 @@ use App\Models\Feed\Feed;
 use App\Models\Groups\GroupMember;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -19,8 +20,11 @@ class FeedController extends Controller
 {
 
     public function index(Request $request) {
-        $search_type = $request->input('search_type',2);
         $user = $request->user();
+        $search_type = $request->input('search_type',2);
+        $page = $request->input('page',1);
+        $alertMsg = '';
+        $last_seen = RateLimiter::instance()->hGet('user_feed_last_seen',$user->id);
         $query = Feed::query();
         switch ($search_type) {
             case 1:
@@ -111,14 +115,36 @@ class FeedController extends Controller
         }
         if ($search_type == 6) {
             //推荐
+            if ($page == 1) {
+                $alertMsg = '为您推荐了'.Config::get('inwehub.api_data_page_size').'条信息';
+            }
         } else {
-            $feeds = $query->distinct()->orderBy('top', 'desc')->latest()
-                ->simplePaginate(Config::get('inwehub.api_data_page_size'));
+            $query = $query->distinct()->orderBy('id','desc');
+            $feeds = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
+            if ($page == 1) {
+                if ($last_seen) {
+                    $ids = $query->take(100)->pluck('id')->toArray();
+                    $newCount = array_search($last_seen,$ids);
+                    if ($newCount === false) {
+                        $newCount = '99+';
+                    }
+                    if ($newCount) {
+                        $alertMsg = '更新了'.$newCount.'条信息';
+                    } else {
+                        $alertMsg = '暂无新信息';
+                    }
+                } else {
+                    $alertMsg = '已为您更新';
+                }
+            }
         }
 
         $return = $feeds->toArray();
         $data = [];
         foreach ($feeds as $feed) {
+            if ($page == 1 && $last_seen < $feed->id) {
+                $last_seen = $feed->id;
+            }
             $sourceData = $feed->getSourceFeedData($search_type);
             if (empty($sourceData)) continue;
             $data[] = [
@@ -138,7 +164,11 @@ class FeedController extends Controller
                 'created_at' => $feed->created_at->diffForHumans()
             ];
         }
+        if ($page == 1) {
+            RateLimiter::instance()->hSet('user_feed_last_seen',$user->id,$last_seen);
+        }
         $return['data'] = $data;
+        $return['alert_msg'] = $alertMsg;
         $return['per_page'] = count($data);
 
         return self::createJsonData(true,$return);

@@ -7,6 +7,7 @@
 
 use App\Events\Frontend\Auth\UserLoggedIn;
 use App\Events\Frontend\System\FuncZan;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\AppVersion;
 use App\Models\LoginRecord;
@@ -38,7 +39,7 @@ class SystemController extends Controller {
             'title'=>'内容',
             'value'=>$request->input('content')
         ];
-        event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.$request->input('title'),$fields));
+        event(new ImportantNotify('用户'.$user->id.'['.$user->name.']'.$request->input('title'),$fields));
         return self::createJsonData(true);
     }
 
