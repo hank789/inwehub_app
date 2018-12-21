@@ -1135,6 +1135,8 @@ if (!function_exists('getUrlInfo')) {
                 preg_match_all($pattern,$f,$matches);
                 if(array_key_exists(1, $matches) && !empty($matches[1][0])) {
                     $temp = $matches[1][0];
+                    //将tp=webp为tp=jpg
+                    $temp = str_replace('tp=webp','tp=jpg',$temp);
                 }
                 preg_match('/<h2 class="rich_media_title" id="activity-name">(?<h2>.*?)<\/h2>/si', $f, $title);
                 if (isset($title['h2'])) {
