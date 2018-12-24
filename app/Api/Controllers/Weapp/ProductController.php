@@ -10,8 +10,11 @@ use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
+use App\Services\RateLimiter;
+use App\Third\Weapp\WeApp;
 use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -226,6 +229,67 @@ class ProductController extends Controller {
         $submission->data = $data;
         $submission->save();
         return self::createJsonData(true,['id'=>$submission->id]);
+    }
+
+    public function getProductShareImage(Request $request){
+        $validateRules = [
+            'id'   => 'required|integer',
+            'type' => 'required|in:1,2'
+        ];
+        $this->validate($request,$validateRules);
+        $type = $request->input('type',1);
+        if ($type == 1) {
+            //分享到朋友圈的长图
+            $collection = 'images_big';
+            $showUrl = 'getProductShareLongInfo';
+        } else {
+            //分享到公众号的短图
+            $collection = 'images_small';
+            $showUrl = 'getProductShareShortInfo';
+        }
+        $tag = Tag::findOrFail($request->input('id'));
+
+        if($tag->getMedia($collection)->isEmpty()){
+            $snappy = App::make('snappy.image');
+            $snappy->setOption('width',1125);
+            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$tag->id);
+            $tag->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
+        }
+        $tag = Tag::find($request->input('id'));
+        $url = $tag->getMedia($collection)->last()->getUrl();
+        return self::createJsonData(true,['url'=>$url]);
+    }
+
+    public function getReviewShareImage(Request $request){
+        $validateRules = [
+            'id'   => 'required|integer',
+            'type' => 'required|in:1,2'
+        ];
+        $this->validate($request,$validateRules);
+        $type = $request->input('type',1);
+        if ($type == 1) {
+            //分享到朋友圈的长图
+            $collection = 'weapp_images_big';
+            $showUrl = 'getReviewShareLongInfo';
+        } else {
+            //分享到公众号的短图
+            $collection = 'weapp_images_small';
+            $showUrl = 'getReviewShareShortInfo';
+        }
+        $submission = Submission::findOrFail($request->input('id'));
+        if(!isset($submission->data[$collection])){
+            $snappy = App::make('snappy.image');
+            $snappy->setOption('width',1125);
+            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$submission->id);
+            $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+            dispatch((new UploadFile($file_name,base64_encode($image))));
+            $img_url = Storage::disk('oss')->url($file_name);
+            $data = $submission->data;
+            $data[$collection] = $img_url;
+            $submission->data = $data;
+            $submission->save();
+        }
+        return self::createJsonData(true,['url'=>$submission->data[$collection]]);
     }
 
 }

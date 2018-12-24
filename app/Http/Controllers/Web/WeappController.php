@@ -1,5 +1,7 @@
 <?php namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
+use App\Models\Submission;
+use App\Models\Tag;
 use App\Models\UserOauth;
 use App\Models\Weapp\Demand;
 use App\Services\RateLimiter;
@@ -61,6 +63,69 @@ class WeappController extends Controller
 
     public function getDemandShareShortInfo($id){
         return view('h5::weapp.demandShareShort');
+    }
+
+    public function getProductShareLongInfo($id, WeApp $wxxcx){
+        $tag = Tag::find($id);
+        $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
+
+        return view('h5::weapp.productShareShort');
+    }
+
+    public function getProductShareShortInfo($id, WeApp $wxxcx){
+        $tag = Tag::find($id);
+        $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
+        return view('h5::weapp.productShareShort');
+    }
+
+    protected function getProductQrcode($id, WeApp $wxxcx) {
+        $qrcodeUrl = RateLimiter::instance()->hGet('product-qrcode',$id);
+        if (!$qrcodeUrl) {
+            $file_name = 'product/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+            $page = 'pages/productDetail/productDetail';
+            $scene = 'id='.$id;
+            try {
+                $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
+                $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+                Storage::disk('oss')->put($file_name,$qrcode);
+                $qrcodeUrl = Storage::disk('oss')->url($file_name);
+                RateLimiter::instance()->hSet('product-qrcode',$id,$qrcodeUrl);
+            } catch (\Exception $e) {
+
+            }
+        }
+        return $qrcodeUrl;
+    }
+
+    public function getReviewShareLongInfo($id, WeApp $wxxcx){
+        $review = Submission::find($id);
+        $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
+        return view('h5::weapp.reviewShareShort');
+    }
+
+    public function getReviewShareShortInfo($id, WeApp $wxxcx){
+        $review = Submission::find($id);
+        $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
+        return view('h5::weapp.reviewShareShort');
+    }
+
+    protected function getReviewQrcode($id, WeApp $wxxcx) {
+        $qrcodeUrl = RateLimiter::instance()->hGet('review-qrcode',$id);
+        if (!$qrcodeUrl) {
+            $file_name = 'review/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+            $page = 'pages/commentDetail/commentDetail';
+            $scene = 'slug='.$id;
+            try {
+                $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
+                $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+                Storage::disk('oss')->put($file_name,$qrcode);
+                $qrcodeUrl = Storage::disk('oss')->url($file_name);
+                RateLimiter::instance()->hSet('review-qrcode',$id,$qrcodeUrl);
+            } catch (\Exception $e) {
+
+            }
+        }
+        return $qrcodeUrl;
     }
 
 }
