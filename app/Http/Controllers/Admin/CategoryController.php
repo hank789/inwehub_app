@@ -35,6 +35,9 @@ class CategoryController extends AdminController
         if( isset($filter['id']) && $filter['id'] ){
             $query->where('id',$filter['id']);
         }
+        if( isset($filter['parent_id']) && $filter['parent_id']>=0 ){
+            $query->where('parent_id',$filter['parent_id']);
+        }
         $categories = $query->paginate(config('inwehub.admin.page_size'));
         return view("admin.category.index")->with(compact('categories','filter'));
     }

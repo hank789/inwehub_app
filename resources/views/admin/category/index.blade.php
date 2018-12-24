@@ -24,7 +24,10 @@
                                         <form name="searchForm" action="{{ route('admin.category.index') }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <div class="col-xs-2 hidden-xs">
-                                                <input type="text" class="form-control" name="id" placeholder="id" value="{{ $filter['id'] or '' }}"/>
+                                                <input type="text" class="form-control" name="id" placeholder="分类id" value="{{ $filter['id'] or '' }}"/>
+                                            </div>
+                                            <div class="col-xs-2 hidden-xs">
+                                                <input type="text" class="form-control" name="parent_id" placeholder="父类id" value="{{ $filter['parent_id'] or '' }}"/>
                                             </div>
                                             <div class="col-xs-4">
                                                 <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
