@@ -80,16 +80,47 @@ class SearchController extends controller
     }
 
     public function getCommonTagProduct() {
-        $product = [
-            'CRM',
-            '钉钉',
-            '阿里云',
-            'SAP',
-            '金蝶',
-            '北森云',
-            'GitHub',
-            'OutLook'
-        ];
+        $p = rand(1,4);
+        $product = [];
+        switch ($p) {
+            case 1:
+                $product = [
+                    'CRM',
+                    '钉钉',
+                    '阿里云',
+                    'SAP',
+                    '金蝶',
+                    '北森云',
+                    'GitHub',
+                    'OutLook'
+                ];
+                break;
+            case 2:
+                $products = TagCategoryRel::select(['tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)
+                    ->where('status',1)->orderBy('updated_at','desc')->distinct()->groupBy('tag_id')->take(8)->get();
+                foreach ($products as $t) {
+                    $model = Tag::find($t->tag_id);
+                    $product[] = $model->name;
+                }
+                break;
+            case 3:
+                $products = TagCategoryRel::select(['tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)
+                    ->where('status',1)->orderBy('review_average_rate','desc')->distinct()->groupBy('tag_id')->take(8)->get();
+                foreach ($products as $t) {
+                    $model = Tag::find($t->tag_id);
+                    $product[] = $model->name;
+                }
+                break;
+            case 4:
+                $products = TagCategoryRel::select(['tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)
+                    ->where('status',1)->orderBy('reviews','desc')->distinct()->groupBy('tag_id')->take(8)->get();
+                foreach ($products as $t) {
+                    $model = Tag::find($t->tag_id);
+                    $product[] = $model->name;
+                }
+                break;
+        }
+
         return self::createJsonData(true,['words'=>$product]);
     }
 
