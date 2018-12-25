@@ -493,7 +493,7 @@ class GroupController extends Controller
         $limit = Config::get('inwehub.api_data_page_size');
         $page = $request->input('page',1);
         $alertMsg = '';
-        $last_seen = RateLimiter::instance()->hGet('user_group_last_seen',$group->id.'_'.$user->id);
+        $last_seen = RateLimiter::instance()->hGet('user_group_last_seen',$group->id.'_'.$user->id.'_'.$type);
         $joined = true;
         if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
             $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
@@ -553,7 +553,7 @@ class GroupController extends Controller
             $list[] = $submission->formatListItem($user);
         }
         if ($page == 1 && $joined) {
-            RateLimiter::instance()->hSet('user_group_last_seen',$group->id.'_'.$user->id,$last_seen);
+            RateLimiter::instance()->hSet('user_group_last_seen',$group->id.'_'.$user->id.'_'.$type,$last_seen);
         }
         $return['data'] = $list;
         $return['alert_msg'] = $alertMsg;
