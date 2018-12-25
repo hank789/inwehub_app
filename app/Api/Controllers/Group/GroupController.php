@@ -524,9 +524,12 @@ class GroupController extends Controller
                 break;
         }
 
+        $query = $query->orderBy('top','desc')->orderBy('id','desc');
+        $submissions = $query->simplePaginate($limit,['*'],'page',$page);
+
         if ($page == 1 && $joined) {
             if ($last_seen) {
-                $ids = $query->orderBy('id','desc')->take(100)->pluck('id')->toArray();
+                $ids = $query->where('top',0)->take(100)->pluck('id')->toArray();
                 $newCount = array_search($last_seen,$ids);
                 if ($newCount === false) {
                     $newCount = '99+';
@@ -540,8 +543,6 @@ class GroupController extends Controller
                 $alertMsg = '已为您更新';
             }
         }
-
-        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate($limit,['*'],'page',$page);
 
         $return = $submissions->toArray();
         $list = [];
