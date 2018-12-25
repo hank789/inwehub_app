@@ -492,6 +492,9 @@ class GroupController extends Controller
         $user = $request->user();
         $limit = Config::get('inwehub.api_data_page_size');
         $page = $request->input('page',1);
+        $alertMsg = '';
+        $last_seen = RateLimiter::instance()->hGet('user_group_last_seen',$group->id.'_'.$user->id);
+        $joined = true;
         if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
             $groupMember = GroupMember::where('user_id',$user->id)->where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->first();
             if (!$groupMember && $user->id != $group->user_id) {
@@ -501,6 +504,7 @@ class GroupController extends Controller
                 //未加入圈子也显示10条
                 $limit = 10;
                 $page = 1;
+                $joined = false;
                 //return self::createJsonData(false,['group_id'=>$group->id],ApiException::GROUP_NOT_JOINED,ApiException::$errorMessages[ApiException::GROUP_NOT_JOINED]);
             }
         }
@@ -519,15 +523,40 @@ class GroupController extends Controller
                 $query = $query->where('is_recommend',1);
                 break;
         }
+        $query = $query->orderBy('top','desc')->orderBy('id','desc');
 
-        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate($limit,['*'],'page',$page);
+        if ($page == 1 && $joined) {
+            if ($last_seen) {
+                $ids = $query->take(100)->pluck('id')->toArray();
+                $newCount = array_search($last_seen,$ids);
+                if ($newCount === false) {
+                    $newCount = '99+';
+                }
+                if ($newCount) {
+                    $alertMsg = '更新了'.$newCount.'条信息';
+                } else {
+                    $alertMsg = '暂无新信息';
+                }
+            } else {
+                $alertMsg = '已为您更新';
+            }
+        }
+
+        $submissions = $query->simplePaginate($limit,['*'],'page',$page);
 
         $return = $submissions->toArray();
         $list = [];
         foreach ($submissions as $submission) {
+            if ($page == 1 && $last_seen < $submission->id) {
+                $last_seen = $submission->id;
+            }
             $list[] = $submission->formatListItem($user);
         }
+        if ($page == 1 && $joined) {
+            RateLimiter::instance()->hSet('user_group_last_seen',$group->id.'_'.$user->id,$last_seen);
+        }
         $return['data'] = $list;
+        $return['alert_msg'] = $alertMsg;
         return self::createJsonData(true, $return);
     }
 
