@@ -523,11 +523,10 @@ class GroupController extends Controller
                 $query = $query->where('is_recommend',1);
                 break;
         }
-        $query = $query->orderBy('top','desc')->orderBy('id','desc');
 
         if ($page == 1 && $joined) {
             if ($last_seen) {
-                $ids = $query->take(100)->pluck('id')->toArray();
+                $ids = $query->orderBy('id','desc')->take(100)->pluck('id')->toArray();
                 $newCount = array_search($last_seen,$ids);
                 if ($newCount === false) {
                     $newCount = '99+';
@@ -542,7 +541,7 @@ class GroupController extends Controller
             }
         }
 
-        $submissions = $query->simplePaginate($limit,['*'],'page',$page);
+        $submissions = $query->orderBy('top','desc')->orderBy('id','desc')->simplePaginate($limit,['*'],'page',$page);
 
         $return = $submissions->toArray();
         $list = [];
