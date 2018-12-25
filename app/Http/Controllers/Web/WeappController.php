@@ -68,13 +68,14 @@ class WeappController extends Controller
     public function getProductShareLongInfo($id, WeApp $wxxcx){
         $tag = Tag::find($id);
         $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
-
+        $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
         return view('h5::weapp.productShareShort');
     }
 
     public function getProductShareShortInfo($id, WeApp $wxxcx){
         $tag = Tag::find($id);
         $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
+        $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
         return view('h5::weapp.productShareShort');
     }
 
