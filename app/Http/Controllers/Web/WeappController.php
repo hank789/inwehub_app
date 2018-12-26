@@ -69,14 +69,14 @@ class WeappController extends Controller
         $tag = Tag::find($id);
         $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
         $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
-        return view('h5::weapp.productShareShort');
+        return view('h5::weapp.productShareLong')->with('tag',$tag)->with('qrcode',$qrcodeUrlFormat);
     }
 
     public function getProductShareShortInfo($id, WeApp $wxxcx){
         $tag = Tag::find($id);
         $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
         $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
-        return view('h5::weapp.productShareShort');
+        return view('h5::weapp.productShareShort')->with('tag',$tag)->with('qrcode',$qrcodeUrlFormat);
     }
 
     protected function getProductQrcode($id, WeApp $wxxcx) {
@@ -100,14 +100,34 @@ class WeappController extends Controller
 
     public function getReviewShareLongInfo($id, WeApp $wxxcx){
         $review = Submission::find($id);
+        $tag = Tag::find($review->category_id);
         $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
-        return view('h5::weapp.reviewShareShort');
+        $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
+        $info = Tag::getReviewInfo($tag->id);
+        $data = [
+            'id' => $tag->id,
+            'name' => $tag->name,
+            'logo' => $tag->logo,
+            'review_count' => $info['review_count'],
+            'review_average_rate' => $info['review_average_rate']
+        ];
+        return view('h5::weapp.reviewShareLong')->with('review',$review)->with('qrcode',$qrcodeUrlFormat)->with('product',$data);
     }
 
     public function getReviewShareShortInfo($id, WeApp $wxxcx){
         $review = Submission::find($id);
+        $tag = Tag::find($review->category_id);
         $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
-        return view('h5::weapp.reviewShareShort');
+        $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
+        $info = Tag::getReviewInfo($tag->id);
+        $data = [
+            'id' => $tag->id,
+            'name' => $tag->name,
+            'logo' => $tag->logo,
+            'review_count' => $info['review_count'],
+            'review_average_rate' => $info['review_average_rate']
+        ];
+        return view('h5::weapp.reviewShareShort')->with('review',$review)->with('qrcode',$qrcodeUrlFormat)->with('product',$data);
     }
 
     protected function getReviewQrcode($id, WeApp $wxxcx) {
