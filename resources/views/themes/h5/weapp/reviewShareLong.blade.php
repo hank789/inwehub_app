@@ -1,31 +1,276 @@
-demandShareLong.blade.php<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
     <title></title>
     <style type="text/css">
-        body{font-family:PingFang-SC-Regular,sans-serif;margin:0;line-height:31.5px}*{-webkit-box-sizing:border-box;box-sizing:border-box;outline:0}.component-card{position:relative;background:#f8f9f9;padding:79.5px 75px 0 75px}.component-card .title{font-family:PingFangSC-Medium,sans-serif;font-size:48px;line-height:67.5px}.component-card .labels{margin-top:27px}.component-card .labels .label{margin-top:7.5px;padding:0 34.5px;height:78px;line-height:78px;font-size:39px;border-radius:150px;border:1.5px solid #dcdcdc;display:inline-block;color:grey;margin-right:15px}.component-card .cardLine{position:relative;margin-top:46.5px;min-height:1.5px}.component-card .cardLine:after{position:absolute;right:0;bottom:0;left:0;height:3px;content:'';-webkit-transform:scaleY(.5);transform:scaleY(.5);background-color:#dcdcdc}.component-card .cardfooter{position:relative;padding-top:42px}.component-card .cardfooter .address{color:#444;font-size:39px}.component-card .cardfooter .address img{width:36px;height:43.5px;vertical-align:middle;margin-right:7.5px}.component-card .cardfooter .address span{vertical-align:middle}.component-card .cardfooter .price{position:absolute;right:0;top:42%;vertical-align:middle}.component-card .cardfooter .price .number{vertical-align:inherit;color:#66dbf9;font-size:57px;line-height:57px;font-family:PingFangSC-Medium,sans-serif}.component-card .cardfooter .price .unit{vertical-align:inherit;color:#b4b4b6;font-size:39px;line-height:39px;margin-left:9px}.component-qrcode{text-align:center;position:relative;height:319.5px}.component-qrcode .circle{position:absolute;left:50%;top:50%;margin-top:-159.8px;margin-left:-159.8px;width:319.5px;height:319.5px;border-radius:50%;background:#fff;overflow:hidden;z-index:999;text-align:center}.component-qrcode .qrcode{width:293.4px;height:293.4px;margin-top:13.1px;border-radius:50%}.component-qrcode .center{position:absolute;z-index:999;left:50%;width:105px;height:90px;top:50%;margin-top:-45px;margin-left:-52.5px}.component-qrcode-help{margin-top:45px;text-align:center;color:#fff;font-size:36px}.component-qrcode-help img{width:45px;vertical-align:middle}.component-qrcode-help span{vertical-align:middle;margin-left:12px}.component-app-footer{margin-top:39.6px;color:#fff;font-size:30px;text-align:center}.component-app-footer span{position:relative}.component-app-footer span:before{position:absolute;width:48px;left:-63px;top:19.5px;height:3px;content:'';-webkit-transform:scaleY(.5);transform:scaleY(.5);background-color:#dcdcdc}.component-app-footer span:after{position:absolute;width:48px;right:-63px;top:19.5px;height:3px;content:'';-webkit-transform:scaleY(.5);transform:scaleY(.5);background-color:#dcdcdc}.bg-card{padding:21px 0 90px;background:-webkit-linear-gradient(180deg,#8fd9ff,#4ec2fd);background:-o-linear-gradient(180deg,#8fd9ff,#4ec2fd);background:-moz-linear-gradient(180deg,#8fd9ff,#4ec2fd);background:linear-gradient(180deg,#8fd9ff,#4ec2fd);position:relative;overflow:hidden}.bg-card:before{position:absolute;content:'';width:2265px;height:2265px;left:50%;bottom:435.8px;margin-left:-1132.5px;background:#f8f9f9;border-radius:50%}
+        body {
+            font-family: PingFang-SC-Regular, sans-serif;
+            margin: 0;
+            line-height: 15.75px
+        }
+        * {
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            outline: 0
+        }
+        .component-card {
+            /* height: 343.5px; */
+            position: relative;
+            padding: 51px 75px 54px;
+            background: #5B71A9;
+        }
+        .component-card .bgimg {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .component-card .card-wrapper {
+            width: 1029px;
+            margin: 0 auto;
+            padding: 75px 90px 90px;
+            border-radius:60px;
+            background: #ffffff;
+            position: relative;
+            z-index: 1;
+        }
+        .component-card .user {
+            border-bottom: 1.5px solid #E9E9E9;
+        }
+        .component-card .card-wrapper .userimg {
+            width:232.5px;
+            height:240px;
+            margin: 0 auto;
+        }
+        .component-card .card-wrapper .userimg img {
+            width: 100%;
+            height: 100%;
+        }
+        .component-card .card-wrapper .username {
+            font-size:54px;
+            font-family:PingFangSC-Medium;
+            color:rgba(68,68,68,1);
+            line-height:75px;
+            text-align: center;
+            margin: 18px 0 19.5px;
+        }
+        .component-card .card-wrapper .stars {
+            text-align: center;
+            padding-bottom: 51px;
+        }
+        .component-card .card-wrapper .stars span {
+            color: #FCC816;
+            line-height: 45px;
+            font-size: 33px;
+            text-align: center;
+        }
+        .component-card .card-wrapper .content {
+            padding: 45px 0 0;
+            border-bottom: 1.5px solid #E9E9E9;
+        }
+        .component-card .card-wrapper span {
+            font-size:42px;
+            font-family:PingFangSC-Regular;
+            color:rgba(68,68,68,1);
+            line-height:78px;
+        }
+        .component-card .card-wrapper .conimg {
+            width:909px;
+            height:489px;
+            margin: 78px auto;
+        }
+        .component-card .card-wrapper .conimg img {
+            width: 100%;
+            height: 100%;
+        }
+        .component-card .card-wrapper .product-wrapper {
+            margin-top: 45px;
+        }
+        .component-card .card-wrapper .product-wrapper .product {
+            display: flex;
+        }
+        .component-card .card-wrapper .product-wrapper .product .logo {
+            width:132px;
+            height:132px;
+            background:#ffffff;
+            border-radius:12px;
+            border:1.5px solid #DCDCDC;
+            overflow: hidden;
+        }
+        .component-card .card-wrapper .product-wrapper .product .logo img {
+            width: 100%;
+            height: 100%;
+        }
+        .component-card .card-wrapper .product-wrapper .product .info {
+            margin-left: 15px;
+        }
+        .component-card .card-wrapper .product-wrapper .product .info .name {
+            font-size:48px;
+            font-family:PingFangSC-Medium;
+            font-weight:500;
+            color:#444444;
+            line-height:67.5px;
+        }
+        .component-card .card-wrapper .stars-wrapper {
+            display: flex;
+            margin-top: 15px;
+        }
+        .component-card .card-wrapper .stars-wrapper .spot {
+            width:6px;
+            height:6px;
+            display: inline-block;
+            background: #B4B4B6;
+            border-radius: 50%;
+            margin: 0px 15px 0;
+            position: relative;
+            top: -7.5px;
+        }
+        .component-card .card-wrapper .stars-wrapper span {
+            font-size:33px;
+            font-family:PingFangSC-Regular;
+            font-weight:400;
+            color:rgba(180,180,182,1);
+            line-height:45px;
+        }
+        .component-card .card-wrapper .stars-wrapper span:nth-of-type(1) {
+            color: #FCC816;
+        }
+
+        .component-card .text-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 45px;
+        }
+        .component-card .text-wrapper .finger {
+            width: 45px;
+            height: 45px;
+            margin-right: 15px;
+        }
+        .component-card .text-wrapper .finger img {
+            width: 100%;
+            height: 100%;
+        }
+        .component-card .text-wrapper .text {
+            color: #FFFFFF;
+            font-size: 36px;
+            line-height: 49.5px;
+        }
+        .component-card .title-wrapper {
+            position: relative;
+        }
+        .component-card .title-wrapper .logo {
+            width:201px;
+            height:27px;
+            padding: 0 18px;
+            margin: 60px auto 0;
+            position: relative;
+            z-index: 9;
+            background: #5B71A9;
+        }
+        .component-card .title-wrapper .logo img {
+            width: 100%;
+            height: 100%;
+            opacity:0.3;
+        }
+        .component-card .title-wrapper .line {
+            width: 300px;
+            height: 3px;
+            margin: 12px auto 0;
+            position: absolute;
+            left: 50%;
+            opacity:0.3;
+            transform: translateX(-50%);
+            background: #ffffff;
+        }
+        .starImg {
+            width: 208.5px;
+            height: 31.5px;
+            position: relative;
+        }
+        .starImg .star-star {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .starImg .star-star img {
+            width: 208.5px;
+        }
+        .starImg .star-S {
+            overflow: hidden;
+        }
+        .starImg .star-S img {
+            /* width: 100%; */
+        }
+        .stars-wrapper .star-text  {
+            margin-top: -6px;
+            margin-left: 18px;
+        }
+        .card-wrapper .user .stars-wrapper {
+            justify-content: center;
+            padding-bottom: 51px;
+        }
+
     </style>
 </head>
+
 <body>
 <div class="component-card">
-    <div class="title">{{ $demand['title'] }}</div>
-    <div class="labels">
-        <div class="label">{{$demand['project_begin_time']}}开始</div><div class="label">{{$demand['project_cycle']['text']}}</div><div class="label">{{$demand['industry']['text']}}</div>
+    <div class="bgimg">
+        <img src="../images/commentDetail@3x.png" alt="">
     </div>
-    <div class="cardLine"></div>
-    <div class="cardfooter">
-        <div class="address"><img src="https://cdn.inwehub.com/weapp_demand/position@3x.png"><span>{{$demand['address']['selProvince']  === '请选择' ? '' : $demand['address']['selProvince'] }}{{$demand['address']['selCity'] ? $demand['address']['selCity'] : ''}}{{$demand['address']['selDistrict'] ? $demand['address']['selDistrict'] : ''}}</span></div>
-        <div class="price"><span class="number">{{$demand['salary'].($demand['salary_upper']>$demand['salary']?'~'.$demand['salary_upper']:'')}}</span><span class="unit">元/{{$demand['salary_type'] == 0?'天':'月'}}</span></div>
+    <div class="card-wrapper">
+        <div class="user">
+            <div class="userimg">
+                <img src="..//images/logo-144.png" alt="">
+            </div>
+            <div class="username">玩够</div>
+            <div class="stars-wrapper">
+                <div class="starImg">
+                    <div class="star-S star-star" style="width: 45%;"><img src="../images/starS@3x.png" alt=""></div>
+                    <div class="star-K star-star"><img src="../images/starK@3x.png" alt=""></div>
+                </div>
+                <div class="star-text">
+                    <span>4.0分</span><i class="spot"></i><span>23条评论</span>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <span>1. 必须使用生产版本管理因为MRP视图中的选择方法字段就没有用处MRP视图中的选择方法字段就没有用处。</span>
+            <div class="conimg"><img src="../images/commentBig@3x.png" alt=""></div>
+        </div>
+        <div class="product-wrapper">
+            <div class="product">
+                <div class="logo">
+                    <img src="../images/logo-144.png" alt="">
+                </div>
+                <div class="info">
+                    <div class="name">麦兜</div>
+                    <div class="stars-wrapper">
+                        <div class="starImg">
+                            <div class="star-S star-star" style="width: 45%;"><img src="../images/starS@3x.png" alt=""></div>
+                            <div class="star-K star-star"><img src="../images/starK@3x.png" alt=""></div>
+                        </div>
+                        <div class="star-text">
+                            <span>4.0分</span><i class="spot"></i><span>23条评论</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-<div class="bg-card">
-    <div class="component-qrcode">
-        <div class="circle"><img class="qrcode" src="{{$demand['qrcodeUrl']}}"></div>
+    <div class="text-wrapper">
+        <div class="finger">
+            <img src="../images/finger@3x.png" alt="">
+        </div>
+        <div class="text">长按识别二维码查看详细信息</div>
     </div>
-    <div class="component-qrcode-help"><img src="https://cdn.inwehub.com/weapp_demand/zhiwen@3x.png"><span>长按识别小程序，查看项目招募信息</span></div>
-    <div class="component-app-footer"><span>项目招募助手</span></div>
+    <div class="title-wrapper">
+        <div class="line"></div>
+        <div class="logo"><img src="../images/text_q@3x.png" alt=""></div>
+    </div>
 </div>
 </body>
+
 </html>
