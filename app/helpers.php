@@ -2054,8 +2054,17 @@ function urlsafe_base64_encode($str){
 
 
 function weapp_qrcode_replace_logo($qrcodeUrl,$newLogoUrl) {
-    $newLogoUrl = str_replace('https://cdn.inwehub.com/','',$newLogoUrl);
-    $s = urlsafe_base64_encode($newLogoUrl.'?x-oss-process=image/resize,m_lfit,h_192,w_192,image/circle,r_100');
-    return $qrcodeUrl.'?x-oss-process=image/resize,w_430/watermark,image_'.$s.',g_center';
+    $circleLogo = \App\Services\RateLimiter::instance()->hGet('weapp_dp_logo_circle',$newLogoUrl);
+    if (!$circleLogo) {
+        $circleLogo = $newLogoUrl.'?x-oss-process=image/resize,m_lfit,h_192,w_192,limit_0,image/circle,r_100/format,png';
+        $file_name = 'product/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+        Storage::disk('oss')->put($file_name,file_get_contents($circleLogo));
+        $circleLogo = Storage::disk('oss')->url($file_name);
+        \App\Services\RateLimiter::instance()->hSet('weapp_dp_logo_circle',$newLogoUrl,$circleLogo);
+    }
+    $logoUrl = str_replace('https://cdn.inwehub.com/','',$circleLogo);
+
+    $s = urlsafe_base64_encode($logoUrl);
+    return $qrcodeUrl.'?x-oss-process=image/resize,w_430,h_430/watermark,image_'.$s.',g_center';
 }
 
