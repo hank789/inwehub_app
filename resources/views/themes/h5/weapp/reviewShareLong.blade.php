@@ -229,7 +229,7 @@
             <div class="userimg">
                 <img src="{{ $qrcode }}" alt="">
             </div>
-            <div class="username">{{ $review->owner->name }}</div>
+            <div class="username">{{ $review->hide ? '匿名':$review->owner->name }}</div>
             <div class="stars-wrapper">
                 <div class="starImg">
                     <div class="star-S star-star" style="width: {{ 100*$review->rate_star/5 }}%;"><img src="https://cdn.inwehub.com/weapp_dianping/starS@3x.png" alt=""></div>

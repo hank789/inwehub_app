@@ -277,7 +277,7 @@ class ProductController extends Controller {
             $showUrl = 'getReviewShareShortInfo';
         }
         $submission = Submission::findOrFail($request->input('id'));
-        if(!isset($submission->data[$collection])){
+        if(!isset($submission->data[$collection]) || config('app.env') != 'production'){
             $snappy = App::make('snappy.image');
             $snappy->setOption('width',1125);
             $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$submission->id);
