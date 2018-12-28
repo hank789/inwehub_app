@@ -2053,7 +2053,7 @@ function urlsafe_base64_encode($str){
 }
 
 
-function weapp_qrcode_replace_logo($qrcodeUrl,$newLogoUrl) {
+function weapp_qrcode_replace_logo($qrcodeUrl,$newLogoUrl,$circleQr = false) {
     $circleLogo = \App\Services\RateLimiter::instance()->hGet('weapp_dp_logo_circle',$newLogoUrl);
     if (!$circleLogo) {
         $circleLogo = $newLogoUrl.'?x-oss-process=image/resize,m_lfit,h_192,w_192,limit_0,image/circle,r_100/format,png';
@@ -2065,6 +2065,6 @@ function weapp_qrcode_replace_logo($qrcodeUrl,$newLogoUrl) {
     $logoUrl = str_replace('https://cdn.inwehub.com/','',$circleLogo);
 
     $s = urlsafe_base64_encode($logoUrl);
-    return $qrcodeUrl.'?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_'.$s.',g_center';
+    return $qrcodeUrl.'?x-oss-process=image/resize,w_430,h_430'.($circleQr?',image/circle,r_300/format,png':'').'/watermark,image_'.$s.',g_center';
 }
 
