@@ -54,7 +54,7 @@
         }
         .component-card .text-wrapper .text span {
             padding-left: 60px;
-            background: url(https://cdn.inwehub.com/weapp_dianping/finger@3x.png) no-repeat;
+            background: url(https://cdn.inwehub.com/weapp_dianping/finger-p@3x.png) no-repeat;
         }
         .component-card .fl .title-wrapper {
             margin-top: 64.5px;
@@ -88,8 +88,6 @@
         .component-card .fr .code-wrapper {
             width:238.5px;
             height:238.5px;
-            background:rgba(255,255,255,1);
-            border-radius:142.5px;
             overflow: hidden;
             position: relative;
         }
@@ -108,7 +106,6 @@
         }
     </style>
 </head>
-
 <body>
 <div class="component-card">
     <div class="bgimg">
