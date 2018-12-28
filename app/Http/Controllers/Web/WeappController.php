@@ -67,15 +67,31 @@ class WeappController extends Controller
 
     public function getProductShareLongInfo($id, WeApp $wxxcx){
         $tag = Tag::find($id);
-        $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
-        $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
+        if (config('app.env') != 'production') {
+            $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
+        } else {
+            $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
+            try {
+                $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
+            } catch (\Exception $e) {
+                $qrcodeUrlFormat = $qrcodeUrl;
+            }
+        }
         return view('h5::weapp.productShareLong')->with('tag',$tag)->with('qrcode',$qrcodeUrlFormat);
     }
 
     public function getProductShareShortInfo($id, WeApp $wxxcx){
         $tag = Tag::find($id);
-        $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
-        $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
+        if (config('app.env') != 'production') {
+            $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
+        } else {
+            $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
+            try {
+                $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
+            } catch (\Exception $e) {
+                $qrcodeUrlFormat = $qrcodeUrl;
+            }
+        }
         return view('h5::weapp.productShareShort')->with('tag',$tag)->with('qrcode',$qrcodeUrlFormat);
     }
 
@@ -101,8 +117,16 @@ class WeappController extends Controller
     public function getReviewShareLongInfo($id, WeApp $wxxcx){
         $review = Submission::find($id);
         $tag = Tag::find($review->category_id);
-        $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
-        $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
+        if (config('app.env') != 'production') {
+            $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
+        } else {
+            $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
+            try {
+                $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
+            } catch (\Exception $e) {
+                $qrcodeUrlFormat = $qrcodeUrl;
+            }
+        }
         $info = Tag::getReviewInfo($tag->id);
         $data = [
             'id' => $tag->id,
@@ -117,8 +141,16 @@ class WeappController extends Controller
     public function getReviewShareShortInfo($id, WeApp $wxxcx){
         $review = Submission::find($id);
         $tag = Tag::find($review->category_id);
-        $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
-        $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
+        if (config('app.env') != 'production') {
+            $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
+        } else {
+            $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
+            try {
+                $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
+            } catch (\Exception $e) {
+                $qrcodeUrlFormat = $qrcodeUrl;
+            }
+        }
         $info = Tag::getReviewInfo($tag->id);
         $data = [
             'id' => $tag->id,

@@ -105,25 +105,25 @@
 <body>
 <div class="component-card">
     <div class="bgimg">
-        <img src="../images/productDetail@3x.png" alt="">
+        <img src="https://cdn.inwehub.com/weapp_dianping/productDetail@3x.png" alt="">
     </div>
     <div class="fl">
-        <div class="product-name">麦兜</div>
+        <div class="product-name">{{ $tag->name }}</div>
         <div class="text-wrapper">
             <div class="finger">
-                <img src="../images/finger@3x.png" alt="">
+                <img src="https://cdn.inwehub.com/weapp_dianping/finger@3x.png" alt="">
             </div>
             <div class="text">长按识别二维码查看详细信息</div>
         </div>
         <div class="title-wrapper">
             <div class="line"></div>
-            <div class="logo"><img src="../images/text_q@3x.png" alt=""></div>
+            <div class="logo"><img src="https://cdn.inwehub.com/weapp_dianping/text_q@3x.png" alt=""></div>
         </div>
     </div>
     <div class="fr">
         <div class="code-wrapper">
             <div class="product-code">
-                <img src="../images/inwehubWechat@3x.png" alt="">
+                <img src="{{ $qrcode }}" alt="">
             </div>
         </div>
     </div>
