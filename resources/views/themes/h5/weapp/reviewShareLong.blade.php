@@ -19,7 +19,7 @@
         .component-card {
             /* height: 343.5px; */
             position: relative;
-            padding: 51px 75px 54px;
+            padding: 51px 0 54px;
             background: #5B71A9;
             overflow: hidden;
         }
