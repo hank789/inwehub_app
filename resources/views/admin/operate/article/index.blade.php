@@ -83,11 +83,11 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                @if ($submission->data['img'] && is_array($submission->data['img']))
+                                                @if (isset($submission->data['img']) && is_array($submission->data['img']))
                                                     @foreach($submission->data['img'] as $img)
                                                         <img width="100" height="100" src="{{ $img }}">
                                                     @endforeach
-                                                @elseif ($submission->data['img'])
+                                                @elseif (isset($submission->data['img']))
                                                     <img width="100" height="100" src="{{ $submission->data['img'] ??'' }}">
                                                 @endif
                                             </td>

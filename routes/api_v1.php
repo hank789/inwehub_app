@@ -527,7 +527,8 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('product/storeReview','ProductController@storeReview')->middleware(['jwt.weappAuth']);
     Route::post('product/addReviewImage','ProductController@addReviewImage')->middleware(['jwt.weappAuth']);
     Route::get('product/myReview','ProductController@myReviewList')->middleware(['jwt.weappAuth']);
-
+    Route::get('product/getProductShareImage','ProductController@getProductShareImage');
+    Route::get('product/getReviewShareImage','ProductController@getReviewShareImage');
 });
 
 //微信小程序

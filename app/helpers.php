@@ -2040,3 +2040,31 @@ function array_unique_fb($array2D){
     return $temp;
 }
 
+/*
+ *
+ * @desc URL安全形式的base64编码
+ * @param string $str
+ * @return string
+ */
+function urlsafe_base64_encode($str){
+    $find = array("+","/");
+    $replace = array("-", "_");
+    return str_replace($find, $replace, base64_encode($str));
+}
+
+
+function weapp_qrcode_replace_logo($qrcodeUrl,$newLogoUrl) {
+    $circleLogo = \App\Services\RateLimiter::instance()->hGet('weapp_dp_logo_circle',$newLogoUrl);
+    if (!$circleLogo) {
+        $circleLogo = $newLogoUrl.'?x-oss-process=image/resize,m_lfit,h_192,w_192,limit_0,image/circle,r_100/format,png';
+        $file_name = 'product/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
+        Storage::disk('oss')->put($file_name,file_get_contents($circleLogo));
+        $circleLogo = Storage::disk('oss')->url($file_name);
+        \App\Services\RateLimiter::instance()->hSet('weapp_dp_logo_circle',$newLogoUrl,$circleLogo);
+    }
+    $logoUrl = str_replace('https://cdn.inwehub.com/','',$circleLogo);
+
+    $s = urlsafe_base64_encode($logoUrl);
+    return $qrcodeUrl.'?x-oss-process=image/resize,w_430,h_430/watermark,image_'.$s.',g_center';
+}
+

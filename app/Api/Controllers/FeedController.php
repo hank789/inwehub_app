@@ -121,7 +121,7 @@ class FeedController extends Controller
         } else {
             $query = $query->distinct()->orderBy('id','desc');
             $feeds = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
-            if ($page == 1) {
+            if ($page == 1 && $search_type != 5) {
                 if ($last_seen) {
                     $ids = $query->take(100)->pluck('id')->toArray();
                     $newCount = array_search($last_seen,$ids);
@@ -164,7 +164,7 @@ class FeedController extends Controller
                 'created_at' => $feed->created_at->diffForHumans()
             ];
         }
-        if ($page == 1) {
+        if ($page == 1 && $search_type != 5) {
             RateLimiter::instance()->hSet('user_feed_last_seen',$user->id,$last_seen);
         }
         $return['data'] = $data;

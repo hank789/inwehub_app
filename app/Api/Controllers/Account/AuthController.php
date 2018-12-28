@@ -704,12 +704,14 @@ class AuthController extends Controller
                 //现token实现
                 $JWTAuth->setRequest($request)->parseToken()->refresh();
                 $newToken = $JWTAuth->fromUser($user);
+                event(new SystemNotify('用户通过手机号完成了账户合并: '.$loginUser->id.'['.$loginUser->name.']=>'.$user->id.'['.$user->name.']'));
                 return self::createJsonData(true,['token'=>$newToken]);
             }
         }
         if (!$user) {
             $loginUser->mobile = $mobile;
             $loginUser->save();
+            event(new SystemNotify('用户完成手机认证: '.$loginUser->id.'['.$loginUser->name.']'));
         }
         $newToken = $JWTAuth->fromUser($loginUser);
 

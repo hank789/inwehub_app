@@ -17,6 +17,11 @@ Route::group(['namespace'=>'Web'], function() {
     Route::get('/weapp/getDemandShareLongInfo/{id}',['uses'=>'WeappController@getDemandShareLongInfo'])->where(['id'=>'[0-9]+']);
     Route::get('/weapp/getDemandShareShortInfo/{id}',['uses'=>'WeappController@getDemandShareShortInfo'])->where(['id'=>'[0-9]+']);
 
+    Route::get('/weapp/getProductShareLongInfo/{id}',['uses'=>'WeappController@getProductShareLongInfo'])->where(['id'=>'[0-9]+']);
+    Route::get('/weapp/getProductShareShortInfo/{id}',['uses'=>'WeappController@getProductShareShortInfo'])->where(['id'=>'[0-9]+']);
+    Route::get('/weapp/getReviewShareLongInfo/{id}',['uses'=>'WeappController@getReviewShareLongInfo'])->where(['id'=>'[0-9]+']);
+    Route::get('/weapp/getReviewShareShortInfo/{id}',['uses'=>'WeappController@getReviewShareShortInfo'])->where(['id'=>'[0-9]+']);
+
 });
 
 

@@ -9,6 +9,7 @@ use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Laravel\Scout\Searchable;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * App\Models\Tag
@@ -39,7 +40,7 @@ use Laravel\Scout\Searchable;
  */
 class Tag extends Model
 {
-    use BelongsToCategoryTrait, Searchable;
+    use BelongsToCategoryTrait, Searchable, HasMediaTrait;
     protected $table = 'tags';
     protected $fillable = ['name', 'logo', 'summary','description','followers', 'category_id', 'reviews'];
 
