@@ -237,7 +237,7 @@
             </div>
         </div>
         <div class="content">
-            <span>{{ $review->title }}</span>
+            <span>{!! $review->title !!}</span>
         </div>
         <div class="product-wrapper">
             <div class="product">

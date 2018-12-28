@@ -120,7 +120,7 @@
         </div>
         <div class="product-name">{{ $tag->name }}</div>
         <div class="content">
-            {{ $tag->summary }}
+            {!! $tag->summary !!}
         </div>
     </div>
     <div class="text-wrapper">
