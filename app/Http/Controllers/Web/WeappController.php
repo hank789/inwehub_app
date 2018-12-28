@@ -80,6 +80,7 @@ class WeappController extends Controller
     }
 
     protected function getProductQrcode($id, WeApp $wxxcx) {
+        if (config('app.env') != 'production') return 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         $qrcodeUrl = RateLimiter::instance()->hGet('product-qrcode',$id);
         if (!$qrcodeUrl) {
             $file_name = 'product/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
@@ -131,6 +132,7 @@ class WeappController extends Controller
     }
 
     protected function getReviewQrcode($id, WeApp $wxxcx) {
+        if (config('app.env') != 'production') return 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         $qrcodeUrl = RateLimiter::instance()->hGet('review-qrcode',$id);
         if (!$qrcodeUrl) {
             $file_name = 'review/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
