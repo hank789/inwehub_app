@@ -25,14 +25,25 @@ use Tymon\JWTAuth\JWTAuth;
 
 class SystemController extends Controller {
 
-    public function feedback(Request $request)
+    public function feedback(Request $request, JWTAuth $JWTAuth)
     {
         $validateRules = [
             'title'   => 'required',
             'content' => 'required'
         ];
         $this->validate($request, $validateRules);
-        $user = $request->user();
+        if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+            $oauth = $JWTAuth->parseToken()->toUser();
+            if ($oauth->user_id) {
+                $user = $oauth->user;
+            } else {
+                $user = new \stdClass();
+                $user->id = 0;
+                $user->name = $oauth->nickname;
+            }
+        } else {
+            $user = $request->user();
+        }
 
         $fields = [];
         $fields[] = [

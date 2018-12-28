@@ -218,42 +218,41 @@
 <body>
 <div class="component-card">
     <div class="bgimg">
-        <img src="../images/commentDetail@3x.png" alt="">
+        <img src="https://cdn.inwehub.com/weapp_dianping/commentDetail@3x.png" alt="">
     </div>
     <div class="card-wrapper">
         <div class="user">
             <div class="userimg">
-                <img src="..//images/logo-144.png" alt="">
+                <img src="{{ $qrcode }}" alt="">
             </div>
-            <div class="username">玩够</div>
+            <div class="username">{{ $review->owner->name }}</div>
             <div class="stars-wrapper">
                 <div class="starImg">
-                    <div class="star-S star-star" style="width: 45%;"><img src="../images/starS@3x.png" alt=""></div>
-                    <div class="star-K star-star"><img src="../images/starK@3x.png" alt=""></div>
+                    <div class="star-S star-star" style="width: {{ 100*$review->rate_star/5 }}%;"><img src="https://cdn.inwhub.com/weapp_dianping/starS@3x.png" alt=""></div>
+                    <div class="star-K star-star"><img src="https://cdn.inwehub.com/weapp_dianping/starK@3x.png" alt=""></div>
                 </div>
                 <div class="star-text">
-                    <span>4.0分</span><i class="spot"></i><span>23条评论</span>
+                    <span>{{ $review->rate_star }}分</span>
                 </div>
             </div>
         </div>
         <div class="content">
-            <span>1. 必须使用生产版本管理因为MRP视图中的选择方法字段就没有用处MRP视图中的选择方法字段就没有用处。</span>
-            <div class="conimg"><img src="../images/commentBig@3x.png" alt=""></div>
+            {{ $review->title }}
         </div>
         <div class="product-wrapper">
             <div class="product">
                 <div class="logo">
-                    <img src="../images/logo-144.png" alt="">
+                    <img src="{{ $product['logo'] }}" alt="">
                 </div>
                 <div class="info">
-                    <div class="name">麦兜</div>
+                    <div class="name">{{ $product['name'] }}</div>
                     <div class="stars-wrapper">
                         <div class="starImg">
-                            <div class="star-S star-star" style="width: 45%;"><img src="../images/starS@3x.png" alt=""></div>
-                            <div class="star-K star-star"><img src="../images/starK@3x.png" alt=""></div>
+                            <div class="star-S star-star" style="width: {{ 100*$product['review_average_rate']/5 }}%;"><img src="https://cdn.inwhub.com/weapp_dianping/starS@3x.png" alt=""></div>
+                            <div class="star-K star-star"><img src="https://cdn.inwehub.com/weapp_dianping/starK@3x.png" alt=""></div>
                         </div>
                         <div class="star-text">
-                            <span>4.0分</span><i class="spot"></i><span>23条评论</span>
+                            <span>{{ $product['review_average_rate'] }}分</span><i class="spot"></i><span>{{ $product['review_count'] }}条评论</span>
                         </div>
                     </div>
                 </div>
@@ -262,13 +261,13 @@
     </div>
     <div class="text-wrapper">
         <div class="finger">
-            <img src="../images/finger@3x.png" alt="">
+            <img src="https://cdn.inwehub.com/weapp_dianping/finger@3x.png" alt="">
         </div>
         <div class="text">长按识别二维码查看详细信息</div>
     </div>
     <div class="title-wrapper">
         <div class="line"></div>
-        <div class="logo"><img src="../images/text_q@3x.png" alt=""></div>
+        <div class="logo"><img src="https://cdn.inwehub.com/weapp_dianping/text_q@3x.png" alt=""></div>
     </div>
 </div>
 </body>

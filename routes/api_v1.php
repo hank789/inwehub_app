@@ -534,6 +534,7 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
 //微信小程序
 Route::group(['prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function() {
     //企业点评
+    Route::post('product/feedback','SystemController@feedback')->middleware(['jwt.weappAuth']);
     Route::post('product/upvoteReview','Article\SubmissionVotesController@upVote')->middleware(['jwt.weappAuth']);
     Route::post('product/downvoteReview','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);
     Route::post('product/upvoteComment','Article\SubmissionVotesController@downVote')->middleware(['jwt.weappAuth']);

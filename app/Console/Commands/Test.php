@@ -62,6 +62,11 @@ class Test extends Command
      */
     public function handle()
     {
+        $url = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png';
+        $logo = 'https://cdn.inwehub.com/tags/2018/11/QCwQdgZz5bfe458c5e535.png';
+        $fUrl = weapp_qrcode_replace_logo($url,$logo);
+        var_dump($fUrl);
+        return;
         $keys = Redis::connection()->keys('inwehub:group-daily-hot-*');
         if ($keys) Redis::connection()->del($keys);
         return;
