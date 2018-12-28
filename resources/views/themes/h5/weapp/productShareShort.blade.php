@@ -17,17 +17,18 @@
             outline: 0
         }
         .component-card {
-            display: flex;
-            justify-content: space-between;
-            /* height: 343.5px; */
             position: relative;
             padding: 51px 75px 54px;
             background: #5B71A9;
+            overflow: hidden;
         }
         .component-card .bgimg {
             position: absolute;
             top: 0;
             right: 0;
+        }
+        .component-card .fl {
+            float: left;
         }
         .component-card .fl .product-name {
             color: #FFFFFF;
@@ -37,14 +38,13 @@
             font-family:PingFangSC-Medium;
         }
         .component-card .text-wrapper {
-            display: flex;
-            /* justify-content: center; */
-            /* margin-top: 45px; */
+            overflow: hidden;
         }
         .component-card .text-wrapper .finger {
             width: 45px;
             height: 45px;
             margin-right: 15px;
+            float: left;
         }
         .component-card .text-wrapper .finger img {
             width: 100%;
@@ -55,10 +55,11 @@
             color: #FFFFFF;
             font-size: 36px;
             line-height: 49.5px;
+            float: left;
         }
         .component-card .fl .title-wrapper {
-            display: flex;
             margin-top: 64.5px;
+            overflow: hidden;
         }
         .component-card .fl .title-wrapper .line {
             width: 9px;
@@ -68,15 +69,20 @@
             opacity: 0.3;
             margin-top: 10.5px;
             margin-right: 15px;
+            float: left;
         }
         .component-card .fl .title-wrapper .logo {
             width:165px;
             height:27px;
+            float: left;
         }
         .component-card .fl .title-wrapper .logo img {
             width: 100%;
             height: 100%;
             opacity: 0.3;
+        }
+        .component-card .fr {
+            float: right;
         }
         .component-card .fr .code-wrapper {
             width:238.5px;

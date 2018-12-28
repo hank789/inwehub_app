@@ -79,7 +79,7 @@
         .component-card .card-wrapper .conimg {
             width:909px;
             height:489px;
-            margin: 78px auto;
+            margin: 0px auto 78px;
         }
         .component-card .card-wrapper .conimg img {
             width: 100%;
@@ -89,7 +89,7 @@
             margin-top: 45px;
         }
         .component-card .card-wrapper .product-wrapper .product {
-            display: flex;
+            overflow: hidden;
         }
         .component-card .card-wrapper .product-wrapper .product .logo {
             width:132px;
@@ -98,6 +98,7 @@
             border-radius:12px;
             border:1.5px solid #DCDCDC;
             overflow: hidden;
+            float: left;
         }
         .component-card .card-wrapper .product-wrapper .product .logo img {
             width: 100%;
@@ -105,6 +106,7 @@
         }
         .component-card .card-wrapper .product-wrapper .product .info {
             margin-left: 15px;
+            float: left;
         }
         .component-card .card-wrapper .product-wrapper .product .info .name {
             font-size:48px;
@@ -114,8 +116,8 @@
             line-height:67.5px;
         }
         .component-card .card-wrapper .stars-wrapper {
-            display: flex;
             margin-top: 15px;
+            overflow: hidden;
         }
         .component-card .card-wrapper .stars-wrapper .spot {
             width:6px;
@@ -139,14 +141,18 @@
         }
 
         .component-card .text-wrapper {
-            display: flex;
-            justify-content: center;
+            width: 529px;
             margin-top: 45px;
+            overflow: hidden;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .component-card .text-wrapper .finger {
             width: 45px;
             height: 45px;
             margin-right: 15px;
+            float: left;
         }
         .component-card .text-wrapper .finger img {
             width: 100%;
@@ -156,9 +162,12 @@
             color: #FFFFFF;
             font-size: 36px;
             line-height: 49.5px;
+            float: left;
         }
         .component-card .title-wrapper {
             position: relative;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .component-card .title-wrapper .logo {
             width:201px;
@@ -188,6 +197,7 @@
             width: 208.5px;
             height: 31.5px;
             position: relative;
+            float: left;
         }
         .starImg .star-star {
             position: absolute;
@@ -206,11 +216,22 @@
         .stars-wrapper .star-text  {
             margin-top: -6px;
             margin-left: 18px;
+            float: left;
         }
         .card-wrapper .user .stars-wrapper {
-            justify-content: center;
+            /* justify-content: center; */
             padding-bottom: 51px;
+            position: relative;
+            left: 50%;
+            transform: translateX(-25%);
         }
+        .describe {
+            display: block;
+            margin-bottom: 78px;
+        }
+        /*
+           display: block;
+           margin-bottom: 78px; */
 
     </style>
 </head>
@@ -237,7 +258,7 @@
             </div>
         </div>
         <div class="content">
-            <span>{!! $review->title !!}</span>
+            <span class="describe">{!! $review->title !!}</span>
         </div>
         <div class="product-wrapper">
             <div class="product">

@@ -30,8 +30,7 @@
         }
         .component-card .car-wrapper {
             width: 1029px;
-            height: 735px;
-            padding: 73.5px 48px 52.5px;
+            padding: 73.5px 48px 70px;
             border-radius: 60px;
             margin: 0px auto 0;
             background: #ffffff;
@@ -61,14 +60,18 @@
             line-height: 57px;
         }
         .component-card .text-wrapper {
-            display: flex;
-            justify-content: center;
+            width: 529px;
+            overflow: hidden;
             margin-top: 45px;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .component-card .text-wrapper .finger {
             width: 45px;
             height: 45px;
             margin-right: 15px;
+            float: left;
         }
         .component-card .text-wrapper .finger img {
             width: 100%;
@@ -78,9 +81,12 @@
             color: #FFFFFF;
             font-size: 36px;
             line-height: 49.5px;
+            float: left;
         }
         .component-card .title-wrapper {
             position: relative;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .component-card .title-wrapper .logo {
             width:201px;
