@@ -30,8 +30,8 @@
         }
         .component-card .card-wrapper {
             width: 1029px;
-            margin: 0 auto;
-            padding: 75px 90px 90px;
+            margin: 0px auto 0;
+            padding: 73.5px 48px 70px;
             border-radius:60px;
             background: #ffffff;
             position: relative;
