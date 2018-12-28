@@ -59,29 +59,23 @@
             font-size: 34.5px;
             line-height: 57px;
         }
+
         .component-card .text-wrapper {
-            width: 529px;
-            overflow: hidden;
-            margin-top: 45px;
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .component-card .text-wrapper .finger {
-            width: 45px;
-            height: 45px;
-            margin-right: 15px;
-            float: left;
-        }
-        .component-card .text-wrapper .finger img {
             width: 100%;
-            height: 100%;
+            height: 45px;
+            overflow: hidden;
+            text-align: center;
+            margin-top: 30px;
         }
         .component-card .text-wrapper .text {
             color: #FFFFFF;
             font-size: 36px;
             line-height: 49.5px;
-            float: left;
+            text-align: center;
+        }
+        .component-card .text-wrapper .text span {
+            padding-left: 60px;
+            background: url(https://cdn.inwehub.com/weapp_dianping/finger@3x.png) no-repeat;
         }
         .component-card .title-wrapper {
             position: relative;
@@ -130,10 +124,7 @@
         </div>
     </div>
     <div class="text-wrapper">
-        <div class="finger">
-            <img src="https://cdn.inwehub.com/weapp_dianping/finger@3x.png" alt="">
-        </div>
-        <div class="text">长按识别二维码查看详细信息</div>
+        <div class="text"><span>长按识别二维码查看详细信息</span></div>
     </div>
     <div class="title-wrapper">
         <div class="line"></div>

@@ -89,7 +89,9 @@
             margin-top: 45px;
         }
         .component-card .card-wrapper .product-wrapper .product {
-            overflow: hidden;
+            /* overflow: hidden; */
+            position: relative;
+            height: 132px;
         }
         .component-card .card-wrapper .product-wrapper .product .logo {
             width:132px;
@@ -98,15 +100,15 @@
             border-radius:12px;
             border:1.5px solid #DCDCDC;
             overflow: hidden;
-            float: left;
+            position: absolute;
         }
         .component-card .card-wrapper .product-wrapper .product .logo img {
             width: 100%;
             height: 100%;
         }
         .component-card .card-wrapper .product-wrapper .product .info {
-            margin-left: 15px;
-            float: left;
+            position: absolute;
+            left: 147px;
         }
         .component-card .card-wrapper .product-wrapper .product .info .name {
             font-size:48px;
@@ -141,28 +143,21 @@
         }
 
         .component-card .text-wrapper {
-            width: 529px;
-            margin-top: 45px;
-            overflow: hidden;
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .component-card .text-wrapper .finger {
-            width: 45px;
-            height: 45px;
-            margin-right: 15px;
-            float: left;
-        }
-        .component-card .text-wrapper .finger img {
             width: 100%;
-            height: 100%;
+            height: 45px;
+            overflow: hidden;
+            text-align: center;
+            margin-top: 30px;
         }
         .component-card .text-wrapper .text {
             color: #FFFFFF;
             font-size: 36px;
             line-height: 49.5px;
-            float: left;
+            text-align: center;
+        }
+        .component-card .text-wrapper .text span {
+            padding-left: 60px;
+            background: url(https://cdn.inwehub.com/weapp_dianping/finger@3x.png) no-repeat;
         }
         .component-card .title-wrapper {
             position: relative;
@@ -197,7 +192,6 @@
             width: 208.5px;
             height: 31.5px;
             position: relative;
-            float: left;
         }
         .starImg .star-star {
             position: absolute;
@@ -214,16 +208,21 @@
             /* width: 100%; */
         }
         .stars-wrapper .star-text  {
-            margin-top: -6px;
-            margin-left: 18px;
-            float: left;
+            position: absolute;
+            left: 222px;
+            width: 350px;
+            top: 75px;
         }
         .card-wrapper .user .stars-wrapper {
-            /* justify-content: center; */
             padding-bottom: 51px;
             position: relative;
             left: 50%;
-            transform: translateX(-25%);
+            width: 510px;
+            overflow: hidden;
+            margin-left: -255px;
+        }
+        .card-wrapper .user .stars-wrapper .star-text {
+            top: -6px;
         }
         .describe {
             display: block;
@@ -281,10 +280,7 @@
         </div>
     </div>
     <div class="text-wrapper">
-        <div class="finger">
-            <img src="https://cdn.inwehub.com/weapp_dianping/finger@3x.png" alt="">
-        </div>
-        <div class="text">长按识别二维码查看详细信息</div>
+        <div class="text"><span>长按识别二维码查看详细信息</span></div>
     </div>
     <div class="title-wrapper">
         <div class="line"></div>
