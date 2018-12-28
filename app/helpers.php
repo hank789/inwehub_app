@@ -2065,6 +2065,6 @@ function weapp_qrcode_replace_logo($qrcodeUrl,$newLogoUrl) {
     $logoUrl = str_replace('https://cdn.inwehub.com/','',$circleLogo);
 
     $s = urlsafe_base64_encode($logoUrl);
-    return $qrcodeUrl.'?x-oss-process=image/resize,w_430,h_430/watermark,image_'.$s.',g_center';
+    return $qrcodeUrl.'?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_'.$s.',g_center';
 }
 
