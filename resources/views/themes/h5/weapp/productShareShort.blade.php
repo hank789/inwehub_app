@@ -99,7 +99,7 @@
             position: absolute;
             left: 50%;
             top: 50%;
-            transform: translate(-50%,-50%);
+            margin: -107px 0 0 -104.25px;
         }
         .component-card .fr .code-wrapper .product-code img {
             width: 100%;
