@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 
 /**
  * App\Models\Tag
@@ -38,7 +39,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\Tag whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Tag extends Model
+class Tag extends Model implements HasMedia
 {
     use BelongsToCategoryTrait, Searchable, HasMediaTrait;
     protected $table = 'tags';
