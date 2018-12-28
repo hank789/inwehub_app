@@ -282,7 +282,7 @@ class ProductController extends Controller {
             $snappy->setOption('width',1125);
             $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$submission->id);
             $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-            dispatch((new UploadFile($file_name,base64_encode($image))));
+            (new UploadFile($file_name,base64_encode($image)))->handle();
             $img_url = Storage::disk('oss')->url($file_name);
             $data = $submission->data;
             $data[$collection] = $img_url;
