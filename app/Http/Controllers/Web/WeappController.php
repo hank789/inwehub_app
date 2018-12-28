@@ -103,7 +103,7 @@ class WeappController extends Controller
             $scene = 'id='.$id;
             try {
                 $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
-                $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
+                $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page,null,null,null,true);
                 Storage::disk('oss')->put($file_name,$qrcode);
                 $qrcodeUrl = Storage::disk('oss')->url($file_name);
                 RateLimiter::instance()->hSet('product-qrcode',$id,$qrcodeUrl);

@@ -22,7 +22,7 @@ class QRCode extends BaseApi
 		return $this->sendRequestWithToken($url,$param);
 	}
 
-	public function getQRCodeB($scene,$page,$width=null,$auto_color=null,$line_color=null){
+	public function getQRCodeB($scene,$page,$width=null,$auto_color=null,$line_color=null, $is_hyaline = false){
 		$url = ApiUrl::GET_APP_CODE_B;
 		$param = array(
 			'scene'=>$scene,
@@ -30,6 +30,7 @@ class QRCode extends BaseApi
 			'width'=>$width,
 			'auto_color'=>$auto_color,
 			'line_color'=>$line_color,
+            'is_hyaline'=>$is_hyaline
 		);
 		return $this->sendRequestWithToken($url,$param);
 	}

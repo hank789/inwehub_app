@@ -21,6 +21,7 @@
             padding: 51px 75px 54px;
             background: #5B71A9;
             overflow: hidden;
+            height: 334.5px;
         }
         .component-card .bgimg {
             position: absolute;
@@ -28,7 +29,8 @@
             right: 0;
         }
         .component-card .fl {
-            float: left;
+            position: absolute;
+            left: 75px;
         }
         .component-card .fl .product-name {
             color: #FFFFFF;
@@ -38,24 +40,21 @@
             font-family:PingFangSC-Medium;
         }
         .component-card .text-wrapper {
-            overflow: hidden;
-        }
-        .component-card .text-wrapper .finger {
-            width: 45px;
-            height: 45px;
-            margin-right: 15px;
-            float: left;
-        }
-        .component-card .text-wrapper .finger img {
             width: 100%;
-            height: 100%;
-            opacity: 0.3;
+            height: 45px;
+            overflow: hidden;
+            text-align: center;
+            margin-top: 30px;
         }
         .component-card .text-wrapper .text {
             color: #FFFFFF;
             font-size: 36px;
             line-height: 49.5px;
-            float: left;
+            text-align: center;
+        }
+        .component-card .text-wrapper .text span {
+            padding-left: 60px;
+            background: url(https://cdn.inwehub.com/weapp_dianping/finger-p@3x.png) no-repeat;
         }
         .component-card .fl .title-wrapper {
             margin-top: 64.5px;
@@ -69,26 +68,26 @@
             opacity: 0.3;
             margin-top: 10.5px;
             margin-right: 15px;
-            float: left;
+            display: inline-block;
+            position: relative;
+            top: -10px;
         }
         .component-card .fl .title-wrapper .logo {
             width:165px;
             height:27px;
-            float: left;
         }
         .component-card .fl .title-wrapper .logo img {
-            width: 100%;
-            height: 100%;
+            width:165px;
+            height:27px;
             opacity: 0.3;
         }
         .component-card .fr {
-            float: right;
+            position: absolute;
+            right: 75px;
         }
         .component-card .fr .code-wrapper {
             width:238.5px;
             height:238.5px;
-            background:rgba(255,255,255,1);
-            border-radius:142.5px;
             overflow: hidden;
             position: relative;
         }
@@ -107,7 +106,6 @@
         }
     </style>
 </head>
-
 <body>
 <div class="component-card">
     <div class="bgimg">
@@ -116,14 +114,11 @@
     <div class="fl">
         <div class="product-name">{{ $tag->name }}</div>
         <div class="text-wrapper">
-            <div class="finger">
-                <img src="https://cdn.inwehub.com/weapp_dianping/finger@3x.png" alt="">
-            </div>
-            <div class="text">长按识别二维码查看详细信息</div>
+            <div class="text"><span>长按识别二维码查看详细信息</span></div>
         </div>
         <div class="title-wrapper">
-            <div class="line"></div>
-            <div class="logo"><img src="https://cdn.inwehub.com/weapp_dianping/text_q@3x.png" alt=""></div>
+            <span class="line"></span>
+            <span class="logo"><img src="https://cdn.inwehub.com/weapp_dianping/text_q@3x.png" alt=""></span>
         </div>
     </div>
     <div class="fr">
