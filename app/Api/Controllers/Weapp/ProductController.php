@@ -127,7 +127,10 @@ class ProductController extends Controller {
         }
         $submission = Submission::where('slug',$request->slug)->first();
         if (!$submission) {
-            throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
+            $submission = Submission::find($request->slug);
+            if (!$submission) {
+                throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
+            }
         }
         if ($submission->type != 'review') {
             throw new ApiException(ApiException::ARTICLE_NOT_EXIST);
