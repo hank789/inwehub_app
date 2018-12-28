@@ -48,7 +48,7 @@ class RecommendRead extends Model
 {
     use MorphManyTagsTrait;
     protected $table = 'recommend_read';
-    protected $fillable = ['read_type','audit_status','data','source_type','source_id','sort', 'rate', 'tips','created_at','updated_at'];
+    protected $fillable = ['read_type','audit_status','data','source_type','source_id','sort', 'rate', 'tips','created_date_rate','created_at','updated_at'];
 
     protected $casts = [
         'data' => 'json'
