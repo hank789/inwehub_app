@@ -120,9 +120,13 @@ class WeappController extends Controller
         if (config('app.env') != 'production') {
             $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         } else {
-            $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
+            $qrcodeUrl = $this->getReviewQrcode($review->id,$wxxcx);
             try {
-                $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
+                if ($review->hide) {
+                    $qrcodeUrlFormat = $qrcodeUrl;
+                } else {
+                    $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
+                }
             } catch (\Exception $e) {
                 $qrcodeUrlFormat = $qrcodeUrl;
             }
@@ -144,7 +148,7 @@ class WeappController extends Controller
         if (config('app.env') != 'production') {
             $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         } else {
-            $qrcodeUrl = $this->getReviewQrcode($review->slug,$wxxcx);
+            $qrcodeUrl = $this->getReviewQrcode($review->id,$wxxcx);
             try {
                 $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
             } catch (\Exception $e) {
