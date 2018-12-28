@@ -237,7 +237,7 @@
             </div>
         </div>
         <div class="content">
-            {{ $review->title }}
+            <span>{{ $review->title }}</span>
         </div>
         <div class="product-wrapper">
             <div class="product">
@@ -248,7 +248,7 @@
                     <div class="name">{{ $product['name'] }}</div>
                     <div class="stars-wrapper">
                         <div class="starImg">
-                            <div class="star-S star-star" style="width: {{ 100*$product['review_average_rate']/5 }}%;"><img src="https://cdn.inwhub.com/weapp_dianping/starS@3x.png" alt=""></div>
+                            <div class="star-S star-star" style="width: {{ 100*$product['review_average_rate']/5 }}%;"><img src="https://cdn.inwehub.com/weapp_dianping/starS@3x.png" alt=""></div>
                             <div class="star-K star-star"><img src="https://cdn.inwehub.com/weapp_dianping/starK@3x.png" alt=""></div>
                         </div>
                         <div class="star-text">
