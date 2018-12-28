@@ -87,7 +87,7 @@ class WeappController extends Controller
         } else {
             $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
             try {
-                $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
+                $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo,true);
             } catch (\Exception $e) {
                 $qrcodeUrlFormat = $qrcodeUrl;
             }
