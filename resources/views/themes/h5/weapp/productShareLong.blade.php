@@ -22,6 +22,7 @@
             padding-top: 60px;
             padding-bottom: 61.5px;
             background: #5B71A9;
+            overflow: hidden;
         }
         .component-card .bgimg {
             position: absolute;
