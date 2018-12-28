@@ -108,7 +108,7 @@ class WeappController extends Controller
                 $qrcodeUrl = Storage::disk('oss')->url($file_name);
                 RateLimiter::instance()->hSet('product-qrcode',$id,$qrcodeUrl);
             } catch (\Exception $e) {
-
+                app('sentry')->captureException($e);
             }
         }
         return $qrcodeUrl;
@@ -179,7 +179,7 @@ class WeappController extends Controller
                 $qrcodeUrl = Storage::disk('oss')->url($file_name);
                 RateLimiter::instance()->hSet('review-qrcode',$id,$qrcodeUrl);
             } catch (\Exception $e) {
-
+                app('sentry')->captureException($e);
             }
         }
         return $qrcodeUrl;
