@@ -228,7 +228,7 @@
             <div class="username">{{ $review->owner->name }}</div>
             <div class="stars-wrapper">
                 <div class="starImg">
-                    <div class="star-S star-star" style="width: {{ 100*$review->rate_star/5 }}%;"><img src="https://cdn.inwhub.com/weapp_dianping/starS@3x.png" alt=""></div>
+                    <div class="star-S star-star" style="width: {{ 100*$review->rate_star/5 }}%;"><img src="https://cdn.inwehub.com/weapp_dianping/starS@3x.png" alt=""></div>
                     <div class="star-K star-star"><img src="https://cdn.inwehub.com/weapp_dianping/starK@3x.png" alt=""></div>
                 </div>
                 <div class="star-text">
