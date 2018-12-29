@@ -111,7 +111,7 @@ class SubmissionController extends Controller {
         RateLimiter::instance()->lock_acquire('upload-image-submission-'.$request->input('id'));
         $submission = Submission::find($request->input('id'));
         $data = $submission->data;
-        $data['img'] += $img['img'];
+        $data['img'] = array_merge($data['img']??[],$img['img']);
         $submission->data = $data;
         $submission->save();
         RateLimiter::instance()->lock_release('upload-image-submission-'.$request->input('id'));
