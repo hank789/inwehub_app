@@ -113,7 +113,7 @@ class SubmissionController extends Controller {
         $data['img'] += $img['img'];
         $submission->data = $data;
         $submission->save();
-        return self::createJsonData(true,['id'=>$submission->id]);
+        return self::createJsonData(true,['id'=>$submission->id,'img_url'=>$img['img']]);
     }
 
     public function thirdApiStore(Request $request) {
