@@ -108,11 +108,13 @@ class SubmissionController extends Controller {
         if ($submission->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        $data = $submission->data;
         $img = $this->uploadImgs($request->input('photos'));
+        RateLimiter::instance()->lock_acquire('upload-image-submission-'.$data['id']);
+        $data = $submission->data;
         $data['img'] += $img['img'];
         $submission->data = $data;
         $submission->save();
+        RateLimiter::instance()->lock_release('upload-image-submission-'.$data['id']);
         return self::createJsonData(true,['id'=>$submission->id,'img_url'=>$img['img']]);
     }
 
