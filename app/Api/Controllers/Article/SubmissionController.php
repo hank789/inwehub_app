@@ -103,17 +103,19 @@ class SubmissionController extends Controller {
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $data = $request->all();
-        $submission = Submission::find($data['id']);
+        $submission = Submission::find($request->input('id'));
         if ($submission->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        $data = $submission->data;
         $img = $this->uploadImgs($request->input('photos'));
-        $data['img'] += $img['img'];
+        RateLimiter::instance()->lock_acquire('upload-image-submission-'.$request->input('id'));
+        $submission = Submission::find($request->input('id'));
+        $data = $submission->data;
+        $data['img'] = array_merge($data['img'],$img['img']);
         $submission->data = $data;
         $submission->save();
-        return self::createJsonData(true,['id'=>$submission->id]);
+        RateLimiter::instance()->lock_release('upload-image-submission-'.$request->input('id'));
+        return self::createJsonData(true,['id'=>$submission->id,'img_url'=>$img['img']]);
     }
 
     public function thirdApiStore(Request $request) {
