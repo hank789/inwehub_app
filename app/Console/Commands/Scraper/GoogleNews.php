@@ -133,7 +133,7 @@ class GoogleNews extends Command {
                             'type'          => 'link',
                             'category_name' => $category->name,
                             'category_id'   => $category->id,
-                            'group_id'      => $group_id,
+                            'group_id'      => 0,
                             'public'        => $group->public,
                             'rate'          => firstRate(),
                             'status'        => 1,

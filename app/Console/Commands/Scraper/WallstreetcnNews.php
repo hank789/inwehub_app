@@ -136,7 +136,7 @@ class WallstreetcnNews extends Command {
                 'type' => 'link',
                 'category_name' => $this->category->name,
                 'category_id' => $this->category->id,
-                'group_id' => $group_id,
+                'group_id' => 0,
                 'public' => 1,
                 'rate' => firstRate(),
                 'status' => 1,

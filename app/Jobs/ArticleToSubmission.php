@@ -61,10 +61,11 @@ class ArticleToSubmission implements ShouldQueue
         //if ($author->group_id <= 0) return;
         $support_type = RateLimiter::instance()->hGet('article_support_type',$this->id);
         $user_id = $author->user_id;
+        $url = $article->content_url;
         if ($article->source_type == 1) {
             if (str_contains($article->content_url,'wechat_redirect') || str_contains($article->content_url,'__biz=') || config('app.env') != 'production') {
                 $url = $article->content_url;
-            } else {
+            } elseif ($author->group_id > 0) {
                 $url = convertWechatTempLinkToForever($article->content_url);
                 if (!$url) {
                     $url = WechatGzhService::instance()->foreverUrl($article->content_url);
@@ -100,8 +101,6 @@ class ArticleToSubmission implements ShouldQueue
                 $author->qr_url = $query['__biz'];
                 $author->save();
             }
-        } else {
-            $url = $article->content_url;
         }
 
         $article->content_url = $url;

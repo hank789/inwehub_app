@@ -155,7 +155,12 @@ class RssPosts extends Command
         if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
             $second = 0;
             foreach ($articles as $article) {
-                (new ArticleToSubmission($article->_id))->handle();
+                if ($second > 0) {
+                    dispatch(new ArticleToSubmission($article->_id))->delay(Carbon::now()->addSeconds($second));
+                } else {
+                    dispatch(new ArticleToSubmission($article->_id));
+                }
+                $second += 300;
             }
         } else {
             $count = count($articles);

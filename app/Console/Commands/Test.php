@@ -62,6 +62,10 @@ class Test extends Command
      */
     public function handle()
     {
+        $submissions = Submission::where('group_id',0)->get();
+        foreach ($submissions as $submission) {
+            $submission->calculationRate();
+        }
         $url = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png';
         $logo = 'https://cdn.inwehub.com/tags/2018/11/QCwQdgZz5bfe458c5e535.png';
         $fUrl = weapp_qrcode_replace_logo($url,$logo);
