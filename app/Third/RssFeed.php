@@ -165,7 +165,7 @@ class RssFeed
 	{
 		$ql = QueryList::getInstance();
 		$options = [];
-		if (config('app.env' == 'production')) {
+		if (config('app.env') == 'production') {
             $options = ['proxy' => 'socks5h://127.0.0.1:1080'];
         }
 		return $ql->get($url,[],$options)->getHtml();
