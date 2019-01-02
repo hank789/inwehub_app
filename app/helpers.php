@@ -1275,11 +1275,7 @@ if (!function_exists('firstRate')) {
      */
     function firstRate()
     {
-        $startTime = 1473696439;
-        $created = time();
-        $timeDiff = $created - $startTime;
-
-        return $timeDiff / 45000;
+        return date('Ymd').'0';
     }
 }
 

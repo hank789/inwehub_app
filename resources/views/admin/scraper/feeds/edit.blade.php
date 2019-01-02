@@ -34,7 +34,7 @@
                                 <div class="row">
                                     <div class="col-sm-10">
                                         <select id="select_group_id" name="select_group_id" class="form-control">
-                                            <option value="0" {{ $feeds->group_id == 0 ? 'selected':'' }}></option>
+                                            <option value="0" {{ $feeds->group_id == 0 ? 'selected':'' }}>不属于圈子</option>
                                             @foreach($groups as $group)
                                                 <option value="{{ $group['id'] }}" {{ $feeds->group_id == $group['id'] ? 'selected':'' }}>{{ $group['name'] }}</option>
                                             @endforeach

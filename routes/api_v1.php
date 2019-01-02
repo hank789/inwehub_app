@@ -14,6 +14,8 @@ Route::post('recommendRead','IndexController@recommendRead');
 Route::post('recommendRead/getNext','IndexController@getNextRecommendRead');
 Route::post('getRelatedRecommend','IndexController@getRelatedRecommend');
 
+Route::post('readList','IndexController@readList');
+
 Route::post('system/getOperators','SystemController@getOperators');
 
 

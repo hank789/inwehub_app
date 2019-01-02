@@ -14,7 +14,7 @@ class FeedsController extends AdminController
     /*新闻创建校验*/
     protected $validateRules = [
         'name'        => 'required|max:255',
-        'group_id'    => 'required|integer|min:1',
+        'group_id'    => 'required|integer|min:0',
         'user_id'     => 'required|integer|min:1',
         'source_type' => 'required|max:255|in:1,2',
         'source_link' => 'required|max:255',

@@ -155,7 +155,7 @@ class ArticleToSubmission implements ShouldQueue
             'category_name' => $category->name,
             'category_id'   => $category->id,
             'group_id'      => $author->group_id,
-            'public'        => $author->group->public,
+            'public'        => $author->group_id?$author->group->public:1,
             'rate'          => firstRate(),
             'user_id'       => $user_id>0?$user_id:504,
             'support_type'  => $support_type?:1,
@@ -167,7 +167,7 @@ class ArticleToSubmission implements ShouldQueue
         $article->save();
         $author->group->increment('articles');
         (new NewSubmissionJob($submission->id,true))->handle();
-        RateLimiter::instance()->sClear('group_read_users:'.$author->group->id);
+        RateLimiter::instance()->sClear('group_read_users:'.$author->group_id);
         Redis::connection()->hset('voten:submission:url',$url, $submission->id);
 
     }

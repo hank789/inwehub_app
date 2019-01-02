@@ -133,7 +133,7 @@ class WechatController extends AdminController
     public function updateAuthor(Request $request) {
         $validateRules = [
             'id'      => 'required',
-            'group_id'   => 'required|integer|min:1',
+            'group_id'   => 'required|integer|min:0',
             'user_id'   => 'required|integer|min:1',
             'audit_status' => 'required|integer',
             'is_auto_publish' => 'required|integer'

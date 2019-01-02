@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers;
 use App\Exceptions\ApiException;
 use App\Logic\QuillLogic;
+use App\Logic\TagsLogic;
 use App\Models\Activity\Coupon;
 use App\Models\AddressBook;
 use App\Models\Answer;
@@ -131,12 +132,15 @@ class IndexController extends Controller {
             }
         }
 
+        $regions = TagsLogic::loadTags(6,'');
+
 
         $data = [
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
             'recommend_experts' => [],
+            'regions' => $regions['tags'],
             'hot_groups' => $hotGroups,
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
@@ -342,6 +346,70 @@ class IndexController extends Controller {
             Cache::put($cache_key,$result,3);
         }
 
+        return self::createJsonData(true, $result);
+    }
+
+    public function readList(Request $request, JWTAuth $JWTAuth) {
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+        $page = $request->input('page',1);
+        $alertMsg = '';
+        $last_seen= '';
+        $filterTag = $request->input('tagFilter','');
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+            $last_seen = RateLimiter::instance()->hGet('user_read_last_seen',$user->id.'_'.$filterTag);
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
+        $query = Submission::where('status',1)->where('group_id',0);
+        if ($filterTag) {
+            $query = $query->whereHas('tags',function($query) use ($filterTag) {
+                $query->where('tag_id', $filterTag);
+            });
+        }
+        $query = $query->orderBy('created_date_rate','desc');
+        if ($page == 1) {
+            if ($last_seen) {
+                $ids = $query->take(100)->pluck('id')->toArray();
+                $newCount = array_search($last_seen,$ids);
+                if ($newCount === false) {
+                    $newCount = '99+';
+                }
+                if ($newCount) {
+                    $alertMsg = '更新了'.$newCount.'条信息';
+                } else {
+                    $alertMsg = '暂无新信息';
+                }
+            } else {
+                $alertMsg = '已为您更新';
+            }
+        }
+        $reads = $query->simplePaginate($perPage);
+        $result = $reads->toArray();
+        $list = [];
+        foreach ($reads as $key=>$item) {
+            if ($page == 1 && $key == 0) {
+                $last_seen = $item->id;
+            }
+            $list[] = [
+                'id'    => $item->id,
+                'title' => $item->data['title']??$item->title,
+                'type'  => $item->type,
+                'domain'    => $item->data['domain']??'',
+                'img'   => $item->data['img']??'',
+                'slug'      => $item->slug,
+                'link_url'  => $item->data['url']??'',
+                'rate'  => (int)(substr($item->rate,8)?:0),
+                'created_at'=> (string)$item->created_at
+            ];
+        }
+        if ($page == 1) {
+            RateLimiter::instance()->hSet('user_read_last_seen',$user->id.'_'.$filterTag,$last_seen);
+        }
+        $result['data'] = $list;
+        $result['alert_msg'] = $alertMsg;
         return self::createJsonData(true, $result);
     }
 

@@ -437,13 +437,14 @@ class Submission extends Model {
         $commentSupports = $this->comments()->sum('supports');
         $views = $this->views;
         //如果是原创文章，权重高一点，默认给100阅读
-        if ($this->type == 'article') {
+        /*if ($this->type == 'article') {
             $views += 100;
         }
         $Qscore = $this->upvotes-$this->downvotes;
         $Ascores = $commentSupports + $this->collections + $shareNumber;
-        $rate =  hotRate($views,$this->comments_number?:1, $Qscore, $Ascores,$this->created_at,$this->updated_at);
-        $this->rate = $rate;
+        $rate =  hotRate($views,$this->comments_number?:1, $Qscore, $Ascores,$this->created_at,$this->updated_at);*/
+        $rate = $views/10 + $commentSupports + $this->collections + $shareNumber + $this->upvotes-$this->downvotes;
+        $this->rate = date('Ymd',strtotime($this->created_at)).$rate;
         $this->save();
         $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
         if ($recommendRead) {
