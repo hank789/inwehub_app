@@ -58,7 +58,7 @@ class ArticleToSubmission implements ShouldQueue
             $author = Feeds::find($article->mp_id);
         }
         if (!$author) return;
-        if ($author->group_id <= 0) return;
+        //if ($author->group_id <= 0) return;
         $support_type = RateLimiter::instance()->hGet('article_support_type',$this->id);
         $user_id = $author->user_id;
         if ($article->source_type == 1) {
