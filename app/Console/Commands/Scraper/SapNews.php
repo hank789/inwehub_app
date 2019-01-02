@@ -97,7 +97,7 @@ class SapNews extends Command {
 
                     $count++;
                     $isBreak = false;
-                    $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('div.entry-title.single>span.blog-date-info')->eq(1)->text();
+                    $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('div.dm-contentHero__statistics>div.dm-contentHero__metadata>span.dm-contentHero__metadata--item')->eq(1)->text();
                     $views = trim(str_replace('Views','',$views));
                     $this->info($item['title'].';'.$views);
                     if ($views < $limitViews) continue;
@@ -159,6 +159,14 @@ class SapNews extends Command {
                 }
                 if ($isBreak) break;
             }
+            $fields = [];
+            $fields[] = [
+                'title'=>'阅读数',
+                'value'=>implode(',',$totalViews)
+            ];
+            event(new SystemNotify('抓取'.$url1.'结束，总文章数:'.$count,[]));
+            $count = 0;
+            $totalViews = [];
             $this->info($url2);
             $page = 1;
             while (true) {
@@ -253,6 +261,12 @@ class SapNews extends Command {
             app('sentry')->captureException($e);
             sleep(5);
         }
+        $fields = [];
+        $fields[] = [
+            'title'=>'阅读数',
+            'value'=>implode(',',$totalViews)
+        ];
+        event(new SystemNotify('抓取'.$url2.'结束，总文章数:'.$count,[]));
         //var_dump($count);
         //var_dump($totalViews);
     }
