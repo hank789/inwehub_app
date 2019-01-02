@@ -164,7 +164,7 @@ class SapNews extends Command {
                 'title'=>'阅读数',
                 'value'=>implode(',',$totalViews)
             ];
-            event(new SystemNotify('抓取'.$url1.'结束，总文章数:'.$count,[]));
+            event(new SystemNotify('抓取['.$url1.']结束，总文章数:'.$count,$fields));
             $count = 0;
             $totalViews = [];
             $this->info($url2);
@@ -266,7 +266,7 @@ class SapNews extends Command {
             'title'=>'阅读数',
             'value'=>implode(',',$totalViews)
         ];
-        event(new SystemNotify('抓取'.$url2.'结束，总文章数:'.$count,[]));
+        event(new SystemNotify('抓取['.$url2.']结束，总文章数:'.$count,$fields));
         //var_dump($count);
         //var_dump($totalViews);
     }
