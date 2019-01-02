@@ -78,6 +78,7 @@ class NewSubmissionJob implements ShouldQueue
         event(new CreditEvent($submission->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$submission->id,'动态分享'));
 
         $typeName = '分享';
+        $targetName = '';
         switch ($submission->type) {
             case 'link':
             case 'text':
@@ -105,11 +106,34 @@ class NewSubmissionJob implements ShouldQueue
                 break;
         }
         if ($submission->type != 'review') {
-            $group = Group::find($submission->group_id);
+            $members = [];
+            if ($submission->group_id) {
+                $group = Group::find($submission->group_id);
 
-            $group->increment('articles');
-            GroupMember::where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
-            RateLimiter::instance()->sClear('group_read_users:'.$group->id);
+                $group->increment('articles');
+                GroupMember::where('group_id',$group->id)->update(['updated_at'=>Carbon::now()]);
+                RateLimiter::instance()->sClear('group_read_users:'.$group->id);
+                $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
+                //提到了人，还未去重
+                $notified_uids = $this->handleSubmissionMentions($submission,$members);
+                $notified_uids[$submission->user_id] = $submission->user_id;
+                //通知圈主
+                if ($submission->user_id != $group->user_id) {
+                    $notified_uids[$group->user_id] = $group->user_id;
+                    $group->user->notify((new NewSubmission($group->user_id,$submission))->delay(Carbon::now()->addMinutes(3)));
+                }
+                //圈主发布的内容通知圈子成员
+                if (false && $submission->user_id == $group->user_id && $members) {
+                    foreach ($members as $muid) {
+                        if (isset($notified_uids[$muid])) continue;
+                        $notified_uids[$muid] = $muid;
+                        $mUser = User::find($muid);
+                        $mUser->notify((new NewSubmission($muid,$submission))->delay(Carbon::now()->addMinutes(3)));
+                    }
+                }
+                $targetName = '在圈子['.$group->name.']';
+            }
+
             if (!$this->notifyAutoChannel) {
                 feed()
                     ->causedBy($user)
@@ -122,36 +146,19 @@ class NewSubmissionJob implements ShouldQueue
                     ->log(($submission->hide?'匿名':$user->name).'发布了'.$typeName, Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE);
             }
 
-            $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
 
 
             //关注的用户接收通知
             $attention_users = Attention::where('source_type','=',get_class($user))->where('source_id','=',$user->id)->pluck('user_id')->toArray();
-            //提到了人，还未去重
-            $notified_uids = $this->handleSubmissionMentions($submission,$members);
-            $notified_uids[$submission->user_id] = $submission->user_id;
-            //通知圈主
-            if ($submission->user_id != $group->user_id) {
-                $notified_uids[$group->user_id] = $group->user_id;
-                $group->user->notify((new NewSubmission($group->user_id,$submission))->delay(Carbon::now()->addMinutes(3)));
-            }
-            //圈主发布的内容通知圈子成员
-            if (false && $submission->user_id == $group->user_id && $members) {
-                foreach ($members as $muid) {
-                    if (isset($notified_uids[$muid])) continue;
-                    $notified_uids[$muid] = $muid;
-                    $mUser = User::find($muid);
-                    $mUser->notify((new NewSubmission($muid,$submission))->delay(Carbon::now()->addMinutes(3)));
-                }
-            }
+
             foreach ($attention_users as $attention_uid) {
                 if (isset($notified_uids[$attention_uid])) continue;
                 //私密圈子的分享只通知圈子内的人
-                if (!$group->public && $members && !in_array($attention_uid,$members)) continue;
+                if ($submission->group_id && !$group->public && $members && !in_array($attention_uid,$members)) continue;
                 $attention_user = User::find($attention_uid);
                 if ($attention_user) $attention_user->notify((new FollowedUserNewSubmission($attention_uid,$submission))->delay(Carbon::now()->addMinutes(3)));
             }
-            $targetName = '在圈子['.$group->name.']';
+
             $url = config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug;
             $submission->setKeywordTags();
         } else {
