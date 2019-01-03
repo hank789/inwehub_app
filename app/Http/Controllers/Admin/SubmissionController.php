@@ -221,8 +221,10 @@ class SubmissionController extends AdminController
         $title = $request->input('title');
         $tagsId = $request->input('tagIds',0);
         $article = Submission::find($articleId);
-        $group = Group::find($article->group_id);
-        if (!$group->public) return $this->error(route('admin.operate.article.index'),'私有圈子里的文章不能设为推荐');
+        if ($article->group_id) {
+            $group = Group::find($article->group_id);
+            if (!$group->public) return $this->error(route('admin.operate.article.index'),'私有圈子里的文章不能设为推荐');
+        }
         $oldData = $article->data;
         unset($oldData['description']);
         unset($oldData['title']);
@@ -264,6 +266,43 @@ class SubmissionController extends AdminController
         }
         return $this->success(url()->previous(),'设为精选成功');
 
+    }
+
+    public function changeTags(Request $request) {
+        $id = $request->input('id','');
+        $tags = explode(',',$request->input('tagIds',0));
+        $article = Submission::find($id);
+
+        $keywords = $article->data['keywords']??'';
+
+        /*更新标签*/
+        $oldTags = $article->tags->pluck('id')->toArray();
+        foreach ($tags as $tag) {
+            if (!in_array($tag,$oldTags)) {
+                $article->tags()->attach($tag);
+                $tagModel = Tag::find($tag);
+                $keywords = $tagModel->name.','.$keywords;
+            }
+        }
+        foreach ($oldTags as $oldTag) {
+            if (!in_array($oldTag,$tags)) {
+                $tagModel = Tag::find($oldTag);
+                $keywords = str_replace($tagModel->name,'',$keywords);
+                $keywords = str_replace(',,',',',$keywords);
+                $article->tags()->detach($oldTag);
+            }
+        }
+        if (isset($tagModel)) {
+            $sData = $article->data;
+            $sData['keywords'] = implode(',',array_unique(explode(',',$keywords)));
+            $article->data = $sData;
+            $article->save();
+            $article->updateRelatedProducts();
+        }
+
+        //$recommend->tags()->detach();
+        //$recommend->setKeywordTags();
+        return response('success');
     }
 
     /**

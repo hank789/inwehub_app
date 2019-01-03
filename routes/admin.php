@@ -256,6 +256,7 @@ Route::get('submission/edit/{id}',['as'=>'admin.operate.article.edit','uses'=>'S
 Route::put('submission/update',['as'=>'admin.operate.article.update','uses'=>'SubmissionController@update']);
 //设置文章点赞类型
 Route::post('submission/setSupportType',['as'=>'admin.operate.article.setSupportType','uses'=>'SubmissionController@setSupportType']);
+Route::post('submission/changeTags',['as'=>'admin.operate.article.changeTags','uses'=>'SubmissionController@changeTags']);
 
 //企业管理
 Route::group(['prefix' => 'company','namespace'=>'Company'], function() {

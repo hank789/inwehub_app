@@ -60,6 +60,9 @@
                                         <th>圈子</th>
                                         <th>发布者</th>
                                     </tr>
+                                    @php
+                                        $pageTags = []
+                                    @endphp
                                     @foreach($submissions as $submission)
                                         <tr id="submission_{{ $submission->id }}">
                                             <td>{{ $submission->id }}</td>
@@ -93,9 +96,13 @@
                                             </td>
                                             <td>{{ $submission->rate }}</td>
                                             <td>
+                                                @php
+                                                    $pageTags += $submission->tags->pluck('name','id')->toArray()
+                                                @endphp
                                                 @foreach($submission->tags as $tagInfo)
                                                     {{ $tagInfo->name.',' }}
                                                 @endforeach
+                                                <a class="btn-edit_tags" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}" data-tags="{{ implode(',',$submission->tags->pluck('id')->toArray()) }}" data-toggle="tooltip" title="修改标签"><i class="fa fa-edit"></i></a>
                                             </td>
                                             <td>{{ $submission->type }}</td>
                                             <td>{{ $submission->views }}</td>
@@ -156,6 +163,39 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" id="set_fav_submit">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="set_tags_modal" tabindex="-1"  role="dialog" aria-labelledby="set_tags_modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">修改标签-<span id="title2"></span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="tagIds2" id="tagIds2" />
+                        <input type="hidden" name="id2" id="id2" />
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label for="select_tags_id2" class="control-label">标签:</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select style="width: auto" id="select_tags_id2" name="select_tags_id2" class="form-control" multiple="multiple" >
+                                            @foreach($pageTags as $key=>$name)
+                                                <option value="{{ $key }}">{{ $name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="set_tags_submit">确认</button>
                     </div>
                 </div>
             </div>
@@ -230,6 +270,51 @@
                 });
                 $('#submission_setfav_' + id).css('display','none');
                 $('#set_fav_modal').modal('hide');
+            });
+
+            $("#select_tags_id2").select2({
+                theme:'bootstrap',
+                placeholder: "标签",
+                ajax: {
+                    url: '/manager/ajax/loadTags',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            word: params.term,
+                            type: 'all'
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength:2,
+                tags:false
+            });
+
+            $("#select_tags_id2").change(function(){
+                $("#tagIds2").val($("#select_tags_id2").val());
+            });
+
+            $(".btn-edit_tags").click(function(){
+                var source_id = $(this).data('source_id');
+                var cs = $(this).data('tags');
+                $("#id2").val(source_id);
+                $("#title2").html($(this).data('title'));
+                $("#select_tags_id2").val(cs.toString().split(','));
+                $('#select_tags_id2').trigger('change');
+                $('#set_tags_modal').modal('show');
+            });
+            $("#set_tags_submit").click(function(){
+                var id = $("#id2").val();
+                $.post('/admin/submission/changeTags',{id: id,tagIds: $("#tagIds2").val()},function(msg){
+                    window.location.reload()
+                });
+                $('#set_tags_modal').modal('hide');
             });
         });
     </script>

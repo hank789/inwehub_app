@@ -139,7 +139,7 @@
                     <input type="hidden" name="id" id="id" />
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="select_tags_id" class="control-label">分类:</label>
+                            <label for="select_tags_id" class="control-label">标签:</label>
                             <div class="row">
                                 <div class="col-sm-10">
                                     <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
