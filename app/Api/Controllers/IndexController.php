@@ -369,7 +369,7 @@ class IndexController extends Controller {
                 $query->where('tag_id', $filterTag);
             });
         }
-        $query = $query->orderBy('created_date_rate','desc');
+        $query = $query->orderBy('rate','desc');
         if ($page == 1) {
             if ($last_seen) {
                 $ids = $query->take(100)->pluck('id')->toArray();
