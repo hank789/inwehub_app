@@ -37,7 +37,7 @@
                           {{ $article->withAuthor()->name }}                     </a></span>
                     </div>
                 </div>
-                <div id="rich_media_content" id="js_content">
+                <div class="rich_media_content" id="js_content">
                     {!! $article->body !!}
                 </div>
             </div>
