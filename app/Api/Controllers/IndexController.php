@@ -389,18 +389,26 @@ class IndexController extends Controller {
         $reads = $query->simplePaginate($perPage);
         $result = $reads->toArray();
         $list = [];
+        $inwehub_user_device = $request->input('inwehub_user_device','web');
         foreach ($reads as $key=>$item) {
             if ($page == 1 && $key == 0) {
                 $last_seen = $item->id;
+            }
+            $domain = $item->data['domain']??'';
+            $link_url = $item->data['url']??'';
+            if (!in_array($inwehub_user_device,['web','wechat']) && $domain == 'mp.weixin.qq.com') {
+                if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz='))) {
+                    $link_url = config('app.url').'/articleInfo/'.$item->id.'?inwehub_user_device='.$inwehub_user_device;
+                }
             }
             $list[] = [
                 'id'    => $item->id,
                 'title' => $item->data['title']??$item->title,
                 'type'  => $item->type,
-                'domain'    => $item->data['domain']??'',
+                'domain'    => $domain,
                 'img'   => $item->data['img']??'',
                 'slug'      => $item->slug,
-                'link_url'  => $item->data['url']??'',
+                'link_url'  => $link_url,
                 'rate'  => (int)(substr($item->rate,8)?:0),
                 'created_at'=> (string)$item->created_at
             ];
