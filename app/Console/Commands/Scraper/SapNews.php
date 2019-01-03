@@ -6,6 +6,7 @@
  */
 
 use App\Events\Frontend\System\ExceptionNotify;
+use App\Events\Frontend\System\OperationNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
@@ -166,7 +167,7 @@ class SapNews extends Command {
                 'title'=>'阅读数',
                 'value'=>implode(',',$totalViews)
             ];
-            event(new SystemNotify('抓取['.$url1.']结束，总文章数:'.$count,$fields));
+            event(new OperationNotify('抓取['.$url1.']结束，总文章数:'.$count,$fields));
             $count = 0;
             $totalViews = [];
             $this->info($url2);
@@ -268,7 +269,7 @@ class SapNews extends Command {
             'title'=>'阅读数',
             'value'=>implode(',',$totalViews)
         ];
-        event(new SystemNotify('抓取['.$url2.']结束，总文章数:'.$count,$fields));
+        event(new OperationNotify('抓取['.$url2.']结束，总文章数:'.$count,$fields));
         //var_dump($count);
         //var_dump($totalViews);
     }

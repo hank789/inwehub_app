@@ -42,7 +42,7 @@ class WechatController extends AdminController
             $query->where('wx_hao', $filter['wx_hao']);
         }
 
-        if( isset($filter['group_id']) && $filter['group_id'] ){
+        if( isset($filter['group_id']) && $filter['group_id']>=0 ){
             $query->where('group_id', $filter['group_id']);
         } else {
             $filter['group_id'] = 0;
