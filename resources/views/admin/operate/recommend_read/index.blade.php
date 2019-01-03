@@ -243,7 +243,7 @@
                 data: function (params) {
                     return {
                         word: params.term,
-                        type: 'all'
+                        type: 'allC'
                     };
                 },
                 processResults: function (data) {

@@ -7,7 +7,7 @@
 @endsection
 @section('content')
     <section class="content-header">
-        <h1>发现分享</h1>
+        <h1>发现分享<small>领域：{{ implode('，',array_column($tags,'text')) }}</small></h1>
     </section>
     <section class="content">
         <div class="row">
@@ -282,7 +282,7 @@
                     data: function (params) {
                         return {
                             word: params.term,
-                            type: 'all'
+                            type: 'allC'
                         };
                     },
                     processResults: function (data) {
