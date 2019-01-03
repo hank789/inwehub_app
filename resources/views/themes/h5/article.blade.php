@@ -12,6 +12,9 @@
     <meta name="author" content="樱维社区" />
     <meta name="copyright" content="2018 inwehub.com" />
     <style>.rich_media_content * {max-width: 100%!important;box-sizing: border-box!important;-webkit-box-sizing: border-box!important;word-wrap: break-word!important;}
+        .appmsg_skin_default .rich_media_area_primary {
+            background-color: #fff;
+        }
         .radius_avatar img{display:block;width:100%;height:100%;border-radius:50%;-moz-border-radius:50%;-webkit-border-radius:50%;background-color:#eee}
         .rich_media_inner{word-wrap:break-word;-webkit-hyphens:auto;-ms-hyphens:auto;hyphens:auto}
         .rich_media_area_primary{padding:20px 16px 12px;background-color:#fafafa}
