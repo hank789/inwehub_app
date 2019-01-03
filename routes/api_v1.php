@@ -638,6 +638,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Article','pr
     Route::post('uploadImage','SubmissionController@uploadImage')->middleware('user.phone');
     //更新文章
     Route::post('update','SubmissionController@update');
+    //运营管理文章
+    Route::post('regionOperator','SubmissionController@regionOperator');
     //设置点赞类型
     Route::post('setSupportType','SubmissionController@setSupportType');
     //推荐文章到app
