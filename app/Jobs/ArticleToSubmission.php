@@ -95,7 +95,7 @@ class ArticleToSubmission implements ShouldQueue
                     }
                 }
             }
-            if (empty($author->qr_url)) {
+            if (empty($author->qr_url) && false) {
                 $parse_url = parse_url($url);
                 $query = parse_query($parse_url['query']);
                 $author->qr_url = $query['__biz'];
