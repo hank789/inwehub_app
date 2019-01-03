@@ -35,6 +35,7 @@
                         <span class="rich_media_meta rich_media_meta_nickname" id="profileBt">
                       <a href="javascript:void(0);" id="js_name">
                           {{ $article->withAuthor()->name }}                     </a></span>
+                        <em id="publish_time" class="rich_media_meta rich_media_meta_text">{{ $showDate }}</em>
                     </div>
                 </div>
                 <div class="rich_media_content" id="js_content">
