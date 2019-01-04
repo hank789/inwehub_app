@@ -134,13 +134,12 @@ class IndexController extends Controller {
 
         $regions = TagsLogic::loadTags(6,'');
 
-
         $data = [
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
             'recommend_experts' => [],
-            'regions' => $regions['tags'],
+            'regions' => array_merge([['value'=>-1,'text'=>'推荐']],$regions['tags']),
             'hot_groups' => $hotGroups,
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
