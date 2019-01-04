@@ -204,6 +204,7 @@ class ItJuZi extends Command {
             ])->getHtml();
             $resultArr = json_decode($result,true);
             $itjuzi_auth = $resultArr['data']['token'];
+            RateLimiter::instance()->setVale('itjuzi','token',$itjuzi_auth,60*60*24*5);
         }
         $this->itjuzi_auth = $itjuzi_auth;
     }

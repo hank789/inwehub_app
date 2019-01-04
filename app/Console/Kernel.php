@@ -51,6 +51,7 @@ class Kernel extends ConsoleKernel
         Commands\Scraper\Indeed::class,
         Commands\Scraper\DoubanUser::class,
         Commands\Scraper\WallstreetcnNews::class,
+        Commands\Scraper\Newrank::class,
 
         //活动脚本
         Commands\Activity\SendSms124425049::class,

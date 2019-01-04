@@ -62,10 +62,31 @@ class Test extends Command
      */
     public function handle()
     {
-        $submissions = Submission::where('group_id',0)->get();
-        foreach ($submissions as $submission) {
-            $submission->calculationRate();
-        }
+
+        $this->ql = QueryList::getInstance();
+        $headers = [
+            'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Referer' => 'https://www.newrank.cn/public/info/detail.html?account=fesco-bj',
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Encoding' => 'gzip, deflate, br',
+            'Accept-Language' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
+            'upgrade-insecure-requests' => 1,
+            'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+            'cookie' => 'tt_token=true; rmbuser=true; name=15050368286; useLoginAccount=true; token=5BD61E8AE52C44858E3F9A847A5418C9; __root_domain_v=.newrank.cn;'
+        ];
+        $result = $this->ql->get('https://www.newrank.cn/public/info/detail.html',[
+            'account' => 'xinhuashefabu1'
+        ],[
+            'timeout' => 10,
+            'headers' => $headers
+        ])->getHtml();
+        $pattern = "/var\s+fgkcdg\s+=\s+(\{[\s\S]*?\});/is";
+        preg_match($pattern, $result, $matchs);
+        $matchs[1] = formatHtml($matchs[1]);
+        var_dump($matchs[1]);
+        $data = json_decode($matchs[1],true);
+        var_dump($data);
+        //Storage::disk('local')->put('attachments/test5.html',$result);
         return;
         $url = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png';
         $logo = 'https://cdn.inwehub.com/tags/2018/11/QCwQdgZz5bfe458c5e535.png';

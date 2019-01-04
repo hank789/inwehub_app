@@ -1860,6 +1860,7 @@ if (!function_exists('convertWechatTempLink')) {
 
 if (!function_exists('convertWechatTempLinkToForever')) {
     function convertWechatTempLinkToForever($tempUrl) {
+        return '';
         try {
             //www.cpopweixin.com
             $ql = \QL\QueryList::getInstance();

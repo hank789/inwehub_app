@@ -111,14 +111,18 @@ class ArticleToSubmission implements ShouldQueue
             $article->delete();
             return;
         }
-
-        $parse_url = parse_url($article->cover_url);
-        $img_url = $article->cover_url;
-        //非本地地址，存储到本地
-        if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
-            $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-            Storage::disk('oss')->put($file_name,file_get_contents($article->cover_url));
-            $img_url = Storage::disk('oss')->url($file_name);
+        if (empty($article->cover_url)) {
+            $info = getUrlInfo($article->content_url,true);
+            $img_url = $info['img_url'];
+        } else {
+            $parse_url = parse_url($article->cover_url);
+            $img_url = $article->cover_url;
+            //非本地地址，存储到本地
+            if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
+                $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
+                Storage::disk('oss')->put($file_name,file_get_contents($article->cover_url));
+                $img_url = Storage::disk('oss')->url($file_name);
+            }
         }
         $article->cover_url = $img_url;
         $article->save();

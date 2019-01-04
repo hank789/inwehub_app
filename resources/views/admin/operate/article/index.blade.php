@@ -208,6 +208,7 @@
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.operate.article.index') }}");
+
         function setSupportType(id,obj) {
             $.post('/admin/submission/setSupportType',{id: id, support_type: obj.value},function(msg){
 
