@@ -407,6 +407,7 @@ class IndexController extends Controller {
                 'domain'    => $domain,
                 'img'   => $item->data['img']??'',
                 'slug'      => $item->slug,
+                'category_id' => $item->category_id,
                 'link_url'  => $link_url,
                 'rate'  => (int)(substr($item->rate,8)?:0),
                 'created_at'=> (string)$item->created_at
