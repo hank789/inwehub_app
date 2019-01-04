@@ -3,6 +3,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\OperationNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\ConvertWechatLink;
 use App\Jobs\LogUserViewTags;
 use App\Jobs\NewSubmissionJob;
 use App\Logic\QuillLogic;
@@ -397,6 +398,7 @@ class SubmissionController extends Controller {
         ];
         if ($tagNames) {
             $operateType = '新增';
+            $this->dispatch(new ConvertWechatLink($submission->id));
         } else {
             $operateType = '删除';
         }
