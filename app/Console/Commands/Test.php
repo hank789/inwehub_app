@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Logic\TagsLogic;
 use App\Logic\WilsonScoreNorm;
 use App\Models\Attention;
 use App\Models\Category;
@@ -62,7 +63,10 @@ class Test extends Command
      */
     public function handle()
     {
-
+        $content = '用在公司app“Inwehub”上，用于根据用户输入的公司名字取得公司的经纬度和位置信息，并显示用户附近的企业';
+        $res = TagsLogic::getRegionTags($content);
+        var_dump($res);
+        return;
         $this->ql = QueryList::getInstance();
         $headers = [
             'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',

@@ -198,4 +198,38 @@ class TagsLogic {
         return [];
     }
 
+    public static function getRegionTags($content) {
+        if (strlen($content)>6) {
+            $tags = [];
+            $regions = TagsLogic::loadTags(6,'')['tags'];
+            $relationTags = [];
+            foreach ($regions as $region) {
+                $tag = Tag::find($region['value']);
+                $description = strip_tags($tag->description);
+                if ($description) {
+                    $description = str_replace('，',',',$description);
+                    $ts = explode(',',$description);
+                    foreach ($ts as $t) {
+                        $relationTags[$t] = $region['text'];
+                        $tags[] = $t;
+                    }
+                }
+                $tags[] = $region['text'];
+            }
+            $res = searchKeys($content,$tags,100);
+            if ($res) {
+                $result =  array_column($res,0);
+                foreach ($result as $key=>$i) {
+                    if (isset($relationTags[$i])) {
+                        unset($result[$key]);
+                        $result[] = $relationTags[$i];
+                    }
+                }
+                return array_unique($result);
+            }
+            return [];
+        }
+        return [];
+    }
+
 }
