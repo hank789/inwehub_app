@@ -124,6 +124,8 @@ class ProductController extends AdminController
                 ]);
             }
         }
+        $tag->updated_at = date('Y-m-d H:i:s');
+        $tag->save();
         TagsLogic::delCache();
         TagsLogic::delRelatedProductsCache();
         return $this->success(route('admin.review.product.index'),'产品创建成功');
@@ -231,6 +233,8 @@ class ProductController extends AdminController
                 'reviews' => $info['review_count']
             ]);
         }
+        $tag->updated_at = date('Y-m-d H:i:s');
+        $tag->save();
         if ($newStatus != $oldStatus) {
             TagsLogic::delRelatedProductsCache();
         }
@@ -268,6 +272,8 @@ class ProductController extends AdminController
                 if (count($cids)) {
                     TagCategoryRel::where('tag_id',$id)->whereIn('category_id',$cids)->delete();
                 }
+                $tag->updated_at = date('Y-m-d H:i:s');
+                $tag->save();
             }
         }
         return response('success');
