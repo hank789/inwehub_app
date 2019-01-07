@@ -62,7 +62,7 @@ class Newrank extends Command {
         foreach ($mpInfos as $mpInfo) {
             $this->info($mpInfo->name);
             //一个小时内刚处理过的跳过
-            if (strtotime($mpInfo->update_time) >= strtotime('-90 minutes')) continue;
+            if (strtotime($mpInfo->update_time) >= strtotime('-120 minutes')) continue;
             if (strlen($mpInfo->newrank_id) < 30) {
                 $info = $this->getMpInfo($mpInfo->wx_hao);
                 if (isset($info['uuid'])) {
@@ -96,6 +96,8 @@ class Newrank extends Command {
             foreach ($list['value']['lastestArticle'] as $wz_item) {
                 $this->info($wz_item['title']);
                 if (strtotime($wz_item['publicTime']) <= strtotime('-2 days')) continue;
+                $uuid = base64_encode($wz_item['title'].$wz_item['summary']);
+                if (RateLimiter::instance()->hGet('wechat_article',$uuid)) continue;
                 $exist_submission_id = Redis::connection()->hget('voten:submission:url',$wz_item['url']);
                 if ($exist_submission_id) continue;
                 $article = WechatWenzhangInfo::create([
@@ -115,7 +117,7 @@ class Newrank extends Command {
                     'read_count' => $wz_item['clicksCount'],
                     'comment_count' => $wz_item['commentsCount']
                 ]);
-                Redis::connection()->hset('voten:submission:url',$wz_item['url'],$article->_id);
+                RateLimiter::instance()->hSet('wechat_article',$uuid,$article->_id);
                 if ($mpInfo->is_auto_publish == 1) {
                     dispatch(new ArticleToSubmission($article->_id));
                 }
