@@ -158,7 +158,7 @@ class SubmissionController extends Controller {
                 if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
         }
-        $group_name = $request->input('group_name','小哈公社');
+        $group_name = $request->input('group_name','');
         $group = Group::where('name',$group_name)->first();
         $url = $request->input('url');
         $title = $request->input('title');
@@ -212,8 +212,8 @@ class SubmissionController extends Controller {
                 'type'          => 'link',
                 'category_name' => $category->name,
                 'category_id'   => $category->id,
-                'group_id'      => $group->id,
-                'public'        => $group->public,
+                'group_id'      => $group?$group->id:0,
+                'public'        => $group?$group->public:1,
                 'rate'          => firstRate(),
                 'status'        => 1,
                 'user_id'       => $operator_id?:$user->id,
