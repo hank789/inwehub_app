@@ -15,6 +15,7 @@ use App\Models\Notice;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\RecommendRead;
+use App\Models\Support;
 use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -400,6 +401,10 @@ class IndexController extends Controller {
                     $link_url = config('app.url').'/articleInfo/'.$item->id.'?inwehub_user_device='.$inwehub_user_device;
                 }
             }
+            $upvote = Support::where('user_id',$user->id)
+                ->where('supportable_id',$item->id)
+                ->where('supportable_type',Submission::class)
+                ->exists();
             $list[] = [
                 'id'    => $item->id,
                 'title' => $item->data['title']??$item->title,
@@ -408,6 +413,7 @@ class IndexController extends Controller {
                 'img'   => $item->data['img']??'',
                 'slug'      => $item->slug,
                 'category_id' => $item->category_id,
+                'is_upvoted'     => $upvote ? 1 : 0,
                 'link_url'  => $link_url,
                 'rate'  => (int)(substr($item->rate,8)?:0),
                 'created_at'=> (string)$item->created_at
