@@ -38,6 +38,10 @@
                               @if ($errors->has('name')) <p class="help-block">{{ $errors->first('name') }}</p> @endif
                           </div>
                             <div class="form-group">
+                                <label for="name">用户uuid</label>
+                                <div>{{ $user->uuid }}</div>
+                            </div>
+                            <div class="form-group">
                                 <label for="name">用户标签</label>
                                 <div>
                                 <ul class="taglist-inline ib">
