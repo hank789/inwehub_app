@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Cache;
 class Category extends Model
 {
     protected $table = 'categories';
-    protected $fillable = ['parent_id','grade','name','slug','icon','status','sort','type','role_id','category_id'];
+    protected $fillable = ['parent_id','grade','name','slug','summary','icon','status','sort','type','role_id','category_id'];
 
 
     public static function boot()
