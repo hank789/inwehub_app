@@ -76,7 +76,7 @@ class Newrank extends Command {
                         $mpInfo->save();
                     } else {
                         event(new ExceptionNotify('获取新榜微信号信息失败:'.$mpInfo->wx_hao));
-                        return;
+                        continue;
                     }
                 }
             }
@@ -133,6 +133,7 @@ class Newrank extends Command {
     }
 
     protected function getListData($data) {
+        sleep(rand(6,15));
         $headers = [
             'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',
             'Referer' => 'https://www.newrank.cn/public/info/detail.html?account=fesco-bj',
@@ -159,6 +160,7 @@ class Newrank extends Command {
     protected function getAuth() {
         $auth = RateLimiter::instance()->getValue('newrank','token');
         if (!$auth) {
+            sleep(1);
             $flag = substr(str_replace('.','',microtime(true)),0,13);
             $nonce = $this->getNonce();
             $data = [
@@ -194,6 +196,7 @@ class Newrank extends Command {
     }
 
     public function getMpInfo($wxhao) {
+        sleep(3);
         $headers = [
             'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',
             'Referer' => 'https://www.newrank.cn/public/info/detail.html?account=fesco-bj',
@@ -212,9 +215,13 @@ class Newrank extends Command {
         ])->getHtml();
         $pattern = "/var\s+fgkcdg\s+=\s+(\{[\s\S]*?\});/is";
         preg_match($pattern, $result, $matchs);
-        $matchs[1] = formatHtml($matchs[1]);
-        $data = json_decode($matchs[1],true);
-        //var_dump($data);
+        if (isset($matchs[1]) && $matchs[1]) {
+            $matchs[1] = formatHtml($matchs[1]);
+            $data = json_decode($matchs[1],true);
+            //var_dump($data);
+        } else {
+            return false;
+        }
         return $data;
     }
 
