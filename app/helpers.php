@@ -1082,11 +1082,24 @@ if (!function_exists('saveImgToCdn')){
             $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$imgType;
             $ql = \QL\QueryList::getInstance();
             $gfw_urls = \App\Services\RateLimiter::instance()->sMembers('gfw_urls');
-            $otherArgs = [
-                'headers' => [
-                    'Referer' => $parse_url['host']
-                ]
-            ];
+            if ($parse_url['host'] == 'mmbiz.qpic.cn') {
+                $otherArgs = [
+                    'headers' => [
+                        'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                        'Host' => $parse_url['host'],
+                        'Upgrade-Insecure-Requests' => 1,
+                        'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+                    ]
+                ];
+            } else {
+                $otherArgs = [
+                    'headers' => [
+                        'Referer' => $parse_url['host'],
+                        'Host' => $parse_url['host'],
+                        'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+                    ]
+                ];
+            }
             try {
                 if (in_array($parse_url['host'],[
                         'lh4.googleusercontent.com',
