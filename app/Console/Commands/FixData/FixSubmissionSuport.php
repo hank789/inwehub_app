@@ -7,6 +7,7 @@
 
 
 use App\Models\Comment;
+use App\Models\Doing;
 use App\Models\Submission;
 use App\Models\Support;
 use Illuminate\Console\Command;
@@ -34,13 +35,15 @@ class FixSubmissionSuport extends Command
      */
     public function handle()
     {
-        $submissions = Submission::get();
-        foreach ($submissions as $submission) {
-            $tags = $submission->tags()->pluck('name')->toArray();
-            $data = $submission->data;
-            $data['keywords'] = implode(',',$tags);
-            $submission->data = $data;
-            $submission->save();
+        $doings = Doing::where('action',Doing::ACTION_SHARE_SUBMISSION_SUCCESS)->get();
+        foreach ($doings as $doing) {
+            $number = Doing::where('action',Doing::ACTION_SHARE_SUBMISSION_SUCCESS)->where('source_id',$doing->source_id)->count();
+            if ($number) {
+                $submission = Submission::find($doing->source_id);
+                $this->info($submission->id);
+                $submission->share_number = $number;
+                $submission->save();
+            }
         }
     }
 

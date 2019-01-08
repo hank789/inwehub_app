@@ -122,7 +122,7 @@ class Submission extends Model {
     protected $fillable = [
         'data', 'title', 'slug','author_id', 'type', 'category_id', 'hide', 'rate','group_id','rate_star',
         'upvotes', 'downvotes', 'user_id', 'views', 'data', 'approved_at','public','is_recommend', 'support_type',
-        'deleted_at', 'comments_number', 'status','	created_at', 'updated_at'
+        'deleted_at', 'comments_number', 'share_number', 'status','	created_at', 'updated_at'
     ];
 
     const RECOMMEND_STATUS_NOTHING = 0;

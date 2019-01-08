@@ -426,7 +426,7 @@ class IndexController extends Controller {
                 'rate'  => (int)(substr($item->rate,8)?:0),
                 'comment_number' => $item->comments_number,
                 'support_number' => $item->upvotes,
-                'share_number' => 0,
+                'share_number' => $item->share_number,
                 'created_at'=> (string)$item->created_at
             ];
         }
