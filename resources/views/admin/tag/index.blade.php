@@ -70,20 +70,20 @@
                                     </tr>
                                     @foreach($tags as $tag)
                                         <tr>
-                                            <td><input type="checkbox" name="id[]" value="{{ $tag->tag_id }}"/></td>
-                                            <td>{{ $tag->tag_id }}</td>
+                                            <td><input type="checkbox" name="id[]" value="{{ $tag->id }}"/></td>
+                                            <td>{{ $tag->id }}</td>
                                             <td> @if($tag->logo)
                                                     <img src="{{ $tag->logo }}"  style="width: 27px;"/>
                                                 @endif
                                             </td>
-                                            <td><a href="{{ route('ask.tag.index',['id'=>$tag->tag_id]) }}" target="_blank">{{ $tag->name }}</a></td>
-                                            <td>{{ implode(',',$tag->tag->categories->pluck('name')->toArray()) }}</td>
+                                            <td><a href="{{ route('ask.tag.index',['id'=>$tag->id]) }}" target="_blank">{{ $tag->name }}</a></td>
+                                            <td>{{ implode(',',$tag->categories->pluck('name')->toArray()) }}</td>
                                             <td width="30%">{{ $tag->summary }}</td>
-                                            <td>{{ $tag->tag->countMorph() }}</td>
+                                            <td>{{ $tag->countMorph() }}</td>
                                             <td>{{ timestamp_format($tag->created_at) }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.tag.edit',['id'=>$tag->tag_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.tag.edit',['id'=>$tag->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                 </div>
                                             </td>
                                         </tr>

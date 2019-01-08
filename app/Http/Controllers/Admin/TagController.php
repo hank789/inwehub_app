@@ -32,7 +32,7 @@ class TagController extends AdminController
     public function index(Request $request)
     {
         $filter =  $request->all();
-        $query = TagCategoryRel::leftJoin('tags','tag_id','=','tags.id');
+        $query = Tag::leftJoin('tag_category_rel','tags.id','=','tag_id');
 
         $filter['category_id'] = $request->input('category_id',-1);
 
@@ -40,7 +40,7 @@ class TagController extends AdminController
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('name','like', '%'.$filter['word'].'%')->orderByRaw('case when name like "'.$filter['word'].'" then 0 else 2 end');
         } else {
-            $query->orderBy('tag_category_rel.tag_id','desc');
+            $query->orderBy('tags.id','desc');
         }
 
         /*分类过滤*/
@@ -49,9 +49,9 @@ class TagController extends AdminController
         }
 
         if( isset($filter['id']) && $filter['id'] ){
-            $query->where('tag_id',$filter['id']);
+            $query->where('tags.id',$filter['id']);
         }
-        $fields = ['tag_category_rel.id','tag_category_rel.tag_id','tag_category_rel.category_id','tag_category_rel.status','tag_category_rel.reviews','tags.name','tags.logo','tags.summary','tags.created_at'];
+        $fields = ['tags.id','tags.name','tags.logo','tags.summary','tags.created_at'];
 
         $tags = $query->select($fields)->paginate(20);
         return view("admin.tag.index")->with('tags',$tags)->with('filter',$filter);
