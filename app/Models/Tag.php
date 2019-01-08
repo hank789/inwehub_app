@@ -222,6 +222,9 @@ class Tag extends Model implements HasMedia
 
     public static function getTagByName($tagName){
         $tag = self::where('name',$tagName)->first();
+        if (!$tag && is_numeric($tagName)) {
+            $tag = self::find($tagName);
+        }
         return $tag;
     }
 
