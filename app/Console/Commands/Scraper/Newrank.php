@@ -69,6 +69,7 @@ class Newrank extends Command {
                     $mpInfo->newrank_id = $info['uuid'];
                     $mpInfo->save();
                 } else {
+                    $this->clearAuth();
                     $this->getAuth();
                     $info = $this->getMpInfo($mpInfo->wx_hao);
                     if (isset($info['uuid'])) {
@@ -86,6 +87,7 @@ class Newrank extends Command {
             ];
             $list = $this->getListData($data);
             if (!isset($list['value']['lastestArticle'])) {
+                $this->clearAuth();
                 $this->getAuth();
                 $list = $this->getListData($data);
             }
@@ -159,6 +161,10 @@ class Newrank extends Command {
         return json_decode($content, true);
     }
 
+    protected function clearAuth() {
+        RateLimiter::instance()->setVale('newrank','token','',60);
+    }
+
     protected function getAuth() {
         $auth = RateLimiter::instance()->getValue('newrank','token');
         if (!$auth) {
@@ -187,7 +193,7 @@ class Newrank extends Command {
                     'X-Requested-With' => 'XMLHttpRequest'
                 ]
             ])->getHtml();
-            //var_dump($result);
+            var_dump($result);
             $resultArr = json_decode($result,true);
             //var_dump($resultArr);
             $auth = $resultArr['value']['token'];
@@ -220,7 +226,7 @@ class Newrank extends Command {
         if (isset($matchs[1]) && $matchs[1]) {
             $matchs[1] = formatHtml($matchs[1]);
             $data = json_decode($matchs[1],true);
-            //var_dump($data);
+            var_dump($data);
         } else {
             return false;
         }
