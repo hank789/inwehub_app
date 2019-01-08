@@ -767,7 +767,7 @@ trait BaseController {
         $group_id = $request->input('group_id',0);
         $public = 1;
         $hide = $request->input('hide',0);
-        if ($request->type != 'review') {
+        if ($request->type != 'review' && $group_id) {
             $group = Group::find($group_id);
             if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
                 if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
