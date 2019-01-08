@@ -1185,7 +1185,7 @@ if (!function_exists('getUrlInfo')) {
                 }
                 if (!$image) {
                     $image = $ql->find('meta[itemprop=image]')->content;
-                    if (!$image) {
+                    if (!$image && false) {
                         $image = $ql->find('link[rel=icon]')->href;
                         if (!$image) {
                             $image = $ql->find('link[rel=shortcut icon]')->href;
@@ -1210,7 +1210,7 @@ if (!function_exists('getUrlInfo')) {
                     }
                 }
                 if (!$image) {
-                    $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
+                    //$img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
                     event(new \App\Events\Frontend\System\ExceptionNotify('未取到网站:'.$url.'的图片'));
                 }
                 $title = $ql->find('title')->eq(0)->text();

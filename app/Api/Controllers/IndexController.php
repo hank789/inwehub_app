@@ -16,6 +16,7 @@ use App\Models\Question;
 use App\Models\Submission;
 use App\Models\RecommendRead;
 use App\Models\Support;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -134,13 +135,14 @@ class IndexController extends Controller {
         }
 
         $regions = TagsLogic::loadTags(6,'');
+        $tags = $regions['tags'];
 
         $data = [
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
             'recommend_experts' => [],
-            'regions' => array_merge([['value'=>-1,'text'=>'推荐']],$regions['tags']),
+            'regions' => array_merge([['value'=>-1,'text'=>'推荐']],$tags),
             'hot_groups' => $hotGroups,
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
