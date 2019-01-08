@@ -828,8 +828,7 @@ trait BaseController {
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
-                'title' => 'required|between:1,6000',
-                'group_id' => 'required|integer'
+                'title' => 'required|between:1,6000'
             ]);
 
             //检查url是否重复
