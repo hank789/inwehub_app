@@ -22,10 +22,11 @@
                     <form role="form" name="tagForm" id="tag_form" method="POST" enctype="multipart/form-data" action="{{ route('admin.tag.update',['id'=>$tag->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" name="_token" id="editor_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="mergeR" id="mergeR" value="0">
                         <div class="box-body">
                             <div class="form-group @if ($errors->has('name')) has-error @endif">
                                 <label for="name">标签名称</label>
-                                <input type="text" name="name" class="form-control " placeholder="标签名称" value="{{ old('name',$tag->name) }}">
+                                <input type="text" name="name" id="name" class="form-control " placeholder="标签名称" value="{{ old('name',$tag->name) }}">
                                 @if ($errors->has('name')) <p class="help-block">{{ $errors->first('name') }}</p> @endif
                             </div>
 
@@ -68,7 +69,7 @@
 
                         </div>
                         <div class="box-footer">
-                            <button type="submit" class="btn btn-primary editor-submit" >保存</button>
+                            <button type="button" id="submitButton" class="btn btn-primary" data-source_id="{{ $tag->id }}" onclick="submitForm()" >保存</button>
                             <button type="reset" class="btn btn-success">重置</button>
                         </div>
                     </form>
@@ -85,5 +86,19 @@
             set_active_menu('manage_tags',"{{ route('admin.tag.index') }}");
             $('#category_id').select2();
         });
+        function submitForm() {
+            var id = $('#submitButton').data('source_id');
+            var name = $('#name').val();
+            $.post('/admin/tag/checkNameExist/' + id,{name: name},function(msg){
+                if(msg == 'failed') {
+                    if(!confirm(name + '已存在，是否将当前标签合并到' + name + '(当前标签下的关联内容也将合并，合并后当前标签会自动删除)？')){
+                        return false;
+                    }
+                    $('#mergeR').val(1);
+                }
+                $('#tag_form').submit();
+            });
+            return false;
+        }
     </script>
 @endsection

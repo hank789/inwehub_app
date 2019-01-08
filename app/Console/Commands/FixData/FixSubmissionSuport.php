@@ -57,8 +57,6 @@ class FixSubmissionSuport extends Command
                 $submission->save();
             }
         }
-        $tag1 = Tag::getTagByName('SaaS与云');
-        $tag2 = Tag::getTagByName('SaaS');
 
         //WechatMpInfo::where('group_id','>',0)->update(['group_id'=>0]);
         //Feeds::where('group_id','>',0)->update(['group_id'=>0]);

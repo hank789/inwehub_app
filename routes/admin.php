@@ -168,6 +168,7 @@ Route::resource('comment', 'CommentController',['only' => ['index','edit','updat
 Route::post('tag/destroy',['as'=>'admin.tag.destroy','uses'=>'TagController@destroy']);
 /*修改分类核*/
 Route::post('tag/changeCategories',['as'=>'admin.tag.changeCategories','uses'=>'TagController@changeCategories']);
+Route::post('tag/checkNameExist/{id}',['as'=>'admin.tag.checkNameExist','uses'=>'TagController@checkNameExist'])->where(['id'=>'[0-9]+']);
 
 /*标签审核*/
 Route::post('tag/verify',['as'=>'admin.tag.verify','uses'=>'TagController@verify']);
