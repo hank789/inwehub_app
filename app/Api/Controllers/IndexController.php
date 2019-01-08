@@ -363,11 +363,15 @@ class IndexController extends Controller {
             $user->id = 0;
             $user->name = '游客';
         }
-        $query = Submission::where('status',1)->where('group_id',0);
-        if ($filterTag) {
-            $query = $query->whereHas('tags',function($query) use ($filterTag) {
-                $query->where('tag_id', $filterTag);
-            });
+        if ($filterTag == -1) {
+            $query = Submission::where('status',1)->where('group_id',0);
+            if ($filterTag) {
+                $query = $query->whereHas('tags',function($query) use ($filterTag) {
+                    $query->where('tag_id', $filterTag);
+                });
+            }
+        } else {
+            $query = RecommendRead::where('audit_status',1);
         }
         $query = $query->orderBy('rate','desc');
         if ($page == 1) {
@@ -393,6 +397,10 @@ class IndexController extends Controller {
         foreach ($reads as $key=>$item) {
             if ($page == 1 && $key == 0) {
                 $last_seen = $item->id;
+            }
+            if ($filterTag == -1 && $item->source_type != Submission::class) continue;
+            if ($filterTag == -1) {
+                $item = Submission::find($item->source_id);
             }
             $domain = $item->data['domain']??'';
             $link_url = $item->data['url']??'';
