@@ -364,6 +364,7 @@ class SubmissionController extends Controller {
         foreach ($tags as $tag) {
             if ($tag == -1) {
                 $isRecommend = true;
+                continue;
             }
             if (!in_array($tag,$oldTags)) {
                 $submission->tags()->attach($tag);
