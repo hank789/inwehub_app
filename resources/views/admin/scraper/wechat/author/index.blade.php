@@ -72,7 +72,7 @@
                                         <th>公众号名称</th>
                                         <th>微信号</th>
                                         <th>圈子</th>
-                                        <th>文章发布者</th>
+                                        <th>发布领域</th>
                                         <th>时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
@@ -99,7 +99,7 @@
                                             <td>{{ $author->name }}</td>
                                             <td>{{ $author->wx_hao }}</td>
                                             <td>{{ $author->group?$author->group->name:'' }}</td>
-                                            <td>{{ $author->user?$author->user->name:'' }}</td>
+                                            <td>{{ implode(',',$author->tags->pluck('name')->toArray()) }}</td>
                                             <td>{{ timestamp_format($author->create_time) }}</td>
                                             <td><span class="label @if($author->status===0) label-danger  @else label-success @endif">{{ trans_common_status($author->status) }} {{ $author->is_auto_publish?'自动发布文章':'' }}</span> </td>
                                             <td>

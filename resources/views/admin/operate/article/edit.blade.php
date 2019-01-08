@@ -39,13 +39,16 @@
                                 <label>类型</label>
                                 <span>{{ $submission->type }}</span>
                             </div>
-                            <div class="row">
-                                <div class="col-xs-12">
+                            <div class="form-group">
+                                <label>标签</label>
+                                <div class="row">
+                                <div class="col-sm-10">
                                     <select id="select_tags" name="select_tags" class="form-control" multiple="multiple" >
                                         @foreach($submission->tags as $tag)
                                             <option value="{{ $tag->id }}" selected="selected">{{ $tag->name }}</option>
                                         @endforeach
                                     </select>
+                                </div>
                                 </div>
                             </div>
 

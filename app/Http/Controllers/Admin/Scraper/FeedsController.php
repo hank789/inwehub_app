@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Logic\TagsLogic;
 use App\Models\Groups\Group;
 use App\Models\Scraper\Feeds;
 use Illuminate\Http\Request;
@@ -14,7 +15,6 @@ class FeedsController extends AdminController
     /*新闻创建校验*/
     protected $validateRules = [
         'name'        => 'required|max:255',
-        'group_id'    => 'required|integer|min:0',
         'user_id'     => 'required|integer|min:1',
         'source_type' => 'required|max:255|in:1,2',
         'source_link' => 'required|max:255',
@@ -50,8 +50,9 @@ class FeedsController extends AdminController
 
     public function create()
     {
+        $regions = TagsLogic::loadTags(6,'','id');
         $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get()->toArray();
-        return view("admin.scraper.feeds.create")->with('groups',$groups);
+        return view("admin.scraper.feeds.create")->with('groups',$groups)->with('tags',$regions['tags']);
     }
 
     /**
@@ -69,7 +70,7 @@ class FeedsController extends AdminController
         $this->validate($request,$this->validateRules);
         $data = [
             'name'        => trim($request->input('name')),
-            'group_id'  =>$request->input('group_id'),
+            'group_id'  =>$request->input('group_id',0),
             'user_id'   => $request->input('user_id',504),
             'source_type' => $request->input('source_type'),
             'source_link'   => $request->input('source_link'),
@@ -82,6 +83,18 @@ class FeedsController extends AdminController
 
         /*判断新闻是否添加成功*/
         if($news){
+            $tagString = $request->input('tagIds');
+            if ($tagString != -1) {
+                /*更新标签*/
+                if (!is_array($tagString)) {
+                    $tags = array_unique(explode(",",$tagString));
+                } else {
+                    $tags = array_unique($tagString);
+                }
+                foreach ($tags as $tag) {
+                    $news->tags()->attach($tag);
+                }
+            }
             $message = '发布成功! ';
             return $this->success(route('admin.scraper.feeds.index'),$message);
         }
@@ -102,8 +115,9 @@ class FeedsController extends AdminController
         if(!$feeds){
             abort(404);
         }
+        $regions = TagsLogic::loadTags(6,'','id');
         $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get()->toArray();
-        return view("admin.scraper.feeds.edit")->with(compact('feeds','groups'));
+        return view("admin.scraper.feeds.edit")->with(compact('feeds','groups'))->with('tags',$regions['tags']);
 
     }
 
@@ -135,7 +149,26 @@ class FeedsController extends AdminController
         $feed->is_auto_publish = $request->input('is_auto_publish',0);
 
         $feed->save();
-
+        $tagString = $request->input('tagIds');
+        if ($tagString != -1) {
+            /*更新标签*/
+            $oldTags = $feed->tags->pluck('id')->toArray();
+            if (!is_array($tagString)) {
+                $tags = array_unique(explode(",",$tagString));
+            } else {
+                $tags = array_unique($tagString);
+            }
+            foreach ($tags as $tag) {
+                if (!in_array($tag,$oldTags)) {
+                    $feed->tags()->attach($tag);
+                }
+            }
+            foreach ($oldTags as $oldTag) {
+                if (!in_array($oldTag,$tags)) {
+                    $feed->tags()->detach($oldTag);
+                }
+            }
+        }
         return $this->success(route('admin.scraper.feeds.index'),"编辑成功");
 
     }

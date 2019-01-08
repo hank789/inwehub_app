@@ -7,10 +7,12 @@ use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
+use App\Models\Tag;
 use App\Services\RateLimiter;
 use App\Services\WechatGzhService;
 use App\Traits\SubmitSubmission;
 use Carbon\Carbon;
+use function GuzzleHttp\Promise\is_fulfilled;
 use function GuzzleHttp\Psr7\parse_query;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -168,6 +170,10 @@ class ArticleToSubmission implements ShouldQueue
         $article->save();
         if ($author->group_id) {
             $author->group->increment('articles');
+        }
+        $regionTags = $author->tags->pluck('id')->toArray();
+        if($regionTags) {
+            Tag::multiAddByIds($regionTags,$submission);
         }
         (new NewSubmissionJob($submission->id,true))->handle();
         RateLimiter::instance()->sClear('group_read_users:'.$author->group_id);

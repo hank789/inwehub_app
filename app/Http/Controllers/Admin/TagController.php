@@ -30,7 +30,7 @@ class TagController extends AdminController
     public function index(Request $request)
     {
         $filter =  $request->all();
-        $query = Tag::query();
+        $query = TagCategoryRel::leftJoin('tags','tag_id','=','tags.id');
 
         $filter['category_id'] = $request->input('category_id',-1);
 
@@ -38,24 +38,20 @@ class TagController extends AdminController
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('name','like', '%'.$filter['word'].'%')->orderByRaw('case when name like "'.$filter['word'].'" then 0 else 2 end');
         } else {
-            $query->orderBy('updated_at','desc');
-        }
-
-        /*时间过滤*/
-        if( isset($filter['date_range']) && $filter['date_range'] ){
-            $query->whereBetween('created_at',explode(" - ",$filter['date_range']));
+            $query->orderBy('tag_category_rel.tag_id','desc');
         }
 
         /*分类过滤*/
         if( $filter['category_id']> 0 ){
-            $query->where('category_id','=',$filter['category_id']);
+            $query->where('tag_category_rel.category_id','=',$filter['category_id']);
         }
 
         if( isset($filter['id']) && $filter['id'] ){
-            $query->where('id',$filter['id']);
+            $query->where('tag_id',$filter['id']);
         }
+        $fields = ['tag_category_rel.id','tag_category_rel.tag_id','tag_category_rel.category_id','tag_category_rel.status','tag_category_rel.reviews','tags.name','tags.logo','tags.summary','tags.created_at'];
 
-        $tags = $query->paginate(20);
+        $tags = $query->select($fields)->paginate(20);
         return view("admin.tag.index")->with('tags',$tags)->with('filter',$filter);
 
 
@@ -91,6 +87,11 @@ class TagController extends AdminController
             Storage::disk('oss')->put($filePath,File::get($file));
             $img_url = Storage::disk('oss')->url($filePath);
             $data['logo'] = $img_url;
+        }
+        if ($data['category_id']) {
+            $data['category_id'] = $data['category_id'][0];
+        } else {
+            $data['category_id'] = 0;
         }
         $tag = Tag::create($data);
         foreach ($request->input('category_id') as $category_id) {

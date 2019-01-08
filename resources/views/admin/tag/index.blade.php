@@ -1,5 +1,9 @@
 @extends('admin/public/layout')
 @section('title')标签管理@endsection
+@section('css')
+    <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
+@endsection
 @section('content')
     <section class="content-header">
         <h1>
@@ -24,18 +28,19 @@
                                 <div class="row">
                                     <form name="searchForm" action="{{ route('admin.tag.index') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" id="category_id" name="category_id" value="" />
+
                                         <div class="col-xs-2 hidden-xs">
                                             <input type="text" class="form-control" name="id" placeholder="id" value="{{ $filter['id'] or '' }}"/>
                                         </div>
                                         <div class="col-xs-3">
                                             <input type="text" class="form-control" name="word" placeholder="关键词" value="{{ $filter['word'] or '' }}"/>
                                         </div>
-                                        <div class="col-xs-4">
-                                            <input type="text" name="date_range" id="date_range" class="form-control" placeholder="时间范围" value="{{ $filter['date_range'] or '' }}" />
-                                        </div>
-                                        <div class="col-xs-3">
-                                            <select class="form-control" name="category_id">
-                                                <option value="-1">不选择</option>
+                                        <div class="col-xs-2">
+                                            <select id="select_tags" name="select_tags" class="form-control" >
+                                                @if ($filter['category_id'] == -1)
+                                                    <option value="-1" selected>不选择</option>
+                                                @endif
                                                 @include('admin.category.option',['type'=>'all','select_id'=>$filter['category_id'],'root'=>false])
                                             </select>
                                         </div>
@@ -65,20 +70,20 @@
                                     </tr>
                                     @foreach($tags as $tag)
                                         <tr>
-                                            <td><input type="checkbox" name="id[]" value="{{ $tag->id }}"/></td>
-                                            <td>{{ $tag->id }}</td>
+                                            <td><input type="checkbox" name="id[]" value="{{ $tag->tag_id }}"/></td>
+                                            <td>{{ $tag->tag_id }}</td>
                                             <td> @if($tag->logo)
                                                     <img src="{{ $tag->logo }}"  style="width: 27px;"/>
                                                 @endif
                                             </td>
-                                            <td><a href="{{ route('ask.tag.index',['id'=>$tag->id]) }}" target="_blank">{{ $tag->name }}</a></td>
-                                            <td>{{ implode(',',$tag->categories->pluck('name')->toArray()) }}</td>
+                                            <td><a href="{{ route('ask.tag.index',['id'=>$tag->tag_id]) }}" target="_blank">{{ $tag->name }}</a></td>
+                                            <td>{{ implode(',',$tag->tag->categories->pluck('name')->toArray()) }}</td>
                                             <td width="30%">{{ $tag->summary }}</td>
-                                            <td>{{ $tag->countMorph() }}</td>
+                                            <td>{{ $tag->tag->countMorph() }}</td>
                                             <td>{{ timestamp_format($tag->created_at) }}</td>
                                             <td>
                                                 <div class="btn-group-xs" >
-                                                    <a class="btn btn-default" href="{{ route('admin.tag.edit',['id'=>$tag->id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="{{ route('admin.tag.edit',['id'=>$tag->tag_id]) }}" data-toggle="tooltip" title="编辑"><i class="fa fa-edit"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -112,8 +117,19 @@
 @endsection
 
 @section('script')
+    <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     @include("admin.public.change_category_modal",['type'=>'tags','form_id'=>'item_form','form_action'=>route('admin.tag.changeCategories')])
     <script type="text/javascript">
         set_active_menu('manage_tags',"{{ route('admin.tag.index') }}");
+        $("#select_tags").select2({
+            theme:'bootstrap',
+            placeholder: "分类",
+            minimumInputLength:2,
+            tags:false
+        });
+
+        $("#select_tags").change(function(){
+            $("#category_id").val($("#select_tags").val());
+        });
     </script>
 @endsection

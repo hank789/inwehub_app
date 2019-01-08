@@ -8,10 +8,12 @@
 
 use App\Models\Comment;
 use App\Models\Doing;
+use App\Models\RecommendRead;
 use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Submission;
 use App\Models\Support;
+use App\Models\Tag;
 use Illuminate\Console\Command;
 
 class FixSubmissionSuport extends Command
@@ -47,8 +49,19 @@ class FixSubmissionSuport extends Command
                 $submission->save();
             }
         }
-        WechatMpInfo::where('group_id','>',0)->update(['group_id'=>0]);
-        Feeds::where('group_id','>',0)->update(['group_id'=>0]);
+        $recommends = RecommendRead::where('audit_status',1)->get();
+        foreach ($recommends as $recommend) {
+            if ($recommend->source_type == Submission::class) {
+                $submission = Submission::find($recommend->source_id);
+                $submission->group_id = 0;
+                $submission->save();
+            }
+        }
+        $tag1 = Tag::getTagByName('SaaS与云');
+        $tag2 = Tag::getTagByName('SaaS');
+
+        //WechatMpInfo::where('group_id','>',0)->update(['group_id'=>0]);
+        //Feeds::where('group_id','>',0)->update(['group_id'=>0]);
     }
 
 }

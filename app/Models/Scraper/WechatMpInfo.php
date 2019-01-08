@@ -1,6 +1,7 @@
 <?php namespace App\Models\Scraper;
 
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Database\Eloquent\Model;
 /**
  * @author: wanghui
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class WechatMpInfo extends Model {
-    use BelongsToUserTrait;
+    use BelongsToUserTrait, MorphManyTagsTrait;
 
     protected $table = 'scraper_wechat_mp_info';
     /**
