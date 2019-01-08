@@ -415,7 +415,7 @@ class IndexController extends Controller {
                 ->exists();
             $list[] = [
                 'id'    => $item->id,
-                'title' => $item->data['title']??$item->title,
+                'title' => strip_tags($item->data['title']??$item->title),
                 'type'  => $item->type,
                 'domain'    => $domain,
                 'img'   => $item->data['img']??'',

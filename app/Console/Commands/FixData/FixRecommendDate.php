@@ -35,7 +35,7 @@ class FixRecommendDate extends Command
      */
     public function handle()
     {
-        $recommends = RecommendRead::where('rate','<=',0)->get();
+        $recommends = RecommendRead::get();
         foreach ($recommends as $recommend) {
             $recommend->source->calculationRate();
         }
