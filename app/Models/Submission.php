@@ -515,7 +515,7 @@ class Submission extends Model {
             //和我们的产品进行一次匹配
             $tags = TagsLogic::getContentTags($content);
             //尝试自动分领域
-            $tags = array_merge($tags,TagsLogic::getRegionTags($content));
+            //$tags = array_merge($tags,TagsLogic::getRegionTags($content));
             $keywords = array_unique($keywords);
             foreach ($keywords as $keyword) {
                 $keyword = formatHtml(formatKeyword($keyword));

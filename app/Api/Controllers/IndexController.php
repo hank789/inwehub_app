@@ -373,7 +373,12 @@ class IndexController extends Controller {
         } else {
             $query = RecommendRead::where('audit_status',1);
         }
-        $query = $query->orderBy('rate','desc');
+        if ($filterTag) {
+            $query = $query->orderBy('rate','desc');
+        } else {
+            $query = $query->orderBy('created_at','desc');
+        }
+
         if ($page == 1) {
             if ($last_seen) {
                 $ids = $query->take(100)->pluck('id')->toArray();
@@ -413,6 +418,13 @@ class IndexController extends Controller {
                 ->where('supportable_id',$item->id)
                 ->where('supportable_type',Submission::class)
                 ->exists();
+            $tags = $item->tags()->wherePivot('is_display',1)->select('tags.id','tags.name')->get()->toArray();
+            if ($item->isRecommendRead()) {
+                $tags[] = [
+                    'id' => -1,
+                    'name'=>'推荐'
+                ];
+            }
             $list[] = [
                 'id'    => $item->id,
                 'title' => strip_tags($item->data['title']??$item->title),
@@ -427,6 +439,7 @@ class IndexController extends Controller {
                 'comment_number' => $item->comments_number,
                 'support_number' => $item->upvotes,
                 'share_number' => $item->share_number,
+                'tags' => $tags,
                 'created_at'=> (string)$item->created_at
             ];
         }
