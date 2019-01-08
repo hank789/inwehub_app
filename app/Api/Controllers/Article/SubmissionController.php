@@ -346,7 +346,7 @@ class SubmissionController extends Controller {
         $this->validate($request, [
             'id' => 'required'
         ]);
-        $submission = Submission::find($request->input('submission_id'));
+        $submission = Submission::find($request->input('id'));
         if (!$submission) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
