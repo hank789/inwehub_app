@@ -448,7 +448,7 @@ class Submission extends Model {
         $this->save();
         $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
         if ($recommendRead) {
-            $recommendRead->rate = $this->rate + $recommendRead->getRateWeight();
+            $recommendRead->rate = $this->rate;
             $recommendRead->save();
         }
     }
