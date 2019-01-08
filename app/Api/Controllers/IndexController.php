@@ -424,6 +424,9 @@ class IndexController extends Controller {
                 'is_upvoted'     => $upvote ? 1 : 0,
                 'link_url'  => $link_url,
                 'rate'  => (int)(substr($item->rate,8)?:0),
+                'comment_number' => $item->comments_number,
+                'support_number' => $item->upvotes,
+                'share_number' => 0,
                 'created_at'=> (string)$item->created_at
             ];
         }
