@@ -153,9 +153,7 @@ class GroupController extends AdminController {
     {
         $ids = $request->input('id');
         foreach ($ids as $id) {
-            if (Submission::where('group_id',$id)->count() <= 0) {
-                Group::destroy($id);
-            }
+            Group::destroy($id);
         }
         return $this->success(url()->previous(),'删除成功，有文章的圈子不会被删除');
     }

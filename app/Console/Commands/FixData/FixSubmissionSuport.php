@@ -8,6 +8,8 @@
 
 use App\Models\Comment;
 use App\Models\Doing;
+use App\Models\Scraper\Feeds;
+use App\Models\Scraper\WechatMpInfo;
 use App\Models\Submission;
 use App\Models\Support;
 use Illuminate\Console\Command;
@@ -45,6 +47,8 @@ class FixSubmissionSuport extends Command
                 $submission->save();
             }
         }
+        WechatMpInfo::where('group_id','>',0)->update(['group_id'=>0]);
+        Feeds::where('group_id','>',0)->update(['group_id'=>0]);
     }
 
 }

@@ -64,14 +64,6 @@ class GoogleNews extends Command {
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));
         $category = Category::where('slug','channel_xwdt')->first();
         foreach ($urls as $group_id => $info) {
-            $group = Group::find($group_id);
-            if (!$group) {
-                event(new ExceptionNotify('圈子['.$group_id.']不存在'));
-                continue;
-            }
-            if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
-                continue;
-            }
             $this->info($info['url']);
             try {
                 $list = $ql->browser($info['url'],false,[
@@ -134,7 +126,7 @@ class GoogleNews extends Command {
                             'category_name' => $category->name,
                             'category_id'   => $category->id,
                             'group_id'      => 0,
-                            'public'        => $group->public,
+                            'public'        => 1,
                             'rate'          => firstRate(),
                             'status'        => 1,
                             'user_id'       => $info['author_id'],
