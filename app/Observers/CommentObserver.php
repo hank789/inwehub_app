@@ -133,6 +133,7 @@ class CommentObserver implements ShouldQueue {
                 //产生一条feed流
                 $submission = $source;
                 $submission->increment('comments_number');
+                $submission->calculationRate();
                 $submission_user = User::find($submission->user_id);
                 $group = Group::find($submission->group_id);
                 if ($submission->group_id && !$group->public) {
