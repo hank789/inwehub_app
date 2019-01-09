@@ -412,7 +412,7 @@ class IndexController extends Controller {
             $domain = $item->data['domain']??'';
             $link_url = $item->data['url']??'';
             if (!in_array($inwehub_user_device,['web','wechat']) && $domain == 'mp.weixin.qq.com') {
-                if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz='))) {
+                if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz=') || str_contains($link_url, '/s/'))) {
                     $link_url = config('app.url').'/articleInfo/'.$item->id.'?inwehub_user_device='.$inwehub_user_device;
                 }
             }

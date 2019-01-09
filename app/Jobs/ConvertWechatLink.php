@@ -53,6 +53,7 @@ class ConvertWechatLink implements ShouldQueue
         $submission = Submission::find($this->id);
         if (!$submission) return;
         $article = WechatWenzhangInfo::where('topic_id',$this->id)->first();
+        if (!$article) return;
         if ($article->source_type == 1) {
             $author = WechatMpInfo::find($article->mp_id);
         } else {
@@ -61,7 +62,7 @@ class ConvertWechatLink implements ShouldQueue
         if (!$author) return;
         $url = $article->content_url;
         if ($article->source_type == 1) {
-            if (str_contains($article->content_url,'wechat_redirect') || str_contains($article->content_url,'__biz=') || config('app.env') != 'production') {
+            if (str_contains($article->content_url,'wechat_redirect') || str_contains($article->content_url,'__biz=') || str_contains($article->content_url,'/s/') || config('app.env') != 'production') {
                 return;
             } else {
                 $url = convertWechatTempLinkToForever($article->content_url);

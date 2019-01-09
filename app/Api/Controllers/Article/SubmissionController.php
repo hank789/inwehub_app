@@ -399,7 +399,12 @@ class SubmissionController extends Controller {
         ];
         if ($tagNames) {
             $operateType = '新增';
-            $this->dispatch(new ConvertWechatLink($submission->id));
+            if (isset($submission->data['domain']) && $submission->data['domain'] == 'mp.weixin.qq.com') {
+                $link_url = $submission->data['url'];
+                if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz=') || str_contains($link_url, '/s/'))) {
+                    $this->dispatch(new ConvertWechatLink($submission->id));
+                }
+            }
         } else {
             $operateType = '删除';
         }
