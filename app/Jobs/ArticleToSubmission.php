@@ -65,7 +65,7 @@ class ArticleToSubmission implements ShouldQueue
         $user_id = $author->user_id;
         $url = $article->content_url;
         if ($article->source_type == 1) {
-            if (str_contains($article->content_url,'wechat_redirect') || str_contains($article->content_url,'__biz=') || config('app.env') != 'production') {
+            if (str_contains($article->content_url,'wechat_redirect') || str_contains($article->content_url,'__biz=') || str_contains($article->content_url,'/s/') || config('app.env') != 'production') {
                 $url = $article->content_url;
             } elseif ($author->group_id > 0) {
                 $url = convertWechatTempLinkToForever($article->content_url);
