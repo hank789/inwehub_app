@@ -889,10 +889,10 @@ trait BaseController {
             $data['current_address_longitude'] = $request->input('current_address_longitude');
             $data['current_address_latitude'] = $request->input('current_address_latitude');
             $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
-            $title = formatHtml($request->title?:$data['title']);
+            $title = formatHtml($request->title);
             $submission = Submission::create([
                 'title'         => formatContentUrls($title),
-                'slug'          => $this->slug($title),
+                'slug'          => $this->slug($title?:$data['title']),
                 'type'          => $request->type,
                 'category_id'   => $category_id,
                 'group_id'      => $group_id,
