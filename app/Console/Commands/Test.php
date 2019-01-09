@@ -63,6 +63,24 @@ class Test extends Command
      */
     public function handle()
     {
+        $mps = WechatMpInfo::where('status',1)->where('group_id',0)->get();
+        foreach ($mps as $mp) {
+            $regionTags = $mp->tags->pluck('id')->toArray();
+            if ($regionTags) {
+                $articles = WechatWenzhangInfo::where('mp_id',$mp->id)->where('source_type',1)->where('topic_id','>',0)->get();
+                foreach ($articles as $article) {
+                    $submission = Submission::find($article->topic_id);
+                    if ($submission) {
+                        $this->info($submission->id);
+                        $submission->group_id = 0;
+                        $submission->public = 1;
+                        $submission->save();
+                        Tag::multiAddByIds($regionTags,$submission);
+                    }
+                }
+            }
+        }
+        return;
         $content = '用在公司app“Inwehub”上，用于根据用户输入的公司名字取得公司的经纬度和位置信息，并显示用户附近的企业';
         $res = TagsLogic::getRegionTags($content);
         var_dump($res);
