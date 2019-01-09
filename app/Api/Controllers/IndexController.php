@@ -427,12 +427,20 @@ class IndexController extends Controller {
                     'name'=>'推荐'
                 ];
             }
+            $img = $item->data['img']??'';
+            if (is_array($img)) {
+                if ($img) {
+                    $img = $img[0];
+                } else {
+                    $img = '';
+                }
+            }
             $list[] = [
                 'id'    => $item->id,
                 'title' => strip_tags($item->data['title']??$item->title),
                 'type'  => $item->type,
                 'domain'    => $domain,
-                'img'   => ($item->data['img']??'')?:'',
+                'img'   => $img,
                 'slug'      => $item->slug,
                 'category_id' => $item->category_id,
                 'is_upvoted'     => $upvote ? 1 : 0,
