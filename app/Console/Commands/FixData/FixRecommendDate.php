@@ -40,6 +40,7 @@ class FixRecommendDate extends Command
         $reviewSubmissions = $query->simplePaginate(100,['*'],'page',$page);
         while ($reviewSubmissions->count() > 0) {
             foreach ($reviewSubmissions as $reviewSubmission) {
+                $reviewSubmission->comments_number = $reviewSubmission->comments()->count();
                 $reviewSubmission->calculationRate();
             }
             $page ++;
