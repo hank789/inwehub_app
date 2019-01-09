@@ -39,9 +39,6 @@ class WechatController extends Controller
         $this->validate($request,$validateRules);
         $user = $request->user();
         if ($user) {
-            if(RateLimiter::instance()->increase('share:success',$user->id,3,1)){
-                throw new ApiException(ApiException::VISIT_LIMIT);
-            }
             $this->credit($user->id,Credit::KEY_SHARE_SUCCESS,0,$request->input('target'));
             $source_type = $request->input('target_type');
             $source_type_class = '';
