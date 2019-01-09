@@ -432,7 +432,7 @@ class IndexController extends Controller {
                 'title' => strip_tags($item->data['title']??$item->title),
                 'type'  => $item->type,
                 'domain'    => $domain,
-                'img'   => $item->data['img']??'',
+                'img'   => ($item->data['img']??'')?:'',
                 'slug'      => $item->slug,
                 'category_id' => $item->category_id,
                 'is_upvoted'     => $upvote ? 1 : 0,
