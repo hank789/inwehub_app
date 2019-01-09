@@ -430,10 +430,7 @@ class Submission extends Model {
 
     //计算排名积分
     public function calculationRate(){
-        $shareNumber = Doing::where('action',Doing::ACTION_SHARE_SUBMISSION_SUCCESS)
-            ->where('source_id',$this->id)
-            ->where('source_type',Submission::class)
-            ->count();
+        $shareNumber = $this->share_number;
         $commentSupports = $this->comments()->sum('supports');
         $views = $this->views;
         //如果是原创文章，权重高一点，默认给100阅读
