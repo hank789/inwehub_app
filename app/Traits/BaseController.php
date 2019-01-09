@@ -827,7 +827,8 @@ trait BaseController {
 
         if ($request->type == 'link') {
             $this->validate($request, [
-                'url'   => 'required|url'
+                'url'   => 'required|url',
+                'title' => 'required|between:1,6000',
             ]);
 
             //检查url是否重复
@@ -892,7 +893,7 @@ trait BaseController {
             $title = formatHtml($request->title);
             $submission = Submission::create([
                 'title'         => formatContentUrls($title),
-                'slug'          => $this->slug($title?:$data['title']),
+                'slug'          => $this->slug($title),
                 'type'          => $request->type,
                 'category_id'   => $category_id,
                 'group_id'      => $group_id,
