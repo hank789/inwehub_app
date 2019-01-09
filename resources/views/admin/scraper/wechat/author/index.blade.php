@@ -36,7 +36,7 @@
                                         </div>
                                         <div class="col-xs-2">
                                             <select id="select_group_id" name="select_group_id">
-                                                <option value="0" {{ $filter['group_id'] == 0 ? '':'selected' }}>选择圈子</option>
+                                                <option value="-1" {{ $filter['group_id'] == -1 ? '':'selected' }}>选择圈子</option>
                                                 @foreach($groups as $group)
                                                     <option value="{{ $group['id'] }}" {{ $filter['group_id'] == $group['id'] ? 'selected':'' }}>{{ $group['name'] }}</option>
                                                 @endforeach
