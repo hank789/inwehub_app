@@ -115,9 +115,9 @@ class Newrank extends Command {
                     'copyright_stat' => $wz_item['copyright_stat']??100,
                     'qunfa_id' => 0,
                     'type' => $wz_item['type']??49,
-                    'like_count' => $wz_item['likeCount'],
-                    'read_count' => $wz_item['clicksCount'],
-                    'comment_count' => $wz_item['commentsCount']
+                    'like_count' => $wz_item['likeCount']?:0,
+                    'read_count' => $wz_item['clicksCount']?:0,
+                    'comment_count' => $wz_item['commentsCount']?:0
                 ]);
                 RateLimiter::instance()->hSet('wechat_article',$uuid,$article->_id);
                 if ($mpInfo->is_auto_publish == 1) {
