@@ -105,6 +105,7 @@ class WechatController extends Controller
                         $refer_user_id = $submission->user_id;
                         $target_id = $submission->id;
                         $submission->increment('share_number');
+                        $this->calculationSubmissionRate($submission->id);
                         $this->credit($refer_user_id,Credit::KEY_READHUB_SUBMISSION_SHARE,$submission->id,'动态分享被转发');
                     }
                     break;
