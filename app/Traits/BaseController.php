@@ -78,7 +78,7 @@ trait BaseController {
         $event = 'calculation:submission:rate';
         $limit = RateLimiter::instance()->getValue($event,$submissionId);
         if (!$limit) {
-            RateLimiter::instance()->increase($event,$submissionId,300,1);
+            RateLimiter::instance()->increase($event,$submissionId,5,1);
             dispatch(new UpdateSubmissionRate($submissionId))->delay(Carbon::now()->addMinutes(5));
         }
     }
