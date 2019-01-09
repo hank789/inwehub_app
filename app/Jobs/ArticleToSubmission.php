@@ -7,10 +7,12 @@ use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
+use App\Models\Tag;
 use App\Services\RateLimiter;
 use App\Services\WechatGzhService;
 use App\Traits\SubmitSubmission;
 use Carbon\Carbon;
+use function GuzzleHttp\Promise\is_fulfilled;
 use function GuzzleHttp\Psr7\parse_query;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -58,13 +60,14 @@ class ArticleToSubmission implements ShouldQueue
             $author = Feeds::find($article->mp_id);
         }
         if (!$author) return;
-        if ($author->group_id <= 0) return;
+        //if ($author->group_id <= 0) return;
         $support_type = RateLimiter::instance()->hGet('article_support_type',$this->id);
         $user_id = $author->user_id;
+        $url = $article->content_url;
         if ($article->source_type == 1) {
             if (str_contains($article->content_url,'wechat_redirect') || str_contains($article->content_url,'__biz=') || config('app.env') != 'production') {
                 $url = $article->content_url;
-            } else {
+            } elseif ($author->group_id > 0) {
                 $url = convertWechatTempLinkToForever($article->content_url);
                 if (!$url) {
                     $url = WechatGzhService::instance()->foreverUrl($article->content_url);
@@ -94,14 +97,12 @@ class ArticleToSubmission implements ShouldQueue
                     }
                 }
             }
-            if (empty($author->qr_url)) {
+            if (empty($author->qr_url) && false) {
                 $parse_url = parse_url($url);
                 $query = parse_query($parse_url['query']);
                 $author->qr_url = $query['__biz'];
                 $author->save();
             }
-        } else {
-            $url = $article->content_url;
         }
 
         $article->content_url = $url;
@@ -112,14 +113,16 @@ class ArticleToSubmission implements ShouldQueue
             $article->delete();
             return;
         }
-
-        $parse_url = parse_url($article->cover_url);
-        $img_url = $article->cover_url;
-        //非本地地址，存储到本地
-        if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
-            $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-            Storage::disk('oss')->put($file_name,file_get_contents($article->cover_url));
-            $img_url = Storage::disk('oss')->url($file_name);
+        if (empty($article->cover_url)) {
+            $info = getUrlInfo($article->content_url,true);
+            $img_url = $info['img_url'];
+        } else {
+            $parse_url = parse_url($article->cover_url);
+            $img_url = $article->cover_url;
+            //非本地地址，存储到本地
+            if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
+                $img_url = saveImgToCdn($article->cover_url,'submissions');
+            }
         }
         $article->cover_url = $img_url;
         $article->save();
@@ -155,7 +158,7 @@ class ArticleToSubmission implements ShouldQueue
             'category_name' => $category->name,
             'category_id'   => $category->id,
             'group_id'      => $author->group_id,
-            'public'        => $author->group->public,
+            'public'        => $author->group_id?$author->group->public:1,
             'rate'          => firstRate(),
             'user_id'       => $user_id>0?$user_id:504,
             'support_type'  => $support_type?:1,
@@ -165,9 +168,15 @@ class ArticleToSubmission implements ShouldQueue
         $article->topic_id = $submission->id;
         $article->status = 2;
         $article->save();
-        $author->group->increment('articles');
+        if ($author->group_id) {
+            $author->group->increment('articles');
+        }
+        $regionTags = $author->tags->pluck('id')->toArray();
+        if($regionTags) {
+            Tag::multiAddByIds($regionTags,$submission);
+        }
         (new NewSubmissionJob($submission->id,true))->handle();
-        RateLimiter::instance()->sClear('group_read_users:'.$author->group->id);
+        RateLimiter::instance()->sClear('group_read_users:'.$author->group_id);
         Redis::connection()->hset('voten:submission:url',$url, $submission->id);
 
     }

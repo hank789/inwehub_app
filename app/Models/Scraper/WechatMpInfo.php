@@ -1,6 +1,7 @@
 <?php namespace App\Models\Scraper;
 
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\Relations\MorphManyTagsTrait;
 use Illuminate\Database\Eloquent\Model;
 /**
  * @author: wanghui
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class WechatMpInfo extends Model {
-    use BelongsToUserTrait;
+    use BelongsToUserTrait, MorphManyTagsTrait;
 
     protected $table = 'scraper_wechat_mp_info';
     /**
@@ -27,7 +28,7 @@ class WechatMpInfo extends Model {
 
     public $timestamps = false;
 
-    protected $fillable = ['name','wx_hao','is_auto_publish','company','description','wz_url','last_qunfa_id','create_time','status','logo_url','qr_url','group_id','user_id'];
+    protected $fillable = ['name','wx_hao','newrank_id','is_auto_publish','company','description','wz_url','last_qunfa_id','create_time','status','logo_url','qr_url','group_id','user_id'];
 
 
     public function group() {

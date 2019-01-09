@@ -20,7 +20,7 @@ class CreateSubmissionsTable extends Migration
             $table->string('type',16)->index();
             $table->json('data');
             $table->string('category_name')->index();
-            $table->string('rate',12)->index()->default(0);
+            $table->string('rate',16)->index()->default(0);
 
             // Used for resubmit feature.
             $table->integer('resubmit_id')->unsigned()->index()->nullable();

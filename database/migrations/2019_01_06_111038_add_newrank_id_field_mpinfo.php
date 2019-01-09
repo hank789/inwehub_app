@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddRateFiledRecommend extends Migration
+class AddNewrankIdFieldMpinfo extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddRateFiledRecommend extends Migration
      */
     public function up()
     {
-        Schema::table('recommend_read', function (Blueprint $table) {
-            $table->string('rate',16)->index()->default(0)->after('sort');
-            $table->string('tips')->nullable()->after('sort');
+        Schema::table('scraper_wechat_mp_info', function (Blueprint $table) {
+            $table->string('newrank_id',64)->default('')->after('wx_hao');
         });
     }
 

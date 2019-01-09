@@ -35,9 +35,15 @@ class FixRecommendDate extends Command
      */
     public function handle()
     {
-        $recommends = RecommendRead::where('rate','<=',0)->get();
-        foreach ($recommends as $recommend) {
-            $recommend->source->calculationRate();
+        $page = 1;
+        $query = Submission::where('type','!=','review')->where('status',1)->orderBy('id','desc');
+        $reviewSubmissions = $query->simplePaginate(100,['*'],'page',$page);
+        while ($reviewSubmissions->count() > 0) {
+            foreach ($reviewSubmissions as $reviewSubmission) {
+                $reviewSubmission->calculationRate();
+            }
+            $page ++;
+            $reviewSubmissions = $query->simplePaginate(100,['*'],'page',$page);
         }
     }
 

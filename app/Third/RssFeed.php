@@ -164,6 +164,10 @@ class RssFeed
 	public static function httpRequest($url, $user, $pass)
 	{
 		$ql = QueryList::getInstance();
-		return $ql->get($url,[],['proxy' => 'socks5h://127.0.0.1:1080'])->getHtml();
+		$options = [];
+		if (config('app.env') == 'production') {
+            $options = ['proxy' => 'socks5h://127.0.0.1:1080'];
+        }
+		return $ql->get($url,[],$options)->getHtml();
 	}
 }

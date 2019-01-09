@@ -211,7 +211,7 @@ class TaskLogic {
 
     public static function alertManagerPendingArticles($number) {
         if ($number <= 0) return;
-        event(new SystemNotify('新抓取'.$number.'篇文章，请及时去后台处理',[]));
+        event(new SystemNotify('新抓取'.$number.'篇文章',[]));
         /*$managerRole = Role::where('slug','operatormanager')->first();
         $roleUsers = RoleUser::where('role_id',$managerRole->id)->get();
         foreach ($roleUsers as $roleUser) {

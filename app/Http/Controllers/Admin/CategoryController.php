@@ -119,6 +119,7 @@ class CategoryController extends AdminController
         $category->sort = $request->input('sort');
         $category->status = $request->input('status');
         $category->parent_id = $request->input('parent_id');
+        $category->summary = $request->input('summary');
         if ($request->input('parent_id')) {
             $parent = Category::find($request->input('parent_id'));
             $category->type = $parent->type;

@@ -767,7 +767,7 @@ trait BaseController {
         $group_id = $request->input('group_id',0);
         $public = 1;
         $hide = $request->input('hide',0);
-        if ($request->type != 'review') {
+        if ($request->type != 'review' && $group_id) {
             $group = Group::find($group_id);
             if ($group->audit_status != Group::AUDIT_STATUS_SYSTEM) {
                 if ($group->audit_status != Group::AUDIT_STATUS_SUCCESS) {
@@ -829,12 +829,11 @@ trait BaseController {
             $this->validate($request, [
                 'url'   => 'required|url',
                 'title' => 'required|between:1,6000',
-                'group_id' => 'required|integer'
             ]);
 
             //检查url是否重复
             $exist_submission_id = Redis::connection()->hget('voten:submission:url',$request->url);
-            if ($exist_submission_id && false){
+            if ($exist_submission_id && empty($group_id)){
                 $exist_submission = Submission::find($exist_submission_id);
                 if (!$exist_submission) {
                     throw new ApiException(ApiException::ARTICLE_URL_ALREADY_EXIST);

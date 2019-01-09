@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers;
 use App\Exceptions\ApiException;
 use App\Logic\QuillLogic;
+use App\Logic\TagsLogic;
 use App\Models\Activity\Coupon;
 use App\Models\AddressBook;
 use App\Models\Answer;
@@ -14,6 +15,8 @@ use App\Models\Notice;
 use App\Models\Question;
 use App\Models\Submission;
 use App\Models\RecommendRead;
+use App\Models\Support;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\RateLimiter;
 use Illuminate\Http\Request;
@@ -131,12 +134,15 @@ class IndexController extends Controller {
             }
         }
 
+        $regions = TagsLogic::loadTags(6,'');
+        $tags = $regions['tags'];
 
         $data = [
             'first_ask_ac' => ['show_first_ask_coupon'=>$show_ad,'coupon_expire_at'=>$expire_at],
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
             'recommend_experts' => [],
+            'regions' => array_merge([['value'=>-1,'text'=>'推荐']],$tags),
             'hot_groups' => $hotGroups,
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
@@ -342,6 +348,116 @@ class IndexController extends Controller {
             Cache::put($cache_key,$result,3);
         }
 
+        return self::createJsonData(true, $result);
+    }
+
+    public function readList(Request $request, JWTAuth $JWTAuth) {
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+        $page = $request->input('page',1);
+        $alertMsg = '';
+        $last_seen= '';
+        $filterTag = $request->input('tagFilter','');
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+            $last_seen = RateLimiter::instance()->hGet('user_read_last_seen',$user->id.'_'.$filterTag);
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
+        if ($filterTag != -1) {
+            $query = Submission::where('status',1)->where('group_id',0)->where('type','!=','review');
+            if ($filterTag) {
+                $query = $query->whereHas('tags',function($query) use ($filterTag) {
+                    $query->where('tag_id', $filterTag);
+                });
+            }
+        } else {
+            $query = RecommendRead::where('audit_status',1);
+        }
+        if ($filterTag) {
+            $query = $query->orderBy('rate','desc');
+        } else {
+            $query = $query->orderBy('created_at','desc');
+        }
+
+        if ($page == 1) {
+            if ($last_seen) {
+                $ids = $query->take(100)->pluck('id')->toArray();
+                $newCount = array_search($last_seen,$ids);
+                if ($newCount === false) {
+                    $newCount = '99+';
+                }
+                if ($newCount) {
+                    $alertMsg = '更新了'.$newCount.'条信息';
+                } else {
+                    $alertMsg = '暂无新信息';
+                }
+            } else {
+                $alertMsg = '已为您更新';
+            }
+        }
+        $reads = $query->simplePaginate($perPage);
+        $result = $reads->toArray();
+        $list = [];
+        $inwehub_user_device = $request->input('inwehub_user_device','web');
+        foreach ($reads as $key=>$item) {
+            if ($page == 1 && $key == 0) {
+                $last_seen = $item->id;
+            }
+            if ($filterTag == -1 && $item->source_type != Submission::class) continue;
+            if ($filterTag == -1) {
+                $item = Submission::find($item->source_id);
+            }
+            $domain = $item->data['domain']??'';
+            $link_url = $item->data['url']??'';
+            if (!in_array($inwehub_user_device,['web','wechat']) && $domain == 'mp.weixin.qq.com') {
+                if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz='))) {
+                    $link_url = config('app.url').'/articleInfo/'.$item->id.'?inwehub_user_device='.$inwehub_user_device;
+                }
+            }
+            $upvote = Support::where('user_id',$user->id)
+                ->where('supportable_id',$item->id)
+                ->where('supportable_type',Submission::class)
+                ->exists();
+            $tags = $item->tags()->wherePivot('is_display',1)->select('tags.id','tags.name')->get()->toArray();
+            if ($item->isRecommendRead()) {
+                $tags[] = [
+                    'id' => -1,
+                    'name'=>'推荐'
+                ];
+            }
+            $img = $item->data['img']??'';
+            if (is_array($img)) {
+                if ($img) {
+                    $img = $img[0];
+                } else {
+                    $img = '';
+                }
+            }
+            $list[] = [
+                'id'    => $item->id,
+                'title' => strip_tags($item->data['title']??$item->title),
+                'type'  => $item->type,
+                'domain'    => $domain,
+                'img'   => $img,
+                'slug'      => $item->slug,
+                'category_id' => $item->category_id,
+                'is_upvoted'     => $upvote ? 1 : 0,
+                'link_url'  => $link_url,
+                'rate'  => (int)(substr($item->rate,8)?:0),
+                'comment_number' => $item->comments_number,
+                'support_number' => $item->upvotes,
+                'share_number' => $item->share_number,
+                'tags' => $tags,
+                'created_at'=> (string)$item->created_at
+            ];
+        }
+        if ($page == 1) {
+            RateLimiter::instance()->hSet('user_read_last_seen',$user->id.'_'.$filterTag,$last_seen);
+        }
+        $result['data'] = $list;
+        $result['alert_msg'] = $alertMsg;
         return self::createJsonData(true, $result);
     }
 

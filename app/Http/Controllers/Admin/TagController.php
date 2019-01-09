@@ -6,6 +6,8 @@ use App\Logic\TagsLogic;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
+use App\Models\Taggable;
+use App\Models\UserTag;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -30,7 +32,7 @@ class TagController extends AdminController
     public function index(Request $request)
     {
         $filter =  $request->all();
-        $query = Tag::query();
+        $query = Tag::leftJoin('tag_category_rel','tags.id','=','tag_id');
 
         $filter['category_id'] = $request->input('category_id',-1);
 
@@ -38,24 +40,20 @@ class TagController extends AdminController
         if( isset($filter['word']) && $filter['word'] ){
             $query->where('name','like', '%'.$filter['word'].'%')->orderByRaw('case when name like "'.$filter['word'].'" then 0 else 2 end');
         } else {
-            $query->orderBy('updated_at','desc');
-        }
-
-        /*时间过滤*/
-        if( isset($filter['date_range']) && $filter['date_range'] ){
-            $query->whereBetween('created_at',explode(" - ",$filter['date_range']));
+            $query->orderBy('tags.id','desc');
         }
 
         /*分类过滤*/
         if( $filter['category_id']> 0 ){
-            $query->where('category_id','=',$filter['category_id']);
+            $query->where('tag_category_rel.category_id','=',$filter['category_id']);
         }
 
         if( isset($filter['id']) && $filter['id'] ){
-            $query->where('id',$filter['id']);
+            $query->where('tags.id',$filter['id']);
         }
+        $fields = ['tags.id','tags.name','tags.logo','tags.summary','tags.created_at'];
 
-        $tags = $query->paginate(20);
+        $tags = $query->select($fields)->paginate(20);
         return view("admin.tag.index")->with('tags',$tags)->with('filter',$filter);
 
 
@@ -91,6 +89,11 @@ class TagController extends AdminController
             Storage::disk('oss')->put($filePath,File::get($file));
             $img_url = Storage::disk('oss')->url($filePath);
             $data['logo'] = $img_url;
+        }
+        if ($data['category_id']) {
+            $data['category_id'] = $data['category_id'][0];
+        } else {
+            $data['category_id'] = 0;
         }
         $tag = Tag::create($data);
         foreach ($request->input('category_id') as $category_id) {
@@ -133,6 +136,15 @@ class TagController extends AdminController
         return view('admin.tag.edit')->with('tag',$tag)->with('tag_categories',$categories);
     }
 
+    public function checkNameExist(Request $request, $id) {
+        $name = $request->input('name');
+        $exist = Tag::where('name',$name)->first();
+        if ($exist && $exist->id != $id) {
+            return response('failed');
+        }
+        return response('success');
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -147,10 +159,28 @@ class TagController extends AdminController
         if(!$tag){
             return $this->error(route('admin.tag.index'),'话题不存在，请核实');
         }
-        $this->validateRules['name'] = 'required|max:128|unique:tags,name,'.$id;
+        $mergeR = $request->input('mergeR');
+        if ($mergeR == 1) {
+            $this->validateRules['name'] = 'required|max:128';
+        } else {
+            $this->validateRules['name'] = 'required|max:128|unique:tags,name,'.$id;
+        }
+
         $this->validate($request,$this->validateRules);
+        $name = $request->input('name');
+        if ($mergeR == 1) {
+            $exist = Tag::where('name',$name)->first();
+            if ($exist && $exist->id != $id) {
+                //合并
+                Taggable::where('tag_id',$id)->update(['tag_id'=>$exist->id]);
+                UserTag::where('tag_id','=',$id)->update(['tag_id'=>$exist->id]);
+                $tag->delete();
+                return $this->success(route('admin.tag.index'),'标签合并成功');
+            }
+        }
+
         $oldCid = $tag->category_id;
-        $tag->name = $request->input('name');
+        $tag->name = $name;
         $tag->summary = $request->input('summary');
         $tag->description = $request->input('description');
         if($request->hasFile('logo')){

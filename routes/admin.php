@@ -168,6 +168,7 @@ Route::resource('comment', 'CommentController',['only' => ['index','edit','updat
 Route::post('tag/destroy',['as'=>'admin.tag.destroy','uses'=>'TagController@destroy']);
 /*修改分类核*/
 Route::post('tag/changeCategories',['as'=>'admin.tag.changeCategories','uses'=>'TagController@changeCategories']);
+Route::post('tag/checkNameExist/{id}',['as'=>'admin.tag.checkNameExist','uses'=>'TagController@checkNameExist'])->where(['id'=>'[0-9]+']);
 
 /*标签审核*/
 Route::post('tag/verify',['as'=>'admin.tag.verify','uses'=>'TagController@verify']);
@@ -256,6 +257,7 @@ Route::get('submission/edit/{id}',['as'=>'admin.operate.article.edit','uses'=>'S
 Route::put('submission/update',['as'=>'admin.operate.article.update','uses'=>'SubmissionController@update']);
 //设置文章点赞类型
 Route::post('submission/setSupportType',['as'=>'admin.operate.article.setSupportType','uses'=>'SubmissionController@setSupportType']);
+Route::post('submission/changeTags',['as'=>'admin.operate.article.changeTags','uses'=>'SubmissionController@changeTags']);
 
 //企业管理
 Route::group(['prefix' => 'company','namespace'=>'Company'], function() {

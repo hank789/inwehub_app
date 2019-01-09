@@ -184,7 +184,7 @@ class RateLimiter extends Singleton
 
     public function setVale($event, $target, $value,$expire = 60) {
         $key = $this->key($event, $target);
-        return $this->client->set($key,$value,$expire);
+        return $this->client->setex($key,$expire,$value);
     }
 
 

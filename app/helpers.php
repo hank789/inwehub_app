@@ -1082,11 +1082,24 @@ if (!function_exists('saveImgToCdn')){
             $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$imgType;
             $ql = \QL\QueryList::getInstance();
             $gfw_urls = \App\Services\RateLimiter::instance()->sMembers('gfw_urls');
-            $otherArgs = [
-                'headers' => [
-                    'Referer' => $parse_url['host']
-                ]
-            ];
+            if ($parse_url['host'] == 'mmbiz.qpic.cn') {
+                $otherArgs = [
+                    'headers' => [
+                        'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                        'Host' => $parse_url['host'],
+                        'Upgrade-Insecure-Requests' => 1,
+                        'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+                    ]
+                ];
+            } else {
+                $otherArgs = [
+                    'headers' => [
+                        'Referer' => $parse_url['host'],
+                        'Host' => $parse_url['host'],
+                        'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+                    ]
+                ];
+            }
             try {
                 if (in_array($parse_url['host'],[
                         'lh4.googleusercontent.com',
@@ -1172,7 +1185,7 @@ if (!function_exists('getUrlInfo')) {
                 }
                 if (!$image) {
                     $image = $ql->find('meta[itemprop=image]')->content;
-                    if (!$image) {
+                    if (!$image && false) {
                         $image = $ql->find('link[rel=icon]')->href;
                         if (!$image) {
                             $image = $ql->find('link[rel=shortcut icon]')->href;
@@ -1197,7 +1210,7 @@ if (!function_exists('getUrlInfo')) {
                     }
                 }
                 if (!$image) {
-                    $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
+                    //$img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
                     event(new \App\Events\Frontend\System\ExceptionNotify('未取到网站:'.$url.'的图片'));
                 }
                 $title = $ql->find('title')->eq(0)->text();
@@ -1275,11 +1288,7 @@ if (!function_exists('firstRate')) {
      */
     function firstRate()
     {
-        $startTime = 1473696439;
-        $created = time();
-        $timeDiff = $created - $startTime;
-
-        return $timeDiff / 45000;
+        return date('Ymd').'0';
     }
 }
 
@@ -1864,6 +1873,7 @@ if (!function_exists('convertWechatTempLink')) {
 
 if (!function_exists('convertWechatTempLinkToForever')) {
     function convertWechatTempLinkToForever($tempUrl) {
+        return '';
         try {
             //www.cpopweixin.com
             $ql = \QL\QueryList::getInstance();

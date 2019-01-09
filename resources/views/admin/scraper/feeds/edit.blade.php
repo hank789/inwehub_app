@@ -22,6 +22,7 @@
                         <input type="hidden" id="editor_token" name="_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="group_id" id="group_id" value="{{ $feeds->group_id }}" />
                         <input type="hidden" id="user_id" name="user_id" value="{{ $feeds->user_id }}" />
+                        <input type="hidden" name="tagIds" id="tagIds" value="-1" />
                         <div class="box-body">
                             <div class="form-group @if($errors->has('name')) has-error @endif ">
                                 <label for="name">站点名:</label>
@@ -34,7 +35,7 @@
                                 <div class="row">
                                     <div class="col-sm-10">
                                         <select id="select_group_id" name="select_group_id" class="form-control">
-                                            <option value="0" {{ $feeds->group_id == 0 ? 'selected':'' }}></option>
+                                            <option value="0" {{ $feeds->group_id == 0 ? 'selected':'' }}>不属于圈子</option>
                                             @foreach($groups as $group)
                                                 <option value="{{ $group['id'] }}" {{ $feeds->group_id == $group['id'] ? 'selected':'' }}>{{ $group['name'] }}</option>
                                             @endforeach
@@ -54,6 +55,22 @@
                                         @if ($errors->first('user_id'))
                                             <span class="help-block">{{ $errors->first('user_id') }}</span>
                                         @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="wx_hao">所属领域:</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
+                                            @foreach($feeds->tags as $tag)
+                                                <option value="{{ $tag->id }}" selected="selected">{{ $tag->name }}</option>
+                                            @endforeach
+                                            @foreach($tags as $tag)
+                                                <option value="{{ $tag['id'] }}">{{ $tag['text'] }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -148,6 +165,15 @@
 
         $("#author_id_select").change(function(){
             $("#user_id").val($("#author_id_select").val());
+        });
+
+        $("#select_tags_id").select2({
+            theme:'bootstrap',
+            placeholder: "领域"
+        });
+
+        $("#select_tags_id").change(function(){
+            $("#tagIds").val($("#select_tags_id").val());
         });
     </script>
 @endsection

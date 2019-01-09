@@ -40,11 +40,13 @@ class WechatGzhService
     }
 
     public function getProfile($biz) {
+        return false;
         $result = $this->postRequest($this->apiUrl.'Home/info/get_profile',['auth'=>$this->authToken,'biz'=>$biz]);
         return $result?$result['list']:false;
     }
 
     public function foreverUrl($tmpUrl) {
+        return false;
         $result = $this->postRequest($this->apiUrl.'Home/info/get_sougou',['auth'=>$this->authToken,'url'=>$tmpUrl]);
         return $result?$result['forever_url']:false;
     }

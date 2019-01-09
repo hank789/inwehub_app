@@ -1,10 +1,13 @@
 <?php namespace App\Api\Controllers\Article;
 use App\Api\Controllers\Controller;
+use App\Events\Frontend\System\OperationNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\ConvertWechatLink;
 use App\Jobs\LogUserViewTags;
 use App\Jobs\NewSubmissionJob;
 use App\Logic\QuillLogic;
+use App\Logic\TagsLogic;
 use App\Models\Answer;
 use App\Models\Attention;
 use App\Models\Category;
@@ -14,6 +17,7 @@ use App\Models\DownVote;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Question;
+use App\Models\RecommendRead;
 use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\Submission;
@@ -154,7 +158,7 @@ class SubmissionController extends Controller {
                 if (strlen($newTagString) > 46) throw new ApiException(ApiException::TAGS_NAME_LENGTH_LIMIT);
             }
         }
-        $group_name = $request->input('group_name','小哈公社');
+        $group_name = $request->input('group_name','');
         $group = Group::where('name',$group_name)->first();
         $url = $request->input('url');
         $title = $request->input('title');
@@ -208,8 +212,8 @@ class SubmissionController extends Controller {
                 'type'          => 'link',
                 'category_name' => $category->name,
                 'category_id'   => $category->id,
-                'group_id'      => $group->id,
-                'public'        => $group->public,
+                'group_id'      => $group?$group->id:0,
+                'public'        => $group?$group->public:1,
                 'rate'          => firstRate(),
                 'status'        => 1,
                 'user_id'       => $operator_id?:$user->id,
@@ -326,7 +330,7 @@ class SubmissionController extends Controller {
 
         $submission = Submission::findOrFail($request->id);
         $user = $request->user();
-        if ($submission->user_id != $user->id) {
+        if (!($submission->user_id == $user->id || $user->isRole('operatormanager'))) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
@@ -335,6 +339,111 @@ class SubmissionController extends Controller {
         }
         $submission->delete();
         self::$needRefresh = true;
+        return self::createJsonData(true);
+    }
+
+    public function regionOperator(Request $request) {
+        $this->validate($request, [
+            'id' => 'required'
+        ]);
+        $submission = Submission::find($request->input('id'));
+        if (!$submission) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $user = $request->user();
+        if (!($user->isRole('operatormanager'))) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $oldTags = $submission->tags->pluck('id')->toArray();
+        $keywords = $submission->data['keywords']??'';
+        $tags = $request->input('tags',[]);
+        $regionTags = TagsLogic::loadTags(6, '')['tags'];
+        $regionTags = array_column($regionTags,'value');
+        $isRecommend = false;
+        $tagNames = '';
+        foreach ($tags as $tag) {
+            if ($tag == -1) {
+                $isRecommend = true;
+                continue;
+            }
+            if (!in_array($tag,$oldTags)) {
+                $submission->tags()->attach($tag);
+                $tagModel = Tag::find($tag);
+                $tagNames = $tagNames.$tagModel->name.',';
+                $keywords = $tagModel->name.','.$keywords;
+            }
+        }
+        foreach ($regionTags as $oldTag) {
+            if (!in_array($oldTag,$tags)) {
+                $tagModel = Tag::find($oldTag);
+                $keywords = str_replace($tagModel->name,'',$keywords);
+                $keywords = str_replace(',,',',',$keywords);
+                $submission->tags()->detach($oldTag);
+            }
+        }
+        $sData = $submission->data;
+        if (isset($tagModel)) {
+            $sData['keywords'] = implode(',',array_unique(explode(',',$keywords)));
+            $submission->data = $sData;
+            $submission->save();
+            $submission->updateRelatedProducts();
+        }
+        $slackFields = [];
+        $slackFields[] = [
+            'title'=>'链接',
+            'value'=>config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug
+        ];
+        $slackFields[] = [
+            'title'=>'领域',
+            'value'=>$tagNames
+        ];
+        if ($tagNames) {
+            $operateType = '新增';
+            $this->dispatch(new ConvertWechatLink($submission->id));
+        } else {
+            $operateType = '删除';
+        }
+        if ($isRecommend) {
+            unset($sData['description']);
+            unset($sData['title']);
+            $recommend = RecommendRead::firstOrCreate([
+                'source_id' => $submission->id,
+                'source_type' => get_class($submission)
+            ],[
+                'source_id' => $submission->id,
+                'source_type' => get_class($submission),
+                'tips' => $request->input('tips'),
+                'sort' => 0,
+                'audit_status' => 0,
+                'rate' => $submission->rate,
+                'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+                'data' => array_merge($sData, [
+                    'title' => $submission->title,
+                    'img'   => $submission->data['img'],
+                    'category_id' => $submission->category_id,
+                    'category_name' => $submission->category_name,
+                    'type' => $submission->type,
+                    'slug' => $submission->slug,
+                    'group_id' => $submission->group_id
+                ])
+            ]);
+            if ($recommend->audit_status == 0) {
+                $recommend->audit_status = 1;
+                $recommend->sort = $recommend->id;
+                $recommend->save();
+                $recommend->setKeywordTags();
+                event(new OperationNotify('用户'.formatSlackUser($user).$operateType.'精选['.$recommend->data['title'].']',$slackFields));
+            }
+        } else {
+            $recommend = RecommendRead::where('source_id',$submission->id)->where('source_type',get_class($submission))->first();
+            if ($recommend) {
+                $recommend->audit_status = 0;
+                $recommend->save();
+            }
+            event(new OperationNotify('用户'.formatSlackUser($user).$operateType.'热门['.$submission->title.']',$slackFields));
+        }
         return self::createJsonData(true);
     }
 

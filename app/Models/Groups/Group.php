@@ -2,9 +2,12 @@
 
 namespace App\Models\Groups;
 
+use App\Models\Feed\Feed;
 use App\Models\IM\MessageRoom;
 use App\Models\IM\Room;
 use App\Models\Relations\BelongsToUserTrait;
+use App\Models\Scraper\Feeds;
+use App\Models\Scraper\WechatMpInfo;
 use App\Models\Submission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -68,6 +71,10 @@ class Group extends Model
         parent::boot();
         static::deleted(function($group){
             GroupMember::where('group_id',$group->id)->delete();
+            Submission::where('group_id',$group->id)->update(['group_id'=>0]);
+            Feed::where('group_id',$group->id)->update(['group_id'=>0]);
+            WechatMpInfo::where('group_id',$group->id)->update(['group_id'=>0]);
+            Feeds::where('group_id',$group->id)->update(['group_id'=>0]);
         });
     }
 

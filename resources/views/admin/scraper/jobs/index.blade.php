@@ -148,6 +148,28 @@
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         set_active_menu('operations',"{{ route('admin.scraper.jobs.index') }}");
+        var aa = {
+            username: 'hank',
+            password: 'fdsfdsfdf',
+            flag: '15465936981070.7281656833200718',
+            identifyCode: ''
+        };
+        var f = [];
+        $.each(aa,
+            function(a, c) {
+                f.push($.trim(a))
+            }),
+            f.sort();
+        console.log(f);
+        var g = {},
+            i = "";
+        $(f).each(function() {
+            var a = this;
+            g[a] = aa[a],
+                i += "&" + a + "=" + aa[a]
+        });
+        console.log(i);
+
         var readArticle = [];
         var publishArticle = [];
         var jobIds = "{{$jobIds}}";

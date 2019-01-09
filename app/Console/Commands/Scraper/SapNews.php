@@ -6,6 +6,7 @@
  */
 
 use App\Events\Frontend\System\ExceptionNotify;
+use App\Events\Frontend\System\OperationNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
@@ -47,7 +48,7 @@ class SapNews extends Command {
      */
     public function handle()
     {
-        $group_id = 51;
+        $group_id = 0;
         $url1 = 'https://blogs.sap.com';
         $url2 = 'https://blogs.saphana.com/blog';
         $limitViews = 500;
@@ -55,10 +56,12 @@ class SapNews extends Command {
         $ql = QueryList::getInstance();
         $category = Category::where('slug','sap_blog')->first();
 
-        $group = Group::find($group_id);
-        if (!$group) {
-            event(new ExceptionNotify('圈子['.$group_id.']不存在'));
-            return;
+        if ($group_id) {
+            $group = Group::find($group_id);
+            if (!$group) {
+                event(new ExceptionNotify('圈子['.$group_id.']不存在'));
+                return;
+            }
         }
         $count = 0;
         $totalViews = [];
@@ -138,7 +141,7 @@ class SapNews extends Command {
                             'category_name' => $category->name,
                             'category_id' => $category->id,
                             'group_id' => $group_id,
-                            'public' => $group->public,
+                            'public' => $group_id?$group->public:1,
                             'rate' => firstRate(),
                             'status' => 1,
                             'user_id' => 2568,
@@ -164,7 +167,7 @@ class SapNews extends Command {
                 'title'=>'阅读数',
                 'value'=>implode(',',$totalViews)
             ];
-            event(new SystemNotify('抓取['.$url1.']结束，总文章数:'.$count,$fields));
+            event(new OperationNotify('抓取['.$url1.']结束，总文章数:'.$count,$fields));
             $count = 0;
             $totalViews = [];
             $this->info($url2);
@@ -235,7 +238,7 @@ class SapNews extends Command {
                             'category_name' => $category->name,
                             'category_id' => $category->id,
                             'group_id' => $group_id,
-                            'public' => $group->public,
+                            'public' => $group_id?$group->public:1,
                             'rate' => firstRate(),
                             'status' => 1,
                             'user_id' => 2568,
@@ -266,7 +269,7 @@ class SapNews extends Command {
             'title'=>'阅读数',
             'value'=>implode(',',$totalViews)
         ];
-        event(new SystemNotify('抓取['.$url2.']结束，总文章数:'.$count,$fields));
+        event(new OperationNotify('抓取['.$url2.']结束，总文章数:'.$count,$fields));
         //var_dump($count);
         //var_dump($totalViews);
     }

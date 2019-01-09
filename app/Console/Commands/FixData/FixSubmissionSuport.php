@@ -7,8 +7,13 @@
 
 
 use App\Models\Comment;
+use App\Models\Doing;
+use App\Models\RecommendRead;
+use App\Models\Scraper\Feeds;
+use App\Models\Scraper\WechatMpInfo;
 use App\Models\Submission;
 use App\Models\Support;
+use App\Models\Tag;
 use Illuminate\Console\Command;
 
 class FixSubmissionSuport extends Command
@@ -34,14 +39,27 @@ class FixSubmissionSuport extends Command
      */
     public function handle()
     {
-        $submissions = Submission::get();
-        foreach ($submissions as $submission) {
-            $tags = $submission->tags()->pluck('name')->toArray();
-            $data = $submission->data;
-            $data['keywords'] = implode(',',$tags);
-            $submission->data = $data;
-            $submission->save();
+        $doings = Doing::where('action',Doing::ACTION_SHARE_SUBMISSION_SUCCESS)->get();
+        foreach ($doings as $doing) {
+            $number = Doing::where('action',Doing::ACTION_SHARE_SUBMISSION_SUCCESS)->where('source_id',$doing->source_id)->count();
+            if ($number) {
+                $submission = Submission::find($doing->source_id);
+                $this->info($submission->id);
+                $submission->share_number = $number;
+                $submission->save();
+            }
         }
+        $recommends = RecommendRead::where('audit_status',1)->get();
+        foreach ($recommends as $recommend) {
+            if ($recommend->source_type == Submission::class) {
+                $submission = Submission::find($recommend->source_id);
+                $submission->group_id = 0;
+                $submission->save();
+            }
+        }
+
+        //WechatMpInfo::where('group_id','>',0)->update(['group_id'=>0]);
+        //Feeds::where('group_id','>',0)->update(['group_id'=>0]);
     }
 
 }

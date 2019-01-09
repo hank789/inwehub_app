@@ -122,7 +122,7 @@ class Submission extends Model {
     protected $fillable = [
         'data', 'title', 'slug','author_id', 'type', 'category_id', 'hide', 'rate','group_id','rate_star',
         'upvotes', 'downvotes', 'user_id', 'views', 'data', 'approved_at','public','is_recommend', 'support_type',
-        'deleted_at', 'comments_number', 'status','	created_at', 'updated_at'
+        'deleted_at', 'comments_number', 'share_number', 'status','	created_at', 'updated_at'
     ];
 
     const RECOMMEND_STATUS_NOTHING = 0;
@@ -437,17 +437,18 @@ class Submission extends Model {
         $commentSupports = $this->comments()->sum('supports');
         $views = $this->views;
         //如果是原创文章，权重高一点，默认给100阅读
-        if ($this->type == 'article') {
+        /*if ($this->type == 'article') {
             $views += 100;
         }
         $Qscore = $this->upvotes-$this->downvotes;
         $Ascores = $commentSupports + $this->collections + $shareNumber;
-        $rate =  hotRate($views,$this->comments_number?:1, $Qscore, $Ascores,$this->created_at,$this->updated_at);
-        $this->rate = $rate;
+        $rate =  hotRate($views,$this->comments_number?:1, $Qscore, $Ascores,$this->created_at,$this->updated_at);*/
+        $rate = $views/10 + $commentSupports * 2 + $this->collections + $shareNumber * 3 + $this->upvotes-$this->downvotes;
+        $this->rate = date('Ymd',strtotime($this->created_at)).(sprintf('%08s',$rate));
         $this->save();
         $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
         if ($recommendRead) {
-            $recommendRead->rate = $this->rate + $recommendRead->getRateWeight();
+            $recommendRead->rate = $this->rate;
             $recommendRead->save();
         }
     }
@@ -513,6 +514,8 @@ class Submission extends Model {
             }
             //和我们的产品进行一次匹配
             $tags = TagsLogic::getContentTags($content);
+            //尝试自动分领域
+            //$tags = array_merge($tags,TagsLogic::getRegionTags($content));
             $keywords = array_unique($keywords);
             foreach ($keywords as $keyword) {
                 $keyword = formatHtml(formatKeyword($keyword));

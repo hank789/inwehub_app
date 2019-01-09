@@ -1,7 +1,6 @@
 @extends('admin/public/layout')
 
 @section('css')
-    <link href="{{ asset('/static/js/summernote/summernote.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2.min.css')}}" rel="stylesheet">
     <link href="{{ asset('/static/js/select2/css/select2-bootstrap.min.css')}}" rel="stylesheet">
 @endsection
@@ -23,10 +22,11 @@
                     <form role="form" name="tagForm" id="tag_form" method="POST" enctype="multipart/form-data" action="{{ route('admin.tag.update',['id'=>$tag->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" name="_token" id="editor_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="mergeR" id="mergeR" value="0">
                         <div class="box-body">
                             <div class="form-group @if ($errors->has('name')) has-error @endif">
                                 <label for="name">标签名称</label>
-                                <input type="text" name="name" class="form-control " placeholder="标签名称" value="{{ old('name',$tag->name) }}">
+                                <input type="text" name="name" id="name" class="form-control " placeholder="标签名称" value="{{ old('name',$tag->name) }}">
                                 @if ($errors->has('name')) <p class="help-block">{{ $errors->first('name') }}</p> @endif
                             </div>
 
@@ -62,15 +62,14 @@
                             </div>
 
                             <div class="form-group @if ($errors->has('description')) has-error @endif">
-                                <label for="name">标签详细介绍</label>
-                                <div id="tag_editor">{!! old('description',$tag->description) !!}</div>
+                                <label for="name">标签详细介绍(关键词以多个逗号隔开)</label>
+                                <textarea name="description" class="form-control" placeholder="关键词" style="height: 80px;">{{ old('description',$tag->description) }}</textarea>
                                 @if ($errors->has('description')) <p class="help-block">{{ $errors->first('description') }}</p> @endif
                             </div>
 
                         </div>
                         <div class="box-footer">
-                            <input type="hidden" id="tag_editor_content"  name="description" value="{{ old('description',$tag->description) }}" />
-                            <button type="submit" class="btn btn-primary editor-submit" >保存</button>
+                            <button type="button" id="submitButton" class="btn btn-primary" data-source_id="{{ $tag->id }}" onclick="submitForm()" >保存</button>
                             <button type="reset" class="btn btn-success">重置</button>
                         </div>
                     </form>
@@ -81,29 +80,25 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('/static/js/summernote/summernote.min.js') }}"></script>
-    <script src="{{ asset('/static/js/summernote/lang/summernote-zh-CN.min.js') }}"></script>
     <script src="{{ asset('/static/js/select2/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         $(function(){
             set_active_menu('manage_tags',"{{ route('admin.tag.index') }}");
             $('#category_id').select2();
-            $('#tag_editor').summernote({
-                lang: 'zh-CN',
-                height: 300,
-                placeholder:'完善话题详情',
-                toolbar: [ {!! config('inwehub.summernote.blog') !!} ],
-                callbacks: {
-                    onChange:function (contents, $editable) {
-                        var code = $(this).summernote("code");
-                        $("#tag_editor_content").val(code);
-                    },
-                    onImageUpload: function(files) {
-                        upload_editor_image(files[0],'tag_editor');
-                    }
-                }
-            });
-
         });
+        function submitForm() {
+            var id = $('#submitButton').data('source_id');
+            var name = $('#name').val();
+            $.post('/admin/tag/checkNameExist/' + id,{name: name},function(msg){
+                if(msg == 'failed') {
+                    if(!confirm(name + '已存在，是否将当前标签合并到' + name + '(当前标签下的关联内容也将合并，合并后当前标签会自动删除)？')){
+                        return false;
+                    }
+                    $('#mergeR').val(1);
+                }
+                $('#tag_form').submit();
+            });
+            return false;
+        }
     </script>
 @endsection

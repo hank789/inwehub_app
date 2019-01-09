@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin\Scraper;
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Jobs\ArticleToSubmission;
+use App\Logic\TagsLogic;
 use App\Models\Groups\Group;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
 use App\Models\Scraper\WechatWenzhangInfo;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
@@ -42,7 +44,7 @@ class WechatController extends AdminController
             $query->where('wx_hao', $filter['wx_hao']);
         }
 
-        if( isset($filter['group_id']) && $filter['group_id'] ){
+        if( isset($filter['group_id']) && $filter['group_id']>=0 ){
             $query->where('group_id', $filter['group_id']);
         } else {
             $filter['group_id'] = 0;
@@ -126,14 +128,15 @@ class WechatController extends AdminController
     public function editAuthor($id)
     {
         $author = WechatMpInfo::find($id);
+        $regions = TagsLogic::loadTags(6,'','id');
         $groups = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->get()->toArray();
-        return view("admin.scraper.wechat.author.edit")->with('author',$author)->with('groups',$groups);
+        return view("admin.scraper.wechat.author.edit")->with('author',$author)->with('groups',$groups)->with('tags',$regions['tags']);
     }
 
     public function updateAuthor(Request $request) {
         $validateRules = [
             'id'      => 'required',
-            'group_id'   => 'required|integer|min:1',
+            'group_id'   => 'required|integer|min:0',
             'user_id'   => 'required|integer|min:1',
             'audit_status' => 'required|integer',
             'is_auto_publish' => 'required|integer'
@@ -145,6 +148,26 @@ class WechatController extends AdminController
         $author->status = $request->input('audit_status');
         $author->is_auto_publish = $request->input('is_auto_publish',0);
         $author->save();
+        $tagString = $request->input('tagIds');
+        if ($tagString != -1) {
+            /*更新标签*/
+            $oldTags = $author->tags->pluck('id')->toArray();
+            if (!is_array($tagString)) {
+                $tags = array_unique(explode(",",$tagString));
+            } else {
+                $tags = array_unique($tagString);
+            }
+            foreach ($tags as $tag) {
+                if (!in_array($tag,$oldTags)) {
+                    $author->tags()->attach($tag);
+                }
+            }
+            foreach ($oldTags as $oldTag) {
+                if (!in_array($oldTag,$tags)) {
+                    $author->tags()->detach($oldTag);
+                }
+            }
+        }
         return $this->success(route('admin.scraper.wechat.author.index'),'修改成功');
     }
 

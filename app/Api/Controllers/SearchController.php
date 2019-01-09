@@ -37,7 +37,8 @@ class SearchController extends Controller
         //$searchCount = RateLimiter::instance()->hGetAll('search-word-count');
         //arsort($searchCount);
         //$topSearch = array_slice($searchCount,0,10,true);
-        $topSearch = ['SAP','智能制造','区块链','数字化转型','转行','制造业','顾问','Oracle','ToB','金融'];
+        //$topSearch = ['SAP','智能制造','区块链','数字化转型','转行','制造业','顾问','Oracle','ToB','金融'];
+        $topSearch = ['企业服务','自动化','CRM','数字化转型','制造业','供应链','SAP','税务','Salesforce','麦肯锡'];
         $searchHistory = array_reverse(array_slice($searchHistory,count($searchHistory)-10,10,true));
         return self::createJsonData(true,['history'=>array_keys($searchHistory),'top'=>$topSearch]);
     }
