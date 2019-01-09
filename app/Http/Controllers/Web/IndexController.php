@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Scraper\WechatWenzhangInfo;
+use App\Models\Submission;
 use Illuminate\Http\Request;
 /**
  * @author: wanghui
@@ -18,7 +19,12 @@ class IndexController extends Controller
     public function articleInfo($id, Request $request)
     {
         $article = WechatWenzhangInfo::where('topic_id',$id)->where('status',2)->first();
-        if (!$article) return 'bad request';
+        \Log::info('test',[$id]);
+        if (!$article) {
+            $submission = Submission::find($id);
+            if (!$submission) return 'bad request';
+            return redirect($submission->data['url']);
+        }
         if (in_array($request->input('inwehub_user_device','web'),['web','wechat']) || $article->source_type != 1 || str_contains($article->content_url, 'wechat_redirect') || str_contains($article->content_url, '__biz=')) {
             return redirect($article->content_url);
         }
