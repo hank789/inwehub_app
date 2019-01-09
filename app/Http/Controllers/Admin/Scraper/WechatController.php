@@ -50,14 +50,23 @@ class WechatController extends AdminController
             $filter['group_id'] = -1;
         }
 
+        if( isset($filter['select_region']) && $filter['select_region']>=0 ){
+            $query = $query->whereHas('tags',function($query) use ($filter) {
+                $query->where('tag_id', $filter['select_region']);
+            });
+        } else {
+            $filter['select_region'] = -1;
+        }
+
         /*问题状态过滤*/
         if( isset($filter['status']) && $filter['status'] > -1 ){
             $query->where('status','=',$filter['status']);
         }
 
+        $regions = TagsLogic::loadTags(6,'','id')['tags'];
 
         $authors = $query->orderBy('create_time','desc')->paginate(20);
-        return view("admin.scraper.wechat.author.index")->with('authors',$authors)->with('filter',$filter)->with('pending',$list)->with('groups',$groups);
+        return view("admin.scraper.wechat.author.index")->with('authors',$authors)->with('filter',$filter)->with('pending',$list)->with('groups',$groups)->with('regions',$regions);
     }
 
     /**

@@ -41,9 +41,18 @@ class FeedsController extends AdminController
             $query->where('status','=',$filter['status']);
         }
 
+        if( isset($filter['select_region']) && $filter['select_region']>=0 ){
+            $query = $query->whereHas('tags',function($query) use ($filter) {
+                $query->where('tag_id', $filter['select_region']);
+            });
+        } else {
+            $filter['select_region'] = -1;
+        }
+        $regions = TagsLogic::loadTags(6,'','id')['tags'];
+
 
         $articles = $query->orderBy('created_at','desc')->paginate(20);
-        return view("admin.scraper.feeds.index")->with('feeds',$articles)->with('filter',$filter);
+        return view("admin.scraper.feeds.index")->with('feeds',$articles)->with('filter',$filter)->with('regions',$regions);
     }
 
 

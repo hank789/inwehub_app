@@ -11,6 +11,7 @@ use App\Models\Doing;
 use App\Models\Question;
 use App\Models\RecommendRead;
 use App\Models\Scraper\BidInfo;
+use App\Models\Scraper\Feeds;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
@@ -68,6 +69,23 @@ class Test extends Command
             $regionTags = $mp->tags->pluck('id')->toArray();
             if ($regionTags) {
                 $articles = WechatWenzhangInfo::where('mp_id',$mp->id)->where('source_type',1)->where('topic_id','>',0)->get();
+                foreach ($articles as $article) {
+                    $submission = Submission::find($article->topic_id);
+                    if ($submission) {
+                        $this->info($submission->id);
+                        $submission->group_id = 0;
+                        $submission->public = 1;
+                        $submission->save();
+                        Tag::multiAddByIds($regionTags,$submission);
+                    }
+                }
+            }
+        }
+        $feeds = Feeds::where('status',1)->where('group_id',0)->get();
+        foreach ($feeds as $feed) {
+            $regionTags = $feed->tags->pluck('id')->toArray();
+            if ($regionTags) {
+                $articles = WechatWenzhangInfo::where('mp_id',$feed->id)->where('source_type',2)->where('topic_id','>',0)->get();
                 foreach ($articles as $article) {
                     $submission = Submission::find($article->topic_id);
                     if ($submission) {

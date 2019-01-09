@@ -43,6 +43,14 @@
                                             </select>
                                         </div>
                                         <div class="col-xs-2">
+                                            <select name="select_region" class="form-control">
+                                                <option value="-1" {{ $filter['select_region'] == -1 ? '':'selected' }}>选择领域</option>
+                                                @foreach($regions as $region)
+                                                    <option value="{{ $region['id'] }}" {{ $filter['select_region'] == $region['id'] ? 'selected':'' }}>{{ $region['text'] }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-xs-2">
                                             <select class="form-control" name="status">
                                                 <option value="-2" {{ isset($filter['status']) && $filter['status']== -2 ? 'selected':'' }}>--状态--</option>
                                                 @foreach(trans_common_status('all') as $key => $status)
