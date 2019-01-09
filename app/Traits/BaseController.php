@@ -828,7 +828,7 @@ trait BaseController {
         if ($request->type == 'link') {
             $this->validate($request, [
                 'url'   => 'required|url',
-                'title' => 'required|between:1,6000'
+                'title' => 'required'
             ]);
 
             //检查url是否重复
@@ -890,7 +890,7 @@ trait BaseController {
             $data['current_address_longitude'] = $request->input('current_address_longitude');
             $data['current_address_latitude'] = $request->input('current_address_latitude');
             $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
-            $title = formatHtml($request->title);
+            $title = formatHtml($request->title?:$data['title']);
             $submission = Submission::create([
                 'title'         => formatContentUrls($title),
                 'slug'          => $this->slug($title),
