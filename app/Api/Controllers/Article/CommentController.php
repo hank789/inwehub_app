@@ -69,9 +69,7 @@ class CommentController extends Controller {
         $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
 
         $comment = Comment::create($data);
-        $submission->increment('comments_number');
         UserTag::multiIncrement($user->id,$submission->tags()->get(),'articles');
-        $this->calculationSubmissionRate($submission->id);
 
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
     }
