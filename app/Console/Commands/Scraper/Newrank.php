@@ -62,7 +62,7 @@ class Newrank extends Command {
         foreach ($mpInfos as $mpInfo) {
             $this->info($mpInfo->name);
             //一个小时内刚处理过的跳过
-            if (strtotime($mpInfo->update_time) >= strtotime('-120 minutes')) continue;
+            //if (strtotime($mpInfo->update_time) >= strtotime('-120 minutes')) continue;
             if (strlen($mpInfo->newrank_id) < 30) {
                 $info = $this->getMpInfo($mpInfo->wx_hao);
                 if (isset($info['uuid'])) {
@@ -99,9 +99,31 @@ class Newrank extends Command {
             }
             foreach ($list['value']['lastestArticle'] as $wz_item) {
                 $this->info($wz_item['title']);
-                if (strtotime($wz_item['publicTime']) <= strtotime('-2 days')) continue;
+                //if (strtotime($wz_item['publicTime']) <= strtotime('-2 days')) continue;
+                $wz_item['title'] = formatHtml($wz_item['title']);
+                $wz_item['summary'] = formatHtml($wz_item['summary']);
                 $uuid = base64_encode($wz_item['title'].$wz_item['summary']);
-                if (RateLimiter::instance()->hGet('wechat_article',$uuid)) continue;
+                $exit = RateLimiter::instance()->hGet('wechat_article',$uuid);
+                if ($exit) {
+                    $exitArticle = WechatWenzhangInfo::find($exit);
+                    if ($exitArticle) {
+                        if (str_contains($exitArticle->content_url,'wechat_redirect') || str_contains($exitArticle->content_url,'__biz=') || str_contains($exitArticle->content_url,'/s/')) {
+                            continue;
+                        }
+                        $exitArticle->content_url = $wz_item['url'];
+                        $exitArticle->save();
+                        if ($exitArticle->topic_id > 0) {
+                            $submission = Submission::find($exitArticle->topic_id);
+                            if ($submission) {
+                                $data = $submission->data;
+                                $data['url'] = $wz_item['url'];
+                                $submission->data = $data;
+                                $submission->save();
+                            }
+                        }
+                    }
+                    continue;
+                }
                 $exist_submission_id = Redis::connection()->hget('voten:submission:url',$wz_item['url']);
                 if ($exist_submission_id) continue;
                 $article = WechatWenzhangInfo::create([
@@ -126,14 +148,6 @@ class Newrank extends Command {
                     dispatch(new ArticleToSubmission($article->_id));
                 }
             }
-            $mpInfo->update_time = date('Y-m-d H:i:s');
-            $mpInfo->save();
-        }
-
-        $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
-        $count = count($articles);
-        if ($count > 0) {
-            TaskLogic::alertManagerPendingArticles($count);
         }
 
     }
