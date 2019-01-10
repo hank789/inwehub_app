@@ -135,10 +135,6 @@ class GoogleNews extends Command {
                         ]);
                         Redis::connection()->hset('voten:submission:url',$item['link'], $submission->id);
                         Tag::multiAddByName($info['tags'],$submission,1);
-                        if ($dateTime) {
-                            $submission->created_at = date('Y-m-d H:i:s',$dateTime);
-                            $submission->save();
-                        }
                         dispatch((new NewSubmissionJob($submission->id,true)));
                     } catch (\Exception $e) {
                         app('sentry')->captureException($e,['url'=>'https://news.google.com/'.$item['link'],'title'=>$item['title']]);
