@@ -127,6 +127,9 @@ class ArticleToSubmission implements ShouldQueue
         if ($img_url == 'https://cdn.inwehub.com/system/group_18@3x.png') {
             $img_url = '';
         }
+        if ($img_url && file_get_contents($img_url) == file_get_contents('https://cdn.inwehub.com/submissions/2019/01/1547120377OIoTGUs.png')) {
+            $img_url = '';
+        }
         $article->cover_url = $img_url;
         $article->save();
         $article_description = strip_tags($article->description);

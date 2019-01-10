@@ -1,5 +1,6 @@
 <?php namespace App\Api\Controllers;
 use App\Events\Frontend\System\ImportantNotify;
+use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Logic\QuillLogic;
 use App\Logic\TagsLogic;
@@ -460,7 +461,7 @@ class IndexController extends Controller {
         }
         if ($page == 1) {
             RateLimiter::instance()->hSet('user_read_last_seen',$user->id.'_'.$filterTag,$last_seen);
-            event(new ImportantNotify('用户'.$user->id.'['.$user->name.']打开首页-'.$filterTagName));
+            event(new SystemNotify('用户'.$user->id.'['.$user->name.']打开首页-'.$filterTagName));
         }
         $result['data'] = $list;
         $result['alert_msg'] = $alertMsg;
