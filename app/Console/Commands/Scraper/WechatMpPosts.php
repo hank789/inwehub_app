@@ -48,7 +48,7 @@ class WechatMpPosts extends Command {
     public function handle()
     {
         try {
-            Artisan::call('scraper:newrank:wechat',[],'/tmp/newrank.txt');
+            Artisan::call('scraper:newrank:wechat');
         } catch (\Exception $e) {
             app('sentry')->captureException($e);
         }
