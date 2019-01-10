@@ -148,7 +148,7 @@ class IndexController extends Controller {
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
         ];
-        $this->doing($user,Doing::ACTION_VIEW_HOME,'',0,'核心页面');
+        //$this->doing($user,Doing::ACTION_VIEW_HOME,'',0,'核心页面');
         return self::createJsonData(true,$data);
     }
 
