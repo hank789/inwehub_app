@@ -68,7 +68,7 @@ class Newrank extends Command {
                 if (isset($info['uuid'])) {
                     $mpInfo->newrank_id = $info['uuid'];
                     $mpInfo->save();
-                } else {
+                } elseif (empty($info)){
                     $this->clearAuth();
                     $this->getAuth();
                     $info = $this->getMpInfo($mpInfo->wx_hao);
@@ -79,6 +79,8 @@ class Newrank extends Command {
                         event(new ExceptionNotify('获取新榜微信号信息失败:'.$mpInfo->wx_hao));
                         continue;
                     }
+                } else {
+                    continue;
                 }
             }
             $data = [
@@ -215,12 +217,18 @@ class Newrank extends Command {
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
             'cookie' => 'tt_token=true; rmbuser=true; name=15050368286; useLoginAccount=true; token='.$this->auth.'; __root_domain_v=.newrank.cn;'
         ];
-        $result = $this->ql->get('https://www.newrank.cn/public/info/detail.html',[
+        $content = $this->ql->get('https://www.newrank.cn/public/info/detail.html',[
             'account' => $wxhao
         ],[
             'timeout' => 10,
             'headers' => $headers
-        ])->getHtml();
+        ]);
+        $title = $content->find('title')->text();
+        if (str_contains($title,'页面错误')) {
+            var_dump('页面错误');
+            return -1;
+        }
+        $result = $content->getHtml();
         $pattern = "/var\s+fgkcdg\s+=\s+(\{[\s\S]*?\});/is";
         preg_match($pattern, $result, $matchs);
         if (isset($matchs[1]) && $matchs[1]) {
