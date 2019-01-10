@@ -156,11 +156,11 @@ class Newrank extends Command {
         $data['xyz'] = $xyz;
 
         $content = $this->ql->post($requestUrl,$data,[
-            'timeout' => 30,
+            'timeout' => 60,
             'headers' => $headers
         ])->getHtml();
         $count++;
-        if (empty($content) && $count <= 2) {
+        if (empty($content) && $count <= 3) {
             unset($data['nonce']);
             unset($data['xyz']);
             return $this->getListData($data,$count);
