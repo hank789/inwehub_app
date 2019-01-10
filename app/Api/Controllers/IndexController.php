@@ -1,4 +1,5 @@
 <?php namespace App\Api\Controllers;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Exceptions\ApiException;
 use App\Logic\QuillLogic;
 use App\Logic\TagsLogic;
@@ -147,7 +148,7 @@ class IndexController extends Controller {
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
         ];
-        $this->doing($user,Doing::ACTION_VIEW_HOME,'',0,'核心页面');
+        //$this->doing($user,Doing::ACTION_VIEW_HOME,'',0,'核心页面');
         return self::createJsonData(true,$data);
     }
 
@@ -357,6 +358,7 @@ class IndexController extends Controller {
         $alertMsg = '';
         $last_seen= '';
         $filterTag = $request->input('tagFilter','');
+        $filterTagName = '全部';
         try {
             $user = $JWTAuth->parseToken()->authenticate();
             $last_seen = RateLimiter::instance()->hGet('user_read_last_seen',$user->id.'_'.$filterTag);
@@ -371,9 +373,12 @@ class IndexController extends Controller {
                 $query = $query->whereHas('tags',function($query) use ($filterTag) {
                     $query->where('tag_id', $filterTag);
                 });
+                $tag = Tag::find($filterTag);
+                $filterTagName = $tag->name;
             }
         } else {
             $query = RecommendRead::where('audit_status',1);
+            $filterTagName = '推荐';
         }
         if ($filterTag) {
             $query = $query->orderBy('rate','desc');
@@ -455,6 +460,7 @@ class IndexController extends Controller {
         }
         if ($page == 1) {
             RateLimiter::instance()->hSet('user_read_last_seen',$user->id.'_'.$filterTag,$last_seen);
+            event(new ImportantNotify('用户'.$user->id.'['.$user->name.']打开首页-'.$filterTagName));
         }
         $result['data'] = $list;
         $result['alert_msg'] = $alertMsg;
