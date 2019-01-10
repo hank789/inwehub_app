@@ -441,6 +441,7 @@ class Submission extends Model {
         $Ascores = $commentSupports + $this->collections + $shareNumber;
         $rate =  hotRate($views,$this->comments_number?:1, $Qscore, $Ascores,$this->created_at,$this->updated_at);*/
         $rate = $views/10 + $commentSupports + $this->comments_number * 2 + $this->collections + $shareNumber * 3 + $this->upvotes-$this->downvotes;
+        $rate = (int) $rate;
         $this->rate = date('Ymd',strtotime($this->created_at)).(sprintf('%08s',$rate));
         $this->save();
         $recommendRead = RecommendRead::where('source_id',$this->id)->where('source_type',Submission::class)->first();
