@@ -114,14 +114,14 @@ class ArticleToSubmission implements ShouldQueue
             return;
         }
         if (empty($article->cover_url)) {
-            $info = getUrlInfo($article->content_url,true);
+            $info = getUrlInfo($article->content_url,true, 'submissions', false);
             $img_url = $info['img_url'];
         } else {
             $parse_url = parse_url($article->cover_url);
             $img_url = $article->cover_url;
             //非本地地址，存储到本地
             if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
-                $img_url = saveImgToCdn($article->cover_url,'submissions');
+                $img_url = saveImgToCdn($article->cover_url,'submissions', false, false);
             }
         }
         $article->cover_url = $img_url;
