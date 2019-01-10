@@ -410,7 +410,7 @@ class SubmissionController extends Controller {
         }
         if ($isRecommend) {
             unset($sData['description']);
-            unset($sData['title']);
+            //unset($sData['title']);
             $recommend = RecommendRead::firstOrCreate([
                 'source_id' => $submission->id,
                 'source_type' => get_class($submission)
@@ -425,7 +425,6 @@ class SubmissionController extends Controller {
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
                 'data' => array_merge($sData, [
-                    'title' => $submission->title,
                     'img'   => $submission->data['img'],
                     'category_id' => $submission->category_id,
                     'category_name' => $submission->category_name,
