@@ -138,7 +138,7 @@ class Newrank extends Command {
 
     }
 
-    protected function getListData($data) {
+    protected function getListData($data,$count=0) {
         sleep(rand(6,15));
         $headers = [
             'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -156,9 +156,15 @@ class Newrank extends Command {
         $data['xyz'] = $xyz;
 
         $content = $this->ql->post($requestUrl,$data,[
-            'timeout' => 10,
+            'timeout' => 30,
             'headers' => $headers
         ])->getHtml();
+        $count++;
+        if (empty($content) && $count <= 2) {
+            unset($data['nonce']);
+            unset($data['xyz']);
+            return $this->getListData($data,$count);
+        }
         var_dump($content);
         return json_decode($content, true);
     }
@@ -220,7 +226,7 @@ class Newrank extends Command {
         $content = $this->ql->get('https://www.newrank.cn/public/info/detail.html',[
             'account' => $wxhao
         ],[
-            'timeout' => 10,
+            'timeout' => 30,
             'headers' => $headers
         ]);
         $title = $content->find('title')->text();
