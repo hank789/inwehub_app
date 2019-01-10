@@ -1213,7 +1213,7 @@ if (!function_exists('getUrlInfo')) {
                     }
                 }
                 if (!$image) {
-                    //$img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
+                    $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
                     event(new \App\Events\Frontend\System\ExceptionNotify('未取到网站:'.$url.'的图片'));
                 }
                 $title = $ql->find('title')->eq(0)->text();
