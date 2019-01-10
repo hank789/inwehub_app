@@ -1082,10 +1082,9 @@ if (!function_exists('saveImgToCdn')){
             $file_name = $dir.'/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$imgType;
             $ql = \QL\QueryList::getInstance();
             $gfw_urls = \App\Services\RateLimiter::instance()->sMembers('gfw_urls');
-            if ($parse_url['host'] == 'mmbiz.qpic.cn') {
+            if ($parse_url['host'] == 'mmbiz.qpic.cn' || $parse_url['host'] == 'mmbiz.qlogo.cn') {
                 $otherArgs = [
                     'headers' => [
-                        'Origin' => 'https://mp.weixin.qq.com',
                         'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                         'Host' => $parse_url['host'],
                         'cache-control' => 'no-cache',
