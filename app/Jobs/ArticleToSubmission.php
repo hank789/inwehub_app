@@ -124,6 +124,9 @@ class ArticleToSubmission implements ShouldQueue
                 $img_url = saveImgToCdn($article->cover_url,'submissions', false, false);
             }
         }
+        if ($img_url == 'https://cdn.inwehub.com/system/group_18@3x.png') {
+            $img_url = '';
+        }
         $article->cover_url = $img_url;
         $article->save();
         $article_description = strip_tags($article->description);

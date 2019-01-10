@@ -111,7 +111,7 @@ class ItJuZi extends Command {
                             event(new ExceptionNotify('抓取IT橘子企业详情失败:'.$item['id']));
                             continue;
                         }
-                        $img = saveImgToCdn($result['data']['invse_with_com']['logo']);
+                        $img = saveImgToCdn($result['data']['invse_with_com']['logo'],'submissions',false,false);
                         $company_url = $result2['data']['basic']['com_url'];
                         $item['custom_data']['company_slogan'] = $result2['data']['basic']['com_slogan'];
                         $type = 'link';

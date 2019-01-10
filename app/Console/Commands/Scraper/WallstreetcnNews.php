@@ -109,9 +109,10 @@ class WallstreetcnNews extends Command {
             $this->info($item['resource']['title']);
             if ($item['resource']['image_uri']) {
                 //图片本地化
-                $item['resource']['image'] = saveImgToCdn($item['resource']['image_uri'], 'submissions');
-            } else {
-                $item['resource']['image'] = 'https://cdn.inwehub.com/system/group_18@3x.png';
+                $item['resource']['image'] = saveImgToCdn($item['resource']['image_uri'], 'submissions',false,false);
+            }
+            if ($item['resource']['image'] == 'https://cdn.inwehub.com/system/group_18@3x.png') {
+                $item['resource']['image'] = '';
             }
             $data = [
                 'url' => $item['resource']['source_uri'],

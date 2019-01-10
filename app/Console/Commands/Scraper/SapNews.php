@@ -109,7 +109,7 @@ class SapNews extends Command {
                     try {
                         if ($item['image']) {
                             //图片本地化
-                            $item['image'] = saveImgToCdn($item['image'], 'submissions');
+                            $item['image'] = saveImgToCdn($item['image'], 'submissions',false,false);
                         } else {
                             $item['image'] = 'https://cdn.inwehub.com/groups/2018/09/1537341872OLqcb91.png';
                         }
@@ -210,7 +210,10 @@ class SapNews extends Command {
                     try {
                         if ($item['image']) {
                             //图片本地化
-                            $item['image'] = saveImgToCdn($item['image'], 'submissions');
+                            $item['image'] = saveImgToCdn($item['image'], 'submissions',false,false);
+                        }
+                        if ($item['image'] == 'https://cdn.inwehub.com/system/group_18@3x.png') {
+                            $item['image'] = '';
                         }
                         $item['title'] = formatHtml($item['title']);
                         $item['description'] = formatHtml($item['description']);

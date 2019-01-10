@@ -108,7 +108,7 @@ class AtomPosts extends Command
                 }
 
                 if (empty($image_url)) {
-                    $info = getUrlInfo((string)$value->link->attributes()->href,true);
+                    $info = getUrlInfo((string)$value->link->attributes()->href,true,'submissions',false);
                     $image_url = $info['img_url'];
                 }
 

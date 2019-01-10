@@ -96,9 +96,12 @@ class GoogleNews extends Command {
                         $item['href'] = $ql->setHtml($urlHtml)->find('div.m2L3rb.eLNT1d')->children('a')->attr('href');
                         if ($item['image']) {
                             //图片本地化
-                            $item['image'] = saveImgToCdn($item['image'],'submissions');
+                            $item['image'] = saveImgToCdn($item['image'],'submissions',false,false);
                         } else {
-                            $item['image'] = 'https://cdn.inwehub.com/system/group_18@3x.png';
+                            $item['image'] = '';
+                        }
+                        if ($item['image'] == 'https://cdn.inwehub.com/system/group_18@3x.png') {
+                            $item['image'] = '';
                         }
                         $item['title'] = formatHtml($item['title']);
                         $item['description'] = formatHtml($item['description']);
