@@ -1068,7 +1068,7 @@ if (!function_exists('string')){
 }
 
 if (!function_exists('saveImgToCdn')){
-    function saveImgToCdn($imgUrl,$dir = 'avatar', $isIco = false){
+    function saveImgToCdn($imgUrl,$dir = 'avatar', $isIco = false, $queue = true){
         $parse_url = parse_url($imgUrl);
         if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
             $imgType = 'png';
@@ -1109,8 +1109,11 @@ if (!function_exists('saveImgToCdn')){
                     $otherArgs['proxy'] = 'socks5h://127.0.0.1:1080';
                 }
                 $content = $ql->get($imgUrl,null,$otherArgs)->getHtml();
-
-                dispatch((new \App\Jobs\UploadFile($file_name,base64_encode($content))));
+                if ($queue) {
+                    dispatch((new \App\Jobs\UploadFile($file_name,base64_encode($content))));
+                } else {
+                    Storage::disk('oss')->put($file_name,$content);
+                }
                 return Storage::url($file_name);
             } catch (Exception $e) {
                 app('sentry')->captureException($e);
@@ -1124,7 +1127,7 @@ if (!function_exists('saveImgToCdn')){
 
 
 if (!function_exists('getUrlInfo')) {
-    function getUrlInfo($url, $withImageUrl = false, $dir = 'submissions') {
+    function getUrlInfo($url, $withImageUrl = false, $dir = 'submissions', $queue = true) {
         $img_url = Cache::get('url_img_'.$url,'');
         $title = Cache::get('url_title_'.$url, '');
         if ($title && $img_url) {
@@ -1241,7 +1244,7 @@ if (!function_exists('getUrlInfo')) {
             if ($temp && $withImageUrl && !$img_url) {
                 try {
                     //保存图片
-                    $img_url = saveImgToCdn($temp,$dir,$isIco);
+                    $img_url = saveImgToCdn($temp,$dir,$isIco,$queue);
                     //非微信文章
                     if ($useCache) {
                         Cache::put('domain_url_img_'.domain($url),$img_url,60 * 24 * 30);
