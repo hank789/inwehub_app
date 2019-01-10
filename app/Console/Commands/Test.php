@@ -64,6 +64,38 @@ class Test extends Command
      */
     public function handle()
     {
+        $urls = [
+            51 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ3WmpSc0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'SAP'],//SAP global news
+            50 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRFZ1YW5jU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Oracle'],//Oracle global news
+            //49 => ['url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRFJ6ZGpRU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Microsoft'],//Microsoft global news
+            48 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRE56WXpnU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'IBM,企业服务'],//IBM global news
+            47 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ5Y0RKakVnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Accenture,咨询行业'],//Accenture global news
+            46 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNRGRpZEhJMUVnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Salesforce,企业服务'],//Salesforce global news
+            45 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNRE4yYkdzd0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Capgemini,咨询行业'],//Capgemini global news
+            44 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREo2ZERreUVnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'McKinsey,咨询行业'],//McKinsey global news
+            43 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNRE4zTURCd0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'BCG,咨询行业'],//BCG global news
+            42 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNR3N5WjNRU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'KPMG,咨询行业'],//KPMG global news
+            41 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREp6Y0daa0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Deloitte,咨询行业'],//Deloitte global news
+        ];
+        foreach ($urls as $group_id => $info) {
+            $submissions = Submission::where('group_id',$group_id)->where('status',1)->where('type','link')->get();
+            $tt = explode(',',$info['tags']);
+            foreach ($submissions as $submission) {
+                $tags = $submission->tags->pluck('name')->toArray();
+                foreach ($tt as $t) {
+                    if (in_array($t,$tags)) {
+                        $submission->group_id = 0;
+                    } elseif ($submission->group_id == 0) {
+                        Tag::multiAddByName($t,$submission,37);
+                    }
+                }
+                if ($submission->group_id == 0) {
+                    $submission->save();
+                    $this->info($submission->id);
+                }
+            }
+        }
+        return;
         $mps = WechatMpInfo::where('status',1)->where('group_id',0)->get();
         foreach ($mps as $mp) {
             $regionTags = $mp->tags->pluck('id')->toArray();
