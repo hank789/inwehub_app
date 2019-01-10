@@ -90,6 +90,7 @@ class Test extends Command
                     }
                 }
                 if ($submission->group_id == 0) {
+                    $submission->public = 1;
                     $submission->save();
                     $this->info($submission->id);
                 }
