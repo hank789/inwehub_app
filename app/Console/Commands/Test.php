@@ -64,6 +64,15 @@ class Test extends Command
      */
     public function handle()
     {
+        for ($id=80683;$id<=80693;$id++) {
+            $submission = Submission::find($id);
+            $info = getUrlInfo($submission->data['url'],true);
+            $data = $submission->data;
+            $data['img'] = $info['img_url'];
+            $submission->data = $data;
+            $submission->save();
+        }
+        return;
         $urls = [
             51 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ3WmpSc0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'SAP'],//SAP global news
             50 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRFZ1YW5jU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Oracle'],//Oracle global news
