@@ -47,11 +47,11 @@ class WechatMpPosts extends Command {
      */
     public function handle()
     {
-        /*try {
+        try {
             Artisan::call('scraper:newrank:wechat');
         } catch (\Exception $e) {
             app('sentry')->captureException($e);
-        }*/
+        }
         $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
         $spider = new MpSpider();
         $successCount = 0;
