@@ -96,7 +96,7 @@ class CommentController extends Controller {
         $orderBy = $request->input('order_by',1);
 
         $submission = Submission::where('slug',$request->submission_slug)->first();
-
+        $submission->increment('views');
         $query = $submission->comments()
             ->where('parent_id', 0);
         if ($orderBy == 1) {
