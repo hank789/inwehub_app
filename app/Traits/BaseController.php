@@ -930,7 +930,7 @@ trait BaseController {
             throw new ApiException(ApiException::ERROR);
         }
         self::$needRefresh = true;
-        return $submission;
+        return self::createJsonData(true,$submission->toArray());
     }
 
     protected function tagProductList(Request $request) {
