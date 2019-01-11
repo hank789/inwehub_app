@@ -46,6 +46,7 @@ use App\Notifications\NewQuestionConfirm;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
@@ -147,10 +148,11 @@ trait BaseController {
                     'value'=>$link
                 ];
             }
+            $from  = Input::get('inwehub_user_device');
             if (strpos($action,'share') === 0) {
-                event(new ImportantNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
+                event(new ImportantNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
             } else {
-                event(new SystemNotify('用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
+                event(new SystemNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
             }
         }
         if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user->id.'_'.$source_id)){
