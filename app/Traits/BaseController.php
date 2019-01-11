@@ -46,6 +46,7 @@ use App\Notifications\NewQuestionConfirm;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
@@ -147,7 +148,7 @@ trait BaseController {
                     'value'=>$link
                 ];
             }
-            $from  = ($_REQUEST['inwehub_user_device']??'')?:($_POST['inwehub_user_device']??'');
+            $from  = Input::get('inwehub_user_device');
             if (strpos($action,'share') === 0) {
                 event(new ImportantNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
             } else {
