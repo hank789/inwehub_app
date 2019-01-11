@@ -124,6 +124,7 @@ class Newrank extends Command {
                     }
                     continue;
                 }
+                if (strtotime($wz_item['publicTime']) <= strtotime('-2 days')) continue;
                 $exist_submission_id = Redis::connection()->hget('voten:submission:url',$wz_item['url']);
                 if ($exist_submission_id) continue;
                 $article = WechatWenzhangInfo::create([
