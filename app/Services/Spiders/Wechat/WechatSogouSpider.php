@@ -3,6 +3,9 @@ use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
 use App\Models\Scraper\WechatMpInfo;
 use App\Services\RuoKuaiService;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\SetCookie;
 use Illuminate\Support\Facades\Storage;
 use QL\QueryList;
 
@@ -26,9 +29,16 @@ class WechatSogouSpider
 
     protected $ssIpLocked = false;
 
+    protected $snuid = '';
+
+    protected $client = '';
+
+    protected $cookieJar = '';
+
     public function __construct()
     {
         $this->ql = QueryList::getInstance();
+        $this->client = new Client(['cookies' => true]);
     }
 
     /**
@@ -38,11 +48,15 @@ class WechatSogouSpider
     public function getGzhInfo($wx_hao) {
         $request_url = 'http://weixin.sogou.com/weixin?query='.$wx_hao.'&_sug_type_=&_sug_=n&type=1&page=1&ie=utf8';
         $jieFengCount = 0;
+        $jfResult = false;
         for ($i=0;$i<16;$i++) {
             $ips = getProxyIps(5,'sogou');
             $ip = $ips[0]??'';
             if ($i>=14) $ip =null;
             var_dump($ip);
+            if ($jfResult) {
+                $request_url = 'http://weixin.sogou.com/weixin?type=2&query='.$wx_hao.'&ie=utf8&s_from=input&_sug_=n&_sug_type_=1&w=01015002&oq=&ri=0&sourceid=sugg&sut=0&sst0=1547216885721&lkt=0,0,0&p=40040108';
+            }
             $content = $this->requestUrl($request_url,$ip);
             if ($content) {
                 $sogouTitle = $content->find('title')->text();
@@ -52,7 +66,7 @@ class WechatSogouSpider
                 } else {
                     var_dump('公众号访问频繁');
                     $r = $content->find('input[name=r]')->val();
-                    $this->jiefeng($r);
+                    $jfResult = $this->jiefeng($r);
                     if ($jieFengCount >= 2) {
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
                         exit();
@@ -256,12 +270,16 @@ class WechatSogouSpider
             $opts = [
                 'proxy' => $ip,
                 //Set the timeout time in seconds
-                'timeout' => 5
+                'timeout' => 10
             ];
             if (empty($ip)) {
                 unset($opts['proxy']);
             }
-            $content = $this->ql->get($url,null,$opts);
+            $response = $this->client->get($url);
+            $body = $response->getBody();
+            $this->ql->setHtml((string) $body);
+            return $this->ql;
+            //$content = $this->ql->get($url,null,$opts);
         } catch (\Exception $e) {
             var_dump($e->getMessage());
             app('sentry')->captureException($e,['url'=>$url,'proxy'=>$ip]);
@@ -272,13 +290,13 @@ class WechatSogouSpider
 
     public function jiefeng($r) {
         $max_count = 1;
-        if ($this->proxyIp) return;
+        if ($this->proxyIp) return false;
         print("出现验证码，准备自动识别");
         while ($max_count < 2) {
             $max_count += 1;
             $time = intval(microtime(true) * 1000);
             $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
-            $img_data = $this->ql->get($codeurl)->getHtml();
+            $img_data = (string) $this->client->get($codeurl)->getBody();
             $result = RuoKuaiService::dama($img_data);
             if (isset($result['Result'])) {
                 $img_code = $result['Result'];
@@ -288,7 +306,7 @@ class WechatSogouSpider
                     'v' => 5
                 ];
 
-                $result = $this->ql->post('http://weixin.sogou.com/antispider/thank.php',$post_data)->getHtml();
+                $result = (string) $this->client->post('http://weixin.sogou.com/antispider/thank.php',['form_params'=>$post_data])->getBody();
                 var_dump($result);
 
                 $resultArr = json_decode($result,true);
@@ -298,14 +316,32 @@ class WechatSogouSpider
                     continue;
                 }
                 if (isset($resultArr['id']) && $resultArr['id']) {
-                    sleep(1);
                     $pbsnuid = $resultArr['id'];
+                    var_dump($pbsnuid);
+                    $this->snuid = $pbsnuid;
                     $pburl = 'http://pb.sogou.com/pv.gif?uigs_productid=webapp&type=antispider&subtype=0_seccodeInputSuccess&domain=weixin&suv=&snuid='.$pbsnuid.'&t='.time();
-                    $this->ql->get($pburl);
-                    sleep(2);
+                    $this->client->get($pburl);
+                    // get cookie
+                    $config = $this->client->getConfig();
+                    $config['cookies']->setCookie(
+                        new SetCookie([
+                            'Name'     => 'SNUID',
+                            'Value'    => $pbsnuid,
+                            'Domain'   => 'weixin.sogou.com',
+                            'Path'     => '/',
+                            'Max-Age'  => null,
+                            'Expires'  => null,
+                            'Secure'   => false,
+                            'Discard'  => false,
+                            'HttpOnly' => false
+                        ])
+                    );
+                    //var_dump($config['cookies']);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     public function jiefeng2($proxy=false) {
@@ -313,7 +349,7 @@ class WechatSogouSpider
         $time = explode(' ',microtime());
         $timever = $time[1].($time[0] * 1000);
         $codeurl = 'http://mp.weixin.qq.com/mp/verifycode?cert='.$timever;
-        $img_data = $this->ql->get($codeurl)->getHtml();
+        $img_data = (string)$this->client->get($codeurl)->getBody();
         $result = RuoKuaiService::dama($img_data,2040);
         $img_code = $result['Result'];
         $post_url = 'http://mp.weixin.qq.com/mp/verifycode';
@@ -326,7 +362,7 @@ class WechatSogouSpider
         if ($proxy) {
             $otherArgs = ['proxy' => 'socks5h://127.0.0.1:1080'];
         }
-        $result2 = $this->ql->post($post_url,$post_data,$otherArgs)->getHtml();
+        $result2 = (string) $this->client->post($post_url,$post_data,$otherArgs)->getBody();
         var_dump($result2);
         return json_decode($result2,true);
     }
