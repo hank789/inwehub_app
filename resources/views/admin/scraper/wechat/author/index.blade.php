@@ -81,7 +81,7 @@
                                         <th>微信号</th>
                                         <th>圈子</th>
                                         <th>发布领域</th>
-                                        <th>时间</th>
+                                        <th>最后抓取时间</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -93,7 +93,7 @@
                                             <td>{{ $author->wx_hao }}</td>
                                             <td>{{ '' }}</td>
                                             <td>{{ '' }}</td>
-                                            <td>{{ timestamp_format($author->create_at) }}</td>
+                                            <td>{{ $author->update_time }}</td>
                                             <td><span class="label label-danger">待抓取</span> </td>
                                             <td>
 
@@ -108,7 +108,7 @@
                                             <td>{{ $author->wx_hao }}</td>
                                             <td>{{ $author->group?$author->group->name:'' }}</td>
                                             <td>{{ implode(',',$author->tags->pluck('name')->toArray()) }}</td>
-                                            <td>{{ timestamp_format($author->create_time) }}</td>
+                                            <td>{{ $author->update_time }}</td>
                                             <td><span class="label @if($author->status===0) label-danger  @else label-success @endif">{{ trans_common_status($author->status) }} {{ $author->is_auto_publish?'自动发布文章':'' }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
