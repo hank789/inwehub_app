@@ -306,7 +306,7 @@ class WechatSogouSpider
                     'v' => 5
                 ];
 
-                $result = (string) $this->client->post('http://weixin.sogou.com/antispider/thank.php',['form_params'=>$post_data])->getBody();
+                $result = (string) $this->client->post('http://weixin.sogou.com/antispider/thank.php',['verify' => false,'form_params'=>$post_data])->getBody();
                 var_dump($result);
 
                 $resultArr = json_decode($result,true);
@@ -362,7 +362,7 @@ class WechatSogouSpider
         if ($proxy) {
             $otherArgs = ['proxy' => 'socks5h://127.0.0.1:1080'];
         }
-        $result2 = (string) $this->client->post($post_url,$post_data,$otherArgs)->getBody();
+        $result2 = (string) $this->client->post($post_url,array_merge(['verify' => false,'form_params'=>$post_data],$otherArgs))->getBody();
         var_dump($result2);
         return json_decode($result2,true);
     }
