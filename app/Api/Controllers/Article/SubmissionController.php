@@ -46,8 +46,8 @@ class SubmissionController extends Controller {
     public function store(Request $request)
     {
         $user = $request->user();
-        $submission = $this->storeSubmission($request,$user);
-        return self::createJsonData(true,$submission->toArray());
+        $result = $this->storeSubmission($request,$user);
+        return self::createJsonData(true,$result);
     }
 
     public function update(Request $request) {

@@ -197,8 +197,8 @@ class ProductController extends Controller {
         if (empty($user->mobile)) {
             throw new ApiException(ApiException::USER_NEED_VALID_PHONE);
         }
-        $submission = $this->storeSubmission($request,$user);
-        return self::createJsonData(true,$submission->toArray());
+        $result = $this->storeSubmission($request,$user);
+        return self::createJsonData(true,$result);
     }
 
     public function addReviewImage(Request $request,JWTAuth $JWTAuth){
