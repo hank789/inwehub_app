@@ -38,7 +38,7 @@ class WechatSogouSpider
     public function __construct()
     {
         $this->ql = QueryList::getInstance();
-        $this->client = new Client(['cookies' => true]);
+        $this->client = new Client(['cookies' => true,'verify' => false]);
     }
 
     /**
