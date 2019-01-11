@@ -620,7 +620,7 @@ class IndexController extends Controller {
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                     if ($submission->type == 'review') {
                         $comment_url = '/dianping/comment/'.$submission->slug;
-                    } elseif ($user->uuid != $loginUser->uuid && !$submission->group->public) {
+                    } elseif ($submission->group_id && $user->uuid != $loginUser->uuid && !$submission->group->public) {
                         $continue = true;
                         continue;
                     }
