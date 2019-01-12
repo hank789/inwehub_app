@@ -100,6 +100,7 @@ class WallstreetcnNews extends Command {
             if ($item['resource_type'] != 'article') continue;
             if ($item['resource']['is_priced']) continue;
             if (!$item['resource']['source_uri']) continue;
+            if (str_contains($item['resource']['source_uri'],'https://wallstreetcn.com')) continue;
             if ($item['resource']['display_time'] <= strtotime('-1 day')) {
                 $nextCursor = 0;
                 break;
