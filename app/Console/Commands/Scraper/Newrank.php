@@ -170,10 +170,16 @@ class Newrank extends Command {
         $data['nonce'] = $nonce;
         $data['xyz'] = $xyz;
 
-        $content = $this->ql->post($requestUrl,$data,[
-            'timeout' => 60,
-            'headers' => $headers
-        ])->getHtml();
+        try {
+            $content = $this->ql->post($requestUrl,$data,[
+                'timeout' => 60,
+                'headers' => $headers
+            ])->getHtml();
+        } catch (\Exception $e) {
+            app('sentry')->captureException($e);
+            $content = null;
+        }
+
         $count++;
         if (empty($content) && $count <= 3) {
             unset($data['nonce']);
@@ -238,28 +244,33 @@ class Newrank extends Command {
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
             'cookie' => 'tt_token=true; rmbuser=true; name=15050368286; useLoginAccount=true; token='.$this->auth.'; __root_domain_v=.newrank.cn;'
         ];
-        $content = $this->ql->get('https://www.newrank.cn/public/info/detail.html',[
-            'account' => $wxhao
-        ],[
-            'timeout' => 30,
-            'headers' => $headers
-        ]);
-        $title = $content->find('title')->text();
-        if (str_contains($title,'页面错误')) {
-            var_dump('页面错误');
-            return -1;
+        try {
+            $content = $this->ql->get('https://www.newrank.cn/public/info/detail.html',[
+                'account' => $wxhao
+            ],[
+                'timeout' => 30,
+                'headers' => $headers
+            ]);
+            $title = $content->find('title')->text();
+            if (str_contains($title,'页面错误')) {
+                var_dump('页面错误');
+                return -1;
+            }
+            $result = $content->getHtml();
+            $pattern = "/var\s+fgkcdg\s+=\s+(\{[\s\S]*?\});/is";
+            preg_match($pattern, $result, $matchs);
+            if (isset($matchs[1]) && $matchs[1]) {
+                $matchs[1] = formatHtml($matchs[1]);
+                $data = json_decode($matchs[1],true);
+                var_dump($data);
+            } else {
+                return false;
+            }
+            return $data;
+        } catch (\Exception $e) {
+            app('sentry')->captureException($e);
         }
-        $result = $content->getHtml();
-        $pattern = "/var\s+fgkcdg\s+=\s+(\{[\s\S]*?\});/is";
-        preg_match($pattern, $result, $matchs);
-        if (isset($matchs[1]) && $matchs[1]) {
-            $matchs[1] = formatHtml($matchs[1]);
-            $data = json_decode($matchs[1],true);
-            var_dump($data);
-        } else {
-            return false;
-        }
-        return $data;
+        return false;
     }
 
     public function getNonce() {
