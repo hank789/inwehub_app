@@ -68,6 +68,8 @@ class WechatPosts extends Command {
                 $this->info($mpInfo->name);
                 //一个小时内刚处理过的跳过
                 if (strtotime($mpInfo->update_time) >= strtotime('-90 minutes')) continue;
+                $todayCount = WechatWenzhangInfo::where('source_type',1)->where('mp_id',$mpInfo->_id)->where('date_time','>=',date("Y-m-d 00:00:00"))->count();
+                if ($todayCount >= 1) continue;
                 #查看一下该号今天是否已经发送文章
                 $last_qunfa_id = $mpInfo->last_qunfa_id;
                 $last_qunfa_time = $mpInfo->last_qufa_time;
