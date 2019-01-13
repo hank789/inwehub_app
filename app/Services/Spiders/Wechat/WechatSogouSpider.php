@@ -127,6 +127,10 @@ class WechatSogouSpider
                     var_dump('请输入验证码');
                     if (empty($ip) && !$this->ssIpLocked) {
                         $wzHtml = curlShadowsocks($mpInfo->wz_url);
+                        if ($wzHtml === false) {
+                            $this->ssIpLocked = true;
+                            continue;
+                        }
                         $content->setHtml($wzHtml);
                         $sogouTitle = $content->find('title')->text();
                         if (!$sogouTitle) {

@@ -1812,9 +1812,11 @@ if (!function_exists('curlShadowsocks')) {
 
         $result = curl_exec($ch);
         if($result === false){
-            var_dump(curl_error($ch));
+            $error = curl_error($ch);
+            var_dump($error);
             curl_close($ch);
-            exit();
+            event(new \App\Events\Frontend\System\ExceptionNotify('curlShadowsocks error:'.$error));
+            return false;
         }
         curl_close($ch);
 
