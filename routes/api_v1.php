@@ -16,6 +16,8 @@ Route::post('getRelatedRecommend','IndexController@getRelatedRecommend');
 
 Route::post('readList','IndexController@readList');
 
+Route::post('dailyReport','IndexController@dailyReport');
+
 Route::post('system/getOperators','SystemController@getOperators');
 
 
