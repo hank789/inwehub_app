@@ -426,7 +426,7 @@ class IndexController extends Controller {
                 ->where('supportable_id',$item->id)
                 ->where('supportable_type',Submission::class)
                 ->exists();
-            $tags = $item->tags()->wherePivot('is_display',1)->select('tags.id','tags.name')->get()->toArray();
+            $tags = $item->tags()->select('tags.id','tags.name')->get()->toArray();
             if ($item->isRecommendRead()) {
                 $tags[] = [
                     'id' => -1,
@@ -466,6 +466,71 @@ class IndexController extends Controller {
         $result['data'] = $list;
         $result['alert_msg'] = $alertMsg;
         return self::createJsonData(true, $result);
+    }
+
+    public function dailyReport(Request $request, JWTAuth $JWTAuth) {
+        $this->validate($request, [
+            'date' => 'required',
+        ]);
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
+        $list = [];
+        $date = $request->input('date');
+        $begin = date('Y-m-d 00:00:00',strtotime($date));
+        $end = date('Y-m-d 23:59:59',strtotime($date));
+        $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->orderBy('rate','desc')->take(10)->get();
+        foreach ($recommends as $recommend) {
+            $item = Submission::find($recommend->source_id);
+            $domain = $item->data['domain']??'';
+            $link_url = $item->data['url']??'';
+            if ($domain == 'mp.weixin.qq.com') {
+                if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz=') || str_contains($link_url, '/s/'))) {
+                    $link_url = config('app.url').'/articleInfo/'.$item->id.'?inwehub_user_device=wechat';
+                }
+            }
+            $upvote = Support::where('user_id',$user->id)
+                ->where('supportable_id',$item->id)
+                ->where('supportable_type',Submission::class)
+                ->exists();
+            $tags = $item->tags()->select('tags.id','tags.name')->get()->toArray();
+            if ($item->isRecommendRead()) {
+                $tags[] = [
+                    'id' => -1,
+                    'name'=>'推荐'
+                ];
+            }
+            $img = $item->data['img']??'';
+            if (is_array($img)) {
+                if ($img) {
+                    $img = $img[0];
+                } else {
+                    $img = '';
+                }
+            }
+            $list[] = [
+                'id'    => $item->id,
+                'title' => strip_tags($item->data['title']??$item->title),
+                'type'  => $item->type,
+                'domain'    => $domain,
+                'img'   => $img,
+                'slug'      => $item->slug,
+                'category_id' => $item->category_id,
+                'is_upvoted'     => $upvote ? 1 : 0,
+                'link_url'  => $link_url,
+                'rate'  => (int)(substr($item->rate,8)?:0),
+                'comment_number' => $item->comments_number,
+                'support_number' => $item->upvotes,
+                'share_number' => $item->share_number,
+                'tags' => $tags,
+                'created_at'=> (string)$item->created_at
+            ];
+        }
+        return self::createJsonData(true,$list);
     }
 
     //精选推荐

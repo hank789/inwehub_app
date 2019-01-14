@@ -60,6 +60,14 @@ return [
     ],
     'phantomjs' => [
         'path' => env('PHANTOMJS_PATH')
-    ]
+    ],
+    'directmail' => [
+        'key' => env('OSS_ACCESS_KEY_ID'),
+        'address_type' => 1,
+        'from_alias' => 'Inwehub',
+        'click_trace' => 1,
+        'version' => '2015-11-23',
+        'region_id' => 'cn-hangzhou',
+    ],
 
 ];
