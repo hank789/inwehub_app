@@ -78,8 +78,21 @@ class GoogleNews extends Command {
                     'image' => ['img.tvs3Id.dIH98c','src']
                 ])->range('div.NiLAwe.R7GTQ.keNKEd.j7vNaf')->query()->getData();
                 if (count($list) <= 0 || empty($list)) {
-                    event(new ExceptionNotify('抓取'.$info['url'].'失败'));
-                    break;
+                    $list = $ql->browser($info['url'],false,[
+                        '--proxy' => '127.0.0.1:1080',
+                        '--proxy-type' => 'socks5'
+                    ])->rules([
+                        'title' => ['a.ipQwMb.Q7tWef>span','text'],
+                        'link'  => ['a.ipQwMb.Q7tWef','href'],
+                        'author' => ['.KbnJ8','text'],
+                        'dateTime' => ['time.WW6dff','datetime'],
+                        'description' => ['p.HO8did.Baotjf','text'],
+                        'image' => ['img.tvs3Id.dIH98c','src']
+                    ])->range('div.NiLAwe.R7GTQ.keNKEd.j7vNaf')->query()->getData();
+                    if (count($list) <= 0 || empty($list)) {
+                        event(new ExceptionNotify('抓取'.$info['url'].'失败'));
+                        continue;
+                    }
                 }
                 foreach ($list as &$item) {
                     $exist_submission_id = Redis::connection()->hget('voten:submission:url',$item['link']);

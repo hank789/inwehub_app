@@ -111,7 +111,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('crontab:calc-group-hot')->hourly();
         if (config('app.env') == 'production') {
             //10 8,12,14,16,18,20,22
-            $schedule->command('scraper:wechat:gzh:posts')->cron('10 10,15,20 * * *')->withoutOverlapping()->appendOutputTo('/tmp/gzh.txt');
+            $schedule->command('scraper:wechat:gzh:posts')->cron('10 9,10,15,20 * * *')->withoutOverlapping()->appendOutputTo('/tmp/gzh.txt');
             $schedule->command('scraper:newrank:wechat')->cron('30 9,19 * * *')->withoutOverlapping()->appendOutputTo('/tmp/newrank.txt');
 
             $schedule->command('crontab:refresh:cookie:task')->hourly();
