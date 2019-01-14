@@ -202,7 +202,7 @@
                 <div class="footer">
                     <table width="100%">
                         <tr>
-                            <td class="aligncenter content-block">访问 <a href="{{ Setting()->get('website_url') }}">{{ Setting()->get('website_name') }}</a> </td>
+                            <td class="aligncenter content-block">访问 <a href="https://www.inwehub.com">{{ Setting()->get('website_name') }}</a> </td>
                         </tr>
                     </table>
                 </div>

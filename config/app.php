@@ -208,7 +208,8 @@ return [
         ScoutEngines\Elasticsearch\ElasticsearchProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class,
-        App\Third\ScoutMysqlDriver\Providers\MySQLScoutServiceProvider::class
+        App\Third\ScoutMysqlDriver\Providers\MySQLScoutServiceProvider::class,
+        \App\Third\AliMail\DirectMailServiceProvider::class
     ],
 
     /*

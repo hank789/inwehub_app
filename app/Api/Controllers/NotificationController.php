@@ -34,7 +34,10 @@ class NotificationController extends Controller
         'push_rel_mine_chatted'=>1,
         'push_my_user_new_activity'=>1,
         'push_my_question_new_answered'=>1,
-        'push_do_not_disturb' => 0
+        'push_do_not_disturb' => 0,
+        'push_daily_subscribe' => 0,
+        'email_daily_subscribe' => 0,
+        'wechat_daily_subscribe' => 0
     ];
 
     public function readhubList(Request $request){
