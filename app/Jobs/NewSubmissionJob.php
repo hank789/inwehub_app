@@ -71,11 +71,13 @@ class NewSubmissionJob implements ShouldQueue
                 }
             }
         }
-        $submission->increment('views');
 
         $user = User::find($submission->user_id);
 
         event(new CreditEvent($submission->user_id,Credit::KEY_READHUB_NEW_SUBMISSION,Setting()->get('coins_'.Credit::KEY_READHUB_NEW_SUBMISSION),Setting()->get('credits_'.Credit::KEY_READHUB_NEW_SUBMISSION),$submission->id,'动态分享'));
+
+        RateLimiter::instance()->lock_acquire('upload-image-submission-'.$submission->id);
+        $submission->increment('views');
 
         $typeName = '分享';
         $targetName = '';
@@ -191,6 +193,8 @@ class NewSubmissionJob implements ShouldQueue
             }
         }
         $submission->calculationRate();
+        RateLimiter::instance()->lock_release('upload-image-submission-'.$submission->id);
+
         $submission->getRelatedProducts();
         $channel = config('slack.ask_activity_channel');
         if ($this->notifyAutoChannel) {
