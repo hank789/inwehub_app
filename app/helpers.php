@@ -1816,6 +1816,7 @@ if (!function_exists('curlShadowsocks')) {
             var_dump($error);
             curl_close($ch);
             event(new \App\Events\Frontend\System\ExceptionNotify('curlShadowsocks error:'.$error));
+            \App\Services\RateLimiter::instance()->setVale('curlShadowsocks','success',0,60*60*24);
             return false;
         }
         curl_close($ch);
