@@ -15,6 +15,7 @@ use App\Models\Credit;
 use App\Models\Doing;
 use App\Models\Feed\Feed;
 use App\Models\Feedback;
+use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
@@ -388,7 +389,8 @@ class ProfileController extends Controller
         $info['article_upvote_count'] = Submission::where('status',1)->where('author_id',$user->id)->whereIn('type',['link','article'])->whereNull('deleted_at')->sum('upvotes');
 
         $info['publishes'] = $info['answers'] + $info['questions'] + $info['submission_count'] + $info['comment_count'];
-        $info['group_number'] = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->count();
+        $groupIds = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->pluck('id')->toArray();
+        $info['group_number'] = GroupMember::where('user_id',$user->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->whereIn('group_id',$groupIds)->count();
         $projects = [];
         $jobs = [];
         $edus = [];
