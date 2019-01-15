@@ -639,6 +639,7 @@ class GroupController extends Controller
         foreach ($groupMembers as $groupMember) {
             $group = $groupMember->group;
             if ($group->audit_status == Group::AUDIT_STATUS_REJECT && $group->user_id != $user->id) continue;
+            if ($group->audit_status == Group::AUDIT_STATUS_CLOSED) continue;
             $item = [
                 'id' => $group->id,
                 'name' => $group->name,
