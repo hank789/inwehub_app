@@ -114,7 +114,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('scraper:wechat:gzh:posts')->cron('10 9,10,14,20 * * *')->withoutOverlapping()->appendOutputTo('/tmp/gzh.txt');
             $schedule->command('scraper:newrank:wechat')->cron('30 9,19 * * *')->withoutOverlapping()->appendOutputTo('/tmp/newrank.txt');
 
-            $schedule->command('crontab:refresh:cookie:task')->hourly();
+            //$schedule->command('crontab:refresh:cookie:task')->hourly();
             $schedule->command('scraper:atom')->cron('0 8,10,16,20 * * *');
             $schedule->command('scraper:wallstreetcn:news')->cron('30 8,10,16,20 * * *');
             $schedule->command('scraper:rss')->cron('30 7,9,11,13,15,17,19,21,22,23 * * *');

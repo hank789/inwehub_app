@@ -35,6 +35,12 @@ class RefreshCookieTask extends Command
     {
         $spider = new MpSpider();
         $spider->refreshCookie();
+        $curlShadowsocks = RateLimiter::instance()->getValue('curlShadowsocks','success');
+        if ($curlShadowsocks === 0) {
+            shell_exec('sslocal -c /etc/shadowsocks/shadowsocks.json -d stop');
+            shell_exec('sslocal -c /etc/shadowsocks/shadowsocks.json -d start');
+            RateLimiter::instance()->setVale('curlShadowsocks','success',1,60*60*24);
+        }
     }
 
 }

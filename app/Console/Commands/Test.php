@@ -20,6 +20,7 @@ use App\Models\Support;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
+use App\Services\Spiders\Wechat\MpAutoLogin;
 use App\Services\Spiders\Wechat\WechatSogouSpider;
 use App\Services\Translate;
 use App\Services\BosonNLPService;
@@ -67,6 +68,30 @@ class Test extends Command
      */
     public function handle()
     {
+        $service = new MpAutoLogin();
+        $service->setToken('');
+        $service->init([
+            'account' => 'fan.pang@inwehub.com',
+            'password' => '8b14dfb9d92adea7dcd7d67d13e08854',
+            'key' => 'wechatmp'
+        ]);
+        return;
+        $ql = QueryList::getInstance();
+        $ql->use(PhantomJs::class,config('services.phantomjs.path'));
+        $url = 'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRE56WXpnU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US:en';
+        $list = $ql->browser($url,false,[
+            '--proxy' => '127.0.0.1:1080',
+            '--proxy-type' => 'socks5'
+        ])->rules([
+            'title' => ['a.ipQwMb.Q7tWef>span','text'],
+            'link'  => ['a.ipQwMb.Q7tWef','href'],
+            'author' => ['.KbnJ8','text'],
+            'dateTime' => ['time.WW6dff','datetime'],
+            'description' => ['p.HO8did.Baotjf','text'],
+            'image' => ['img.tvs3Id.dIH98c','src']
+        ])->range('div.NiLAwe.R7GTQ.keNKEd.j7vNaf')->query()->getData();
+        var_dump($list);
+        return;
         Mail::to(['hank.wang@inwehub.com','wanghui198831@126.com'])->send(new DailySubscribe('你好'));
         return;
         $spider = new WechatSogouSpider();
