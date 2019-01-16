@@ -50,6 +50,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\HeaderBag;
 use Zhuzhichao\IpLocationZh\Ip;
 use App\Events\Frontend\System\Credit as CreditEvent;
 use Illuminate\Http\Request;
@@ -140,6 +141,10 @@ trait BaseController {
      */
     protected function doing($user,$action,$source_type,$source_id,$subject,$content='',$refer_id=0,$refer_user_id=0,$refer_content='',$link = '')
     {
+        $ua = app('request')->header('user-agent');
+        if (searchKeys($ua,['Googlebot','Baiduspider','Sogou spider','Sogou web spider','MSNBot'],100)) {
+            return;
+        }
         if (strpos($action,'view') === 0 || strpos($action,'share') === 0) {
             $slackFields = [];
             if ($link) {
