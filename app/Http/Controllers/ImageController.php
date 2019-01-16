@@ -33,8 +33,7 @@ class ImageController extends Controller
         if(!is_file($imageFile)){
             abort(404);
         }
-        return Image::make($imageFile)->response();
-
+        return response()->file($imageFile);
     }
 
 
