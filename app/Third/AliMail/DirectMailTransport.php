@@ -25,6 +25,8 @@ class DirectMailTransport extends Transport
      * @var string
      */
     protected $key;
+
+    private $accessSecret;
     /**
      * @var array
      */
@@ -44,6 +46,7 @@ class DirectMailTransport extends Transport
     public function __construct(ClientInterface $client, $key, $options = [])
     {
         $this->key = $key;
+        $this->accessSecret = $options['accessSecret'];
         $this->client = $client;
         $this->options = $options;
     }
@@ -119,7 +122,7 @@ class DirectMailTransport extends Transport
     protected function makeSignature(array $parameters)
     {
         $signString = 'POST&%2F&'.$this->percentEncode(substr($this->encodeUrl($parameters),1));
-        return base64_encode(hash_hmac('sha1', $signString, env('OSS_ACCESS_KEY_SECRET',''). '&', true));
+        return base64_encode(hash_hmac('sha1', $signString, $this->accessSecret. '&', true));
     }
 
     protected function percentEncode($str) {

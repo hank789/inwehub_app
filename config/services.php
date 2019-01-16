@@ -63,6 +63,7 @@ return [
     ],
     'directmail' => [
         'key' => env('OSS_ACCESS_KEY_ID'),
+        'accessSecret'     => env('OSS_ACCESS_KEY_SECRET', 'accessSecret'),
         'address_type' => 1,
         'from_alias' => 'Inwehub',
         'click_trace' => 1,
