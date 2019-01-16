@@ -1,8 +1,10 @@
 <?php namespace App\Services\Spiders\Wechat;
+use App\Events\Frontend\System\SystemNotify;
 use App\Mail\ScanQrcode;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use QL\QueryList;
 
 /**
  * @author: wanghui
@@ -16,7 +18,7 @@ class MpAutoLogin
     private $_apis = [
         "host" => "https://mp.weixin.qq.com",
         "login" => "https://mp.weixin.qq.com/cgi-bin/bizlogin?action=startlogin",
-        "qrcode" => "https://mp.weixin.qq.com/cgi-bin/loginqrcode?action=getqrcode¶m=4300",
+        "qrcode" => "https://mp.weixin.qq.com/cgi-bin/loginqrcode?action=getqrcode&param=4300",
         "loginqrcode" => "https://mp.weixin.qq.com/cgi-bin/loginqrcode?action=ask&token=&lang=zh_CN&f=json&ajax=1",
         "loginask" => "https://mp.weixin.qq.com/cgi-bin/loginqrcode?action=ask&token=&lang=zh_CN&f=json&ajax=1&random=",
         "loginauth" => "https://mp.weixin.qq.com/cgi-bin/loginauth?action=ask&token=&lang=zh_CN&f=json&ajax=1",
@@ -25,6 +27,7 @@ class MpAutoLogin
     private $_redirect_url = "";
     private $_key = "";
     private $_qrcodeUrl = '';
+    private $_ql = '';
 
     private function _getCookieFile()
     {
@@ -43,7 +46,7 @@ class MpAutoLogin
 
     private function _log($msg)
     {
-        var_dump("[微信调度:" . date("Y-m-d H:i:s") . "]  ======: {$msg}");
+        event(new SystemNotify("[微信调度:" . date("Y-m-d H:i:s") . "]  ======: {$msg}"));
     }
 
     public function getToken()
@@ -64,12 +67,13 @@ class MpAutoLogin
         $this->_key = $options["key"];
         if ($this->getToken()) {
             echo("HAS Token !");
-            return;
+            return true;
         } else {
+            $this->_ql = QueryList::getInstance();
             //尼玛，先要获取首页!!!
             $this->fetch("https://mp.weixin.qq.com/", "", "text");
             $this->_log("start login!!");
-            $this->start_login($options);
+            return $this->start_login($options);
         }
     }
 
@@ -78,7 +82,7 @@ class MpAutoLogin
         $_res = $this->_login($options["account"], $options["password"]);
         if ($_res == false) {
             $this->_log('登陆失败');
-            return;
+            return false;
         }
         //保存二维码
         $this->_saveQRcode();
@@ -113,12 +117,12 @@ class MpAutoLogin
                     $this->_log("等待确认");
                 }
             }
-            sleep(2);
+            sleep(5);
             $_index++;
         }
         if($_index>=60){
             $this->_log("U亲，超时了");
-            return;
+            return false;
         }
         $this->_log("开始验证");
         $_input["post"] = ["lang" => "zh_CN", "f" => "json", "ajax" => 1, "random" => $this->getWxRandomNum(), "token" => ""];
@@ -127,13 +131,14 @@ class MpAutoLogin
         $this->_log(print_r($_res, true));
         if ($_res["base_resp"]["ret"] != 0) {
             $this->_log("error = " . $_res["base_resp"]["err_msg"]);
-            return;
+            return false;
         }
         $redirect_url = $_res["redirect_url"];//跳转路径
         if (preg_match('/token=([\d]+)/i', $redirect_url, $match)) {//获取cookie
             $this->setToken($match[1]);
         }
         $this->_log("验证成功,token: " . $this->getToken());
+        return true;
     }
 
     //下载二维码
@@ -141,9 +146,9 @@ class MpAutoLogin
     {
         $_input["refer"] = $this->_redirect_url;
         $_res = $this->fetch($this->_apis["qrcode"], $_input, "text");
-        $fileName = 'wechat_temp/'.time().'png';
-        Storage::disk('oss')->put($fileName,$_res);
-        $this->_qrcodeUrl = Storage::disk('oss')->url($fileName);
+        $fileName = 'attachments/qrcode.png';
+        Storage::disk('local')->put($fileName,$_res);
+        $this->_qrcodeUrl = config('app.url').'/manager/image/show/attachments-qrcode.png';
         Mail::to('hank.wang@inwehub.com')->send(new ScanQrcode($this->_qrcodeUrl));
         //$fp = fopen($this->_getSavePath(), "wb+") or die("open fails");
         //fwrite($fp, $_res) or die("fwrite fails");
@@ -182,6 +187,22 @@ class MpAutoLogin
      */
     function fetch($url, $_input = null, $data_type = 'json')
     {
+        $headers = [];
+        if (isset($_input['refer'])) {
+            $headers['Referer'] = $_input['refer'];
+        }
+        if (isset($_input['post'])) {
+            $result = $this->_ql->post($url,$_input['post'],['headers'=>$headers])->getHtml();
+        } else {
+            $result = $this->_ql->get($url,null,['headers'=>$headers])->getHtml();
+        }
+        //var_dump($result);
+        if ($data_type == 'json') {
+            $result = json_decode($result, true);
+        }
+        return $result;
+
+
         $ch = curl_init();
         $useragent = isset($_input['useragent']) ? $_input['useragent'] : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2';
         //curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->_headers); //设置HTTP头字段的数组
@@ -198,6 +219,7 @@ class MpAutoLogin
         curl_setopt($ch, CURLOPT_COOKIEFILE, (isset($_input['cookiefile']) ? $_input['cookiefile'] : $this->_getCookieFile()));
         $result = curl_exec($ch);
         curl_close($ch);
+        var_dump($result);
         if ($data_type == 'json') {
             $result = json_decode($result, true);
         }

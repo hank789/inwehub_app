@@ -117,7 +117,8 @@ class ProfileController extends Controller
                 + $user->userData->answers + Submission::where('user_id',$user->id)->count()
                 + Comment::where('user_id',$user->id)->count();
             $info['collections'] = $user->collections()->count();
-            $info['groups'] = GroupMember::where('user_id',$user->id)->count();
+            $groupIds = Group::where('audit_status',Group::AUDIT_STATUS_SUCCESS)->pluck('id')->toArray();
+            $info['groups'] = GroupMember::where('user_id',$user->id)->whereIn('group_id',$groupIds)->count();
             $info['feedbacks'] = Feedback::where('to_user_id',$user->id)->count();
             $info['total_score'] = '综合评分暂无';
 
