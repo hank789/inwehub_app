@@ -26,12 +26,15 @@ class MpSpider {
 
     protected $mpUrl = 'https://mp.weixin.qq.com';
 
+    protected $mpAutoLogin;
+
     public function __construct()
     {
         $this->ql = QueryList::getInstance();
         $this->ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        $this->cookie = Setting::get('scraper_wechat_gzh_cookie');
+        //$this->cookie = Setting::get('scraper_wechat_gzh_cookie');
         $this->token = Setting::get('scraper_wechat_gzh_token');
+        $this->mpAutoLogin = new MpAutoLogin();
     }
 
 
@@ -42,14 +45,14 @@ class MpSpider {
         if ($scraper_mp_count >= 102) return false;
         $url = $this->mpUrl.'/cgi-bin/searchbiz?action=search_biz&token='.$this->token.'&lang=zh_CN&f=json&ajax=1&random=0.930593749582243&query='.$wx_hao.'&begin=0&count=5';
         $data = $this->ql->get($url,null,[
-            'cookies' => null,
+            //'cookies' => null,
             'headers' => [
                 'Host'   => 'mp.weixin.qq.com',
                 'X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json, text/javascript, */*; q=0.01',
                 'Accept-Language:' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
                 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                'Cookie' => $this->cookie
+                //'Cookie' => $this->cookie
             ]
         ])->getHtml();
         $dataArr = json_decode($data, true);
@@ -74,10 +77,20 @@ class MpSpider {
             RateLimiter::instance()->setVale('scraper_mp_freq',date('Y-m-d'),1,60*60*24);
         } elseif ($dataArr['base_resp']['ret'] != 0) {
             var_dump($dataArr);
+            $this->mpAutoLogin->setToken('');
+            $res = $this->mpAutoLogin->init([
+                'account' => 'fan.pang@inwehub.com',
+                'password' => 'HW(CP8LJU/',
+                'key' => 'wechatmp'
+            ]);
+            if ($res) {
+                return $this->getGzhInfo($wx_hao);
+            }
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
         } else {
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
         }
+
         return false;
     }
 
@@ -89,14 +102,14 @@ class MpSpider {
         }
         $url = $this->mpUrl.'/cgi-bin/appmsg?token='.$this->token.'&lang=zh_CN&f=json&ajax=1&random=0.5033763103689131&action=list_ex&begin=0&count=5&query=&fakeid='.urlencode($mp['fakeid']).'&type=9';
         $data =$this->ql->get($url,null,[
-            'cookies' => null,
+            //'cookies' => null,
             'headers' => [
                 'Host'   => 'mp.weixin.qq.com',
                 'X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json, text/javascript, */*; q=0.01',
                 'Accept-Language:' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
                 'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                'Cookie' => $this->cookie
+                //'Cookie' => $this->cookie
             ]
         ])->getHtml();
         $dataArr = json_decode($data, true);
@@ -109,17 +122,7 @@ class MpSpider {
     }
 
     public function refreshCookie() {
-        return $this->ql->get($this->mpUrl.'/cgi-bin/home?t=home/index&token='.$this->token.'&lang=zh_CN',null,[
-            'cookies' => null,
-            'headers' => [
-                'Host'   => 'mp.weixin.qq.com',
-                'X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json, text/javascript, */*; q=0.01',
-                'Accept-Language:' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
-                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
-                'Cookie' => $this->cookie
-            ]
-        ])->getHtml();
+        return true;
     }
 
     /**

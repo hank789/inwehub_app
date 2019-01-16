@@ -75,7 +75,7 @@ server {
         add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
     
         if ($request_method = 'OPTIONS') {
-            return 200;
+            return 204;
         }
         index  index.php index.html index.htm;
 	    try_files $uri $uri/ /index.php?$query_string;
@@ -89,6 +89,72 @@ server {
     }
 }
 `
+
+## nginx 负载均衡配置
+
+upstream inwehub_api{
+    server 127.0.0.1 weight=7;
+    server 172.26.195.231 weight=3;
+}
+
+server {
+	listen 80;
+	server_name api.inwehub.com;
+	#rewrite ^(.*) https://api.inwehub.com/$1 permanent;
+	root /home/web/www/inwehub_app/public;
+	index index.html;
+	location / {
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
+        add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization';
+
+        if ($request_method = 'OPTIONS') {
+                return 204;
+        }
+            index  index.php index.html index.htm;
+            try_files $uri $uri/ /index.php?$query_string;
+    }
+location ~ \.php$ {
+            root           /home/web/www/inwehub_app/public;
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  /home/web/www/inwehub_app/public/$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+}
+server {
+    listen 443;
+    server_name api.inwehub.com;
+    ssl on;
+    root /home/web/www/inwehub_app/public;
+    index index.html index.htm;
+    ssl_certificate   /etc/nginx/cert/api_inwehub/214701682170142.pem;
+    ssl_certificate_key  /etc/nginx/cert/api_inwehub/214701682170142.key;
+    ssl_session_timeout 5m;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    location /api/ {
+    	proxy_pass http://inwehub_api;
+        proxy_set_header Host $host;
+        proxy_redirect http:// $scheme://;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header REMOTE-HOST $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+   location / {
+        index  index.php index.html index.htm;
+	try_files $uri $uri/ /index.php?$query_string;
+    }
+    location ~ \.php$ {
+            root           /home/web/www/inwehub_app/public;
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  /home/web/www/inwehub_app/public/$fastcgi_script_name;
+            include        fastcgi_params;
+    }
+}
 
 ## 启动socket.id
 ```
