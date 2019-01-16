@@ -100,6 +100,9 @@ class MpSpider {
                 return $this->getGzhInfo($wx_hao);
             }
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
+        } elseif ($dataArr['base_resp']['ret'] == 0 && $dataArr['total'] <= 0) {
+            event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
+            return -1;
         } else {
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败:'.$data));
         }
@@ -112,6 +115,9 @@ class MpSpider {
         $mp = $this->getGzhInfo($mpInfo->wx_hao);
         if (!$mp) {
             return false;
+        }
+        if ($mp == -1) {
+            return [];
         }
         $url = $this->mpUrl.'/cgi-bin/appmsg?token='.$this->token.'&lang=zh_CN&f=json&ajax=1&random=0.5033763103689131&action=list_ex&begin=0&count=5&query=&fakeid='.urlencode($mp['fakeid']).'&type=9';
         $args = [
