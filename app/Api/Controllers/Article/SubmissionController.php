@@ -421,7 +421,7 @@ class SubmissionController extends Controller {
                 'audit_status' => 0,
                 'rate' => $submission->rate,
                 'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
-                'created_at' => Carbon::now(),
+                'created_at' => $submission->created_at,
                 'updated_at' => Carbon::now(),
                 'data' => array_merge($sData, [
                     'img'   => $submission->data['img'],
