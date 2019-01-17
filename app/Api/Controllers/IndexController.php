@@ -144,7 +144,7 @@ class IndexController extends Controller {
             'invitation_coupon' => ['show'=>$show_invitation_coupon],
             'notices' => $notices,
             'recommend_experts' => [],
-            'regions' => array_merge([['value'=>-1,'text'=>'推荐']],$tags),
+            'regions' => array_merge([['value'=>-1,'text'=>'热门']],$tags),
             'hot_groups' => $hotGroups,
             'user_group_unread' => $user_group_unread,
             'new_message' => $new_message
