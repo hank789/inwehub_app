@@ -75,7 +75,7 @@ class ReadhubController extends Controller
             } else {
                 $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
                 $group = Group::find($submission->group_id);
-                $category_name = $group->name;
+                $category_name = $group?$group->name:'';
             }
 
             $list[] = [

@@ -36,7 +36,7 @@ class DailySubscribePush extends Command
         //app推送
         $users = User::where('site_notifications','like','%"push_daily_subscribe":1%')->get();
         foreach ($users as $user) {
-            event(new Push($user->id,'不容错过的今日热点推荐已新鲜出炉','点击查看',['object_type'=>'daily_subscribe','object_id'=>date('Y-m-d')]));
+            event(new Push($user->id,'不容错过的今日热点推荐已新鲜出炉','点击查看',['object_type'=>'recommend_daily_subscribe','object_id'=>date('Y-m-d')]));
         }
     }
 
