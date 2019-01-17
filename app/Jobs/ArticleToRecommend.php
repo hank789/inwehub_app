@@ -80,7 +80,7 @@ class ArticleToRecommend implements ShouldQueue
             'rate' => $submission->rate,
             'audit_status' => 0,
             'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
-            'created_at' => Carbon::now(),
+            'created_at' => $submission->created_at,
             'updated_at' => Carbon::now(),
             'data' => array_merge($oldData, [
                 'title' => $this->title?:$submission->title,

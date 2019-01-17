@@ -239,7 +239,7 @@ class SubmissionController extends AdminController
             'audit_status' => 0,
             'rate' => $article->rate,
             'read_type' => RecommendRead::READ_TYPE_SUBMISSION,
-            'created_at' => Carbon::now(),
+            'created_at' => $article->created_at,
             'updated_at' => Carbon::now(),
             'data' => array_merge($oldData, [
                 'title' => $title?:$article->title,
