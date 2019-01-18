@@ -36,6 +36,9 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\RefreshCookieTask::class,
         Commands\Crontab\DailySubmitUrls::class,
         Commands\Crontab\RefreshWwwCache::class,
+        Commands\Crontab\DailySubscribePush::class,
+        Commands\Crontab\DailySubscribeEmail::class,
+        Commands\Crontab\DailySubscribeWechatPush::class,
         //抓取脚本
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
