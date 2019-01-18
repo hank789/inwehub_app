@@ -255,7 +255,7 @@ class NotificationController extends Controller
                     $title = '推送订阅:'.($val?'开启':'关闭');
                     break;
                 case 'email_daily_subscribe':
-                    $title = '邮件订阅:'.$val;
+                    $title = '邮件订阅:'.($val?:'关');
                     break;
                 case 'wechat_daily_subscribe':
                     $title = '微信服务号订阅:'.($val?'开启':'关闭');
