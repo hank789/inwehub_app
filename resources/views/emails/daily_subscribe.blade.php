@@ -138,7 +138,7 @@
                                                         <tbody>
                                                         <tr>
                                                             <td align="left" valign="middle" height="58" width="250"><span style="line-height:28px; padding-left:8px; font-size:18px">InweHub每日精选</span></td>
-                                                            <td align="right" valign="middle" height="58"><span style="font-size:18px; padding:0 20px 0 0">$date</span></td>
+                                                            <td align="right" valign="middle" height="58"><span style="font-size:18px; padding:0 20px 0 0">{{ $date }}</span></td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
