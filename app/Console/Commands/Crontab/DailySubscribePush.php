@@ -18,7 +18,7 @@ class DailySubscribePush extends Command
      *
      * @var string
      */
-    protected $signature = 'crontab:daily:subscribe:push';
+    protected $signature = 'crontab:daily:subscribe:push {date?}';
 
     /**
      * The console command description.
@@ -34,7 +34,10 @@ class DailySubscribePush extends Command
      */
     public function handle()
     {
-        $date = date('Y-m-d');
+        $date = $this->argument('date');
+        if (!$date) {
+            $date = date('Y-m-d');
+        }
         $begin = date('Y-m-d 00:00:00',strtotime($date));
         $end = date('Y-m-d 23:59:59',strtotime($date));
         $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->count();
