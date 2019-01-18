@@ -248,17 +248,21 @@ class NotificationController extends Controller
             }
         }
         $settings->persist();
+        $msg = '';
         foreach ($notify as $key=>$val) {
             $title = '';
             switch ($key) {
                 case 'push_daily_subscribe':
                     $title = '推送订阅:'.($val?'开启':'关闭');
+                    $msg = ($val?'已开启':'已关闭').'推送订阅';
                     break;
                 case 'email_daily_subscribe':
                     $title = '邮件订阅:'.($val?:'关');
+                    $msg = ($val?'已开启':'已关闭').'邮件订阅';
                     break;
                 case 'wechat_daily_subscribe':
                     $title = '微信服务号订阅:'.($val?'开启':'关闭');
+                    $msg = ($val?'已开启':'已关闭').'微信阅';
                     break;
             }
             if ($title) {
@@ -266,7 +270,7 @@ class NotificationController extends Controller
             }
         }
 
-        return self::createJsonData(true,$settings->all());
+        return self::createJsonData(true,$settings->all(),ApiException::SUCCESS,$msg);
     }
 
     //获取推送设置信息
