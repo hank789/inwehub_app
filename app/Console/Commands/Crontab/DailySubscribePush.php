@@ -41,7 +41,7 @@ class DailySubscribePush extends Command
         $begin = date('Y-m-d 00:00:00',strtotime($date));
         $end = date('Y-m-d 23:59:59',strtotime($date));
         $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->count();
-        if ($recommends <=0) return;
+        if ($recommends <=4) return;
         //app推送
         $users = User::where('site_notifications','like','%"push_daily_subscribe": 1%')->get();
         foreach ($users as $user) {
