@@ -21,6 +21,7 @@ use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
 use App\Services\Spiders\Wechat\MpAutoLogin;
+use App\Services\Spiders\Wechat\MpSpider;
 use App\Services\Spiders\Wechat\WechatSogouSpider;
 use App\Services\Translate;
 use App\Services\BosonNLPService;
@@ -39,6 +40,7 @@ use Illuminate\Support\Facades\Storage;
 use PHPHtmlParser\Dom;
 use QL\Ext\PhantomJs;
 use QL\QueryList;
+use QL\Services\HttpService;
 use Stichoza\GoogleTranslate\TranslateClient;
 use Excel;
 
@@ -68,13 +70,27 @@ class Test extends Command
      */
     public function handle()
     {
+        Mail::to('hank.wang@inwehub.com')->send(new DailySubscribe('2019-01-01'));
+        return;
+        $tt = [
+            'Googlebot1',
+            'Baiduspider'
+        ];
+        $r = searchKeys('Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',$tt,100);
+        var_dump($r);
+        return;
         $service = new MpAutoLogin();
         $service->setToken('');
         $service->init([
             'account' => 'fan.pang@inwehub.com',
-            'password' => '8b14dfb9d92adea7dcd7d67d13e08854',
+            'password' => 'HW(CP8LJU/',
             'key' => 'wechatmp'
         ]);
+
+        $spider = new MpSpider();
+        $mpInfo = WechatMpInfo::where('status',1)->first();
+        $wz_list = $spider->getGzhArticles($mpInfo);
+        var_dump($wz_list);
         return;
         $ql = QueryList::getInstance();
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));

@@ -6,9 +6,12 @@
  */
 
 use App\Events\Frontend\System\Push;
+use App\Mail\DailySubscribe;
+use App\Models\RecommendRead;
 use App\Models\User;
 use App\Third\AliCdn\Cdn;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class DailySubscribeEmail extends Command
 {
@@ -17,7 +20,7 @@ class DailySubscribeEmail extends Command
      *
      * @var string
      */
-    protected $signature = 'crontab:daily:subscribe:email';
+    protected $signature = 'crontab:daily:subscribe:email {date?}';
 
     /**
      * The console command description.
@@ -33,10 +36,18 @@ class DailySubscribeEmail extends Command
      */
     public function handle()
     {
+        $date = $this->argument('date');
+        if (!$date) {
+            $date = date('Y-m-d');
+        }
+        $begin = date('Y-m-d 00:00:00',strtotime($date));
+        $end = date('Y-m-d 23:59:59',strtotime($date));
+        $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->count();
+        if ($recommends <=0) return;
         //app推送
-        $users = User::where('site_notifications','like','%"wechat_daily_subscribe":%@')->get();
+        $users = User::where('site_notifications','like','%"email_daily_subscribe":%@')->get();
         foreach ($users as $user) {
-            event(new Push($user->id,'不容错过的今日热点推荐已新鲜出炉','点击查看',['object_type'=>'daily_subscribe','object_id'=>date('Y-m-d')]));
+            Mail::to($user->site_notifications['email_daily_subscribe'])->send(new DailySubscribe($date));
         }
     }
 

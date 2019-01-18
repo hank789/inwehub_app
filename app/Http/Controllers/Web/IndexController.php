@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
+use App\Models\RecommendRead;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use Illuminate\Http\Request;
@@ -13,7 +14,11 @@ class IndexController extends Controller
 {
     public function index()
     {
-        return 'hello world';
+        $date = date('Y-m-d');
+        $begin = date('Y-m-d 00:00:00',strtotime($date));
+        $end = date('Y-m-d 23:59:59',strtotime($date));
+        $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->orderBy('rate','desc')->take(10)->get();
+        return view('emails.daily_subscribe')->with('date',$date)->with('items',$recommends);
     }
 
     public function articleInfo($id, Request $request)
