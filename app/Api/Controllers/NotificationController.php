@@ -266,7 +266,7 @@ class NotificationController extends Controller
                     break;
             }
             if ($title) {
-                event(new ImportantNotify('用户设置'.$title));
+                event(new ImportantNotify(formatSlackUser($user).'用户设置'.$title));
             }
         }
 
