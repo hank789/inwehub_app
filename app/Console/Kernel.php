@@ -36,6 +36,9 @@ class Kernel extends ConsoleKernel
         Commands\Crontab\RefreshCookieTask::class,
         Commands\Crontab\DailySubmitUrls::class,
         Commands\Crontab\RefreshWwwCache::class,
+        Commands\Crontab\DailySubscribePush::class,
+        Commands\Crontab\DailySubscribeEmail::class,
+        Commands\Crontab\DailySubscribeWechatPush::class,
         //抓取脚本
         Commands\Scraper\WechatAuthor::class,
         Commands\Scraper\WechatPosts::class,
@@ -109,6 +112,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('user:check:rg_code')->daily()->at('00:30');
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
         $schedule->command('crontab:calc-group-hot')->hourly();
+        $schedule->command('crontab:daily:subscribe:push')->daily()->at('17:30');
         if (config('app.env') == 'production') {
             //10 8,12,14,16,18,20,22
             $schedule->command('scraper:wechat:gzh:posts')->cron('10 9,10,14,20 * * *')->withoutOverlapping()->appendOutputTo('/tmp/gzh.txt');

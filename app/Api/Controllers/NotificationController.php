@@ -3,7 +3,9 @@
 namespace App\Api\Controllers;
 
 use App\Events\Frontend\Notification\MarkAsRead;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Exceptions\ApiException;
+use App\Http\Controllers\Admin\OperateController;
 use App\Logic\TaskLogic;
 use App\Models\Doing;
 use App\Models\Groups\Group;
@@ -238,13 +240,37 @@ class NotificationController extends Controller
          */
         $settings = $user->notificationSettings();
         $fields = $this->notificationSettings;
+        $notify = [];
         foreach ($fields as $field=>$value) {
             if (-1 != $request->input($field,-1)) {
                 $settings->set($field,$request->input($field));
+                $notify[$field] = $request->input($field);
             }
         }
         $settings->persist();
-        return self::createJsonData(true,$settings->all());
+        $msg = '';
+        foreach ($notify as $key=>$val) {
+            $title = '';
+            switch ($key) {
+                case 'push_daily_subscribe':
+                    $title = '推送订阅:'.($val?'开启':'关闭');
+                    $msg = ($val?'已开启':'已关闭').'推送订阅';
+                    break;
+                case 'email_daily_subscribe':
+                    $title = '邮件订阅:'.($val?:'关');
+                    $msg = ($val?'已开启':'已关闭').'邮件订阅';
+                    break;
+                case 'wechat_daily_subscribe':
+                    $title = '微信服务号订阅:'.($val?'开启':'关闭');
+                    $msg = ($val?'已开启':'已关闭').'微信阅';
+                    break;
+            }
+            if ($title) {
+                event(new ImportantNotify('用户设置'.$title));
+            }
+        }
+
+        return self::createJsonData(true,$settings->all(),ApiException::SUCCESS,$msg);
     }
 
     //获取推送设置信息
