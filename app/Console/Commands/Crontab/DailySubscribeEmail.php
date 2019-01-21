@@ -79,7 +79,7 @@ class DailySubscribeEmail extends Command
             ];
         }
         //app推送
-        $users = User::where('site_notifications','like','%"email_daily_subscribe":%@')->get();
+        $users = User::where('site_notifications','like','%email_daily_subscribe%@%')->get();
         $emails = [];
         foreach ($users as $user) {
             $email = $user->site_notifications['email_daily_subscribe'];
