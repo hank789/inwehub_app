@@ -26,7 +26,7 @@
                                     </div>
                                 </div>
                                 @if ($item['img'])
-                                    <div style=" position: absolute; right: 0; width: 132px; height: 89px; border-radius: 4px;"><img style=" width: 100%;height: 89px; border-radius: 4px;" src="{{ $item['img'] }}" alt=""></div>
+                                    <div style=" position: absolute; right: 0; width: 132px; height: 89px; border-radius: 4px;"><img style="width: 132px; height: 89px; border-radius: 4px;" src="{{ $item['img'] }}" alt=""></div>
                                 @endif
                                 @if (($key+1) < count($items))
                                     <div style="position: absolute; bottom: 0px; left: 33px; width: 95%; height: 2px; background: #E0E8EF;"></div>
