@@ -42,14 +42,12 @@
 
         .container {
             display: block !important;
-            max-width: 600px !important;
             margin: 0 auto !important;
             /* makes it centered */
             clear: both !important;
         }
 
         .content {
-            max-width: 600px;
             margin: 0 auto;
             display: block;
             padding: 20px;
@@ -188,7 +186,7 @@
 </head>
 
 <body itemscope itemtype="{{ Setting()->get('website_url') }}">
-<table class="body-wrap">
+<table class="body-wrap" align="center">
     <tr>
         <td class="container" width="800">
             <div class="content">

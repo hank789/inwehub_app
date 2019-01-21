@@ -70,9 +70,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $date = date('Y-m-d');
-        var_dump(date('w',strtotime($date)));
-        return;
+        $date = '2018-12-19';
         $begin = date('Y-m-d 00:00:00',strtotime($date));
         $end = date('Y-m-d 23:59:59',strtotime($date));
         $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->orderBy('rate','desc')->take(10)->get();
