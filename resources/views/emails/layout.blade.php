@@ -188,7 +188,7 @@
 <body itemscope itemtype="{{ Setting()->get('website_url') }}">
 <table class="body-wrap" align="center">
     <tr>
-        <td class="container" width="800">
+        <td class="container" width="658">
             <div class="content">
                 <table class="main" width="100%" cellpadding="0" cellspacing="0">
                     <tr>
