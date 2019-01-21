@@ -80,8 +80,12 @@ class DailySubscribeEmail extends Command
         }
         //app推送
         $users = User::where('site_notifications','like','%"email_daily_subscribe":%@')->get();
+        $emails = [];
         foreach ($users as $user) {
-            Mail::to($user->site_notifications['email_daily_subscribe'])->send(new DailySubscribe($date,$user->id,$list));
+            $email = $user->site_notifications['email_daily_subscribe'];
+            if (isset($emails[$email])) continue;
+            $emails[$email] = $user->id;
+            Mail::to($email)->send(new DailySubscribe($date,$user->id,$list));
         }
     }
 
