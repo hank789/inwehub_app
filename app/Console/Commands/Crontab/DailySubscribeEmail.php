@@ -84,6 +84,7 @@ class DailySubscribeEmail extends Command
         foreach ($users as $user) {
             $email = $user->site_notifications['email_daily_subscribe'];
             if (isset($emails[$email])) continue;
+            $this->info($email);
             $emails[$email] = $user->id;
             Mail::to($email)->send(new DailySubscribe($date,$user->id,$list));
         }
