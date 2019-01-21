@@ -19,7 +19,7 @@
                             <div style="position: relative; height: 111px; margin: 20px 0; ">
                                 <div style="position: absolute; left: 0; height: 90px; width: 100%;">
                                     <span style="color: #7C93B2; font-size: 18px; font-family:PingFangSC-Medium; font-weight:500; ">1.</span>
-                                    <div style="color: #4A5F7B; font-size: 18px; font-family:PingFangSC-Medium; font-weight:500; line-height:28px; {{ $item['img']?'width: 546px;':'' }} position: absolute; top: 0; left: 31px; display:-webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ $item['title'] }}</div>
+                                    <div style="color: #4A5F7B; font-size: 18px; font-family:PingFangSC-Medium; font-weight:500; line-height:28px; {{ $item['img']?'width: 546px;':'' }} position: absolute; top: 0; left: 31px; display:-webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;"><a target="_blank" href="{{ $item['link_url'] }}">{{ $item['title'] }}</a></div>
                                     <div style="position: absolute; bottom: 0; left: 38px;">
                                         <img style="width: 12px; height: 14px" src="https://cdn.inwehub.com/system/fire@3x.png" alt="">
                                         <span style="font-size:14px; font-family:HelveticaNeue; color: #B3C2D5; position: relative; top: -1px;">{{ $item['rate'] }}</span>
