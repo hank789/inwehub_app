@@ -18,7 +18,7 @@ class DailySubscribe extends Mailable
 
     protected $uid;
 
-    protected $list;
+    protected $dataList;
 
     /**
      * Create a new message instance.
@@ -29,7 +29,7 @@ class DailySubscribe extends Mailable
     {
         $this->date = $date;
         $this->uid = $uid;
-        $this->list = $list;
+        $this->dataList = $list;
     }
 
     /**
@@ -39,10 +39,11 @@ class DailySubscribe extends Mailable
      */
     public function build()
     {
-        if (count($this->list) <= 4) return;
-        foreach ($this->list as &$item) {
+        $weekarray=array("日","一","二","三","四","五","六");
+        $weekday = '星期'.$weekarray[date('w',strtotime($this->date))];
+        foreach ($this->dataList as &$item) {
             $item['link_url'] .= $this->uid;
         }
-        return $this->from('notice@inwehub.com','Inwehub每日热门')->view('emails.daily_subscribe')->with('date',$this->date)->with('items',$this->list)->subject('今日热门推荐');
+        return $this->from('notice@inwehub.com','Inwehub每日热门')->view('emails.daily_subscribe')->with('date',$this->date)->with('items',$this->dataList)->with('weekday',$weekday)->subject('今日热门推荐');
     }
 }
