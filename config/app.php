@@ -209,7 +209,8 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class,
         App\Third\ScoutMysqlDriver\Providers\MySQLScoutServiceProvider::class,
-        \App\Third\AliMail\DirectMailServiceProvider::class
+        \App\Third\AliMail\DirectMailServiceProvider::class,
+        Naux\Mail\SendCloudServiceProvider::class,
     ],
 
     /*

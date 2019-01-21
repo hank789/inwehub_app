@@ -70,7 +70,7 @@ class Test extends Command
      */
     public function handle()
     {
-        Mail::to('hank.wang@inwehub.com')->send(new DailySubscribe('2019-01-01'));
+        Mail::to('hank.wang@inwehub.com')->send(new DailySubscribe('2019-01-01',1));
         return;
         $tt = [
             'Googlebot1',

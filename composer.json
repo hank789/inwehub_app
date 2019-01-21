@@ -29,6 +29,7 @@
         "mews/captcha": "~2.0",
         "mews/purifier": "^2.0",
         "mixpanel/mixpanel-php": "^2.6",
+        "naux/sendcloud": "^1.1",
         "overtrue/laravel-pinyin": "~3.0",
         "overtrue/wechat": "~3.0",
         "paquettg/php-html-parser": "^1.7",

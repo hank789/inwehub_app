@@ -1,8 +1,10 @@
 <?php namespace App\Http\Controllers\Web;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Http\Controllers\Controller;
 use App\Models\RecommendRead;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
+use App\Models\User;
 use Illuminate\Http\Request;
 /**
  * @author: wanghui
@@ -58,5 +60,19 @@ class IndexController extends Controller
             $showDate = date('Y-m-d',$date);
         }
         return view('h5::article')->with('article',$article)->with('showDate',$showDate);
+    }
+
+    public function trackEmail($type,$id,$uid, Request $request) {
+        $user = User::find($uid);
+        switch ($type) {
+            case 1:
+                //推荐
+                $recommend = RecommendRead::find($id);
+                $submission = Submission::find($recommend->source_id);
+                $url = 'https://www.inwehub.com/c/'.$submission->category_id.'/'.$submission->slug;
+                break;
+        }
+        event(new ImportantNotify(formatSlackUser($user).'打开了邮件链接:'.$url));
+        return redirect($url);
     }
 }
