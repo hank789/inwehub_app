@@ -97,7 +97,7 @@
                         <span class="info-box-icon bg-green"><i class="fa fa-feed"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">订阅数(app|邮件|微信)</span>
-                            <span class="info-box-number">{{ $subscribePushCount|$subscribeEmailCount|$subscribeWechatCount }}</span>
+                            <span class="info-box-number">{{ $subscribePushCount }}|{{ $subscribeEmailCount }}|{{ $subscribeWechatCount }}</span>
                         </div><!-- /.info-box-content -->
                     </a>
                 </div><!-- /.info-box -->
