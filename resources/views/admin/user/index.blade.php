@@ -88,8 +88,9 @@
                                         <th>回答数</th>
                                         <th>档案完整度(%)</th>
                                         <th>账户余额</th>
-                                        <th>成长值</th>
-                                        <th>贡献值</th>
+                                        <th>app订阅</th>
+                                        <th>邮件订阅</th>
+                                        <th>微信订阅</th>
                                         <th>注册时间</th>
                                         <th>注册来源</th>
                                         <th>邀请码</th>
@@ -113,8 +114,9 @@
                                             <td>{{ $user->userData->answers }}</td>
                                             <td>{{ $user->getInfoCompletePercent() }}</td>
                                             <td>{{ $user->userMoney->total_money }}</td>
-                                            <td>{{ $user->userData->credits }}</td>
-                                            <td>{{ $user->userData->coins }}</td>
+                                            <td>{{ $user->site_notifications['push_daily_subscribe'] }}</td>
+                                            <td>{{ $user->site_notifications['email_daily_subscribe'] }}</td>
+                                            <td>{{ $user->site_notifications['wechat_daily_subscribe'] }}</td>
                                             <td>{{ $user->created_at }}</td>
                                             <td>{{ $user->getRegisterSource() }}</td>
                                             <td>{{ $user->rc_code }}</td>
