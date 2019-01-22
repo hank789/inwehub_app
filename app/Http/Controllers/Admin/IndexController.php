@@ -150,9 +150,9 @@ class IndexController extends AdminController
             $searchCount = array_slice($searchCount,0,100,true);
 
             //订阅数
-            $subscribePushCount = User::where('site_notifications','like','%"push_daily_subscribe": 1%')->count();
+            $subscribePushCount = User::where('site_notifications','like','%"push_daily_subscribe":1%')->count();
             $subscribeEmailCount = User::where('site_notifications','like','%email_daily_subscribe%@%')->count();
-            $subscribeWechatCount = User::where('site_notifications','like','%"wechat_daily_subscribe": 1%')->count();
+            $subscribeWechatCount = User::where('site_notifications','like','%"wechat_daily_subscribe":1%')->count();
 
             return compact('totalUserNum','totalQuestionNum','totalFeedbackNum',
                     'totalAnswerNum',
