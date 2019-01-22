@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Company\CompanyData;
 use App\Models\Doing;
 use App\Models\Submission;
+use App\Models\Support;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
@@ -296,5 +297,68 @@ class ProductController extends Controller {
         }
         return self::createJsonData(true,['url'=>$submission->data[$collection]]);
     }
+
+    public function getAlbumList(Request $request) {
+        $categories = Category::where('grade',0)->where('type','product_album')->orderBy('sort','desc')->simplePaginate($request->input('perPage',10));
+        $data = $categories->toArray();
+        return self::createJsonData(true,$data);
+    }
+
+    public function albumProductList(Request $request,JWTAuth $JWTAuth) {
+        $this->validate($request, [
+            'id' => 'required'
+        ]);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        $category_id = $request->input('id');
+        $query = TagCategoryRel::select(['id','tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
+        $tags = $query->where('category_id',$category_id)->orderBy('support_rate','desc')->simplePaginate(15);
+        $return = $tags->toArray();
+        $list = [];
+        foreach ($tags as $tag) {
+            $model = Tag::find($tag->tag_id);
+            $info = Tag::getReviewInfo($model->id);
+            $can_support = RateLimiter::instance()->getValue('album_product_support',date('Ymd').'_'.$oauth->user_id);
+            $list[] = [
+                'id' => $tag->id,
+                'tag_id' => $model->id,
+                'name' => $model->name,
+                'logo' => $model->logo,
+                'summary' => $model->summary,
+                'support_rate' => $model->support_rate,
+                'review_average_rate' => $info['review_average_rate'],
+                'can_support' => $can_support<3?1:0
+            ];
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
+    }
+
+    public function supportAlbumProduct(Request $request,JWTAuth $JWTAuth) {
+        $this->validate($request, [
+            'id' => 'required'
+        ]);
+        $id = $request->input('id');
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+        if (RateLimiter::STATUS_BAD == RateLimiter::instance()->increase('album_product_support',date('Ymd').'_'.$oauth->user_id,60*60*24,3)) {
+            return self::createJsonData(true,[],ApiException::PRODUCT_ALBUM_SUPPORT_LIMIT);
+        }
+        $rel = TagCategoryRel::find($id);
+        $data = [
+            'user_id'        => $user->id,
+            'supportable_id'   => $id,
+            'supportable_type' => get_class($rel),
+            'refer_user_id'    => 0
+        ];
+
+        $support = Support::create($data);
+        $rel->increment('support_rate');
+        return self::createJsonData(true);
+    }
+
 
 }

@@ -50,6 +50,11 @@
                                 @if($errors->has('sort')) <p class="help-block">{{ $errors->first('sort') }}</p> @endif
                             </div>
 
+                            <div class="form-group">
+                                <label>图标</label>
+                                <input type="file" name="icon" />
+                            </div>
+
                             <div class="form-group @if ($errors->has('summary')) has-error @endif">
                                 <label for="name">简介</label>
                                 <textarea name="summary" class="form-control" placeholder="话题简介" style="height: 80px;">{{ old('summary','') }}</textarea>

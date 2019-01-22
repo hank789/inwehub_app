@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Logic\TagsLogic;
 use App\Models\Category;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\File;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends AdminController
 {
@@ -74,6 +75,14 @@ class CategoryController extends AdminController
         } else {
             $formData['parent_id'] = 0;
         }
+        if($request->hasFile('icon')){
+            $file = $request->file('icon');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'category/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $formData['icon'] = $img_url;
+        }
         Category::create($formData);
         TagsLogic::delCache();
         return $this->success(route('admin.category.index'),'分类添加成功');
@@ -128,6 +137,16 @@ class CategoryController extends AdminController
         } else {
             $formData['parent_id'] = 0;
         }
+
+        if($request->hasFile('icon')){
+            $file = $request->file('icon');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'category/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $category->icon = $img_url;
+        }
+
         $category->save();
         if ($oldParentId) {
             $oldParent = Category::find($oldParentId);
