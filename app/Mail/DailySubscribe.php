@@ -44,6 +44,6 @@ class DailySubscribe extends Mailable
         foreach ($this->dataList as &$item) {
             $item['link_url'] .= $this->uid;
         }
-        return $this->from('notice@inwehub.com','Inwehub每日热门')->view('emails.daily_subscribe')->with('date',$this->date)->with('items',$this->dataList)->with('weekday',$weekday)->subject('今日热门推荐');
+        return $this->from('notice@inwehub.com','Inwehub每日热门')->view('emails.daily_subscribe')->with('date',$this->date)->with('items',$this->dataList)->with('weekday',$weekday)->with('uid',$this->uid)->subject('今日热门推荐');
     }
 }

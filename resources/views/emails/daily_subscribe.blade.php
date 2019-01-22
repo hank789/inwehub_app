@@ -55,7 +55,7 @@
                             <span style="display: inline-block; width: 4px; height: 4px; background: #03AEF9; border-radius: 50%; position: relative; top: -3px; right: 10px;"></span>本邮件为系统自动发送邮件，请勿直接回复
                         </div>
                         <div style="color: #7C93B2; font-size: 14px; margin-top: 10px; margin-left: 10px">
-                            <span style="display: inline-block; width: 4px; height: 4px; background: #03AEF9; border-radius: 50%; position: relative; top: -3px; right: 10px;"></span>如果您不想收到此邮件，点击<a href="%%user_defined_unsubscribe_link%%" style="color: #4A5F7B;">退订</a>
+                            <span style="display: inline-block; width: 4px; height: 4px; background: #03AEF9; border-radius: 50%; position: relative; top: -3px; right: 10px;"></span>如果您不想收到此邮件，点击<a target="_blank" href="{{ route('website.unsubscribeEmail',['uid'=>$uid]) }}?redirect=%%user_defined_unsubscribe_link%%" style="color: #4A5F7B;">退订</a>
                         </div>
                         <div style="color: #7C93B2; font-size: 14px; margin-top: 10px; margin-left: 10px">
                             <span style="display: inline-block; width: 4px; height: 4px; background: #03AEF9; border-radius: 50%; position: relative; top: -3px; right: 10px;"></span>联系我们：邮箱hi@inwehub.com，微信hiinwe
