@@ -42,14 +42,12 @@
 
         .container {
             display: block !important;
-            max-width: 600px !important;
             margin: 0 auto !important;
             /* makes it centered */
             clear: both !important;
         }
 
         .content {
-            max-width: 600px;
             margin: 0 auto;
             display: block;
             padding: 20px;
@@ -188,9 +186,9 @@
 </head>
 
 <body itemscope itemtype="{{ Setting()->get('website_url') }}">
-<table class="body-wrap">
+<table class="body-wrap" align="center">
     <tr>
-        <td class="container" width="800">
+        <td class="container" width="658">
             <div class="content">
                 <table class="main" width="100%" cellpadding="0" cellspacing="0">
                     <tr>
@@ -199,13 +197,6 @@
                         </td>
                     </tr>
                 </table>
-                <div class="footer">
-                    <table width="100%">
-                        <tr>
-                            <td class="aligncenter content-block">访问 <a href="https://www.inwehub.com">{{ Setting()->get('website_name') }}</a> </td>
-                        </tr>
-                    </table>
-                </div>
             </div>
         </td>
     </tr>

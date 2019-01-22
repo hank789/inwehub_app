@@ -11,6 +11,9 @@ Route::group(['namespace'=>'Web'], function() {
     Route::get('/',['as'=>'website.index','uses'=>'IndexController@index']);
 
     Route::get('/articleInfo/{id}',['as'=>'website.articleInfo','uses'=>'IndexController@articleInfo'])->where(['id'=>'[0-9]+']);
+    Route::get('/trackEmail/{type}/{id}/{uid}',['as'=>'website.trackEmail','uses'=>'IndexController@trackEmail'])->where(['id'=>'[0-9]+']);
+    Route::get('/unsubscribeEmail/{uid}',['as'=>'website.unsubscribeEmail','uses'=>'IndexController@unsubscribeEmail'])->where(['uid'=>'[0-9]+']);
+
 
     Route::get('/service/register',['as'=>'website.service.register','uses'=>'ServiceController@register']);
     Route::get('/service/about',['as'=>'website.service.about','uses'=>'ServiceController@about']);

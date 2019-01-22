@@ -1,8 +1,10 @@
 <?php namespace App\Http\Controllers\Web;
+use App\Events\Frontend\System\ImportantNotify;
 use App\Http\Controllers\Controller;
 use App\Models\RecommendRead;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
+use App\Models\User;
 use Illuminate\Http\Request;
 /**
  * @author: wanghui
@@ -59,4 +61,28 @@ class IndexController extends Controller
         }
         return view('h5::article')->with('article',$article)->with('showDate',$showDate);
     }
+
+    public function trackEmail($type,$id,$uid) {
+        $user = User::find($uid);
+        switch ($type) {
+            case 1:
+                //推荐
+                $recommend = RecommendRead::find($id);
+                $submission = Submission::find($recommend->source_id);
+                $url = 'https://www.inwehub.com/c/'.$submission->category_id.'/'.$submission->slug;
+                break;
+        }
+        event(new ImportantNotify(formatSlackUser($user).'打开了邮件链接:'.$url));
+        return redirect($url);
+    }
+
+    public function unsubscribeEmail($uid) {
+        $user = User::find($uid);
+        $settings = $user->notificationSettings();
+        $settings->set('email_daily_subscribe',0);
+        $settings->persist();
+        event(new ImportantNotify(formatSlackUser($user).'用户取消了邮件订阅'));
+        return '取消订阅成功';
+    }
+
 }

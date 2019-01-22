@@ -70,7 +70,43 @@ class Test extends Command
      */
     public function handle()
     {
-        Mail::to('hank.wang@inwehub.com')->send(new DailySubscribe('2019-01-01'));
+        $date = '2018-12-19';
+        $begin = date('Y-m-d 00:00:00',strtotime($date));
+        $end = date('Y-m-d 23:59:59',strtotime($date));
+        $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->orderBy('rate','desc')->take(10)->get();
+        $list = [];
+        foreach ($recommends as $recommend) {
+            $item = Submission::find($recommend->source_id);
+            $domain = $item->data['domain']??'';
+            $link_url = config('app.url').'/trackEmail/1/'.$recommend->id.'/';
+
+            $img = $item->data['img']??'';
+            if (is_array($img)) {
+                if ($img) {
+                    $img = $img[0];
+                } else {
+                    $img = '';
+                }
+            }
+            $list[] = [
+                'id'    => $item->id,
+                'title' => strip_tags($item->data['title']??$item->title),
+                'type'  => $item->type,
+                'domain'    => $domain,
+                'img'   => $img,
+                'slug'      => $item->slug,
+                'category_id' => $item->category_id,
+                'is_upvoted'     => 0,
+                'link_url'  => $link_url,
+                'rate'  => (int)(substr($item->rate,8)?:0),
+                'comment_number' => $item->comments_number,
+                'support_number' => $item->upvotes,
+                'share_number' => $item->share_number,
+                'tags' => [],
+                'created_at'=> (string)$item->created_at
+            ];
+        }
+        Mail::to('hank.wang@inwehub.com')->send(new DailySubscribe('2019-01-01',1,$list));
         return;
         $tt = [
             'Googlebot1',
