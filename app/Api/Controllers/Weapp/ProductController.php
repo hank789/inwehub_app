@@ -298,6 +298,21 @@ class ProductController extends Controller {
         return self::createJsonData(true,['url'=>$submission->data[$collection]]);
     }
 
+    public function albumInfo(Request $request) {
+        $this->validate($request, [
+            'id' => 'required'
+        ]);
+        $id = $request->input('id');
+        $category = Category::find($id);
+        $data = [
+            'id' => $category->id,
+            'name' => $category->name,
+            'icon' => $category->icon,
+            'summary' => $category->summary
+        ];
+        return self::createJsonData(true,$data);
+    }
+
     public function getAlbumList(Request $request) {
         $categories = Category::where('grade',0)->where('type','product_album')->orderBy('sort','desc')->simplePaginate($request->input('perPage',10));
         $data = $categories->toArray();
