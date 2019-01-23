@@ -147,7 +147,7 @@
                                 <div class="row">
                                     <div class="col-sm-10">
                                         <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
-                                            @include('admin.category.option',['type'=>'enterprise_review','select_id'=>0,'root'=>false, 'last'=>true])
+                                            @include('admin.category.option',['type'=>['enterprise_review','product_album'],'select_id'=>0,'root'=>false, 'last'=>true])
                                         </select>
                                     </div>
                                 </div>
