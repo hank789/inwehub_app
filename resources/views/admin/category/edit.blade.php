@@ -48,7 +48,7 @@
                             <div class="form-group">
                                 <label>图标</label>
                                 <input type="file" name="icon" />
-                                @if($tag->icon)
+                                @if($category->icon)
                                     <div style="margin-top: 10px;">
                                         <img src="{{ $category->icon }}" />
                                     </div>
