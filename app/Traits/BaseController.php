@@ -589,7 +589,7 @@ trait BaseController {
                 'id' => $category->id,
                 'name' => $category->name,
                 'rate' => $rate+1,
-                'support_rate' => $categoryRel->support_rate,
+                'support_rate' => $categoryRel->support_rate?:0,
                 'type' => $category->type == 'enterprise_review'?1:2
             ];
         }

@@ -340,7 +340,7 @@ class ProductController extends Controller {
                 'name' => $model->name,
                 'logo' => $model->logo,
                 'summary' => $model->summary,
-                'support_rate' => $model->support_rate,
+                'support_rate' => $model->support_rate?:0,
                 'review_average_rate' => $info['review_average_rate'],
                 'can_support' => $can_support<3?1:0
             ];
