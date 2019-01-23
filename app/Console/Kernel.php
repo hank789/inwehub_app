@@ -114,6 +114,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('ac:check:coupon')->daily()->at('00:20');
         $schedule->command('crontab:calc-group-hot')->hourly();
         $schedule->command('crontab:daily:subscribe:push')->daily()->at('17:30');
+        $schedule->command('crontab:daily:subscribe:email')->daily()->at('18:00');
         if (config('app.env') == 'production') {
             //10 8,12,14,16,18,20,22
             $schedule->command('scraper:wechat:gzh:posts')->cron('10 9,10,14,20 * * *')->withoutOverlapping()->appendOutputTo('/tmp/gzh.txt');
