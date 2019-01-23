@@ -142,7 +142,7 @@ class SupportObserver implements ShouldQueue {
                     return;
                     break;
             }
-            if ($source->user_id != $support->user_id && !isset($notified[$source->user_id])) {
+            if ($source->user_id && $source->user_id != $support->user_id && !isset($notified[$source->user_id])) {
                 $source->user->notify(new NewSupport($source->user_id,$support));
             }
         }
