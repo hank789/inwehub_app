@@ -50,7 +50,7 @@
                                 <input type="file" name="icon" />
                                 @if($tag->icon)
                                     <div style="margin-top: 10px;">
-                                        <img src="{{ $tag->icon }}" />
+                                        <img src="{{ $category->icon }}" />
                                     </div>
                                 @endif
                             </div>
