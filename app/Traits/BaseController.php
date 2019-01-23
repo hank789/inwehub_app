@@ -588,7 +588,9 @@ trait BaseController {
             $data['categories'][] = [
                 'id' => $category->id,
                 'name' => $category->name,
-                'rate' => $rate+1
+                'rate' => $rate+1,
+                'support_rate' => $categoryRel->support_rate,
+                'type' => $category->type == 'enterprise_review'?1:2
             ];
         }
         $data['vendor'] = '';
