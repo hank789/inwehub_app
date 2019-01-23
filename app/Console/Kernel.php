@@ -92,7 +92,8 @@ class Kernel extends ConsoleKernel
         Commands\Init\TranslateProducts::class,
         Commands\Init\TagRoles::class,
         Commands\Init\ItJuZiCompany::class,
-        Commands\Init\TagProductDict::class
+        Commands\Init\TagProductDict::class,
+        Commands\Init\ProductAlbum::class
 
     ];
 
