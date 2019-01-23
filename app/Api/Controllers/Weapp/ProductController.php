@@ -11,6 +11,7 @@ use App\Models\Support;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
+use App\Models\User;
 use App\Services\RateLimiter;
 use App\Third\Weapp\WeApp;
 use App\Traits\SubmitSubmission;
@@ -367,12 +368,33 @@ class ProductController extends Controller {
             'user_id'        => $user->id,
             'supportable_id'   => $id,
             'supportable_type' => get_class($rel),
-            'refer_user_id'    => 0
+            'refer_user_id'    => $rel->category_id
         ];
 
         $support = Support::create($data);
         $rel->increment('support_rate');
         return self::createJsonData(true);
+    }
+
+    public function getAlbumSupports(Request $request) {
+        $this->validate($request, [
+            'id' => 'required'
+        ]);
+        $id = $request->input('id');
+        $supports = Support::where('refer_user_id',$id)->where('supportable_type',TagCategoryRel::class)->take(20)->inRandomOrder()->get();
+        $list = [];
+        foreach ($supports as $support) {
+            $user = User::find($support->user_id);
+            $rel = $support->source;
+            $tag = Tag::find($rel->tag_id);
+            $list[] = [
+                'id' => $support->id,
+                'user_name' => $user->name,
+                'tag_name' => $tag->name,
+                'created_at' => (string)$support->created_at
+            ];
+        }
+        return self::createJsonData(true,$list);
     }
 
 

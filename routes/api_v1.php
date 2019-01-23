@@ -537,6 +537,7 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::get('product/albumInfo','ProductController@albumInfo');
     Route::get('product/albumProductList','ProductController@albumProductList');
     Route::post('product/supportAlbumProduct','ProductController@supportAlbumProduct');
+    Route::get('product/getAlbumSupports','ProductController@getAlbumSupports');
 
 });
 
