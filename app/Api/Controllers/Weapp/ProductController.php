@@ -333,7 +333,7 @@ class ProductController extends Controller {
         foreach ($tags as $tag) {
             $model = Tag::find($tag->tag_id);
             $info = Tag::getReviewInfo($model->id);
-            $can_support = RateLimiter::instance()->getValue('album_product_support',date('Ymd').'_'.$oauth->user_id);
+            $can_support = RateLimiter::instance()->getValue('album_product_support',date('Ymd').'_'.$tag->id.'_'.$oauth->user_id);
             $list[] = [
                 'id' => $tag->id,
                 'tag_id' => $model->id,
@@ -360,7 +360,7 @@ class ProductController extends Controller {
         } else {
             throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
         }
-        if (RateLimiter::STATUS_BAD == RateLimiter::instance()->increase('album_product_support',date('Ymd').'_'.$oauth->user_id,60*60*24,3)) {
+        if (RateLimiter::STATUS_BAD == RateLimiter::instance()->increase('album_product_support',date('Ymd').'_'.$id.'_'.$oauth->user_id,60*60*24,3)) {
             return self::createJsonData(true,[],ApiException::PRODUCT_ALBUM_SUPPORT_LIMIT);
         }
         $rel = TagCategoryRel::find($id);
