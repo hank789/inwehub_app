@@ -1146,7 +1146,39 @@ if (!function_exists('getUrlInfo')) {
             $temp = '';
             $useCache = false;
             $urlArr = parse_url($url);
-            if ($urlArr['host']=='mp.weixin.qq.com') {
+            if (in_array($urlArr['host'],['web.ywhub.com','m.inwehub.com'])) {
+                $params = explode('/',$urlArr['fragment']);
+                if (isset($params[1]) && ($params[1] == 'c' || $params[1] == 'dianping')) {
+                    $slug = explode('?',$params[3]);
+                    if ($params[2] == 'product') {
+                        $tag = \App\Models\Tag::getTagByName(urldecode($slug[0]));
+                        return ['title'=>$tag->name,'img_url'=>$tag->logo];
+                    } else {
+                        $submission = \App\Models\Submission::where('slug',$slug[0])->first();
+                        $img = $submission->data['img']??'';
+                        if (is_array($img)) {
+                            if ($img) {
+                                $img = $img[0];
+                            } else {
+                                $img = '';
+                            }
+                        }
+                        return ['title'=>$submission->data['title']??$submission->title,'img_url'=>$img];
+                    }
+
+                } elseif (isset($params[1]) && $params[1] == 'ask') {
+                    if ($params[3] == 'answers') {
+                        $slug = explode('?',$params[4]);
+                        $question = \App\Models\Question::find($slug[0]);
+                    } else {
+                        $slug = explode('?',$params[3]);
+                        $answer = \App\Models\Answer::find($slug[0]);
+                        $question = \App\Models\Question::find($answer->question_id);
+                    }
+                    return ['title'=>$question->title,'img_url'=>''];
+                }
+
+            } elseif ($urlArr['host']=='mp.weixin.qq.com') {
                 $f = file_get_contents_curl($url);
                 //微信的文章
                 $pattern = '/var msg_cdn_url = "(.*?)";/s';
