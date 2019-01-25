@@ -1146,7 +1146,49 @@ if (!function_exists('getUrlInfo')) {
             $temp = '';
             $useCache = false;
             $urlArr = parse_url($url);
-            if ($urlArr['host']=='mp.weixin.qq.com') {
+            if (in_array($urlArr['host'],['web.ywhub.com','m.inwehub.com'])) {
+                $params = explode('/', $urlArr['fragment']);
+                if (isset($params[1]) && $params[1] == 'c') {
+                    $slug = explode('?', $params[3]);
+                    $submission = \App\Models\Submission::where('slug', $slug[0])->first();
+                    $img = $submission->data['img'] ?? '';
+                    if (is_array($img)) {
+                        if ($img) {
+                            $img = $img[0];
+                        } else {
+                            $img = '';
+                        }
+                    }
+                    $title = strip_tags($submission->data['title'] ?? $submission->title);
+                    $img_url = $img;
+                } elseif (isset($params[1]) && $params[1] == 'ask') {
+                    if ($params[3] == 'answers') {
+                        $slug = explode('?', $params[4]);
+                        $question = \App\Models\Question::find($slug[0]);
+                    } else {
+                        $slug = explode('?', $params[3]);
+                        $answer = \App\Models\Answer::find($slug[0]);
+                        $question = \App\Models\Question::find($answer->question_id);
+                    }
+                    $title = strip_tags($question->title);
+                    $img_url = '';
+                } elseif (isset($params[1]) && $params[1] == 'dianping') {
+                    $slug = explode('?', $params[3]);
+                    if ($params[2] == 'product') {
+                        $tag = \App\Models\Tag::getTagByName(urldecode($slug[0]));
+                        $title = $tag->name;
+                        $img_url = $tag->logo;
+                    } else {
+                        $submission = \App\Models\Submission::where('slug', $slug[0])->first();
+                        $tag = \App\Models\Tag::find($submission->category_id);
+                        $title = strip_tags($submission->data['title'] ?? $submission->title);
+                        $img_url = $tag->logo;
+                    }
+                }
+                Cache::put('url_title_' . $url, $title, 60 * 24 * 7);
+                Cache::put('url_img_' . $url, $img_url, 60 * 24 * 7);
+                return ['title' => $title, 'img_url' => $img_url];
+            } elseif ($urlArr['host']=='mp.weixin.qq.com') {
                 $f = file_get_contents_curl($url);
                 //微信的文章
                 $pattern = '/var msg_cdn_url = "(.*?)";/s';
@@ -1215,7 +1257,7 @@ if (!function_exists('getUrlInfo')) {
                     }
                 }
                 if (!$image) {
-                    $img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
+                    //$img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
                     //event(new \App\Events\Frontend\System\ExceptionNotify('未取到网站:'.$url.'的图片'));
                 }
                 $title = $ql->find('title')->eq(0)->text();
@@ -1226,7 +1268,7 @@ if (!function_exists('getUrlInfo')) {
 
                 if (stripos($image,'//') === 0) {
                     $temp = 'http:'.$image;
-                } elseif (stripos($image,'http') !== 0) {
+                } elseif ($image && stripos($image,'http') !== 0) {
                     $temp = $urlArr['scheme'].'://'.$urlArr['host'].$image;
                 } else {
                     $temp = $image;

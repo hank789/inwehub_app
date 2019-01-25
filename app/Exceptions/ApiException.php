@@ -129,6 +129,7 @@ class ApiException extends Exception
     const GROUP_NOT_JOINED = 6108;
     const PRODUCT_TAG_ALREADY_EXIST = 6109;
     const PRODUCT_TAG_NOT_EXIST = 6109;
+    const PRODUCT_ALBUM_SUPPORT_LIMIT = 6120;
 
 
     public static $errorMessages = [

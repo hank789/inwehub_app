@@ -12,6 +12,8 @@ use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Submission;
 use App\Models\Support;
+use App\Models\Tag;
+use App\Models\TagCategoryRel;
 use App\Notifications\NewSupport;
 use App\Services\RateLimiter;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -132,11 +134,15 @@ class SupportObserver implements ShouldQueue {
                         }
                     }
                     break;
+                case TagCategoryRel::class:
+                    $tag = Tag::find($source->tag_id);
+                    $title = '产品:'.$tag->name;
+                    break;
                 default:
                     return;
                     break;
             }
-            if ($source->user_id != $support->user_id && !isset($notified[$source->user_id])) {
+            if ($source->user_id && $source->user_id != $support->user_id && !isset($notified[$source->user_id])) {
                 $source->user->notify(new NewSupport($source->user_id,$support));
             }
         }

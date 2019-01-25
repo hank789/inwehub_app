@@ -190,8 +190,16 @@ class Category extends Model
         /*按类文档型返回分类*/
         $categories = [];
         foreach( $globalCategories as $category ){
-            if( str_contains($category->type,$type) ){
-                $categories[] = $category;
+            if (is_array($type)) {
+                foreach ($type as $item) {
+                    if( str_contains($category->type,$item) ){
+                        $categories[] = $category;
+                    }
+                }
+            } else {
+                if( str_contains($category->type,$type) ){
+                    $categories[] = $category;
+                }
             }
         }
         return $categories;
