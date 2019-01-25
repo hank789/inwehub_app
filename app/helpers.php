@@ -1218,7 +1218,6 @@ if (!function_exists('getUrlInfo')) {
                     //$img_url = 'https://cdn.inwehub.com/system/group_18@3x.png';
                     //event(new \App\Events\Frontend\System\ExceptionNotify('未取到网站:'.$url.'的图片'));
                 }
-                var_dump($img_url);
                 $title = $ql->find('title')->eq(0)->text();
                 if (str_contains($image,'.ico')) {
                     $useCache = true;
