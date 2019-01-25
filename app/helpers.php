@@ -1181,7 +1181,7 @@ if (!function_exists('getUrlInfo')) {
                     } else {
                         $submission = \App\Models\Submission::where('slug', $slug[0])->first();
                         $tag = \App\Models\Tag::find($submission->category_id);
-                        $title = strip_tags($submission->data['title'] ?? $submission->title));
+                        $title = strip_tags($submission->data['title'] ?? $submission->title);
                         $img_url = $tag->logo;
                     }
                 }
