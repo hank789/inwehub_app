@@ -1147,43 +1147,47 @@ if (!function_exists('getUrlInfo')) {
             $useCache = false;
             $urlArr = parse_url($url);
             if (in_array($urlArr['host'],['web.ywhub.com','m.inwehub.com'])) {
-                $params = explode('/',$urlArr['fragment']);
-                if (isset($params[1]) && ($params[1] == 'c' || $params[1] == 'dianping')) {
-                    $slug = explode('?',$params[3]);
+                $params = explode('/', $urlArr['fragment']);
+                if (isset($params[1]) && $params[1] == 'c') {
+                    $slug = explode('?', $params[3]);
+                    $submission = \App\Models\Submission::where('slug', $slug[0])->first();
+                    $img = $submission->data['img'] ?? '';
+                    if (is_array($img)) {
+                        if ($img) {
+                            $img = $img[0];
+                        } else {
+                            $img = '';
+                        }
+                    }
+                    $title = strip_tags($submission->data['title'] ?? $submission->title);
+                    $img_url = $img;
+                } elseif (isset($params[1]) && $params[1] == 'ask') {
+                    if ($params[3] == 'answers') {
+                        $slug = explode('?', $params[4]);
+                        $question = \App\Models\Question::find($slug[0]);
+                    } else {
+                        $slug = explode('?', $params[3]);
+                        $answer = \App\Models\Answer::find($slug[0]);
+                        $question = \App\Models\Question::find($answer->question_id);
+                    }
+                    $title = strip_tags($question->title);
+                    $img_url = '';
+                } elseif (isset($params[1]) && $params[1] == 'dianping') {
+                    $slug = explode('?', $params[3]);
                     if ($params[2] == 'product') {
                         $tag = \App\Models\Tag::getTagByName(urldecode($slug[0]));
                         $title = $tag->name;
                         $img_url = $tag->logo;
                     } else {
-                        $submission = \App\Models\Submission::where('slug',$slug[0])->first();
-                        $img = $submission->data['img']??'';
-                        if (is_array($img)) {
-                            if ($img) {
-                                $img = $img[0];
-                            } else {
-                                $img = '';
-                            }
-                        }
-                        $title = $submission->data['title']??$submission->title;
-                        $img_url = $img;
+                        $submission = \App\Models\Submission::where('slug', $slug[0])->first();
+                        $tag = \App\Models\Tag::find($submission->category_id);
+                        $title = strip_tags($submission->data['title'] ?? $submission->title));
+                        $img_url = $tag->logo;
                     }
-
-                } elseif (isset($params[1]) && $params[1] == 'ask') {
-                    if ($params[3] == 'answers') {
-                        $slug = explode('?',$params[4]);
-                        $question = \App\Models\Question::find($slug[0]);
-                    } else {
-                        $slug = explode('?',$params[3]);
-                        $answer = \App\Models\Answer::find($slug[0]);
-                        $question = \App\Models\Question::find($answer->question_id);
-                    }
-                    $title = $question->title;
-                    $img_url = '';
                 }
-                Cache::put('url_title_'.$url,$title,60 * 24 * 7);
-                Cache::put('url_img_'.$url,$img_url,60 * 24 * 7);
-                return ['title'=>$title,'img_url'=>$img_url];
-
+                Cache::put('url_title_' . $url, $title, 60 * 24 * 7);
+                Cache::put('url_img_' . $url, $img_url, 60 * 24 * 7);
+                return ['title' => $title, 'img_url' => $img_url];
             } elseif ($urlArr['host']=='mp.weixin.qq.com') {
                 $f = file_get_contents_curl($url);
                 //微信的文章
