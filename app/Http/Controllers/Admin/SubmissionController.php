@@ -93,6 +93,7 @@ class SubmissionController extends AdminController
         $author_id = $request->input('author_id',-1);
         $oldStatus = $submission->status;
         $newStatus = $request->input('status',1);
+        $link = $request->input('link','');
         if ($author_id != -1) {
             $submission->author_id = $author_id;
         }
@@ -104,6 +105,12 @@ class SubmissionController extends AdminController
         }
         if ($related_question) {
             $object_data['related_question'] = $related_question;
+        }
+        if ($link) {
+            $oldLink = $submission->data['url'];
+            if ($link != $oldLink) {
+                $object_data['url'] = $link;
+            }
         }
         $submission->title = $request->input('title');
         $rate_star = $request->input('rate_star',-1);
