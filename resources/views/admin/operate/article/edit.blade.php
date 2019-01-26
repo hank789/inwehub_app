@@ -39,6 +39,12 @@
                                 <label>类型</label>
                                 <span>{{ $submission->type }}</span>
                             </div>
+                            @if ($submission->type == 'link')
+                                <div class="form-group">
+                                    <label>文章链接</label>
+                                    <input type="text" name="link" class="form-control "  placeholder="文章链接" value="{{ old('created_at',$submission->data['url'] ) }}">
+                                </div>
+                            @endif
                             <div class="form-group">
                                 <label>标签</label>
                                 <div class="row">

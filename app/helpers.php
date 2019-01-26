@@ -1645,6 +1645,52 @@ if (!function_exists('convertWechatLimitLinkToUnlimit')) {
     }
 }
 
+if (!function_exists('convertWechatOvertimeLinkToUnlimit')) {
+    function convertWechatOvertimeLinkToUnlimit($link) {
+        $ch = curl_init();
+
+        $url = "https://api.newrank.cn/api/async/task/sogou/advanced/towxurl";
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/x-www-form-urlencoded;charset=utf-8','Key:8ea425d1573648eabc57244a4'));
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS,['url'=>urlencode($link)]);
+        // 执行HTTP请求
+
+        curl_setopt($ch , CURLOPT_URL , $url);
+
+        $res = curl_exec($ch);
+
+        curl_close($ch);
+
+        return json_decode($res,true);
+    }
+}
+
+if (!function_exists('queryWechatOvertimeLinkToUnlimit')) {
+    function queryWechatOvertimeLinkToUnlimit($taskId) {
+        $ch = curl_init();
+
+        $url = "https://api.newrank.cn/api/task/result";
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/x-www-form-urlencoded;charset=utf-8','Key:8ea425d1573648eabc57244a4'));
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS,['taskId'=>$taskId]);
+        // 执行HTTP请求
+
+        curl_setopt($ch , CURLOPT_URL , $url);
+
+        $res = curl_exec($ch);
+
+        curl_close($ch);
+
+        return json_decode($res,true);
+    }
+}
+
 if (!function_exists('getWechatArticleInfo')) {
     function getWechatArticleInfo($link) {
         $ch = curl_init();
