@@ -114,9 +114,9 @@
                                             <td>{{ $user->userData->answers }}</td>
                                             <td>{{ $user->getInfoCompletePercent() }}</td>
                                             <td>{{ $user->userMoney->total_money }}</td>
-                                            <td>{{ $user->site_notifications['push_daily_subscribe'] }}</td>
-                                            <td>{{ $user->site_notifications['email_daily_subscribe'] }}</td>
-                                            <td>{{ $user->site_notifications['wechat_daily_subscribe'] }}</td>
+                                            <td>{{ $user->site_notifications['push_daily_subscribe']??0 }}</td>
+                                            <td>{{ $user->site_notifications['email_daily_subscribe']??0 }}</td>
+                                            <td>{{ $user->site_notifications['wechat_daily_subscribe']??0 }}</td>
                                             <td>{{ $user->created_at }}</td>
                                             <td>{{ $user->getRegisterSource() }}</td>
                                             <td>{{ $user->rc_code }}</td>
