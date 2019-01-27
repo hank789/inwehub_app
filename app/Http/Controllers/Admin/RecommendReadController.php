@@ -106,6 +106,7 @@ class RecommendReadController extends AdminController
         }
         $oldRate = $recommendation->getRateWeight();
         $oldStatus = $recommendation->audit_status;
+        $link = $request->input('link','');
 
         $recommendation->sort = $request->input('recommend_sort');
         $recommendation->tips = $request->input('tips');
@@ -114,6 +115,17 @@ class RecommendReadController extends AdminController
         $object_data = $recommendation->data;
         if ($img_url) {
             $object_data['img'] = $img_url;
+        }
+        if ($link) {
+            $submission = $recommendation->source;
+            $oldLink = $submission->data['url'];
+            if ($link != $oldLink) {
+                $object_data['url'] = $link;
+                $submission_data = $submission->data;
+                $submission_data['url'] = $link;
+                $submission->data = $submission_data;
+                $submission->save();
+            }
         }
         $object_data['title'] = $request->input('title');
         $recommendation->rate = $recommendation->getRateWeight() - $oldRate + $recommendation->rate;

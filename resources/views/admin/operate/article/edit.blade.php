@@ -42,7 +42,7 @@
                             @if ($submission->type == 'link')
                                 <div class="form-group">
                                     <label>文章链接</label>
-                                    <input type="text" name="link" class="form-control "  placeholder="文章链接" value="{{ old('created_at',$submission->data['url'] ) }}">
+                                    <input type="text" name="link" class="form-control "  placeholder="文章链接" value="{{ old('link',$submission->data['url'] ) }}">
                                 </div>
                             @endif
                             <div class="form-group">
