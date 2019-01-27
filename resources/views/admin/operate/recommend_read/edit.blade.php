@@ -45,6 +45,13 @@
                                 <span><a href="{{ $recommendation->getWebUrl() }}" target="_blank">{{ $recommendation->getWebUrl() }}</a></span>
                             </div>
 
+                            @if ($recommendation->read_type ==1 && $recommendation->source->type == 'link')
+                                <div class="form-group">
+                                    <label>文章链接</label>
+                                    <input type="text" name="link" class="form-control "  placeholder="文章链接" value="{{ old('link',$recommendation->source->data['url'] ) }}">
+                                </div>
+                            @endif
+
                             <div class="form-group">
                                 <label>封面图片</label>
                                 <input type="file" name="img_url" />
