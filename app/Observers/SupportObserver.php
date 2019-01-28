@@ -7,6 +7,7 @@
 
 use App\Events\Frontend\System\Credit;
 use App\Models\Answer;
+use App\Models\Category;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
@@ -136,7 +137,8 @@ class SupportObserver implements ShouldQueue {
                     break;
                 case TagCategoryRel::class:
                     $tag = Tag::find($source->tag_id);
-                    $title = '产品:'.$tag->name;
+                    $category = Category::find($source->category_id);
+                    $title = '专题['.$category->name.']下的产品:'.$tag->name;
                     break;
                 default:
                     return;
@@ -146,7 +148,7 @@ class SupportObserver implements ShouldQueue {
                 $source->user->notify(new NewSupport($source->user_id,$support));
             }
         }
-        if ($fields) {
+        if ($title) {
             \Slack::to(config('slack.ask_activity_channel'))
                 ->disableMarkdown()
                 ->attach(
