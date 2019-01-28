@@ -70,6 +70,67 @@ class Test extends Command
      */
     public function handle()
     {
+        $product_c = Category::where('slug','product_album')->first();
+        $categories = [
+            [
+                'name' => '分析与商业智能_1',
+                'slug' => 'product_album_business_intelligence_analytics_1',
+                'type' => 'product_album'
+            ],
+            [
+                'name' => 'CRM_1',
+                'slug' => 'product_album_crm_1',
+                'type' => 'product_album'
+            ],
+            [
+                'name' => 'OA与协同_1',
+                'slug' => 'product_album_oa_1',
+                'type' => 'product_album'
+            ],
+            [
+                'name' => '基础架构服务（laaS）_1',
+                'slug' => 'product_album_laas_1',
+                'type' => 'product_album'
+            ],
+            [
+                'name' => 'PLM_1',
+                'slug' => 'product_album_plm_1',
+                'type' => 'product_album'
+            ],
+            [
+                'name' => 'ERP软件_1',
+                'slug' => 'product_album_erp_1',
+                'type' => 'product_album'
+            ],
+            [
+                'name' => 'HRMS_1',
+                'slug' => 'product_album_hrms_1',
+                'type' => 'product_album'
+            ],
+            [
+                'name' => '表单调查_1',
+                'slug' => 'product_album_form_1',
+                'type' => 'product_album'
+            ],
+            [
+                'name' => '舆情监控工具_1',
+                'slug' => 'product_album_public_sentiment_monitoring_1',
+                'type' => 'product_album'
+            ]
+        ];
+        foreach ($categories as $category) {
+            Category::create([
+                'parent_id' => $product_c->id,
+                'grade'     => 0,
+                'name'      => $category['name'],
+                'icon'      => 'https://cdn.inwehub.com/system/group_18@3x.png',
+                'slug'      => $category['slug'],
+                'type'      => $category['type'],
+                'sort'      => 0,
+                'status'    => 1
+            ]);
+        }
+        return;
         $date = '2018-12-19';
         $begin = date('Y-m-d 00:00:00',strtotime($date));
         $end = date('Y-m-d 23:59:59',strtotime($date));
