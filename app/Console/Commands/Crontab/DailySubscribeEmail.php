@@ -44,7 +44,7 @@ class DailySubscribeEmail extends Command
         $begin = date('Y-m-d 00:00:00',strtotime($date));
         $end = date('Y-m-d 23:59:59',strtotime($date));
         $count = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->count();
-        if ($count <=0) return;
+        if ($count <=4) return;
         $recommends = RecommendRead::where('audit_status',1)->whereBetween('created_at',[$begin,$end])->orderBy('rate','desc')->take(10)->get();
         $list = [];
         foreach ($recommends as $recommend) {
