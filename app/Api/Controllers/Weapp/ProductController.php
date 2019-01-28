@@ -326,7 +326,7 @@ class ProductController extends Controller {
         ]);
         $oauth = $JWTAuth->parseToken()->toUser();
         $category_id = $request->input('id');
-        $query = TagCategoryRel::select(['id','tag_id'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
+        $query = TagCategoryRel::select(['id','tag_id','support_rate'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
         $tags = $query->where('category_id',$category_id)->orderBy('support_rate','desc')->simplePaginate(15);
         $return = $tags->toArray();
         $list = [];
@@ -340,7 +340,7 @@ class ProductController extends Controller {
                 'name' => $model->name,
                 'logo' => $model->logo,
                 'summary' => $model->summary,
-                'support_rate' => $model->support_rate?:0,
+                'support_rate' => $tag->support_rate?:0,
                 'review_average_rate' => $info['review_average_rate'],
                 'can_support' => $can_support<3?1:0
             ];
