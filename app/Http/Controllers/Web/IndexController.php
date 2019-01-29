@@ -28,7 +28,7 @@ class IndexController extends Controller
             if (!$submission) return 'bad request';
             return redirect($submission->data['url']);
         }
-        if (in_array($request->input('inwehub_user_device','web'),['web','wechat']) || $article->source_type != 1 || str_contains($article->content_url, 'wechat_redirect') || str_contains($article->content_url, '__biz=')) {
+        if (in_array($request->input('inwehub_user_device','web'),['web','wechat']) || $article->source_type != 1 || str_contains($article->content_url, '/s/') || str_contains($article->content_url, 'wechat_redirect') || str_contains($article->content_url, '__biz=')) {
             return redirect($article->content_url);
         }
         $date = strtotime($article->date_time);
