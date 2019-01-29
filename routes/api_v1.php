@@ -56,8 +56,6 @@ Route::group(['namespace'=>'Share'], function() {
 });
 
 Route::group(['namespace'=>'Account'], function() {
-    //用户个人名片
-    Route::any('profile/resumeInfo','ProfileController@resumeInfo');
     Route::post('profile/infoByUuid','ProfileController@infoByUuid');
 
 });
@@ -84,6 +82,8 @@ Route::group(['middleware' => ['jwt.auth','ban.user'],'namespace'=>'Account'], f
     //用户信息
     Route::get('profile/info','ProfileController@info');
     Route::post('profile/info','ProfileController@info');
+    //用户个人名片
+    Route::any('profile/resumeInfo','ProfileController@resumeInfo');
 
     //修改用户头像
     Route::post('profile/updateAvatar','ProfileController@postAvatar');
