@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box box-default">
-                    <form role="form" name="addForm" method="POST"  action="{{ route('admin.category.store') }}">
+                    <form role="form" name="addForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.category.store') }}">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <input type="hidden" id="parent_id" name="parent_id" value="" />
                         <div class="box-body">
