@@ -140,6 +140,7 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="tagIds" id="tagIds" />
+                        <input type="hidden" name="albumIds" id="albumIds" />
                         <input type="hidden" name="id" id="id" />
                         <div class="box-body">
                             <div class="form-group">
@@ -147,7 +148,17 @@
                                 <div class="row">
                                     <div class="col-sm-10">
                                         <select style="width: auto" id="select_tags_id" name="select_tags_id" class="form-control" multiple="multiple" >
-                                            @include('admin.category.option',['type'=>['enterprise_review','product_album'],'select_id'=>0,'root'=>false, 'last'=>true])
+                                            @include('admin.category.option',['type'=>'enterprise_review','select_id'=>0,'root'=>false, 'last'=>true])
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="select_tags_id_product_album" class="control-label">专辑:</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select style="width: auto" id="select_tags_id_product_album" name="select_tags_id_product_album" class="form-control" multiple="multiple" >
+                                            @include('admin.category.option',['type'=>'product_album','select_id'=>0,'root'=>false, 'last'=>true])
                                         </select>
                                     </div>
                                 </div>
@@ -183,11 +194,20 @@
 
         $("#select_tags_id").select2({
             theme:'bootstrap',
-            placeholder: "标签"
+            placeholder: "分类"
         });
 
         $("#select_tags_id").change(function(){
             $("#tagIds").val($("#select_tags_id").val());
+        });
+
+        $("#select_tags_id_product_album").select2({
+            theme:'bootstrap',
+            placeholder: "专辑"
+        });
+
+        $("#select_tags_id_product_album").change(function(){
+            $("#albumIds").val($("#select_tags_id_product_album").val());
         });
 
         $(".btn-edit_category").click(function(){
@@ -197,16 +217,17 @@
             $("#title").html($(this).data('title'));
             $("#select_tags_id").val(cs.toString().split(','));
             $('#select_tags_id').trigger('change');
+
+            $("#select_tags_id_product_album").val(cs.toString().split(','));
+            $('#select_tags_id_product_album').trigger('change');
             $('#set_fav_modal').modal('show');
         });
 
         $("#set_fav_submit").click(function(){
             var id = $("#id").val();
-            $.post('/admin/review/product/updateCategory',{ids: id,category_id: $("#tagIds").val()},function(msg){
-
+            $.post('/admin/review/product/updateCategory',{ids: id,category_id: $("#tagIds").val(), album_id: $("#albumIds").val()},function(msg){
+                window.location.reload();
             });
-            $('.product_edit_category_' + id).css('display','none');
-            $('#set_fav_modal').modal('hide');
         });
 
         $(".btn-setveriy").click(function(){
