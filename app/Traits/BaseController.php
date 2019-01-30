@@ -156,11 +156,11 @@ trait BaseController {
             $from  = Input::get('inwehub_user_device');
             if (strpos($action,'share') === 0) {
                 event(new ImportantNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
-            } else {
+            } elseif ($user->id) {
                 event(new SystemNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
             }
         }
-        if(RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user->id.'_'.$source_id)){
+        if($user->id && RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('doing_'.$action,$user->id.'_'.$source_id)){
             try {
                 dispatch(new SaveActivity([
                     'user_id' => $user->id,
