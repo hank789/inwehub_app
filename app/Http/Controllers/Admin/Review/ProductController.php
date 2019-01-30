@@ -246,6 +246,8 @@ class ProductController extends AdminController
     public function changeCategories(Request $request){
         $ids = $request->input('ids','');
         $categoryIds = explode(',',$request->input('category_id',0));
+        $albumIds = explode(',',$request->input('album_id',0));
+        $categoryIds = array_merge($categoryIds,$albumIds);
         if($ids){
             $idArray = explode(",",$ids);
             foreach ($idArray as $id) {
