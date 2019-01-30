@@ -12,7 +12,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="box box-primary">
-                    <form role="form" name="editForm" method="POST" action="{{ route('admin.category.update',['id'=>$category->id]) }}">
+                    <form role="form" name="editForm" method="POST" enctype="multipart/form-data" action="{{ route('admin.category.update',['id'=>$category->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" id="parent_id" name="parent_id" value="{{ $category->parent_id }}" />
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
