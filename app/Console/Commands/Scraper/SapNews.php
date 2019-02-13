@@ -181,7 +181,7 @@ class SapNews extends Command {
                     'title' => ['h2>a','text'],
                     'link'  => ['h2>a','href'],
                     'author' => ['p.posted>a','text'],
-                    'dateTime' => ['time','text'],
+                    'dateTime' => ['p.posted','text'],
                     'description' => ['section>p','text'],
                     'image' => ['img.avatar.avatar-96.photo','src']
                 ])->range('article.post-listing')->query()->getData();
@@ -196,7 +196,8 @@ class SapNews extends Command {
                 foreach ($list as $item) {
                     $exist_submission_id = Redis::connection()->hget('voten:submission:url', $item['link']);
                     if ($exist_submission_id) continue;
-                    $dateTime = $item['dateTime'];
+                    $dateTime = str_replace('Posted by '.$item['author'].' on ','',$item['dateTime']);
+                    $this->info($dateTime);
                     if ($dateTime) {
                         $dateTime = strtotime($dateTime);
                         if ($dateTime <= strtotime('-'.$limitDays.' days')) {
