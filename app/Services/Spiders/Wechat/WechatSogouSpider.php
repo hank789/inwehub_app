@@ -115,6 +115,8 @@ class WechatSogouSpider
                 $newData = $this->getGzhInfo($mpInfo->wx_hao);
                 if (empty($newData['name'])) {
                     event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
+                    $mpInfo->rank_article_release_count = -1;
+                    $mpInfo->save();
                     return [];
                 }
                 $mpInfo->wz_url = $newData['url'];
