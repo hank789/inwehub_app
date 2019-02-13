@@ -61,7 +61,7 @@ class WechatPosts extends Command {
                 $notify = false;
                 $mpInfos = WechatMpInfo::where('status',1)->where('wx_hao',$gzh)->orderBy('update_time','asc')->get();
             } else {
-                $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
+                $mpInfos = WechatMpInfo::where('status',1)->where('rank_article_release_count','>=',0)->orderBy('update_time','asc')->get();
             }
             $succ_count = 0;
             foreach ($mpInfos as $mpInfo) {
