@@ -96,6 +96,10 @@ class SapNews extends Command {
                             $isBreak = true;
                             break;
                         }
+                    } else {
+                        event(new ExceptionNotify('未取到'.$url1.'发布日期'));
+                        $isBreak = true;
+                        break;
                     }
 
                     $count++;
@@ -199,6 +203,10 @@ class SapNews extends Command {
                             $isBreak = true;
                             break;
                         }
+                    } else {
+                        event(new ExceptionNotify('未取到'.$url2.'发布日期'));
+                        $isBreak = true;
+                        break;
                     }
                     $this->info($item['title']);
                     $count++;
