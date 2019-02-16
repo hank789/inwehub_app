@@ -97,7 +97,10 @@ class NewSupport extends Notification implements ShouldBroadcast,ShouldQueue
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_READ;
                 $title = $this->support->user->name.'赞了您的'.$titleType;
                 $avatar = $this->support->user->avatar;
-                $body = $source->formatTitle();
+                $body = strip_tags($source->title);
+                if ($source->type == 'link') {
+                    $body = strip_tags($source->data['title']);
+                }
                 break;
             case 'App\Models\Comment':
                 $notification_type = NotificationModel::NOTIFICATION_TYPE_TASK;
