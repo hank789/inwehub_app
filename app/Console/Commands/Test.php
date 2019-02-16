@@ -9,6 +9,9 @@ use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Company\CompanyData;
 use App\Models\Doing;
+use App\Models\Feed\Feed;
+use App\Models\Groups\Group;
+use App\Models\Groups\GroupMember;
 use App\Models\Question;
 use App\Models\RecommendRead;
 use App\Models\Scraper\BidInfo;
@@ -70,6 +73,15 @@ class Test extends Command
      */
     public function handle()
     {
+        $groups = Group::where('audit_status',4)->get();
+        foreach ($groups as $group) {
+            GroupMember::where('group_id',$group->id)->delete();
+            Submission::where('group_id',$group->id)->update(['group_id'=>1]);
+            Feed::where('group_id',$group->id)->update(['group_id'=>1]);
+            WechatMpInfo::where('group_id',$group->id)->update(['group_id'=>1]);
+            Feeds::where('group_id',$group->id)->update(['group_id'=>1]);
+        }
+        return;
         $product_c = Category::where('slug','product_album')->first();
         $categories = [
             [

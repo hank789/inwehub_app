@@ -60,6 +60,15 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
                     ->line('Thank you for using our application!');
     }
 
+    public function getTitle() {
+        $title = strip_tags($this->submission->title);
+        if ($this->submission->type == 'link') {
+            $title = strip_tags($this->submission->data['title']);
+        }
+        if (empty($title)) return false;
+        return $title;
+    }
+
     /**
      * Get the array representation of the notification.
      *
@@ -80,7 +89,7 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
             'notification_type' => NotificationModel::NOTIFICATION_TYPE_READ,
             'avatar' => $this->submission->owner->avatar,
             'title'  => '您关注的@'.$this->submission->owner->name.'发布了新'.$typeName,
-            'body'   => strip_tags($this->submission->title),
+            'body'   => $this->getTitle(),
             'extra_body' => ''
         ];
     }
@@ -94,9 +103,10 @@ class FollowedUserNewSubmission extends Notification implements ShouldBroadcast,
             $typeName = '分享';
             $url = '/c/'.$this->submission->category_id.'/'.$this->submission->slug;
         }
+
         return [
             'title' => '您关注的@'.$this->submission->owner->name.'发布了新'.$typeName,
-            'body'  => strip_tags($this->submission->title),
+            'body'  => $this->getTitle(),
             'payload' => ['object_type'=>'readhub_new_submission','object_id'=>$url],
         ];
     }
