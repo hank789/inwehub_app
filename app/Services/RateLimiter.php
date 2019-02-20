@@ -202,15 +202,16 @@ class RateLimiter extends Singleton
      * @return bool
      */
     function lock_acquire($key,$max=1,$timeout=5){
-        $key = 'inwehub:'.$key;
+        $key = $this->prefix.$key;
         $count = $this->client->incr($key);
-        $this->client->expire($key,$timeout);
-        $max = $max + 1;
-        while($count >= $max){
-            $count = $this->client->incr($key);
+        while($count > $max){
             usleep(1000);
+            $count = $this->client->incr($key);
         }
-        return true;
+        $ttl = $this->client->pttl($key);
+        if ($ttl <= 0) {
+            $this->client->expire($key,$timeout);
+        }
     }
 
     /**
