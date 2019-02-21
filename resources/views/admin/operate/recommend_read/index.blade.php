@@ -64,7 +64,7 @@
                                         <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>ID</th>
                                         <th>标题</th>
-                                        <th>标签语</th>
+                                        <th>微信链接转换</th>
                                         <th>封面图片</th>
                                         <th>热度</th>
                                         <th>文章ID</th>
@@ -87,7 +87,11 @@
                                                     <a class="btn btn-default btn-sm btn-cancelVerify" data-toggle="tooltip" title="取消审核" data-source_id = "{{ $item->id }}"><i class="fa fa-lock"></i></a>
                                                 </div>
                                             </td>
-                                            <td>{{ $item->tips }}</td>
+                                            <td>
+                                                @if ($item->checkSourceLink() !== true)
+                                                    <a href="{{ $item->checkSourceLink() }}" target="_blank">过期链接</a>
+                                                @endif
+                                            </td>
                                             <td>
                                                 @if ($item->data['img'] && is_array($item->data['img']))
                                                     @foreach($item->data['img'] as $img)
