@@ -6,6 +6,7 @@ use App\Jobs\UploadFile;
 use App\Models\Category;
 use App\Models\Company\CompanyData;
 use App\Models\Doing;
+use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Support;
 use App\Models\Tag;
@@ -49,7 +50,93 @@ class ProductController extends Controller {
         if (!$tag) {
             throw new ApiException(ApiException::PRODUCT_TAG_NOT_EXIST);
         }
-        $data = $this->getTagProductInfo($tag);
+
+        $reviewInfo = Tag::getReviewInfo($tag->id);
+        $data = $tag->toArray();
+        $data['review_count'] = $reviewInfo['review_count'];
+        $data['review_average_rate'] = $reviewInfo['review_average_rate'];
+        $submissions = Submission::selectRaw('count(*) as total,rate_star')->where('status',1)->where('category_id',$tag->id)->groupBy('rate_star')->get();
+        foreach ($submissions as $submission) {
+            $data['review_rate_info'][] = [
+                'rate_star' => $submission->rate_star,
+                'count'=> $submission->total
+            ];
+        }
+
+        $data['related_tags'] = $tag->relationReviews(4);
+        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
+        $cids = [];
+        foreach ($categoryRels as $key=>$categoryRel) {
+            $cids[] = $categoryRel->category_id;
+            $category = Category::find($categoryRel->category_id);
+            if ($category->type == 'enterprise_review') continue;//只显示专辑
+            $rate = TagCategoryRel::where('category_id',$category->id)->where('review_average_rate','>',$categoryRel->review_average_rate)->count();
+            $data['categories'][] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'rate' => $rate+1,
+                'support_rate' => $categoryRel->support_rate?:0,
+                'type' => $category->type == 'enterprise_review'?1:2
+            ];
+        }
+        $data['is_pro'] = 1;//是否专业版
+        $data['cover_pic'] = 'https://cdn.inwehub.com/submissions/2019/02/1551078771CFm6MRz.png';//封面图
+        $data['introduce_pic'] = [
+            'https://cdn.inwehub.com/submissions/2019/02/1551059065JDby9cC.png',
+            'https://cdn.inwehub.com/submissions/2019/02/1551058565rOuuRHB.png',
+            'https://cdn.inwehub.com/submissions/2019/02/1550798768V9o7Dod.png',
+            'https://cdn.inwehub.com/submissions/2019/02/15508303947o9L5xX.png',
+            'https://cdn.inwehub.com/submissions/2019/02/1550798803A3cIcky.png'
+        ];
+        $data['recent_news'] = [];
+        $news = Submission::where('status',1)->where('category_id',$tag->id)->where('type','!=','review')->orderBy('_id','desc')->take(5)->get();
+        foreach ($news as $new) {
+            $img = $new->data['img']??'';
+            if (is_array($img)) {
+                if ($img) {
+                    $img = $img[0];
+                } else {
+                    $img = '';
+                }
+            }
+            $data['recent_news'][] = [
+                'title' => strip_tags($new->data['title']??$new->title),
+                'date' => date('Y年m月d日',$new->created_at),
+                'author' => 'mp.weixin.com',
+                'cover_pic' => $img,
+                'link_url' => config('app.url').'/articleInfo/'.$new->id.'?inwehub_user_device=weapp'
+            ];
+        }
+        $data['case_list'][] = [
+            'title' => 'GeneDock',
+            'desc' => '帮助合作伙伴在医学健康和卫生领域不断进行创新',
+            'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/1550830307ND2DNtt.png',
+            'type' => 'image',
+            'link_url' => 'https://cdn.inwehub.com/submissions/2019/02/1550830307ND2DNtt.png'
+        ];
+        $data['case_list'][] = [
+            'title' => '七陌',
+            'desc' => '在发展过程中保障了七陌云平台的安全、稳定',
+            'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/15507124879eHmrYV.png',
+            'type' => 'link',
+            'link_url' => 'https://api.inwehub.com/articleInfo/91284?inwehub_user_device=ios'
+        ];
+
+        $data['expert_review'][] = [
+            'avatar' => 'https://cdn.inwehub.com/media/494/user_origin_3566.jpg',
+            'name' => 'Jack',
+            'title' => '知名架构师',
+            'content' => '依托实力雄厚的阿里巴巴集团，在杭州、北京和硅谷等地设有运营机构。阿里云是目前中国最大的云服务商，占有50%以上的市场份额。'
+        ];
+
+        $data['expert_review'][] = [
+            'avatar' => 'https://cdn.inwehub.com/media/483/user_origin_3545.jpg',
+            'name' => '冯大牛',
+            'title' => '咨询顾问',
+            'content' => '总体感觉还是很不错的，用了有快一年了没出过问题，很稳定，比以前自己的服务器好多了，备案也很方便。建议初创企业或者网站可以使用，性价比还是很高的，省心 。'
+        ];
+
+
         event(new SystemNotify('小程序用户'.$oauth->user_id.'['.$oauth->nickname.']查看产品详情:'.$tag->name));
         return self::createJsonData(true,$data);
     }
@@ -83,7 +170,7 @@ class ProductController extends Controller {
             $user->id = 0;
             $user->name = '游客';
         }
-        $query = Submission::where('status',1)->where('category_id',$tag->id);
+        $query = Submission::where('status',1)->where('category_id',$tag->id)->where('type','review');
         $submissions = $query->orderBy('is_recommend','desc')->orderBy('id','desc')->paginate($perPage);
         $return = $submissions->toArray();
         $list = [];

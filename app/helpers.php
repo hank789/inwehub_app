@@ -2174,3 +2174,12 @@ function weapp_qrcode_replace_logo($qrcodeUrl,$newLogoUrl,$circleQr = false) {
     return $qrcodeUrl.'?x-oss-process=image/resize,w_430,h_430'.($circleQr?',image/circle,r_300/format,png':'').'/watermark,image_'.$s.',g_center';
 }
 
+function formatThirdLink($link) {
+    if (str_contains($link,'?')) {
+        $link = $link.'&from_source=inwehub';
+    } else {
+        $link = $link.'?from_source=inwehub';
+    }
+    return $link;
+}
+

@@ -18,7 +18,14 @@
     <section class="content">
         <div class="row">
             <div class="col-xs-12">
-                <div class="box box-default">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tab_base" data-toggle="tab" aria-expanded="false">产品编辑</a></li>
+                        <li><a href="#tab_news" data-toggle="tab" aria-expanded="true">产品亮点</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_base">
+                            <div class="box box-default">
                     <form role="form" name="tagForm" id="tag_form" method="POST" enctype="multipart/form-data" action="{{ route('admin.review.product.update',['id'=>$tag->id]) }}">
                         <input name="_method" type="hidden" value="PUT">
                         <input type="hidden" name="_token" id="editor_token" value="{{ csrf_token() }}">
@@ -34,7 +41,7 @@
                                 <input type="file" name="logo" />
                                 @if($tag->tag->logo)
                                 <div style="margin-top: 10px;">
-                                    <img src="{{ $tag->tag->logo }}" />
+                                    <img style="width: 150px;height: 150px;" src="{{ $tag->tag->logo }}" />
                                 </div>
                                 @endif
                             </div>
@@ -51,7 +58,7 @@
 
                             <div class="form-group @if ($errors->has('summary')) has-error @endif">
                                 <label for="name">简介(供前台展示)</label>
-                                <textarea name="summary" class="form-control" placeholder="简介" style="height: 80px;">{{ old('summary',$tag->tag->summary) }}</textarea>
+                                <textarea name="summary" class="form-control" placeholder="简介" style="height: 280px;">{{ old('summary',$tag->tag->summary) }}</textarea>
                                 @if ($errors->has('summary')) <p class="help-block">{{ $errors->first('summary') }}</p> @endif
                             </div>
 
@@ -79,6 +86,12 @@
                             <button type="reset" class="btn btn-success">重置</button>
                         </div>
                     </form>
+                </div>
+                        </div>
+                        <div class="tab-pane" id="tab_news">
+                            产品亮点
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
