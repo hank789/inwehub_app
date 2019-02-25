@@ -275,7 +275,7 @@ class ProductController extends Controller {
         $actionName = Doing::ACTION_VIEW_DIANPING_REVIEW_INFO;
         $actionUrl = config('app.mobile_url').'#/dianping/comment/'.$submission->slug;
         $return = $this->formatSubmissionInfo($request,$submission,$user);
-
+        $return['offical_reply'] = '今年6月份注册成为Airbnb的房东，接待了两个房客，感觉非常的开心';
         $this->logUserViewTags($user->id,$submission->tags()->get());
         $this->doing($user,$actionName,get_class($submission),$submission->id,$submission->type == 'link'?$submission->data['title']:$submission->title,
             '',0,0,'',$actionUrl);
