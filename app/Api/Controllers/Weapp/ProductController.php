@@ -181,6 +181,54 @@ class ProductController extends Controller {
         return self::createJsonData(true, $return);
     }
 
+    public function newsList(Request $request, JWTAuth $JWTAuth) {
+        $validateRules = [
+            'tag_id' => 'required'
+        ];
+
+        $this->validate($request,$validateRules);
+        $tag_id = $request->input('tag_id');
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+
+        $tag = Tag::find($tag_id);
+        if (!$tag) {
+            throw new ApiException(ApiException::PRODUCT_TAG_NOT_EXIST);
+        }
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
+        $query = Submission::where('status',1)->where('category_id',$tag->id)->where('type','link');
+        $submissions = $query->orderBy('id','desc')->paginate($perPage);
+        $return = $submissions->toArray();
+        $list = [];
+        foreach ($submissions as $submission) {
+            $img = $submission->data['img']??'';
+            if (is_array($img)) {
+                if ($img) {
+                    $img = $img[0];
+                } else {
+                    $img = '';
+                }
+            }
+            $list[] = [
+                'id' => $submission->id,
+                'title' => strip_tags($submission->data['title']??$submission->title),
+                'type' => 'link',
+                'domain' => $submission->data['domain']??'',
+                'img' => $img,
+                'link_url' => config('app.url').'/articleInfo/'.$submission->id.'?inwehub_user_device=weapp',
+                'created_at' => date('Y年m月d日',$submission->created_at)
+            ];
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
+    }
+
     public function myReviewList(Request $request, JWTAuth $JWTAuth) {
         $oauth = $JWTAuth->parseToken()->toUser();
         if ($oauth->user_id) {
