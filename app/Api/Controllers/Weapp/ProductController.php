@@ -89,7 +89,7 @@ class ProductController extends Controller {
             'https://cdn.inwehub.com/submissions/2019/02/1550798803A3cIcky.png'
         ];
         $data['recent_news'] = [];
-        $news = Submission::where('status',1)->where('category_id',$tag->id)->where('type','!=','review')->orderBy('_id','desc')->take(5)->get();
+        $news = Submission::where('status',1)->where('category_id',$tag->id)->where('type','!=','review')->orderBy('id','desc')->take(5)->get();
         foreach ($news as $new) {
             $img = $new->data['img']??'';
             if (is_array($img)) {
