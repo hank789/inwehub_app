@@ -156,7 +156,7 @@ trait BaseController {
             $from  = Input::get('inwehub_user_device');
             if (strpos($action,'share') === 0) {
                 event(new ImportantNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
-            } elseif ($user->id) {
+            } elseif ($user->id>0) {
                 event(new SystemNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
             }
         }

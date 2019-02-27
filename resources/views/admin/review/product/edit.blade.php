@@ -24,6 +24,7 @@
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#tab_base" data-toggle="tab" aria-expanded="false">产品编辑</a></li>
                         <li><a href="#tab_news" data-toggle="tab" aria-expanded="true">产品亮点</a></li>
+                        <li><a href="#tab_idea" data-toggle="tab" aria-expanded="true">专家观点</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_base">
@@ -117,10 +118,6 @@
                 </div>
                         </div>
                         <div class="tab-pane" id="tab_news">
-                                <input name="_method" type="hidden" value="POST">
-                                <input type="hidden" name="_token" id="editor_token" value="{{ csrf_token() }}">
-                                <input type="hidden" name="deletedImages" id="deletedImages" value="">
-
                                 <div class="box-body">
                                     <div class="file-loading">
                                         <label>Preview File Icon</label>
@@ -128,6 +125,73 @@
                                     </div>
 
                                 </div>
+                        </div>
+                        <div class="tab-pane" id="tab_idea">
+                            <div class="panel-body">
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-stripped">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                专家头像
+                                            </th>
+                                            <th>
+                                                专家姓名
+                                            </th>
+                                            <th>
+                                                头衔
+                                            </th>
+                                            <th>
+                                                观点
+                                            </th>
+                                            <th>
+                                                排序
+                                            </th>
+                                            <th>
+                                                操作
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($ideaList as $key=>$idea)
+                                                <tr id="tr_idea_{{$key}}">
+                                                    <td>
+                                                        <input onchange="uploadAndPreviewImg(1,'avatar_{{$key}}','avatar_preview_{{$key}}')" type="file" id="avatar_{{$key}}" accept="image/*" name="avatar" />
+                                                        <fieldset style="width:300px;">
+                                                            <div style="position: relative;" id="avatar_preview_{{$key}}">
+                                                            </div>
+                                                        </fieldset>
+                                                        @if ($idea['avatar'])
+                                                            <img style="width: 150px;height: 150px;" src="{{$idea['avatar']}}">
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <input name="name" id="name_{{$key}}" type="text" class="form-control" value="{{ $idea['name'] }}">
+                                                    </td>
+                                                    <td>
+                                                        <input name="title" id="title_{{$key}}" type="text" class="form-control" value="{{ $idea['title'] }}">
+                                                    </td>
+                                                    <td>
+                                                        <textarea name="content" id="content_{{$key}}" class="form-control" placeholder="观点" style="height: 80px;">{{ $idea['content'] }}</textarea>
+                                                    </td>
+                                                    <td>
+                                                        <input name="sort" id="sort_{{$key}}" type="text" class="form-control" value="{{ $idea['sort'] }}">
+                                                    </td>
+                                                    <td>
+                                                        @if ($idea['id'] > 0)
+                                                            <button class="btn btn-white" data-id="{{$idea['id']}}" data-key="{{$key}}" onclick="deleteIdea(this)"><i class="fa fa-trash"></i> </button>
+                                                        @endif
+                                                            <button class="btn btn-white" data-tag_id="{{$tag->tag_id}}" data-id="{{$idea['id']}}" data-key="{{$key}}" onclick="saveIdea(this)"><i class="fa fa-save"></i> </button>
+                                                    </td>
+                                                </tr>
+                                        @endforeach
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -181,6 +245,53 @@
                     }
                 });
             });
-        })
+        });
+        function deleteIdea(obj) {
+            if(!confirm('确认删除该记录？')){
+                return false;
+            }
+            var id = $(obj).data('id');
+            var key = $(obj).data('key');
+            $.ajax({
+                type: "post",
+                data: {id: id},
+                url:"{{route('admin.review.product.deleteIdea')}}",
+                success: function(data){
+                    console.log(data);
+                    $("#tr_idea_" + key).css('display','none');
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
+        }
+        function saveIdea(obj) {
+            var id = $(obj).data('id');
+            var key = $(obj).data('key');
+            var formData = new FormData();
+            formData.append('file', $('#avatar_'+key)[0].files[0]);  //添加图片信息的参数
+            formData.append('name',$('#name_'+key).val());
+            formData.append('title',$('#title_'+key).val());
+            formData.append('content',$('#content_'+key).val());
+            formData.append('sort',$('#sort_'+key).val());
+            formData.append('id',id);
+
+            $.ajax({
+                type: "post",
+                data: formData,
+                cache: false,
+                processData: false, // 告诉jQuery不要去处理发送的数据
+                contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+                url:"{{route('admin.review.product.saveIdea',['tag_id'=>$tag->tag_id])}}",
+                success: function(data){
+                    console.log(data);
+                    $(obj).data('id',data.id);
+                    alert('保存成功');
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
+        }
     </script>
 @endsection

@@ -152,7 +152,7 @@ jQuery.DuoImgsYulan = function(file, id, length, fileId) {
             var del = document.createElement("div"); //删除按钮div
             del.setAttribute("style", "position: absolute; bottom: 4px; right: 0px; z-index: 99; width: 30px; height:30px;border-radius:50%;")
             var delicon = document.createElement("img");
-            delicon.setAttribute("src", "http://www.jq22.com/tp/f26c324f-24db-4f08-91d6-f7ffc9ca1516.png");
+            delicon.setAttribute("src", "https://cdn.inwehub.com/system/deleted.png");
             delicon.setAttribute("title", "删除");
             delicon.setAttribute("style", "cursor:pointer;width: 30px; height:30px");
             del.onclick = function() {

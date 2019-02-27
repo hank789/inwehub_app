@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Review;
 use App\Http\Controllers\Admin\AdminController;
 use App\Logic\TagsLogic;
 use App\Models\Category;
+use App\Models\ContentCollection;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
@@ -167,9 +168,35 @@ class ProductController extends AdminController
                 'extra' => ['url'=>$img['url']]
             ];
         }
+        $ideas = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA)
+            ->where('status',1)
+            ->where('source_id',$tag->tag_id)
+            ->orderBy('sort','asc')->get();
+        $ideaList = [];
+        for ($i=1;$i<=10;$i++) {
+            $ideaList[] = [
+                'id' => 0,
+                'avatar' => '',
+                'name' => '',
+                'title' => '',
+                'content' => '',
+                'sort' => $i
+            ];
+        }
+        foreach ($ideas as $v=>$idea) {
+            $ideaList[$v] = [
+                'id' => $idea->id,
+                'avatar' => $idea->content['avatar'],
+                'name' => $idea->content['name'],
+                'title' => $idea->content['title'],
+                'content' => $idea->content['content'],
+                'sort' => $idea->sort
+            ];
+        }
 
         return view('admin.review.product.edit')->with('tag',$tag)
             ->with('initialPreview',json_encode(array_column($initialPreview,'url')))
+            ->with('ideaList',$ideaList)
             ->with('initialPreviewConfig',json_encode($initialPreviewConfig));
     }
 
@@ -413,6 +440,50 @@ class ProductController extends AdminController
         $tagIds = $request->input('ids');
         TagCategoryRel::where('id',$tagIds)->delete();
         return response('success');
+    }
+
+    public function deleteIdea(Request $request) {
+        $id = $request->input('id');
+        ContentCollection::destroy($id);
+        return response()->json(['id'=>$id]);
+    }
+
+    public function saveIdea(Request $request,$tag_id) {
+        $validateRules = [
+            'name' => 'required|max:128',
+            'title' => 'required|max:128',
+            'content' => 'required',
+            'sort' => 'required',
+            'file' => 'required|file',
+            'id' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $data = $request->all();
+        $img_url = '';
+        if($request->hasFile('file')){
+            $file = $request->file('file');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+        }
+        $id = $data['id'];
+        if ($id) {
+            $model = ContentCollection::find($id);
+        } else {
+            $model = ContentCollection::create([
+                'content_type' => ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA,
+                'sort' => $data['sort'],
+                'source_id' => $tag_id,
+                'content' => [
+                    'avatar' => $img_url,
+                    'name' => $data['name'],
+                    'title' => $data['title'],
+                    'content' => $data['content']
+                ]
+            ]);
+        }
+        return response()->json(['id'=>$model->id]);
     }
 
 }

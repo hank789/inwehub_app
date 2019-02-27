@@ -188,6 +188,8 @@ Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
     Route::post('product/updateIntroducePic/{id}',['as'=>'admin.review.product.updateIntroducePic','uses'=>'ProductController@updateIntroducePic'])->where(['id'=>'[0-9]+']);
     Route::post('product/deleteIntroducePic/{id}',['as'=>'admin.review.product.deleteIntroducePic','uses'=>'ProductController@deleteIntroducePic'])->where(['id'=>'[0-9]+']);
     Route::post('product/sortIntroducePic/{id}',['as'=>'admin.review.product.sortIntroducePic','uses'=>'ProductController@sortIntroducePic'])->where(['id'=>'[0-9]+']);
+    Route::post('product/deleteIdea',['as'=>'admin.review.product.deleteIdea','uses'=>'ProductController@deleteIdea']);
+    Route::post('product/saveIdea/{tag_id}',['as'=>'admin.review.product.saveIdea','uses'=>'ProductController@saveIdea'])->where(['tag_id'=>'[0-9]+']);
 
 
     Route::get('submission/index',['as'=>'admin.review.submission.index','uses'=>'SubmissionController@index']);
