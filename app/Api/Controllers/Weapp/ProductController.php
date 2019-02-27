@@ -108,18 +108,34 @@ class ProductController extends Controller {
             ];
         }
         $data['case_list'][] = [
-            'title' => 'GeneDock',
+            'title' => '图片预览',
             'desc' => '帮助合作伙伴在医学健康和卫生领域不断进行创新',
             'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/1550830307ND2DNtt.png',
             'type' => 'image',
             'link_url' => 'https://cdn.inwehub.com/submissions/2019/02/1550830307ND2DNtt.png'
         ];
         $data['case_list'][] = [
-            'title' => '七陌',
+            'title' => '打开链接',
             'desc' => '在发展过程中保障了七陌云平台的安全、稳定',
             'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/15507124879eHmrYV.png',
             'type' => 'link',
-            'link_url' => 'https://api.inwehub.com/articleInfo/91284?inwehub_user_device=ios'
+            'link_url' => 'https://api.inwehub.com/articleInfo/91284?inwehub_user_device=weapp_dianping'
+        ];
+
+        $data['case_list'][] = [
+            'title' => '播放视频',
+            'desc' => '在发展过程中保障了七陌云平台的安全、稳定',
+            'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/15507124879eHmrYV.png',
+            'type' => 'video',
+            'link_url' => 'http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400'
+        ];
+
+        $data['case_list'][] = [
+            'title' => '打开pdf文档',
+            'desc' => '在发展过程中保障了七陌云平台的安全、稳定',
+            'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/15507124879eHmrYV.png',
+            'type' => 'pdf',
+            'link_url' => 'https://cdn.inwehub.com/pdf/pdf.pdf'
         ];
 
         $data['expert_review'][] = [
