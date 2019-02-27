@@ -185,6 +185,10 @@ Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
     Route::put('product/update/{id}',['as'=>'admin.review.product.update','uses'=>'ProductController@update'])->where(['id'=>'[0-9]+']);
     Route::post('product/setveriy',['as'=>'admin.review.product.setveriy','uses'=>'ProductController@setVeriy']);
     Route::post('product/updateCategory',['as'=>'admin.review.product.updateCategory','uses'=>'ProductController@changeCategories']);
+    Route::post('product/updateIntroducePic/{id}',['as'=>'admin.review.product.updateIntroducePic','uses'=>'ProductController@updateIntroducePic'])->where(['id'=>'[0-9]+']);
+    Route::post('product/deleteIntroducePic/{id}',['as'=>'admin.review.product.deleteIntroducePic','uses'=>'ProductController@deleteIntroducePic'])->where(['id'=>'[0-9]+']);
+    Route::post('product/sortIntroducePic/{id}',['as'=>'admin.review.product.sortIntroducePic','uses'=>'ProductController@sortIntroducePic'])->where(['id'=>'[0-9]+']);
+
 
     Route::get('submission/index',['as'=>'admin.review.submission.index','uses'=>'SubmissionController@index']);
     Route::get('submission/edit/{id}',['as'=>'admin.review.submission.edit','uses'=>'SubmissionController@edit'])->where(['id'=>'[0-9]+']);

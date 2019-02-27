@@ -36,7 +36,7 @@
         "predis/predis": "^1.1",
         "ramsey/uuid": "^3.6",
         "riverslei/payment": "dev-master",
-        "sentry/sentry-laravel": "^0.8.0",
+        "sentry/sentry-laravel": "1.0.0",
         "spatie/laravel-backup": "5.*",
         "spatie/laravel-medialibrary": "6.*",
         "stichoza/google-translate-php": "^3.2",

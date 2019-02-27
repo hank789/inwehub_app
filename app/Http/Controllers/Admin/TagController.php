@@ -182,7 +182,8 @@ class TagController extends AdminController
         $oldCid = $tag->category_id;
         $tag->name = $name;
         $tag->summary = $request->input('summary');
-        $tag->description = $request->input('description');
+        $keywords = $request->input('description');
+        $tag->setDescription(['keywords'=>$keywords]);
         if($request->hasFile('logo')){
             $file = $request->file('logo');
             $extension = $file->getClientOriginalExtension();

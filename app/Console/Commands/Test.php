@@ -73,6 +73,9 @@ class Test extends Command
      */
     public function handle()
     {
+        $s = 'hanktest';
+        var_dump(json_decode($s,true));
+        return;
         $groups = Group::where('audit_status',4)->get();
         foreach ($groups as $group) {
             GroupMember::where('group_id',$group->id)->delete();

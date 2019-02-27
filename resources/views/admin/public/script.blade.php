@@ -29,7 +29,7 @@
 
 
 
-<script src='{{ asset('/js/admin/common.js') }}' type="text/javascript"></script>
+<script src='{{ asset('/js/admin/common.js?ver=1') }}' type="text/javascript"></script>
 
 @if ( session('message') )
 <script type="text/javascript">

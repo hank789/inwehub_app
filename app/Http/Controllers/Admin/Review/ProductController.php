@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
+use App\Services\RateLimiter;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -155,7 +156,21 @@ class ProductController extends AdminController
            abort(404);
         }
         //$categories = $tag->categories->pluck('id')->toArray();
-        return view('admin.review.product.edit')->with('tag',$tag);
+        $initialPreview = $tag->tag->getIntroducePic();
+        $initialPreviewConfig = [];
+        foreach ($initialPreview as $key=>$img) {
+            $initialPreviewConfig[] = [
+                'caption' => '',
+                'width' => '120px',
+                'url' => route('admin.review.product.deleteIntroducePic',['id'=>$tag->tag_id]),
+                'key' => $img['sort'],
+                'extra' => ['url'=>$img['url']]
+            ];
+        }
+
+        return view('admin.review.product.edit')->with('tag',$tag)
+            ->with('initialPreview',json_encode(array_column($initialPreview,'url')))
+            ->with('initialPreviewConfig',json_encode($initialPreviewConfig));
     }
 
     /**
@@ -179,7 +194,8 @@ class ProductController extends AdminController
         $this->validate($request,$this->validateRules);
         $tag->name = $request->input('name');
         $tag->summary = $request->input('summary');
-        $tag->description = strip_tags($request->input('description'));
+        $tag->is_pro = $request->input('is_pro',0);
+
         if($request->hasFile('logo')){
             $file = $request->file('logo');
             $extension = $file->getClientOriginalExtension();
@@ -188,6 +204,18 @@ class ProductController extends AdminController
             $img_url = Storage::disk('oss')->url($filePath);
             $tag->logo = $img_url;
         }
+        $cover_pic = '';
+        if($request->hasFile('cover_pic')){
+            $file = $request->file('cover_pic');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            $cover_pic = $img_url;
+        }
+
+        $keywords = $request->input('description');
+        $tag->setDescription(['keywords'=>$keywords,'cover_pic'=>$cover_pic]);
         $tag->save();
         TagsLogic::cacheProductTags($tag);
         $category_ids = $request->input('category_id');
@@ -240,6 +268,82 @@ class ProductController extends AdminController
         }
         TagsLogic::delCache();
         return $this->success($returnUrl,'产品修改成功');
+    }
+
+    public function updateIntroducePic(Request $request, $id) {
+        RateLimiter::instance()->lock_acquire('updateIntroducePic');
+        $tag = Tag::find($id);
+        $images = $tag->getIntroducePic();
+        if ($images) {
+            usort($images,function ($a,$b) {
+                if ($a['sort'] == $b['sort']) {
+                    return 0;
+                }
+                return ($a['sort'] < $b['sort']) ? -1 : 1;
+            });
+            $baseSort = $images[count($images)-1]['sort']+1;
+        } else {
+            $baseSort = 0;
+        }
+
+        $imgUrls = [];
+        $initialPreviewConfig = [];
+        $sort = $request->input('file_id',-1);
+        if($request->hasFile('introduce_pic')){
+            $files = $request->file('introduce_pic');
+            foreach ($files as $key=>$file) {
+                $extension = $file->getClientOriginalExtension();
+                $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+                Storage::disk('oss')->put($filePath,File::get($file));
+                $imgUrl = Storage::disk('oss')->url($filePath);
+                $imgUrls[] = ['url'=>$imgUrl,'sort'=>$baseSort+($sort >= 0?$sort:$key)];
+                $initialPreviewConfig[] = [
+                    'caption' => '',
+                    'width' => '120px',
+                    'url' => route('admin.review.product.deleteIntroducePic',['id'=>$id]),
+                    'key' => ($sort >= 0?$sort:$key),
+                    'extra' => ['url'=>$imgUrl]
+                ];
+            }
+        }
+        $tag->setDescription(['introduce_pic'=>array_merge($images,$imgUrls)]);
+        $tag->save();
+        RateLimiter::instance()->lock_release('updateIntroducePic');
+        return response()->json([
+            'initialPreview' => array_column($imgUrls,'url'),
+            'initialPreviewConfig' => $initialPreviewConfig
+        ]);
+    }
+
+    public function deleteIntroducePic(Request $request, $id) {
+        RateLimiter::instance()->lock_acquire('deleteIntroducePic');
+        $tag = Tag::find($id);
+        $images = $tag->getIntroducePic();
+        $url = $request->input('url',-1);
+        foreach ($images as $i=>$image) {
+            if ($image['url'] == $url) {
+                unset($images[$i]);
+            }
+        }
+        $tag->setDescription(['introduce_pic'=>$images]);
+        $tag->save();
+        RateLimiter::instance()->lock_release('deleteIntroducePic');
+        return response()->json(['message'=>'success']);
+    }
+
+    public function sortIntroducePic(Request $request, $id) {
+        $tag = Tag::find($id);
+        $newList = $request->input('newList',[]);
+        $urls = [];
+        foreach ($newList as $key=>$item) {
+            $urls[] = [
+                'sort' => $key,
+                'url' => $item['extra']['url']
+            ];
+        }
+        $tag->setDescription(['introduce_pic'=>$urls]);
+        $tag->save();
+        return response()->json(['message'=>'success']);
     }
 
     /*修改分类*/

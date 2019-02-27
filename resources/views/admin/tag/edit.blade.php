@@ -63,7 +63,7 @@
 
                             <div class="form-group @if ($errors->has('description')) has-error @endif">
                                 <label for="name">标签详细介绍(关键词以多个逗号隔开)</label>
-                                <textarea name="description" class="form-control" placeholder="关键词" style="height: 80px;">{{ old('description',$tag->description) }}</textarea>
+                                <textarea name="description" class="form-control" placeholder="关键词" style="height: 80px;">{{ old('description',$tag->getKeywords()) }}</textarea>
                                 @if ($errors->has('description')) <p class="help-block">{{ $errors->first('description') }}</p> @endif
                             </div>
 

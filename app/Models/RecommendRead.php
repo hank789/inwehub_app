@@ -120,10 +120,11 @@ class RecommendRead extends Model
     public function checkSourceLink() {
         if ($this->data['type'] == 'link') {
             if ($this->data['domain'] == 'mp.weixin.qq.com') {
-                if (str_contains($this->data['url'],'wechat_redirect') || str_contains($this->data['url'],'__biz=') || str_contains($this->data['url'],'/s/')) {
+                $source = $this->source;
+                if (str_contains($source->data['url'],'wechat_redirect') || str_contains($source->data['url'],'__biz=') || str_contains($source->data['url'],'/s/')) {
                     return true;
                 }
-                return $this->data['url'];
+                return $source->data['url'];
             }
         }
         return true;
