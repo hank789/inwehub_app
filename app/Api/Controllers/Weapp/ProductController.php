@@ -4,7 +4,9 @@ use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Company\CompanyData;
+use App\Models\ContentCollection;
 use App\Models\Doing;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
@@ -63,13 +65,13 @@ class ProductController extends Controller {
             ];
         }
 
-        $data['related_tags'] = $tag->relationReviews(4);
+        $data['related_tags'] = $tag->relationReviews(8);
         $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
         $cids = [];
         foreach ($categoryRels as $key=>$categoryRel) {
             $cids[] = $categoryRel->category_id;
             $category = Category::find($categoryRel->category_id);
-            if ($category->type == 'enterprise_review') continue;//只显示专辑
+            if ($category->type != 'product_album') continue;//只显示专辑
             $rate = TagCategoryRel::where('category_id',$category->id)->where('review_average_rate','>',$categoryRel->review_average_rate)->count();
             $data['categories'][] = [
                 'id' => $category->id,
@@ -79,7 +81,63 @@ class ProductController extends Controller {
                 'type' => $category->type == 'enterprise_review'?1:2
             ];
         }
-        $data['is_pro'] = 1;//是否专业版
+        //产品介绍封面图
+        $data['cover_pic'] = $tag->getCoverPic();
+        //产品亮点轮播图
+        $introduce_pic = $tag->getIntroducePic();
+        if ($introduce_pic) {
+            usort($introduce_pic,function ($a,$b) {
+                if ($a['sort'] == $b['sort']) {
+                    return 0;
+                }
+                return ($a['sort'] < $b['sort']) ? -1 : 1;
+            });
+            $data['introduce_pic'] = array_column($introduce_pic,'url');
+        }
+        //产品最新资讯
+        $data['recent_news'] = [];
+        $news = WechatWenzhangInfo::where('source_type',1)
+            ->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS)
+            ->whereHas('tags',function($query) use ($tag) {
+                $query->where('tag_id', $tag->id);
+            })
+            ->orderBy('_id','desc')->take(5)->get();
+        foreach ($news as $new) {
+            $data['recent_news'][] = [
+                'title' => strip_tags($new->title),
+                'date' => date('Y年m月d日',strtotime($new->date_time)),
+                'author' => domain($new->content_url),
+                'cover_pic' => $new->cover_url,
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
+            ];
+        }
+        //产品案例介绍
+        $data['case_list'] = [];
+        $caseList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
+            ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','asc')->get();
+        foreach ($caseList as $case) {
+            $data['case_list'][] = [
+                'title' => $case->content['title'],
+                'desc' => $case->content['desc'],
+                'cover_pic' => $case->content['cover_pic'],
+                'type' => $case->content['type'],
+                'link_url' => $case->content['link_url']
+            ];
+        }
+        //产品专家观点
+        $data['expert_review'] = [];
+        $ideaList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA)
+            ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','asc')->get();
+        foreach ($ideaList as $idea) {
+            $data['expert_review'][] = [
+                'avatar' => $idea->content['avatar'],
+                'name' => $idea->content['name'],
+                'title' => $idea->content['title'],
+                'content' => $idea->content['content']
+            ];
+        }
+
+        /*$data['is_pro'] = 1;//是否专业版
         $data['cover_pic'] = 'https://cdn.inwehub.com/submissions/2019/02/1551078771CFm6MRz.png';//封面图
         $data['introduce_pic'] = [
             'https://cdn.inwehub.com/submissions/2019/02/1551059065JDby9cC.png',
@@ -150,8 +208,7 @@ class ProductController extends Controller {
             'name' => '冯大牛',
             'title' => '咨询顾问',
             'content' => '总体感觉还是很不错的，用了有快一年了没出过问题，很稳定，比以前自己的服务器好多了，备案也很方便。建议初创企业或者网站可以使用，性价比还是很高的，省心 。'
-        ];
-
+        ];*/
 
         event(new SystemNotify('小程序用户'.$oauth->user_id.'['.$oauth->nickname.']查看产品详情:'.$tag->name));
         return self::createJsonData(true,$data);
@@ -218,27 +275,24 @@ class ProductController extends Controller {
             $user->id = 0;
             $user->name = '游客';
         }
-        $query = Submission::where('status',1)->where('category_id',$tag->id)->where('type','link');
-        $submissions = $query->orderBy('id','desc')->paginate($perPage);
-        $return = $submissions->toArray();
+        $news = WechatWenzhangInfo::where('source_type',1)
+            ->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS)
+            ->whereHas('tags',function($query) use ($tag) {
+                $query->where('tag_id', $tag->id);
+            })
+            ->orderBy('_id','desc')->paginate($perPage);
+
+        $return = $news->toArray();
         $list = [];
-        foreach ($submissions as $submission) {
-            $img = $submission->data['img']??'';
-            if (is_array($img)) {
-                if ($img) {
-                    $img = $img[0];
-                } else {
-                    $img = '';
-                }
-            }
+        foreach ($news as $new) {
             $list[] = [
-                'id' => $submission->id,
-                'title' => strip_tags($submission->data['title']??$submission->title),
+                'id' => $new->_id,
+                'title' => strip_tags($new->title),
                 'type' => 'link',
-                'domain' => $submission->data['domain']??'',
-                'img' => $img,
-                'link_url' => config('app.url').'/articleInfo/'.$submission->id.'?inwehub_user_device=weapp',
-                'created_at' => date('Y年m月d日',$submission->created_at)
+                'date' => date('Y年m月d日',strtotime($new->date_time)),
+                'author' => domain($new->content_url),
+                'cover_pic' => $new->cover_url,
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
             ];
         }
         $return['data'] = $list;
@@ -291,7 +345,12 @@ class ProductController extends Controller {
         $actionName = Doing::ACTION_VIEW_DIANPING_REVIEW_INFO;
         $actionUrl = config('app.mobile_url').'#/dianping/comment/'.$submission->slug;
         $return = $this->formatSubmissionInfo($request,$submission,$user);
-        $return['offical_reply'] = '今年6月份注册成为Airbnb的房东，接待了两个房客，感觉非常的开心';
+        $comment = Comment::where('source_id',$submission->id)->where('source_type',get_class($submission))
+            ->where('comment_type',Comment::COMMENT_TYPE_OFFICIAL)->where('status',1)->first();
+        $return['official_reply'] = '';
+        if ($comment) {
+            $return['official_reply'] = $comment->content;
+        }
         $this->logUserViewTags($user->id,$submission->tags()->get());
         $this->doing($user,$actionName,get_class($submission),$submission->id,$submission->type == 'link'?$submission->data['title']:$submission->title,
             '',0,0,'',$actionUrl);

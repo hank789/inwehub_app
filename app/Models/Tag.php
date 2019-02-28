@@ -382,6 +382,10 @@ class Tag extends Model implements HasMedia
         return $return;
     }
 
+    public function relationProductAlbum($pageSize=25) {
+
+    }
+
     public function countMorph() {
         return Taggable::where('tag_id',$this->id)->count();
     }

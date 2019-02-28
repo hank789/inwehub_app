@@ -302,6 +302,12 @@ class Submission extends Model {
                     $sourceData['tags'][$key]['review_average_rate'] = $reviewInfo['review_average_rate'];
                 }
             }
+            $comment = Comment::where('source_id',$submission->id)->where('source_type',get_class($submission))
+                ->where('comment_type',Comment::COMMENT_TYPE_OFFICIAL)->where('status',1)->first();
+            $return['official_reply'] = '';
+            if ($comment) {
+                $return['official_reply'] = $comment->content;
+            }
         }
 
         $item = [
