@@ -73,8 +73,22 @@ class Test extends Command
      */
     public function handle()
     {
-        $s = 'hanktest';
-        var_dump(json_decode($s,true));
+        $ql = QueryList::getInstance();
+        $url = 'https://mp.weixin.qq.com/s?src=11&timestamp=1551277801&ver=1454&signature=2LeyCV-PPfChXb28QWVd7hPlGSAc*86HoF4Kg7MmhNzakH4sT5Rn9zQXFHZu5rhPNTytvkkcdeBjU4YC0XsblQ6IXHsb5U4GmeK6ZDYC3Wo4V7U1r0FupSK94qXgshUu&new=1';
+        $s = getWechatUrlInfo($url, false);
+        var_dump($s);
+        return;
+        $html = $ql->get($url);
+        $aTitle = $html->find('h2#activity-name')->text();
+        $aBody = $html->find('div#js_content')->html();
+        $aAuthor = $html->find('a#js_name')->text();
+        $wxHao = $html->find('span.profile_meta_value')->eq(0)->text();
+        var_dump($wxHao);
+        $body = $html->getHtml();
+        $pattern = "/var\s+msg_cdn_url\s+=\s+([\s\S]*?);/is";
+        preg_match($pattern, $body, $matchs);
+        var_dump(trim($matchs[1],'"'));
+        //Storage::disk('local')->put('attachments/test5.html',$html->getHtml());
         return;
         $groups = Group::where('audit_status',4)->get();
         foreach ($groups as $group) {

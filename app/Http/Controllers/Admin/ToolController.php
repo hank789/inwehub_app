@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class ToolController extends AdminController
 {
@@ -56,8 +58,23 @@ class ToolController extends AdminController
         }catch (\Swift_SwiftException $e){
             return response($e->getMessage());
         }
+    }
 
-
+    public function upload(Request $request)
+    {
+        $validateRules = [
+            'file' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        if($request->hasFile('file')){
+            $file = $request->file('file');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'attachments/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+            return response($img_url);
+        }
+        return response('error');
     }
 
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Logic\TagsLogic;
 use App\Models\Category;
 use App\Models\ContentCollection;
+use App\Models\Scraper\WechatMpInfo;
+use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
@@ -15,6 +17,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use QL\QueryList;
 
 class ProductController extends AdminController
 {
@@ -193,10 +196,15 @@ class ProductController extends AdminController
                 'sort' => $idea->sort
             ];
         }
+        $caseList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
+            ->where('status',1)
+            ->where('source_id',$tag->tag_id)
+            ->orderBy('sort','asc')->get();
 
         return view('admin.review.product.edit')->with('tag',$tag)
             ->with('initialPreview',json_encode(array_column($initialPreview,'url')))
             ->with('ideaList',$ideaList)
+            ->with('caseList',$caseList)
             ->with('initialPreviewConfig',json_encode($initialPreviewConfig));
     }
 
@@ -485,5 +493,117 @@ class ProductController extends AdminController
         }
         return response()->json(['id'=>$model->id]);
     }
+
+    public function deleteCase(Request $request,$id) {
+
+    }
+
+    public function editCase(Request $request,$id) {
+
+    }
+
+    public function addCase(Request $request,$tag_id) {
+        $tag = Tag::find($tag_id);
+        if(!$tag){
+            abort(404);
+        }
+        return view('admin.review.product.addCase')->with('tag',$tag);
+    }
+
+    public function storeCase(Request $request,$tag_id) {
+        $tag = Tag::find($tag_id);
+        if(!$tag){
+            abort(404);
+        }
+        $validateRules = [
+            'title' => 'required|max:128',
+            'desc' => 'required',
+            'sort' => 'required',
+            'cover_pic' => 'required|file',
+            'type' => 'required',
+            'link_url' => 'required_if:type,link,video',
+            'file' => 'required_if:type,pdf,image'
+        ];
+        $this->validate($request,$validateRules);
+        $data = $request->all();
+        if ($data['type'] == 'link') {
+            $link_url = parse_url($data['link_url']);
+            if ($link_url['host'] != 'mp.weixin.qq.com') {
+                return $this->error(url()->previous(),'暂时不支持非微信公众号的链接地址');
+            }
+        }
+        if ($data['type'] == 'pdf' || $data['type'] == 'image') {
+            if($request->hasFile('file')){
+                $file = $request->file('file');
+                $extension = $file->getClientOriginalExtension();
+                $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+                Storage::disk('oss')->put($filePath,File::get($file));
+                $data['link_url'] = Storage::disk('oss')->url($filePath);
+            } else {
+                return $this->error(url()->previous(),'未上传案例文件');
+            }
+        }
+        $img_url = '';
+        if($request->hasFile('cover_pic')){
+            $file = $request->file('cover_pic');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $img_url = Storage::disk('oss')->url($filePath);
+        }
+
+        if ($data['type'] == 'link') {
+            $linkInfo = getWechatUrlInfo($data['link_url'],false,true);
+            $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
+            if (!$mpInfo) {
+                $mpInfo = WechatMpInfo::create([
+                    'name' => $linkInfo['name'],
+                    'wx_hao' => $linkInfo['wxHao'],
+                    'company' => $linkInfo['name'],
+                    'description' => '',
+                    'logo_url' => '',
+                    'qr_url' => '',
+                    'wz_url' => '',
+                    'last_qunfa_id' => 0,
+                    'status' => 0,
+                    'create_time' => date('Y-m-d H:i:s')
+                ]);
+            }
+            $article = WechatWenzhangInfo::create([
+                'title' => $linkInfo['title'],
+                'source_url' => '',
+                'content_url' => $data['link_url'],
+                'cover_url'   => $linkInfo['cover_img'],
+                'description' => '',
+                'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
+                'mp_id' => $mpInfo->_id,
+                'author' => $linkInfo['name'],
+                'msg_index' => 0,
+                'copyright_stat' => 0,
+                'qunfa_id' => 0,
+                'type' => 49,
+                'like_count' => 0,
+                'read_count' => 0,
+                'comment_count' => 0
+            ]);
+            $data['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping';;
+        }
+        $model = ContentCollection::create([
+            'content_type' => ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE,
+            'sort' => $data['sort'],
+            'source_id' => $tag_id,
+            'status' => $data['status'],
+            'content' => [
+                'cover_pic' => $img_url,
+                'title' => $data['title'],
+                'desc' => $data['desc'],
+                'link_url' => $data['link_url'],
+                'type' => $data['type']
+            ]
+        ]);
+        return $this->success(url()->previous(),'案例添加成功');
+    }
+
+
 
 }

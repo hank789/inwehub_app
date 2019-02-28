@@ -25,6 +25,8 @@
                         <li class="active"><a href="#tab_base" data-toggle="tab" aria-expanded="false">产品编辑</a></li>
                         <li><a href="#tab_news" data-toggle="tab" aria-expanded="true">产品亮点</a></li>
                         <li><a href="#tab_idea" data-toggle="tab" aria-expanded="true">专家观点</a></li>
+                        <li><a href="#tab_case" data-toggle="tab" aria-expanded="true">案例展示</a></li>
+
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_base">
@@ -191,6 +193,51 @@
                                     </table>
                                 </div>
 
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="tab_case">
+
+                            <div class="box-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="topic_news_table" style="width: 100%;">
+                                        <thead>
+                                        <tr>
+                                            <th>标题</th>
+                                            <th>封面图</th>
+                                            <th>类型</th>
+                                            <th>排序</th>
+                                            <th>简介</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($caseList as $case)
+                                            <tr>
+                                                <td><a href="{{ $case->content['link_url'] }}" target="_blank">{{ $case->content['title'] }}</a></td>
+                                                <td>
+                                                    <img style="width: 150px;height: 150px;" src="{{ $case->content['cover_pic'] }}" />
+                                                </td>
+                                                <td>{{ $case->content['type'] }}</td>
+                                                <td>{{ $case->sort }}</td>
+                                                <td>{{ $case->content['desc'] }}</td>
+                                                <td><span class="label @if($case->status===0) label-warning  @else label-success @endif">{{ trans_common_status($case->status) }}</span></td>
+                                                <td>
+                                                    <div class="btn-group-xs" >
+                                                        <a class="btn btn-default" href="{{ route('admin.review.product.editCase',['id'=>$case->id]) }}" data-toggle="tooltip" title="修改"><i class="fa fa-edit"></i></a>
+                                                        <a class="btn btn-warning" href="{{ route('admin.review.product.deleteCase',['id'=>$case->id]) }}" data-toggle="tooltip" title="删除"><i class="fa fa-trash"></i></a>
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="box-footer">
+                                <a class="btn btn-primary" href="{{ route('admin.review.product.addCase',['tag_id'=>$tag->tag_id]) }}" target="_blank" data-toggle="tooltip" title="添加案例">添加案例</a>
                             </div>
                         </div>
                     </div>

@@ -21,7 +21,12 @@ class IndexController extends Controller
 
     public function articleInfo($id, Request $request)
     {
-        $article = WechatWenzhangInfo::where('topic_id',$id)->where('status',2)->first();
+        $from_source = $request->input('inwehub_user_device','web');
+        if ($from_source == 'weapp_dianping') {
+            $article = WechatWenzhangInfo::find($id);
+        } else {
+            $article = WechatWenzhangInfo::where('topic_id',$id)->where('status',2)->first();
+        }
         \Log::info('test',[$id]);
         if (!$article) {
             $submission = Submission::find($id);

@@ -328,7 +328,7 @@ class ProductController extends Controller {
         if ($orderBy == 1) {
             $query = $query->orderBy('created_at', 'desc');
         } else {
-            $query = $query->orderBy('supports', 'desc');
+            $query = $query->orderBy('supports', 'desc')->orderBy('created_at', 'desc');
         }
         $comments = $query->simplePaginate($request->input('perPage',20));
         $return = $comments->toArray();
@@ -466,7 +466,7 @@ class ProductController extends Controller {
     }
 
     public function getAlbumList(Request $request) {
-        $categories = Category::where('grade',0)->where('type','product_album')->orderBy('sort','desc')->simplePaginate($request->input('perPage',10));
+        $categories = Category::where('grade',0)->where('type','product_album')->orderBy('sort','asc')->orderBy('updated_at','desc')->simplePaginate($request->input('perPage',10));
         $data = $categories->toArray();
         return self::createJsonData(true,$data);
     }
@@ -478,7 +478,7 @@ class ProductController extends Controller {
         $oauth = $JWTAuth->parseToken()->toUser();
         $category_id = $request->input('id');
         $query = TagCategoryRel::select(['id','tag_id','support_rate'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
-        $tags = $query->where('category_id',$category_id)->orderBy('support_rate','desc')->simplePaginate(15);
+        $tags = $query->where('category_id',$category_id)->orderBy('support_rate','desc')->orderBy('updated_at','desc')->simplePaginate(15);
         $return = $tags->toArray();
         $list = [];
         foreach ($tags as $tag) {
