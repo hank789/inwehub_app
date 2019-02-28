@@ -2,22 +2,27 @@
 
 namespace App\Http\Controllers\Admin\Review;
 
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Http\Controllers\Admin\AdminController;
 use App\Logic\TagsLogic;
 use App\Models\Category;
 use App\Models\ContentCollection;
 use App\Models\Scraper\WechatMpInfo;
+use App\Models\Scraper\WechatMpList;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Services\RateLimiter;
+use App\Services\Spiders\Wechat\MpSpider;
+use App\Services\Spiders\Wechat\WechatSogouSpider;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use QL\QueryList;
+use Illuminate\Support\Facades\Artisan;
 
 class ProductController extends AdminController
 {
@@ -172,7 +177,6 @@ class ProductController extends AdminController
             ];
         }
         $ideas = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA)
-            ->where('status',1)
             ->where('source_id',$tag->tag_id)
             ->orderBy('sort','asc')->get();
         $ideaList = [];
@@ -197,14 +201,17 @@ class ProductController extends AdminController
             ];
         }
         $caseList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
-            ->where('status',1)
             ->where('source_id',$tag->tag_id)
             ->orderBy('sort','asc')->get();
+
+        $gzhList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)
+            ->where('source_id',$tag->tag_id)->orderBy('id','desc')->get();
 
         return view('admin.review.product.edit')->with('tag',$tag)
             ->with('initialPreview',json_encode(array_column($initialPreview,'url')))
             ->with('ideaList',$ideaList)
             ->with('caseList',$caseList)
+            ->with('gzhList',$gzhList)
             ->with('initialPreviewConfig',json_encode($initialPreviewConfig));
     }
 
@@ -561,9 +568,9 @@ class ProductController extends AdminController
             $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
             if (!$mpInfo) {
                 $mpInfo = WechatMpInfo::create([
-                    'name' => $linkInfo['name'],
+                    'name' => $linkInfo['author'],
                     'wx_hao' => $linkInfo['wxHao'],
-                    'company' => $linkInfo['name'],
+                    'company' => $linkInfo['author'],
                     'description' => '',
                     'logo_url' => '',
                     'qr_url' => '',
@@ -577,17 +584,19 @@ class ProductController extends AdminController
                 'title' => $linkInfo['title'],
                 'source_url' => '',
                 'content_url' => $data['link_url'],
-                'cover_url'   => $linkInfo['cover_img'],
+                'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
                 'description' => '',
                 'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
                 'mp_id' => $mpInfo->_id,
-                'author' => $linkInfo['name'],
+                'author' => $linkInfo['author'],
                 'msg_index' => 0,
                 'copyright_stat' => 0,
                 'qunfa_id' => 0,
-                'type' => 49,
+                'body' => $linkInfo['body'],
+                'type' => WechatWenzhangInfo::TYPE_TAG_CASE,
                 'like_count' => 0,
                 'read_count' => 0,
+                'status' => 2,
                 'comment_count' => 0
             ]);
             $data['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping';;
@@ -652,9 +661,9 @@ class ProductController extends AdminController
             $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
             if (!$mpInfo) {
                 $mpInfo = WechatMpInfo::create([
-                    'name' => $linkInfo['name'],
+                    'name' => $linkInfo['author'],
                     'wx_hao' => $linkInfo['wxHao'],
-                    'company' => $linkInfo['name'],
+                    'company' => $linkInfo['author'],
                     'description' => '',
                     'logo_url' => '',
                     'qr_url' => '',
@@ -668,17 +677,19 @@ class ProductController extends AdminController
                 'title' => $linkInfo['title'],
                 'source_url' => '',
                 'content_url' => $data['link_url'],
-                'cover_url'   => $linkInfo['cover_img'],
+                'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
                 'description' => '',
                 'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
                 'mp_id' => $mpInfo->_id,
-                'author' => $linkInfo['name'],
+                'author' => $linkInfo['author'],
+                'body' => $linkInfo['body'],
                 'msg_index' => 0,
                 'copyright_stat' => 0,
                 'qunfa_id' => 0,
-                'type' => 49,
+                'type' => WechatWenzhangInfo::TYPE_TAG_CASE,
                 'like_count' => 0,
                 'read_count' => 0,
+                'status' => 2,
                 'comment_count' => 0
             ]);
             $content['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping';;
@@ -695,6 +706,192 @@ class ProductController extends AdminController
         return $this->success(url()->previous(),'案例修改成功');
     }
 
+    public function newsList(Request $request,$tag_id) {
+        $filter =  $request->all();
+        $tag = Tag::find($tag_id);
+
+        $query = WechatWenzhangInfo::where('source_type',1)
+            ->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS)
+            ->whereHas('tags',function($query) use ($tag_id) {
+            $query->where('tag_id', $tag_id);
+        });
+
+        /*公众号id过滤*/
+        if( isset($filter['mp_id']) && $filter['mp_id'] > -1 ){
+            $query->where('mp_id','=',$filter['mp_id']);
+        }
+        /*问题标题过滤*/
+        if( isset($filter['word']) && $filter['word'] ){
+            $query->where('title','like', '%'.$filter['word'].'%');
+        }
+
+        $newsList = $query->orderBy('_id','desc')->simplePaginate(20);
+        return view('admin.review.product.newsList')->with('articles',$newsList)->with('filter',$filter)->with('tag',$tag);
+    }
+
+    public function addNews(Request $request,$tag_id) {
+        $tag = Tag::find($tag_id);
+        return view('admin.review.product.addNews')->with('tag',$tag);
+    }
+
+    public function addGzh(Request $request,$tag_id) {
+        $tag = Tag::find($tag_id);
+        return view('admin.review.product.addGzh')->with('tag',$tag);
+    }
+
+    public function storeGzh(Request $request,$tag_id) {
+        $wx_hao = trim($request->input('wx_hao'));
+        $mpInfo = WechatMpInfo::where('wx_hao',$wx_hao)->first();
+        if ($mpInfo) {
+            $exist = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)
+                ->where('source_id',$tag_id)
+                ->where('sort',$mpInfo->_id)
+                ->first();
+            if (!$exist) {
+                ContentCollection::create([
+                    'content_type' => ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH,
+                    'sort' => $mpInfo->_id,
+                    'source_id' => $tag_id,
+                    'status' => 1,
+                    'content' => [
+                        'wx_hao' => $wx_hao,
+                        'mp_id' => $mpInfo->_id
+                    ]
+                ]);
+            }
+            if ($mpInfo->status != 1) {
+                $mpInfo->status = 1;
+                $mpInfo->save();
+            }
+            return $this->success($request->input('url_previous'),'微信公众号添加成功');
+        }
+        $spider = new MpSpider();
+        $data = $spider->getGzhInfo($wx_hao);
+        if ($data) {
+            $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
+            if (!$info) {
+                $mpInfo = WechatMpInfo::create([
+                    'name' => $data['name'],
+                    'wx_hao' => $data['wechatid'],
+                    'company' => $data['company'],
+                    'description' => $data['description'],
+                    'logo_url' => $data['img'],
+                    'qr_url' => $data['qrcode'],
+                    'wz_url' => $data['url'],
+                    'last_qunfa_id' => $data['last_qunfa_id'],
+                    'is_auto_publish' => 1,
+                    'status' => 1,
+                    'create_time' => date('Y-m-d H:i:s')
+                ]);
+            }
+        } else {
+            $spider2 = new WechatSogouSpider();
+            $data = $spider2->getGzhInfo($wx_hao);
+            if ($data['name']) {
+                $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
+                if (!$info) {
+                    $mpInfo = WechatMpInfo::create([
+                        'name' => $data['name'],
+                        'wx_hao' => $data['wechatid'],
+                        'company' => $data['company'],
+                        'description' => $data['description'],
+                        'logo_url' => $data['img'],
+                        'qr_url' => $data['qrcode'],
+                        'wz_url' => $data['url'],
+                        'is_auto_publish' => 1,
+                        'status' => 1,
+                        'last_qunfa_id' => $data['last_qunfa_id'],
+                        'create_time' => date('Y-m-d H:i:s')
+                    ]);
+                }
+            } else {
+                event(new ExceptionNotify('产品抓取微信公众号失败：'.$wx_hao));
+            }
+        }
+        if ($mpInfo) {
+            $exist = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)
+                ->where('source_id',$tag_id)
+                ->where('sort',$mpInfo->_id)
+                ->first();
+            if (!$exist) {
+                ContentCollection::create([
+                    'content_type' => ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH,
+                    'sort' => $mpInfo->_id,
+                    'source_id' => $tag_id,
+                    'status' => 1,
+                    'content' => [
+                        'wx_hao' => $wx_hao,
+                        'mp_id' => $mpInfo->_id
+                    ]
+                ]);
+            }
+        } else {
+            return  $this->error($request->input('url_previous'),"抓取失败，请稍后再试");
+        }
+
+        return $this->success($request->input('url_previous'),'微信公众号添加成功');
+    }
+
+    public function deleteGzh(Request $request) {
+        $id = $request->input('id');
+        ContentCollection::destroy($id);
+        return response()->json(['id'=>$id]);
+    }
+
+    public function storeNews(Request $request,$tag_id) {
+        $validateRules = [
+            'link_url' => 'required|url'
+        ];
+        $this->validate($request,$validateRules);
+        $link_url = $request->input('link_url');
+        $parse_url = parse_url($link_url);
+        if ($parse_url['host'] != 'mp.weixin.qq.com') {
+            return $this->error(url()->previous(),'暂时不支持非微信公众号的链接地址');
+        }
+        $linkInfo = getWechatUrlInfo($link_url,false,true);
+        \Log::info('test',$linkInfo);
+        $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
+        if (!$mpInfo) {
+            $mpInfo = WechatMpInfo::create([
+                'name' => $linkInfo['author'],
+                'wx_hao' => $linkInfo['wxHao'],
+                'company' => $linkInfo['author'],
+                'description' => '',
+                'logo_url' => '',
+                'qr_url' => '',
+                'wz_url' => '',
+                'last_qunfa_id' => 0,
+                'status' => 0,
+                'create_time' => date('Y-m-d H:i:s')
+            ]);
+        }
+        $article = WechatWenzhangInfo::create([
+            'title' => $linkInfo['title'],
+            'source_url' => '',
+            'content_url' => $link_url,
+            'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
+            'description' => '',
+            'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
+            'mp_id' => $mpInfo->_id,
+            'author' => $linkInfo['author'],
+            'msg_index' => 0,
+            'body' => $linkInfo['body'],
+            'copyright_stat' => 0,
+            'qunfa_id' => 0,
+            'type' => WechatWenzhangInfo::TYPE_TAG_NEWS,
+            'like_count' => 0,
+            'status' => 2,
+            'read_count' => 0,
+            'comment_count' => 0
+        ]);
+        Tag::multiAddByIds([$tag_id],$article);
+        return $this->success($request->input('url_previous'),'资讯添加成功');
+    }
+
+    public function deleteNews(Request $request) {
+        $id = $request->input('id');
+        WechatWenzhangInfo::destroy($id);
+    }
 
 
 }

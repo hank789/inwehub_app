@@ -114,13 +114,8 @@ class WechatController extends AdminController
     public function verifyArticle(Request $request)
     {
         $articleIds = $request->input('id');
-        WechatWenzhangInfo::whereIn('_id',$articleIds)->update(['status'=>1]);
-        foreach ($articleIds as $articleId) {
-            $article = WechatWenzhangInfo::find($articleId);
-            if ($article->topic_id > 0) continue;
-            dispatch(new ArticleToSubmission($articleId));
-        }
-        return $this->success(route('admin.scraper.wechat.article.index'),'审核成功');
+        WechatWenzhangInfo::whereIn('_id',$articleIds)->update(['status'=>2]);
+        return $this->success(url()->previous(),'审核成功');
     }
 
     public function sync(Request $request){
@@ -228,7 +223,7 @@ class WechatController extends AdminController
     }
 
     public function destroyArticle(Request $request){
-        WechatWenzhangInfo::whereIn('_id',$request->input('id'))->update(['status'=>0]);
-        return $this->success(route('admin.scraper.wechat.article.index'),'禁用成功');
+        WechatWenzhangInfo::whereIn('_id',$request->input('id'))->update(['status'=>3]);
+        return $this->success(url()->previous(),'禁用成功');
     }
 }

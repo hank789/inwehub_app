@@ -26,6 +26,7 @@
                         <li><a href="#tab_news" data-toggle="tab" aria-expanded="true">产品亮点</a></li>
                         <li><a href="#tab_idea" data-toggle="tab" aria-expanded="true">专家观点</a></li>
                         <li><a href="#tab_case" data-toggle="tab" aria-expanded="true">案例展示</a></li>
+                        <li><a href="#tab_gzh" data-toggle="tab" aria-expanded="true">资讯管理</a></li>
 
                     </ul>
                     <div class="tab-content">
@@ -240,6 +241,51 @@
                                 <a class="btn btn-primary" href="{{ route('admin.review.product.addCase',['tag_id'=>$tag->tag_id]) }}" target="_blank" data-toggle="tooltip" title="添加案例">添加案例</a>
                             </div>
                         </div>
+
+                        <div class="tab-pane" id="tab_gzh">
+
+                            <div class="box-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="topic_news_table" style="width: 100%;">
+                                        <thead>
+                                        <tr>
+                                            <th>公众号名称</th>
+                                            <th>微信号</th>
+                                            <th>最后抓取时间</th>
+                                            <th>今日抓取文章数</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($gzhList as $gzh)
+                                            @php
+                                            $mpInfo = \App\Models\Scraper\WechatMpInfo::find($gzh->content['mp_id'])
+                                            @endphp
+                                            <tr id="gzh_{{$gzh->id}}">
+                                                <td>{{ $mpInfo->name }}</td>
+                                                <td>{{ $gzh->content['wx_hao'] }}</td>
+                                                <td>{{ $mpInfo->update_time }}</td>
+                                                <td>{{ $mpInfo->countTodayArticle() }}</td>
+                                                <td><span class="label @if($gzh->status===0) label-warning  @else label-success @endif">{{ trans_common_status($gzh->status) }}</span></td>
+                                                <td>
+                                                    <div class="btn-group-xs" >
+                                                        <button class="btn btn-warning" onclick="deleteGzh(this)" data-id="{{$gzh->id}}" data-toggle="tooltip" title="删除"><i class="fa fa-trash"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="box-footer">
+                                <a class="btn btn-primary" href="{{ route('admin.review.product.newsList',['tag_id'=>$tag->tag_id]) }}" target="_blank" data-toggle="tooltip" title="查看资讯列表">查看资讯列表</a>
+                                <a class="btn btn-primary" href="{{ route('admin.review.product.addGzh',['tag_id'=>$tag->tag_id]) }}" target="_blank" data-toggle="tooltip" title="添加公众号">添加公众号</a>
+                                <a class="btn btn-primary" href="{{ route('admin.review.product.addNews',['tag_id'=>$tag->tag_id]) }}" target="_blank" data-toggle="tooltip" title="添加资讯">添加资讯</a>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -312,6 +358,25 @@
             });
 
         }
+        function deleteGzh(obj) {
+            if(!confirm('确认删除该记录？')){
+                return false;
+            }
+            var id = $(obj).data('id');
+            $.ajax({
+                type: "post",
+                data: {id: id},
+                url:"{{route('admin.review.product.deleteGzh')}}",
+                success: function(data){
+                    console.log(data);
+                    $("#gzh_" + id).css('display','none');
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
+        }
+
         function deleteIdea(obj) {
             if(!confirm('确认删除该记录？')){
                 return false;

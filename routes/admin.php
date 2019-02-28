@@ -196,6 +196,16 @@ Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
     Route::post('product/storeCase/{tag_id}',['as'=>'admin.review.product.storeCase','uses'=>'ProductController@storeCase'])->where(['tag_id'=>'[0-9]+']);
     Route::post('product/updateCase/{id}',['as'=>'admin.review.product.updateCase','uses'=>'ProductController@updateCase'])->where(['id'=>'[0-9]+']);
 
+    Route::get('product/newsList/{tag_id}',['as'=>'admin.review.product.newsList','uses'=>'ProductController@newsList'])->where(['tag_id'=>'[0-9]+']);
+    Route::get('product/addNews/{tag_id}',['as'=>'admin.review.product.addNews','uses'=>'ProductController@addNews'])->where(['tag_id'=>'[0-9]+']);
+    Route::get('product/addGzh/{tag_id}',['as'=>'admin.review.product.addGzh','uses'=>'ProductController@addGzh'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/storeGzh/{tag_id}',['as'=>'admin.review.product.storeGzh','uses'=>'ProductController@storeGzh'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/storeNews/{tag_id}',['as'=>'admin.review.product.storeNews','uses'=>'ProductController@storeNews'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/deleteGzh',['as'=>'admin.review.product.deleteGzh','uses'=>'ProductController@deleteGzh']);
+    Route::post('product/deleteNews/{id}',['as'=>'admin.review.product.deleteNews','uses'=>'ProductController@deleteNews'])->where(['id'=>'[0-9]+']);
+
+
+
     Route::get('submission/index',['as'=>'admin.review.submission.index','uses'=>'SubmissionController@index']);
     Route::get('submission/edit/{id}',['as'=>'admin.review.submission.edit','uses'=>'SubmissionController@edit'])->where(['id'=>'[0-9]+']);
     Route::get('submission/create/{id}',['as'=>'admin.review.submission.create','uses'=>'SubmissionController@create'])->where(['id'=>'[0-9]+']);
