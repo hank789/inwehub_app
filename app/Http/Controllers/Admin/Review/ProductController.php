@@ -494,12 +494,16 @@ class ProductController extends AdminController
         return response()->json(['id'=>$model->id]);
     }
 
-    public function deleteCase(Request $request,$id) {
-
+    public function deleteCase(Request $request) {
+        $id = $request->input('id');
+        ContentCollection::destroy($id);
+        return response()->json(['id'=>$id]);
     }
 
     public function editCase(Request $request,$id) {
-
+        $case = ContentCollection::find($id);
+        $tag = Tag::find($case->source_id);
+        return view('admin.review.product.editCase')->with('tag',$tag)->with('case',$case);
     }
 
     public function addCase(Request $request,$tag_id) {
@@ -602,6 +606,93 @@ class ProductController extends AdminController
             ]
         ]);
         return $this->success(url()->previous(),'案例添加成功');
+    }
+
+    public function updateCase(Request $request,$id) {
+        $validateRules = [
+            'title' => 'required|max:128',
+            'desc' => 'required',
+            'sort' => 'required',
+            'type' => 'required',
+            'link_url' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $case = ContentCollection::find($id);
+        $data = $request->all();
+        $content = $case->content;
+        if ($data['type'] == 'link') {
+            $link_url = parse_url($data['link_url']);
+            if ($link_url['host'] != 'mp.weixin.qq.com') {
+                return $this->error(url()->previous(),'暂时不支持非微信公众号的链接地址');
+            }
+        }
+        if ($data['type'] == 'pdf' || $data['type'] == 'image') {
+            if($request->hasFile('file')){
+                $file = $request->file('file');
+                $extension = $file->getClientOriginalExtension();
+                $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+                Storage::disk('oss')->put($filePath,File::get($file));
+                $content['link_url'] = Storage::disk('oss')->url($filePath);
+            }
+        }
+        if($request->hasFile('cover_pic')){
+            $file = $request->file('cover_pic');
+            $extension = $file->getClientOriginalExtension();
+            $filePath = 'tags/'.gmdate("Y")."/".gmdate("m")."/".uniqid(str_random(8)).'.'.$extension;
+            Storage::disk('oss')->put($filePath,File::get($file));
+            $content['cover_pic'] = Storage::disk('oss')->url($filePath);
+        }
+
+        if ($data['type'] == 'video' && $data['link_url'] != $case->content['link_url']) {
+            $content['link_url'] = $data['link_url'];
+        }
+
+        if ($data['type'] == 'link' && $data['link_url'] != $case->content['link_url']) {
+            $linkInfo = getWechatUrlInfo($data['link_url'],false,true);
+            $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
+            if (!$mpInfo) {
+                $mpInfo = WechatMpInfo::create([
+                    'name' => $linkInfo['name'],
+                    'wx_hao' => $linkInfo['wxHao'],
+                    'company' => $linkInfo['name'],
+                    'description' => '',
+                    'logo_url' => '',
+                    'qr_url' => '',
+                    'wz_url' => '',
+                    'last_qunfa_id' => 0,
+                    'status' => 0,
+                    'create_time' => date('Y-m-d H:i:s')
+                ]);
+            }
+            $article = WechatWenzhangInfo::create([
+                'title' => $linkInfo['title'],
+                'source_url' => '',
+                'content_url' => $data['link_url'],
+                'cover_url'   => $linkInfo['cover_img'],
+                'description' => '',
+                'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
+                'mp_id' => $mpInfo->_id,
+                'author' => $linkInfo['name'],
+                'msg_index' => 0,
+                'copyright_stat' => 0,
+                'qunfa_id' => 0,
+                'type' => 49,
+                'like_count' => 0,
+                'read_count' => 0,
+                'comment_count' => 0
+            ]);
+            $content['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping';;
+        }
+
+        $content['title'] = $data['title'];
+        $content['type'] = $data['type'];
+        $content['desc'] = $data['desc'];
+        $case->sort = $data['sort'];
+        $case->status = $data['status'];
+        $case->content = $content;
+        $case->save();
+
+        return $this->success(url()->previous(),'案例修改成功');
     }
 
 

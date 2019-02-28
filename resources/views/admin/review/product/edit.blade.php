@@ -214,7 +214,7 @@
                                         </thead>
                                         <tbody>
                                         @foreach($caseList as $case)
-                                            <tr>
+                                            <tr id="case_{{$case->id}}">
                                                 <td><a href="{{ $case->content['link_url'] }}" target="_blank">{{ $case->content['title'] }}</a></td>
                                                 <td>
                                                     <img style="width: 150px;height: 150px;" src="{{ $case->content['cover_pic'] }}" />
@@ -225,8 +225,8 @@
                                                 <td><span class="label @if($case->status===0) label-warning  @else label-success @endif">{{ trans_common_status($case->status) }}</span></td>
                                                 <td>
                                                     <div class="btn-group-xs" >
-                                                        <a class="btn btn-default" href="{{ route('admin.review.product.editCase',['id'=>$case->id]) }}" data-toggle="tooltip" title="修改"><i class="fa fa-edit"></i></a>
-                                                        <a class="btn btn-warning" href="{{ route('admin.review.product.deleteCase',['id'=>$case->id]) }}" data-toggle="tooltip" title="删除"><i class="fa fa-trash"></i></a>
+                                                        <a class="btn btn-default" target="_blank" href="{{ route('admin.review.product.editCase',['id'=>$case->id]) }}" data-toggle="tooltip" title="修改"><i class="fa fa-edit"></i></a>
+                                                        <button class="btn btn-warning" onclick="deleteCase(this)" data-id="{{$case->id}}" data-toggle="tooltip" title="删除"><i class="fa fa-trash"></i></button>
 
                                                     </div>
                                                 </td>
@@ -293,6 +293,25 @@
                 });
             });
         });
+        function deleteCase(obj) {
+            if(!confirm('确认删除该记录？')){
+                return false;
+            }
+            var id = $(obj).data('id');
+            $.ajax({
+                type: "post",
+                data: {id: id},
+                url:"{{route('admin.review.product.deleteCase')}}",
+                success: function(data){
+                    console.log(data);
+                    $("#case_" + id).css('display','none');
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
+
+        }
         function deleteIdea(obj) {
             if(!confirm('确认删除该记录？')){
                 return false;

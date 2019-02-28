@@ -190,7 +190,7 @@ Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
     Route::post('product/sortIntroducePic/{id}',['as'=>'admin.review.product.sortIntroducePic','uses'=>'ProductController@sortIntroducePic'])->where(['id'=>'[0-9]+']);
     Route::post('product/deleteIdea',['as'=>'admin.review.product.deleteIdea','uses'=>'ProductController@deleteIdea']);
     Route::post('product/saveIdea/{tag_id}',['as'=>'admin.review.product.saveIdea','uses'=>'ProductController@saveIdea'])->where(['tag_id'=>'[0-9]+']);
-    Route::post('product/deleteCase/{id}',['as'=>'admin.review.product.deleteCase','uses'=>'ProductController@deleteCase'])->where(['id'=>'[0-9]+']);
+    Route::post('product/deleteCase',['as'=>'admin.review.product.deleteCase','uses'=>'ProductController@deleteCase']);
     Route::get('product/editCase/{id}',['as'=>'admin.review.product.editCase','uses'=>'ProductController@editCase'])->where(['id'=>'[0-9]+']);
     Route::get('product/addCase/{tag_id}',['as'=>'admin.review.product.addCase','uses'=>'ProductController@addCase'])->where(['tag_id'=>'[0-9]+']);
     Route::post('product/storeCase/{tag_id}',['as'=>'admin.review.product.storeCase','uses'=>'ProductController@storeCase'])->where(['tag_id'=>'[0-9]+']);
