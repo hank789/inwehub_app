@@ -540,6 +540,7 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::get('product/getAlbumSupports','ProductController@getAlbumSupports');
     Route::post('product/newsList','ProductController@newsList');
     Route::post('product/commentAlbum','ProductController@commentAlbum');
+    Route::post('product/albumNewsList','ProductController@albumNewsList');
 
 });
 

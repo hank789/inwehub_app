@@ -624,6 +624,51 @@ class ProductController extends Controller {
         return self::createJsonData(true,$return);
     }
 
+    public function albumNewsList(Request $request,JWTAuth $JWTAuth) {
+        $validateRules = [
+            'id' => 'required'
+        ];
+
+        $this->validate($request,$validateRules);
+        $id = $request->input('id');
+        $perPage = $request->input('perPage',Config::get('inwehub.api_data_page_size'));
+
+        $tagIds = TagCategoryRel::where('category_id',$id)
+            ->where('type',TagCategoryRel::TYPE_REVIEW)
+            ->where('status',1)->pluck('tag_id')->toArray();
+        $tagIds = array_unique($tagIds);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
+        $news = WechatWenzhangInfo::where('source_type',1)
+            ->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS)
+            ->whereHas('tags',function($query) use ($tagIds) {
+                $query->whereIn('tag_id', $tagIds);
+            })
+            ->orderBy('_id','desc')->paginate($perPage);
+
+        $return = $news->toArray();
+        $list = [];
+        foreach ($news as $new) {
+            $list[] = [
+                'id' => $new->_id,
+                'title' => strip_tags($new->title),
+                'type' => 'link',
+                'date' => date('Y年m月d日',strtotime($new->date_time)),
+                'author' => domain($new->content_url),
+                'cover_pic' => $new->cover_url,
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
+            ];
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
+    }
+
     public function supportAlbumProduct(Request $request,JWTAuth $JWTAuth) {
         $this->validate($request, [
             'id' => 'required'
