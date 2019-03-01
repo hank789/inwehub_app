@@ -534,6 +534,16 @@ class ProductController extends Controller {
         return self::createJsonData(true,$data);
     }
 
+    public function moreAlbum(Request $request) {
+        $this->validate($request, [
+            'id' => 'required'
+        ]);
+        $id = $request->input('id');
+        $categories = Category::where('grade',0)->where('type','product_album')->where('id','!=',$id)->orderBy('sort','asc')->orderBy('updated_at','desc')->take(8)->get();
+        $data = $categories->toArray();
+        return self::createJsonData(true,$data);
+    }
+
     public function albumProductList(Request $request,JWTAuth $JWTAuth) {
         $this->validate($request, [
             'id' => 'required'
