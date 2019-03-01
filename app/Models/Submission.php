@@ -306,7 +306,11 @@ class Submission extends Model {
                 ->where('comment_type',Comment::COMMENT_TYPE_OFFICIAL)->where('status',1)->first();
             $return['official_reply'] = '';
             if ($comment) {
-                $return['official_reply'] = $comment->content;
+                $return['official_reply'] = [
+                    'author' => '官方回复',
+                    'content'=>$comment->content,
+                    'created_at' => $comment->created_at->diffForHumans()
+                ];
             }
         }
 
