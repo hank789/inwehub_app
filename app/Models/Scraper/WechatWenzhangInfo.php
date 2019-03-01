@@ -71,6 +71,18 @@ class WechatWenzhangInfo extends Model {
             ->pluck('source_id')->toArray();
         if ($tag_ids) {
             Tag::multiAddByIds($tag_ids,$this);
+            if (empty($this->cover_url)) {
+                $info = getUrlInfo($this->content_url,true, 'submissions', false);
+                $img_url = $info['img_url'];
+            } else {
+                $parse_url = parse_url($this->cover_url);
+                $img_url = $this->cover_url;
+                //非本地地址，存储到本地
+                if (isset($parse_url['host']) && !in_array($parse_url['host'],['cdnread.ywhub.com','cdn.inwehub.com','inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com','intervapp-test.oss-cn-zhangjiakou.aliyuncs.com'])) {
+                    $img_url = saveImgToCdn($this->cover_url,'submissions', false, false);
+                }
+            }
+            $this->cover_url = $img_url;
             $this->type = WechatWenzhangInfo::TYPE_TAG_NEWS;
             $this->save();
         }
