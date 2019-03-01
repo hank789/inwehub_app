@@ -71,6 +71,8 @@ class WechatWenzhangInfo extends Model {
             ->pluck('source_id')->toArray();
         if ($tag_ids) {
             Tag::multiAddByIds($tag_ids,$this);
+            $this->type = WechatWenzhangInfo::TYPE_TAG_NEWS;
+            $this->save();
         }
     }
 
