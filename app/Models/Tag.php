@@ -287,7 +287,7 @@ class Tag extends Model implements HasMedia
     public function getIntroducePic() {
         $description = json_decode($this->description,true);
         if (is_array($description)) {
-            $introduce_pic = $description['introduce_pic'];
+            $introduce_pic = $description['introduce_pic']??[];
         } else {
             $introduce_pic = [];
         }
