@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Relations\MorphManyCommentsTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
@@ -40,6 +41,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Category extends Model
 {
+    use MorphManyCommentsTrait;
     protected $table = 'categories';
     protected $fillable = ['parent_id','grade','name','slug','summary','icon','status','sort','type','role_id','category_id'];
 

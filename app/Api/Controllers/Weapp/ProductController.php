@@ -397,7 +397,7 @@ class ProductController extends Controller {
         $return = $comments->toArray();
         $return['total'] = $submission->comments_number;
         foreach ($return['data'] as &$item) {
-            $this->checkCommentIsSupported($user, $item);
+            $this->checkCommentIsSupported($user->id, $item);
         }
 
         return self::createJsonData(true,$return);
@@ -597,7 +597,31 @@ class ProductController extends Controller {
         $comment = Comment::create($data);
 
         return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
+    }
 
+    public function albumCommentList(Request $request,JWTAuth $JWTAuth) {
+        $this->validate($request, [
+            'id' => 'required',
+        ]);
+        $oauth = $JWTAuth->parseToken()->toUser();
+
+        $category_id = $request->input('id');
+        $category = Category::find($category_id);
+        $orderBy = $request->input('order_by',1);
+        $query = $category->comments()
+            ->where('parent_id', 0);
+        if ($orderBy == 1) {
+            $query = $query->orderBy('created_at', 'desc');
+        } else {
+            $query = $query->orderBy('supports', 'desc')->orderBy('created_at', 'desc');
+        }
+        $comments = $query->simplePaginate($request->input('perPage',20));
+        $return = $comments->toArray();
+        foreach ($return['data'] as &$item) {
+            $this->checkCommentIsSupported($oauth->user_id, $item);
+        }
+
+        return self::createJsonData(true,$return);
     }
 
     public function supportAlbumProduct(Request $request,JWTAuth $JWTAuth) {
