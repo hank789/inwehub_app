@@ -607,6 +607,9 @@ class ProductController extends Controller {
 
         $category_id = $request->input('id');
         $category = Category::find($category_id);
+        if (!$category) {
+            throw new ApiException(ApiException::PRODUCT_ALBUM_NOT_EXIST);
+        }
         $orderBy = $request->input('order_by',1);
         $query = $category->comments()
             ->where('parent_id', 0);
