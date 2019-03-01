@@ -304,9 +304,9 @@ class Submission extends Model {
             }
             $comment = Comment::where('source_id',$submission->id)->where('source_type',get_class($submission))
                 ->where('comment_type',Comment::COMMENT_TYPE_OFFICIAL)->where('status',1)->first();
-            $return['official_reply'] = '';
+            $sourceData['official_reply'] = '';
             if ($comment) {
-                $return['official_reply'] = [
+                $sourceData['official_reply'] = [
                     'author' => '官方回复',
                     'content'=>$comment->content,
                     'created_at' => $comment->created_at->diffForHumans()
