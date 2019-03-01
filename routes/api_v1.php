@@ -541,7 +541,7 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::post('product/newsList','ProductController@newsList');
     Route::post('product/commentAlbum','ProductController@commentAlbum');
     Route::post('product/albumNewsList','ProductController@albumNewsList');
-    Route::post('product/albumCommentList','ProductController@albumCommentList');
+    Route::post('product/albumComments','ProductController@albumCommentList');
 
 });
 
