@@ -257,7 +257,8 @@ class ProductController extends AdminController
         }
 
         $keywords = $request->input('description');
-        $tag->setDescription(['keywords'=>$keywords,'cover_pic'=>$cover_pic]);
+        $advance_desc = $request->input('advance_desc');
+        $tag->setDescription(['keywords'=>$keywords,'cover_pic'=>$cover_pic,'advance_desc'=>$advance_desc]);
         $tag->save();
         TagsLogic::cacheProductTags($tag);
         $category_ids = $request->input('category_id');

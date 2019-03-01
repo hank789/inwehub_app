@@ -556,11 +556,48 @@ class ProductController extends Controller {
                 'summary' => $model->summary,
                 'support_rate' => $tag->support_rate?:0,
                 'review_average_rate' => $info['review_average_rate'],
-                'can_support' => $can_support<3?1:0
+                'can_support' => $can_support<3?1:0,
+                'advance_desc' => $model->getAdvanceDesc()
             ];
         }
         $return['data'] = $list;
         return self::createJsonData(true,$return);
+    }
+
+    public function commentAlbum(Request $request,JWTAuth $JWTAuth) {
+        $this->validate($request, [
+            'id' => 'required',
+            'body'          => 'required|min:1',
+            'parent_id'     => 'required|integer',
+        ]);
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth->user_id) {
+            $user = $oauth->user;
+        } else {
+            throw new ApiException(ApiException::USER_WEAPP_NEED_REGISTER);
+        }
+
+        $category_id = $request->input('id');
+        $category = Category::find($category_id);
+
+        $parentComment = ($request->parent_id > 0) ? Comment::find($request->parent_id) : null;
+        $data = [
+            'content'          => formatContentUrls($request->body),
+            'user_id'       => $user->id,
+            'parent_id'     => $request->parent_id,
+            'level'         => $parentComment ? ($parentComment->level + 1) : 0,
+            'source_id' => $category_id,
+            'source_type' => get_class($category),
+            'to_user_id'  => 0,
+            'status'      => 1,
+            'supports'    => 0,
+        ];
+        $data['mentions'] = is_array($request->input('mentions'))?array_unique($request->input('mentions')):[];
+
+        $comment = Comment::create($data);
+
+        return self::createJsonData(true,$comment->toArray(),ApiException::SUCCESS,'评论成功');
+
     }
 
     public function supportAlbumProduct(Request $request,JWTAuth $JWTAuth) {

@@ -82,6 +82,12 @@
                                 @if ($errors->has('summary')) <p class="help-block">{{ $errors->first('summary') }}</p> @endif
                             </div>
 
+                            <div class="form-group @if ($errors->has('name')) has-error @endif">
+                                <label for="name">亮点说明</label>
+                                <input type="text" name="advance_desc" class="form-control " placeholder="亮点说明" value="{{ old('advance_desc',$tag->tag->getAdvanceDesc()) }}">
+                                @if ($errors->has('advance_desc')) <p class="help-block">{{ $errors->first('advance_desc') }}</p> @endif
+                            </div>
+
                             <div class="form-group @if ($errors->has('description')) has-error @endif">
                                 <label for="name">关键词(供搜索用,多个以逗号隔开)</label>
                                 <textarea name="description" class="form-control" placeholder="关键词" style="height: 80px;">{{ old('description',$tag->tag->getKeywords()) }}</textarea>

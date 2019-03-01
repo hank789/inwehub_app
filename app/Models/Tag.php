@@ -294,6 +294,16 @@ class Tag extends Model implements HasMedia
         return $introduce_pic;
     }
 
+    public function getAdvanceDesc() {
+        $description = json_decode($this->description,true);
+        if (is_array($description)) {
+            $advance_desc = $description['advance_desc']??'';
+        } else {
+            $advance_desc = '';
+        }
+        return $advance_desc;
+    }
+
     public function setDescription(array $desc) {
         $description = json_decode($this->description,true);
         if (!$description) {
