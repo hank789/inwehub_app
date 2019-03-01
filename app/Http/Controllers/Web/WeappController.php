@@ -95,7 +95,6 @@ class WeappController extends Controller
         foreach ($tags as $tag) {
             $model = Tag::find($tag->tag_id);
             $info = Tag::getReviewInfo($model->id);
-            $can_support = RateLimiter::instance()->getValue('album_product_support',date('Ymd').'_'.$tag->id.'_'.$oauth->user_id);
             $list[] = [
                 'id' => $tag->id,
                 'tag_id' => $model->id,
@@ -104,7 +103,6 @@ class WeappController extends Controller
                 'summary' => $model->summary,
                 'support_rate' => $tag->support_rate?:0,
                 'review_average_rate' => $info['review_average_rate'],
-                'can_support' => $can_support<3?1:0,
                 'advance_desc' => $model->getAdvanceDesc()
             ];
         }
