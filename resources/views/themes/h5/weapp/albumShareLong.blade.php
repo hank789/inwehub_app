@@ -202,8 +202,346 @@
             content: "\e701";
         }
 
-        .container-special{position:relative;padding-top:161px;margin-bottom:33px;padding-bottom:12px;background:#1c2c42}.container-special .component-card-product{margin-top:27px}.container-special.container-special-share{padding-top:30px;padding-bottom:19px}.container-special.container-special-share .component-earth-bottom{height:213px}.icon{width:1em;height:1em;vertical-align:-.15em;fill:currentColor;overflow:hidden}.component-card-main{margin:0 16px 52px;font-family:PingFangSC-Medium;letter-spacing:1px;position:relative;background:-webkit-gradient(linear,left top, left bottom,color-stop(0, #29bcb8),color-stop(52%, #205463),to(#1c2c42));background:linear-gradient(180deg,#29bcb8 0,#205463 52%,#1c2c42 100%);border-radius:4px;padding:30px 25px}.component-card-main:before{content:'';position:absolute;background-image:url(../images/zhuanti_main_card_bg@3x.png);background-size:contain;background:no-repeat;width:100%;height:100%;left:0;top:0;z-index:1}.component-card-main .title{color:#fff;font-size:20px;letter-spacing:1px;display:-webkit-box;overflow:hidden;white-space:normal!important;text-overflow:ellipsis;word-wrap:break-word;-webkit-line-clamp:1;-webkit-box-orient:vertical}.component-card-main .content{margin-top:35px;font-size:14px;color:#fff;opacity:.58;line-height:23px;display:-webkit-box;overflow:hidden;white-space:normal!important;text-overflow:ellipsis;word-wrap:break-word;-webkit-line-clamp:3;-webkit-box-orient:vertical}.component-card-main .before{color:#29bcb8;font-size:15px;position:absolute;top:65px;left:25px}.component-card-main .last{color:#29bcb8;font-size:15px;position:absolute;bottom:5px;right:25px;-webkit-transform:rotate(180deg);transform:rotate(180deg)}.component-card-main .topRight{position:absolute;right:0;top:0}.component-card-main .topRight img{width:145px;height:111.14px}.component-card-product{margin:0 16px}.component-card-product .first{padding:15px 15px 10px;background:linear-gradient(315deg,#234c60 0,#22354e 100%);border-radius:4px 4px 0 0}.component-card-product .first .productHead{display:-webkit-box;display:-ms-flexbox;display:flex}.component-card-product .first .productHead .logo{-ms-flex-negative:0;flex-shrink:0;width:44px;height:44px;border-radius:4px;background:#fff;border:1px solid #ececee}.component-card-product .first .productHead .logo img{width:100%;height:100%;-o-object-fit:contain;object-fit:contain}.component-card-product .first .productHead .right{padding-left:8px}.component-card-product .first .productHead .right .title{font-size:16px;font-family:PingFangSC-Medium;font-weight:500;color:#fff;line-height:25px;display:-webkit-box;overflow:hidden;white-space:normal!important;text-overflow:ellipsis;word-wrap:break-word;-webkit-line-clamp:1;-webkit-box-orient:vertical}.component-card-product .first .productHead .right .stars{font-size:11px;line-height:22px;font-family:PingFangSC-Regular;font-weight:400;color:#29bcb8}.component-card-product .first .productHead .right .stars .iconfont{font-size:11px;line-height:22px;font-family:PingFangSC-Regular;font-weight:400;color:#29bcb8;margin-right:2px}.component-card-product .first .productHead .right .stars .span{margin-left:3px}.component-card-product .first .content{font-size:14px;font-family:PingFangSC-Regular;font-weight:400;color:#fff;line-height:23px;letter-spacing:1px;margin-top:8px;opacity:.58;display:-webkit-box;overflow:hidden;white-space:normal!important;text-overflow:ellipsis;word-wrap:break-word;-webkit-line-clamp:2;-webkit-box-orient:vertical}.component-card-product .second{background:#22354e;height:49px;line-height:49px;padding:0 15px;position:relative;z-index:1;overflow:hidden}.component-card-product .second .left{font-size:13px;font-family:HelveticaNeue-Medium;font-weight:500;color:#fff}.component-card-product .second .left img{position:relative;top:2px;width:13px;height:15px;margin-right:3px}.component-card-product .second .right{position:absolute;right:15px;top:11px}.component-card-product .second .right .button{border-radius:14.5px;padding:0 16px;height:29px;line-height:29px;text-align:center;background:#29bcb8;color:#fff}.component-card-product .second .right .button .iconfont{position:relative;top:1px;font-size:16px;margin-right:3px}.component-card-product .three{padding-left:12px;line-height:34px;height:34px;color:#fff;font-size:14px}.component-card-product .three .iconfont{font-size:23px;color:#29bcb8;position:relative;top:-5px;margin-right:3px}.component-card-product .three .span{opacity:.58;margin-left:5px}.component-earth-top{position:absolute;bottom:-23px;left:0;height:42px;width:100%}.component-earth-top img{position:absolute;top:19px;left:0;width:100%;height:23px}.component-earth-bottom{display:inline-block;position:absolute;top:0;left:0;width:100%;height:252px;z-index:0}.component-earth-bottom img{width:100%;height:100%;-o-object-fit:cover;object-fit:cover}.component-earth-bottom img.radian{z-index:1;position:absolute;left:0;bottom:0;width:100%;height:23px}.component-title-big{font-size:20px;font-family:PingFangSC-Medium;font-weight:500;color:#3c3e44;padding:0 16px;margin-top:3px}.container-card-product-minis{display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;padding-left:10px}.container-card-product-minis .component-card-product-mini{margin-bottom:10px}.component-card-product-mini{-ms-flex-negative:0;flex-shrink:0;width:78px;height:125px;margin:0 5px;border-radius:4px;overflow:hidden;background:linear-gradient(226deg,#234c60 0,#22354e 100%)}.component-card-product-mini .logo{width:78px;height:78px}.component-card-product-mini .logo img{-o-object-fit:contain;object-fit:contain;width:100%;height:100%}.component-card-product-mini .desc{font-size:11px;font-family:PingFangSC-Regular;color:#29bcb8;line-height:16px;padding:8px 10px}.component-card-product-mini .help{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;height:100%;width:100%}.component-card-product-mini .help .iconfont{font-size:30px;color:#29bcb8}.component-specialShare-bottom{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;padding:10px 16px 5px}.component-specialShare-bottom .left{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-flow:column;flex-flow:column;padding-top:9px}.component-specialShare-bottom .left img{width:74px}.component-specialShare-bottom .left span{font-size:12px;font-family:PingFangSC-Regular;font-weight:400;color:#444;line-height:20px;-webkit-transform:scale(.84);transform:scale(.84);position:relative;left:-13px;opacity:.5971}.component-specialShare-bottom .right{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;position:relative;top:-11px;left:-7px}.component-specialShare-bottom .right img{width:73px;height:73px}
+        .container-special {
+            position: relative;
+            padding-top: 483px;
+            margin-bottom: 99px;
+            padding-bottom: 36px;
+            background: #1C2C42; }
+        .container-special .component-card-product {
+            margin-top: 81px; }
+        .container-special.container-special-share {
+            padding-top: 90px;
+            padding-bottom: 57px; }
+        .container-special.container-special-share .component-earth-bottom {
+            height: 639px; }
 
+        .icon {
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.15em;
+            fill: currentColor;
+            overflow: hidden; }
+
+        .component-card-main {
+            margin: 0 48px 156px;
+            font-family: PingFangSC-Medium;
+            letter-spacing: 3px;
+            position: relative;
+            background: -webkit-gradient(linear, left top, left bottom, from(#29bcb8), color-stop(52%, #205463), to(#1c2c42));
+            background: linear-gradient(180deg, #29bcb8 0%, #205463 52%, #1c2c42 100%);
+            border-radius: 12px;
+            padding: 90px 75px; }
+        .component-card-main:before {
+            content: '';
+            position: absolute;
+            background-image: url(../images/zhuanti_main_card_bg@3x.png);
+            background-size: contain;
+            background: no-repeat;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            z-index: 1; }
+        .component-card-main .title {
+            color: #fff;
+            font-size: 60px;
+            letter-spacing: 3px;
+            display: -webkit-box;
+            overflow: hidden;
+            white-space: normal !important;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical; }
+        .component-card-main .content {
+            margin-top: 105px;
+            font-size: 42px;
+            color: #fff;
+            opacity: .58;
+            line-height: 69px;
+            display: -webkit-box;
+            overflow: hidden;
+            white-space: normal !important;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical; }
+        .component-card-main .before {
+            color: #29BCB8;
+            font-size: 45px;
+            position: absolute;
+            top: 195px;
+            left: 75px; }
+        .component-card-main .last {
+            color: #29BCB8;
+            font-size: 45px;
+            position: absolute;
+            bottom: 15px;
+            right: 75px;
+            -webkit-transform: rotate(180deg);
+            transform: rotate(180deg); }
+        .component-card-main .topRight {
+            position: absolute;
+            right: 0;
+            top: 0; }
+        .component-card-main .topRight img {
+            width: 435px;
+            height: 333.42px; }
+
+        .component-card-product {
+            margin: 0 48px; }
+        .component-card-product .first {
+            padding: 45px 45px 30px;
+            background: linear-gradient(315deg, #234c60 0%, #22354e 100%);
+            border-radius: 12px 12px 0 0; }
+        .component-card-product .first .productHead {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex; }
+        .component-card-product .first .productHead .logo {
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+            width: 132px;
+            height: 132px;
+            border-radius: 12px;
+            background: white;
+            border: 3px solid #ececee;
+            overflow: hidden; }
+        .component-card-product .first .productHead .logo img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: contain;
+            object-fit: contain; }
+        .component-card-product .first .productHead .right {
+            padding-left: 24px; }
+        .component-card-product .first .productHead .right .title {
+            font-size: 48px;
+            font-family: PingFangSC-Medium;
+            font-weight: 500;
+            color: white;
+            line-height: 75px;
+            display: -webkit-box;
+            overflow: hidden;
+            white-space: normal !important;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical; }
+        .component-card-product .first .productHead .right .stars {
+            font-size: 33px;
+            line-height: 66px;
+            font-family: PingFangSC-Regular;
+            font-weight: 400;
+            color: #29bcb8; }
+        .component-card-product .first .productHead .right .stars .iconfont {
+            font-size: 33px;
+            line-height: 66px;
+            font-family: PingFangSC-Regular;
+            font-weight: 400;
+            color: #29bcb8;
+            margin-right: 6px; }
+        .component-card-product .first .productHead .right .stars .span {
+            margin-left: 9px; }
+        .component-card-product .first .content {
+            font-size: 42px;
+            font-family: PingFangSC-Regular;
+            font-weight: 400;
+            color: white;
+            line-height: 69px;
+            letter-spacing: 3px;
+            margin-top: 24px;
+            opacity: 0.58;
+            display: -webkit-box;
+            overflow: hidden;
+            white-space: normal !important;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical; }
+        .component-card-product .second {
+            background: #22354E;
+            height: 147px;
+            line-height: 147px;
+            padding: 0 45px;
+            position: relative;
+            z-index: 1;
+            overflow: hidden; }
+        .component-card-product .second .left {
+            font-size: 39px;
+            font-family: HelveticaNeue-Medium;
+            font-weight: 500;
+            color: white; }
+        .component-card-product .second .left img {
+            position: relative;
+            top: 6px;
+            width: 39px;
+            height: 45px;
+            margin-right: 9px; }
+        .component-card-product .second .right {
+            position: absolute;
+            right: 45px;
+            top: 33px; }
+        .component-card-product .second .right .button {
+            border-radius: 43.5px;
+            padding: 0 48px;
+            height: 87px;
+            line-height: 87px;
+            text-align: center;
+            background: #29bcb8;
+            color: #fff; }
+        .component-card-product .second .right .button .iconfont {
+            position: relative;
+            top: 3px;
+            font-size: 48px;
+            margin-right: 9px; }
+        .component-card-product .three {
+            padding-left: 36px;
+            line-height: 102px;
+            height: 102px;
+            color: #fff;
+            font-size: 42px; }
+        .component-card-product .three .iconfont {
+            font-size: 69px;
+            color: #29BCB8;
+            position: relative;
+            top: -15px;
+            margin-right: 9px; }
+        .component-card-product .three .span {
+            opacity: .58;
+            margin-left: 15px; }
+
+        .component-earth-top {
+            position: absolute;
+            bottom: -69px;
+            left: 0;
+            height: 126px;
+            width: 100%; }
+        .component-earth-top img {
+            position: absolute;
+            top: 56px;
+            left: 0;
+            width: 100%;
+            height: 69px; }
+
+        .component-earth-bottom {
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 756px;
+            z-index: 0; }
+        .component-earth-bottom img {
+            width: 100%;
+            height: 100%;
+            -o-object-fit: cover;
+            object-fit: cover; }
+        .component-earth-bottom img.radian {
+            z-index: 1;
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 100%;
+            height: 69px; }
+
+        .component-title-big {
+            font-size: 60px;
+            font-family: PingFangSC-Medium;
+            font-weight: 500;
+            color: #3c3e44;
+            padding: 0 48px;
+            margin-top: 9px; }
+
+        .container-card-product-minis {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            padding-left: 30px; }
+        .container-card-product-minis .component-card-product-mini {
+            margin-bottom: 30px; }
+
+        .component-card-product-mini {
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+            width: 234px;
+            height: 375px;
+            margin: 0 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(226deg, #234c60 0%, #22354e 100%); }
+        .component-card-product-mini .logo {
+            width: 234px;
+            height: 234px; }
+        .component-card-product-mini .logo img {
+            -o-object-fit: contain;
+            object-fit: contain;
+            width: 100%;
+            height: 100%; }
+        .component-card-product-mini .desc {
+            font-size: 33px;
+            font-family: PingFangSC-Regular;
+            color: #29bcb8;
+            line-height: 48px;
+            padding: 24px 30px; }
+        .component-card-product-mini .help {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            height: 100%;
+            width: 100%; }
+        .component-card-product-mini .help .iconfont {
+            font-size: 90px;
+            color: #29BCB8; }
+
+        .component-specialShare-bottom {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            padding: 30px 48px 15px; }
+        .component-specialShare-bottom .left {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-flow: column;
+            flex-flow: column;
+            padding-top: 27px; }
+        .component-specialShare-bottom .left .imgWrapper img {
+            width: 222px; }
+        .component-specialShare-bottom .left .span {
+            font-size: 36px;
+            font-family: PingFangSC-Regular;
+            font-weight: 400;
+            color: #444444;
+            line-height: 60px;
+            -webkit-transform: scale(0.84);
+            transform: scale(0.84);
+            position: relative;
+            left: -39px;
+            opacity: 0.5971; }
+        .component-specialShare-bottom .right {
+            -webkit-box-pack: end;
+            -ms-flex-pack: end;
+            justify-content: flex-end;
+            position: relative;
+            top: -33px;
+            left: -21px; }
+        .component-specialShare-bottom .right img {
+            width: 219px;
+            height: 219px; }
     </style>
 </head>
 <body>
@@ -233,7 +571,7 @@
     <div class="component-earth-top"><img class="radian" src="https://cdn.inwehub.com/weapp_dianping/images/hudu@3x.png"></div>
 </div>
 <div class="component-specialShare-bottom">
-    <div class="left"><img src="https://cdn.inwehub.com/weapp_dianping/images/qiyefuwudianping_hei@3x.png"><span>长按识别二维码查看专题详情</span></div>
+    <div class="left"><div class="imgWrapper"><img src="https://cdn.inwehub.com/weapp_dianping/images/qiyefuwudianping_hei@3x.png"></div><div class="span">长按识别二维码查看专题详情</div></div>
     <div class="right"><img src="{{ $qrcode }}"></div>
 </div>
 </body>
