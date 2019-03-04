@@ -235,7 +235,7 @@
         .component-card-main:before {
             content: '';
             position: absolute;
-            background-image: url(../images/zhuanti_main_card_bg@3x.png);
+            background-image: url(https://cdn.inwehub.com/weapp_dianping/images/zhuanti_main_card_bg@3x.png);
             background-size: contain;
             background: no-repeat;
             width: 100%;

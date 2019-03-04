@@ -20,6 +20,7 @@ use App\Third\Weapp\WeApp;
 use App\Traits\SubmitSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -491,6 +492,10 @@ class ProductController extends Controller {
         $showUrl = 'getAlbumShareLongInfo';
 
         $category = Category::findOrFail($request->input('id'));
+        $url = RateLimiter::instance()->getValue('album_share_image',$category->id);
+        if ($url && config('app.env') == 'production') {
+            return self::createJsonData(true,['url'=>$url]);
+        }
 
         if($category->getMedia($collection)->isEmpty() || config('app.env') != 'production'){
             $snappy = App::make('snappy.image');
@@ -500,6 +505,7 @@ class ProductController extends Controller {
         }
         $category = Category::find($request->input('id'));
         $url = $category->getMedia($collection)->last()->getUrl();
+        RateLimiter::instance()->setVale('album_share_image',$category->id,$url,60*60*12);
         return self::createJsonData(true,['url'=>$url]);
     }
 
