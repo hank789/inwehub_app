@@ -202,6 +202,7 @@
             content: "\e701";
         }
 
+
         .container-special {
             position: relative;
             padding-top: 483px;
@@ -235,7 +236,7 @@
         .component-card-main:before {
             content: '';
             position: absolute;
-            background-image: url(https://cdn.inwehub.com/weapp_dianping/images/zhuanti_main_card_bg@3x.png);
+            background-image: url(../images/zhuanti_main_card_bg@3x.png);
             background-size: contain;
             background: no-repeat;
             width: 100%;
@@ -454,18 +455,12 @@
             margin-top: 9px; }
 
         .container-card-product-minis {
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -ms-flex-wrap: wrap;
-            flex-wrap: wrap;
             padding-left: 30px; }
         .container-card-product-minis .component-card-product-mini {
             margin-bottom: 30px; }
 
         .component-card-product-mini {
-            -ms-flex-negative: 0;
-            flex-shrink: 0;
+            display: inline-block;
             width: 234px;
             height: 375px;
             margin: 0 15px;
@@ -545,7 +540,6 @@
     </style>
 </head>
 <body>
-<div style="display: inline-block;width: 1125px;">
 <div class="container-special container-special-share">
     <div class="component-earth-bottom"><img src="{{$category->icon}}"><img class="radian" src="https://cdn.inwehub.com/weapp_dianping/images/hudu2@3x.png"></div>
     <div class="component-card-main">
@@ -574,7 +568,6 @@
 <div class="component-specialShare-bottom">
     <div class="left"><div class="imgWrapper"><img src="https://cdn.inwehub.com/weapp_dianping/images/qiyefuwudianping_hei@3x.png"></div><div class="span">长按识别二维码查看专题详情</div></div>
     <div class="right"><img src="{{ $qrcode }}"></div>
-</div>
 </div>
 </body>
 </html>
