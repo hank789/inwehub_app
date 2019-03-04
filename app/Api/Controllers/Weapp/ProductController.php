@@ -492,7 +492,7 @@ class ProductController extends Controller {
 
         $category = Category::findOrFail($request->input('id'));
 
-        if($category->getMedia($collection)->isEmpty()){
+        if($category->getMedia($collection)->isEmpty() || config('app.env') != 'production'){
             $snappy = App::make('snappy.image');
             $snappy->setOption('width',1125);
             $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$category->id);
