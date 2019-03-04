@@ -481,13 +481,16 @@ class ProductController extends Controller {
         return self::createJsonData(true,['url'=>$url]);
     }
 
-    public function getAlbumShareImage(Request $request,$id){
-
+    public function getAlbumShareImage(Request $request){
+        $validateRules = [
+            'id'   => 'required|integer'
+        ];
+        $this->validate($request,$validateRules);
         //分享到朋友圈的长图
         $collection = 'images_big';
         $showUrl = 'getAlbumShareLongInfo';
 
-        $category = Category::findOrFail($id);
+        $category = Category::findOrFail($request->input('id'));
 
         if($category->getMedia($collection)->isEmpty()){
             $snappy = App::make('snappy.image');
@@ -495,7 +498,7 @@ class ProductController extends Controller {
             $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$category->id);
             $category->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
         }
-        $category = Category::find($id);
+        $category = Category::find($request->input('id'));
         $url = $category->getMedia($collection)->last()->getUrl();
         return self::createJsonData(true,['url'=>$url]);
     }

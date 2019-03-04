@@ -533,7 +533,7 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::get('product/myReview','ProductController@myReviewList')->middleware(['jwt.weappAuth']);
     Route::get('product/getProductShareImage','ProductController@getProductShareImage');
     Route::get('product/getReviewShareImage','ProductController@getReviewShareImage');
-    Route::get('product/getAlbumShareImage/{id}','ProductController@getAlbumShareImage')->where(['id'=>'[0-9]+']);
+    Route::get('product/getAlbumShareImage','ProductController@getAlbumShareImage');
     Route::get('product/albumList','ProductController@getAlbumList');
     Route::get('product/moreAlbum','ProductController@moreAlbum');
     Route::get('product/albumInfo','ProductController@albumInfo');
