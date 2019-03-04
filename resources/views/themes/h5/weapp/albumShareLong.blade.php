@@ -545,6 +545,7 @@
     </style>
 </head>
 <body>
+<div style="display: inline-block;width: 1125px;">
 <div class="container-special container-special-share">
     <div class="component-earth-bottom"><img src="{{$category->icon}}"><img class="radian" src="https://cdn.inwehub.com/weapp_dianping/images/hudu2@3x.png"></div>
     <div class="component-card-main">
@@ -573,6 +574,7 @@
 <div class="component-specialShare-bottom">
     <div class="left"><div class="imgWrapper"><img src="https://cdn.inwehub.com/weapp_dianping/images/qiyefuwudianping_hei@3x.png"></div><div class="span">长按识别二维码查看专题详情</div></div>
     <div class="right"><img src="{{ $qrcode }}"></div>
+</div>
 </div>
 </body>
 </html>
