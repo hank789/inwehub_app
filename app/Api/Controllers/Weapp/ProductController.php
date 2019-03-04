@@ -656,7 +656,7 @@ class ProductController extends Controller {
         } else {
             $query = $query->orderBy('supports', 'desc')->orderBy('created_at', 'desc');
         }
-        $comments = $query->simplePaginate($request->input('perPage',20));
+        $comments = $query->paginate($request->input('perPage',20));
         $return = $comments->toArray();
         foreach ($return['data'] as &$item) {
             $this->checkCommentIsSupported($oauth->user_id, $item);
