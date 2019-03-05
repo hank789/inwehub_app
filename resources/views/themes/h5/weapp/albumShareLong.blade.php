@@ -552,10 +552,7 @@
         <div class="topRight"><img src="https://cdn.inwehub.com/weapp_dianping/images/zhuanti_main_card_bg@3x.png"></div>
     </div>
     <div class="container-card-product-minis">
-        @foreach($tags as $tag)
-            <div class="component-card-product-mini"><div class="logo" style="background-image: url({{ $tag['logo'] }})"></div><div class="desc"><div class="descFirst">评分{{$tag['review_average_rate']}}</div><div class="descSecond">热度{{$tag['support_rate']}}</div></div></div>
-        @endforeach
-        <div class="component-card-product-mini"><div class="help"><img src="https://cdn.inwehub.com/weapp_dianping/images/wenhao@3x.png"></div></div>
+        @foreach($tags as $tag)<div class="component-card-product-mini"><div class="logo" style="background-image: url({{ $tag['logo'] }})"></div><div class="desc"><div class="descFirst">评分{{$tag['review_average_rate']}}</div><div class="descSecond">热度{{$tag['support_rate']}}</div></div></div>@endforeach<div class="component-card-product-mini"><div class="help"><img src="https://cdn.inwehub.com/weapp_dianping/images/wenhao@3x.png"></div></div>
     </div>
     <div class="component-earth-top"><img class="radian" src="https://cdn.inwehub.com/weapp_dianping/images/hudu@3x.png"></div>
 </div>
