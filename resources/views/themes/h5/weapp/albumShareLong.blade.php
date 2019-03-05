@@ -203,6 +203,7 @@
         }
 
 
+
         .container-special {
             position: relative;
             padding-top: 483px;
@@ -256,6 +257,8 @@
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical; }
         .component-card-main .content {
+            font-family:PingFangSC-Regular;
+            letter-spacing:1px;
             margin-top: 105px;
             font-size: 42px;
             color: #fff;
@@ -279,9 +282,7 @@
             font-size: 45px;
             position: absolute;
             bottom: 15px;
-            right: 75px;
-            -webkit-transform: rotate(180deg);
-            transform: rotate(180deg); }
+            right: 75px; }
         .component-card-main .topRight {
             position: absolute;
             right: 0;
@@ -294,6 +295,7 @@
             margin: 0 48px; }
         .component-card-product .first {
             padding: 45px 45px 30px;
+            background: -webkit-linear-gradient(315deg, #234c60 0%, #22354e 100%);
             background: linear-gradient(315deg, #234c60 0%, #22354e 100%);
             border-radius: 12px 12px 0 0; }
         .component-card-product .first .productHead {
@@ -466,10 +468,15 @@
             margin: 0 15px;
             border-radius: 12px;
             overflow: hidden;
-            background: linear-gradient(226deg, #234c60 0%, #22354e 100%); }
+            background:url(../images/minicardbg@3x.png) no-repeat;
+            background-size: cover; }
         .component-card-product-mini .logo {
             width: 234px;
-            height: 234px; }
+            height: 234px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center center;
+        }
         .component-card-product-mini .logo img {
             -o-object-fit: contain;
             object-fit: contain;
@@ -482,20 +489,14 @@
             line-height: 48px;
             padding: 24px 30px; }
         .component-card-product-mini .help {
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-pack: center;
-            -ms-flex-pack: center;
-            justify-content: center;
-            -webkit-box-align: center;
-            -ms-flex-align: center;
-            align-items: center;
             height: 100%;
             width: 100%; }
-        .component-card-product-mini .help .iconfont {
-            font-size: 90px;
-            color: #29BCB8; }
+        .component-card-product-mini .help img {
+            position: relative;
+            top: 50%;
+            left: 50%;
+            margin-left:-31px;
+            margin-top:-45px; }
 
         .component-specialShare-bottom {
             display: -webkit-box;
@@ -537,6 +538,7 @@
         .component-specialShare-bottom .right img {
             width: 219px;
             height: 219px; }
+
     </style>
 </head>
 <body>
@@ -545,14 +547,14 @@
     <div class="component-card-main">
         <div class="title">{{$category->name}}</div>
         <div class="content">{{$category->summary}}</div>
-        <div class="before"><span class="iconfont icon-shangyinhao-"></span></div>
-        <div class="last"><span class="iconfont icon-shangyinhao-"></span></div>
+        <div class="before"><img src="https://cdn.inwehub.com/weapp_dianping/images/shangyinhao@3x.png"></div>
+        <div class="last"><img src="https://cdn.inwehub.com/weapp_dianping/images/xiayinhao@3x.png"></div>
         <div class="topRight"><img src="https://cdn.inwehub.com/weapp_dianping/images/zhuanti_main_card_bg@3x.png"></div>
     </div>
     <div class="container-card-product-minis">
         @foreach($tags as $tag)
             <div class="component-card-product-mini">
-                <div class="logo"><img src="{{ $tag['logo'] }}"></div>
+                <div class="logo" style="background-image: url({{ $tag['logo'] }})"></div>
                 <div class="desc">
                     <div class="descFirst">评分{{$tag['review_average_rate']}}</div>
                     <div class="descSecond">热度{{$tag['support_rate']}}</div>
@@ -560,7 +562,7 @@
             </div>
         @endforeach
         <div class="component-card-product-mini">
-            <div class="help"><span class="iconfont icon-wenhao-"></span></div>
+            <div class="help"><img src="https://cdn.inwehub.com/weapp_dianping/images/wenhao@3x.png"></div>
         </div>
     </div>
     <div class="component-earth-top"><img class="radian" src="https://cdn.inwehub.com/weapp_dianping/images/hudu@3x.png"></div>
