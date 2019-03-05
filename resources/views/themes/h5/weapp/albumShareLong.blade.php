@@ -204,6 +204,7 @@
 
 
 
+
         .container-special {
             position: relative;
             padding-top: 483px;
@@ -463,6 +464,7 @@
 
         .component-card-product-mini {
             display: inline-block;
+            position: relative;
             width: 234px;
             height: 375px;
             margin: 0 15px;
@@ -488,11 +490,9 @@
             color: #29bcb8;
             line-height: 48px;
             padding: 24px 30px; }
-        .component-card-product-mini .help {
-            height: 100%;
-            width: 100%; }
-        .component-card-product-mini .help img {
-            position: relative;
+
+        .component-card-product-mini .help{
+            position: absolute;
             top: 50%;
             left: 50%;
             margin-left:-31px;
@@ -539,6 +539,7 @@
             width: 219px;
             height: 219px; }
 
+
     </style>
 </head>
 <body>
@@ -552,7 +553,7 @@
         <div class="topRight"><img src="https://cdn.inwehub.com/weapp_dianping/images/zhuanti_main_card_bg@3x.png"></div>
     </div>
     <div class="container-card-product-minis">
-        @foreach($tags as $tag)<div class="component-card-product-mini"><div class="logo" style="background-image: url({{ $tag['logo'] }})"></div><div class="desc"><div class="descFirst">评分{{$tag['review_average_rate']}}</div><div class="descSecond">热度{{$tag['support_rate']}}</div></div></div>@endforeach<div class="component-card-product-mini"><div class="help"><img src="https://cdn.inwehub.com/weapp_dianping/images/wenhao@3x.png"></div></div>
+        @foreach($tags as $tag)<div class="component-card-product-mini"><div class="logo" style="background-image: url({{ $tag['logo'] }})"></div><div class="desc"><div class="descFirst">评分{{$tag['review_average_rate']}}</div><div class="descSecond">热度{{$tag['support_rate']}}</div></div></div>@endforeach<div class="component-card-product-mini"><img class="help" src="https://cdn.inwehub.com/weapp_dianping/images/wenhao@3x.png"></div>
     </div>
     <div class="component-earth-top"><img class="radian" src="https://cdn.inwehub.com/weapp_dianping/images/hudu@3x.png"></div>
 </div>
