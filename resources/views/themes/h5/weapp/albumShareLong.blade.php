@@ -463,6 +463,7 @@
 
         .component-card-product-mini {
             display: inline-block;
+            vertical-align: top;
             width: 234px;
             height: 375px;
             margin: 0 15px;
