@@ -468,7 +468,7 @@
             margin: 0 15px;
             border-radius: 12px;
             overflow: hidden;
-            background:url(../images/minicardbg@3x.png) no-repeat;
+            background:url(https://cdn.inwehub.com/weapp_dianping/images/minicardbg@3x.png) no-repeat;
             background-size: cover; }
         .component-card-product-mini .logo {
             width: 234px;
