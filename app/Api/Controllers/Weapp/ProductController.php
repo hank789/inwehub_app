@@ -102,7 +102,7 @@ class ProductController extends Controller {
             ->whereHas('tags',function($query) use ($tag) {
                 $query->where('tag_id', $tag->id);
             })
-            ->orderBy('_id','desc')->take(5)->get();
+            ->orderBy('date_time','desc')->take(5)->get();
         foreach ($news as $new) {
             $data['recent_news'][] = [
                 'title' => strip_tags($new->title),
@@ -281,7 +281,7 @@ class ProductController extends Controller {
             ->whereHas('tags',function($query) use ($tag) {
                 $query->where('tag_id', $tag->id);
             })
-            ->orderBy('_id','desc')->paginate($perPage);
+            ->orderBy('date_time','desc')->paginate($perPage);
 
         $return = $news->toArray();
         $list = [];
@@ -696,7 +696,7 @@ class ProductController extends Controller {
             ->whereHas('tags',function($query) use ($tagIds) {
                 $query->whereIn('tag_id', $tagIds);
             })
-            ->orderBy('_id','desc')->paginate($perPage);
+            ->orderBy('date_time','desc')->paginate($perPage);
 
         $return = $news->toArray();
         $list = [];
