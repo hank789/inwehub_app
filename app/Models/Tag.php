@@ -374,7 +374,7 @@ class Tag extends Model implements HasMedia
         $return = [];
         $category_ids = TagCategoryRel::where('tag_id',$this->id)->orderBy('support_rate','desc')->pluck('category_id')->toArray();
         $album_cids = Category::whereIn('id',$category_ids)->where('type','product_album')->pluck('id')->toArray();
-        $related_tags = TagCategoryRel::WhereIn('category_id',$album_cids)->where('type',TagCategoryRel::TYPE_REVIEW)
+        $related_tags = TagCategoryRel::WhereIn('category_id',count($album_cids)?$album_cids:$category_ids)->where('type',TagCategoryRel::TYPE_REVIEW)
             ->where('tag_id','!=',$this->id)
             ->select('tag_id')->distinct()
             ->orderBy('reviews','desc')->take($pageSize)->get();
@@ -389,7 +389,7 @@ class Tag extends Model implements HasMedia
                 'review_average_rate' => $reviewInfo['review_average_rate']
             ];
         }
-        if (count($return) < $pageSize) {
+        if (count($return) < $pageSize && count($album_cids)) {
             $other_cids = array_diff($category_ids,$album_cids);
             if ($other_cids) {
                 $related_tags = TagCategoryRel::WhereIn('category_id',$other_cids)->where('type',TagCategoryRel::TYPE_REVIEW)
