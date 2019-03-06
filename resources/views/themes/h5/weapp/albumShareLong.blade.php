@@ -576,7 +576,7 @@
     <div class="component-earth-top"><img class="radian" src="https://cdn.inwehub.com/weapp_dianping/images/hudu@3x.png"></div>
 </div>
 <div class="component-specialShare-bottom">
-    <div class="left"><div class="imgWrapper"><img src="https://cdn.inwehub.com/weapp_dianping/images/qiyefuwudianping_hei@3x.png"></div><div class="span">长按识别二维码查看专题详情</div></div>
+    <div class="left"><div class="imgWrapper"><img src="https://cdn.inwehub.com/weapp_dianping/images/qiyefuwudianping_hei@3x.png"></div><div class="span">长按识别小程序码查看专题详情</div></div>
     <div class="right"><img src="{{ $qrcode }}"></div>
 </div>
 </body>
