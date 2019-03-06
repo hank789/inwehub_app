@@ -129,7 +129,6 @@ class SubmissionController extends AdminController
         $submission->save();
 
         $tagString = trim($request->input('tags'));
-        \Log::info('test',[$tagString]);
 
         $keywords = $submission->data['keywords']??'';
         /*更新标签*/

@@ -125,7 +125,6 @@ class CompanyController extends Controller {
         $longitude = $request->input('longitude');
         $latitude = $request->input('latitude');
         $page = $request->input('page',1);
-        \Log::info('test',$request->all());
         if ($longitude) {
             $geohash = new GeoHash();
 

@@ -147,7 +147,6 @@ class SubmissionController extends AdminController
         ]);
 
         $tagString = trim($request->input('tags'));
-        \Log::info('test',[$tagString]);
 
         Tag::multiSaveByIds($tagString,$submission);
         if ($submission->status == 1) {

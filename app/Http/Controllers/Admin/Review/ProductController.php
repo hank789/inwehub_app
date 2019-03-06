@@ -417,7 +417,6 @@ class ProductController extends AdminController
                             'type' => TagCategoryRel::TYPE_REVIEW
                         ]);
                 }
-                \Log::info('test',$cids);
                 if (count($cids)) {
                     TagCategoryRel::where('tag_id',$id)->whereIn('category_id',$cids)->delete();
                 }
@@ -850,7 +849,6 @@ class ProductController extends AdminController
             return $this->error(url()->previous(),'暂时不支持非微信公众号的链接地址');
         }
         $linkInfo = getWechatUrlInfo($link_url,false,true);
-        \Log::info('test',$linkInfo);
         $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
         if (!$mpInfo) {
             $mpInfo = WechatMpInfo::create([
