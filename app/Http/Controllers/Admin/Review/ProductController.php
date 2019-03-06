@@ -632,7 +632,7 @@ class ProductController extends AdminController
         $content = $case->content;
         if ($data['type'] == 'link') {
             $link_url = parse_url($data['link_url']);
-            if ($link_url['host'] != 'mp.weixin.qq.com') {
+            if ($link_url['host'] != 'mp.weixin.qq.com' && !in_array($link_url['host'],['api.inwehub.com','api.ywhub.com'])) {
                 return $this->error(url()->previous(),'暂时不支持非微信公众号的链接地址');
             }
         }
