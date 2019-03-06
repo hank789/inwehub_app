@@ -1730,6 +1730,8 @@ if (!function_exists('getWechatUrlBodyText')) {
                     return 'src="'.$imgUrl.'"';
                 }, $html);
             }
+            //去除微信图片遮罩
+            $html = str_replace('opacity: 0;','',$html);
         }
         return $html;
     }
@@ -1760,7 +1762,8 @@ if (!function_exists('getWechatUrlInfo')) {
                     return 'src="'.$imgUrl.'"';
                 }, $js_content);
             }
-
+            //去除微信图片遮罩
+            $js_content = str_replace('opacity: 0;','',$js_content);
             return [
                 'body' => $js_content,
                 'title' => $title,
