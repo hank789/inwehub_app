@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
     <title></title>
     <style type="text/css">
+        @font-face {
+            font-family: 'PingFangSC-Regular';
+            src: url('https://cdn.inwehub.com/system/PingFangSC-Regular.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'PingFangSC-Medium';
+            src: url('https://cdn.inwehub.com/system/PingFangSC-Medium.ttf');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
             font-family: PingFang-SC-Regular, sans-serif;
             -webkit-tap-highlight-color: transparent;
@@ -248,6 +262,7 @@
         .component-card-main .title {
             color: #fff;
             font-size: 60px;
+            line-height: 66px;
             letter-spacing: 3px;
             display: -webkit-box;
             overflow: hidden;
@@ -474,6 +489,7 @@
         .component-card-product-mini .logo {
             width: 234px;
             height: 234px;
+            background-color:#fff;
             background-repeat: no-repeat;
             background-size: contain;
             background-position: center center;
@@ -538,6 +554,7 @@
         .component-specialShare-bottom .right img {
             width: 219px;
             height: 219px; }
+
 
 
     </style>
