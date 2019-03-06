@@ -84,7 +84,8 @@
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-eye"></i></a>
                                                     <a class="btn btn-default" href="{{ route('admin.review.submission.edit',['id'=>$submission->id]) }}" data-toggle="tooltip" title="编辑信息"><i class="fa fa-edit"></i></a>
-                                                    @if (!$submission->isRecommendRead() && false)
+                                                    <a class="btn btn-default" target="_blank" href="{{ route('admin.review.submission.addOfficialReply',['id'=>$submission->id]) }}" data-toggle="tooltip" title="官方回复"><i class="fa fa-comment-o"></i></a>
+                                                @if (!$submission->isRecommendRead() && false)
                                                         <a class="btn btn-default btn-sm btn-setfav" id="submission_setfav_{{ $submission->id }}" data-toggle="tooltip" title="设为精选" data-source_id = "{{ $submission->id }}" data-title="{{ $submission->title }}"><i class="fa fa-heart"></i></a>
                                                     @endif
                                                     <a class="btn btn-default btn-sm btn-setveriy" data-toggle="tooltip" title="{{ $submission->status ? '设为待审核':'审核成功' }}" data-title="{{ $submission->status ? '设为待审核':'审核成功' }}" data-source_id = "{{ $submission->id }}"><i class="fa {{ $submission->status ? 'fa-lock':'fa-check-square-o' }}"></i></a>

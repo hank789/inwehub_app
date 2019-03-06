@@ -32,7 +32,9 @@ class SystemController extends Controller {
             'content' => 'required'
         ];
         $this->validate($request, $validateRules);
+        $source = '';
         if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+            $source = '小程序';
             $oauth = $JWTAuth->parseToken()->toUser();
             if ($oauth->user_id) {
                 $user = $oauth->user;
@@ -50,7 +52,7 @@ class SystemController extends Controller {
             'title'=>'内容',
             'value'=>$request->input('content')
         ];
-        event(new ImportantNotify('用户'.$user->id.'['.$user->name.']'.$request->input('title'),$fields));
+        event(new ImportantNotify($source.'用户'.$user->id.'['.$user->name.']'.$request->input('title'),$fields));
         return self::createJsonData(true);
     }
 

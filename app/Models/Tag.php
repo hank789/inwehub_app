@@ -43,8 +43,7 @@ class Tag extends Model implements HasMedia
 {
     use BelongsToCategoryTrait, Searchable, HasMediaTrait;
     protected $table = 'tags';
-    protected $fillable = ['name', 'logo', 'summary','description','followers', 'category_id', 'reviews'];
-
+    protected $fillable = ['name', 'logo', 'summary','description','followers', 'category_id', 'reviews', 'is_pro'];
 
     public static function boot()
     {
@@ -248,9 +247,11 @@ class Tag extends Model implements HasMedia
                 $type = TagCategoryRel::TYPE_REVIEW;
             }
         }
+        $keywords = $this->getKeywords();
+
         $fields =  [
             'name' => strtolower($this->name),
-            'keywords' => strtolower(strip_tags($this->description)),
+            'keywords' => strtolower(strip_tags($keywords)),
             'status' => $status,
             'reviews' => $this->reviews,
             'type' => $type
@@ -263,7 +264,54 @@ class Tag extends Model implements HasMedia
         return $fields;
     }
 
+    public function getKeywords() {
+        $description = json_decode($this->description,true);
+        if (is_array($description)) {
+            $keywords = $description['keywords']??'';
+        } else {
+            $keywords = $this->description;
+        }
+        return $keywords;
+    }
 
+    public function getCoverPic() {
+        $description = json_decode($this->description,true);
+        if (is_array($description)) {
+            $cover_pic = $description['cover_pic']??'';
+        } else {
+            $cover_pic = '';
+        }
+        return $cover_pic;
+    }
+
+    public function getIntroducePic() {
+        $description = json_decode($this->description,true);
+        if (is_array($description)) {
+            $introduce_pic = $description['introduce_pic']??[];
+        } else {
+            $introduce_pic = [];
+        }
+        return $introduce_pic;
+    }
+
+    public function getAdvanceDesc() {
+        $description = json_decode($this->description,true);
+        if (is_array($description)) {
+            $advance_desc = $description['advance_desc']??'';
+        } else {
+            $advance_desc = '';
+        }
+        return $advance_desc;
+    }
+
+    public function setDescription(array $desc) {
+        $description = json_decode($this->description,true);
+        if (!$description) {
+            $description = [];
+        }
+        $description = array_merge($description,$desc);
+        $this->description = json_encode($description);
+    }
 
     public function questions()
     {
@@ -342,6 +390,10 @@ class Tag extends Model implements HasMedia
             ];
         }
         return $return;
+    }
+
+    public function relationProductAlbum($pageSize=25) {
+
     }
 
     public function countMorph() {

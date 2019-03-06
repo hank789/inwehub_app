@@ -533,11 +533,17 @@ Route::group(['namespace'=>'Weapp','prefix' => 'weapp','middleware' => ['jwt.wea
     Route::get('product/myReview','ProductController@myReviewList')->middleware(['jwt.weappAuth']);
     Route::get('product/getProductShareImage','ProductController@getProductShareImage');
     Route::get('product/getReviewShareImage','ProductController@getReviewShareImage');
+    Route::get('product/getAlbumShareImage','ProductController@getAlbumShareImage');
     Route::get('product/albumList','ProductController@getAlbumList');
+    Route::get('product/moreAlbum','ProductController@moreAlbum');
     Route::get('product/albumInfo','ProductController@albumInfo');
     Route::get('product/albumProductList','ProductController@albumProductList')->middleware(['jwt.weappAuth']);
     Route::post('product/supportAlbumProduct','ProductController@supportAlbumProduct')->middleware(['jwt.weappAuth']);
     Route::get('product/getAlbumSupports','ProductController@getAlbumSupports');
+    Route::post('product/newsList','ProductController@newsList');
+    Route::post('product/commentAlbum','ProductController@commentAlbum');
+    Route::post('product/albumNewsList','ProductController@albumNewsList');
+    Route::post('product/albumComments','ProductController@albumCommentList');
 
 });
 

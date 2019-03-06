@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Review;
 use App\Http\Controllers\Admin\AdminController;
 use App\Jobs\NewSubmissionJob;
 use App\Logic\TagsLogic;
+use App\Models\Comment;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Traits\SubmitSubmission;
@@ -154,6 +155,40 @@ class SubmissionController extends AdminController
         }
 
         return $this->success(route('admin.review.submission.index'),'点评新建成功');
+    }
+
+    public function addOfficialReply(Request $request,$id) {
+        $submission = Submission::find($id);
+        $comment = Comment::where('source_id',$id)->where('source_type',get_class($submission))
+            ->where('comment_type',Comment::COMMENT_TYPE_OFFICIAL)->first();
+        return view("admin.review.submission.addOfficialReply")->with('submission',$submission)->with('comment',$comment);
+    }
+
+    public function storeOfficialReply(Request $request,$id) {
+        $submission = Submission::find($id);
+        $comment_id = $request->input('comment_id',0);
+        $data = [
+            'content'          => $request->input('content'),
+            'user_id'       => $request->user()->id,
+            'parent_id'     => 0,
+            'level'         => 0,
+            'source_id' => $submission->id,
+            'source_type' => get_class($submission),
+            'to_user_id'  => 0,
+            'supports'    => 0,
+            'comment_type' => Comment::COMMENT_TYPE_OFFICIAL,
+            'mentions' => [],
+            'status' => $request->input('status',0)
+        ];
+        if (!$comment_id) {
+            $comment = Comment::create($data);
+        } else {
+            $comment = Comment::find($comment_id);
+            $comment->content = $data['content'];
+            $comment->status = $request->input('status',0);
+            $comment->save();
+        }
+        return $this->success(route('admin.review.submission.index'),'官方回复成功');
     }
 
 }

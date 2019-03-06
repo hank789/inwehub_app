@@ -589,7 +589,7 @@ class AnswerController extends Controller
             ->simplePaginate(Config::get('inwehub.api_data_page_size'));
         $return = $comments->toArray();
         foreach ($return['data'] as &$item) {
-            $this->checkCommentIsSupported($user, $item);
+            $this->checkCommentIsSupported($user->id, $item);
         }
 
         return self::createJsonData(true,  $return);

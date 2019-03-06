@@ -144,6 +144,7 @@ class WechatMpPosts extends Command {
                     $query = parse_query($parse_url['query']);
                     $mpInfo->qr_url = $query['__biz'];
                 }
+                $article->addProductTag();
 
                 RateLimiter::instance()->hSet('wechat_article',$uuid,$article->_id);
                 (new GetArticleBody($article->_id))->handle();

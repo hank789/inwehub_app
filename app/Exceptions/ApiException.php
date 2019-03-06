@@ -130,6 +130,7 @@ class ApiException extends Exception
     const PRODUCT_TAG_ALREADY_EXIST = 6109;
     const PRODUCT_TAG_NOT_EXIST = 6109;
     const PRODUCT_ALBUM_SUPPORT_LIMIT = 6120;
+    const PRODUCT_ALBUM_NOT_EXIST = 6121;
 
 
     public static $errorMessages = [
@@ -238,7 +239,8 @@ class ApiException extends Exception
         self::GROUP_UNDER_AUDIT => '圈子正在审核中',
         self::GROUP_NOT_JOINED => '成为圈成员，查看所有分享',
         self::PRODUCT_TAG_ALREADY_EXIST => '产品已存在',
-        self::PRODUCT_TAG_NOT_EXIST => '产品不存在'
+        self::PRODUCT_TAG_NOT_EXIST => '产品不存在',
+        self::PRODUCT_ALBUM_NOT_EXIST => '产品专辑不存在'
     ];
 
 

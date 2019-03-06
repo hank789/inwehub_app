@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers\Web;
 use App\Events\Frontend\System\ImportantNotify;
+use App\Events\Frontend\System\SystemNotify;
 use App\Http\Controllers\Controller;
 use App\Models\RecommendRead;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -16,20 +17,30 @@ class IndexController extends Controller
 {
     public function index()
     {
+        //return view('inspinia.home.index');
         return '欢迎来到Inwehub';
     }
 
     public function articleInfo($id, Request $request)
     {
-        $article = WechatWenzhangInfo::where('topic_id',$id)->where('status',2)->first();
-        \Log::info('test',[$id]);
+        $from_source = $request->input('inwehub_user_device','web');
+        if ($from_source == 'weapp_dianping') {
+            $article = WechatWenzhangInfo::find($id);
+        } else {
+            $article = WechatWenzhangInfo::where('topic_id',$id)->where('status',2)->first();
+        }
         if (!$article) {
             $submission = Submission::find($id);
             if (!$submission) return 'bad request';
             return redirect($submission->data['url']);
         }
+        if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+            event(new SystemNotify('小程序用户查看了文章:'.$article->title));
+        }
         if (in_array($request->input('inwehub_user_device','web'),['web','wechat']) || $article->source_type != 1 || str_contains($article->content_url, '/s/') || str_contains($article->content_url, 'wechat_redirect') || str_contains($article->content_url, '__biz=')) {
-            return redirect($article->content_url);
+            if ($request->input('inwehub_user_device') != 'weapp_dianping') {
+                return redirect($article->content_url);
+            }
         }
         $date = strtotime($article->date_time);
         $today = strtotime(date('Y-m-d 00:00:00'));

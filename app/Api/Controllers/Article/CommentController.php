@@ -107,7 +107,7 @@ class CommentController extends Controller {
         $return = $comments->toArray();
         $return['total'] = $submission->comments_number;
         foreach ($return['data'] as &$item) {
-            $this->checkCommentIsSupported($user, $item);
+            $this->checkCommentIsSupported($user->id, $item);
         }
 
         return self::createJsonData(true,$return);

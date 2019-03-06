@@ -1730,6 +1730,48 @@ if (!function_exists('getWechatUrlBodyText')) {
                     return 'src="'.$imgUrl.'"';
                 }, $html);
             }
+            //去除微信图片遮罩
+            $html = str_replace('opacity: 0;','',$html);
+        }
+        return $html;
+    }
+}
+
+if (!function_exists('getWechatUrlInfo')) {
+    function getWechatUrlInfo($url,$strip_tags=true, $downloadImg = false) {
+        $ql = \QL\QueryList::getInstance();
+        $content = $ql->get($url);
+        $html = $content->getHtml();
+        $parse = parse_url($url);
+        if ($parse['host'] == 'mp.weixin.qq.com') {
+            $title = $content->find('h2#activity-name')->text();
+            $author = $content->find('a#js_name')->text();
+            $wxHao = $content->find('span.profile_meta_value')->eq(0)->text();
+            $pattern = "/var\s+ct\s+=\s+([\s\S]*?);/is";
+            preg_match($pattern, $html, $matchs);
+            $date = trim($matchs[1],'"');
+            $pattern = "/var\s+msg_cdn_url\s+=\s+([\s\S]*?);/is";
+            preg_match($pattern, $html, $matchs);
+            $cover_img = trim($matchs[1],'"');
+
+            preg_match_all("/id=\"js_content\">(.*)<script/iUs",$html,$body,PREG_PATTERN_ORDER);
+            $js_content = isset($body[1][0])?($strip_tags?strip_tags($body[1][0]):$body[1][0]):'';
+            if ($downloadImg) {
+                $js_content = preg_replace_callback('/data-src="(.*?)"/', function($matches1){
+                    $imgUrl = saveImgToCdn($matches1[1],'wechat_temp');
+                    return 'src="'.$imgUrl.'"';
+                }, $js_content);
+            }
+            //去除微信图片遮罩
+            $js_content = str_replace('opacity: 0;','',$js_content);
+            return [
+                'body' => $js_content,
+                'title' => $title,
+                'author' => $author,
+                'wxHao' => $wxHao,
+                'date' => $date,
+                'cover_img' => $cover_img
+            ];
         }
         return $html;
     }
@@ -2172,5 +2214,14 @@ function weapp_qrcode_replace_logo($qrcodeUrl,$newLogoUrl,$circleQr = false) {
 
     $s = urlsafe_base64_encode($logoUrl);
     return $qrcodeUrl.'?x-oss-process=image/resize,w_430,h_430'.($circleQr?',image/circle,r_300/format,png':'').'/watermark,image_'.$s.',g_center';
+}
+
+function formatThirdLink($link) {
+    if (str_contains($link,'?')) {
+        $link = $link.'&from_source=inwehub';
+    } else {
+        $link = $link.'?from_source=inwehub';
+    }
+    return $link;
 }
 

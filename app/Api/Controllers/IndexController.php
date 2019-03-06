@@ -208,7 +208,7 @@ class IndexController extends Controller {
                     $item['data']['domain'] = $object->data['domain'];
                     $item['data']['body'] = strip_tags($object->title);
                     $item['data']['article_title'] = strip_tags($object->data['title']);
-                    $item['data']['url'] = $object->data['url'];
+                    $item['data']['url'] = formatThirdLink($object->data['url']);
                 } elseif($object->type == 'text') {
                     $item['data']['body'] = str_limit(strip_tags($object->title), 300);
                 } elseif($object->type == 'article') {
@@ -421,6 +421,9 @@ class IndexController extends Controller {
                 if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz=') || str_contains($link_url, '/s/'))) {
                     $link_url = config('app.url').'/articleInfo/'.$item->id.'?inwehub_user_device='.$inwehub_user_device;
                 }
+            }
+            if ($link_url) {
+                $link_url = formatThirdLink($link_url);
             }
             $upvote = Support::where('user_id',$user->id)
                 ->where('supportable_id',$item->id)

@@ -85,12 +85,12 @@ trait BaseController {
         }
     }
 
-    protected function checkCommentIsSupported($user, &$comment) {
-        $support = Support::where("user_id",'=',$user->id)->where('supportable_type','=',Comment::class)->where('supportable_id','=',$comment['id'])->first();
+    protected function checkCommentIsSupported($user_id, &$comment) {
+        $support = Support::where("user_id",'=',$user_id)->where('supportable_type','=',Comment::class)->where('supportable_id','=',$comment['id'])->first();
         $comment['is_supported'] = $support?1:0;
         if ($comment['children']) {
             foreach ($comment['children'] as &$children) {
-                $this->checkCommentIsSupported($user, $children);
+                $this->checkCommentIsSupported($user_id, $children);
             }
         } else {
             return;
@@ -156,7 +156,7 @@ trait BaseController {
             $from  = Input::get('inwehub_user_device');
             if (strpos($action,'share') === 0) {
                 event(new ImportantNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
-            } elseif ($user->id) {
+            } elseif ($user->id>0) {
                 event(new SystemNotify('['.$from.']用户'.$user->id.'['.$user->name.']'.Doing::$actionName[$action].($subject?':'.str_limit(strip_tags($subject)):''),$slackFields));
             }
         }
@@ -794,13 +794,12 @@ trait BaseController {
         if ($request->type == 'review') {
             $this->validate($request, [
                 'title' => 'required|between:1,6000',
-                'category_ids' => 'required',
                 'tags' => 'required',
                 'rate_star' => 'required|min:1',
                 'identity' => 'required'
             ]);
             $data = $this->uploadImgs($request->input('photos'));
-            $data['category_ids'] = $request->input('category_ids');
+            $data['category_ids'] = $request->input('category_ids',[]);
             $data['author_identity'] = $request->input('identity');
             $data['from_source'] = $request->input('inwehub_user_device');
             if (!is_array($data['author_identity'])) {

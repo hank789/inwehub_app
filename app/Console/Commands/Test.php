@@ -73,6 +73,23 @@ class Test extends Command
      */
     public function handle()
     {
+        $ql = QueryList::getInstance();
+        $url = 'https://mp.weixin.qq.com/s?src=11&timestamp=1551340802&ver=1455&signature=FS*1hUMfKPQ6rt9Tvwy65ouB60hOFt9QmIX5XQzjPXIEiFK8hCMfNSyT5plc2h8sWCZC0eVwYi39GfWnivjs1w6wTYAWTNep3ljGtJcOBGbeoo6d8vJ6aBr-0KxeAYmN&new=1';
+        $s = getWechatUrlInfo($url, false,true);
+        var_dump($s);
+        return;
+        $html = $ql->get($url);
+        $aTitle = $html->find('h2#activity-name')->text();
+        $aBody = $html->find('div#js_content')->html();
+        $aAuthor = $html->find('a#js_name')->text();
+        $wxHao = $html->find('span.profile_meta_value')->eq(0)->text();
+        var_dump($wxHao);
+        $body = $html->getHtml();
+        $pattern = "/var\s+msg_cdn_url\s+=\s+([\s\S]*?);/is";
+        preg_match($pattern, $body, $matchs);
+        var_dump(trim($matchs[1],'"'));
+        //Storage::disk('local')->put('attachments/test5.html',$html->getHtml());
+        return;
         $groups = Group::where('audit_status',4)->get();
         foreach ($groups as $group) {
             GroupMember::where('group_id',$group->id)->delete();

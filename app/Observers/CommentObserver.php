@@ -44,6 +44,7 @@ class CommentObserver implements ShouldQueue {
     {
         $source = $comment->source;
         $members = [];
+        $notify = true;
         switch ($comment->source_type) {
             case 'App\Models\Article':
                 $notifyType = '活动';
@@ -213,6 +214,10 @@ class CommentObserver implements ShouldQueue {
                         ]));
                 }
                 break;
+            case 'App\Models\Category':
+                $notifyType = '专题:'.$source->name;
+                $notify = false;
+                break;
             default:
                 return;
         }
@@ -220,7 +225,7 @@ class CommentObserver implements ShouldQueue {
 
 
         //@了某些人
-        if ($comment->mentions) {
+        if ($notify && $comment->mentions) {
             foreach ($comment->mentions as $m_uid) {
                 if (isset($notifyUids[$m_uid])) continue;
                 if ($members && !in_array($m_uid,$members)) continue;

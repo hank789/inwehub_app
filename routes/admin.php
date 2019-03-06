@@ -185,12 +185,34 @@ Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
     Route::put('product/update/{id}',['as'=>'admin.review.product.update','uses'=>'ProductController@update'])->where(['id'=>'[0-9]+']);
     Route::post('product/setveriy',['as'=>'admin.review.product.setveriy','uses'=>'ProductController@setVeriy']);
     Route::post('product/updateCategory',['as'=>'admin.review.product.updateCategory','uses'=>'ProductController@changeCategories']);
+    Route::post('product/updateIntroducePic/{id}',['as'=>'admin.review.product.updateIntroducePic','uses'=>'ProductController@updateIntroducePic'])->where(['id'=>'[0-9]+']);
+    Route::post('product/deleteIntroducePic/{id}',['as'=>'admin.review.product.deleteIntroducePic','uses'=>'ProductController@deleteIntroducePic'])->where(['id'=>'[0-9]+']);
+    Route::post('product/sortIntroducePic/{id}',['as'=>'admin.review.product.sortIntroducePic','uses'=>'ProductController@sortIntroducePic'])->where(['id'=>'[0-9]+']);
+    Route::post('product/deleteIdea',['as'=>'admin.review.product.deleteIdea','uses'=>'ProductController@deleteIdea']);
+    Route::post('product/saveIdea/{tag_id}',['as'=>'admin.review.product.saveIdea','uses'=>'ProductController@saveIdea'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/deleteCase',['as'=>'admin.review.product.deleteCase','uses'=>'ProductController@deleteCase']);
+    Route::get('product/editCase/{id}',['as'=>'admin.review.product.editCase','uses'=>'ProductController@editCase'])->where(['id'=>'[0-9]+']);
+    Route::get('product/addCase/{tag_id}',['as'=>'admin.review.product.addCase','uses'=>'ProductController@addCase'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/storeCase/{tag_id}',['as'=>'admin.review.product.storeCase','uses'=>'ProductController@storeCase'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/updateCase/{id}',['as'=>'admin.review.product.updateCase','uses'=>'ProductController@updateCase'])->where(['id'=>'[0-9]+']);
+
+    Route::get('product/newsList/{tag_id}',['as'=>'admin.review.product.newsList','uses'=>'ProductController@newsList'])->where(['tag_id'=>'[0-9]+']);
+    Route::get('product/addNews/{tag_id}',['as'=>'admin.review.product.addNews','uses'=>'ProductController@addNews'])->where(['tag_id'=>'[0-9]+']);
+    Route::get('product/addGzh/{tag_id}',['as'=>'admin.review.product.addGzh','uses'=>'ProductController@addGzh'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/storeGzh/{tag_id}',['as'=>'admin.review.product.storeGzh','uses'=>'ProductController@storeGzh'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/storeNews/{tag_id}',['as'=>'admin.review.product.storeNews','uses'=>'ProductController@storeNews'])->where(['tag_id'=>'[0-9]+']);
+    Route::post('product/deleteGzh',['as'=>'admin.review.product.deleteGzh','uses'=>'ProductController@deleteGzh']);
+    Route::post('product/deleteNews/{id}',['as'=>'admin.review.product.deleteNews','uses'=>'ProductController@deleteNews'])->where(['id'=>'[0-9]+']);
+
+
 
     Route::get('submission/index',['as'=>'admin.review.submission.index','uses'=>'SubmissionController@index']);
     Route::get('submission/edit/{id}',['as'=>'admin.review.submission.edit','uses'=>'SubmissionController@edit'])->where(['id'=>'[0-9]+']);
     Route::get('submission/create/{id}',['as'=>'admin.review.submission.create','uses'=>'SubmissionController@create'])->where(['id'=>'[0-9]+']);
     Route::post('submission/store',['as'=>'admin.review.submission.store','uses'=>'SubmissionController@store']);
     Route::get('submission/export',['as'=>'admin.review.submission.export','uses'=>'SubmissionController@export']);
+    Route::get('submission/addOfficialReply/{id}',['as'=>'admin.review.submission.addOfficialReply','uses'=>'SubmissionController@addOfficialReply'])->where(['id'=>'[0-9]+']);
+    Route::post('submission/storeOfficialReply/{id}',['as'=>'admin.review.submission.storeOfficialReply','uses'=>'SubmissionController@storeOfficialReply'])->where(['id'=>'[0-9]+']);
 
 
 });
@@ -210,6 +232,7 @@ Route::resource('recommendation', 'RecommendationController',['except' => ['show
 /*工具管理*/
 Route::match(['get','post'],'tool/clearCache',['as'=>'admin.tool.clearCache','uses'=>'ToolController@clearCache']);
 Route::post('tool/sendTestEmail',['as'=>'admin.tool.sendTestEmail','uses'=>'ToolController@sendTestEmail']);
+Route::post('tool/upload',['as'=>'admin.tool.upload','uses'=>'ToolController@upload']);
 
 /*首页问答推荐*/
 Route::resource('recommendQa', 'RecommendQaController',['except' => ['show'],'as'=>'admin.operate']);

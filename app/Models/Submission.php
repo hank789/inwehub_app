@@ -302,6 +302,16 @@ class Submission extends Model {
                     $sourceData['tags'][$key]['review_average_rate'] = $reviewInfo['review_average_rate'];
                 }
             }
+            $comment = Comment::where('source_id',$submission->id)->where('source_type',get_class($submission))
+                ->where('comment_type',Comment::COMMENT_TYPE_OFFICIAL)->where('status',1)->first();
+            $sourceData['official_reply'] = '';
+            if ($comment) {
+                $sourceData['official_reply'] = [
+                    'author' => '官方回复',
+                    'content'=>$comment->content,
+                    'created_at' => $comment->created_at->diffForHumans()
+                ];
+            }
         }
 
         $item = [
