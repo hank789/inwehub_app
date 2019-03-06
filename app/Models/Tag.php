@@ -377,8 +377,11 @@ class Tag extends Model implements HasMedia
         $related_tags = TagCategoryRel::WhereIn('category_id',count($album_cids)?$album_cids:$category_ids)->where('type',TagCategoryRel::TYPE_REVIEW)
             ->where('tag_id','!=',$this->id)
             ->select('tag_id')->distinct()
-            ->orderBy('reviews','desc')->take($pageSize)->get();
+            ->orderBy('reviews','desc')->take($pageSize*2)->get();
+        $used = [];
         foreach ($related_tags as $related_tag) {
+            if (isset($used[$related_tag->tag_id])) continue;
+            $used[$related_tag->tag_id] = $related_tag->tag_id;
             $reviewInfo = Tag::getReviewInfo($related_tag->tag_id);
             $tag = Tag::find($related_tag->tag_id);
             $return[] = [
@@ -388,6 +391,7 @@ class Tag extends Model implements HasMedia
                 'review_count' => $reviewInfo['review_count'],
                 'review_average_rate' => $reviewInfo['review_average_rate']
             ];
+            if (count($return) >= $pageSize) return $return;
         }
         if (count($return) < $pageSize && count($album_cids)) {
             $other_cids = array_diff($category_ids,$album_cids);
@@ -395,8 +399,10 @@ class Tag extends Model implements HasMedia
                 $related_tags = TagCategoryRel::WhereIn('category_id',$other_cids)->where('type',TagCategoryRel::TYPE_REVIEW)
                     ->where('tag_id','!=',$this->id)
                     ->select('tag_id')->distinct()
-                    ->orderBy('reviews','desc')->take($pageSize-count($return))->get();
+                    ->orderBy('reviews','desc')->take($pageSize*2)->get();
                 foreach ($related_tags as $related_tag) {
+                    if (isset($used[$related_tag->tag_id])) continue;
+                    $used[$related_tag->tag_id] = $related_tag->tag_id;
                     $reviewInfo = Tag::getReviewInfo($related_tag->tag_id);
                     $tag = Tag::find($related_tag->tag_id);
                     $return[] = [
@@ -406,6 +412,7 @@ class Tag extends Model implements HasMedia
                         'review_count' => $reviewInfo['review_count'],
                         'review_average_rate' => $reviewInfo['review_average_rate']
                     ];
+                    if (count($return) >= $pageSize) return $return;
                 }
             }
         }
