@@ -794,13 +794,12 @@ trait BaseController {
         if ($request->type == 'review') {
             $this->validate($request, [
                 'title' => 'required|between:1,6000',
-                'category_ids' => 'required',
                 'tags' => 'required',
                 'rate_star' => 'required|min:1',
                 'identity' => 'required'
             ]);
             $data = $this->uploadImgs($request->input('photos'));
-            $data['category_ids'] = $request->input('category_ids');
+            $data['category_ids'] = $request->input('category_ids',[]);
             $data['author_identity'] = $request->input('identity');
             $data['from_source'] = $request->input('inwehub_user_device');
             if (!is_array($data['author_identity'])) {

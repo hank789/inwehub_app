@@ -91,9 +91,11 @@ class NewSubmissionJob implements ShouldQueue
                 break;
             case 'review':
                 $typeName = '点评';
-                foreach ($submission->data['category_ids'] as $category_id) {
-                    $tagC = TagCategoryRel::where('tag_id',$submission->category_id)->where('category_id',$category_id)->first();
-                    $tagC->calcRate();
+                if (isset($submission->data['category_ids'])) {
+                    foreach ($submission->data['category_ids'] as $category_id) {
+                        $tagC = TagCategoryRel::where('tag_id',$submission->category_id)->where('category_id',$category_id)->first();
+                        $tagC->calcRate();
+                    }
                 }
                 $tag = Tag::find($submission->category_id);
                 $tag->reviews += 1;
