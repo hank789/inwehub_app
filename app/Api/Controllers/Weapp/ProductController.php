@@ -67,13 +67,13 @@ class ProductController extends Controller {
         }
 
         $data['related_tags'] = $tag->relationReviews(8);
-        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('review_average_rate','desc')->get();
+        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('support_rate','desc')->get();
         $cids = [];
         foreach ($categoryRels as $key=>$categoryRel) {
             $cids[] = $categoryRel->category_id;
             $category = Category::find($categoryRel->category_id);
             if ($category->type != 'product_album') continue;//只显示专辑
-            $rate = TagCategoryRel::where('category_id',$category->id)->where('review_average_rate','>',$categoryRel->review_average_rate)->count();
+            $rate = TagCategoryRel::where('category_id',$category->id)->where('support_rate','>',$categoryRel->support_rate)->count();
             $data['categories'][] = [
                 'id' => $category->id,
                 'name' => $category->name,

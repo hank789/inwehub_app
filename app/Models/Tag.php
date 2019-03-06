@@ -372,7 +372,7 @@ class Tag extends Model implements HasMedia
     public function relationReviews($pageSize=25)
     {
         $return = [];
-        $category_ids = TagCategoryRel::where('tag_id',$this->id)->pluck('category_id')->toArray();
+        $category_ids = TagCategoryRel::where('tag_id',$this->id)->orderBy('support_rate','desc')->pluck('category_id')->toArray();
         $album_cids = Category::whereIn('id',$category_ids)->where('type','product_album')->pluck('id')->toArray();
         $related_tags = TagCategoryRel::WhereIn('category_id',$album_cids)->where('type',TagCategoryRel::TYPE_REVIEW)
             ->where('tag_id','!=',$this->id)
