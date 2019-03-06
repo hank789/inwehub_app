@@ -541,10 +541,11 @@ class ProductController extends Controller {
         return self::createJsonData(true,['url'=>$submission->data[$collection]]);
     }
 
-    public function albumInfo(Request $request) {
+    public function albumInfo(Request $request, JWTAuth $JWTAuth) {
         $this->validate($request, [
             'id' => 'required'
         ]);
+
         $id = $request->input('id');
         $category = Category::find($id);
         $data = [
@@ -553,6 +554,10 @@ class ProductController extends Controller {
             'icon' => $category->icon,
             'summary' => $category->summary
         ];
+        $oauth = $JWTAuth->parseToken()->toUser();
+        if ($oauth) {
+            event(new SystemNotify('小程序用户'.$oauth->user_id.'['.$oauth->nickname.']查看专题详情:'.$category->name));
+        }
         return self::createJsonData(true,$data);
     }
 

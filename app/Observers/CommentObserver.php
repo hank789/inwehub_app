@@ -213,6 +213,9 @@ class CommentObserver implements ShouldQueue {
                         ]));
                 }
                 break;
+            case 'App\Models\Category':
+                $notifyType = '专题:'.$source->name;
+                break;
             default:
                 return;
         }

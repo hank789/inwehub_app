@@ -94,14 +94,14 @@
                                 @if ($errors->has('description')) <p class="help-block">{{ $errors->first('description') }}</p> @endif
                             </div>
 
-                            <div class="form-group @if ($errors->first('status')) has-error @endif">
+                            <div class="form-group @if ($errors->first('is_pro')) has-error @endif">
                                 <label>专业版</label>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="is_pro" value="0" @if($tag->is_pro==0) checked @endif /> 否
+                                        <input type="radio" name="is_pro" value="0" @if($tag->tag->is_pro==0) checked @endif /> 否
                                     </label>&nbsp;&nbsp;
                                     <label>
-                                        <input type="radio" name="is_pro" value="1" @if($tag->is_pro==1) checked @endif /> 是
+                                        <input type="radio" name="is_pro" value="1" @if($tag->tag->is_pro==1) checked @endif /> 是
                                     </label>
                                 </div>
                             </div>
