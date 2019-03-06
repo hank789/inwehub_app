@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers\Web;
 use App\Events\Frontend\System\ImportantNotify;
+use App\Events\Frontend\System\SystemNotify;
 use App\Http\Controllers\Controller;
 use App\Models\RecommendRead;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -16,6 +17,7 @@ class IndexController extends Controller
 {
     public function index()
     {
+        return view('inspinia.home.index');
         return '欢迎来到Inwehub';
     }
 
@@ -27,11 +29,13 @@ class IndexController extends Controller
         } else {
             $article = WechatWenzhangInfo::where('topic_id',$id)->where('status',2)->first();
         }
-        \Log::info('test',[$id]);
         if (!$article) {
             $submission = Submission::find($id);
             if (!$submission) return 'bad request';
             return redirect($submission->data['url']);
+        }
+        if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+            event(new SystemNotify('小程序用户查看了文章:'.$article->title));
         }
         if (in_array($request->input('inwehub_user_device','web'),['web','wechat']) || $article->source_type != 1 || str_contains($article->content_url, '/s/') || str_contains($article->content_url, 'wechat_redirect') || str_contains($article->content_url, '__biz=')) {
             if ($request->input('inwehub_user_device') != 'weapp_dianping') {
