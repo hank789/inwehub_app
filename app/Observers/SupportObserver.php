@@ -41,6 +41,7 @@ class SupportObserver implements ShouldQueue {
         $fields = [];
         $title = '';
         $notified = [];
+        $notify = true;
         if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('upvote:'.get_class($source),$source->id.'_'.$support->user_id,0)) {
             switch ($support->supportable_type) {
                 case 'App\Models\Comment':
@@ -139,12 +140,13 @@ class SupportObserver implements ShouldQueue {
                     $tag = Tag::find($source->tag_id);
                     $category = Category::find($source->category_id);
                     $title = '专题['.$category->name.']下的产品:'.$tag->name;
+                    $notify = false;
                     break;
                 default:
                     return;
                     break;
             }
-            if ($source->user_id && $source->user_id != $support->user_id && !isset($notified[$source->user_id])) {
+            if ($notify && $source->user_id && $source->user_id != $support->user_id && !isset($notified[$source->user_id])) {
                 $source->user->notify(new NewSupport($source->user_id,$support));
             }
         }
