@@ -246,7 +246,7 @@ class ProductController extends AdminController
             $img_url = Storage::disk('oss')->url($filePath);
             $tag->logo = $img_url;
         }
-        $cover_pic = '';
+        $cover_pic = $tag->getCoverPic();
         if($request->hasFile('cover_pic')){
             $file = $request->file('cover_pic');
             $extension = $file->getClientOriginalExtension();
