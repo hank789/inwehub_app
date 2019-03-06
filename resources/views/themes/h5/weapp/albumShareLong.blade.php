@@ -262,6 +262,7 @@
         .component-card-main .title {
             color: #fff;
             font-size: 60px;
+            font-weight: 500;
             line-height: 66px;
             letter-spacing: 3px;
             display: -webkit-box;
