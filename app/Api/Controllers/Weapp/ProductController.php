@@ -765,4 +765,9 @@ class ProductController extends Controller {
     }
 
 
+    //统计数据上报
+    public function reportActivity(Request $request,JWTAuth $JWTAuth) {
+        \Log::info('test',$request->all());
+        return self::createJsonData(true);
+    }
 }
