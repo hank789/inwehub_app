@@ -497,7 +497,7 @@ class ProductController extends Controller {
             return self::createJsonData(true,['url'=>$url]);
         }
 
-        if($category->getMedia($collection)->isEmpty() || config('app.env') != 'production'){
+        if(empty($url) || config('app.env') != 'production'){
             $snappy = App::make('snappy.image');
             $snappy->setOption('width',1125);
             $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$category->id);
@@ -739,6 +739,7 @@ class ProductController extends Controller {
 
         $support = Support::create($data);
         $rel->increment('support_rate');
+        RateLimiter::instance()->setVale('album_share_image',$rel->category_id,'');
         return self::createJsonData(true);
     }
 
