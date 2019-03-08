@@ -24,8 +24,21 @@ class IndexController extends Controller
     public function articleInfo($id, Request $request)
     {
         $from_source = $request->input('inwehub_user_device','web');
+        $miniprogram_back = '';
         if ($from_source == 'weapp_dianping') {
             $article = WechatWenzhangInfo::find($id);
+            $article_source = $request->input('source','');
+            if ($article_source) {
+                $t = explode('_',$article_source);
+                switch ($t[0]) {
+                    case 'product':
+                        $miniprogram_back = '/pages/majorProduct/majorProduct?id='.$t[1];
+                        break;
+                    case 'album':
+                        $miniprogram_back = '/pages/specialDetail/specialDetail?id='.$t[1];
+                        break;
+                }
+            }
         } else {
             $article = WechatWenzhangInfo::where('topic_id',$id)->where('status',2)->first();
         }
@@ -34,10 +47,10 @@ class IndexController extends Controller
             if (!$submission) return 'bad request';
             return redirect($submission->data['url']);
         }
-        if ($request->input('inwehub_user_device') == 'weapp_dianping') {
+        if ($from_source == 'weapp_dianping') {
             event(new SystemNotify('小程序用户查看了文章:'.$article->title));
         }
-        if (in_array($request->input('inwehub_user_device','web'),['web','wechat']) || $article->source_type != 1 || str_contains($article->content_url, '/s/') || str_contains($article->content_url, 'wechat_redirect') || str_contains($article->content_url, '__biz=')) {
+        if (in_array($from_source,['web','wechat']) || $article->source_type != 1 || str_contains($article->content_url, '/s/') || str_contains($article->content_url, 'wechat_redirect') || str_contains($article->content_url, '__biz=')) {
             if ($request->input('inwehub_user_device') != 'weapp_dianping') {
                 return redirect($article->content_url);
             }
@@ -66,7 +79,7 @@ class IndexController extends Controller
         } else {
             $showDate = date('Y-m-d',$date);
         }
-        return view('h5::article')->with('article',$article)->with('showDate',$showDate);
+        return view('h5::article')->with('article',$article)->with('showDate',$showDate)->with('from_source',$from_source)->with('miniprogram_back',$miniprogram_back);
     }
 
     public function trackEmail($type,$id,$uid) {

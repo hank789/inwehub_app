@@ -3,6 +3,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
+use App\Jobs\WeappActivity;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Company\CompanyData;
@@ -109,7 +110,7 @@ class ProductController extends Controller {
                 'date' => date('Y年m月d日',strtotime($new->date_time)),
                 'author' => domain($new->content_url),
                 'cover_pic' => $new->cover_url,
-                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag->id
             ];
         }
         //产品案例介绍
@@ -293,7 +294,7 @@ class ProductController extends Controller {
                 'date' => date('Y年m月d日',strtotime($new->date_time)),
                 'author' => domain($new->content_url),
                 'cover_pic' => $new->cover_url,
-                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag_id
             ];
         }
         $return['data'] = $list;
@@ -708,7 +709,7 @@ class ProductController extends Controller {
                 'date' => date('Y年m月d日',strtotime($new->date_time)),
                 'author' => domain($new->content_url),
                 'cover_pic' => $new->cover_url,
-                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping&source=album_'.$id
             ];
         }
         $return['data'] = $list;
@@ -765,4 +766,16 @@ class ProductController extends Controller {
     }
 
 
+    //统计数据上报
+    public function reportActivity(Request $request,JWTAuth $JWTAuth) {
+        $this->validate($request, [
+            'start_time' => 'required',
+            'end_time'   => 'required',
+            'page'       => 'required'
+        ]);
+        \Log::info('reportActivity',$request->all());
+        $oauth = $JWTAuth->parseToken()->toUser();
+        $this->dispatch(new WeappActivity($oauth->id,$request->all()));
+        return self::createJsonData(true);
+    }
 }

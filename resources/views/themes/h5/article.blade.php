@@ -12,6 +12,32 @@
     <meta name="author" content="樱维社区" />
     <meta name="copyright" content="2018 inwehub.com" />
     <link href="https://cdn.inwehub.com/system/article.css" rel="stylesheet" />
+    <style>
+        .bottomBack {
+            position: fixed;
+            bottom: 20px;
+            right: 16px;
+        }
+        .bottomBack a {
+            width: 64px;
+            height: 44px;
+            line-height: 44px;
+            text-align: center;
+            background: #ffffff;
+            color: #29BC9E;
+            font-size: 16px;
+            font-family:PingFangSC-Medium;
+            display: inline-block;
+            box-shadow:0px 0px 19px 0px rgba(234,240,244,1);
+            border-radius:44px;
+        }
+    </style>
+    @if ($miniprogram_back)
+        <script
+                type="text/javascript"
+                src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"
+        ></script>
+    @endif
 
     <!--[if lt IE 9]>
     <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -44,7 +70,18 @@
             </div>
         </div>
     </div>
+    @if ($miniprogram_back)
+        <div class="bottomBack">
+            <a href="javascript:void(0);" onclick="backToMiniprogam('{{$miniprogram_back}}')">返回</a>
+        </div>
+    @endif
 </div>
-
+<script>
+    function backToMiniprogam(path) {
+        wx.miniProgram.navigateTo({
+            url: path
+        })
+    }
+</script>
 </body>
 </html>

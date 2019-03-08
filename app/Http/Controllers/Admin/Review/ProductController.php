@@ -599,7 +599,7 @@ class ProductController extends AdminController
                 'status' => 2,
                 'comment_count' => 0
             ]);
-            $data['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping';;
+            $data['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag->id;;
         }
         $model = ContentCollection::create([
             'content_type' => ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE,
@@ -692,7 +692,7 @@ class ProductController extends AdminController
                 'status' => 2,
                 'comment_count' => 0
             ]);
-            $content['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping';;
+            $content['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$case->source_id;;
         }
 
         $content['title'] = $data['title'];
