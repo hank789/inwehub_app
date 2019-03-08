@@ -109,7 +109,7 @@
         </div>
     </div>
     @if ($miniprogram_back)
-        <a class="backToMiniprogam" href="javascript:void(0);" onclick="backToMiniprogam({{$miniprogram_back}})">
+        <a class="backToMiniprogam" href="javascript:void(0);" onclick="backToMiniprogam('{{$miniprogram_back}}')">
             <div class="iconfont icon-shouyeshouye"></div>
         </a>
     @endif
