@@ -15,17 +15,17 @@
     <style>
         .bottomBack {
             position: fixed;
-            bottom: 40px;
-            right: 32px;
+            bottom: 20px;
+            right: 16px;
         }
         .bottomBack a {
-            width: 127px;
-            height: 88px;
-            line-height: 88px;
+            width: 64px;
+            height: 44px;
+            line-height: 44px;
             text-align: center;
             background: #ffffff;
             color: #29BC9E;
-            font-size: 32px;
+            font-size: 16px;
             font-family:PingFangSC-Medium;
             display: inline-block;
             box-shadow:0px 0px 19px 0px rgba(234,240,244,1);
