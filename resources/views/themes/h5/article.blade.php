@@ -78,7 +78,7 @@
 </div>
 <script>
     function backToMiniprogam(path) {
-        wx.miniProgram.redirectTo({
+        wx.miniProgram.navigateTo({
             url: path
         })
     }
