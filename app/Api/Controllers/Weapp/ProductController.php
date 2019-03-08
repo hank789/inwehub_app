@@ -3,6 +3,7 @@ use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\UploadFile;
+use App\Jobs\WeappActivity;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Company\CompanyData;
@@ -767,7 +768,14 @@ class ProductController extends Controller {
 
     //统计数据上报
     public function reportActivity(Request $request,JWTAuth $JWTAuth) {
-        \Log::info('test',$request->all());
+        $this->validate($request, [
+            'start_time' => 'required',
+            'end_time'   => 'required',
+            'page'       => 'required'
+        ]);
+        \Log::info('reportActivity',$request->all());
+        $oauth = $JWTAuth->parseToken()->toUser();
+        $this->dispatch(new WeappActivity($oauth->id,$request->all()));
         return self::createJsonData(true);
     }
 }
