@@ -13,60 +13,23 @@
     <meta name="copyright" content="2018 inwehub.com" />
     <link href="https://cdn.inwehub.com/system/article.css" rel="stylesheet" />
     <style>
-
-        @font-face {font-family: "iconfont";
-            src: url('//at.alicdn.com/t/font_4n1crpa4urpv6lxr.eot?t=1482133471430'); /* IE9*/
-            src: url('//at.alicdn.com/t/font_4n1crpa4urpv6lxr.eot?t=1482133471430#iefix') format('embedded-opentype'), /* IE6-IE8 */
-            url('//at.alicdn.com/t/font_4n1crpa4urpv6lxr.woff?t=1482133471430') format('woff'), /* chrome, firefox */
-            url('//at.alicdn.com/t/font_4n1crpa4urpv6lxr.ttf?t=1482133471430') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-            url('//at.alicdn.com/t/font_4n1crpa4urpv6lxr.svg?t=1482133471430#iconfont') format('svg'); /* iOS 4.1- */
-        }
-
-        .iconfont {
-            font-family:"iconfont" !important;
-            font-size:36px;
-            font-style:normal;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .icon-xiazai:before { content: "\e62c"; }
-
-        .icon-svg35:before { content: "\e848"; }
-
-        .icon-pinglun:before { content: "\e612"; }
-
-        .icon-biaoqing:before { content: "\e60d"; }
-
-        .icon-my:before { content: "\e63e"; }
-
-        .icon-ku:before { content: "\e60e"; }
-
-        .icon-pinglun1:before { content: "\e606"; }
-
-        .icon-8:before { content: "\e60a"; }
-
-        .icon-iconfontfasong:before { content: "\e61d"; }
-
-        .icon-shoucangyishoucang-copy:before { content: "\e600"; }
-
-        .icon-send:before { content: "\e6a6"; }
-
-        .icon-liulan:before { content: "\e613"; }
-
-        .icon-shouyeshouye:before { content: "\e631"; }
-
-        .icon-emoji:before { content: "\e614"; }
-
-        .icon-xihuan:before { content: "\e6bd"; }
-
-        .icon-liulan1:before { content: "\e67b"; }
-
-        .backToMiniprogam {
+        .bottomBack {
             position: fixed;
-            width: 30px;
-            bottom: 0;
-            right: 10px;
+            bottom: 40px;
+            right: 32px;
+        }
+        .bottomBack a {
+            width: 127px;
+            height: 88px;
+            line-height: 88px;
+            text-align: center;
+            background: #ffffff;
+            color: #29BC9E;
+            font-size: 32px;
+            font-family:PingFangSC-Medium;
+            display: inline-block;
+            box-shadow:0px 0px 19px 0px rgba(234,240,244,1);
+            border-radius:44px;
         }
     </style>
     @if ($miniprogram_back)
@@ -108,9 +71,9 @@
         </div>
     </div>
     @if ($miniprogram_back)
-        <a class="backToMiniprogam" href="javascript:void(0);" onclick="backToMiniprogam('{{$miniprogram_back}}')">
-            <div class="iconfont icon-shouyeshouye"></div>
-        </a>
+        <div class="bottomBack">
+            <a href="javascript:void(0);" onclick="backToMiniprogam('{{$miniprogram_back}}')">返回</a>
+        </div>
     @endif
 </div>
 <script>
