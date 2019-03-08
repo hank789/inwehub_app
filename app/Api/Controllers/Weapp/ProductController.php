@@ -110,7 +110,7 @@ class ProductController extends Controller {
                 'date' => date('Y年m月d日',strtotime($new->date_time)),
                 'author' => domain($new->content_url),
                 'cover_pic' => $new->cover_url,
-                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag->id
             ];
         }
         //产品案例介绍
@@ -294,7 +294,7 @@ class ProductController extends Controller {
                 'date' => date('Y年m月d日',strtotime($new->date_time)),
                 'author' => domain($new->content_url),
                 'cover_pic' => $new->cover_url,
-                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag_id
             ];
         }
         $return['data'] = $list;
@@ -709,7 +709,7 @@ class ProductController extends Controller {
                 'date' => date('Y年m月d日',strtotime($new->date_time)),
                 'author' => domain($new->content_url),
                 'cover_pic' => $new->cover_url,
-                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping'
+                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping&source=album_'.$id
             ];
         }
         $return['data'] = $list;
