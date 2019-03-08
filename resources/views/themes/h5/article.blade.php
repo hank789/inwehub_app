@@ -67,7 +67,6 @@
             width: 30px;
             bottom: 0;
             right: 10px;
-            background: #FFFFFF;
         }
     </style>
     @if ($miniprogram_back)
@@ -116,7 +115,7 @@
 </div>
 <script>
     function backToMiniprogam(path) {
-        wx.miniProgram.navigateTo({
+        wx.miniProgram.redirectTo({
             url: path
         })
     }
