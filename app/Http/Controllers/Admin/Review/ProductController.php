@@ -260,6 +260,10 @@ class ProductController extends AdminController
         $advance_desc = $request->input('advance_desc');
         $tag->setDescription(['keywords'=>$keywords,'cover_pic'=>$cover_pic,'advance_desc'=>$advance_desc]);
         $tag->save();
+        if($request->hasFile('logo')){
+            $tag->clearMediaCollection('images_big');
+            $tag->clearMediaCollection('images_small');
+        }
         TagsLogic::cacheProductTags($tag);
         $category_ids = $request->input('category_id');
         $returnUrl = url()->previous();

@@ -147,6 +147,7 @@
         </a>
         <ul class="treeview-menu" id="manage_data">
             <li><a href="{{ route('admin.data.views') }}"><i class="fa fa-circle-o"></i> 浏览统计</a></li>
+            <li><a href="{{ route('admin.data.weappDianpingViews') }}"><i class="fa fa-circle-o"></i> 点评小程序浏览统计</a></li>
         </ul>
     </li>
 

@@ -73,6 +73,10 @@ class Test extends Command
      */
     public function handle()
     {
+        $spider2 = new WechatSogouSpider();
+        $data = $spider2->getGzhInfo('irootech');
+        var_dump($data);
+        return;
         $ql = QueryList::getInstance();
         $url = 'https://mp.weixin.qq.com/s?src=11&timestamp=1551340802&ver=1455&signature=FS*1hUMfKPQ6rt9Tvwy65ouB60hOFt9QmIX5XQzjPXIEiFK8hCMfNSyT5plc2h8sWCZC0eVwYi39GfWnivjs1w6wTYAWTNep3ljGtJcOBGbeoo6d8vJ6aBr-0KxeAYmN&new=1';
         $s = getWechatUrlInfo($url, false,true);

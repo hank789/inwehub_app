@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Doing;
 use App\Models\RecommendRead;
 use App\Models\Submission;
+use App\Models\Weapp\Tongji;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -103,6 +104,21 @@ class DataController extends AdminController
             Cache::put($cacheKey,$data,30);
         }
         return view("admin.data.views")->with('filter',$filter)->with('data',$data)->with('labelTimes',$labelTimes);
+    }
+
+
+    public function weappDianpingViews(Request $request) {
+        $filter =  $request->all();
+        $dateRange = '';
+        $query = Tongji::query();
+        /*提问时间过滤*/
+        if( isset($filter['date_range']) && $filter['date_range'] ){
+            $dateRange = explode(" - ",$filter['date_range']);
+            $query->whereBetween('created_at',$dateRange);
+            $filter['date_range'] = implode('-',$dateRange);
+        }
+        $data = $query->orderBy('id','desc')->paginate(20);
+        return view("admin.data.dianping")->with('data',$data)->with('filter',$filter);
     }
 
 }
