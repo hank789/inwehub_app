@@ -59,6 +59,7 @@ class WeappActivity implements ShouldQueue
                 'end_time'   => $this->data['end_time'],
                 'stay_time'  => $this->data['end_time']-$this->data['start_time'],
                 'event_id'   => $event_id,
+                'page'      => $this->data['page'],
                 'scene'     => $scene
             ]);
         }catch (\Exception $e){
