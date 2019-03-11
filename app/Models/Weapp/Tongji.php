@@ -5,6 +5,7 @@
  * @email: hank.huiwang@gmail.com
  */
 
+use App\Models\UserOauth;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -27,5 +28,21 @@ class Tongji extends Model
         'pages/allDianping/allDianping' => ['name'=>'点评列表'],
         'pages/search/search' => ['name'=>'搜索页']
     ];
+
+    public function getUserName() {
+        if ($this->user_oauth_id) {
+            $oauth = UserOauth::find($this->user_oauth_id);
+            return $oauth->nickname;
+        }
+        return '游客';
+    }
+
+    public function getPageName() {
+        return self::$pageType[$this->page]??'';
+    }
+
+    public function getPageObject() {
+        return '';
+    }
 
 }

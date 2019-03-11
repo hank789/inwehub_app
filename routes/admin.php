@@ -378,6 +378,7 @@ Route::group(['prefix' => 'im','namespace'=>'IM'], function() {
 //数据统计
 Route::group(['prefix' => 'data'], function() {
     Route::get('views',['as'=>'admin.data.views','uses'=>'DataController@views']);
+    Route::get('weappDianpingViews',['as'=>'admin.data.weappDianpingViews','uses'=>'DataController@weappDianpingViews']);
 });
 
 //找顾问助手管理
