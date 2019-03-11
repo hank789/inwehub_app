@@ -38,7 +38,7 @@ class Tongji extends Model
     }
 
     public function getPageName() {
-        return self::$pageType[$this->page]??'';
+        return isset(self::$pageType[$this->page])?self::$pageType[$this->page]['name']:'';
     }
 
     public function getPageObject() {
