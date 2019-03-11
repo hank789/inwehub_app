@@ -59,7 +59,8 @@ class WeappActivity implements ShouldQueue
             $url = parse_url($params['url']);
             if (in_array($url['host'],['api.ywhub.com','api.inwehub.com'])) {
                 $event_id = explode('/',$url['path'])[2];
-                $parent_refer = parse_query($url['query'])['source'];
+                $url_query = parse_query($url['query']);
+                $parent_refer = $url_query['source']??0;
             }
         }
         if ($this->data['page'] == 'pages/moreInfo/moreInfo') {
