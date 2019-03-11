@@ -53,6 +53,12 @@ class WeappActivity implements ShouldQueue
             if (isset($params['scene'])) {
                 $scene =  $params['scene'];
             }
+            if ($this->data['page'] == 'pages/url/url') {
+                $url = parse_url($params['url']);
+                if (in_array($url['host'],['api.ywhub.com','api.inwehub.com'])) {
+                    $event_id = explode('/',$url['path'])[2];
+                }
+            }
             Tongji::create([
                 'user_oauth_id' => $this->user_oauth_id,
                 'start_time' => $this->data['start_time'],

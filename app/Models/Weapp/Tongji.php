@@ -5,6 +5,9 @@
  * @email: hank.huiwang@gmail.com
  */
 
+use App\Models\Category;
+use App\Models\Scraper\WechatWenzhangInfo;
+use App\Models\Tag;
 use App\Models\UserOauth;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,7 +29,8 @@ class Tongji extends Model
         'pages/majorProduct/majorProduct' => ['name'=>'产品详情'],
         'pages/commentDetail/commentDetail' => ['name'=>'点评详情'],
         'pages/allDianping/allDianping' => ['name'=>'点评列表'],
-        'pages/search/search' => ['name'=>'搜索页']
+        'pages/search/search' => ['name'=>'搜索页'],
+        'pages/url/url' => ['name'=>'文章详情']
     ];
 
     public function getUserName() {
@@ -42,6 +46,21 @@ class Tongji extends Model
     }
 
     public function getPageObject() {
+        if (empty($this->event_id)) return '';
+        switch ($this->page) {
+            case 'pages/specialDetail/specialDetail':
+                $c = Category::find($this->event_id);
+                return $c->name;
+                break;
+            case 'pages/majorProduct/majorProduct':
+                $tag = Tag::find($this->event_id);
+                return $tag->name;
+                break;
+            case 'pages/url/url':
+                $article = WechatWenzhangInfo::find($this->event_id);
+                return $article->title;
+                break;
+        }
         return '';
     }
 
