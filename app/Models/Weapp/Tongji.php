@@ -7,6 +7,7 @@
 
 use App\Models\Category;
 use App\Models\Scraper\WechatWenzhangInfo;
+use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\UserOauth;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,7 @@ class Tongji extends Model
 {
 
     protected $table = 'weapp_tongji';
-    protected $fillable = ['user_oauth_id', 'page', 'start_time', 'end_time', 'stay_time','event_id','scene'];
+    protected $fillable = ['user_oauth_id', 'page', 'start_time', 'end_time', 'stay_time','event_id','scene','parent_refer'];
 
     public static $pageType = [
         'pages/index/index' => ['name'=>'首页'],
@@ -30,7 +31,9 @@ class Tongji extends Model
         'pages/commentDetail/commentDetail' => ['name'=>'点评详情'],
         'pages/allDianping/allDianping' => ['name'=>'点评列表'],
         'pages/search/search' => ['name'=>'搜索页'],
-        'pages/url/url' => ['name'=>'文章详情']
+        'pages/url/url' => ['name'=>'文章详情'],
+        'pages/moreInfo/moreInfo' => ['name'=>'资讯列表'],
+        'pages/totalComment/totalComment' => ['name'=>'评论列表']
     ];
 
     public function getUserName() {
@@ -48,10 +51,12 @@ class Tongji extends Model
     public function getPageObject() {
         if (empty($this->event_id)) return '';
         switch ($this->page) {
+            case 'pages/totalComment/totalComment':
             case 'pages/specialDetail/specialDetail':
                 $c = Category::find($this->event_id);
                 return $c->name;
                 break;
+            case 'pages/allDianping/allDianping':
             case 'pages/majorProduct/majorProduct':
                 $tag = Tag::find($this->event_id);
                 return $tag->name;
@@ -59,6 +64,19 @@ class Tongji extends Model
             case 'pages/url/url':
                 $article = WechatWenzhangInfo::find($this->event_id);
                 return $article->title;
+                break;
+            case 'pages/moreInfo/moreInfo':
+                if ($this->parent_refer == 'album') {
+                    $c = Category::find($this->event_id);
+                    return $c->name;
+                } else {
+                    $tag = Tag::find($this->event_id);
+                    return $tag->name;
+                }
+                break;
+            case 'pages/commentDetail/commentDetail':
+                $review = Submission::find($this->event_id);
+                return str_limit($review->title);
                 break;
         }
         return '';
