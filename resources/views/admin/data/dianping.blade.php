@@ -42,7 +42,6 @@
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
-                                        <th><input type="checkbox" class="checkbox-toggle"/></th>
                                         <th>用户</th>
                                         <th>页面</th>
                                         <th>对象</th>
