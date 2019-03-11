@@ -6,6 +6,7 @@
  */
 
 use App\Models\Category;
+use App\Models\ContentCollection;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Tag;
@@ -32,6 +33,7 @@ class Tongji extends Model
         'pages/allDianping/allDianping' => ['name'=>'点评列表'],
         'pages/search/search' => ['name'=>'搜索页'],
         'pages/url/url' => ['name'=>'文章详情'],
+        'pages/pdf/pdf' => ['name'=>'pdf案例'],
         'pages/video/video' => ['name'=>'视频案例'],
         'pages/moreInfo/moreInfo' => ['name'=>'资讯列表'],
         'pages/totalComment/totalComment' => ['name'=>'评论列表']
@@ -57,7 +59,6 @@ class Tongji extends Model
                 $c = Category::find($this->event_id);
                 return $c->name;
                 break;
-            case 'pages/video/video':
             case 'pages/allDianping/allDianping':
             case 'pages/majorProduct/majorProduct':
                 $tag = Tag::find($this->event_id);
@@ -79,6 +80,11 @@ class Tongji extends Model
             case 'pages/commentDetail/commentDetail':
                 $review = Submission::find($this->event_id);
                 return str_limit($review->title);
+                break;
+            case 'pages/video/video':
+            case 'pages/pdf/pdf':
+                $case = ContentCollection::find($this->event_id);
+                return $case->content['title'];
                 break;
         }
         return '';

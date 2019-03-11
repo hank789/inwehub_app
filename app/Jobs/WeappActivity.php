@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\ContentCollection;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\Weapp\Tongji;
@@ -69,6 +70,10 @@ class WeappActivity implements ShouldQueue
         if ($this->data['page'] == 'pages/allDianping/allDianping') {
             $tag = Tag::getTagByName($params['name']);
             $event_id = $tag->id;
+        }
+        if (in_array($this->data['page'],['pages/pdf/pdf','pages/video/video'])) {
+            $case = ContentCollection::find($event_id);
+            $parent_refer = $case->source_id;
         }
         Tongji::create([
             'user_oauth_id' => $this->user_oauth_id,
