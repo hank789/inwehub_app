@@ -584,25 +584,33 @@ class ProductController extends AdminController
                     'create_time' => date('Y-m-d H:i:s')
                 ]);
             }
-            $article = WechatWenzhangInfo::create([
-                'title' => $linkInfo['title'],
-                'source_url' => '',
-                'content_url' => $data['link_url'],
-                'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
-                'description' => '',
-                'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
-                'mp_id' => $mpInfo->_id,
-                'author' => $linkInfo['author'],
-                'msg_index' => 0,
-                'copyright_stat' => 0,
-                'qunfa_id' => 0,
-                'body' => $linkInfo['body'],
-                'type' => WechatWenzhangInfo::TYPE_TAG_CASE,
-                'like_count' => 0,
-                'read_count' => 0,
-                'status' => 2,
-                'comment_count' => 0
-            ]);
+            $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].$linkInfo['date']);
+            $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
+            if ($aid) {
+                $article = WechatWenzhangInfo::find($aid);
+                $article->type = WechatWenzhangInfo::TYPE_TAG_CASE;
+                $article->save();
+            } else {
+                $article = WechatWenzhangInfo::create([
+                    'title' => $linkInfo['title'],
+                    'source_url' => '',
+                    'content_url' => $data['link_url'],
+                    'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
+                    'description' => '',
+                    'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
+                    'mp_id' => $mpInfo->_id,
+                    'author' => $linkInfo['author'],
+                    'msg_index' => 0,
+                    'copyright_stat' => 0,
+                    'qunfa_id' => 0,
+                    'body' => $linkInfo['body'],
+                    'type' => WechatWenzhangInfo::TYPE_TAG_CASE,
+                    'like_count' => 0,
+                    'read_count' => 0,
+                    'status' => 2,
+                    'comment_count' => 0
+                ]);
+            }
             $data['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag->id;;
         }
         $model = ContentCollection::create([
@@ -677,25 +685,33 @@ class ProductController extends AdminController
                     'create_time' => date('Y-m-d H:i:s')
                 ]);
             }
-            $article = WechatWenzhangInfo::create([
-                'title' => $linkInfo['title'],
-                'source_url' => '',
-                'content_url' => $data['link_url'],
-                'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
-                'description' => '',
-                'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
-                'mp_id' => $mpInfo->_id,
-                'author' => $linkInfo['author'],
-                'body' => $linkInfo['body'],
-                'msg_index' => 0,
-                'copyright_stat' => 0,
-                'qunfa_id' => 0,
-                'type' => WechatWenzhangInfo::TYPE_TAG_CASE,
-                'like_count' => 0,
-                'read_count' => 0,
-                'status' => 2,
-                'comment_count' => 0
-            ]);
+            $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].$linkInfo['date']);
+            $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
+            if ($aid) {
+                $article = WechatWenzhangInfo::find($aid);
+                $article->type = WechatWenzhangInfo::TYPE_TAG_CASE;
+                $article->save();
+            } else {
+                $article = WechatWenzhangInfo::create([
+                    'title' => $linkInfo['title'],
+                    'source_url' => '',
+                    'content_url' => $data['link_url'],
+                    'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
+                    'description' => '',
+                    'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
+                    'mp_id' => $mpInfo->_id,
+                    'author' => $linkInfo['author'],
+                    'body' => $linkInfo['body'],
+                    'msg_index' => 0,
+                    'copyright_stat' => 0,
+                    'qunfa_id' => 0,
+                    'type' => WechatWenzhangInfo::TYPE_TAG_CASE,
+                    'like_count' => 0,
+                    'read_count' => 0,
+                    'status' => 2,
+                    'comment_count' => 0
+                ]);
+            }
             $content['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$case->source_id;;
         }
 
@@ -868,25 +884,33 @@ class ProductController extends AdminController
                 'create_time' => date('Y-m-d H:i:s')
             ]);
         }
-        $article = WechatWenzhangInfo::create([
-            'title' => $linkInfo['title'],
-            'source_url' => '',
-            'content_url' => $link_url,
-            'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
-            'description' => '',
-            'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
-            'mp_id' => $mpInfo->_id,
-            'author' => $linkInfo['author'],
-            'msg_index' => 0,
-            'body' => $linkInfo['body'],
-            'copyright_stat' => 0,
-            'qunfa_id' => 0,
-            'type' => WechatWenzhangInfo::TYPE_TAG_NEWS,
-            'like_count' => 0,
-            'status' => 2,
-            'read_count' => 0,
-            'comment_count' => 0
-        ]);
+        $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].$linkInfo['date']);
+        $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
+        if ($aid) {
+            $article = WechatWenzhangInfo::find($aid);
+            $article->type = WechatWenzhangInfo::TYPE_TAG_CASE;
+            $article->save();
+        } else {
+            $article = WechatWenzhangInfo::create([
+                'title' => $linkInfo['title'],
+                'source_url' => '',
+                'content_url' => $link_url,
+                'cover_url'   => saveImgToCdn($linkInfo['cover_img'],'submissions'),
+                'description' => '',
+                'date_time'   => date('Y-m-d H:i:s',$linkInfo['date']),
+                'mp_id' => $mpInfo->_id,
+                'author' => $linkInfo['author'],
+                'msg_index' => 0,
+                'body' => $linkInfo['body'],
+                'copyright_stat' => 0,
+                'qunfa_id' => 0,
+                'type' => WechatWenzhangInfo::TYPE_TAG_NEWS,
+                'like_count' => 0,
+                'status' => 2,
+                'read_count' => 0,
+                'comment_count' => 0
+            ]);
+        }
         Tag::multiAddByIds([$tag_id],$article);
         return $this->success($request->input('url_previous'),'资讯添加成功');
     }
