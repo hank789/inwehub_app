@@ -128,7 +128,7 @@ class WeappController extends Controller
         $qrcodeUrl = RateLimiter::instance()->hGet('product-qrcode',$id);
         if (!$qrcodeUrl) {
             $file_name = 'product/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
-            $page = 'pages/productDetail/productDetail';
+            $page = 'pages/majorProduct/majorProduct';
             $scene = 'id='.$id;
             try {
                 $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
