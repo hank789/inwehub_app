@@ -118,7 +118,7 @@ class WechatMpPosts extends Command {
                 $wz_item['title'] = formatHtml($wz_item['title']);
                 $wz_item['digest'] = formatHtml($wz_item['digest']);
 
-                $uuid = base64_encode($mpInfo->_id.$wz_item['title'].$wz_item['update_time']);
+                $uuid = base64_encode($mpInfo->_id.$wz_item['title'].date('Y-m-d',$wz_item['update_time']));
                 if (RateLimiter::instance()->hGet('wechat_article',$uuid)) continue;
                 $content_url = substr($wz_item['link'],0,strpos($wz_item['link'],'&chksm='));
                 if (WechatWenzhangInfo::where('content_url',$content_url)->first()) continue;

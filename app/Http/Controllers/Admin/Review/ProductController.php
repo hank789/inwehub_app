@@ -584,7 +584,7 @@ class ProductController extends AdminController
                     'create_time' => date('Y-m-d H:i:s')
                 ]);
             }
-            $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].$linkInfo['date']);
+            $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].date('Y-m-d',$linkInfo['date']));
             $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
             if ($aid) {
                 $article = WechatWenzhangInfo::find($aid);
@@ -610,6 +610,7 @@ class ProductController extends AdminController
                     'status' => 2,
                     'comment_count' => 0
                 ]);
+                RateLimiter::instance()->hSet('wechat_article',$article_uuid,$article->_id);
             }
             $data['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag->id;;
         }
@@ -685,7 +686,7 @@ class ProductController extends AdminController
                     'create_time' => date('Y-m-d H:i:s')
                 ]);
             }
-            $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].$linkInfo['date']);
+            $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].date('Y-m-d',$linkInfo['date']));
             $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
             if ($aid) {
                 $article = WechatWenzhangInfo::find($aid);
@@ -711,6 +712,7 @@ class ProductController extends AdminController
                     'status' => 2,
                     'comment_count' => 0
                 ]);
+                RateLimiter::instance()->hSet('wechat_article',$article_uuid,$article->_id);
             }
             $content['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$case->source_id;;
         }
@@ -884,7 +886,7 @@ class ProductController extends AdminController
                 'create_time' => date('Y-m-d H:i:s')
             ]);
         }
-        $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].$linkInfo['date']);
+        $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].date('Y-m-d',$linkInfo['date']));
         $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
         if ($aid) {
             $article = WechatWenzhangInfo::find($aid);
@@ -910,6 +912,7 @@ class ProductController extends AdminController
                 'read_count' => 0,
                 'comment_count' => 0
             ]);
+            RateLimiter::instance()->hSet('wechat_article',$article_uuid,$article->_id);
         }
         Tag::multiAddByIds([$tag_id],$article);
         return $this->success($request->input('url_previous'),'资讯添加成功');
