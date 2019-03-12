@@ -102,7 +102,7 @@ class Newrank extends Command {
                 //if (strtotime($wz_item['publicTime']) <= strtotime('-2 days')) continue;
                 $wz_item['title'] = formatHtml($wz_item['title']);
                 $wz_item['summary'] = formatHtml($wz_item['summary']);
-                $uuid = base64_encode($wz_item['title'].$wz_item['summary']);
+                $uuid = base64_encode($mpInfo->_id.$wz_item['title'].strtotime($wz_item['publicTime']));
                 $exit = RateLimiter::instance()->hGet('wechat_article',$uuid);
                 if ($exit) {
                     $exitArticle = WechatWenzhangInfo::find($exit);
