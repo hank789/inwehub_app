@@ -119,6 +119,7 @@ class ProductController extends Controller {
             ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','asc')->get();
         foreach ($caseList as $case) {
             $data['case_list'][] = [
+                'id' => $case->id,
                 'title' => $case->content['title'],
                 'desc' => $case->content['desc'],
                 'cover_pic' => $case->content['cover_pic'],
