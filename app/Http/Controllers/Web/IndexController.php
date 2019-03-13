@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\RecommendRead;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
 /**
@@ -25,6 +26,7 @@ class IndexController extends Controller
     {
         $from_source = $request->input('inwehub_user_device','web');
         $miniprogram_back = '';
+        $logo = '';
         if ($from_source == 'weapp_dianping') {
             $article = WechatWenzhangInfo::find($id);
             $article_source = $request->input('source','');
@@ -33,6 +35,8 @@ class IndexController extends Controller
                 switch ($t[0]) {
                     case 'product':
                         $miniprogram_back = '/pages/majorProduct/majorProduct?id='.$t[1];
+                        $tag = Tag::find($t[1]);
+                        $logo = $tag->logo;
                         break;
                     case 'album':
                         $miniprogram_back = '/pages/specialDetail/specialDetail?id='.$t[1];
@@ -79,7 +83,7 @@ class IndexController extends Controller
         } else {
             $showDate = date('Y-m-d',$date);
         }
-        return view('h5::article')->with('article',$article)->with('showDate',$showDate)->with('from_source',$from_source)->with('miniprogram_back',$miniprogram_back);
+        return view('h5::article')->with('article',$article)->with('showDate',$showDate)->with('from_source',$from_source)->with('miniprogram_back',$miniprogram_back)->with('logo',$logo);
     }
 
     public function trackEmail($type,$id,$uid) {
