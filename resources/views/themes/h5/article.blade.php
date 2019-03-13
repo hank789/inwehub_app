@@ -14,7 +14,7 @@
     <link href="https://cdn.inwehub.com/system/article.css" rel="stylesheet" />
     <style>
         .bottomBack {
-            height: 44px;
+            height: 22px;
             position: fixed;
             bottom: 20px;
             right: 16px;
@@ -45,7 +45,7 @@
         }
         .bottomBack .logoImg img {
             width: 100%;
-            height: 100%;
+            height: 100% !important;
             border-radius: 50%;
         }
     </style>
