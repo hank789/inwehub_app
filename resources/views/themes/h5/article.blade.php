@@ -14,22 +14,39 @@
     <link href="https://cdn.inwehub.com/system/article.css" rel="stylesheet" />
     <style>
         .bottomBack {
+            height: 22px;
             position: fixed;
             bottom: 20px;
             right: 16px;
-        }
-        .bottomBack a {
-            width: 64px;
-            height: 44px;
-            line-height: 44px;
-            text-align: center;
+            overflow: hidden;
+            padding: 11px 15px;
+            border-radius: 44px;
             background: #ffffff;
+            box-shadow:0px 0px 19px 0px rgba(234,240,244,1);
+        }
+        .bottomBack .backText {
+            float: left;
             color: #29BC9E;
             font-size: 16px;
             font-family:PingFangSC-Medium;
-            display: inline-block;
-            box-shadow:0px 0px 19px 0px rgba(234,240,244,1);
-            border-radius:44px;
+        }
+        .bottomBack .backText a {
+            text-decoration:none;
+            color: #29BC9E;
+        }
+        .bottomBack .logoImg {
+            width: 34px;
+            height: 34px;
+            float: left;
+            border-radius: 50%;
+            margin-top: -6px;
+            margin-left: -6px;
+            margin-right: 10px;
+        }
+        .bottomBack .logoImg img {
+            width: 100%;
+            height: 100% !important;
+            border-radius: 50%;
         }
     </style>
     @if ($miniprogram_back)
@@ -72,7 +89,14 @@
     </div>
     @if ($miniprogram_back)
         <div class="bottomBack">
-            <a href="javascript:void(0);" onclick="backToMiniprogam('{{$miniprogram_back}}')">返回</a>
+            @if ($logo)
+                <div class="logoImg">
+                    <img src="{{ $logo }}" alt="">
+                </div>
+            @endif
+            <div class="backText">
+                <a href="javascript:void(0);" onclick="backToMiniprogam('{{$miniprogram_back}}')">返回</a>
+            </div>
         </div>
     @endif
 </div>
