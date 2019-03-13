@@ -83,6 +83,6 @@
 
 @section('script')
     <script type="text/javascript">
-        set_active_menu('finance',"{{ route('admin.data.weappDianpingViews') }}");
+        set_active_menu('manage_data',"{{ route('admin.data.weappDianpingViews') }}");
     </script>
 @endsection
