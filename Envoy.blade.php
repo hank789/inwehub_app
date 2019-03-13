@@ -46,7 +46,6 @@ git pull origin master
 php artisan config:cache
 php artisan route:cache
 php artisan opcache:clear
-php artisan opcache:optimize
 php artisan queue:restart
 @endtask
 
@@ -54,7 +53,6 @@ php artisan queue:restart
 cd /home/web/www/inwehub_app
 git pull origin master
 php artisan opcache:clear
-php artisan opcache:optimize
 @endtask
 
 @task('pro-sitemap',['on' => ['web-read']])

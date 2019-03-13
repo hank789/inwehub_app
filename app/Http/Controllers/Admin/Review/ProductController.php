@@ -588,7 +588,7 @@ class ProductController extends AdminController
             $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
             if ($aid) {
                 $article = WechatWenzhangInfo::find($aid);
-                $article->type = WechatWenzhangInfo::TYPE_TAG_CASE;
+                $article->type = WechatWenzhangInfo::TYPE_TAG_NEWS;
                 $article->save();
             } else {
                 $article = WechatWenzhangInfo::create([
@@ -604,7 +604,7 @@ class ProductController extends AdminController
                     'copyright_stat' => 0,
                     'qunfa_id' => 0,
                     'body' => $linkInfo['body'],
-                    'type' => WechatWenzhangInfo::TYPE_TAG_CASE,
+                    'type' => WechatWenzhangInfo::TYPE_TAG_NEWS,
                     'like_count' => 0,
                     'read_count' => 0,
                     'status' => 2,
@@ -690,7 +690,7 @@ class ProductController extends AdminController
             $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
             if ($aid) {
                 $article = WechatWenzhangInfo::find($aid);
-                $article->type = WechatWenzhangInfo::TYPE_TAG_CASE;
+                $article->type = WechatWenzhangInfo::TYPE_TAG_NEWS;
                 $article->save();
             } else {
                 $article = WechatWenzhangInfo::create([
@@ -706,7 +706,7 @@ class ProductController extends AdminController
                     'msg_index' => 0,
                     'copyright_stat' => 0,
                     'qunfa_id' => 0,
-                    'type' => WechatWenzhangInfo::TYPE_TAG_CASE,
+                    'type' => WechatWenzhangInfo::TYPE_TAG_NEWS,
                     'like_count' => 0,
                     'read_count' => 0,
                     'status' => 2,
@@ -890,7 +890,7 @@ class ProductController extends AdminController
         $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
         if ($aid) {
             $article = WechatWenzhangInfo::find($aid);
-            $article->type = WechatWenzhangInfo::TYPE_TAG_CASE;
+            $article->type = WechatWenzhangInfo::TYPE_TAG_NEWS;
             $article->save();
         } else {
             $article = WechatWenzhangInfo::create([

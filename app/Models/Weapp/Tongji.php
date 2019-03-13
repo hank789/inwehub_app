@@ -29,6 +29,7 @@ class Tongji extends Model
         'pages/index/index' => ['name'=>'首页'],
         'pages/specialDetail/specialDetail' => ['name'=>'专题集'],
         'pages/majorProduct/majorProduct' => ['name'=>'产品详情'],
+        'pages/productDetail/productDetail' => ['name'=>'产品详情'],
         'pages/commentDetail/commentDetail' => ['name'=>'点评详情'],
         'pages/allDianping/allDianping' => ['name'=>'点评列表'],
         'pages/search/search' => ['name'=>'搜索页'],
@@ -59,6 +60,7 @@ class Tongji extends Model
                 $c = Category::find($this->event_id);
                 return $c->name;
                 break;
+            case 'pages/productDetail/productDetail':
             case 'pages/allDianping/allDianping':
             case 'pages/majorProduct/majorProduct':
                 $tag = Tag::find($this->event_id);
