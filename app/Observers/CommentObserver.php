@@ -137,6 +137,7 @@ class CommentObserver implements ShouldQueue {
                 $submission->calculationRate();
                 $submission_user = User::find($submission->user_id);
                 $group = Group::find($submission->group_id);
+                $is_official_reply = $comment->comment_type == Comment::COMMENT_TYPE_OFFICIAL;
                 if ($submission->group_id && !$group->public) {
                     //私密圈子的分享只通知圈子内的人
                     $members = GroupMember::where('group_id',$group->id)->where('audit_status',GroupMember::AUDIT_STATUS_SUCCESS)->pluck('user_id')->toArray();
@@ -187,9 +188,9 @@ class CommentObserver implements ShouldQueue {
                     $notifyUser->notify(new SubmissionReplied($submission->user_id,
                         [
                             'url'    => $notifyUrl,
-                            'name'   => $user->name,
-                            'avatar' => $user->avatar,
-                            'title'  => $user->name.'回复了'.$notifyType,
+                            'name'   => $is_official_reply?'官方':$user->name,
+                            'avatar' => $is_official_reply?'':$user->avatar,
+                            'title'  => ($is_official_reply?'官方':$user->name).'回复了'.$notifyType,
                             'comment_id' => $comment->id,
                             'body'   => $comment->formatContent(),
                             'notification_type' => Notification::NOTIFICATION_TYPE_READ,
