@@ -18,27 +18,30 @@
             position: fixed;
             bottom: 20px;
             right: 16px;
-            padding-right: 10px;
+            overflow: hidden;
+            padding: 11px 15px;
             border-radius: 44px;
             background: #ffffff;
             box-shadow:0px 0px 19px 0px rgba(234,240,244,1);
         }
-        .bottomBack a {
-            text-align: center;
+        .bottomBack .backText {
+            float: left;
             color: #29BC9E;
             font-size: 16px;
-            position: relative;
-            top: -11px;
-            line-height: 22.5px;
             font-family:PingFangSC-Medium;
-            display: inline-block;
+        }
+        .bottomBack .backText a {
+            text-decoration:none;
+            color: #29BC9E;
         }
         .bottomBack .logoImg {
             width: 34px;
             height: 34px;
+            float: left;
             border-radius: 50%;
-            display: inline-block;
-            margin: 5px 5px 0 10px;
+            margin-top: -6px;
+            margin-left: -6px;
+            margin-right: 10px;
         }
         .bottomBack .logoImg img {
             width: 100%;
