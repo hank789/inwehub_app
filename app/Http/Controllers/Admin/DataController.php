@@ -111,10 +111,13 @@ class DataController extends AdminController
         $filter =  $request->all();
         $dateRange = '';
         $query = Tongji::query();
+        if (isset($filter['user_id']) && $filter['user_id']) {
+            $query = $query->where('user_oauth_id',$filter['user_id']);
+        }
         /*提问时间过滤*/
         if( isset($filter['date_range']) && $filter['date_range'] ){
             $dateRange = explode(" - ",$filter['date_range']);
-            $query->whereBetween('created_at',$dateRange);
+            $query = $query->whereBetween('created_at',$dateRange);
             $filter['date_range'] = implode('-',$dateRange);
         }
         $data = $query->orderBy('id','desc')->paginate(20);
