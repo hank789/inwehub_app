@@ -364,7 +364,7 @@
                 uploadUrl: "{{route('admin.review.product.updateIntroducePic',['id'=>$tag->tag_id])}}",
                 showUpload: true,
                 uploadAsync: false,
-                maxFileCount: 5,
+                maxFileCount: 10,
                 showCaption: false,
                 allowedFileExtensions: ['jpg', 'png','jpeg', 'gif'],
                 overwriteInitial: false,
