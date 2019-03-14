@@ -297,6 +297,17 @@
 
                                     <div class="box-body">
                                         <div class="form-group">
+                                            <label>只显示人工推荐</label>
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" name="only_show_relate_products" value="0" @if($only_show_relate_products==0) checked @endif /> 否
+                                                </label>&nbsp;&nbsp;
+                                                <label>
+                                                    <input type="radio" name="only_show_relate_products" value="1" @if($only_show_relate_products==1) checked @endif /> 是
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <label>选择相关产品</label>
                                             <select id="rel_product_id" name="rel_product_id[]" class="form-control" multiple="multiple" >
                                                 @foreach( $rel_tags as $rel_tag)
@@ -477,9 +488,10 @@
         function updateRelTags(obj) {
             var id = $(obj).data('id');
             var tags = $('#rel_product_id').val();
+            var showType = $('input:radio[name=only_show_relate_products]:checked').val();
             $.ajax({
                 type: "post",
-                data: {rel_tags: tags},
+                data: {rel_tags: tags, isOnlyShow: showType},
                 url:"{{route('admin.review.product.relateProducts',['tag_id'=>$tag->tag_id])}}",
                 success: function(data){
                     console.log(data);
