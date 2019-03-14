@@ -206,13 +206,22 @@ class ProductController extends AdminController
 
         $gzhList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)
             ->where('source_id',$tag->tag_id)->orderBy('id','desc')->get();
-
+        $rel_tags = $tag->tag->getRelateProducts();
         return view('admin.review.product.edit')->with('tag',$tag)
             ->with('initialPreview',json_encode(array_column($initialPreview,'url')))
             ->with('ideaList',$ideaList)
             ->with('caseList',$caseList)
             ->with('gzhList',$gzhList)
+            ->with('rel_tags',$rel_tags)
             ->with('initialPreviewConfig',json_encode($initialPreviewConfig));
+    }
+
+    public function updateRelateProducts(Request $request, $tag_id) {
+        $tag = Tag::find($tag_id);
+        $rel_tags = $request->input('rel_tags');
+        $tag->setDescription(['rel_tags'=>$rel_tags]);
+        $tag->save();
+        return response()->json(['message'=>'success']);
     }
 
     /**

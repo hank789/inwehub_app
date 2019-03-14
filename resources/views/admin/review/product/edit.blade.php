@@ -27,7 +27,7 @@
                         <li><a href="#tab_idea" data-toggle="tab" aria-expanded="true">专家观点</a></li>
                         <li><a href="#tab_case" data-toggle="tab" aria-expanded="true">案例展示</a></li>
                         <li><a href="#tab_gzh" data-toggle="tab" aria-expanded="true">资讯管理</a></li>
-
+                        <li><a href="#tab_rel" data-toggle="tab" aria-expanded="true">相关推荐</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_base">
@@ -292,6 +292,24 @@
                             </div>
                         </div>
 
+                        <div class="tab-pane active" id="tab_rel">
+                            <div class="box box-default">
+
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <label>选择相关产品</label>
+                                            <select id="rel_product_id" name="rel_product_id[]" class="form-control" multiple="multiple" >
+                                                @foreach( $rel_tags as $rel_tag)
+                                                    <option value="{{ $rel_tag->id }}" selected>{{ $rel_tag->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button type="button" data-id="{{$tag->tag_id}}" class="btn btn-primary editor-submit" onclick="updateRelTags(this)">保存</button>
+                                    </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -311,6 +329,31 @@
         $(function() {
             set_active_menu('manage_review', "{{ route('admin.review.product.index') }}");
             $('#category_id').select2();
+
+            $("#rel_product_id").select2({
+                theme:'bootstrap',
+                placeholder: "相关产品",
+                ajax: {
+                    url: '/manager/ajax/loadTags',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            word: params.term,
+                            type: 7
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength:2,
+                tags:false
+            });
+
             /*
             $(".file").on('fileselect', function(event, n, l) {
             alert('File Selected. Name: ' + l + ', Num: ' + n);
@@ -423,6 +466,23 @@
                 success: function(data){
                     console.log(data);
                     $(obj).data('id',data.id);
+                    alert('保存成功');
+                },
+                error: function(data){
+                    console.log(data);
+                }
+            });
+        }
+
+        function updateRelTags(obj) {
+            var id = $(obj).data('id');
+            var tags = $('#rel_product_id').val();
+            $.ajax({
+                type: "post",
+                data: {rel_tags: tags},
+                url:"{{route('admin.review.product.relateProducts',['tag_id'=>$tag->tag_id])}}",
+                success: function(data){
+                    console.log(data);
                     alert('保存成功');
                 },
                 error: function(data){
