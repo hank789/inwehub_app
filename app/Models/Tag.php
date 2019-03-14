@@ -304,6 +304,23 @@ class Tag extends Model implements HasMedia
         return $advance_desc;
     }
 
+    public function getRelateProducts() {
+        $description = json_decode($this->description,true);
+        if (is_array($description)) {
+            $rel_tags = $description['rel_tags']??[];
+        } else {
+            $rel_tags = [];
+        }
+        if ($rel_tags) {
+            $tags = [];
+            foreach ($rel_tags as $id) {
+                $tags[] = Tag::find($id);
+            }
+            return $tags;
+        }
+        return $rel_tags;
+    }
+
     public function setDescription(array $desc) {
         $description = json_decode($this->description,true);
         if (!$description) {
@@ -372,6 +389,19 @@ class Tag extends Model implements HasMedia
     public function relationReviews($pageSize=25)
     {
         $return = [];
+        //优先取后台配置的
+        $rel_tags = $this->getRelateProducts();
+        foreach ($rel_tags as $rel_tag) {
+            $reviewInfo = Tag::getReviewInfo($rel_tag->id);
+            $return[] = [
+                'id' => $rel_tag->id,
+                'name' => $rel_tag->name,
+                'logo' => $rel_tag->logo,
+                'review_count' => $reviewInfo['review_count'],
+                'review_average_rate' => $reviewInfo['review_average_rate']
+            ];
+            if (count($return) >= $pageSize) return $return;
+        }
         $category_ids = TagCategoryRel::where('tag_id',$this->id)->orderBy('support_rate','desc')->pluck('category_id')->toArray();
         $album_cids = Category::whereIn('id',$category_ids)->where('type','product_album')->pluck('id')->toArray();
         $related_tags = TagCategoryRel::WhereIn('category_id',count($album_cids)?$album_cids:$category_ids)->where('type',TagCategoryRel::TYPE_REVIEW)

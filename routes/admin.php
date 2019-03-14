@@ -203,6 +203,7 @@ Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
     Route::post('product/storeNews/{tag_id}',['as'=>'admin.review.product.storeNews','uses'=>'ProductController@storeNews'])->where(['tag_id'=>'[0-9]+']);
     Route::post('product/deleteGzh',['as'=>'admin.review.product.deleteGzh','uses'=>'ProductController@deleteGzh']);
     Route::post('product/deleteNews/{id}',['as'=>'admin.review.product.deleteNews','uses'=>'ProductController@deleteNews'])->where(['id'=>'[0-9]+']);
+    Route::post('product/relateProducts/{tag_id}',['as'=>'admin.review.product.relateProducts','uses'=>'ProductController@updateRelateProducts'])->where(['tag_id'=>'[0-9]+']);
 
 
 
