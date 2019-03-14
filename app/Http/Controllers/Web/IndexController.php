@@ -27,7 +27,7 @@ class IndexController extends Controller
         $from_source = $request->input('inwehub_user_device','web');
         $miniprogram_back = '';
         $logo = '';
-        if ($from_source == 'weapp_dianping') {
+        if ($from_source == 'weapp_dianping' || empty($from_source)) {
             $article = WechatWenzhangInfo::find($id);
             $article_source = $request->input('source','');
             if ($article_source) {
