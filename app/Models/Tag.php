@@ -304,6 +304,16 @@ class Tag extends Model implements HasMedia
         return $advance_desc;
     }
 
+    public function getOnlyShowRelateProducts() {
+        $description = json_decode($this->description,true);
+        if (is_array($description)) {
+            $advance_desc = $description['only_show_relate_products']??0;
+        } else {
+            $advance_desc = 0;
+        }
+        return $advance_desc;
+    }
+
     public function getRelateProducts() {
         $description = json_decode($this->description,true);
         if (is_array($description)) {
@@ -402,6 +412,8 @@ class Tag extends Model implements HasMedia
             ];
             if (count($return) >= $pageSize) return $return;
         }
+        $only_show_relate_products = $this->getOnlyShowRelateProducts();
+        if ($only_show_relate_products) return $return;
         $category_ids = TagCategoryRel::where('tag_id',$this->id)->orderBy('support_rate','desc')->pluck('category_id')->toArray();
         $album_cids = Category::whereIn('id',$category_ids)->where('type','product_album')->pluck('id')->toArray();
         $related_tags = TagCategoryRel::WhereIn('category_id',count($album_cids)?$album_cids:$category_ids)->where('type',TagCategoryRel::TYPE_REVIEW)
