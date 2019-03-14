@@ -24,10 +24,10 @@ class IndexController extends Controller
 
     public function articleInfo($id, Request $request)
     {
-        $from_source = $request->input('inwehub_user_device','web');
+        $from_source = $request->input('inwehub_user_device','weapp_dianping');
         $miniprogram_back = '';
         $logo = '';
-        if ($from_source == 'weapp_dianping' || empty($from_source)) {
+        if ($from_source == 'weapp_dianping') {
             $article = WechatWenzhangInfo::find($id);
             $article_source = $request->input('source','');
             if ($article_source) {
