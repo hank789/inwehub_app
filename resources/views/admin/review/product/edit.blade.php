@@ -295,6 +295,7 @@
                         <div class="tab-pane" id="tab_rel">
                             <div class="box box-default">
 
+
                                     <div class="box-body">
                                         <div class="form-group">
                                             <label>只显示人工推荐</label>
@@ -309,7 +310,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label>选择相关产品</label>
-                                            <select id="rel_product_id" name="rel_product_id[]" class="form-control" multiple="multiple" >
+                                            <select id="rel_product_id" name="rel_product_id[]" class="form-control" multiple="multiple" style="width: 100%;" >
                                                 @foreach( $rel_tags as $rel_tag)
                                                     <option value="{{ $rel_tag->id }}" selected>{{ $rel_tag->name }}</option>
                                                 @endforeach
@@ -319,6 +320,7 @@
                                     <div class="box-footer">
                                         <button type="button" data-id="{{$tag->tag_id}}" class="btn btn-primary editor-submit" onclick="updateRelTags(this)">保存</button>
                                     </div>
+                                
                             </div>
                         </div>
                     </div>
