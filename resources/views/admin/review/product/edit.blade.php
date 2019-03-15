@@ -320,7 +320,7 @@
                                     <div class="box-footer">
                                         <button type="button" data-id="{{$tag->tag_id}}" class="btn btn-primary editor-submit" onclick="updateRelTags(this)">保存</button>
                                     </div>
-                                
+
                             </div>
                         </div>
                     </div>
