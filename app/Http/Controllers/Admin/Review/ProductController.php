@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Review;
 
 use App\Events\Frontend\System\ExceptionNotify;
 use App\Http\Controllers\Admin\AdminController;
+use App\Jobs\UpdateProductInfoCache;
 use App\Logic\TagsLogic;
 use App\Models\Category;
 use App\Models\ContentCollection;
@@ -224,6 +225,7 @@ class ProductController extends AdminController
         $isOnlyShow = $request->input('isOnlyShow',0);
         $tag->setDescription(['rel_tags'=>$rel_tags,'only_show_relate_products'=>$isOnlyShow]);
         $tag->save();
+        $this->dispatch(new UpdateProductInfoCache($tag->id));
         return response()->json(['message'=>'success']);
     }
 
@@ -326,6 +328,7 @@ class ProductController extends AdminController
             TagsLogic::delRelatedProductsCache();
         }
         TagsLogic::delCache();
+        $this->dispatch(new UpdateProductInfoCache($tag->id));
         return $this->success($returnUrl,'产品修改成功');
     }
 
@@ -368,6 +371,7 @@ class ProductController extends AdminController
         $tag->setDescription(['introduce_pic'=>array_merge($images,$imgUrls)]);
         $tag->save();
         RateLimiter::instance()->lock_release('updateIntroducePic');
+        $this->dispatch(new UpdateProductInfoCache($tag->id));
         return response()->json([
             'initialPreview' => array_column($imgUrls,'url'),
             'initialPreviewConfig' => $initialPreviewConfig
@@ -387,6 +391,7 @@ class ProductController extends AdminController
         $tag->setDescription(['introduce_pic'=>$images]);
         $tag->save();
         RateLimiter::instance()->lock_release('deleteIntroducePic');
+        $this->dispatch(new UpdateProductInfoCache($tag->id));
         return response()->json(['message'=>'success']);
     }
 
@@ -402,6 +407,7 @@ class ProductController extends AdminController
         }
         $tag->setDescription(['introduce_pic'=>$urls]);
         $tag->save();
+        $this->dispatch(new UpdateProductInfoCache($tag->id));
         return response()->json(['message'=>'success']);
     }
 
@@ -438,6 +444,7 @@ class ProductController extends AdminController
                 }
                 $tag->updated_at = date('Y-m-d H:i:s');
                 $tag->save();
+                $this->dispatch(new UpdateProductInfoCache($tag->id));
             }
         }
         return response('success');
@@ -475,7 +482,9 @@ class ProductController extends AdminController
 
     public function deleteIdea(Request $request) {
         $id = $request->input('id');
-        ContentCollection::destroy($id);
+        $model = ContentCollection::find($id);
+        $model->delete();
+        $this->dispatch(new UpdateProductInfoCache($model->source_id));
         return response()->json(['id'=>$id]);
     }
 
@@ -514,12 +523,15 @@ class ProductController extends AdminController
                 ]
             ]);
         }
+        $this->dispatch(new UpdateProductInfoCache($tag_id));
         return response()->json(['id'=>$model->id]);
     }
 
     public function deleteCase(Request $request) {
         $id = $request->input('id');
-        ContentCollection::destroy($id);
+        $model = ContentCollection::find($id);
+        $model->delete();
+        $this->dispatch(new UpdateProductInfoCache($model->source_id));
         return response()->json(['id'=>$id]);
     }
 
@@ -639,6 +651,7 @@ class ProductController extends AdminController
                 'type' => $data['type']
             ]
         ]);
+        $this->dispatch(new UpdateProductInfoCache($tag_id));
         return $this->success(url()->previous(),'案例添加成功');
     }
 
@@ -736,6 +749,7 @@ class ProductController extends AdminController
         $case->status = $data['status'];
         $case->content = $content;
         $case->save();
+        $this->dispatch(new UpdateProductInfoCache($case->source_id));
 
         return $this->success(url()->previous(),'案例修改成功');
     }
@@ -927,6 +941,7 @@ class ProductController extends AdminController
             RateLimiter::instance()->hSet('wechat_article',$article_uuid,$article->_id);
         }
         Tag::multiAddByIds([$tag_id],$article);
+        $this->dispatch(new UpdateProductInfoCache($tag_id));
         return $this->success($request->input('url_previous'),'资讯添加成功');
     }
 

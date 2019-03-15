@@ -8,6 +8,7 @@ use App\Models\Relations\BelongsToCategoryTrait;
 use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
@@ -478,5 +479,12 @@ class Tag extends Model implements HasMedia
         return $tag;
     }
 
+    public function getProductCacheInfo() {
+        return Cache::get('weapp_product_info_'.$this->id);
+    }
+
+    public function setProductCacheInfo(array $data) {
+        Cache::put('weapp_product_info_'.$this->id,$data,60*24*4);
+    }
 
 }

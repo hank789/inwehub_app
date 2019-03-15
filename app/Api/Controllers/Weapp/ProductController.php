@@ -2,6 +2,7 @@
 use App\Api\Controllers\Controller;
 use App\Events\Frontend\System\SystemNotify;
 use App\Exceptions\ApiException;
+use App\Jobs\UpdateProductInfoCache;
 use App\Jobs\UploadFile;
 use App\Jobs\WeappActivity;
 use App\Models\Category;
@@ -54,164 +55,10 @@ class ProductController extends Controller {
         if (!$tag) {
             throw new ApiException(ApiException::PRODUCT_TAG_NOT_EXIST);
         }
-
-        $reviewInfo = Tag::getReviewInfo($tag->id);
-        $data = $tag->toArray();
-        $data['review_count'] = $reviewInfo['review_count'];
-        $data['review_average_rate'] = $reviewInfo['review_average_rate'];
-        $submissions = Submission::selectRaw('count(*) as total,rate_star')->where('status',1)->where('category_id',$tag->id)->groupBy('rate_star')->get();
-        foreach ($submissions as $submission) {
-            $data['review_rate_info'][] = [
-                'rate_star' => $submission->rate_star,
-                'count'=> $submission->total
-            ];
+        $data = $tag->getProductCacheInfo();
+        if (!$data) {
+            $data = (new UpdateProductInfoCache($tag->id))->handle();
         }
-
-        $data['related_tags'] = $tag->relationReviews(8);
-        $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('support_rate','desc')->get();
-        $cids = [];
-        foreach ($categoryRels as $key=>$categoryRel) {
-            $cids[] = $categoryRel->category_id;
-            $category = Category::find($categoryRel->category_id);
-            if ($category->type != 'product_album') continue;//只显示专辑
-            $rate = TagCategoryRel::where('category_id',$category->id)->where('support_rate','>',$categoryRel->support_rate)->count();
-            $data['categories'][] = [
-                'id' => $category->id,
-                'name' => $category->name,
-                'rate' => $rate+1,
-                'support_rate' => $categoryRel->support_rate?:0,
-                'type' => $category->type == 'enterprise_review'?1:2
-            ];
-        }
-        //产品介绍封面图
-        $data['cover_pic'] = $tag->getCoverPic();
-        //产品亮点轮播图
-        $introduce_pic = $tag->getIntroducePic();
-        if ($introduce_pic) {
-            usort($introduce_pic,function ($a,$b) {
-                if ($a['sort'] == $b['sort']) {
-                    return 0;
-                }
-                return ($a['sort'] < $b['sort']) ? -1 : 1;
-            });
-            $data['introduce_pic'] = array_column($introduce_pic,'url');
-        }
-        //产品最新资讯
-        $data['recent_news'] = [];
-        $news = WechatWenzhangInfo::where('source_type',1)
-            ->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS)
-            ->whereHas('tags',function($query) use ($tag) {
-                $query->where('tag_id', $tag->id);
-            })
-            ->orderBy('date_time','desc')->take(5)->get();
-        foreach ($news as $new) {
-            $data['recent_news'][] = [
-                'title' => strip_tags($new->title),
-                'date' => date('Y年m月d日',strtotime($new->date_time)),
-                'author' => domain($new->content_url),
-                'cover_pic' => $new->cover_url,
-                'link_url' => config('app.url').'/articleInfo/'.$new->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag->id
-            ];
-        }
-        //产品案例介绍
-        $data['case_list'] = [];
-        $caseList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
-            ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','asc')->get();
-        foreach ($caseList as $case) {
-            $data['case_list'][] = [
-                'id' => $case->id,
-                'title' => $case->content['title'],
-                'desc' => $case->content['desc'],
-                'cover_pic' => $case->content['cover_pic'],
-                'type' => $case->content['type'],
-                'link_url' => $case->content['link_url']
-            ];
-        }
-        //产品专家观点
-        $data['expert_review'] = [];
-        $ideaList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA)
-            ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','asc')->get();
-        foreach ($ideaList as $idea) {
-            $data['expert_review'][] = [
-                'avatar' => $idea->content['avatar'],
-                'name' => $idea->content['name'],
-                'title' => $idea->content['title'],
-                'content' => $idea->content['content']
-            ];
-        }
-
-        /*$data['is_pro'] = 1;//是否专业版
-        $data['cover_pic'] = 'https://cdn.inwehub.com/submissions/2019/02/1551078771CFm6MRz.png';//封面图
-        $data['introduce_pic'] = [
-            'https://cdn.inwehub.com/submissions/2019/02/1551059065JDby9cC.png',
-            'https://cdn.inwehub.com/submissions/2019/02/1551058565rOuuRHB.png',
-            'https://cdn.inwehub.com/submissions/2019/02/1550798768V9o7Dod.png',
-            'https://cdn.inwehub.com/submissions/2019/02/15508303947o9L5xX.png',
-            'https://cdn.inwehub.com/submissions/2019/02/1550798803A3cIcky.png'
-        ];
-        $data['recent_news'] = [];
-        $news = Submission::where('status',1)->where('category_id',$tag->id)->where('type','!=','review')->orderBy('id','desc')->take(5)->get();
-        foreach ($news as $new) {
-            $img = $new->data['img']??'';
-            if (is_array($img)) {
-                if ($img) {
-                    $img = $img[0];
-                } else {
-                    $img = '';
-                }
-            }
-            $data['recent_news'][] = [
-                'title' => strip_tags($new->data['title']??$new->title),
-                'date' => date('Y年m月d日',$new->created_at),
-                'author' => 'mp.weixin.com',
-                'cover_pic' => $img,
-                'link_url' => config('app.url').'/articleInfo/'.$new->id.'?inwehub_user_device=weapp'
-            ];
-        }
-        $data['case_list'][] = [
-            'title' => '图片预览',
-            'desc' => '帮助合作伙伴在医学健康和卫生领域不断进行创新',
-            'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/1550830307ND2DNtt.png',
-            'type' => 'image',
-            'link_url' => 'https://cdn.inwehub.com/submissions/2019/02/1550830307ND2DNtt.png'
-        ];
-        $data['case_list'][] = [
-            'title' => '打开链接',
-            'desc' => '在发展过程中保障了七陌云平台的安全、稳定',
-            'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/15507124879eHmrYV.png',
-            'type' => 'link',
-            'link_url' => 'https://api.inwehub.com/articleInfo/91284?inwehub_user_device=weapp_dianping'
-        ];
-
-        $data['case_list'][] = [
-            'title' => '播放视频',
-            'desc' => '在发展过程中保障了七陌云平台的安全、稳定',
-            'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/15507124879eHmrYV.png',
-            'type' => 'video',
-            'link_url' => 'http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400'
-        ];
-
-        $data['case_list'][] = [
-            'title' => '打开pdf文档',
-            'desc' => '在发展过程中保障了七陌云平台的安全、稳定',
-            'cover_pic' => 'https://cdn.inwehub.com/submissions/2019/02/15507124879eHmrYV.png',
-            'type' => 'pdf',
-            'link_url' => 'https://cdn.inwehub.com/pdf/pdf.pdf'
-        ];
-
-        $data['expert_review'][] = [
-            'avatar' => 'https://cdn.inwehub.com/media/494/user_origin_3566.jpg',
-            'name' => 'Jack',
-            'title' => '知名架构师',
-            'content' => '依托实力雄厚的阿里巴巴集团，在杭州、北京和硅谷等地设有运营机构。阿里云是目前中国最大的云服务商，占有50%以上的市场份额。'
-        ];
-
-        $data['expert_review'][] = [
-            'avatar' => 'https://cdn.inwehub.com/media/483/user_origin_3545.jpg',
-            'name' => '冯大牛',
-            'title' => '咨询顾问',
-            'content' => '总体感觉还是很不错的，用了有快一年了没出过问题，很稳定，比以前自己的服务器好多了，备案也很方便。建议初创企业或者网站可以使用，性价比还是很高的，省心 。'
-        ];*/
 
         event(new SystemNotify('小程序用户'.$oauth->user_id.'['.$oauth->nickname.']查看产品详情:'.$tag->name));
         return self::createJsonData(true,$data);
