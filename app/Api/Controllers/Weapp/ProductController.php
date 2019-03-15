@@ -588,6 +588,10 @@ class ProductController extends Controller {
 
         $support = Support::create($data);
         $rel->increment('support_rate');
+        $tag_ids = TagCategoryRel::where('category_id',$rel->category_id)->pluck('tag_id')->toArray();
+        foreach ($tag_ids as $tag_id) {
+            RateLimiter::instance()->hSet('product_pending_update_cache',$tag_id,$tag_id);
+        }
         RateLimiter::instance()->setVale('album_share_image',$rel->category_id,'');
         return self::createJsonData(true);
     }

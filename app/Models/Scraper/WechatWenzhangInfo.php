@@ -5,6 +5,7 @@ use App\Models\RecommendRead;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Models\Submission;
 use App\Models\Tag;
+use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 /**
  * @author: wanghui
@@ -85,6 +86,10 @@ class WechatWenzhangInfo extends Model {
             $this->cover_url = $img_url;
             $this->type = WechatWenzhangInfo::TYPE_TAG_NEWS;
             $this->save();
+            //更新产品信息缓存
+            foreach ($tag_ids as $id) {
+                RateLimiter::instance()->hSet('product_pending_update_cache',$id,$id);
+            }
         }
     }
 

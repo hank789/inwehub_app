@@ -1,6 +1,7 @@
 <?php namespace App\Console\Commands\Scraper;
 use App\Jobs\ArticleToSubmission;
 use App\Jobs\GetArticleBody;
+use App\Jobs\UpdateProductInfoCache;
 use App\Logic\TaskLogic;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -144,6 +145,13 @@ class WechatPosts extends Command {
                 $count = count($articles);
                 if ($count > 0 && $notify) {
                     TaskLogic::alertManagerPendingArticles($count);
+                }
+            }
+            //更新产品信息缓存
+            $ids = RateLimiter::instance()->hGetAll('product_pending_update_cache');
+            if ($ids) {
+                foreach ($ids as $key=>$val) {
+                    dispatch(new UpdateProductInfoCache($key));
                 }
             }
         }

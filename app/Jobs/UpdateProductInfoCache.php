@@ -64,11 +64,12 @@ class UpdateProductInfoCache implements ShouldQueue
             $category = Category::find($categoryRel->category_id);
             if ($category->type != 'product_album') continue;//只显示专辑
             $rate = TagCategoryRel::where('category_id',$category->id)->where('support_rate','>',$categoryRel->support_rate)->count();
+            $support_rate = TagCategoryRel::where('category_id',$category->id)->sum('support_rate');
             $data['categories'][] = [
                 'id' => $category->id,
                 'name' => $category->name,
                 'rate' => $rate+1,
-                'support_rate' => $categoryRel->support_rate?:0,
+                'support_rate' => $support_rate,
                 'type' => $category->type == 'enterprise_review'?1:2
             ];
         }
