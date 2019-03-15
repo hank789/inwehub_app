@@ -292,7 +292,7 @@
                             </div>
                         </div>
 
-                        <div class="tab-pane active" id="tab_rel">
+                        <div class="tab-pane" id="tab_rel">
                             <div class="box box-default">
 
                                     <div class="box-body">
