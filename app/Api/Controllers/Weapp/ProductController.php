@@ -617,6 +617,30 @@ class ProductController extends Controller {
         return self::createJsonData(true,$list);
     }
 
+    public function getHotProducts(Request $request) {
+        $perPage = $request->input('perPage',15);
+        $query = TagCategoryRel::selectRaw('sum(support_rate) as total_support_rate,tag_id')->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
+        $tags = $query->groupBy('tag_id')->orderBy('total_support_rate','desc')->simplePaginate(15);
+        $return = $tags->toArray();
+        $list = [];
+        foreach ($tags as $tag) {
+            $model = Tag::find($tag->tag_id);
+            $total_support_rate = $tag->total_support_rate;
+            $info = Tag::getReviewInfo($model->id);
+            $list[] = [
+                'id' => $tag->id,
+                'tag_id' => $model->id,
+                'name' => $model->name,
+                'logo' => $model->logo,
+                'summary' => $model->summary,
+                'support_rate' => $total_support_rate,
+                'review_average_rate' => $info['review_average_rate'],
+                'advance_desc' => $model->getAdvanceDesc()
+            ];
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
+    }
 
     //统计数据上报
     public function reportActivity(Request $request,JWTAuth $JWTAuth) {
