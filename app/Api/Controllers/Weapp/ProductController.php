@@ -620,7 +620,7 @@ class ProductController extends Controller {
     public function getHotProducts(Request $request) {
         $perPage = $request->input('perPage',15);
         $query = TagCategoryRel::selectRaw('sum(support_rate) as total_support_rate,tag_id')->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
-        $tags = $query->groupBy('tag_id')->orderBy('total_support_rate','desc')->simplePaginate(15);
+        $tags = $query->groupBy('tag_id')->orderBy('total_support_rate','desc')->simplePaginate($perPage);
         $return = $tags->toArray();
         $list = [];
         foreach ($tags as $tag) {
@@ -640,6 +640,10 @@ class ProductController extends Controller {
         }
         $return['data'] = $list;
         return self::createJsonData(true,$return);
+    }
+
+    public function getHotAlbum(Request $request) {
+
     }
 
     //统计数据上报
