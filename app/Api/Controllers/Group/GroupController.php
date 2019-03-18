@@ -202,6 +202,7 @@ class GroupController extends Controller
         $members = $group->members()->where('audit_status',1)->take(6)->orderBy(DB::raw('RAND()'))->get();
         foreach ($members as $member) {
             if ($member->user_id == $group->user_id) continue;
+            if (!$member->user) continue;
             $return['members'][] = [
                 'id' => $member->user_id,
                 'uuid' => $member->user->uuid,

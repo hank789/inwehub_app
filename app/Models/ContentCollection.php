@@ -36,5 +36,7 @@ class ContentCollection extends Model
     const CONTENT_TYPE_TAG_EXPERT_IDEA = 1;//专辑产品专家观点
     const CONTENT_TYPE_TAG_SHOW_CASE = 2;//专辑产品成功案例
     const CONTENT_TYPE_TAG_WECHAT_GZH = 3;//专辑产品和公众号关联
+    const CONTENT_TYPE_HOT_ALBUM = 4;//热门专题
+
 
 }

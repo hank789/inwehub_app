@@ -61,6 +61,7 @@
         <ul class="treeview-menu" id="manage_review">
             <li><a href="{{ route('admin.review.product.index') }}"><i class="fa fa-circle-o"></i> 产品管理</a></li>
             <li><a href="{{ route('admin.review.submission.index') }}"><i class="fa fa-circle-o"></i> 点评管理</a></li>
+            <li><a href="{{ route('admin.review.album.hotIndex') }}"><i class="fa fa-circle-o"></i> 热门专题</a></li>
         </ul>
     </li>
 

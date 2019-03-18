@@ -177,6 +177,10 @@ Route::resource('tag', 'TagController',['except' => ['show','destroy'],'as'=>'ad
 
 //点评管理
 Route::group(['prefix' => 'review','namespace'=>'Review'], function() {
+    Route::get('album/hotIndex',['as'=>'admin.review.album.hotIndex','uses'=>'ProductController@hotAlbums']);
+    Route::post('album/deleteHot',['as'=>'admin.review.album.deleteHot','uses'=>'ProductController@deleteHotAlbum']);
+    Route::post('album/saveHot',['as'=>'admin.review.album.saveHot','uses'=>'ProductController@saveHotAlbum']);
+
     Route::get('product/index',['as'=>'admin.review.product.index','uses'=>'ProductController@index']);
     Route::get('product/create',['as'=>'admin.review.product.create','uses'=>'ProductController@create']);
     Route::get('product/edit/{id}',['as'=>'admin.review.product.edit','uses'=>'ProductController@edit'])->where(['id'=>'[0-9]+']);
