@@ -82,7 +82,7 @@
                     </div>
                 </div>
                 <div class="rich_media_content" id="js_content">
-                    {!! $article->body !!}
+                    {!! strip_html_tags(['iframe'],$article->body,true) !!}
                 </div>
             </div>
         </div>
