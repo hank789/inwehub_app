@@ -61,7 +61,7 @@ class WechatMpPosts extends Command {
             if ($successCount < 10 && $flag) {
                 $wz_list = $spider->getGzhArticles($mpInfo);
             }
-            if ($wz_list === false || $successCount >= 50) {
+            if ($wz_list === false || $successCount >= 10) {
                 $flag = false;
                 //只执行上面的服务50次
                 if ($mpInfo->qr_url) {
