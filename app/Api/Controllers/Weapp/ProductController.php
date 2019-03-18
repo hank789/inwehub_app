@@ -643,7 +643,18 @@ class ProductController extends Controller {
     }
 
     public function getHotAlbum(Request $request) {
-
+        $list = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_HOT_ALBUM)->orderBy('sort','asc')->get();
+        $return = [];
+        foreach ($list as $idea) {
+            $category = Category::find($idea->source_id);
+            $return[] = [
+                'id' => $category->id,
+                'name' => $category->name,
+                'tips' => $idea->content['desc'],
+                'sort' => $idea->sort
+            ];
+        }
+        return self::createJsonData(true,$return);
     }
 
     //统计数据上报

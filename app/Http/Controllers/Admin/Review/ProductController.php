@@ -20,6 +20,7 @@ use App\Services\Spiders\Wechat\WechatSogouSpider;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use QL\QueryList;
@@ -510,6 +511,15 @@ class ProductController extends AdminController
         $id = $data['id'];
         if ($id) {
             $model = ContentCollection::find($id);
+            $model->update([
+                'sort' => $data['sort'],
+                'content' => [
+                    'avatar' => $img_url,
+                    'name' => $data['name'],
+                    'title' => $data['title'],
+                    'content' => $data['content']
+                ]
+            ]);
         } else {
             $model = ContentCollection::create([
                 'content_type' => ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA,
@@ -948,6 +958,68 @@ class ProductController extends AdminController
     public function deleteNews(Request $request) {
         $id = $request->input('id');
         WechatWenzhangInfo::destroy($id);
+        return response()->json(['id'=>$id]);
+    }
+
+    public function hotAlbums(Request $request) {
+        $list = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_HOT_ALBUM)->orderBy('sort','asc')->get();
+        $ideaList = [];
+        for ($i=1;$i<=5;$i++) {
+            $ideaList[] = [
+                'id' => 0,
+                'category_id' => 0,
+                'desc' => '',
+                'sort' => $i
+            ];
+        }
+        foreach ($list as $v=>$idea) {
+            $ideaList[$v] = [
+                'id' => $idea->id,
+                'category_id' => $idea->source_id,
+                'desc' => $idea->content['desc'],
+                'sort' => $idea->sort
+            ];
+        }
+        return view('admin.review.product.hotAlbums')->with('list',$ideaList);
+    }
+
+    public function saveHotAlbum(Request $request) {
+        $validateRules = [
+            'id' => 'required',
+            'category_id' => 'required|min:1',
+            'desc' => 'required',
+            'sort' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $data = $request->all();
+        $id = $data['id'];
+        if ($id) {
+            $model = ContentCollection::find($id);
+            $model->update([
+                'sort' => $data['sort'],
+                'source_id' => $data['category_id'],
+                'content' => [
+                    'desc' => $data['desc']
+                ]
+            ]);
+        } else {
+            $model = ContentCollection::create([
+                'content_type' => ContentCollection::CONTENT_TYPE_HOT_ALBUM,
+                'sort' => $data['sort'],
+                'source_id' => $data['category_id'],
+                'content' => [
+                    'desc' => $data['desc']
+                ]
+            ]);
+        }
+        return response()->json(['id'=>$model->id]);
+    }
+
+    public function deleteHotAlbum(Request $request) {
+        $id = $request->input('id');
+        $model = ContentCollection::find($id);
+        $model->delete();
+        return response()->json(['id'=>$id]);
     }
 
 
