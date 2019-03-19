@@ -88,14 +88,14 @@
         </div>
     </div>
     @if ($miniprogram_back)
-        <div class="bottomBack">
+        <div class="bottomBack" onclick="backToMiniprogam('{{$miniprogram_back}}')">
             @if ($logo)
                 <div class="logoImg">
                     <img src="{{ $logo }}" alt="">
                 </div>
             @endif
             <div class="backText">
-                <a href="javascript:void(0);" onclick="backToMiniprogam('{{$miniprogram_back}}')">返回</a>
+                <a href="javascript:void(0);">返回</a>
             </div>
         </div>
     @endif
