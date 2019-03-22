@@ -42,7 +42,7 @@ class SupportObserver implements ShouldQueue {
         $title = '';
         $notified = [];
         $notify = true;
-        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('upvote:'.get_class($source),$source->id.'_'.$support->user_id,0)) {
+        if (RateLimiter::STATUS_GOOD == RateLimiter::instance()->increase('upvote:'.get_class($source),$source->id.'_'.$support->user_id)) {
             switch ($support->supportable_type) {
                 case 'App\Models\Comment':
                     $title = '评论';
