@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\UpdateProductInfoCache;
 use App\Logic\TagsLogic;
 use App\Logic\WilsonScoreNorm;
 use App\Mail\DailySubscribe;
@@ -73,33 +74,13 @@ class Test extends Command
      */
     public function handle()
     {
-        $ids = [
-            15932 => "https://cdn.inwehub.com/product/qrcode/2018/12/1546000370MBPq4V4.png",
-            136948 => "https://cdn.inwehub.com/product/qrcode/2019/03/1551946365SqK9x6V.png",
-            4355 => "https://cdn.inwehub.com/product/qrcode/2019/01/1546409990n1UIjei.png",
-            39799 => "https://cdn.inwehub.com/product/qrcode/2019/01/1546410934LDpVYpL.png",
-            119151 => "https://cdn.inwehub.com/product/qrcode/2018/12/15459995431IiU2wm.png",
-            105748 => "https://cdn.inwehub.com/product/qrcode/2018/12/1546064515UMgimld.png",
-            9677 => "https://cdn.inwehub.com/product/qrcode/2019/02/1550748150YLSymY6.png",
-            8808 => "https://cdn.inwehub.com/product/qrcode/2018/12/1545999454gew47sJ.png",
-            39741 => "https://cdn.inwehub.com/product/qrcode/2019/01/1546410919PEE9ISH.png",
-            9574 => "https://cdn.inwehub.com/product/qrcode/2018/12/1545985695T3Uk8xw.png",
-            40864 => "https://cdn.inwehub.com/product/qrcode/2018/12/1546064476exCZs5j.png",
-            140 => "https://cdn.inwehub.com/product/qrcode/2019/03/1552298677DdD4sky.png",
-            39795 => "https://cdn.inwehub.com/product/qrcode/2019/03/1552298220G9xI9LD.png",
-            46317 => "https://cdn.inwehub.com/product/qrcode/2019/01/1547714441Fr05pUR.png",
-            6305 => "https://cdn.inwehub.com/product/qrcode/2019/03/1552397308rWTCicj.png",
-            40903 => "https://cdn.inwehub.com/product/qrcode/2019/03/1552298165MsulKcN.png",
-            2840 => "https://cdn.inwehub.com/product/qrcode/2019/01/15464316895hfySHq.png",
-            53048 => "https://cdn.inwehub.com/product/qrcode/2019/02/1551086263L7NnmB0.png",
-            135794 => "https://cdn.inwehub.com/product/qrcode/2019/03/1551422700bONuzkE.png",
-            291 => "https://cdn.inwehub.com/product/qrcode/2019/03/1551938076y7Ztc43.png",
-            85201 => "https://cdn.inwehub.com/product/qrcode/2019/03/1552370226v9H7Wr2.png",
-            66792 => "https://cdn.inwehub.com/product/qrcode/2019/02/15510933407hFvzSc.png",
-        ];
-        foreach ($ids as $id=>$v) {
-            $tag = Tag::find($id);
-            $tag->media()->get()->each->delete();
+        //更新产品信息缓存
+        $ids = RateLimiter::instance()->hGetAll('product_pending_update_cache');
+        if ($ids) {
+            foreach ($ids as $key=>$val) {
+                dispatch_now(new UpdateProductInfoCache($key));
+                RateLimiter::instance()->hDel('product_pending_update_cache',$key);
+            }
         }
         return;
         $spider2 = new WechatSogouSpider();

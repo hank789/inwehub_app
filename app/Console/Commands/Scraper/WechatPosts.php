@@ -151,7 +151,8 @@ class WechatPosts extends Command {
             $ids = RateLimiter::instance()->hGetAll('product_pending_update_cache');
             if ($ids) {
                 foreach ($ids as $key=>$val) {
-                    dispatch(new UpdateProductInfoCache($key));
+                    dispatch_now(new UpdateProductInfoCache($key));
+                    RateLimiter::instance()->hDel('product_pending_update_cache',$key);
                 }
             }
         }
