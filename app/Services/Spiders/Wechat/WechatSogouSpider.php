@@ -80,11 +80,11 @@ class WechatSogouSpider
                 } else {
                     var_dump('公众号访问频繁');
                     $r = $content->find('input[name=r]')->val();
-                    $jfResult = $this->jiefeng($r);
-                    if ($jieFengCount >= 1) {
+                    if ($jieFengCount >= 2) {
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
                         throw new ApiException(ApiException::REQUEST_FAIL);
                     }
+                    $jfResult = $this->jiefeng($r);
                     $jieFengCount ++;
                     deleteProxyIp($ip,'sogou');
                 }
@@ -111,9 +111,11 @@ class WechatSogouSpider
             $html = $content2->getHtml();
             $pattern = "/url\s+\+=\s+([\s\S]*?);/is";
             preg_match($pattern, $html, $matchs);
-            $url = trim($matchs[1],'"');
-            $url = trim($url,"'");
-            $url = str_replace('@','',$url);
+            if (isset($matchs[1])) {
+                $url = trim($matchs[1],'"');
+                $url = trim($url,"'");
+                $url = str_replace('@','',$url);
+            }
         }
         $data = [
             'name' => $name,
