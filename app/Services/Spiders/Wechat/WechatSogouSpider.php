@@ -41,7 +41,7 @@ class WechatSogouSpider
     public function __construct()
     {
         $this->ql = QueryList::getInstance();
-        $this->client = new Client(['cookies' => true,'verify' => false]);
+        $this->client = new Client(['cookies' => true,'verify' => false,'headers'=>['User-Agent'=>'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36']]);
     }
 
     /**
@@ -65,13 +65,15 @@ class WechatSogouSpider
             $ips = getProxyIps(5,'sogou');
             $ip = $ips[0]??'';
             if ($i>=14) $ip =null;
-            var_dump($ip);
+            //var_dump($ip);
             if ($jfResult) {
                 //$request_url = 'http://weixin.sogou.com/weixin?type=2&query='.$wx_hao.'&ie=utf8&s_from=input&_sug_=n&_sug_type_=1&w=01015002&oq=&ri=0&sourceid=sugg&sut=0&sst0=1547216885721&lkt=0,0,0&p=40040108';
             }
             $content = $this->requestUrl($request_url,$ip);
+            var_dump($content->getHtml());
             if ($content) {
                 $sogouTitle = $content->find('title')->text();
+                var_dump('title:'.$sogouTitle);
                 if (str_contains($sogouTitle,$wx_hao)) {
                     var_dump('抓取公众号成功');
                     break;
@@ -105,7 +107,7 @@ class WechatSogouSpider
         })->toArray();
         if (!str_contains($url,'://')) {
             $url = 'http://weixin.sogou.com'.$url;
-            $content2 = $this->requestUrl($url);
+            $content2 = $this->requestUrl($url,null);
             $html = $content2->getHtml();
             $pattern = "/url\s+\+=\s+([\s\S]*?);/is";
             preg_match($pattern, $html, $matchs);
@@ -314,6 +316,9 @@ class WechatSogouSpider
             if (empty($ip)) {
                 unset($opts['proxy']);
             }
+            //$config = $this->client->getConfig();
+            //var_dump('requestUrl');
+            //var_dump($config['cookies']);
             $response = $this->client->get($url);
             $body = $response->getBody();
             $this->ql->setHtml((string) $body);
