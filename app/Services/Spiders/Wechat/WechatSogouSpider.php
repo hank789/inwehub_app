@@ -391,7 +391,33 @@ class WechatSogouSpider
                             'Domain'   => '.sogou.com',
                             'Path'     => '/',
                             'Max-Age'  => null,
-                            'Expires'  => strtotime('+3000 seconds'),
+                            'Expires'  => strtotime('+30000 seconds'),
+                            'Secure'   => false,
+                            'Discard'  => false,
+                            'HttpOnly' => false
+                        ])
+                    );
+                    $config['cookies']->setCookie(
+                        new SetCookie([
+                            'Name'     => 'weixinIndexVisited',
+                            'Value'    => 1,
+                            'Domain'   => 'weixin.sogou.com',
+                            'Path'     => '/',
+                            'Max-Age'  => null,
+                            'Expires'  => strtotime('+30000 seconds'),
+                            'Secure'   => false,
+                            'Discard'  => false,
+                            'HttpOnly' => false
+                        ])
+                    );
+                    $config['cookies']->setCookie(
+                        new SetCookie([
+                            'Name'     => 'sct',
+                            'Value'    => 3,
+                            'Domain'   => '.sogou.com',
+                            'Path'     => '/',
+                            'Max-Age'  => null,
+                            'Expires'  => strtotime('+30000 seconds'),
                             'Secure'   => false,
                             'Discard'  => false,
                             'HttpOnly' => false
