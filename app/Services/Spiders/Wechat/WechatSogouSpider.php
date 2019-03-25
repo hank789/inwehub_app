@@ -97,7 +97,12 @@ class WechatSogouSpider
                     deleteProxyIp($ip,'sogou');
                 }
             } else {
-                deleteProxyIp($ip,'sogou');
+                if ($ip) {
+                    deleteProxyIp($ip,'sogou');
+                } else {
+                    event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
+                    throw new ApiException(ApiException::REQUEST_FAIL);
+                }
             }
         }
         $wechatid = $content->find('label[name=em_weixinhao]')->eq(0)->text();
