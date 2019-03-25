@@ -411,7 +411,7 @@ class ProductController extends Controller {
     }
 
     public function getAlbumList(Request $request) {
-        $categories = Category::where('grade',0)->where('type','product_album')->orderBy('sort','asc')->orderBy('updated_at','desc')->simplePaginate($request->input('perPage',10));
+        $categories = Category::where('grade',0)->where('type','product_album')->where('status',1)->orderBy('sort','asc')->orderBy('updated_at','desc')->simplePaginate($request->input('perPage',10));
         $data = $categories->toArray();
         return self::createJsonData(true,$data);
     }
