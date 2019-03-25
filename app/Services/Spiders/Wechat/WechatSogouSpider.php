@@ -77,7 +77,7 @@ class WechatSogouSpider
                 if (str_contains($sogouTitle,$wx_hao)) {
                     var_dump('抓取公众号成功');
                     break;
-                } else {
+                } elseif (str_contains($sogouTitle,'搜狗搜索')) {
                     var_dump('公众号访问频繁');
                     $r = $content->find('input[name=r]')->val();
                     if ($jieFengCount >= 2) {
@@ -361,7 +361,8 @@ class WechatSogouSpider
         ];
         while ($max_count < 2) {
             $max_count += 1;
-            $time = intval(microtime(true) * 1000);
+            //$time = intval(microtime(true) * 1000);
+            $time = time();
             $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
             $img_data = (string) $this->client->get($codeurl)->getBody();
             $result = RuoKuaiService::dama($img_data);

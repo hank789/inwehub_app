@@ -132,7 +132,7 @@ class WechatPosts extends Command {
                 }
                 $mpInfo->update_time = date('Y-m-d H:i:s');
                 $mpInfo->save();
-                sleep(rand(5,15));
+                sleep(rand(8,15));
             }
             $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
             if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
