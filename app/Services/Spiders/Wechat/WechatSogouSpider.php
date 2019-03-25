@@ -383,11 +383,12 @@ class WechatSogouSpider
                     $this->client->get($pburl);
                     // get cookie
                     $config = $this->client->getConfig();
+                    //var_dump($config['cookies']);
                     $config['cookies']->setCookie(
                         new SetCookie([
                             'Name'     => 'SNUID',
                             'Value'    => $pbsnuid,
-                            'Domain'   => 'weixin.sogou.com',
+                            'Domain'   => '.sogou.com',
                             'Path'     => '/',
                             'Max-Age'  => null,
                             'Expires'  => null,
