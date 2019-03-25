@@ -75,7 +75,11 @@ class WechatPosts extends Command {
                 $last_qunfa_id = $mpInfo->last_qunfa_id;
                 $last_qunfa_time = $mpInfo->last_qufa_time;
                 $cur_qunfa_id = $last_qunfa_id;
-                $wz_list = $spider->getGzhArticles($mpInfo);
+                try {
+                    $wz_list = $spider->getGzhArticles($mpInfo);
+                } catch (\Exception $e) {
+                    break;
+                }
                 if ($wz_list === false) break;
                 if (count($wz_list) <= 0) continue;
                 $qunfa_time = '';
@@ -151,7 +155,7 @@ class WechatPosts extends Command {
             $ids = RateLimiter::instance()->hGetAll('product_pending_update_cache');
             if ($ids) {
                 foreach ($ids as $key=>$val) {
-                    dispatch_now(new UpdateProductInfoCache($key));
+                    dispatch(new UpdateProductInfoCache($key));
                     RateLimiter::instance()->hDel('product_pending_update_cache',$key);
                 }
             }
