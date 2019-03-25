@@ -28,7 +28,7 @@ class WechatMpInfo extends Model {
 
     public $timestamps = false;
 
-    protected $fillable = ['name','wx_hao','newrank_id','is_auto_publish','company','description','wz_url','last_qunfa_id','create_time','status','logo_url','qr_url','group_id','user_id'];
+    protected $fillable = ['name','wx_hao','newrank_id','is_auto_publish','company','description','wz_url','last_qunfa_id','create_time','status','logo_url','qr_url','group_id','user_id','rank_article_release_count'];
 
 
     public function group() {
