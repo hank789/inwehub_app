@@ -1,6 +1,7 @@
 <?php namespace App\Services\Spiders\Wechat;
 use App\Events\Frontend\System\ExceptionNotify;
 use App\Events\Frontend\System\SystemNotify;
+use App\Exceptions\ApiException;
 use App\Models\Scraper\WechatMpInfo;
 use App\Services\RuoKuaiService;
 use GuzzleHttp\Client;
@@ -69,7 +70,7 @@ class WechatSogouSpider
                     $jfResult = $this->jiefeng($r);
                     if ($jieFengCount >= 2) {
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
-                        exit();
+                        throw new ApiException(ApiException::REQUEST_FAIL);
                     }
                     $jieFengCount ++;
                     deleteProxyIp($ip,'sogou');
