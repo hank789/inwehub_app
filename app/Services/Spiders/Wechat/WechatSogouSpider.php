@@ -419,9 +419,9 @@ class WechatSogouSpider
                     );
                     $config['cookies']->setCookie(
                         new SetCookie([
-                            'Name'     => 'weixinIndexVisited',
-                            'Value'    => 1,
-                            'Domain'   => 'weixin.sogou.com',
+                            'Name'     => 'SUV',
+                            'Value'    => md5(1000*intval(microtime(true) * 1000) + (intval(1000*(float)rand()/(float)getrandmax()))),
+                            'Domain'   => '.sogou.com',
                             'Path'     => '/',
                             'Max-Age'  => null,
                             'Expires'  => strtotime('+30000 seconds'),
