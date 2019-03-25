@@ -79,6 +79,14 @@ class WechatSogouSpider
                     break;
                 } elseif (str_contains($sogouTitle,'搜狗搜索')) {
                     var_dump('公众号访问频繁');
+                    //使用ss抓取
+                    $ssHtml = curlShadowsocks($request_url);
+                    if ($ssHtml !== false) {
+                        if (!str_contains($ssHtml,'您的访问过于频繁') && str_contains($ssHtml,$wx_hao)) {
+                            $content->setHtml($ssHtml);
+                            break;
+                        }
+                    }
                     $r = $content->find('input[name=r]')->val();
                     if ($jieFengCount >= 2) {
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
@@ -361,8 +369,7 @@ class WechatSogouSpider
         ];
         while ($max_count < 2) {
             $max_count += 1;
-            //$time = intval(microtime(true) * 1000);
-            $time = time();
+            $time = intval(microtime(true) * 1000);
             $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
             $img_data = (string) $this->client->get($codeurl)->getBody();
             $result = RuoKuaiService::dama($img_data);
