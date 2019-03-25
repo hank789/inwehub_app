@@ -391,7 +391,7 @@ class WechatSogouSpider
                             'Domain'   => '.sogou.com',
                             'Path'     => '/',
                             'Max-Age'  => null,
-                            'Expires'  => null,
+                            'Expires'  => strtotime('+3000 seconds'),
                             'Secure'   => false,
                             'Discard'  => false,
                             'HttpOnly' => false
