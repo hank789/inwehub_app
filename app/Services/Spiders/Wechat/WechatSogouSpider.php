@@ -82,7 +82,7 @@ class WechatSogouSpider
                     //使用ss抓取
                     $ssHtml = curlShadowsocks($request_url);
                     if ($ssHtml !== false) {
-                        if (!str_contains($ssHtml,'您的访问过于频繁') && str_contains($ssHtml,$wx_hao)) {
+                        if (!str_contains($ssHtml,'需要您协助验证') && str_contains($ssHtml,$wx_hao)) {
                             $content->setHtml($ssHtml);
                             break;
                         }
