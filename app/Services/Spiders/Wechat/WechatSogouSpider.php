@@ -70,7 +70,7 @@ class WechatSogouSpider
                 //$request_url = 'http://weixin.sogou.com/weixin?type=2&query='.$wx_hao.'&ie=utf8&s_from=input&_sug_=n&_sug_type_=1&w=01015002&oq=&ri=0&sourceid=sugg&sut=0&sst0=1547216885721&lkt=0,0,0&p=40040108';
             }
             $content = $this->requestUrl($request_url,$ip);
-            var_dump($content->getHtml());
+            //var_dump($content->getHtml());
             if ($content) {
                 $sogouTitle = $content->find('title')->text();
                 var_dump('title:'.$sogouTitle);
