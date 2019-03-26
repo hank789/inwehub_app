@@ -93,7 +93,9 @@ class WechatSogouSpider
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
                         throw new ApiException(ApiException::REQUEST_FAIL);
                     }
-                    $jfResult = $this->jiefeng($r);
+                    if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
+                        $jfResult = $this->jiefeng($r);
+                    }
                     $jieFengCount ++;
                     deleteProxyIp($ip,'sogou');
                 }

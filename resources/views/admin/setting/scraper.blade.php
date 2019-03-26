@@ -37,6 +37,18 @@
                                 </tr>
 
                                 <tr>
+                                    <td>微信公众号验证码解封</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('is_scraper_wechat_yzm_jiefeng')) has-error @endif ">
+                                            <div class="radio">
+                                                <label><input type="radio" name="is_scraper_wechat_yzm_jiefeng" value="0" @if ( Setting()->get('is_scraper_wechat_yzm_jiefeng',1) == 0) checked @endif >否</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="radio" name="is_scraper_wechat_yzm_jiefeng" value="1" @if ( Setting()->get('is_scraper_wechat_yzm_jiefeng',1) == 1) checked @endif>是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
                                     <td>爬虫代理</td>
                                     <td>
                                         <div class="col-md-12 @if ($errors->has('scraper_proxy_address')) has-error @endif ">
