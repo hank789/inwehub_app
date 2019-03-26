@@ -49,6 +49,7 @@ class WechatSogouSpider
      * @param $wx_hao
      */
     public function getGzhInfo($wx_hao) {
+        $this->requestUrl('http://weixin.sogou.com/',null);
         $request_url = 'http://weixin.sogou.com/weixin?type=1&s_from=input&query='.$wx_hao.'&ie=utf8&_sug_=n&_sug_type_=';
         $jieFengCount = 0;
         $jfResult = false;
@@ -372,7 +373,7 @@ class WechatSogouSpider
             'X-Requested-With' => 'XMLHttpRequest',
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
         ];
-        while ($max_count <= 2) {
+        while ($max_count <= 1) {
             $max_count += 1;
             $time = intval(microtime(true) * 1000);
             $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
