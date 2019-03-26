@@ -88,7 +88,7 @@ class WechatSogouSpider
                         }
                     }
                     $r = $content->find('input[name=r]')->val();
-                    if ($jieFengCount >= 2) {
+                    if ($jieFengCount >= 1) {
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
                         throw new ApiException(ApiException::REQUEST_FAIL);
                     }
@@ -372,7 +372,7 @@ class WechatSogouSpider
             'X-Requested-With' => 'XMLHttpRequest',
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
         ];
-        while ($max_count < 2) {
+        while ($max_count <= 2) {
             $max_count += 1;
             $time = intval(microtime(true) * 1000);
             $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
