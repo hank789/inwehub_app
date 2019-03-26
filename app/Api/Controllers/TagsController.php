@@ -123,7 +123,11 @@ class TagsController extends Controller {
         $this->validate($request,$validateRules);
         $tag_name = $request->input('tag_name');
         $tag = Tag::getTagByName($tag_name);
+        $is_followed = 0;
+        $followAttention = Attention::where('user_id',$user->id)->where('source_type','=',get_class($tag))->where('source_id','=',$tag->id)->first();
+        if ($followAttention) $is_followed = 1;
         $data = $this->getTagProductInfo($tag);
+        $data['is_followed'] = $is_followed;
         $data['seo'] = [
             'title' => $tag->name,
             'description' => $tag->summary,

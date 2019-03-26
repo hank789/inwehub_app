@@ -433,7 +433,7 @@ class ProductController extends Controller {
         $oauth = $JWTAuth->parseToken()->toUser();
         $category_id = $request->input('id');
         $query = TagCategoryRel::select(['id','tag_id','support_rate'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
-        $tags = $query->where('category_id',$category_id)->orderBy('support_rate','desc')->orderBy('updated_at','desc')->simplePaginate(15);
+        $tags = $query->where('category_id',$category_id)->orderBy('support_rate','desc')->orderBy('updated_at','desc')->simplePaginate(50);
         $return = $tags->toArray();
         $list = [];
         foreach ($tags as $tag) {
