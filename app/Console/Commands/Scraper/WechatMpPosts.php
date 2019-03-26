@@ -58,10 +58,10 @@ class WechatMpPosts extends Command {
             if (strtotime($mpInfo->update_time) >= strtotime('-120 minutes')) continue;
             $wz_list = false;
             //先通过公众号服务取50次数据
-            if ($successCount < 10 && $flag) {
+            if ($successCount < 15 && $flag) {
                 $wz_list = $spider->getGzhArticles($mpInfo);
             }
-            if ($wz_list === false || $successCount >= 10) {
+            if ($wz_list === false || $successCount >= 15) {
                 $flag = false;
                 //只执行上面的服务50次
                 if ($mpInfo->qr_url) {
