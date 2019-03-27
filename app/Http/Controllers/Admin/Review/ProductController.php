@@ -247,6 +247,7 @@ class ProductController extends AdminController
         $oldStatus = $tagRel->status;
         $newStatus = $request->input('status');
         $tag = Tag::find($tagRel->tag_id);
+        $oldSummary = $tag->summary;
         $this->validateRules['name'] = 'required|max:128|unique:tags,name,'.$tag->id;
         $this->validate($request,$this->validateRules);
         $tag->name = $request->input('name');
@@ -275,7 +276,7 @@ class ProductController extends AdminController
         $advance_desc = $request->input('advance_desc');
         $tag->setDescription(['keywords'=>$keywords,'cover_pic'=>$cover_pic,'advance_desc'=>$advance_desc]);
         $tag->save();
-        if($request->hasFile('logo')){
+        if($request->hasFile('logo') || $oldSummary != $tag->summary){
             $tag->clearMediaCollection('images_big');
             $tag->clearMediaCollection('images_small');
         }
