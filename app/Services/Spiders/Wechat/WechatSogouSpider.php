@@ -189,7 +189,7 @@ class WechatSogouSpider
                 $sogouTitle = $content->find('title')->text();
                 if (str_contains($sogouTitle,'请输入验证码')) {
                     var_dump('请输入验证码');
-                    if (empty($ip) && !$this->ssIpLocked && false) {
+                    if (empty($ip) && !$this->ssIpLocked) {
                         $wzHtml = curlShadowsocks($mpInfo->wz_url);
                         if ($wzHtml === false) {
                             $this->ssIpLocked = true;
@@ -490,19 +490,19 @@ class WechatSogouSpider
         ];
         $time = explode(' ',microtime());
         $timever = $time[1].($time[0] * 1000);
-        $codeurl = 'http://mp.weixin.qq.com/mp/verifycode?cert='.$timever;
-        $img_data = (string)$this->client->get($codeurl)->getBody();
+        $codeurl = 'https://mp.weixin.qq.com/mp/verifycode?cert='.$timever;
+        $img_data = (string)$this->client->get($codeurl,['headers'=>$headers])->getBody();
         $result = RuoKuaiService::dama($img_data,2040);
         $img_code = $result['Result'];
-        $post_url = 'http://mp.weixin.qq.com/mp/verifycode';
+        $post_url = 'https://mp.weixin.qq.com/mp/verifycode';
         $post_data = [
             'cert' => $timever,
             'input'=> $img_code,
             'appmsg_token' => ''
         ];
-        $otherArgs = [];
+        $otherArgs = ['headers'=>$headers];
         if ($proxy) {
-            $otherArgs = ['proxy' => 'socks5h://127.0.0.1:1080'];
+            $otherArgs['proxy'] = 'socks5h://127.0.0.1:1080';
         }
         $result2 = (string) $this->client->post($post_url,array_merge(['verify' => false,'form_params'=>$post_data],$otherArgs))->getBody();
         var_dump($result2);
