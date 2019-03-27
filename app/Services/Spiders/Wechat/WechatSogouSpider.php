@@ -49,8 +49,8 @@ class WechatSogouSpider
      * @param $wx_hao
      */
     public function getGzhInfo($wx_hao) {
-        $this->requestUrl('http://weixin.sogou.com/',null);
-        $request_url = 'http://weixin.sogou.com/weixin?type=1&s_from=input&query='.$wx_hao.'&ie=utf8&_sug_=n&_sug_type_=';
+        $this->requestUrl('https://weixin.sogou.com/',null);
+        $request_url = 'https://weixin.sogou.com/weixin?type=1&s_from=input&query='.$wx_hao.'&ie=utf8&_sug_=n&_sug_type_=';
         $jieFengCount = 0;
         $jfResult = false;
         $headers = [
@@ -70,7 +70,7 @@ class WechatSogouSpider
             if ($jfResult) {
                 //$request_url = 'http://weixin.sogou.com/weixin?type=2&query='.$wx_hao.'&ie=utf8&s_from=input&_sug_=n&_sug_type_=1&w=01015002&oq=&ri=0&sourceid=sugg&sut=0&sst0=1547216885721&lkt=0,0,0&p=40040108';
             }
-            $content = $this->requestUrl($request_url,$ip);
+            $content = $this->requestUrl($request_url,null,['headers'=>$headers]);
             //var_dump($content->getHtml());
             if ($content) {
                 $sogouTitle = $content->find('title')->text();
@@ -122,22 +122,24 @@ class WechatSogouSpider
             }
         })->toArray();
         if (!str_contains($url,'://')) {
-            $url = 'http://weixin.sogou.com'.$url;
-            $content2 = $this->requestUrl($url,null);
+            $a = stripos($url,'url=');
+            $b = rand(10,99) + 1;
+            $h = substr($url,$a+4+$b,1);
+            $url = 'https://weixin.sogou.com'.$url.'&k='.$b.'&h='.$h;
+            var_dump($url);
+            $content2 = $this->requestUrl($url,null,['headers'=>$headers]);
             $html = $content2->getHtml();
+            //var_dump($html);
             if (str_contains($html,'需要您协助验证')) {
-                $html = curlShadowsocks($url);
-                if (str_contains($html,'需要您协助验证')) {
-                    event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
-                    throw new ApiException(ApiException::REQUEST_FAIL);
-                }
+                event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
+                throw new ApiException(ApiException::REQUEST_FAIL);
             }
+
             $pattern = "/url\s+\+=\s+([\s\S]*?);/is";
-            preg_match($pattern, $html, $matchs);
+            preg_match_all($pattern, $html, $matchs);
             if (isset($matchs[1])) {
-                $url = trim($matchs[1],'"');
-                $url = trim($url,"'");
-                $url = str_replace('@','',$url);
+                $t = str_replace("'",'',implode('',$matchs[1]));
+                $url = str_replace('@','',$t);
             }
         }
         $data = [
@@ -329,7 +331,7 @@ class WechatSogouSpider
         return $items;
     }
 
-    protected function requestUrl($url,$ip,$options=[]) {
+    protected function requestUrl($url,$ip=null,$options=[]) {
         try {
             $this->url = $url;
             $this->proxyIp = $ip;
@@ -344,7 +346,10 @@ class WechatSogouSpider
             //$config = $this->client->getConfig();
             //var_dump('requestUrl');
             //var_dump($config['cookies']);
-            $response = $this->client->get($url);
+            $response = $this->client->get($url,array_merge($opts,$options));
+            //$config = $this->client->getConfig();
+            //var_dump('requestUrl');
+            //var_dump($config['cookies']);
             $body = $response->getBody();
             $this->ql->setHtml((string) $body);
             return $this->ql;
@@ -357,10 +362,17 @@ class WechatSogouSpider
         return $content;
     }
 
-    public function jiefeng($r) {
+    public function jiefeng($r,$ip=null) {
         $max_count = 1;
-        if ($this->proxyIp) return false;
         print("出现验证码，准备自动识别");
+        $opts = [
+            'proxy' => $ip,
+            //Set the timeout time in seconds
+            'timeout' => 10
+        ];
+        if (empty($ip)) {
+            unset($opts['proxy']);
+        }
         $headers0 = [
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
         ];
@@ -380,13 +392,14 @@ class WechatSogouSpider
             'Accept-Language' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
             'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8',
             'X-Requested-With' => 'XMLHttpRequest',
+            'Origin' => 'https://weixin.sogou.com',
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
         ];
         while ($max_count <= 1) {
             $max_count += 1;
             $time = intval(microtime(true) * 1000);
-            $codeurl = 'http://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
-            $img_data = (string) $this->client->get($codeurl)->getBody();
+            $codeurl = 'https://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
+            $img_data = (string) $this->client->get($codeurl,$opts)->getBody();
             $result = RuoKuaiService::dama($img_data);
             if (isset($result['Result'])) {
                 $img_code = $result['Result'];
@@ -396,7 +409,7 @@ class WechatSogouSpider
                     'v' => 5
                 ];
                 var_dump($post_data);
-                $result = (string) $this->client->post('http://weixin.sogou.com/antispider/thank.php',['verify' => false,'form_params'=>$post_data])->getBody();
+                $result = (string) $this->client->post('https://weixin.sogou.com/antispider/thank.php',array_merge($opts,['verify' => false,'form_params'=>$post_data,'headers'=>$headers2]))->getBody();
                 var_dump($result);
 
                 $resultArr = json_decode($result,true);
@@ -409,8 +422,8 @@ class WechatSogouSpider
                     $pbsnuid = $resultArr['id'];
                     var_dump($pbsnuid);
                     $this->snuid = $pbsnuid;
-                    $pburl = 'http://pb.sogou.com/pv.gif?uigs_productid=webapp&type=antispider&subtype=0_seccodeInputSuccess&domain=weixin&suv=&snuid='.$pbsnuid.'&t='.time();
-                    $this->client->get($pburl);
+                    $pburl = 'https://pb.sogou.com/pv.gif?uigs_productid=webapp&type=antispider&subtype=0_seccodeInputSuccess&domain=weixin&suv=&snuid='.$pbsnuid.'&t='.time();
+                    $this->client->get($pburl,$opts);
                     // get cookie
                     $config = $this->client->getConfig();
                     //var_dump($config['cookies']);
