@@ -302,12 +302,13 @@ class ProductController extends Controller {
         return self::createJsonData(true,['id'=>$submission->id]);
     }
 
-    public function getProductShareImage(Request $request){
+    public function getProductShareImage(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer',
             'type' => 'required|in:1,2'
         ];
         $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
         $type = $request->input('type',1);
         if ($type == 1) {
             //分享到朋友圈的长图
@@ -318,30 +319,31 @@ class ProductController extends Controller {
             $collection = 'images_small';
             $showUrl = 'getProductShareShortInfo';
         }
-        $tag = Tag::findOrFail($request->input('id'));
+        $tag = Tag::find($request->input('id'));
 
-        if($tag->getMedia($collection)->isEmpty()){
+        if($tag->getMedia($collection)->where('name',$oauth->id)->isEmpty()){
             $snappy = App::make('snappy.image');
             $snappy->setOption('width',1125);
-            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$tag->id);
-            $tag->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
+            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$tag->id.'?oauth_id='.$oauth->id);
+            $tag->addMediaFromBase64(base64_encode($image))->setName($oauth->id)->toMediaCollection($collection);
         }
         $tag = Tag::find($request->input('id'));
-        $url = $tag->getMedia($collection)->last()->getUrl();
+        $url = $tag->getMedia($collection)->where('name',$oauth->id)->last()->getUrl();
         return self::createJsonData(true,['url'=>$url]);
     }
 
-    public function getAlbumShareImage(Request $request){
+    public function getAlbumShareImage(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
         //分享到朋友圈的长图
         $collection = 'images_big';
         $showUrl = 'getAlbumShareLongInfo';
 
         $category = Category::findOrFail($request->input('id'));
-        $url = RateLimiter::instance()->getValue('album_share_image',$category->id);
+        $url = RateLimiter::instance()->getValue('album_share_image',$category->id.'_'.$oauth->id);
         if ($url && config('app.env') == 'production') {
             return self::createJsonData(true,['url'=>$url]);
         }
@@ -349,21 +351,22 @@ class ProductController extends Controller {
         if(empty($url) || config('app.env') != 'production'){
             $snappy = App::make('snappy.image');
             $snappy->setOption('width',1125);
-            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$category->id);
-            $category->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
+            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$category->id.'?oauth_id='.$oauth->id);
+            $category->addMediaFromBase64(base64_encode($image))->setName($oauth->id)->toMediaCollection($collection);
         }
         $category = Category::find($request->input('id'));
-        $url = $category->getMedia($collection)->last()->getUrl();
-        RateLimiter::instance()->setVale('album_share_image',$category->id,$url,60*60*12);
+        $url = $category->getMedia($collection)->where('name',$oauth->id)->last()->getUrl();
+        RateLimiter::instance()->setVale('album_share_image',$category->id.'_'.$oauth->id,$url,60*60*12);
         return self::createJsonData(true,['url'=>$url]);
     }
 
-    public function getReviewShareImage(Request $request){
+    public function getReviewShareImage(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer',
             'type' => 'required|in:1,2'
         ];
         $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
         $type = $request->input('type',1);
         if ($type == 1) {
             //分享到朋友圈的长图
@@ -375,19 +378,15 @@ class ProductController extends Controller {
             $showUrl = 'getReviewShareShortInfo';
         }
         $submission = Submission::findOrFail($request->input('id'));
-        if(!isset($submission->data[$collection]) || config('app.env') != 'production'){
+        if($submission->getMedia($collection)->where('name',$oauth->id)->where('created_at','>=',date('Y-m-d H:i:s',strtotime('-7 days')))->isEmpty() || config('app.env') != 'production'){
             $snappy = App::make('snappy.image');
             $snappy->setOption('width',1125);
-            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$submission->id);
-            $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.jpeg';
-            (new UploadFile($file_name,base64_encode($image)))->handle();
-            $img_url = Storage::disk('oss')->url($file_name);
-            $data = $submission->data;
-            $data[$collection] = $img_url;
-            $submission->data = $data;
-            $submission->save();
+            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$submission->id.'?oauth_id='.$oauth->id);
+            $submission->addMediaFromBase64(base64_encode($image))->setName($oauth->id)->toMediaCollection($collection);
         }
-        return self::createJsonData(true,['url'=>$submission->data[$collection]]);
+        $submission = Submission::find($request->input('id'));
+        $url = $submission->getMedia($collection)->where('name',$oauth->id)->last()->getUrl();
+        return self::createJsonData(true,['url'=>$url]);
     }
 
     public function albumInfo(Request $request, JWTAuth $JWTAuth) {

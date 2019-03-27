@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Laravel\Scout\Searchable;
 use QL\QueryList;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\HasMedia\Interfaces\HasMedia;
 
 /**
  * App\Models\Submission
@@ -102,9 +104,9 @@ use QL\QueryList;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission wherePublic($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Submission whereViews($value)
  */
-class Submission extends Model {
+class Submission extends Model implements HasMedia {
 
-    use SoftDeletes,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToUserTrait, Searchable;
+    use SoftDeletes,MorphManyCommentsTrait,MorphManyTagsTrait,BelongsToUserTrait, Searchable, HasMediaTrait;
 
     protected $table = 'submissions';
 
