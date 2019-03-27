@@ -204,6 +204,8 @@ class WechatSogouSpider
                             //说明链接已过期
                             $newData = $this->getGzhInfo($mpInfo->wx_hao);
                             if (empty($newData['name'])) {
+                                $mpInfo->rank_article_release_count = -1;
+                                $mpInfo->save();
                                 event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
                                 return [];
                             }
@@ -233,6 +235,8 @@ class WechatSogouSpider
                     //说明链接已过期
                     $newData = $this->getGzhInfo($mpInfo->wx_hao);
                     if (empty($newData['name'])) {
+                        $mpInfo->rank_article_release_count = -1;
+                        $mpInfo->save();
                         event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
                         return [];
                     }
