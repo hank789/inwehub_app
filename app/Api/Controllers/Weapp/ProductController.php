@@ -302,12 +302,13 @@ class ProductController extends Controller {
         return self::createJsonData(true,['id'=>$submission->id]);
     }
 
-    public function getProductShareImage(Request $request){
+    public function getProductShareImage(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer',
             'type' => 'required|in:1,2'
         ];
         $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
         $type = $request->input('type',1);
         if ($type == 1) {
             //分享到朋友圈的长图
@@ -318,24 +319,25 @@ class ProductController extends Controller {
             $collection = 'images_small';
             $showUrl = 'getProductShareShortInfo';
         }
-        $tag = Tag::findOrFail($request->input('id'));
+        $tag = Tag::find($request->input('id'));
 
-        if($tag->getMedia($collection)->isEmpty()){
+        if($tag->getMedia($collection)->where('name',$oauth->id)->isEmpty()){
             $snappy = App::make('snappy.image');
             $snappy->setOption('width',1125);
-            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$tag->id);
-            $tag->addMediaFromBase64(base64_encode($image))->toMediaCollection($collection);
+            $image = $snappy->getOutput(config('app.url').'/weapp/'.$showUrl.'/'.$tag->id.'?oauth_id='.$oauth->id);
+            $tag->addMediaFromBase64(base64_encode($image))->setName($oauth->id)->toMediaCollection($collection);
         }
         $tag = Tag::find($request->input('id'));
         $url = $tag->getMedia($collection)->last()->getUrl();
         return self::createJsonData(true,['url'=>$url]);
     }
 
-    public function getAlbumShareImage(Request $request){
+    public function getAlbumShareImage(Request $request,JWTAuth $JWTAuth){
         $validateRules = [
             'id'   => 'required|integer'
         ];
         $this->validate($request,$validateRules);
+        $oauth = $JWTAuth->parseToken()->toUser();
         //分享到朋友圈的长图
         $collection = 'images_big';
         $showUrl = 'getAlbumShareLongInfo';

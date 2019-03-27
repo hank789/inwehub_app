@@ -9,6 +9,7 @@ use App\Models\Weapp\Demand;
 use App\Services\RateLimiter;
 use App\Third\Weapp\WeApp;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 /**
  * @author: wanghui
@@ -67,12 +68,13 @@ class WeappController extends Controller
         return view('h5::weapp.demandShareShort');
     }
 
-    public function getProductShareLongInfo($id, WeApp $wxxcx){
+    public function getProductShareLongInfo($id,Request $request, WeApp $wxxcx){
         $tag = Tag::find($id);
+        $oauth_id = $request->input('oauth_id',0);
         if (config('app.env') != 'production') {
             $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         } else {
-            $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
+            $qrcodeUrl = $this->getProductQrcode($id,$oauth_id,$wxxcx);
             try {
                 $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo);
             } catch (\Exception $e) {
@@ -82,12 +84,13 @@ class WeappController extends Controller
         return view('h5::weapp.productShareLong')->with('tag',$tag)->with('qrcode',$qrcodeUrlFormat);
     }
 
-    public function getAlbumShareLongInfo($id, WeApp $wxxcx){
+    public function getAlbumShareLongInfo($id,Request $request, WeApp $wxxcx){
         $category = Category::find($id);
+        $oauth_id = $request->input('oauth_id',0);
         if (config('app.env') != 'production') {
             $qrcodeUrl = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         } else {
-            $qrcodeUrl = $this->getAlbumQrcode($id,$wxxcx);
+            $qrcodeUrl = $this->getAlbumQrcode($id,$oauth_id,$wxxcx);
         }
         $query = TagCategoryRel::select(['id','tag_id','support_rate'])->where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1);
         $tags = $query->where('category_id',$id)->orderBy('support_rate','desc')->orderBy('updated_at','desc')->take(7)->get();
@@ -109,12 +112,13 @@ class WeappController extends Controller
         return view('h5::weapp.albumShareLong')->with('category',$category)->with('tags',$list)->with('qrcode',$qrcodeUrl);
     }
 
-    public function getProductShareShortInfo($id, WeApp $wxxcx){
+    public function getProductShareShortInfo($id,Request $request, WeApp $wxxcx){
         $tag = Tag::find($id);
+        $oauth_id = $request->input('oauth_id',0);
         if (config('app.env') != 'production') {
             $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         } else {
-            $qrcodeUrl = $this->getProductQrcode($id,$wxxcx);
+            $qrcodeUrl = $this->getProductQrcode($id,$oauth_id,$wxxcx);
             try {
                 $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$tag->logo,true);
             } catch (\Exception $e) {
@@ -124,12 +128,12 @@ class WeappController extends Controller
         return view('h5::weapp.productShareShort')->with('tag',$tag)->with('qrcode',$qrcodeUrlFormat);
     }
 
-    protected function getProductQrcode($id, WeApp $wxxcx) {
-        $qrcodeUrl = RateLimiter::instance()->hGet('product-qrcode',$id);
+    protected function getProductQrcode($id,$oauth_id, WeApp $wxxcx) {
+        $qrcodeUrl = RateLimiter::instance()->hGet('product-qrcode',$id.'_'.$oauth_id);
         if (!$qrcodeUrl) {
             $file_name = 'product/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
             $page = 'pages/majorProduct/majorProduct';
-            $scene = 'id='.$id;
+            $scene = '='.$id.'='.$oauth_id;
             try {
                 $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
                 $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
@@ -143,13 +147,14 @@ class WeappController extends Controller
         return $qrcodeUrl;
     }
 
-    public function getReviewShareLongInfo($id, WeApp $wxxcx){
+    public function getReviewShareLongInfo($id,Request $request, WeApp $wxxcx){
         $review = Submission::find($id);
         $tag = Tag::find($review->category_id);
+        $oauth_id = $request->input('oauth_id',0);
         if (config('app.env') != 'production') {
             $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         } else {
-            $qrcodeUrl = $this->getReviewQrcode($review->id,$wxxcx);
+            $qrcodeUrl = $this->getReviewQrcode($review->id,$oauth_id,$wxxcx);
             try {
                 if ($review->hide) {
                     $qrcodeUrlFormat = $qrcodeUrl;
@@ -171,13 +176,14 @@ class WeappController extends Controller
         return view('h5::weapp.reviewShareLong')->with('review',$review)->with('qrcode',$qrcodeUrlFormat)->with('product',$data);
     }
 
-    public function getReviewShareShortInfo($id, WeApp $wxxcx){
+    public function getReviewShareShortInfo($id,Request $request, WeApp $wxxcx){
         $review = Submission::find($id);
         $tag = Tag::find($review->category_id);
+        $oauth_id = $request->input('oauth_id',0);
         if (config('app.env') != 'production') {
             $qrcodeUrlFormat = 'https://cdn.inwehub.com/demand/qrcode/2018/09/153733792816zoTjw.png?x-oss-process=image/resize,w_430,h_430,image/circle,r_300/format,png/watermark,image_cHJvZHVjdC9xcmNvZGUvMjAxOC8xMi8xNTQ1OTc1NDc3WTlMbzZLSi5wbmc=,g_center';
         } else {
-            $qrcodeUrl = $this->getReviewQrcode($review->id,$wxxcx);
+            $qrcodeUrl = $this->getReviewQrcode($review->id,$oauth_id,$wxxcx);
             try {
                 $qrcodeUrlFormat = weapp_qrcode_replace_logo($qrcodeUrl,$review->user->avatar);
             } catch (\Exception $e) {
@@ -195,12 +201,12 @@ class WeappController extends Controller
         return view('h5::weapp.reviewShareShort')->with('review',$review)->with('qrcode',$qrcodeUrlFormat)->with('product',$data);
     }
 
-    protected function getReviewQrcode($id, WeApp $wxxcx) {
-        $qrcodeUrl = RateLimiter::instance()->hGet('review-qrcode',$id);
+    protected function getReviewQrcode($id,$oauth_id, WeApp $wxxcx) {
+        $qrcodeUrl = RateLimiter::instance()->hGet('review-qrcode',$id.'_'.$oauth_id);
         if (!$qrcodeUrl) {
             $file_name = 'review/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
             $page = 'pages/commentDetail/commentDetail';
-            $scene = 'slug='.$id;
+            $scene = '='.$id.'='.$oauth_id;
             try {
                 $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
                 $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
@@ -214,12 +220,12 @@ class WeappController extends Controller
         return $qrcodeUrl;
     }
 
-    protected function getAlbumQrcode($id, WeApp $wxxcx) {
-        $qrcodeUrl = RateLimiter::instance()->hGet('album-qrcode',$id);
+    protected function getAlbumQrcode($id,$oauth_id, WeApp $wxxcx) {
+        $qrcodeUrl = RateLimiter::instance()->hGet('album-qrcode',$id.'_'.$oauth_id);
         if (!$qrcodeUrl) {
             $file_name = 'review/qrcode/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.png';
             $page = 'pages/specialDetail/specialDetail';
-            $scene = 'id='.$id;
+            $scene = '='.$id.'='.$oauth_id;
             try {
                 $wxxcx->setConfig(config('weapp.appid_ask'),config('weapp.secret_ask'));
                 $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
