@@ -121,7 +121,9 @@ class WechatSogouSpider
                 return ['company'=>$item->find('dd')->text()];
             }
         })->toArray();
-        if (!str_contains($url,'://')) {
+        //var_dump($content->getHtml());
+
+        if (!empty($name) && !str_contains($url,'://')) {
             $a = stripos($url,'url=');
             $b = rand(10,99) + 1;
             $h = substr($url,$a+4+$b,1);
