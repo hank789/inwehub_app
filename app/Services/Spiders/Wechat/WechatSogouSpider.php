@@ -125,6 +125,13 @@ class WechatSogouSpider
             $url = 'http://weixin.sogou.com'.$url;
             $content2 = $this->requestUrl($url,null);
             $html = $content2->getHtml();
+            if (str_contains($html,'需要您协助验证')) {
+                $html = curlShadowsocks($url);
+                if (str_contains($html,'需要您协助验证')) {
+                    event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
+                    throw new ApiException(ApiException::REQUEST_FAIL);
+                }
+            }
             $pattern = "/url\s+\+=\s+([\s\S]*?);/is";
             preg_match($pattern, $html, $matchs);
             if (isset($matchs[1])) {
@@ -217,7 +224,7 @@ class WechatSogouSpider
                         return false;
                     }
                     deleteProxyIp($ip,'sogou');
-                } elseif (!$sogouTitle) {
+                } elseif (!$sogouTitle || str_contains($sogouTitle,'搜狗搜索')) {
                     var_dump('链接已过期');
                     //说明链接已过期
                     $newData = $this->getGzhInfo($mpInfo->wx_hao);
