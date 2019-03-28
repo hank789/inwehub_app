@@ -52,7 +52,8 @@ Route::get('user/resume/info',['as'=>'admin.user.resume.info','uses'=>'UserContr
 Route::get('user/export',['as'=>'admin.user.export','uses'=>'UserController@exportUsers']);
 //导出通讯录
 Route::get('addressBook/export',['as'=>'admin.user.addressBook.export','uses'=>'UserController@exportAddressBook']);
-
+//三方用户
+Route::get('user/oauth/index',['as'=>'admin.user.oauth.index','uses'=>'UserController@oauthUser']);
 
 /*认证管理*/
 Route::post('authentication/destroy',['as'=>'admin.authentication.destroy','uses'=>'AuthenticationController@destroy']);
