@@ -129,6 +129,7 @@ class SearchController extends controller
         $timestamp = $request->input('timestamp');
         $nonce = $request->input('nonce');
         $echostr = $request->input('echostr');
+        \Log::info('test',$request->all());
         $token = 'dianping2019inwehub';
         $tmpArr = array($token, $timestamp, $nonce);
         sort($tmpArr, SORT_STRING);
