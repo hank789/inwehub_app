@@ -124,5 +124,22 @@ class SearchController extends controller
         return self::createJsonData(true,['words'=>$product]);
     }
 
+    public function msgCallback(Request $request) {
+        $signature = $request->input('signature');
+        $timestamp = $request->input('timestamp');
+        $nonce = $request->input('nonce');
+        $echostr = $request->input('echostr');
+        $token = 'dianping2019inwehub';
+        $tmpArr = array($token, $timestamp, $nonce);
+        sort($tmpArr, SORT_STRING);
+        $tmpStr = implode( $tmpArr );
+        $tmpStr = sha1( $tmpStr );
+
+        if( $tmpStr == $signature ){
+            return $echostr;
+        }else{
+            return '';
+        }
+    }
 
 }
