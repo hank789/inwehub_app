@@ -23,7 +23,7 @@ class Tongji extends Model
 {
 
     protected $table = 'weapp_tongji';
-    protected $fillable = ['user_oauth_id', 'page', 'start_time', 'end_time', 'stay_time','event_id','scene','parent_refer'];
+    protected $fillable = ['user_oauth_id', 'page', 'start_time', 'end_time', 'stay_time','event_id','scene','parent_refer','from_user_id'];
 
     public static $pageType = [
         'pages/index/index' => ['name'=>'首页'],

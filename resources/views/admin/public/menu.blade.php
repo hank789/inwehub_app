@@ -13,6 +13,7 @@
             <li><a href="{{ route('admin.user.index') }}"><i class="fa fa-circle-o"></i> 用户管理</a></li>
             <li><a href="{{ route('admin.authentication.index') }}"><i class="fa fa-circle-o"></i> 专家管理</a></li>
             <li><a href="{{ route('admin.user.addressBook') }}"><i class="fa fa-circle-o"></i> 用户通讯录</a></li>
+            <li><a href="{{ route('admin.user.oauth.index') }}"><i class="fa fa-circle-o"></i> 微信认证用户</a></li>
         </ul>
     </li>
 

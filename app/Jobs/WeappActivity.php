@@ -47,14 +47,22 @@ class WeappActivity implements ShouldQueue
         $event_id = 0;
         $scene = 0;
         $parent_refer = 0;
+        $from_oauth_id = 0;
         if (isset($params['id'])) {
             $event_id = $params['id'];
         } elseif (isset($params['slug'])) {
             $submission = Submission::where('slug',$params['slug'])->first();
             $event_id = $submission->id;
         }
+        if (isset($params['from_oauth_id'])) {
+            $from_oauth_id = $params['from_oauth_id'];
+        }
         if (isset($params['scene'])) {
-            $scene =  $params['scene'];
+            $scene =  urldecode($params['scene']);
+            $sceneArr = explode('=',$scene);
+            if (isset($sceneArr[2]) && $sceneArr[2] > 0) {
+                $from_oauth_id = $sceneArr[2];
+            }
         }
         if ($this->data['page'] == 'pages/url/url') {
             $url = parse_url($params['url']);
@@ -83,7 +91,8 @@ class WeappActivity implements ShouldQueue
             'event_id'   => $event_id,
             'page'      => $this->data['page'],
             'scene'     => $scene,
-            'parent_refer' => $parent_refer
+            'parent_refer' => $parent_refer,
+            'from_oauth_id' => $from_oauth_id
         ]);
     }
 }

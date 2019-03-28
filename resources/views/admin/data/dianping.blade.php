@@ -46,6 +46,7 @@
                                         <th>页面</th>
                                         <th>对象</th>
                                         <th>场景值</th>
+                                        <th>分享者oauth_id</th>
                                         <th>访问开始时间</th>
                                         <th>访问结束时间</th>
                                         <th>停留时间(秒)</th>
@@ -56,6 +57,7 @@
                                             <td>{{ $item->page.'['.$item->getPageName().']' }}</td>
                                             <td>{{ $item->getPageObject() }}</td>
                                             <td>{{ $item->scene }}</td>
+                                            <td>{{ $item->from_user_id }}</td>
                                             <td>{{ date('Y-m-d H:i:s',$item->start_time/1000) }}</td>
                                             <td>{{ date('Y-m-d H:i:s',$item->end_time/1000) }}</td>
                                             <td>{{ $item->stay_time/1000 }}</td>

@@ -50,6 +50,28 @@ class UserController extends AdminController
         return view('admin.user.index')->with('users',$users)->with('filter',$filter);
     }
 
+    public function oauthUser(Request $request) {
+        $filter =  $request->all();
+
+        $query = UserOauth::query();
+
+        if(isset($filter['user_id']) && $filter['user_id'] > 0){
+            $query->where("id","=",$filter['user_id']);
+        }
+
+        /*状态过滤*/
+        if( isset($filter['status']) && $filter['status'] > -2 ){
+            $query->where('status','=',$filter['status']);
+        }
+
+        if (isset($filter['wechat_nickname']) && $filter['wechat_nickname']) {
+            $query->where('nickname','like','%'.$filter['wechat_nickname'].'%');
+        }
+
+        $users = $query->orderBy('created_at','desc')->paginate(Config::get('inwehub.admin.page_size'));
+        return view('admin.user.oauth')->with('users',$users)->with('filter',$filter);
+    }
+
     public function addressBook(Request $request) {
         $filter =  $request->all();
 
