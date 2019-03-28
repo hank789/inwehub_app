@@ -70,24 +70,25 @@ class GoogleNews extends Command {
                     '--proxy' => '127.0.0.1:1080',
                     '--proxy-type' => 'socks5'
                 ])->rules([
-                    'title' => ['a.ipQwMb.Q7tWef>span','text'],
-                    'link'  => ['a.ipQwMb.Q7tWef','href'],
-                    'author' => ['.KbnJ8','text'],
+                    'title' => ['a.DY5T1d','text'],
+                    'link'  => ['a.DY5T1d','href'],
+                    'author' => ['span.wEwyrc','text'],
                     'dateTime' => ['time.WW6dff','datetime'],
                     'description' => ['p.HO8did.Baotjf','text'],
-                    'image' => ['img.tvs3Id.dIH98c','src']
+                    'image' => ['img.tvs3Id','src']
                 ])->range('div.NiLAwe.R7GTQ.keNKEd.j7vNaf')->query()->getData();
+                //var_dump($list);
                 if (count($list) <= 0 || empty($list)) {
                     $list = $ql->browser($info['url'],false,[
                         '--proxy' => '127.0.0.1:1080',
                         '--proxy-type' => 'socks5'
                     ])->rules([
-                        'title' => ['a.ipQwMb.Q7tWef>span','text'],
-                        'link'  => ['a.ipQwMb.Q7tWef','href'],
-                        'author' => ['.KbnJ8','text'],
+                        'title' => ['a.DY5T1d','text'],
+                        'link'  => ['a.DY5T1d','href'],
+                        'author' => ['span.wEwyrc','text'],
                         'dateTime' => ['time.WW6dff','datetime'],
                         'description' => ['p.HO8did.Baotjf','text'],
-                        'image' => ['img.tvs3Id.dIH98c','src']
+                        'image' => ['img.tvs3Id','src']
                     ])->range('div.NiLAwe.R7GTQ.keNKEd.j7vNaf')->query()->getData();
                     if (count($list) <= 0 || empty($list)) {
                         event(new ExceptionNotify('抓取'.$info['url'].'失败'));
@@ -99,8 +100,7 @@ class GoogleNews extends Command {
                     if ($exist_submission_id) continue;
                     $dateTime = trim(str_replace('seconds:','',trim($item['dateTime']??'')));
                     if ($dateTime) {
-                        $dateTime = substr($dateTime,0,10);
-                        if ($dateTime <= strtotime('-3 days')) continue;
+                        if (strtotime($dateTime) <= strtotime('-3 days')) continue;
                     }
                     sleep(1);
                     $this->info($item['title']);
