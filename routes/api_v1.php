@@ -20,6 +20,8 @@ Route::post('dailyReport','IndexController@dailyReport');
 
 Route::post('system/getOperators','SystemController@getOperators');
 
+//微信小程序消息推送
+Route::get('weapp/msgCallback', 'Weapp\SearchController@msgCallback');
 
 //登陆注册认证类
 Route::group(['prefix' => 'auth','namespace'=>'Account'], function() {
