@@ -43,7 +43,7 @@
                                                 @if ($filter['category_id'] == -1)
                                                     <option value="-1" selected>不选择</option>
                                                 @endif
-                                                @include('admin.category.option',['type'=>'enterprise_review','select_id'=>$filter['category_id'],'root'=>false, 'last'=>true])
+                                                @include('admin.category.option',['type'=>['product_album','enterprise_review'],'select_id'=>$filter['category_id'],'root'=>false, 'last'=>true])
                                             </select>
                                         </div>
                                         <div class="col-xs-2">
