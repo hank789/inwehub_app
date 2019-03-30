@@ -124,9 +124,16 @@ class WechatSogouSpider
         //var_dump($content->getHtml());
 
         if (!empty($name) && !str_contains($url,'://')) {
+            $returnHtml = $content->getHtml();
             $a = stripos($url,'url=');
             $b = rand(10,99) + 1;
-            $h = substr($url,$a+27+$b,1);
+
+            $pattern = "/a=this.href.substr\(a\+([\s\S]*?)\)\+b/is";
+            preg_match($pattern, $returnHtml, $matchs);
+            $s = str_replace('(','',str_replace('parseInt','',str_replace('"','',$matchs[1])));
+            $t =eval('return '.$s.';');
+
+            $h = substr($url,$a+$t+$b,1);
             $url = 'https://weixin.sogou.com'.$url.'&k='.$b.'&h='.$h;
             var_dump($url);
             $headers['Referer'] = $request_url;
