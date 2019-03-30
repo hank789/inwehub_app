@@ -126,7 +126,7 @@ class WechatSogouSpider
         if (!empty($name) && !str_contains($url,'://')) {
             $a = stripos($url,'url=');
             $b = rand(10,99) + 1;
-            $h = substr($url,$a+15+$b,1);
+            $h = substr($url,$a+27+$b,1);
             $url = 'https://weixin.sogou.com'.$url.'&k='.$b.'&h='.$h;
             var_dump($url);
             $headers['Referer'] = $request_url;
