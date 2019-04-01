@@ -93,7 +93,7 @@ class WechatSogouSpider
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
                         throw new ApiException(ApiException::REQUEST_FAIL);
                     }
-                    if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
+                    if (Setting()->get('is_scraper_wechat_yzm_jiefeng',1)) {
                         $jfResult = $this->jiefeng($r);
                     }
                     $jieFengCount ++;
@@ -141,8 +141,25 @@ class WechatSogouSpider
             $html = $content2->getHtml();
             //var_dump($html);
             if (str_contains($html,'需要您协助验证')) {
-                event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
-                throw new ApiException(ApiException::REQUEST_FAIL);
+                $html = curlShadowsocks($url,$headers);
+                //var_dump($html);
+                if (str_contains($html,'需要您协助验证')) {
+                    if (Setting()->get('is_scraper_wechat_yzm_jiefeng',1)) {
+                        $r = $content2->find('input[name=r]')->val();
+                        $jfResult = $this->jiefeng($r);
+                        if ($jfResult) {
+                            $content2 = $this->requestUrl($url,null,['headers'=>$headers]);
+                            $html = $content2->getHtml();
+                            if (str_contains($html,'需要您协助验证')) {
+                                event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
+                                throw new ApiException(ApiException::REQUEST_FAIL);
+                            }
+                        } else {
+                            event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
+                            throw new ApiException(ApiException::REQUEST_FAIL);
+                        }
+                    }
+                }
             }
 
             $pattern = "/url\s+\+=\s+([\s\S]*?);/is";
@@ -352,7 +369,7 @@ class WechatSogouSpider
             $opts = [
                 'proxy' => $ip,
                 //Set the timeout time in seconds
-                'timeout' => 10
+                'timeout' => 20
             ];
             if (empty($ip)) {
                 unset($opts['proxy']);
