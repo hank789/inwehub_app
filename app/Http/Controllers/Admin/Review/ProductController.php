@@ -8,6 +8,7 @@ use App\Jobs\UpdateProductInfoCache;
 use App\Logic\TagsLogic;
 use App\Models\Category;
 use App\Models\ContentCollection;
+use App\Models\ProductUserRel;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatMpList;
 use App\Models\Scraper\WechatWenzhangInfo;
@@ -210,12 +211,16 @@ class ProductController extends AdminController
             ->where('source_id',$tag->tag_id)->orderBy('id','desc')->get();
         $rel_tags = $tag->tag->getRelateProducts();
         $only_show_relate_products = $tag->tag->getOnlyShowRelateProducts();
+
+        //产品维护人员
+        $managers = ProductUserRel::where('tag_id',$tag->tag_id)->get();
         return view('admin.review.product.edit')->with('tag',$tag)
             ->with('initialPreview',json_encode(array_column($initialPreview,'url')))
             ->with('ideaList',$ideaList)
             ->with('caseList',$caseList)
             ->with('gzhList',$gzhList)
             ->with('rel_tags',$rel_tags)
+            ->with('managers',$managers)
             ->with('only_show_relate_products',$only_show_relate_products)
             ->with('initialPreviewConfig',json_encode($initialPreviewConfig));
     }
@@ -326,6 +331,16 @@ class ProductController extends AdminController
         }
         $tag->updated_at = date('Y-m-d H:i:s');
         $tag->save();
+        $managers = $request->input('author_id_select');
+        if ($managers) {
+            ProductUserRel::where('tag_id',$tag->id)->delete();
+            foreach ($managers as $mid) {
+                ProductUserRel::create([
+                    'user_id' => $mid,
+                    'tag_id' => $tag->id
+                ]);
+            }
+        }
         if ($newStatus != $oldStatus) {
             TagsLogic::delRelatedProductsCache();
         }

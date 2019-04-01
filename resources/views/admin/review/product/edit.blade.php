@@ -106,6 +106,22 @@
                                 </div>
                             </div>
 
+                            <div class="form-group @if ($errors->first('author_id')) has-error @endif">
+                                <label for="author_id_select" class="control-label">管理者</label>
+                                <div class="row">
+                                    <div class="col-sm-10">
+                                        <select id="author_id_select" name="author_id_select[]" multiple="multiple" class="form-control">
+                                            @foreach($managers as $manager)
+                                                <option value="{{ $manager->user->id }}" selected> {{ '<span><img style="width: 30px;height: 20px;" src="' .($manager->user->avatar) .'" class="img-flag" />' . ($manager->user->name).'</span>'}} </option>
+                                            @endforeach
+                                        </select>
+                                        @if ($errors->first('author_id'))
+                                            <span class="help-block">{{ $errors->first('author_id') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group @if ($errors->first('status')) has-error @endif">
                                 <label>审核状态</label>
                                 <div class="radio">
@@ -342,6 +358,41 @@
         $(function() {
             set_active_menu('manage_review', "{{ route('admin.review.product.index') }}");
             $('#category_id').select2();
+
+            $("#author_id_select").select2({
+                theme:'bootstrap',
+                placeholder: "管理人员",
+                templateResult: function(state) {
+                    if (!state.id) {
+                        return state.text;
+                    }
+                    return $('<span><img style="width: 30px;height: 20px;" src="' + state.avatar + '" class="img-flag" /> ' + state.name + '</span>');
+                },
+                templateSelection: function (state) {
+                    console.log(state.text);
+                    if (!state.id) return state.text; // optgroup
+                    if (state.text) return $(state.text);
+                    return $('<span><img style="width: 30px;height: 20px;" src="' + state.avatar + '" class="img-flag" /> ' + (state.name || state.text) + '</span>');
+                },
+                ajax: {
+                    url: '/manager/ajax/loadUsers',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            word: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength:1,
+                tags:false
+            });
 
             $("#rel_product_id").select2({
                 theme:'bootstrap',

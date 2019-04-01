@@ -74,18 +74,25 @@ class Test extends Command
      */
     public function handle()
     {
-        //更新产品信息缓存
-        $ids = RateLimiter::instance()->hGetAll('product_pending_update_cache');
-        if ($ids) {
-            foreach ($ids as $key=>$val) {
-                dispatch_now(new UpdateProductInfoCache($key));
-                RateLimiter::instance()->hDel('product_pending_update_cache',$key);
-            }
-        }
-        return;
+        
         $spider2 = new WechatSogouSpider();
-        $data = $spider2->getGzhInfo('irootech');
-        var_dump($data);
+        //$mp = WechatMpInfo::where('wx_hao','irootech')->first();
+        $list = [
+            'zhongdaguanlizixun',
+            'zlzxwx',
+            'hejungroup',
+            'PWCCHINA',
+            'Neuters',
+            'gh_c684f23d4a6f',
+            'COHO-WorkTime',
+            'baidu_cloud',
+            'TencentCloud',
+            'gh_2b1d3c10c8d6'
+        ];
+        foreach ($list as $wx_hao) {
+            $data = $spider2->getGzhInfo($wx_hao);
+            var_dump($data);
+        }
         return;
         $ql = QueryList::getInstance();
         $url = 'https://mp.weixin.qq.com/s?src=11&timestamp=1551340802&ver=1455&signature=FS*1hUMfKPQ6rt9Tvwy65ouB60hOFt9QmIX5XQzjPXIEiFK8hCMfNSyT5plc2h8sWCZC0eVwYi39GfWnivjs1w6wTYAWTNep3ljGtJcOBGbeoo6d8vJ6aBr-0KxeAYmN&new=1';
@@ -293,39 +300,6 @@ class Test extends Command
             $data['img'] = $info['img_url'];
             $submission->data = $data;
             $submission->save();
-        }
-        return;
-        $urls = [
-            51 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ3WmpSc0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'SAP'],//SAP global news
-            50 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRFZ1YW5jU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Oracle'],//Oracle global news
-            //49 => ['url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRFJ6ZGpRU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Microsoft'],//Microsoft global news
-            48 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNRE56WXpnU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'IBM,企业服务'],//IBM global news
-            47 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZ5Y0RKakVnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Accenture,咨询行业'],//Accenture global news
-            46 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNRGRpZEhJMUVnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Salesforce,企业服务'],//Salesforce global news
-            45 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNRE4yYkdzd0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Capgemini,咨询行业'],//Capgemini global news
-            44 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREo2ZERreUVnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'McKinsey,咨询行业'],//McKinsey global news
-            43 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNRE4zTURCd0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'BCG,咨询行业'],//BCG global news
-            42 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNR3N5WjNRU0FtVnVLQUFQAQ?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'KPMG,咨询行业'],//KPMG global news
-            41 => ['author_id'=>2568,'url'=>'https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREp6Y0daa0VnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen','tags'=>'Deloitte,咨询行业'],//Deloitte global news
-        ];
-        foreach ($urls as $group_id => $info) {
-            $submissions = Submission::where('group_id',$group_id)->where('status',1)->where('type','link')->get();
-            $tt = explode(',',$info['tags']);
-            foreach ($submissions as $submission) {
-                $tags = $submission->tags->pluck('name')->toArray();
-                foreach ($tt as $t) {
-                    if (in_array($t,$tags)) {
-                        $submission->group_id = 0;
-                    } elseif ($submission->group_id == 0) {
-                        Tag::multiAddByName($t,$submission,37);
-                    }
-                }
-                if ($submission->group_id == 0) {
-                    $submission->public = 1;
-                    $submission->save();
-                    $this->info($submission->id);
-                }
-            }
         }
         return;
         $mps = WechatMpInfo::where('status',1)->where('group_id',0)->get();
