@@ -335,10 +335,13 @@ class ProductController extends AdminController
         if ($managers) {
             ProductUserRel::where('tag_id',$tag->id)->delete();
             foreach ($managers as $mid) {
-                ProductUserRel::create([
-                    'user_id' => $mid,
-                    'tag_id' => $tag->id
-                ]);
+                $exist = ProductUserRel::where('user_id',$mid)->first();
+                if (!$exist) {
+                    ProductUserRel::create([
+                        'user_id' => $mid,
+                        'tag_id' => $tag->id
+                    ]);
+                }
             }
         }
         if ($newStatus != $oldStatus) {
@@ -853,7 +856,7 @@ class ProductController extends AdminController
                     'qr_url' => $data['qrcode'],
                     'wz_url' => $data['url'],
                     'last_qunfa_id' => $data['last_qunfa_id'],
-                    'is_auto_publish' => 1,
+                    'is_auto_publish' => 0,
                     'status' => 1,
                     'create_time' => date('Y-m-d H:i:s')
                 ]);
@@ -872,7 +875,7 @@ class ProductController extends AdminController
                         'logo_url' => $data['img'],
                         'qr_url' => $data['qrcode'],
                         'wz_url' => $data['url'],
-                        'is_auto_publish' => 1,
+                        'is_auto_publish' => 0,
                         'status' => 1,
                         'last_qunfa_id' => $data['last_qunfa_id'],
                         'create_time' => date('Y-m-d H:i:s')
