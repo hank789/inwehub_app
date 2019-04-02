@@ -79,6 +79,7 @@ class Test extends Command
         $list = WechatWenzhangInfo::where('created_at','>=','2019-04-02 00:00:00')->where('body','')->get();
         foreach ($list as $item) {
             (new GetArticleBody($item->_id))->handle();
+            sleep(10);
         }
         return;
         $ql = QueryList::getInstance();
