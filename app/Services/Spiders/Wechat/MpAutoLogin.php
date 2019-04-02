@@ -147,8 +147,9 @@ class MpAutoLogin
         $_input["refer"] = $this->_redirect_url;
         $_res = $this->fetch($this->_apis["qrcode"], $_input, "text");
         $fileName = 'attachments/qrcode.png';
-        Storage::disk('local')->put($fileName,$_res);
-        $this->_qrcodeUrl = config('app.url').'/manager/image/show/attachments-qrcode.png';
+        //Storage::disk('local')->put($fileName,$_res);
+        Storage::disk('oss')->put('system/mp_auto_login_qrcode.png',$_res);
+        $this->_qrcodeUrl = 'http://inwehub-pro.oss-cn-zhangjiakou.aliyuncs.com/system/mp_auto_login_qrcode.png';
         Mail::to('hank.wang@inwehub.com')->send(new ScanQrcode($this->_qrcodeUrl));
         //$fp = fopen($this->_getSavePath(), "wb+") or die("open fails");
         //fwrite($fp, $_res) or die("fwrite fails");

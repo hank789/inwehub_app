@@ -131,6 +131,10 @@ class ApiException extends Exception
     const PRODUCT_TAG_NOT_EXIST = 6109;
     const PRODUCT_ALBUM_SUPPORT_LIMIT = 6120;
     const PRODUCT_ALBUM_NOT_EXIST = 6121;
+    const USER_HAS_NOT_PRODUCT = 6122;
+    const PRODUCT_CASE_URL_INVALID = 6123;
+    const PRODUCT_SOURCE_URL_INVALID = 6123;
+
 
 
     public static $errorMessages = [
@@ -138,7 +142,7 @@ class ApiException extends Exception
         self::TOKEN_EXPIRED=>'需登录后才能操作',
         self::TOKEN_INVALID => '需登录后才能操作',
         self::BAD_REQUEST => '非法的请求',
-        self::REQUEST_FAIL => '请求失败',
+        self::REQUEST_FAIL => '请求失败，请稍后再试或者联系管理员',
         self::AUTH_FAIL => '验证失败',
         self::INVALID_PARAMS => '参数错误',
         self::SUCCESS => 'success',
@@ -240,7 +244,10 @@ class ApiException extends Exception
         self::GROUP_NOT_JOINED => '成为圈成员，查看所有分享',
         self::PRODUCT_TAG_ALREADY_EXIST => '产品已存在',
         self::PRODUCT_TAG_NOT_EXIST => '产品不存在',
-        self::PRODUCT_ALBUM_NOT_EXIST => '产品专辑不存在'
+        self::PRODUCT_ALBUM_NOT_EXIST => '产品专辑不存在',
+        self::USER_HAS_NOT_PRODUCT => '该用户不是产品管理人员',
+        self::PRODUCT_CASE_URL_INVALID => '暂时不支持非微信公众号的链接地址',
+        self::PRODUCT_SOURCE_URL_INVALID => '暂时只支持微信公众号'
     ];
 
 

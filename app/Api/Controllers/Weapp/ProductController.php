@@ -127,8 +127,9 @@ class ProductController extends Controller {
         }
         $news = WechatWenzhangInfo::where('source_type',1)
             ->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS)
+            ->whereIn('status',[1,2])
             ->whereHas('tags',function($query) use ($tag) {
-                $query->where('tag_id', $tag->id);
+                $query->where('tag_id', $tag->id)->where('is_display',1);
             })
             ->orderBy('date_time','desc')->paginate($perPage);
 
@@ -529,6 +530,7 @@ class ProductController extends Controller {
 
         $tagIds = TagCategoryRel::where('category_id',$id)
             ->where('type',TagCategoryRel::TYPE_REVIEW)
+            ->whereIn('status',[1,2])
             ->where('status',1)->pluck('tag_id')->toArray();
         $tagIds = array_unique($tagIds);
         $oauth = $JWTAuth->parseToken()->toUser();
@@ -542,7 +544,7 @@ class ProductController extends Controller {
         $news = WechatWenzhangInfo::where('source_type',1)
             ->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS)
             ->whereHas('tags',function($query) use ($tagIds) {
-                $query->whereIn('tag_id', $tagIds);
+                $query->whereIn('tag_id', $tagIds)->where('is_display',1);
             })
             ->orderBy('date_time','desc')->paginate($perPage);
 

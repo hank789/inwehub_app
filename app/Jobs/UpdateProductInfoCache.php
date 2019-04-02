@@ -91,7 +91,7 @@ class UpdateProductInfoCache implements ShouldQueue
         $news = WechatWenzhangInfo::where('source_type',1)
             ->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS)
             ->whereHas('tags',function($query) use ($tag) {
-                $query->where('tag_id', $tag->id);
+                $query->where('tag_id', $tag->id)->where('is_display',1);
             })
             ->orderBy('date_time','desc')->take(5)->get();
         foreach ($news as $new) {
@@ -106,7 +106,7 @@ class UpdateProductInfoCache implements ShouldQueue
         //产品案例介绍
         $data['case_list'] = [];
         $caseList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
-            ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','asc')->get();
+            ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','desc')->get();
         foreach ($caseList as $case) {
             $data['case_list'][] = [
                 'id' => $case->id,
@@ -120,7 +120,7 @@ class UpdateProductInfoCache implements ShouldQueue
         //产品专家观点
         $data['expert_review'] = [];
         $ideaList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA)
-            ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','asc')->get();
+            ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','desc')->get();
         foreach ($ideaList as $idea) {
             $data['expert_review'][] = [
                 'avatar' => $idea->content['avatar'],

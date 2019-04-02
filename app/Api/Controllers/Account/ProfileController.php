@@ -19,6 +19,7 @@ use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Pay\MoneyLog;
 use App\Models\Pay\UserMoney;
+use App\Models\ProductUserRel;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\Task;
@@ -207,6 +208,11 @@ class ProfileController extends Controller
         }
         if ($need_report) {
             $this->doing($user,Doing::ACTION_VIEW_MY_INFO,'',0,'核心页面');
+        }
+        $data['productManager'] = false;
+        $managerPros = ProductUserRel::where('user_id',$user->id)->where('status',1)->count();
+        if ($managerPros > 0) {
+            $data['productManager'] = true;
         }
 
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');

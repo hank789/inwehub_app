@@ -562,6 +562,36 @@ Route::group(['prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function
     Route::post('product/support/{source_type}',['uses'=>'SupportController@store'])->where(['source_type'=>'(answer|article|comment)'])->middleware(['jwt.weappAuth']);
 });
 
+//客户管理后台
+Route::group(['namespace'=>'Manage','prefix' => 'manage','middleware' => ['jwt.weappConfig','jwt.weappAuth']], function() {
+    Route::post('product/ideaList','ProductController@ideaList');
+    Route::post('product/sourceList','ProductController@sourceList');
+    Route::post('product/caseList','ProductController@caseList');
+    Route::post('product/newsList','ProductController@newsList');
+    Route::post('product/deleteIntroducePic','ProductController@deleteIntroducePic');
+    Route::post('product/delSource','ProductController@delSource');
+    Route::post('product/sortIdea','ProductController@sortIdea');
+    Route::post('product/sortIntroducePic','ProductController@sortIntroducePic');
+    Route::post('product/sortCase','ProductController@sortCase');
+    Route::post('product/updateCaseStatus','ProductController@updateCaseStatus');
+    Route::post('product/updateIdeaStatus','ProductController@updateIdeaStatus');
+    Route::post('product/updateNewsStatus','ProductController@updateNewsStatus');
+    Route::post('product/updateIdea','ProductController@updateIdea');
+    Route::post('product/updateIntroducePic','ProductController@updateIntroducePic');
+    Route::post('product/updateInfo','ProductController@updateInfo');
+    Route::post('product/updateCase','ProductController@updateCase');
+    Route::post('product/storeIdea','ProductController@storeIdea');
+    Route::post('product/storeSource','ProductController@storeSource');
+    Route::post('product/storeCase','ProductController@storeCase');
+    Route::post('product/storeNews','ProductController@storeNews');
+    Route::post('product/fetchUrlInfo','ProductController@fetchUrlInfo');
+    Route::get('product/getIntroducePic','ProductController@getIntroducePic');
+    Route::get('product/getViewData','ProductController@getViewData');
+    Route::post('product/fetchSourceInfo','ProductController@fetchSourceInfo');
+    Route::get('product/getInfo','ProductController@getInfo');
+
+});
+
 Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespace'=>'Weapp'], function() {
     //提问
     Route::post('question/store','QuestionController@store')->middleware(['jwt.weappAuth']);
