@@ -1720,6 +1720,9 @@ if (!function_exists('getWechatArticleInfo')) {
 if (!function_exists('getWechatUrlBodyText')) {
     function getWechatUrlBodyText($url,$strip_tags=true, $downloadImg = false) {
         $html = file_get_contents_curl($url);
+        if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
+            $html = curlShadowsocks($url);
+        }
         $parse = parse_url($url);
         if ($parse['host'] == 'mp.weixin.qq.com') {
             preg_match_all("/id=\"js_content\">(.*)<script/iUs",$html,$content,PREG_PATTERN_ORDER);
@@ -1740,8 +1743,23 @@ if (!function_exists('getWechatUrlBodyText')) {
 if (!function_exists('getWechatUrlInfo')) {
     function getWechatUrlInfo($url,$strip_tags=true, $downloadImg = false) {
         $ql = \QL\QueryList::getInstance();
-        $content = $ql->get($url);
+        $headers = [
+            'Host'    => 'mp.weixin.qq.com',
+            'Origin'  => 'https://www.itjuzi.com',
+            'Referer' => 'http://www.itjuzi.com/investevent',
+            'Connection' => 'keep-alive',
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+            'Accept-Encoding' => 'gzip, deflate, br',
+            'Accept-Language' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
+            'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',
+            'Upgrade-Insecure-Requests' => 1
+        ];
+        $content = $ql->get($url,null,['headers'=>$headers]);
         $html = $content->getHtml();
+        if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
+            $html = curlShadowsocks($url,$headers);
+            $content->setHtml($html);
+        }
         $parse = parse_url($url);
         if ($parse['host'] == 'mp.weixin.qq.com') {
             $title = $content->find('h2#activity-name')->text();
