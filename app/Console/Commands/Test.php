@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\GetArticleBody;
 use App\Jobs\UpdateProductInfoCache;
 use App\Logic\TagsLogic;
 use App\Logic\WilsonScoreNorm;
@@ -75,23 +76,10 @@ class Test extends Command
     public function handle()
     {
         
-        $spider2 = new WechatSogouSpider();
-        //$mp = WechatMpInfo::where('wx_hao','irootech')->first();
-        $list = [
-            'zhongdaguanlizixun',
-            'zlzxwx',
-            'hejungroup',
-            'PWCCHINA',
-            'Neuters',
-            'gh_c684f23d4a6f',
-            'COHO-WorkTime',
-            'baidu_cloud',
-            'TencentCloud',
-            'gh_2b1d3c10c8d6'
-        ];
-        foreach ($list as $wx_hao) {
-            $data = $spider2->getGzhInfo($wx_hao);
-            var_dump($data);
+        $list = WechatWenzhangInfo::where('created_at','>=','2019-04-02 00:00:00')->where('body','')->get();
+        foreach ($list as $item) {
+            (new GetArticleBody($item->_id))->handle();
+            sleep(10);
         }
         return;
         $ql = QueryList::getInstance();
