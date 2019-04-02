@@ -563,7 +563,7 @@ Route::group(['prefix' => 'weapp','middleware' => ['jwt.weappConfig']], function
 });
 
 //客户管理后台
-Route::group(['namespace'=>'Manage','prefix' => 'manage','middleware' => ['jwt.weappConfig','jwt.weappAuth']], function() {
+Route::group(['namespace'=>'Manage','prefix' => 'manage','middleware' => ['jwt.auth','ban.user']], function() {
     Route::post('product/ideaList','ProductController@ideaList');
     Route::post('product/sourceList','ProductController@sourceList');
     Route::post('product/caseList','ProductController@caseList');
