@@ -123,7 +123,7 @@ class WechatMpPosts extends Command {
                 $content_url = substr($wz_item['link'],0,strpos($wz_item['link'],'&chksm='));
                 if (WechatWenzhangInfo::where('content_url',$content_url)->first()) continue;
                 $article = WechatWenzhangInfo::create([
-                    'title' => $wz_item['title'],
+                    'title' => formatHtml($wz_item['title']),
                     'source_url' => $wz_item['aid'],//此api接口内应该是唯一的
                     'content_url' => $content_url,
                     'cover_url'   => $wz_item['cover'],

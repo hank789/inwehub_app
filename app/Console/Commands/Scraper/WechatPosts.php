@@ -102,7 +102,7 @@ class WechatPosts extends Command {
                         $uuid = base64_encode($mpInfo->_id.$wz_item['title'].date('Y-m-d',$wz_item['datetime']));
                         if (RateLimiter::instance()->hGet('wechat_article',$uuid)) continue;
                         $article = WechatWenzhangInfo::create([
-                            'title' => $wz_item['title'],
+                            'title' => formatHtml($wz_item['title']),
                             'source_url' => $wz_item['source_url'],
                             'content_url' => $wz_item['content_url'],
                             'cover_url'   => $wz_item['cover'],

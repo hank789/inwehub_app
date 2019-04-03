@@ -2036,6 +2036,7 @@ if (!function_exists('formatHtml')) {
         $html = str_replace('&lt;', '<',$html);
         $html = str_replace('&gt;', '>',$html);
         $html = str_replace('&nbsp;', ' ',$html);
+        $html = str_replace('&quot;', '"',$html);
         $html = str_replace('\\', '',$html);
         return $html;
     }
