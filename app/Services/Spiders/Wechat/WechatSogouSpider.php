@@ -63,9 +63,7 @@ class WechatSogouSpider
             'Upgrade-Insecure-Requests' => 1
         ];
         for ($i=0;$i<16;$i++) {
-            $ips = getProxyIps(5,'sogou');
-            $ip = $ips[0]??'';
-            if ($i>=14) $ip =null;
+            $ip =null;
             //var_dump($ip);
             if ($jfResult) {
                 //$request_url = 'http://weixin.sogou.com/weixin?type=2&query='.$wx_hao.'&ie=utf8&s_from=input&_sug_=n&_sug_type_=1&w=01015002&oq=&ri=0&sourceid=sugg&sut=0&sst0=1547216885721&lkt=0,0,0&p=40040108';
@@ -194,10 +192,7 @@ class WechatSogouSpider
             'Upgrade-Insecure-Requests' => 1
         ];
         for ($i=0;$i<16;$i++) {
-            $ips = getProxyIps(5,'sogou');
-            var_dump($ips);
-            $ip = $ips[0]??'';
-            if ($i>=14) $ip =null;
+            $ip =null;
             if (empty($mpInfo->wz_url)) {
                 $newData = $this->getGzhInfo($mpInfo->wx_hao);
                 if (empty($newData['name'])) {

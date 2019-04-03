@@ -1723,6 +1723,15 @@ if (!function_exists('getWechatUrlBodyText')) {
         if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
             $html = curlShadowsocks($url);
         }
+        if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
+            $ql = \QL\QueryList::getInstance();
+            $proxyIp = getPayProxyIp();
+            $content = $ql->get($url,null,['proxy' => $proxyIp,'timeout'=>20]);
+            $html = $content->getHtml();
+            if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
+                event(new \App\Events\Frontend\System\ExceptionNotify('获取微信公众号文章内容失败：访问太频繁'));
+            }
+        }
         $parse = parse_url($url);
         if ($parse['host'] == 'mp.weixin.qq.com') {
             preg_match_all("/id=\"js_content\">(.*)<script/iUs",$html,$content,PREG_PATTERN_ORDER);
@@ -1759,6 +1768,14 @@ if (!function_exists('getWechatUrlInfo')) {
         if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
             $html = curlShadowsocks($url,$headers);
             $content->setHtml($html);
+        }
+        if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
+            $proxyIp = getPayProxyIp();
+            $content = $ql->get($url,null,['headers'=>$headers,'proxy' => $proxyIp,'timeout'=>20]);
+            $html = $content->getHtml();
+            if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
+                event(new \App\Events\Frontend\System\ExceptionNotify('获取微信公众号文章内容失败：访问太频繁'));
+            }
         }
         $parse = parse_url($url);
         if ($parse['host'] == 'mp.weixin.qq.com') {
@@ -1829,6 +1846,37 @@ if (!function_exists('validateProxyIps')) {
                 deleteProxyIp($proxyIp,$domain);
             }
         }
+    }
+}
+
+if (!function_exists('getPayProxyIp')) {
+    function getPayProxyIp() {
+        $ip = \Illuminate\Support\Facades\Cache::get('pay_proxy_ip');
+        if ($ip) return $ip;
+        $scraper_proxy_address = Setting()->get('scraper_proxy_address','');
+        if (empty($scraper_proxy_address)) return false;
+        $proxy = json_decode(file_get_contents(Setting()->get('scraper_proxy_address','')),true);
+        if (!$proxy) {
+            return false;
+        }
+        if ($proxy['code'] == 3001) {
+            return false;
+        } elseif ($proxy['code'] != 0) {
+            event(new \App\Events\Frontend\System\ExceptionNotify('代理返回失败：'.$proxy['msg']));
+            return false;
+        }
+        $ipsNew = $proxy['msg'];
+        foreach ($ipsNew as $key=>$ip) {
+            $ip =  $ip['ip'].':'.$ip['port'];
+            \Illuminate\Support\Facades\Cache::put('pay_proxy_ip',$ip,5);
+            return $ip;
+        }
+    }
+}
+
+if (!function_exists('deletePayProxyIp')) {
+    function deletePayProxyIp() {
+        \Illuminate\Support\Facades\Cache::delete('pay_proxy_ip');
     }
 }
 
