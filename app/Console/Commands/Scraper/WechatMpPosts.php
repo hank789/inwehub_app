@@ -151,6 +151,7 @@ class WechatMpPosts extends Command {
                 if ($mpInfo->is_auto_publish == 1 && $article->date_time >= date('Y-m-d 00:00:00',strtotime('-1 days'))) {
                     dispatch(new ArticleToSubmission($article->_id));
                 }
+                sleep(5);
             }
             $mpInfo->update_time = date('Y-m-d H:i:s');
             $mpInfo->save();
