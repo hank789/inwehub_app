@@ -527,7 +527,6 @@ class ProductController extends Controller {
         $content['title'] = $data['title'];
         $content['type'] = $data['type'];
         $content['desc'] = $data['desc'];
-        $case->status = $data['status'];
         $case->content = $content;
         $case->save();
 
@@ -621,7 +620,7 @@ class ProductController extends Controller {
             'content_type' => ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE,
             'sort' => $lastCase?$lastCase->sort+1:0,
             'source_id' => $id,
-            'status' => $data['status'],
+            'status' => 1,
             'content' => [
                 'cover_pic' => $cover_pic,
                 'title' => $data['title'],
