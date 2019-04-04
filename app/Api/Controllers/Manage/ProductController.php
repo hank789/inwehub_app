@@ -380,7 +380,7 @@ class ProductController extends Controller {
         $perPage = $request->input('perPage',200);
         $caseList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
             ->where('source_id',$id)
-            ->where('status',[0,1])
+            ->whereIn('status',[0,1])
             ->orderBy('sort','desc')->paginate($perPage);
         $list = [];
         $return = $caseList->toArray();

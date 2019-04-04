@@ -209,10 +209,10 @@ class SapNews extends Command {
                         $isBreak = true;
                         break;
                     }
-                    $this->info($item['title']);
                     $count++;
                     $isBreak = false;
                     $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('span.simple-pvc-views')->text();
+                    $this->info($item['title'].';'.$views);
                     $totalViews[] = $views;
                     if ($views < $limitViews) continue;
                     sleep(1);
