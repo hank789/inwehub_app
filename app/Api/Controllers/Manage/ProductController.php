@@ -1,6 +1,7 @@
 <?php namespace App\Api\Controllers\Manage;
 use App\Api\Controllers\Controller;
 
+use App\Events\Frontend\System\ImportantNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\UpdateProductInfoCache;
 use App\Logic\TagsLogic;
@@ -51,6 +52,7 @@ class ProductController extends Controller {
             'cover_pic' => $tag->getCoverPic(),
             'weappCodeUrl' => $qrcodeUrlFormat
         ];
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'登陆后台'));
         return self::createJsonData(true,$data);
     }
 
@@ -89,6 +91,7 @@ class ProductController extends Controller {
         }
         TagsLogic::cacheProductTags($tag);
         $this->dispatch(new UpdateProductInfoCache($tag->id));
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'修改产品信息:'.$tag->name));
         return self::createJsonData(true);
     }
 
@@ -180,6 +183,7 @@ class ProductController extends Controller {
         $tag->save();
         $this->dispatch(new UpdateProductInfoCache($tag->id));
         $introduce_pic = $tag->getIntroducePic();
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'更新产品亮点图:'.$tag->name));
         return self::createJsonData(true,[
             'id' => $id,
             'introduce_pic' => $introduce_pic?array_column($introduce_pic,'url'):[]
@@ -207,6 +211,7 @@ class ProductController extends Controller {
         $tag->setDescription(['introduce_pic'=>$images]);
         $tag->save();
         $this->dispatch(new UpdateProductInfoCache($tag->id));
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'删除产品亮点图:'.$tag->name));
         return self::createJsonData(true);
     }
 
@@ -232,6 +237,7 @@ class ProductController extends Controller {
         $tag->setDescription(['introduce_pic'=>$urls]);
         $tag->save();
         $this->dispatch(new UpdateProductInfoCache($tag->id));
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'排序产品信息:'.$tag->name));
         return self::createJsonData(true,[
             'id' => $id,
             'introduce_pic' => $newList
@@ -283,6 +289,8 @@ class ProductController extends Controller {
         $idea->status = $request->input('status');
         $idea->save();
         $this->dispatch(new UpdateProductInfoCache($idea->source_id));
+        $tag = Tag::find($idea->source_id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'修改产品观点状态:'.$tag->name));
         return self::createJsonData(true,['status'=>$request->input('status')]);
     }
 
@@ -305,6 +313,8 @@ class ProductController extends Controller {
         $idea->save();
         $toIdea->save();
         $this->dispatch(new UpdateProductInfoCache($idea->source_id));
+        $tag = Tag::find($idea->source_id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'排序产品观点状态:'.$tag->name));
         return self::createJsonData(true);
     }
 
@@ -333,6 +343,8 @@ class ProductController extends Controller {
             ]
         ]);
         $this->dispatch(new UpdateProductInfoCache($idea->source_id));
+        $tag = Tag::find($idea->source_id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'更新产品观点:'.$tag->name));
         return self::createJsonData(true,['id'=>$id]);
     }
 
@@ -365,6 +377,8 @@ class ProductController extends Controller {
             ]
         ]);
         $this->dispatch(new UpdateProductInfoCache($id));
+        $tag = Tag::find($id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'添加产品观点:'.$tag->name));
         return self::createJsonData(true,['id'=>$model->id]);
     }
 
@@ -419,6 +433,8 @@ class ProductController extends Controller {
         $idea->save();
         $toIdea->save();
         $this->dispatch(new UpdateProductInfoCache($idea->source_id));
+        $tag = Tag::find($id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'排序产品案例:'.$tag->name));
         return self::createJsonData(true);
     }
 
@@ -436,6 +452,8 @@ class ProductController extends Controller {
         $idea->status = $request->input('status');
         $idea->save();
         $this->dispatch(new UpdateProductInfoCache($idea->source_id));
+        $tag = Tag::find($idea->source_id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'修改产品案例状态:'.$tag->name));
         return self::createJsonData(true,['status'=>$request->input('status')]);
     }
 
@@ -531,6 +549,8 @@ class ProductController extends Controller {
         $case->save();
 
         $this->dispatch(new UpdateProductInfoCache($case->source_id));
+        $tag = Tag::find($case->source_id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'更新产品案例:'.$tag->name));
         return self::createJsonData(true,['id'=>$id]);
     }
 
@@ -630,6 +650,7 @@ class ProductController extends Controller {
             ]
         ]);
         $this->dispatch(new UpdateProductInfoCache($id));
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'添加产品案例:'.$tag->name));
         return self::createJsonData(true,['id'=>$model->id]);
     }
 
@@ -701,6 +722,8 @@ class ProductController extends Controller {
         }
 
         $this->dispatch(new UpdateProductInfoCache($product_id));
+        $tag = Tag::find($product_id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'更新产品资讯状态:'.$tag->name));
         return self::createJsonData(true,['status'=>$request->input('status')]);
     }
 
@@ -765,6 +788,8 @@ class ProductController extends Controller {
         }
         Tag::multiAddByIds([$product_id],$article);
         $this->dispatch(new UpdateProductInfoCache($product_id));
+        $tag = Tag::find($product_id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'添加产品资讯:'.$tag->name));
         return self::createJsonData(true,['id'=>$article->_id]);
     }
 
@@ -867,6 +892,8 @@ class ProductController extends Controller {
         $this->checkUserProduct($user->id,$model->source_id);
         $model->delete();
         $this->dispatch(new UpdateProductInfoCache($model->source_id));
+        $tag = Tag::find($model->source_id);
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'删除产品内容源:'.$tag->name));
         return self::createJsonData(true);
     }
 
@@ -877,6 +904,7 @@ class ProductController extends Controller {
             'source'   => 'required',
         ];
         $this->validate($request,$validateRules);
+        $user = $request->user();
         $wx_hao = trim($request->input('source'));
         $product_id = $request->input('id');
         if (count(parse_url($wx_hao))>=2) {
@@ -906,6 +934,7 @@ class ProductController extends Controller {
             $mpInfo->status = 1;
             $mpInfo->save();
         }
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'添加产品内容源:'.$wx_hao));
         return self::createJsonData(true,['id'=>$exist->id]);
     }
 
