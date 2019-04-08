@@ -955,7 +955,7 @@ class ProductController extends Controller {
             return self::createJsonData(true,['title'=>$mpInfo->name]);
         }
         $spider = new MpSpider();
-        if (config('app.env' == 'production')) {
+        if (config('app.env') == 'production') {
             $data = $spider->getGzhInfo($wx_hao);
         } else {
             $data = null;
