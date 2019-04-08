@@ -388,7 +388,7 @@ class WechatSogouSpider
 
     public function jiefeng($r,$ip=null) {
         $max_count = 1;
-        print("出现验证码，准备自动识别");
+        \Log::info('WechatSogouSpider',["出现验证码，准备自动识别"]);
         $opts = [
             'proxy' => $ip,
             //Set the timeout time in seconds
@@ -438,7 +438,7 @@ class WechatSogouSpider
 
                 $resultArr = json_decode($result,true);
                 if ($resultArr['code'] != 0) {
-                    print("搜狗返回验证码错误，1秒后更换验证码再次启动尝试，尝试次数：".($max_count));
+                    \Log::info('WechatSogouSpider',["搜狗返回验证码错误，1秒后更换验证码再次启动尝试，尝试次数：".($max_count)]);
                     sleep(1);
                     continue;
                 }
