@@ -955,7 +955,12 @@ class ProductController extends Controller {
             return self::createJsonData(true,['title'=>$mpInfo->name]);
         }
         $spider = new MpSpider();
-        $data = $spider->getGzhInfo($wx_hao);
+        if (config('app.env' == 'production')) {
+            $data = $spider->getGzhInfo($wx_hao);
+        } else {
+            $data = null;
+        }
+
         if ($data) {
             $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
             if (!$info) {
