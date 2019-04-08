@@ -974,7 +974,7 @@ class ProductController extends Controller {
                     'wz_url' => $data['url'],
                     'last_qunfa_id' => $data['last_qunfa_id'],
                     'is_auto_publish' => 0,
-                    'status' => 1,
+                    'status' => 0,
                     'create_time' => date('Y-m-d H:i:s')
                 ]);
             }
@@ -993,7 +993,7 @@ class ProductController extends Controller {
                         'qr_url' => $data['qrcode'],
                         'wz_url' => $data['url'],
                         'is_auto_publish' => 0,
-                        'status' => 1,
+                        'status' => 0,
                         'last_qunfa_id' => $data['last_qunfa_id'],
                         'create_time' => date('Y-m-d H:i:s')
                     ]);
