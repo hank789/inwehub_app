@@ -901,16 +901,16 @@ class ProductController extends Controller {
     public function storeSource(Request $request) {
         $validateRules = [
             'id' => 'required',
-            'source'   => 'required',
+            'source_id'   => 'required',
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
-        $wx_hao = trim($request->input('source'));
+        $source_id = trim($request->input('source_id'));
         $product_id = $request->input('id');
-        if (count(parse_url($wx_hao))>=2) {
+        if (count(parse_url($source_id))>=2) {
             throw new ApiException(ApiException::PRODUCT_SOURCE_URL_INVALID);
         }
-        $mpInfo = WechatMpInfo::where('wx_hao',$wx_hao)->first();
+        $mpInfo = WechatMpInfo::find($source_id);
         if (!$mpInfo) {
             throw new ApiException(ApiException::REQUEST_FAIL);
         }
@@ -925,7 +925,7 @@ class ProductController extends Controller {
                 'source_id' => $product_id,
                 'status' => 1,
                 'content' => [
-                    'wx_hao' => $wx_hao,
+                    'wx_hao' => $mpInfo->wx_hao,
                     'mp_id' => $mpInfo->_id
                 ]
             ]);
@@ -952,7 +952,7 @@ class ProductController extends Controller {
         }
         $mpInfo = WechatMpInfo::where('wx_hao',$wx_hao)->first();
         if ($mpInfo) {
-            return self::createJsonData(true,['title'=>$mpInfo->name]);
+            return self::createJsonData(true,['title'=>$mpInfo->name,'source_id'=>$mpInfo->_id]);
         }
         $spider = new MpSpider();
         if (config('app.env') == 'production') {
@@ -1003,7 +1003,7 @@ class ProductController extends Controller {
             }
         }
         if ($mpInfo) {
-            return self::createJsonData(true,['title'=>$mpInfo->name]);
+            return self::createJsonData(true,['title'=>$mpInfo->name,'source_id'=>$mpInfo->_id]);
         } else {
             throw new ApiException(ApiException::REQUEST_FAIL);
         }
