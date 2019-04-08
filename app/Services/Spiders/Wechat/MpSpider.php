@@ -76,11 +76,11 @@ class MpSpider {
             ];
         } elseif ($dataArr['base_resp']['ret'] == 200013) {
             //抓取太频繁
-            var_dump($dataArr);
+            \Log::info('mpspider',$dataArr);
             event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败,已抓取'.RateLimiter::instance()->getValue('scraper_mp_count',date('Ymd')).'次:'.$data));
             RateLimiter::instance()->setVale('scraper_mp_freq',date('Y-m-d'),1,60*60*24);
         } elseif ($dataArr['base_resp']['ret'] != 0) {
-            var_dump($dataArr);
+            \Log::info('mpspider',$dataArr);
             $this->mpAutoLogin->setToken('');
             $this->cookie = '';
             $res = $this->mpAutoLogin->init([
