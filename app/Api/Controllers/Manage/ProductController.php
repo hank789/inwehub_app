@@ -956,7 +956,7 @@ class ProductController extends Controller {
         }
         $spider = new MpSpider();
         if (config('app.env') == 'production') {
-            $data = $spider->getGzhInfo($wx_hao);
+            $data = $spider->getGzhInfo($wx_hao,false);
         } else {
             $data = null;
         }
@@ -980,7 +980,7 @@ class ProductController extends Controller {
             }
         } else {
             $spider2 = new WechatSogouSpider();
-            $data = $spider2->getGzhInfo($wx_hao);
+            $data = $spider2->getGzhInfo($wx_hao,true);
             if ($data['name']) {
                 $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
                 if (!$info) {

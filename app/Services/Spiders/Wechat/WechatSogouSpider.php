@@ -26,7 +26,7 @@ class WechatSogouSpider
 
     protected $url;
 
-    protected $proxyIp;
+    protected $proxyIp = '';
 
     protected $ssIpLocked = false;
 
@@ -47,8 +47,9 @@ class WechatSogouSpider
     /**
      * 根据公众号id获取公众号信息
      * @param $wx_hao
+     * @param $usePayProxy
      */
-    public function getGzhInfo($wx_hao) {
+    public function getGzhInfo($wx_hao, $usePayProxy = false) {
         $this->requestUrl('https://weixin.sogou.com/',null);
         $request_url = 'https://weixin.sogou.com/weixin?type=1&s_from=input&query='.$wx_hao.'&ie=utf8&_sug_=n&_sug_type_=';
         $jieFengCount = 0;
@@ -87,6 +88,15 @@ class WechatSogouSpider
                     }
                     $r = $content->find('input[name=r]')->val();
                     if ($jieFengCount >= 1) {
+                        if ($usePayProxy) {
+                            $proxyIp = getPayProxyIp();
+                            $content = $this->requestUrl($request_url,$proxyIp,['headers'=>$headers]);
+                            $sogouTitle = $content->find('title')->text();
+                            if (str_contains($sogouTitle,$wx_hao)) {
+                                $this->proxyIp = $proxyIp;
+                                break;
+                            }
+                        }
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
                         throw new ApiException(ApiException::REQUEST_FAIL);
                     }
@@ -134,7 +144,7 @@ class WechatSogouSpider
             $url = 'https://weixin.sogou.com'.$url.'&k='.$b.'&h='.$h;
             \Log::info('WechatSogouSpider',[$url]);
             $headers['Referer'] = $request_url;
-            $content2 = $this->requestUrl($url,null,['headers'=>$headers]);
+            $content2 = $this->requestUrl($url,$this->proxyIp,['headers'=>$headers]);
             $html = $content2->getHtml();
             //var_dump($html);
             if (str_contains($html,'需要您协助验证')) {
