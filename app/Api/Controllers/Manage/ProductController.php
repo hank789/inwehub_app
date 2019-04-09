@@ -235,7 +235,7 @@ class ProductController extends Controller {
         foreach ($newList as $key=>$item) {
             $urls[] = [
                 'sort' => $key,
-                'url' => $item['extra']['url']
+                'url' => $item
             ];
         }
         $tag->setDescription(['introduce_pic'=>$urls]);
