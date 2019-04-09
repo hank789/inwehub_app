@@ -80,6 +80,7 @@ class Test extends Command
         foreach ($list as $item) {
             $item->getPageObject();
         }
+        return;
         $ql = QueryList::getInstance();
         $url = 'https://mp.weixin.qq.com/s?src=11&timestamp=1551340802&ver=1455&signature=FS*1hUMfKPQ6rt9Tvwy65ouB60hOFt9QmIX5XQzjPXIEiFK8hCMfNSyT5plc2h8sWCZC0eVwYi39GfWnivjs1w6wTYAWTNep3ljGtJcOBGbeoo6d8vJ6aBr-0KxeAYmN&new=1';
         $s = getWechatUrlInfo($url, false,true);
