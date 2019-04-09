@@ -5,12 +5,15 @@ use App\Events\Frontend\System\ImportantNotify;
 use App\Exceptions\ApiException;
 use App\Jobs\UpdateProductInfoCache;
 use App\Logic\TagsLogic;
+use App\Models\Comment;
 use App\Models\ContentCollection;
 use App\Models\ProductUserRel;
 use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
+use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\Taggable;
+use App\Models\UserOauth;
 use App\Models\Weapp\Tongji;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\MpSpider;
@@ -1007,6 +1010,178 @@ class ProductController extends Controller {
         } else {
             throw new ApiException(ApiException::REQUEST_FAIL);
         }
+    }
+
+    //删除点评
+    public function delDianping(Request $request) {
+        $validateRules = [
+            'id' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $id = trim($request->input('id'));
+        $review = Submission::find($id);
+        if ($review->type != 'review') {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $product_id = $review->category_id;
+        $this->checkUserProduct($user->id,$product_id);
+        $review->status = 0;
+        $review->save();
+        return self::createJsonData(true);
+    }
+
+    //加精点评
+    public function recommendDianping(Request $request) {
+        $validateRules = [
+            'id' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $id = trim($request->input('id'));
+        $review = Submission::find($id);
+        if ($review->type != 'review') {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $product_id = $review->category_id;
+        $this->checkUserProduct($user->id,$product_id);
+        $review->is_recommend = 1;
+        $review->save();
+        return self::createJsonData(true);
+    }
+
+    //官方回复点评
+    public function officialReplyDianping(Request $request) {
+        $validateRules = [
+            'id' => 'required',
+            'content' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $id = trim($request->input('id'));
+        $review = Submission::find($id);
+        if ($review->type != 'review') {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $product_id = $review->category_id;
+        $this->checkUserProduct($user->id,$product_id);
+        $comment = Comment::where('source_id',$id)->where('source_type',get_class($review))
+            ->where('comment_type',Comment::COMMENT_TYPE_OFFICIAL)->first();
+
+        $data = [
+            'content'          => trim($request->input('content')),
+            'user_id'       => $user->id,
+            'parent_id'     => 0,
+            'level'         => 0,
+            'source_id' => $id,
+            'source_type' => get_class($review),
+            'to_user_id'  => 0,
+            'supports'    => 0,
+            'comment_type' => Comment::COMMENT_TYPE_OFFICIAL,
+            'mentions' => [],
+            'status' => 1
+        ];
+        if (!$comment) {
+            $comment = Comment::create($data);
+        } else {
+            $comment->content = $data['content'];
+            $comment->status = 1;
+            $comment->save();
+        }
+        return self::createJsonData(true);
+    }
+
+    //删除官方回复
+    public function delOfficialReplyDianping(Request $request) {
+        $validateRules = [
+            'id' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $id = trim($request->input('id'));
+        $comment = Comment::find($id);
+        if ($comment->comment_type != Comment::COMMENT_TYPE_OFFICIAL && $comment->source_type != Submission::class) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
+        $product_id = $comment->source_id;
+        $this->checkUserProduct($user->id,$product_id);
+        $comment->delete();
+        return self::createJsonData(true);
+    }
+
+    //点评列表
+    public function dianpingList(Request $request) {
+        $validateRules = [
+            'product_id' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $id = trim($request->input('product_id'));
+        $this->checkUserProduct($user->id,$id);
+        $perPage = $request->input('perPage',20);
+        $word = $request->input('search_word');
+        $query = Submission::where('status',1)->where('category_id',$id)->where('type','review');
+        $submissions = $query->orderBy('id','desc')->paginate($perPage);
+        $return = $submissions->toArray();
+        $list = [];
+        foreach ($submissions as $submission) {
+            $comment = Comment::where('source_id',$submission->id)->where('source_type',get_class($submission))
+                ->where('comment_type',Comment::COMMENT_TYPE_OFFICIAL)->where('status',1)->first();
+            $official_reply = '';
+            if ($comment) {
+                $official_reply = [
+                    'id' => $comment->id,
+                    'author' => '官方回复',
+                    'content'=>$comment->content,
+                    'created_at' => (string)$comment->created_at
+                ];
+            }
+            $oauth_id = '';
+            $nickname = '匿名';
+            $avatar = config('image.user_default_avatar');
+
+            if (!$submission->hide) {
+                $oauth = UserOauth::where('user_id',$submission->user_id)->where('status',1)->orderBy('id','desc')->first();
+                if ($oauth) {
+                    $oauth_id = $oauth->id;
+                    $nickname = $oauth->nickname;
+                    $avatar = $oauth->avatar;
+                } else {
+                    $oauth_id = '';
+                    $nickname = $submission->user->name;
+                    $avatar = $submission->user->avatar;
+                }
+            }
+            $list[] = [
+                'id' => $submission->id,
+                'content' => $submission->title,
+                'rate_star' => $submission->rate_star,
+                'official_reply' => $official_reply,
+                'is_recommend' => $submission->is_recommend,
+                'user'  => [
+                    'oauth_id'  => $oauth_id,
+                    'nickname'  => $nickname,
+                    'avatar'=> $avatar
+                ],
+                'created_at' => (string)$submission->created_at
+            ];
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true, $return);
+    }
+
+
+    //分析-用户列表
+    public function visitedUserList(Request $request) {
+        $validateRules = [
+            'product_id' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $id = trim($request->input('product_id'));
+        $this->checkUserProduct($user->id,$id);
+        $perPage = $request->input('perPage',20);
+        $query = Tongji::where('event_id',$id);
     }
 
 

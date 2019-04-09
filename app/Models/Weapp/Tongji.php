@@ -23,7 +23,7 @@ class Tongji extends Model
 {
 
     protected $table = 'weapp_tongji';
-    protected $fillable = ['user_oauth_id', 'page', 'start_time', 'end_time', 'stay_time','event_id','scene','parent_refer','from_user_id'];
+    protected $fillable = ['user_oauth_id', 'page', 'start_time', 'end_time', 'stay_time','event_id','scene','parent_refer','from_user_id','product_id'];
 
     public static $pageType = [
         'pages/index/index' => ['name'=>'首页'],
@@ -64,10 +64,21 @@ class Tongji extends Model
             case 'pages/allDianping/allDianping':
             case 'pages/majorProduct/majorProduct':
                 $tag = Tag::find($this->event_id);
+                if (empty($this->product_id)) {
+                    $this->product_id = $this->event_id;
+                    $this->save();
+                }
                 return $tag->name;
                 break;
             case 'pages/url/url':
                 $article = WechatWenzhangInfo::find($this->event_id);
+                if ($this->parent_refer && empty($this->product_id)) {
+                    $parent_refer_arr = explode('_',$this->parent_refer);
+                    if (isset($parent_refer_arr[0]) && $parent_refer_arr[0] == 'product') {
+                        $this->product_id = $parent_refer_arr[1];
+                        $this->save();
+                    }
+                }
                 return $article->title;
                 break;
             case 'pages/moreInfo/moreInfo':
@@ -76,16 +87,28 @@ class Tongji extends Model
                     return $c->name;
                 } else {
                     $tag = Tag::find($this->event_id);
+                    if (empty($this->product_id)) {
+                        $this->product_id = $this->event_id;
+                        $this->save();
+                    }
                     return $tag->name;
                 }
                 break;
             case 'pages/commentDetail/commentDetail':
                 $review = Submission::find($this->event_id);
+                if (empty($this->product_id)) {
+                    $this->product_id = $review->category_id;
+                    $this->save();
+                }
                 return str_limit($review->title);
                 break;
             case 'pages/video/video':
             case 'pages/pdf/pdf':
                 $case = ContentCollection::find($this->event_id);
+                if (empty($this->product_id)) {
+                    $this->product_id = $case->source_id;
+                    $this->save();
+                }
                 return $case->content['title'];
                 break;
         }

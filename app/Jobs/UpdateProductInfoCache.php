@@ -108,13 +108,17 @@ class UpdateProductInfoCache implements ShouldQueue
         $caseList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
             ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','desc')->get();
         foreach ($caseList as $case) {
+            $link_url = $case->content['link_url'];
+            if (!str_contains($link_url,'&source=product_')) {
+                $link_url .= '&source=product_'.$case->source_id;
+            }
             $data['case_list'][] = [
                 'id' => $case->id,
                 'title' => $case->content['title'],
                 'desc' => $case->content['desc'],
                 'cover_pic' => $case->content['cover_pic'],
                 'type' => $case->content['type'],
-                'link_url' => $case->content['link_url']
+                'link_url' => $link_url
             ];
         }
         //产品专家观点
