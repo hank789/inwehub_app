@@ -10,6 +10,7 @@ use App\Jobs\NewSubmissionJob;
 use App\Models\Category;
 use App\Models\Submission;
 use App\Traits\SubmitSubmission;
+use function GuzzleHttp\Psr7\parse_query;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
 use QL\QueryList;
@@ -107,6 +108,13 @@ class WallstreetcnNews extends Command {
             };
             $exist_submission_id = Redis::connection()->hget('voten:submission:url', $item['resource']['source_uri']);
             if ($exist_submission_id) continue;
+            $source_uri = $item['resource']['source_uri'];
+            $arr = parse_url($source_uri);
+            $url_query = parse_query($arr['query']);
+            if (isset($url_query['target_uri']) && $url_query['target_uri']) {
+                $source_uri = $url_query['target_uri'];
+            }
+
             $this->info($item['resource']['title']);
             if ($item['resource']['image_uri']) {
                 //图片本地化
@@ -116,7 +124,7 @@ class WallstreetcnNews extends Command {
                 $item['resource']['image'] = '';
             }
             $data = [
-                'url' => $item['resource']['source_uri'],
+                'url' => $source_uri,
                 'title' => $item['resource']['title'],
                 'description' => null,
                 'type' => 'link',
@@ -147,7 +155,7 @@ class WallstreetcnNews extends Command {
                 'views' => 1,
             ]);
             $this->articleCount++;
-            Redis::connection()->hset('voten:submission:url', $item['resource']['source_uri'], $submission->id);
+            Redis::connection()->hset('voten:submission:url', $source_uri, $submission->id);
             dispatch((new NewSubmissionJob($submission->id,true,'华尔街见闻:')));
         }
         return $nextCursor;
