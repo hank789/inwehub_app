@@ -20,6 +20,7 @@ use App\Services\Spiders\Wechat\MpSpider;
 use App\Services\Spiders\Wechat\WechatSogouSpider;
 use Illuminate\Http\Request;
 use App\Third\Weapp\WeApp;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use League\Glide\Api\Api;
 
@@ -745,24 +746,28 @@ class ProductController extends Controller {
         if ($parse_url['host'] != 'mp.weixin.qq.com') {
             throw new ApiException(ApiException::PRODUCT_CASE_URL_INVALID);
         }
-        $linkInfo = getWechatUrlInfo($link_url,false,true);
-        $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
-        if (!$mpInfo) {
-            $mpInfo = WechatMpInfo::create([
-                'name' => $linkInfo['author'],
-                'wx_hao' => $linkInfo['wxHao'],
-                'company' => $linkInfo['author'],
-                'description' => '',
-                'logo_url' => '',
-                'qr_url' => '',
-                'wz_url' => '',
-                'last_qunfa_id' => 0,
-                'status' => 0,
-                'create_time' => date('Y-m-d H:i:s')
-            ]);
+        $aid = Cache::get($link_url);
+        if (!$aid) {
+            $linkInfo = getWechatUrlInfo($link_url,false,true);
+            $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
+            if (!$mpInfo) {
+                $mpInfo = WechatMpInfo::create([
+                    'name' => $linkInfo['author'],
+                    'wx_hao' => $linkInfo['wxHao'],
+                    'company' => $linkInfo['author'],
+                    'description' => '',
+                    'logo_url' => '',
+                    'qr_url' => '',
+                    'wz_url' => '',
+                    'last_qunfa_id' => 0,
+                    'status' => 0,
+                    'create_time' => date('Y-m-d H:i:s')
+                ]);
+            }
+            $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].date('Y-m-d',$linkInfo['date']));
+            $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
         }
-        $article_uuid = base64_encode($mpInfo->_id.$linkInfo['title'].date('Y-m-d',$linkInfo['date']));
-        $aid = RateLimiter::instance()->hGet('wechat_article',$article_uuid);
+
         if ($aid) {
             $article = WechatWenzhangInfo::find($aid);
             $article->type = WechatWenzhangInfo::TYPE_TAG_NEWS;
@@ -849,6 +854,7 @@ class ProductController extends Controller {
             ]);
             RateLimiter::instance()->hSet('wechat_article',$article_uuid,$article->_id);
         }
+        Cache::put($link_url,$article->_id,30);
         return self::createJsonData(true,[
             'title' => $article->title,
             'author' => $article->author,
