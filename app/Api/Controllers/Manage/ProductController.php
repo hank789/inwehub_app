@@ -910,18 +910,76 @@ class ProductController extends Controller {
     public function storeSource(Request $request) {
         $validateRules = [
             'id' => 'required',
-            'source_id'   => 'required',
+            'source'   => 'required',
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
+        $source = trim($request->input('source'));
         $source_id = trim($request->input('source_id'));
         $product_id = $request->input('id');
-        if (count(parse_url($source_id))>=2) {
+        if (count(parse_url($source))>=2) {
             throw new ApiException(ApiException::PRODUCT_SOURCE_URL_INVALID);
         }
-        $mpInfo = WechatMpInfo::find($source_id);
-        if (!$mpInfo) {
-            throw new ApiException(ApiException::REQUEST_FAIL);
+        if ($source_id) {
+            $mpInfo = WechatMpInfo::find($source_id);
+            if (!$mpInfo) {
+                throw new ApiException(ApiException::REQUEST_FAIL);
+            }
+        } else {
+            $mpInfo = WechatMpInfo::where('wx_hao',$source)->first();
+            if (!$mpInfo) {
+                $mpInfo = WechatMpInfo::where('name',$source)->first();
+            }
+            if (!$mpInfo) {
+                $spider = new MpSpider();
+                if (config('app.env') == 'production') {
+                    $data = $spider->getGzhInfo($source,false);
+                } else {
+                    $data = null;
+                }
+
+                if ($data) {
+                    $info = WechatMpInfo::where('wx_hao',$source)->first();
+                    if (!$info) {
+                        $mpInfo = WechatMpInfo::create([
+                            'name' => $data['name'],
+                            'wx_hao' => $data['wechatid'],
+                            'company' => $data['company'],
+                            'description' => $data['description'],
+                            'logo_url' => $data['img'],
+                            'qr_url' => $data['qrcode'],
+                            'wz_url' => $data['url'],
+                            'last_qunfa_id' => $data['last_qunfa_id'],
+                            'is_auto_publish' => 0,
+                            'status' => 0,
+                            'create_time' => date('Y-m-d H:i:s')
+                        ]);
+                    }
+                } else {
+                    $spider2 = new WechatSogouSpider();
+                    $data = $spider2->getGzhInfo($source,true);
+                    if ($data['name']) {
+                        $info = WechatMpInfo::where('wx_hao',$source)->first();
+                        if (!$info) {
+                            $mpInfo = WechatMpInfo::create([
+                                'name' => $data['name'],
+                                'wx_hao' => $data['wechatid'],
+                                'company' => $data['company'],
+                                'description' => $data['description'],
+                                'logo_url' => $data['img'],
+                                'qr_url' => $data['qrcode'],
+                                'wz_url' => $data['url'],
+                                'is_auto_publish' => 0,
+                                'status' => 0,
+                                'last_qunfa_id' => $data['last_qunfa_id'],
+                                'create_time' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    } else {
+                        throw new ApiException(ApiException::REQUEST_FAIL);
+                    }
+                }
+            }
         }
         $exist = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)
             ->where('source_id',$product_id)
@@ -943,7 +1001,7 @@ class ProductController extends Controller {
             $mpInfo->status = 1;
             $mpInfo->save();
         }
-        event(new ImportantNotify('[后台]'.formatSlackUser($user).'添加产品内容源:'.$wx_hao));
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'添加产品内容源:'.$source));
         return self::createJsonData(true,['id'=>$exist->id]);
     }
 
@@ -960,6 +1018,10 @@ class ProductController extends Controller {
             throw new ApiException(ApiException::PRODUCT_SOURCE_URL_INVALID);
         }
         $mpInfo = WechatMpInfo::where('wx_hao',$wx_hao)->first();
+        if ($mpInfo) {
+            return self::createJsonData(true,['title'=>$mpInfo->name,'source_id'=>$mpInfo->_id]);
+        }
+        $mpInfo = WechatMpInfo::where('name',$wx_hao)->first();
         if ($mpInfo) {
             return self::createJsonData(true,['title'=>$mpInfo->name,'source_id'=>$mpInfo->_id]);
         }
