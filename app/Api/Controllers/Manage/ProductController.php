@@ -450,7 +450,7 @@ class ProductController extends Controller {
         $idea->save();
         $toIdea->save();
         $this->dispatch(new UpdateProductInfoCache($idea->source_id));
-        $tag = Tag::find($id);
+        $tag = Tag::find($idea->source_id);
         event(new ImportantNotify('[后台]'.formatSlackUser($user).'排序产品案例:'.$tag->name));
         return self::createJsonData(true);
     }
