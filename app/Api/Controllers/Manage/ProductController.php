@@ -294,7 +294,20 @@ class ProductController extends Controller {
         $idea->save();
         $this->dispatch(new UpdateProductInfoCache($idea->source_id));
         $tag = Tag::find($idea->source_id);
-        event(new ImportantNotify('[后台]'.formatSlackUser($user).'修改产品观点状态:'.$tag->name));
+        switch ($idea->status) {
+            case 0:
+                $statusName = '隐藏';
+                break;
+            case 1:
+                $statusName = '显示';
+                break;
+            case 3:
+                $statusName = '删除';
+                break;
+            default:
+                $statusName = '';
+        }
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'修改产品观点状态为['.$statusName.']:'.$tag->name));
         return self::createJsonData(true,['status'=>$request->input('status')]);
     }
 
@@ -457,7 +470,20 @@ class ProductController extends Controller {
         $idea->save();
         $this->dispatch(new UpdateProductInfoCache($idea->source_id));
         $tag = Tag::find($idea->source_id);
-        event(new ImportantNotify('[后台]'.formatSlackUser($user).'修改产品案例状态:'.$tag->name));
+        switch ($idea->status) {
+            case 0:
+                $statusName = '隐藏';
+                break;
+            case 1:
+                $statusName = '显示';
+                break;
+            case 3:
+                $statusName = '删除';
+                break;
+            default:
+                $statusName = '';
+        }
+        event(new ImportantNotify('[后台]'.formatSlackUser($user).'修改产品案例状态为['.$statusName.']:'.$tag->name));
         return self::createJsonData(true,['status'=>$request->input('status')]);
     }
 
