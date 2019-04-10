@@ -84,12 +84,8 @@ class Test extends Command
         foreach ($ideas as $idea) {
             $sort[$idea->source_id][] = $idea;
         }
-        foreach ($sort as $arr) {
-            $max = count($arr);
-            foreach ($arr as $i) {
-                $i->sort = $max-$i->sort;
-                $i->save();
-            }
+        foreach ($sort as $id=>$arr) {
+            (new UpdateProductInfoCache($id))->handle();
         }
 
         $cases = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
@@ -99,12 +95,8 @@ class Test extends Command
         foreach ($cases as $case) {
             $sort[$case->source_id][] = $case;
         }
-        foreach ($sort as $arr) {
-            $max = count($arr);
-            foreach ($arr as $v) {
-                $v->sort = $max-$v->sort;
-                $v->save();
-            }
+        foreach ($sort as $id=>$arr) {
+            (new UpdateProductInfoCache($id))->handle();
         }
         return;
         $list = Tongji::get();
