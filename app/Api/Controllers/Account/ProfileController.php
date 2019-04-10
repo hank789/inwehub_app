@@ -214,6 +214,7 @@ class ProfileController extends Controller
         if ($managerPros > 0) {
             $data['productManager'] = true;
         }
+        \Log::info('test',$data);
 
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
