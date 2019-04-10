@@ -202,6 +202,7 @@ class WechatSogouSpider
         ];
         for ($i=0;$i<16;$i++) {
             $ip =null;
+            \Log::info('WechatSogouSpider:wz_url',[$mpInfo->wz_url]);
             $parse_url = parse_url($mpInfo->wz_url);
             if (empty($mpInfo->wz_url) || !isset($parse_url['host'])) {
                 $newData = $this->getGzhInfo($mpInfo->wx_hao);
@@ -214,6 +215,7 @@ class WechatSogouSpider
                 $mpInfo->wz_url = $newData['url'];
                 $mpInfo->save();
             }
+            \Log::info('WechatSogouSpider:wz_url',[$mpInfo->wz_url]);
             $parse_url = parse_url($mpInfo->wz_url);
             $headers['Host'] = $parse_url['host'];
             $content = $this->requestUrl($mpInfo->wz_url,$ip,['headers'=>$headers]);
@@ -417,6 +419,7 @@ class WechatSogouSpider
             'Accept' => 'image/webp,image/apng,image/*,*/*;q=0.8',
             'Accept-Encoding' => 'gzip, deflate, br',
             'Accept-Language' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
+            'Referer' => $r,
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
         ];
         $headers2 = [
@@ -434,7 +437,7 @@ class WechatSogouSpider
             $max_count += 1;
             $time = intval(microtime(true) * 1000);
             $codeurl = 'https://weixin.sogou.com/antispider/util/seccode.php?tc='.$time;
-            $img_data = (string) $this->client->get($codeurl,$opts)->getBody();
+            $img_data = (string) $this->client->get($codeurl,array_merge($opts,['headers'=>$headers1]))->getBody();
             $result = RuoKuaiService::dama($img_data);
             if (isset($result['Result'])) {
                 $img_code = $result['Result'];
