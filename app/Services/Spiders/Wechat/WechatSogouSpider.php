@@ -221,6 +221,7 @@ class WechatSogouSpider
             $content = $this->requestUrl($mpInfo->wz_url,$ip,['headers'=>$headers]);
             if ($content) {
                 $sogouTitle = $content->find('title')->text();
+                \Log::info('WechatSogouSpider:sogouTitle',[$sogouTitle]);
                 if (str_contains($sogouTitle,'请输入验证码')) {
                     \Log::info('WechatSogouSpider',['请输入验证码']);
                     if (empty($ip) && !$this->ssIpLocked) {

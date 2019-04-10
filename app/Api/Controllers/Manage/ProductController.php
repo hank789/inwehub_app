@@ -22,7 +22,6 @@ use Illuminate\Http\Request;
 use App\Third\Weapp\WeApp;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use League\Glide\Api\Api;
 
 /**
  * @author: wanghui
@@ -1275,7 +1274,23 @@ class ProductController extends Controller {
         $id = trim($request->input('product_id'));
         $this->checkUserProduct($user->id,$id);
         $perPage = $request->input('perPage',20);
-        $query = Tongji::where('event_id',$id);
+        $users = Tongji::select(['user_oauth_id'])->where('product_id',$id)->distinct()->groupBy('user_oauth_id')->paginate($perPage);
+        $return = $users->toArray();
+        $list = [];
+        foreach ($return as $item) {
+            $oauth = UserOauth::find($item['user_oauth_id']);
+            $mobile = '';
+            if ($oauth->user_id) {
+                $mobile = $oauth->user->mobile;
+            }
+            $list[] = [
+                'avatar' => $oauth->avatar,
+                'oauth_id' => $oauth->id,
+                'nickname' => $oauth->nickname,
+                'mobile' => $mobile,
+                'tags'
+            ];
+        }
     }
 
 
