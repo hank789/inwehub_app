@@ -107,8 +107,8 @@ class SapNews extends Command {
                     $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('div.dm-contentHero__statistics>div.dm-contentHero__metadata>span.dm-contentHero__metadata--item')->eq(1)->text();
                     $views = trim(str_replace('Views','',$views));
                     $this->info($item['title'].';'.$views);
-                    if ($views < $limitViews) continue;
                     $totalViews[] = $views;
+                    if ($views < $limitViews) continue;
                     sleep(1);
                     try {
                         if ($item['image']) {
@@ -209,12 +209,12 @@ class SapNews extends Command {
                         $isBreak = true;
                         break;
                     }
-                    $this->info($item['title']);
                     $count++;
                     $isBreak = false;
                     $views = $ql->get($item['link'],[],['proxy' => 'socks5h://127.0.0.1:1080'])->find('span.simple-pvc-views')->text();
-                    if ($views < $limitViews) continue;
+                    $this->info($item['title'].';'.$views);
                     $totalViews[] = $views;
+                    if ($views < $limitViews) continue;
                     sleep(1);
                     try {
                         if ($item['image']) {

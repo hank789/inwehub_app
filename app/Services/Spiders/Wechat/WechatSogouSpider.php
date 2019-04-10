@@ -26,7 +26,7 @@ class WechatSogouSpider
 
     protected $url;
 
-    protected $proxyIp;
+    protected $proxyIp = '';
 
     protected $ssIpLocked = false;
 
@@ -47,8 +47,9 @@ class WechatSogouSpider
     /**
      * 根据公众号id获取公众号信息
      * @param $wx_hao
+     * @param $usePayProxy
      */
-    public function getGzhInfo($wx_hao) {
+    public function getGzhInfo($wx_hao, $usePayProxy = false) {
         $this->requestUrl('https://weixin.sogou.com/',null);
         $request_url = 'https://weixin.sogou.com/weixin?type=1&s_from=input&query='.$wx_hao.'&ie=utf8&_sug_=n&_sug_type_=';
         $jieFengCount = 0;
@@ -63,10 +64,7 @@ class WechatSogouSpider
             'Upgrade-Insecure-Requests' => 1
         ];
         for ($i=0;$i<16;$i++) {
-            $ips = getProxyIps(5,'sogou');
-            $ip = $ips[0]??'';
-            if ($i>=14) $ip =null;
-            //var_dump($ip);
+            $ip =null;
             if ($jfResult) {
                 //$request_url = 'http://weixin.sogou.com/weixin?type=2&query='.$wx_hao.'&ie=utf8&s_from=input&_sug_=n&_sug_type_=1&w=01015002&oq=&ri=0&sourceid=sugg&sut=0&sst0=1547216885721&lkt=0,0,0&p=40040108';
             }
@@ -74,12 +72,12 @@ class WechatSogouSpider
             //var_dump($content->getHtml());
             if ($content) {
                 $sogouTitle = $content->find('title')->text();
-                var_dump('title:'.$sogouTitle);
+                \Log::info('WechatSogouSpider',['title:'.$sogouTitle]);
                 if (str_contains($sogouTitle,$wx_hao)) {
-                    var_dump('抓取公众号成功');
+                    \Log::info('WechatSogouSpider',['抓取公众号成功']);
                     break;
                 } elseif (str_contains($sogouTitle,'搜狗搜索')) {
-                    var_dump('公众号访问频繁');
+                    \Log::info('WechatSogouSpider',['公众号访问频繁']);
                     //使用ss抓取
                     $ssHtml = curlShadowsocks($request_url);
                     if ($ssHtml !== false) {
@@ -90,6 +88,15 @@ class WechatSogouSpider
                     }
                     $r = $content->find('input[name=r]')->val();
                     if ($jieFengCount >= 1) {
+                        if ($usePayProxy) {
+                            $proxyIp = getPayProxyIp();
+                            $content = $this->requestUrl($request_url,$proxyIp,['headers'=>$headers]);
+                            $sogouTitle = $content->find('title')->text();
+                            if (str_contains($sogouTitle,$wx_hao)) {
+                                $this->proxyIp = $proxyIp;
+                                break;
+                            }
+                        }
                         event(new ExceptionNotify('微信公众号['.$wx_hao.']抓取失败，无法解封IP'));
                         throw new ApiException(ApiException::REQUEST_FAIL);
                     }
@@ -135,9 +142,9 @@ class WechatSogouSpider
 
             $h = substr($url,$a+$t+$b,1);
             $url = 'https://weixin.sogou.com'.$url.'&k='.$b.'&h='.$h;
-            var_dump($url);
+            \Log::info('WechatSogouSpider',[$url]);
             $headers['Referer'] = $request_url;
-            $content2 = $this->requestUrl($url,null,['headers'=>$headers]);
+            $content2 = $this->requestUrl($url,$this->proxyIp,['headers'=>$headers]);
             $html = $content2->getHtml();
             //var_dump($html);
             if (str_contains($html,'需要您协助验证')) {
@@ -179,7 +186,7 @@ class WechatSogouSpider
             'company' => $description[1]['company']??'',
             'last_qunfa_id' => 0
         ];
-        var_dump($data);
+        \Log::info('WechatSogouSpider',$data);
         return $data;
     }
 
@@ -194,10 +201,7 @@ class WechatSogouSpider
             'Upgrade-Insecure-Requests' => 1
         ];
         for ($i=0;$i<16;$i++) {
-            $ips = getProxyIps(5,'sogou');
-            var_dump($ips);
-            $ip = $ips[0]??'';
-            if ($i>=14) $ip =null;
+            $ip =null;
             if (empty($mpInfo->wz_url)) {
                 $newData = $this->getGzhInfo($mpInfo->wx_hao);
                 if (empty($newData['name'])) {
@@ -215,7 +219,7 @@ class WechatSogouSpider
             if ($content) {
                 $sogouTitle = $content->find('title')->text();
                 if (str_contains($sogouTitle,'请输入验证码')) {
-                    var_dump('请输入验证码');
+                    \Log::info('WechatSogouSpider',['请输入验证码']);
                     if (empty($ip) && !$this->ssIpLocked) {
                         $wzHtml = curlShadowsocks($mpInfo->wz_url);
                         if ($wzHtml === false) {
@@ -225,7 +229,7 @@ class WechatSogouSpider
                         $content->setHtml($wzHtml);
                         $sogouTitle = $content->find('title')->text();
                         if (!$sogouTitle) {
-                            var_dump('链接已过期');
+                            \Log::info('WechatSogouSpider',['链接已过期']);
                             //说明链接已过期
                             $newData = $this->getGzhInfo($mpInfo->wx_hao);
                             if (empty($newData['name'])) {
@@ -238,10 +242,10 @@ class WechatSogouSpider
                             $mpInfo->save();
                             continue;
                         } elseif (!str_contains($sogouTitle,'请输入验证码')) {
-                            var_dump('Shadowsocks抓取文章列表成功');
+                            \Log::info('WechatSogouSpider',['Shadowsocks抓取文章列表成功']);
                             break;
                         } else {
-                            var_dump('Shadowsocks需要验证码');
+                            \Log::info('WechatSogouSpider',['Shadowsocks需要验证码']);
                             $jiefengR = $this->jiefeng2(true);
                             if ($jiefengR && $jiefengR['ret'] != -6) {
                                 continue;
@@ -256,7 +260,7 @@ class WechatSogouSpider
                     }
                     deleteProxyIp($ip,'sogou');
                 } elseif (!$sogouTitle || str_contains($sogouTitle,'搜狗搜索')) {
-                    var_dump('链接已过期');
+                    \Log::info('WechatSogouSpider',['链接已过期']);
                     //说明链接已过期
                     $newData = $this->getGzhInfo($mpInfo->wx_hao);
                     if (empty($newData['name'])) {
@@ -268,7 +272,7 @@ class WechatSogouSpider
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
                 } elseif (str_contains($sogouTitle,$mpInfo->name)) {
-                    var_dump('抓取文章列表成功');
+                    \Log::info('WechatSogouSpider',['抓取文章列表成功']);
                     break;
                 } else {
                     deleteProxyIp($ip,'sogou');
@@ -386,7 +390,6 @@ class WechatSogouSpider
             return $this->ql;
             //$content = $this->ql->get($url,null,$opts);
         } catch (\Exception $e) {
-            var_dump($e->getMessage());
             app('sentry')->captureException($e,['url'=>$url,'proxy'=>$ip]);
             $content = null;
         }
@@ -395,7 +398,7 @@ class WechatSogouSpider
 
     public function jiefeng($r,$ip=null) {
         $max_count = 1;
-        print("出现验证码，准备自动识别");
+        \Log::info('WechatSogouSpider',["出现验证码，准备自动识别"]);
         $opts = [
             'proxy' => $ip,
             //Set the timeout time in seconds
@@ -439,19 +442,19 @@ class WechatSogouSpider
                     'r' => $r,
                     'v' => 5
                 ];
-                var_dump($post_data);
+                \Log::info('WechatSogouSpider',$post_data);
                 $result = (string) $this->client->post('https://weixin.sogou.com/antispider/thank.php',array_merge($opts,['verify' => false,'form_params'=>$post_data,'headers'=>$headers2]))->getBody();
-                var_dump($result);
+                \Log::info('WechatSogouSpider',[$result]);
 
                 $resultArr = json_decode($result,true);
                 if ($resultArr['code'] != 0) {
-                    print("搜狗返回验证码错误，1秒后更换验证码再次启动尝试，尝试次数：".($max_count));
+                    \Log::info('WechatSogouSpider',["搜狗返回验证码错误，1秒后更换验证码再次启动尝试，尝试次数：".($max_count)]);
                     sleep(1);
                     continue;
                 }
                 if (isset($resultArr['id']) && $resultArr['id']) {
                     $pbsnuid = $resultArr['id'];
-                    var_dump($pbsnuid);
+                    \Log::info('WechatSogouSpider',[$pbsnuid]);
                     $this->snuid = $pbsnuid;
                     $pburl = 'https://pb.sogou.com/pv.gif?uigs_productid=webapp&type=antispider&subtype=0_seccodeInputSuccess&domain=weixin&suv=&snuid='.$pbsnuid.'&t='.time();
                     $this->client->get($pburl,$opts);
@@ -536,7 +539,7 @@ class WechatSogouSpider
             $otherArgs['proxy'] = 'socks5h://127.0.0.1:1080';
         }
         $result2 = (string) $this->client->post($post_url,array_merge(['verify' => false,'form_params'=>$post_data],$otherArgs))->getBody();
-        var_dump($result2);
+        \Log::info('WechatSogouSpider',[$result2]);
         return json_decode($result2,true);
     }
 

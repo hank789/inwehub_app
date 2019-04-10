@@ -41,6 +41,7 @@ class DailyReadReport extends Command
             'interval' => 1
         ]);
         $today = date('Y-m-d');
+        var_dump($data);
         $current = $data['data']['values']["inwehub:discover_detail"][$today] + $data['data']['values']["inwehub:ask-offer-answers"][$today] +
             $data['data']['values']["inwehub:ask-offer-detail"][$today] + $data['data']['values']["inwehub:read_page_detail"][$today] + $data['data']['values']["inwehub:dianping-product-detail"][$today] +
             $data['data']['values']["inwehub:dianping-comment-detail"][$today];

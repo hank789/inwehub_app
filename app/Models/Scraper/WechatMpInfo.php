@@ -39,4 +39,8 @@ class WechatMpInfo extends Model {
         return WechatWenzhangInfo::where('mp_id',$this->_id)->where('source_type',1)->whereBetween('created_at',[date('Y-m-d 00:00:00'),date('Y-m-d 23:59:59')])->count();
     }
 
+    public function countTotalArticle() {
+        return WechatWenzhangInfo::where('mp_id',$this->_id)->where('source_type',1)->count();
+    }
+
 }

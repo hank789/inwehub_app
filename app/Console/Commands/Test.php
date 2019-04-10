@@ -25,6 +25,7 @@ use App\Models\Support;
 use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
+use App\Models\Weapp\Tongji;
 use App\Services\Spiders\Wechat\MpAutoLogin;
 use App\Services\Spiders\Wechat\MpSpider;
 use App\Services\Spiders\Wechat\WechatSogouSpider;
@@ -75,11 +76,9 @@ class Test extends Command
      */
     public function handle()
     {
-        
-        $list = WechatWenzhangInfo::where('created_at','>=','2019-04-02 00:00:00')->where('body','')->get();
+        $list = Tongji::get();
         foreach ($list as $item) {
-            (new GetArticleBody($item->_id))->handle();
-            sleep(10);
+            $item->getPageObject();
         }
         return;
         $ql = QueryList::getInstance();

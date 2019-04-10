@@ -102,7 +102,7 @@ class WechatPosts extends Command {
                         $uuid = base64_encode($mpInfo->_id.$wz_item['title'].date('Y-m-d',$wz_item['datetime']));
                         if (RateLimiter::instance()->hGet('wechat_article',$uuid)) continue;
                         $article = WechatWenzhangInfo::create([
-                            'title' => $wz_item['title'],
+                            'title' => formatHtml($wz_item['title']),
                             'source_url' => $wz_item['source_url'],
                             'content_url' => $wz_item['content_url'],
                             'cover_url'   => $wz_item['cover'],
@@ -121,10 +121,10 @@ class WechatPosts extends Command {
                         RateLimiter::instance()->hSet('wechat_article',$uuid,$article->_id);
                         $article->addProductTag();
                         (new GetArticleBody($article->_id))->handle();
-                        sleep(5);
                         if ($mpInfo->is_auto_publish == 1 && $article->date_time >= date('Y-m-d 00:00:00',strtotime('-1 days'))) {
                             dispatch(new ArticleToSubmission($article->_id));
                         }
+                        sleep(5);
                     }
                 }
                 if ($last_qunfa_id < $cur_qunfa_id) {

@@ -43,6 +43,8 @@ class IndexController extends Controller
                         break;
                 }
             }
+        } elseif ($from_source == 'weapp_admin') {
+            $article = WechatWenzhangInfo::find($id);
         } else {
             $article = WechatWenzhangInfo::where('topic_id',$id)->where('status',2)->first();
         }

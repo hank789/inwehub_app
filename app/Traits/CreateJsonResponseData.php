@@ -9,7 +9,7 @@ trait CreateJsonResponseData
 
     public static $needRefresh = false;
 
-    public static function createJsonData(bool $success,array $data=[],$code = ApiException::SUCCESS,$message='ok')
+    public static function createJsonData(bool $success,$data=[],$code = ApiException::SUCCESS,$message='ok')
     {
         $data = [
             'status'  => $success,

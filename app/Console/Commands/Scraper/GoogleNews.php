@@ -62,7 +62,7 @@ class GoogleNews extends Command {
         ];
         $ql = QueryList::getInstance();
         $ql->use(PhantomJs::class,config('services.phantomjs.path'));
-        $category = Category::where('slug','channel_xwdt')->first();
+        $category = Category::where('slug','channel_googlenews')->first();
         foreach ($urls as $group_id => $info) {
             $this->info($info['url']);
             try {

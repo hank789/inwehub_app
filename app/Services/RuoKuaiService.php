@@ -15,7 +15,7 @@ class RuoKuaiService {
         $fileName = time().str_random(7).'.jpg';
         Storage::disk('local')->put('attachments/'.$fileName,$imageData);
         $imagePath = storage_path('app/attachments/'.$fileName);
-        var_dump($imagePath);
+        \Log::info('RuoKuaiService::dama',[$imagePath]);
         $curlFile = curl_file_create($imagePath,'image/jpeg','a.jpg');
         $postFields = array('username' => 'hankwang',
             'password' => md5('hank8831'),
@@ -38,7 +38,7 @@ class RuoKuaiService {
 
         curl_close($ch);
 
-        var_dump($result);
+        \Log::info('RuoKuaiService::dama',[$result]);
         Storage::disk('local')->delete('attachments/'.$fileName);
         return json_decode($result,true);
     }

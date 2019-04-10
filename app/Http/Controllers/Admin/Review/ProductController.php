@@ -181,7 +181,8 @@ class ProductController extends AdminController
         }
         $ideas = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA)
             ->where('source_id',$tag->tag_id)
-            ->orderBy('sort','asc')->get();
+            ->whereIn('status',[0,1])
+            ->orderBy('sort','desc')->get();
         $ideaList = [];
         for ($i=1;$i<=10;$i++) {
             $ideaList[] = [
@@ -190,7 +191,7 @@ class ProductController extends AdminController
                 'name' => '',
                 'title' => '',
                 'content' => '',
-                'sort' => $i
+                'sort' => 10-$i
             ];
         }
         foreach ($ideas as $v=>$idea) {
@@ -205,7 +206,8 @@ class ProductController extends AdminController
         }
         $caseList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
             ->where('source_id',$tag->tag_id)
-            ->orderBy('sort','asc')->get();
+            ->whereIn('status',[0,1])
+            ->orderBy('sort','desc')->get();
 
         $gzhList = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)
             ->where('source_id',$tag->tag_id)->orderBy('id','desc')->get();
@@ -665,7 +667,7 @@ class ProductController extends AdminController
                 ]);
                 RateLimiter::instance()->hSet('wechat_article',$article_uuid,$article->_id);
             }
-            $data['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag->id;;
+            $data['link_url'] = config('app.url').'/articleInfo/'.$article->_id.'?inwehub_user_device=weapp_dianping&source=product_'.$tag->id;
         }
         $model = ContentCollection::create([
             'content_type' => ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE,
