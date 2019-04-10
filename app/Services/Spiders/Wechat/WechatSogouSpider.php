@@ -202,7 +202,8 @@ class WechatSogouSpider
         ];
         for ($i=0;$i<16;$i++) {
             $ip =null;
-            if (empty($mpInfo->wz_url)) {
+            $parse_url = parse_url($mpInfo->wz_url);
+            if (empty($mpInfo->wz_url) || !isset($parse_url['host'])) {
                 $newData = $this->getGzhInfo($mpInfo->wx_hao);
                 if (empty($newData['name'])) {
                     event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
