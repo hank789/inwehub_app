@@ -345,6 +345,8 @@ class ProductController extends AdminController
                     ]);
                 }
             }
+        } else {
+            ProductUserRel::where('tag_id',$tag->id)->delete();
         }
         if ($newStatus != $oldStatus) {
             TagsLogic::delRelatedProductsCache();
