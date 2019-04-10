@@ -49,7 +49,6 @@ class ProfileController extends Controller
         $user = $request->user();
         $data = Cache::get('user_info_'.$user->id);
         $need_report = $request->input('need_report',0);
-        \Log::info('test0',$data);
         if (!$data) {
             $info = [];
             $info['id'] = $user->id;
@@ -214,7 +213,6 @@ class ProfileController extends Controller
         if ($managerPros > 0) {
             $data['productManager'] = true;
         }
-        \Log::info('test',$data);
 
         return self::createJsonData(true,$data,ApiException::SUCCESS,'ok');
     }
