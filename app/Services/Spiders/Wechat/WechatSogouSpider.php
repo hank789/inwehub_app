@@ -419,7 +419,7 @@ class WechatSogouSpider
             'Accept' => 'image/webp,image/apng,image/*,*/*;q=0.8',
             'Accept-Encoding' => 'gzip, deflate, br',
             'Accept-Language' => 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7,pl;q=0.6',
-            'Referer' => $r,
+            'Referer' => 'https://weixin.sogou.com/antispider/?from='.$r,
             'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
         ];
         $headers2 = [
