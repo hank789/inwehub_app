@@ -109,7 +109,7 @@ class UpdateProductInfoCache implements ShouldQueue
             ->where('source_id',$tag->id)->where('status',1)->orderBy('sort','desc')->get();
         foreach ($caseList as $case) {
             $link_url = $case->content['link_url'];
-            if (!str_contains($link_url,'&source=product_')) {
+            if (!str_contains($link_url,'&source=product_') && $case->content['type'] == 'link') {
                 $link_url .= '&source=product_'.$case->source_id;
             }
             $data['case_list'][] = [
