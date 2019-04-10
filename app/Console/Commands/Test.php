@@ -10,6 +10,7 @@ use App\Mail\DailySubscribe;
 use App\Models\Attention;
 use App\Models\Category;
 use App\Models\Company\CompanyData;
+use App\Models\ContentCollection;
 use App\Models\Doing;
 use App\Models\Feed\Feed;
 use App\Models\Groups\Group;
@@ -76,6 +77,36 @@ class Test extends Command
      */
     public function handle()
     {
+        $ideas = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA)
+            ->whereIn('status',[0,1])
+            ->orderBy('sort','desc')->get();
+        $sort = [];
+        foreach ($ideas as $idea) {
+            $sort[$idea->source_id][] = $idea;
+        }
+        foreach ($sort as $arr) {
+            $max = count($arr);
+            foreach ($arr as $i) {
+                $i->sort = $max-$i->sort;
+                $i->save();
+            }
+        }
+
+        $cases = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_SHOW_CASE)
+            ->whereIn('status',[0,1])
+            ->orderBy('sort','desc')->get();
+        $sort = [];
+        foreach ($cases as $case) {
+            $sort[$case->source_id][] = $case;
+        }
+        foreach ($sort as $arr) {
+            $max = count($arr);
+            foreach ($arr as $v) {
+                $v->sort = $max-$v->sort;
+                $v->save();
+            }
+        }
+        return;
         $list = Tongji::get();
         foreach ($list as $item) {
             $item->getPageObject();
