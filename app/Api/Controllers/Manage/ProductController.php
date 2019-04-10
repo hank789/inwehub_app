@@ -1296,7 +1296,7 @@ class ProductController extends Controller {
                 $qrcode = $wxxcx->getQRCode()->getQRCodeB($scene,$page);
                 Storage::disk('oss')->put($file_name,$qrcode);
                 $qrcodeUrl = Storage::disk('oss')->url($file_name);
-                RateLimiter::instance()->hSet('product-qrcode',$id,$qrcodeUrl);
+                RateLimiter::instance()->hSet('product-qrcode',$id.'_'.$oauth_id,$qrcodeUrl);
             } catch (\Exception $e) {
                 app('sentry')->captureException($e);
             }
