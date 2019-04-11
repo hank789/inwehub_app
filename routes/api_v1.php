@@ -590,6 +590,14 @@ Route::group(['namespace'=>'Manage','prefix' => 'manage','middleware' => ['jwt.a
     Route::post('product/fetchSourceInfo','ProductController@fetchSourceInfo');
     Route::get('product/getInfo','ProductController@getInfo');
 
+    Route::post('product/delOfficialReplyDianping','ProductController@delOfficialReplyDianping');
+    Route::post('product/delDianping','ProductController@delDianping');
+    Route::post('product/recommendDianping','ProductController@recommendDianping');
+    Route::post('product/officialReplyDianping','ProductController@officialReplyDianping');
+    Route::post('product/dianpingList','ProductController@dianpingList');
+    Route::post('product/addCustomUserTag','ProductController@addCustomUserTag');
+    Route::post('product/visitedUserList','ProductController@visitedUserList');
+    Route::post('product/userVisitList','ProductController@userVisitList');
 });
 
 Route::group(['middleware' => ['jwt.weappConfig'],'prefix' => 'weapp', 'namespace'=>'Weapp'], function() {
