@@ -1319,10 +1319,15 @@ class ProductController extends Controller {
         $item_user_info = null;
         if ($oauth_id) {
             $item_oauth = UserOauth::find($oauth_id);
+            $mobile = '';
+            if ($item_oauth->user_id) {
+                $mobile = $item_oauth->user->mobile;
+            }
             $item_user_info = [
                 'avatar' => $item_oauth->avatar,
                 'oauth_id' => $oauth_id,
                 'nickname' => $item_oauth->nickname,
+                'mobile' => $mobile,
                 'tags' => $tags
             ];
             $model = UserToOauthUser::where('user_id',$user->id)->where('to_oauth_user_id',$oauth_id)->first();
@@ -1347,6 +1352,7 @@ class ProductController extends Controller {
                     'avatar' => $oauth->avatar,
                     'oauth_id' => $item->user_oauth_id,
                     'nickname' => $oauth->nickname,
+                    'mobile' => $oauth->user_id?$oauth->user->mobile:'',
                     'tags' => $tags
                 ];
             }
