@@ -596,6 +596,8 @@ Route::group(['namespace'=>'Manage','prefix' => 'manage','middleware' => ['jwt.a
     Route::post('product/officialReplyDianping','ProductController@officialReplyDianping');
     Route::post('product/dianpingList','ProductController@dianpingList');
     Route::post('product/addCustomUserTag','ProductController@addCustomUserTag');
+    Route::post('product/delCustomUserTag','ProductController@delCustomUserTag');
+
     Route::post('product/visitedUserList','ProductController@visitedUserList');
     Route::post('product/userVisitList','ProductController@userVisitList');
 });

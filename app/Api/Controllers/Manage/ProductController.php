@@ -1397,6 +1397,30 @@ class ProductController extends Controller {
         return self::createJsonData(true,['tags'=>$model->data['tags']]);
     }
 
+    //删除用户标签
+    public function delCustomUserTag(Request $request) {
+        $validateRules = [
+            'oauth_id' => 'required|integer',
+            'tag' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $oauth_id = $request->input('oauth_id','');
+        $tag = $request->input('tag');
+        $model = UserToOauthUser::where('user_id',$user->id)->where('to_oauth_user_id',$oauth_id)->first();
+        if ($model) {
+            $data = $model->data;
+            foreach ($data['tags'] as $key=>$v) {
+                if ($v == $tag) {
+                    unset($data['tags'][$key]);
+                }
+            }
+            $model->data = $data;
+            $model->save();
+        }
+        return self::createJsonData(true);
+    }
+
 
 
     protected function checkUserProduct($uid,$pid) {
