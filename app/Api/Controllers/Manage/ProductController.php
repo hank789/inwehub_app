@@ -1281,7 +1281,7 @@ class ProductController extends Controller {
         $users = Tongji::select(['user_oauth_id'])->where('product_id',$id)->distinct()->groupBy('user_oauth_id')->paginate($perPage);
         $return = $users->toArray();
         $list = [];
-        foreach ($return as $item) {
+        foreach ($return['data'] as $item) {
             $oauth = UserOauth::find($item['user_oauth_id']);
             $mobile = '';
             if ($oauth->user_id) {
