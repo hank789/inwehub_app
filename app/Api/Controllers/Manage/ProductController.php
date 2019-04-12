@@ -14,6 +14,7 @@ use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\Taggable;
 use App\Models\UserOauth;
+use App\Models\UserToOauthUser;
 use App\Models\Weapp\Tongji;
 use App\Services\RateLimiter;
 use App\Services\Spiders\Wechat\MpSpider;
@@ -1197,7 +1198,8 @@ class ProductController extends Controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $product_id = $comment->source_id;
-        $this->checkUserProduct($user->id,$product_id);
+        $review = $comment->source;
+        $this->checkUserProduct($user->id,$review->category_id);
         $comment->delete();
         return self::createJsonData(true);
     }
@@ -1214,6 +1216,9 @@ class ProductController extends Controller {
         $perPage = $request->input('perPage',20);
         $word = $request->input('search_word');
         $query = Submission::where('status',1)->where('category_id',$id)->where('type','review');
+        if ($word) {
+            $query = $query->where('title','like','%'.$word.'%');
+        }
         $submissions = $query->orderBy('id','desc')->paginate($perPage);
         $return = $submissions->toArray();
         $list = [];
@@ -1277,20 +1282,154 @@ class ProductController extends Controller {
         $users = Tongji::select(['user_oauth_id'])->where('product_id',$id)->distinct()->groupBy('user_oauth_id')->paginate($perPage);
         $return = $users->toArray();
         $list = [];
-        foreach ($return as $item) {
+        foreach ($return['data'] as $item) {
             $oauth = UserOauth::find($item['user_oauth_id']);
             $mobile = '';
             if ($oauth->user_id) {
                 $mobile = $oauth->user->mobile;
+            }
+            $tags = [];
+            $model = UserToOauthUser::where('user_id',$user->id)->where('to_oauth_user_id',$oauth->id)->first();
+            if ($model) {
+                $tags = $model->data['tags']??[];
             }
             $list[] = [
                 'avatar' => $oauth->avatar,
                 'oauth_id' => $oauth->id,
                 'nickname' => $oauth->nickname,
                 'mobile' => $mobile,
-                'tags'
+                'tags' => $tags
             ];
         }
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
+    }
+
+    //分析-用户访问记录列表
+    public function userVisitList(Request $request) {
+        $validateRules = [
+            'product_id' => 'required',
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $id = trim($request->input('product_id'));
+        $this->checkUserProduct($user->id,$id);
+        $perPage = $request->input('perPage',20);
+        $oauth_id = $request->input('oauth_id',null);
+        $tags = [];
+        $item_user_info = null;
+        if ($oauth_id) {
+            $item_oauth = UserOauth::find($oauth_id);
+            $mobile = '';
+            if ($item_oauth->user_id) {
+                $mobile = $item_oauth->user->mobile;
+            }
+            $item_user_info = [
+                'avatar' => $item_oauth->avatar,
+                'oauth_id' => $oauth_id,
+                'nickname' => $item_oauth->nickname,
+                'mobile' => $mobile,
+                'tags' => $tags
+            ];
+            $model = UserToOauthUser::where('user_id',$user->id)->where('to_oauth_user_id',$oauth_id)->first();
+            if ($model) {
+                $tags = $model->data['tags']??[];
+                $item_user_info['tags'] = $tags;
+            }
+        }
+        $query = Tongji::where('product_id',$id);
+        if ($oauth_id) {
+            $query = $query->where('user_oauth_id',$oauth_id);
+        }
+        $items = $query->orderBy('id','desc')->paginate($perPage);
+        $return = $items->toArray();
+        $list = [];
+        foreach ($items as $item) {
+            if ($item_user_info) {
+                $user_info = $item_user_info;
+            } else {
+                $oauth = UserOauth::find($item->user_oauth_id);
+                $user_info = [
+                    'avatar' => $oauth->avatar,
+                    'oauth_id' => $item->user_oauth_id,
+                    'nickname' => $oauth->nickname,
+                    'mobile' => $oauth->user_id?$oauth->user->mobile:'',
+                    'tags' => $tags
+                ];
+            }
+            $seconds = ($item->stay_time/1000);
+            if ($seconds < 1) {
+                $stay_time = explode('.',$seconds)[1].'毫秒';
+            } elseif ($seconds <= 60 && $seconds >0 ) {
+                $stay_time = ((int)$seconds).'秒';
+            } else {
+                $second = $seconds%60;
+                $minutes = (int)(($seconds-$second)/60);
+                $stay_time = $minutes.'分'.$second.'秒';
+            }
+            $list[] = [
+                'id' => $item->id,
+                'page' => $item->getPageName(),
+                'stay_time' => $stay_time,
+                'user' => $user_info,
+                'created_at' => date('Y.m.d H:i',$item->start_time/1000)
+            ];
+        }
+        $return['data'] = $list;
+        return self::createJsonData(true,$return);
+    }
+
+    //添加用户标签
+    public function addCustomUserTag(Request $request) {
+        $validateRules = [
+            'oauth_id' => 'required|integer',
+            'tag' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $oauth_id = $request->input('oauth_id','');
+        $tag = $request->input('tag');
+        $model = UserToOauthUser::where('user_id',$user->id)->where('to_oauth_user_id',$oauth_id)->first();
+        if (!$model) {
+            $model = UserToOauthUser::create([
+                'user_id' => $user->id,
+                'to_oauth_user_id' => $oauth_id,
+                'data' => [
+                    'tags' => [$tag]
+                ]
+            ]);
+        } else {
+            $data = $model->data;
+            $data['tags'][] = $tag;
+            $data['tags'] = array_unique($data['tags']);
+            $model->data = $data;
+            $model->save();
+        }
+        return self::createJsonData(true,['tags'=>$model->data['tags']]);
+    }
+
+    //删除用户标签
+    public function delCustomUserTag(Request $request) {
+        $validateRules = [
+            'oauth_id' => 'required|integer',
+            'tag' => 'required'
+        ];
+        $this->validate($request,$validateRules);
+        $user = $request->user();
+        $oauth_id = $request->input('oauth_id','');
+        $tag = $request->input('tag');
+        $model = UserToOauthUser::where('user_id',$user->id)->where('to_oauth_user_id',$oauth_id)->first();
+        if ($model) {
+            $data = $model->data;
+            foreach ($data['tags'] as $key=>$v) {
+                if ($v == $tag) {
+                    unset($data['tags'][$key]);
+                }
+            }
+            $model->data = $data;
+            $model->save();
+        }
+        return self::createJsonData(true);
     }
 
 
