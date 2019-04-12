@@ -1360,9 +1360,9 @@ class ProductController extends Controller {
             $list[] = [
                 'id' => $item->id,
                 'page' => $item->getPageName(),
-                'stay_time' => $item->stay_time,
+                'stay_time' => $item->stay_time/1000,
                 'user' => $user_info,
-                'created_at' => date('Y.m.d H:i',$item->start_time)
+                'created_at' => date('Y.m.d H:i',$item->start_time/1000)
             ];
         }
         $return['data'] = $list;
