@@ -1198,7 +1198,8 @@ class ProductController extends Controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $product_id = $comment->source_id;
-        $this->checkUserProduct($user->id,$product_id);
+        $review = $comment->source;
+        $this->checkUserProduct($user->id,$review->category_id);
         $comment->delete();
         return self::createJsonData(true);
     }
