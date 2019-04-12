@@ -1357,10 +1357,20 @@ class ProductController extends Controller {
                     'tags' => $tags
                 ];
             }
+            $seconds = ($item->stay_time/1000);
+            if ($seconds < 1) {
+                $stay_time = explode('.',$seconds)[1].'毫秒';
+            } elseif ($seconds <= 60 && $seconds >0 ) {
+                $stay_time = ((int)$seconds).'秒';
+            } else {
+                $second = $seconds%60;
+                $minutes = (int)(($seconds-$second)/60);
+                $stay_time = $minutes.'分'.$second.'秒';
+            }
             $list[] = [
                 'id' => $item->id,
                 'page' => $item->getPageName(),
-                'stay_time' => $item->stay_time/1000,
+                'stay_time' => $stay_time,
                 'user' => $user_info,
                 'created_at' => date('Y.m.d H:i',$item->start_time/1000)
             ];
