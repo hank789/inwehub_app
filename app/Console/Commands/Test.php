@@ -77,6 +77,10 @@ class Test extends Command
      */
     public function handle()
     {
+        $url = 'http://mp.weixin.qq.com/profile?src=3&timestamp=1555486298&ver=1&signature=BS8ySGXU*BuFHNZoXpUAoUY6cLA*bPsF9hL3LtrmSz13WtmO9RFeS8ojYK*aKMkYmXgC3HDDufcqJRiOKAK4*Q==';
+        $html = curlShadowsocks($url);
+        var_dump($html);
+        return;
         $ideas = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_EXPERT_IDEA)
             ->whereIn('status',[0,1])
             ->orderBy('sort','desc')->get();
