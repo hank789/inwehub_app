@@ -212,6 +212,7 @@ class WechatSogouSpider
                     $mpInfo->save();
                     return [];
                 }
+                $mpInfo->name = $newData['name'];
                 $mpInfo->wz_url = $newData['url'];
                 $mpInfo->save();
             }
@@ -242,6 +243,7 @@ class WechatSogouSpider
                                 event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
                                 return [];
                             }
+                            $mpInfo->name = $newData['name'];
                             $mpInfo->wz_url = $newData['url'];
                             $mpInfo->save();
                             continue;
@@ -273,6 +275,7 @@ class WechatSogouSpider
                         event(new ExceptionNotify('微信公众号['.$mpInfo->wx_hao.']不存在'));
                         return [];
                     }
+                    $mpInfo->name = $newData['name'];
                     $mpInfo->wz_url = $newData['url'];
                     $mpInfo->save();
                 } elseif (str_contains($sogouTitle,$mpInfo->name)) {
