@@ -289,6 +289,15 @@ class WechatSogouSpider
             }
         }
         $html = $content->getHtml();
+        $bizPattern = "/var\s+biz\s+=\s+([\s\S]*?);/is";
+        preg_match($bizPattern,$html,$bizMatch);
+        if (isset($bizMatch[1])) {
+            $biz = str_replace('"','',$bizMatch[1]);
+            $biz = trim(str_replace('|','',$biz));
+            $mpInfo->qr_url = $biz;
+            $mpInfo->save();
+        }
+
         $pattern = "/var\s+msgList\s+=\s+(\{[\s\S]*?\});/is";
         $items = [];
         if (preg_match($pattern, $html, $matchs)) {
