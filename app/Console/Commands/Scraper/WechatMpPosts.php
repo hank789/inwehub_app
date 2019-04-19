@@ -161,7 +161,7 @@ class WechatMpPosts extends Command {
                 sleep(rand(3,8));
             }
         }
-        Artisan::call('scraper:wechat:posts');
+        //Artisan::call('scraper:wechat:posts');
         var_dump(date('Y-m-d H:i:s').'抓取完成：'.$successCount);
         $articles = WechatWenzhangInfo::where('source_type',1)->where('topic_id',0)->where('status',1)->where('date_time','>=',date('Y-m-d 00:00:00',strtotime('-1 days')))->get();
         if (Setting()->get('is_scraper_wechat_auto_publish',1)) {
