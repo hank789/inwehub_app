@@ -93,7 +93,7 @@ class NotificationController extends Controller
             $money_unread_count = $user->unreadNotifications()->where('notification_type', Notification::NOTIFICATION_TYPE_MONEY)->count();
 
             $total_unread =  $notice_unread_count + $task_notice_unread_count + $readhub_unread_count + $money_unread_count + $todo_task;
-            $im_rooms = Room::where('source_type',User::class)->where(function ($query) use ($user) {$query->where('user_id',$user->id)->orWhere('source_id',$user->id);})->take(99)->get();
+            $im_rooms = Room::where('source_type',User::class)->where(function ($query) use ($user) {$query->where('user_id',$user->id)->orWhere('source_id',$user->id);})->take(50)->get();
 
             $im_list = [];
             $is_kefu_in = false;
