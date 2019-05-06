@@ -17,7 +17,8 @@ class CategoryController extends AdminController
     protected $validateRules = [
         'name' => 'required|max:255',
         'slug' => 'required|max:255|unique:categories',
-        'sort' => 'required|integer'
+        'sort' => 'required|integer',
+        'summary' => 'required'
     ];
 
 
@@ -136,6 +137,7 @@ class CategoryController extends AdminController
             $parent->save();
         } else {
             $formData['parent_id'] = 0;
+            $formData['grade'] = 0;
         }
 
         if($request->hasFile('icon')){
