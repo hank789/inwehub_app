@@ -93,7 +93,7 @@ class RuoKuaiService {
         Storage::disk('local')->delete('attachments/'.$fileName);
         $re = json_decode($result,true);
         if ($re['ret'] == 0) {
-            $count = 4;
+            $count = 10;
             while ($count >=0) {
                 $count--;
                 $re2 = json_decode(file_get_contents('http://api.yundama.com/api.php?method=result&cid='.$re['cid']),true);
