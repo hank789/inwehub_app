@@ -502,6 +502,7 @@ class ProductController extends Controller {
         $user = $request->user();
         $id = $request->input('case_id');
         $case = ContentCollection::find($id);
+        $tag = Tag::find($case->source_id);
         $this->checkUserProduct($user->id,$case->source_id);
         $data = $request->all();
         $content = $case->content;
@@ -579,7 +580,7 @@ class ProductController extends Controller {
         $case->save();
 
         $this->dispatch(new UpdateProductInfoCache($case->source_id));
-        $tag = Tag::find($case->source_id);
+
         event(new ImportantNotify('[后台]'.formatSlackUser($user).'更新产品案例:'.$tag->name));
         return self::createJsonData(true,['id'=>$id]);
     }

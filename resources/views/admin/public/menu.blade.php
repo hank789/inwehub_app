@@ -66,7 +66,7 @@
         </ul>
     </li>
 
-    @permission('admin.index.all')
+
     <li class="treeview">
         <a href="#">
             <i class="fa fa-suitcase"></i> <span>分类&标签</span>
@@ -78,6 +78,7 @@
         </ul>
     </li>
 
+    @permission('admin.index.all')
     <li class="treeview">
         <a href="#">
             <i class="fa fa-suitcase"></i> <span>项目</span>
@@ -121,6 +122,7 @@
             <li><a href="{{ route('admin.task.index') }}"><i class="fa fa-circle-o"></i> 任务管理</a></li>
         </ul>
     </li>
+    @endpermission
 
     <li class="treeview">
         <a href="#">
@@ -142,6 +144,7 @@
         </ul>
     </li>
 
+    @permission('admin.index.all')
     <li class="treeview">
         <a href="#">
             <i class="fa fa-clock-o"></i> <span>数据统计</span>
@@ -248,6 +251,7 @@
             <li><a href="{{ route('admin.scraper.wechat.article.index') }}"><i class="fa fa-circle-o"></i> 微信公众号文章管理</a></li>
         </ul>
     </li>
+    @endpermission
 
     <li class="header">常用菜单</li>
     <li><a href="{{ route('website.index') }}" target="_blank"><i class="fa fa-circle-o text-success"></i> <span>网站首页</span></a></li>
@@ -255,5 +259,4 @@
     <li><a href="https://www.inwehub.com/" target="_blank"><i class="fa fa-circle-o text-success"></i> <span>官网</span></a></li>
     <li><a href="{{ route('admin.tool.clearCache') }}"><i class="fa fa-circle-o text-info"></i> <span>清空缓存</span></a></li>
 
-    @endpermission
 </ul>

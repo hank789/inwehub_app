@@ -48,10 +48,11 @@
         "zhuzhichao/ip-location-zh": "^2.2"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^2.1",
+        "barryvdh/laravel-ide-helper": "2.4.*",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "barryvdh/laravel-ide-helper":"2.4.*",
-        "barryvdh/laravel-debugbar": "^2.1"
+        "xethron/migrations-generator": "^2.0"
     },
     "autoload": {
         "classmap": [
