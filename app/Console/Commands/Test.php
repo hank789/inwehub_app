@@ -27,6 +27,7 @@ use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
 use App\Models\Weapp\Tongji;
+use App\Services\RuoKuaiService;
 use App\Services\Spiders\Wechat\MpAutoLogin;
 use App\Services\Spiders\Wechat\MpSpider;
 use App\Services\Spiders\Wechat\WechatSogouSpider;
@@ -77,6 +78,10 @@ class Test extends Command
      */
     public function handle()
     {
+        $file = '/Users/wanghui/www/interv/intervapp/storage/app/attachments/1553509472gBBUumj.jpg';
+        $re = RuoKuaiService::dama(file_get_contents($file));
+        var_dump($re);
+        return;
         $url = 'http://mp.weixin.qq.com/profile?src=3&timestamp=1555486298&ver=1&signature=BS8ySGXU*BuFHNZoXpUAoUY6cLA*bPsF9hL3LtrmSz13WtmO9RFeS8ojYK*aKMkYmXgC3HDDufcqJRiOKAK4*Q==';
         $html = curlShadowsocks($url);
         var_dump($html);
