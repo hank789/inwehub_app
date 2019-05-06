@@ -135,9 +135,9 @@ class CategoryController extends AdminController
             $category->type = $parent->type;
             $parent->grade = 1;
             $parent->save();
+            $category->grade = 0;
         } else {
-            $formData['parent_id'] = 0;
-            $formData['grade'] = 0;
+            $category->grade = 1;
         }
 
         if($request->hasFile('icon')){
