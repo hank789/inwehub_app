@@ -141,7 +141,7 @@ class NewSubmissionJob implements ShouldQueue
                 $targetName = '在圈子['.$group->name.']';
             }
 
-            if (!$this->notifyAutoChannel) {
+            if (!$this->notifyAutoChannel || $user->id == 2571) {
                 feed()
                     ->causedBy($user)
                     ->performedOn($submission)
