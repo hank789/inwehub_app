@@ -19,6 +19,7 @@ class CreatePartnerOauthTable extends Migration
             $table->string('app_secret');
             $table->integer('product_id')->unsigned();
             $table->string('description');
+            $table->string('api_url');
             $table->integer('status')->unsigned()->default(1);
             $table->timestamps();
             $table->unique('app_id','partner_oauth_app_id');

@@ -128,6 +128,7 @@ class OauthController extends AdminController
         }
         $oauth->status = trim($request->input('status'));
         $oauth->description = trim($request->input('description'));
+        $oauth->api_url = trim($request->input('api_url'));
 
         $oauth->save();
 

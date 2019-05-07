@@ -62,7 +62,8 @@ Route::group(['namespace'=>'Share'], function() {
 Route::group(['namespace'=>'Partner', 'prefix'=>'partner'], function() {
     //发送短信验证码
     Route::post('service/sendPhoneCode','ServiceController@sendPhoneCode');
-
+    //获得产品信息
+    Route::post('service/getProductInfo','ServiceController@getProductInfo');
 });
 
 Route::group(['namespace'=>'Account'], function() {

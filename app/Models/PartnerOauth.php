@@ -28,7 +28,7 @@ use Illuminate\Database\Eloquent\Model;
 class PartnerOauth extends Model
 {
     protected $table = 'partner_oauth';
-    protected $fillable = ['app_id', 'app_secret','status','description','product_id'];
+    protected $fillable = ['app_id', 'app_secret','status','description','product_id','api_url'];
 
     public function product() {
         return $this->hasOne('App\Models\Tag','id','product_id');

@@ -54,6 +54,7 @@
                                         <th>密匙</th>
                                         <th>产品</th>
                                         <th>描述</th>
+                                        <th>api地址</th>
                                         <th>状态</th>
                                         <th>操作</th>
                                     </tr>
@@ -64,6 +65,7 @@
                                             <td>{{ $oauth->app_secret }}</td>
                                             <td>{{ $oauth->product->name }}</td>
                                             <td>{{ $oauth->description }}</td>
+                                            <td>{{ $oauth->api_url }}</td>
                                             <td><span class="label @if($oauth->status===0) label-danger  @else label-success @endif">{{ trans_app_version_status($oauth->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
