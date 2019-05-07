@@ -450,7 +450,7 @@ if (! function_exists('trans_app_version_status')) {
 
     function trans_app_version_status($status){
         $map = [
-            0 => 'IOS审核中',
+            0 => '审核中',
             1 => '已审核',
             -1 => '已禁止'
         ];

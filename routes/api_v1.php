@@ -57,6 +57,14 @@ Route::group(['namespace'=>'Share'], function() {
 
 });
 
+
+//定制化客户
+Route::group(['namespace'=>'Partner', 'prefix'=>'partner'], function() {
+    //发送短信验证码
+    Route::post('service/sendPhoneCode','ServiceController@sendPhoneCode');
+
+});
+
 Route::group(['namespace'=>'Account'], function() {
     Route::post('profile/infoByUuid','ProfileController@infoByUuid');
 

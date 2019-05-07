@@ -214,7 +214,7 @@ $(function(){
     if( $("#select_tags").length > 0 ){
         $("#select_tags").select2({
             theme:'bootstrap',
-            placeholder: "选择话题",
+            placeholder: "选择标签",
             ajax: {
                 url: '/manager/ajax/loadTags',
                 dataType: 'json',

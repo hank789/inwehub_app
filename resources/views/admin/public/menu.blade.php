@@ -56,6 +56,16 @@
 
     <li class="treeview">
         <a href="#">
+            <i class="fa fa-suitcase"></i> <span>定制客户</span>
+            <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu" id="manage_partner">
+            <li><a href="{{ route('admin.partner.oauth.index') }}"><i class="fa fa-circle-o"></i> 客户管理</a></li>
+        </ul>
+    </li>
+
+    <li class="treeview">
+        <a href="#">
             <i class="fa fa-suitcase"></i> <span>服务点评</span>
             <i class="fa fa-angle-left pull-right"></i>
         </a>

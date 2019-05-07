@@ -28,6 +28,7 @@ use App\Models\DownVote;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
 use App\Models\Notification;
+use App\Models\PartnerOauth;
 use App\Models\Pay\Settlement;
 use App\Models\Question;
 use App\Models\QuestionInvitation;
@@ -43,6 +44,7 @@ use App\Models\User;
 use App\Models\UserTag;
 use App\Notifications\NewQuestionAnswered;
 use App\Notifications\NewQuestionConfirm;
+use App\Services\Hmac\Server;
 use App\Services\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -997,6 +999,18 @@ trait BaseController {
             Cache::forever($cacheKey,$return);
         }
         return $return;
+    }
+
+    protected function validPartnerOauth(Request $request) {
+        $app_id = $request->input('auth_key');
+        $oauth = PartnerOauth::where('app_id',$app_id)->where('status',1)->first();
+        if (!$oauth) {
+            throw new ApiException(ApiException::TOKEN_INVALID);
+        }
+        $res = Server::instance()->validate($request->all());
+        if ($res['code'] != 1000) {
+            throw new ApiException(ApiException::BAD_REQUEST);
+        }
     }
 
 }

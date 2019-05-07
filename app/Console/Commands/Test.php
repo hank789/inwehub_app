@@ -27,6 +27,7 @@ use App\Models\Tag;
 use App\Models\TagCategoryRel;
 use App\Models\Taggable;
 use App\Models\Weapp\Tongji;
+use App\Services\Hmac\Client;
 use App\Services\RuoKuaiService;
 use App\Services\Spiders\Wechat\MpAutoLogin;
 use App\Services\Spiders\Wechat\MpSpider;
@@ -78,6 +79,9 @@ class Test extends Command
      */
     public function handle()
     {
+        $re = Client::instance()->request('http://zhihu.hank.com:8080/api/home');
+        var_dump($re);
+        return;
         $file = '/Users/wanghui/www/interv/intervapp/storage/app/attachments/1553509472gBBUumj.jpg';
         $re = RuoKuaiService::dama(file_get_contents($file));
         var_dump($re);
