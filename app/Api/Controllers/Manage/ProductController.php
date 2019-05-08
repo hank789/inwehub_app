@@ -839,6 +839,15 @@ class ProductController extends Controller {
         if ($parse_url['host'] != 'mp.weixin.qq.com') {
             throw new ApiException(ApiException::PRODUCT_CASE_URL_INVALID);
         }
+        $aid = Cache::get($link_url);
+        if ($aid) {
+            $article = WechatWenzhangInfo::find($aid);
+            return self::createJsonData(true,[
+                'title' => $article->title,
+                'author' => $article->author,
+                'date' => $article->date_time
+            ]);
+        }
         $linkInfo = getWechatUrlInfo($link_url,false,true);
         $mpInfo = WechatMpInfo::where('wx_hao',$linkInfo['wxHao'])->first();
         if (!$mpInfo) {
@@ -881,7 +890,7 @@ class ProductController extends Controller {
             ]);
             RateLimiter::instance()->hSet('wechat_article',$article_uuid,$article->_id);
         }
-        Cache::put($link_url,$article->_id,30);
+        Cache::put($link_url,$article->_id,120);
         return self::createJsonData(true,[
             'title' => $article->title,
             'author' => $article->author,
@@ -925,10 +934,19 @@ class ProductController extends Controller {
         $user = $request->user();
         $id = $request->input('source_id');
         $model = ContentCollection::find($id);
+        $mpId = $model->sort;
         $this->checkUserProduct($user->id,$model->source_id);
         $model->delete();
         $this->dispatch(new UpdateProductInfoCache($model->source_id));
         $tag = Tag::find($model->source_id);
+        $exist = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)
+            ->where('sort',$mpId)
+            ->first();
+        if (!$exist) {
+            $mpInfo = WechatMpInfo::find($mpId);
+            $mpInfo->status = 0;
+            $mpInfo->save();
+        }
         event(new ImportantNotify('[后台]'.formatSlackUser($user).'删除产品内容源:'.$tag->name));
         return self::createJsonData(true);
     }
