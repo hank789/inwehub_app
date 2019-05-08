@@ -34,6 +34,7 @@ class DailyReadReport extends Command
      */
     public function handle()
     {
+        return;
         $data = MixpanelService::instance()->request(['events'],[
             'event' => ['inwehub:discover_detail','inwehub:dianping-product-detail','inwehub:dianping-comment-detail','inwehub:ask-offer-answers','inwehub:ask-offer-detail','inwehub:read_page_detail','inwehub:dianping-add','inwehub:ask','inwehub:discover_add'],
             'type'  => 'general',

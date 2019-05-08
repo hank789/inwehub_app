@@ -55,6 +55,7 @@ class Newrank extends Command {
      */
     public function handle()
     {
+        return;
         $mpInfos = WechatMpInfo::where('status',1)->orderBy('update_time','asc')->get();
         $this->ql = QueryList::getInstance();
         $this->getAuth();
