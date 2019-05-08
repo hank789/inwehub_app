@@ -1,10 +1,13 @@
 <?php namespace App\Models\Scraper;
 
+use App\Events\Frontend\System\ExceptionNotify;
 use App\Models\ContentCollection;
+use App\Models\PartnerOauth;
 use App\Models\RecommendRead;
 use App\Models\Relations\MorphManyTagsTrait;
 use App\Models\Submission;
 use App\Models\Tag;
+use App\Services\Hmac\Client;
 use App\Services\RateLimiter;
 use Illuminate\Database\Eloquent\Model;
 /**
@@ -89,6 +92,16 @@ class WechatWenzhangInfo extends Model {
             //更新产品信息缓存
             foreach ($tag_ids as $id) {
                 RateLimiter::instance()->hSet('product_pending_update_cache',$id,$id);
+                //推送文章给定制化客户
+                $partner = PartnerOauth::where('product_id',$id)->where('status',1)->first();
+                if ($partner) {
+                    $article = WechatWenzhangInfo::find($this->_id);
+                    try {
+                        Client::instance()->request($partner->api_url.'/api/system/pushArticle/'.$id,$article->toArray());
+                    } catch (\Exception $e) {
+                        event(new ExceptionNotify('文章推送给客户['.$partner->app_id.']失败：'.$e->getMessage()));
+                    }
+                }
             }
         }
     }

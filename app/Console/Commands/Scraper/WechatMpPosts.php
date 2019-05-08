@@ -144,10 +144,9 @@ class WechatMpPosts extends Command {
                     $query = parse_query($parse_url['query']);
                     $mpInfo->qr_url = $query['__biz'];
                 }
-                $article->addProductTag();
-
                 RateLimiter::instance()->hSet('wechat_article',$uuid,$article->_id);
                 (new GetArticleBody($article->_id))->handle();
+                $article->addProductTag();
                 if ($mpInfo->is_auto_publish == 1 && $article->date_time >= date('Y-m-d 00:00:00',strtotime('-1 days'))) {
                     dispatch(new ArticleToSubmission($article->_id));
                 }
