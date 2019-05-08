@@ -33,6 +33,7 @@ class DailyUserActiveReport extends Command
      */
     public function handle()
     {
+        return;
         $data = MixpanelService::instance()->request(['events'],[
             'event' => ['inwehub:analysis:router:count'],
             'type'  => 'unique',

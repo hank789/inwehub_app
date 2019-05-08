@@ -110,6 +110,7 @@ class WallstreetcnNews extends Command {
             if ($exist_submission_id) continue;
             $source_uri = $item['resource']['source_uri'];
             $arr = parse_url($source_uri);
+            if (!isset($arr['query'])) continue;
             $url_query = parse_query($arr['query']);
             if (isset($url_query['target_uri']) && $url_query['target_uri']) {
                 $source_uri = $url_query['target_uri'];
