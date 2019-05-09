@@ -124,6 +124,10 @@ class ProductController extends AdminController
             unset($data['name']);
             $tag->update($data);
         }
+        $keywords = $request->input('description');
+        $website = $request->input('website');
+
+        $tag->setDescription(['keywords'=>$keywords,'website'=>$website]);
         TagsLogic::cacheProductTags($tag);
         foreach ($category_ids as $category_id) {
             if ($category_id<=0) continue;
