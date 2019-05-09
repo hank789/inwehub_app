@@ -281,7 +281,9 @@ class ProductController extends AdminController
 
         $keywords = $request->input('description');
         $advance_desc = $request->input('advance_desc');
-        $tag->setDescription(['keywords'=>$keywords,'cover_pic'=>$cover_pic,'advance_desc'=>$advance_desc]);
+        $website = $request->input('website');
+
+        $tag->setDescription(['keywords'=>$keywords,'cover_pic'=>$cover_pic,'advance_desc'=>$advance_desc,'website'=>$website]);
         $tag->save();
         if($request->hasFile('logo') || $oldSummary != $tag->summary){
             $tag->clearMediaCollection('images_big');

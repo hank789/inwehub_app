@@ -305,6 +305,16 @@ class Tag extends Model implements HasMedia
         return $advance_desc;
     }
 
+    public function getWebsite() {
+        $description = json_decode($this->description,true);
+        if (is_array($description)) {
+            $website = $description['website']??'';
+        } else {
+            $website = '';
+        }
+        return $website;
+    }
+
     public function getOnlyShowRelateProducts() {
         $description = json_decode($this->description,true);
         if (is_array($description)) {

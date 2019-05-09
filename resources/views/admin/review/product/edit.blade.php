@@ -75,6 +75,11 @@
                                 </select>
                             </div>
 
+                            <div class="form-group @if ($errors->has('website')) has-error @endif">
+                                <label for="website">产品官网</label>
+                                <input type="text" name="website" class="form-control " placeholder="产品官网" value="{{ old('website',$tag->tag->getWebsite()) }}">
+                                @if ($errors->has('website')) <p class="help-block">{{ $errors->first('website') }}</p> @endif
+                            </div>
 
                             <div class="form-group @if ($errors->has('summary')) has-error @endif">
                                 <label for="name">简介(供前台展示)</label>
