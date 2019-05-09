@@ -69,6 +69,7 @@ class ServiceController extends Controller
             $article = WechatWenzhangInfo::find($aid);
             $mpInfo = WechatMpInfo::find($article->mp_id);
             return self::createJsonData(true,[
+                'mp_id' => $article->mp_id,
                 'body' => $article->body,
                 'title' => $article->title,
                 'author' => $article->author,
@@ -121,6 +122,7 @@ class ServiceController extends Controller
         }
         Cache::put($link_url,$article->_id,120);
         return self::createJsonData(true,[
+            'mp_id' => $article->mp_id,
             'body' => $article->body,
             'title' => $article->title,
             'author' => $article->author,
@@ -134,12 +136,10 @@ class ServiceController extends Controller
     public function fetchSourceInfo(Request $request) {
         $this->validPartnerOauth($request);
         $validateRules = [
-            'product_id' => 'required',
             'source'   => 'required',
         ];
         $this->validate($request,$validateRules);
         $wx_hao = trim($request->input('source'));
-        $product_id = $request->input('product_id');
         if (count(parse_url($wx_hao))>=2) {
             throw new ApiException(ApiException::PRODUCT_SOURCE_URL_INVALID);
         }
