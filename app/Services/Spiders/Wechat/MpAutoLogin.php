@@ -162,7 +162,11 @@ class MpAutoLogin
             'username' => $_username,
             'pwd' => md5($_password),
             'f' => 'json',
-            'imgcode' => ""
+            'imgcode' => "",
+            'ajax' => 1,
+            'userlang' => 'zh_CN',
+            'lang' => 'zh_CN',
+            'redirect_url' => ''
         );
         $_input["refer"] = "https://mp.weixin.qq.com";
         $_res = $this->fetch($this->_apis["login"], $_input);
@@ -170,6 +174,7 @@ class MpAutoLogin
             var_dump($_res["base_resp"]["err_msg"]);
             return false;
         }
+        //var_dump($_res);
         $this->_redirect_url = "https://mp.weixin.qq.com" . $_res["redirect_url"];//跳转路径
         return true;
     }
