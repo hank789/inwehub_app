@@ -97,7 +97,7 @@ class WechatWenzhangInfo extends Model {
                 if ($partner) {
                     $article = WechatWenzhangInfo::find($this->_id);
                     try {
-                        Client::instance()->request($partner->api_url.'/api/system/pushArticle/'.$id,$article->toArray());
+                        $res = Client::instance($partner->app_id,$partner->app_secret)->request($partner->api_url.'/api/system/pushArticle/'.$id,$article->toArray());
                     } catch (\Exception $e) {
                         event(new ExceptionNotify('文章推送给客户['.$partner->app_id.']失败：'.$e->getMessage()));
                     }

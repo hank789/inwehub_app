@@ -848,7 +848,7 @@ class ProductController extends AdminController
         }
         $spider = new MpSpider();
         $data = $spider->getGzhInfo($wx_hao);
-        if ($data) {
+        if ($data && isset($data['wechatid']) && $data['wechatid']) {
             $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
             if (!$info) {
                 $mpInfo = WechatMpInfo::create([
@@ -868,7 +868,7 @@ class ProductController extends AdminController
         } else {
             $spider2 = new WechatSogouSpider();
             $data = $spider2->getGzhInfo($wx_hao);
-            if ($data['name']) {
+            if (isset($data['wechatid']) && $data['wechatid']) {
                 $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
                 if (!$info) {
                     $mpInfo = WechatMpInfo::create([

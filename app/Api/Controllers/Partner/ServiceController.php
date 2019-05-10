@@ -44,11 +44,8 @@ class ServiceController extends Controller
         $app_id = $request->input('auth_key');
         $oauth = PartnerOauth::where('app_id',$app_id)->where('status',1)->first();
         $product = Tag::find($oauth->product_id);
-        $data = $product->getProductCacheInfo();
-        if (!$data) {
-            $data = (new UpdateProductInfoCache($product->id))->handle();
-        }
-        $oauth->api_url = trim($request->input('api_url'));
+        $data = $product->toArray();
+        $oauth->api_url = trim(trim($request->input('api_url')),"/");
         $oauth->save();
         return self::createJsonData(true,$data);
     }
@@ -158,7 +155,7 @@ class ServiceController extends Controller
             $data = null;
         }
 
-        if ($data) {
+        if (isset($data['wechatid']) && $data['wechatid']) {
             $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
             if (!$info) {
                 $mpInfo = WechatMpInfo::create([
@@ -178,7 +175,7 @@ class ServiceController extends Controller
         } else {
             $spider2 = new WechatSogouSpider();
             $data = $spider2->getGzhInfo($wx_hao,true);
-            if ($data['name']) {
+            if (isset($data['wechatid']) && $data['wechatid']) {
                 $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
                 if (!$info) {
                     $mpInfo = WechatMpInfo::create([
@@ -239,7 +236,7 @@ class ServiceController extends Controller
                     $data = null;
                 }
 
-                if ($data) {
+                if (isset($data['wechatid']) && $data['wechatid']) {
                     $info = WechatMpInfo::where('wx_hao',$source)->first();
                     if (!$info) {
                         $mpInfo = WechatMpInfo::create([
@@ -259,7 +256,7 @@ class ServiceController extends Controller
                 } else {
                     $spider2 = new WechatSogouSpider();
                     $data = $spider2->getGzhInfo($source,true);
-                    if ($data['name']) {
+                    if (isset($data['wechatid']) && $data['wechatid']) {
                         $info = WechatMpInfo::where('wx_hao',$source)->first();
                         if (!$info) {
                             $mpInfo = WechatMpInfo::create([

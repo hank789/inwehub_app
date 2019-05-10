@@ -1007,7 +1007,7 @@ trait BaseController {
         if (!$oauth) {
             throw new ApiException(ApiException::TOKEN_INVALID);
         }
-        $res = Server::instance()->validate($request->all());
+        $res = Server::instance($oauth->app_id,$oauth->app_secret)->validate($request->all());
         if ($res['code'] != 1000) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }

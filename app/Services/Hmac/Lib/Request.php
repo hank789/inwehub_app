@@ -100,9 +100,11 @@ class Request
      */
     private function signature(array $payload, $method, $uri, $secret)
     {
-        $payload = urldecode(http_build_query($payload));
-
-        $payload = implode("\n", array($method, $uri, $payload));
+        $s = '';
+        foreach ($payload as $key=>$val) {
+            $s .= $key.'='.$val.'&';
+        }
+        $payload = implode("\n", array($method, $uri, $s));
 
         return hash_hmac('sha256', $payload, $secret);
     }

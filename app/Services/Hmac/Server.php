@@ -54,9 +54,9 @@ class Server
         }
     }
 
-    public static function instance() {
+    public static function instance($app_id,$app_secret) {
         if (!self::$instance) {
-            self::$instance = new self(config('app.app_id'),config('app.app_secret'));
+            self::$instance = new self($app_id,$app_secret);
         }
         return self::$instance;
     }
