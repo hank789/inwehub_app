@@ -16,14 +16,16 @@ use Illuminate\Http\Request;
 
 class IndexController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        \Log::info('test',[$request->url()]);
         //return view('inspinia.home.index');
         return '欢迎来到Inwehub';
     }
 
     public function articleInfo($id, Request $request)
     {
+        \Log::info('test',[$request->url()]);
         $from_source = $request->input('inwehub_user_device','weapp_dianping');
         $miniprogram_back = '';
         $logo = '';

@@ -57,6 +57,23 @@ Route::group(['namespace'=>'Share'], function() {
 
 });
 
+
+//定制化客户
+Route::group(['namespace'=>'Partner', 'prefix'=>'partner'], function() {
+    //发送短信验证码
+    Route::post('service/sendPhoneCode','ServiceController@sendPhoneCode');
+    //获得产品信息
+    Route::post('service/getProductInfo','ServiceController@getProductInfo');
+    //获取微信文章信息
+    Route::post('service/fetWechatUrlInfo','ServiceController@fetWechatUrlInfo');
+    //获取微信公众号信息
+    Route::post('service/fetchSourceInfo','ServiceController@fetchSourceInfo');
+    //添加微信公众号
+    Route::post('service/addSource','ServiceController@addSource');
+    //删除微信公众号
+    Route::post('service/removeSource','ServiceController@removeSource');
+});
+
 Route::group(['namespace'=>'Account'], function() {
     Route::post('profile/infoByUuid','ProfileController@infoByUuid');
 

@@ -228,7 +228,7 @@ class Submission extends Model implements HasMedia {
         return strip_tags($this->title,'<a><span>');
     }
 
-    public function formatListItem($user, $withGroup = true) {
+    public function formatListItem($user, $withGroup = true, $inwehub_user_device = 'web') {
         $submission = $this;
         //发布文章
         $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
@@ -290,6 +290,11 @@ class Submission extends Model implements HasMedia {
         if ($submission->type == 'link') {
             $feed_type = Feed::FEED_TYPE_SUBMIT_READHUB_LINK;
             $sourceData['link_url'] = $submission->data['url'];
+            if (!in_array($inwehub_user_device,['web','wechat']) && $sourceData['domain'] == 'mp.weixin.qq.com') {
+                if (!(str_contains($sourceData['link_url'], 'wechat_redirect') || str_contains($sourceData['link_url'], '__biz=') || str_contains($sourceData['link_url'], '/s/'))) {
+                    $sourceData['link_url'] = config('app.url').'/articleInfo/'.$submission->id.'?inwehub_user_device='.$inwehub_user_device;
+                }
+            }
         }
         if ($submission->type == 'review') {
             $url = '/dianping/comment/'.$submission->slug;

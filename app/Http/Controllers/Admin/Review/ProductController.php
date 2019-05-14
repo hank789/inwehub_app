@@ -853,8 +853,8 @@ class ProductController extends AdminController
             return $this->success($request->input('url_previous'),'微信公众号添加成功');
         }
         $spider = new MpSpider();
-        $data = $spider->getGzhInfo($wx_hao);
-        if ($data) {
+        $data = $spider->getGzhInfo($wx_hao,false);
+        if ($data && isset($data['wechatid']) && $data['wechatid']) {
             $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
             if (!$info) {
                 $mpInfo = WechatMpInfo::create([
@@ -874,7 +874,7 @@ class ProductController extends AdminController
         } else {
             $spider2 = new WechatSogouSpider();
             $data = $spider2->getGzhInfo($wx_hao);
-            if ($data['name']) {
+            if (isset($data['wechatid']) && $data['wechatid']) {
                 $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
                 if (!$info) {
                     $mpInfo = WechatMpInfo::create([

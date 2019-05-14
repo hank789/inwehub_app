@@ -400,6 +400,18 @@ Route::group(['prefix' => 'weapp','namespace'=>'Weapp'], function() {
 
 });
 
+//合作伙伴管理
+Route::group(['prefix' => 'partner','namespace'=>'Partner'], function() {
+    Route::get('oauth/index',['as'=>'admin.partner.oauth.index','uses'=>'OauthController@index']);
+    Route::get('oauth/create',['as'=>'admin.partner.oauth.create','uses'=>'OauthController@create']);
+    Route::post('oauth/store',['as'=>'admin.partner.oauth.store','uses'=>'OauthController@store']);
+    Route::get('oauth/edit/{id}',['as'=>'admin.partner.oauth.edit','uses'=>'OauthController@edit'])->where(['id'=>'[0-9]+']);
+    Route::post('oauth/update',['as'=>'admin.partner.oauth.update','uses'=>'OauthController@update']);
+    Route::post('oauth/destroy',['as'=>'admin.partner.oauth.destroy','uses'=>'OauthController@destroy']);
+    Route::post('oauth/verify',['as'=>'admin.partner.oauth.verify','uses'=>'OauthController@verify']);
+
+});
+
 //日志查看
 Route::get('loginLog',['as'=>'admin.logger.login','uses'=>'LoggerController@loginLog']);
 Route::get('doingLog',['as'=>'admin.logger.doing','uses'=>'LoggerController@doingLog']);

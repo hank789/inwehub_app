@@ -25,6 +25,7 @@ class FeedController extends Controller
         $page = $request->input('page',1);
         $alertMsg = '';
         $last_seen = RateLimiter::instance()->hGet('user_feed_last_seen',$user->id);
+        $inwehub_user_device = $request->input('inwehub_user_device','web');
         $query = Feed::query();
         switch ($search_type) {
             case 1:
@@ -145,7 +146,7 @@ class FeedController extends Controller
             if ($page == 1 && $last_seen < $feed->id) {
                 $last_seen = $feed->id;
             }
-            $sourceData = $feed->getSourceFeedData($search_type);
+            $sourceData = $feed->getSourceFeedData($search_type,$inwehub_user_device);
             if (empty($sourceData)) continue;
             $data[] = [
                 'id' => $feed->id,
