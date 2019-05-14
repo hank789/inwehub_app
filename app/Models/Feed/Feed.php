@@ -136,7 +136,7 @@ class Feed extends Model
 
     }
 
-    public function getSourceFeedData($search_type=0) {
+    public function getSourceFeedData($search_type=0,$inwehub_user_device='web') {
         $url = '';
         $data = [];
         switch ($this->feed_type) {
@@ -251,7 +251,7 @@ class Feed extends Model
                 //发布文章
                 $submission = Submission::find($this->source_id);
                 if (!$submission) return null;
-                $item = $submission->formatListItem(Auth::user());
+                $item = $submission->formatListItem(Auth::user(),true,$inwehub_user_device);
                 $data = $item['feed'];
                 $url = $item['url'];
                 $this->feed_type = $item['feed_type'];
