@@ -389,7 +389,7 @@ class IndexController extends Controller {
 
         if ($page == 1) {
             if ($last_seen) {
-                $ids = $query->take(100)->pluck('id')->toArray();
+                $ids = $query->take(99)->pluck('id')->toArray();
                 $newCount = array_search($last_seen,$ids);
                 if ($newCount === false) {
                     $newCount = '99+';
@@ -429,12 +429,15 @@ class IndexController extends Controller {
                 ->where('supportable_id',$item->id)
                 ->where('supportable_type',Submission::class)
                 ->exists();
-            $tags = $item->tags()->select('tags.id','tags.name')->get()->toArray();
-            if ($item->isRecommendRead()) {
-                $tags[] = [
-                    'id' => -1,
-                    'name'=>'推荐'
-                ];
+            $tags = [];
+            if ($user->id > 0 && $user->isRole('operatormanager')) {
+                $tags = $item->tags()->select('tags.id','tags.name')->get()->toArray();
+                if ($item->isRecommendRead()) {
+                    $tags[] = [
+                        'id' => -1,
+                        'name'=>'推荐'
+                    ];
+                }
             }
             $img = $item->data['img']??'';
             if (is_array($img)) {
