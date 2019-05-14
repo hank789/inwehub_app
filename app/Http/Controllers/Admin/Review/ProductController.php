@@ -847,7 +847,7 @@ class ProductController extends AdminController
             return $this->success($request->input('url_previous'),'微信公众号添加成功');
         }
         $spider = new MpSpider();
-        $data = $spider->getGzhInfo($wx_hao);
+        $data = $spider->getGzhInfo($wx_hao,false);
         if ($data && isset($data['wechatid']) && $data['wechatid']) {
             $info = WechatMpInfo::where('wx_hao',$wx_hao)->first();
             if (!$info) {

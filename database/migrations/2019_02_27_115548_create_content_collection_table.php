@@ -16,7 +16,7 @@ class CreateContentCollectionTable extends Migration
         Schema::create('content_collection', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('content_type')->unsigned()->index()->default(0);
-            $table->tinyInteger('sort')->unsigned()->index()->default(0);
+            $table->integer('sort')->unsigned()->index()->default(0);
             $table->integer('source_id')->unsigned()->index()->default(0);
             $table->json('content');
             $table->tinyInteger('status')->unsigned()->index()->default(1);

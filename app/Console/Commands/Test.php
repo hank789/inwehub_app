@@ -79,6 +79,18 @@ class Test extends Command
      */
     public function handle()
     {
+        $list = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)->get();
+        foreach ($list as $item) {
+            if ($item->content['mp_id'] != $item->sort) {
+                $item->sort = $item->content['mp_id'];
+                $item->save();
+                $articles = WechatWenzhangInfo::where('mp_id',$item->sort)->where('date_time','>=','2019-05-01 00:00:00')->orderBy('_id','desc')->get();
+                foreach ($articles as $article) {
+                    $article->addProductTag();
+                }
+            }
+        }
+        return;
         $re = Client::instance()->request('http://zhihu.hank.com:8080/api/home');
         var_dump($re);
         return;
