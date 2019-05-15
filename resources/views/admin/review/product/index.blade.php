@@ -80,6 +80,8 @@
                                         <th>名称</th>
                                         <th>分类</th>
                                         <th>点评数</th>
+                                        <th>官网</th>
+                                        <th>公众号</th>
                                         <th>简介</th>
                                         <th>状态</th>
                                         <th>操作</th>
@@ -94,8 +96,10 @@
                                             <td><a href="{{ route('ask.tag.index',['id'=>$tag->tag_id]) }}" target="_blank">{{ $tag->name }}</a></td>
                                             <td>{{ implode(',',$tag->tag->categories->pluck('name')->toArray()) }} <a class="btn-edit_category" data-source_id = "{{ $tag->tag_id }}" data-title="{{ $tag->tag->name }}" data-categories="{{ implode(',',$tag->tag->categories->pluck('id')->toArray()) }}" data-toggle="tooltip" title="修改分类"><i class="fa fa-edit"></i></a></td>
                                             <td>{{ $tag->reviews.'|'.$tag->category->name }}</td>
+                                            <td>{{ $tag->tag->getWebsite() }}</td>
+                                            <td>{{ implode(',',$tag->tag->getGzhNames()) }}</td>
                                             <td width="30%">{{ $tag->summary }}</td>
-                                            <td><span class="label @if($tag->status===0) label-warning  @else label-success @endif">{{ trans_common_status($tag->status) }}</span>{{ $tag->created_at }} </td>
+                                            <td><span class="label @if($tag->status===0) label-warning  @else label-success @endif">{{ trans_common_status($tag->status) }}</span> </td>
                                             <td>
                                                 <div class="btn-group-xs" >
                                                     @if ($tag->status == 0)

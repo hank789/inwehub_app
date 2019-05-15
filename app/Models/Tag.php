@@ -315,6 +315,17 @@ class Tag extends Model implements HasMedia
         return $website;
     }
 
+    public function getGzhNames() {
+        $contents = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)
+            ->where('source_id',$this->id)
+            ->get();
+        $names = [];
+        foreach ($contents as $content) {
+            $names[]= $content->content['wx_hao'];
+        }
+        return $names;
+    }
+
     public function getOnlyShowRelateProducts() {
         $description = json_decode($this->description,true);
         if (is_array($description)) {
