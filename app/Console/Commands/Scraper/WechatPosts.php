@@ -121,7 +121,7 @@ class WechatPosts extends Command {
                         RateLimiter::instance()->hSet('wechat_article',$uuid,$article->_id);
                         (new GetArticleBody($article->_id))->handle();
                         $article->addProductTag();
-                        if ($mpInfo->is_auto_publish == 1 && $article->date_time >= date('Y-m-d 00:00:00',strtotime('-1 days'))) {
+                        if ($article->date_time >= date('Y-m-d 00:00:00',strtotime('-1 days'))) {
                             dispatch(new ArticleToSubmission($article->_id));
                         }
                         sleep(5);
