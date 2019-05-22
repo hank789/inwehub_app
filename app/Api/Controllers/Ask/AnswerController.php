@@ -288,6 +288,7 @@ class AnswerController extends Controller
         $bottom_id = $request->input('bottom_id',0);
         $type = $request->input('type',0);
         $uuid = $request->input('uuid');
+        $returnType = $request->input('return_type');
         $user = $request->user();
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
@@ -339,6 +340,11 @@ class AnswerController extends Controller
                 'created_at' => (string)$question->created_at,
                 'answer_promise_time' =>  $answer_promise_time
             ];
+        }
+        if ($returnType) {
+            $return = $answers->toArray();
+            $return['data'] = $list;
+            return self::createJsonData(true,$return);
         }
         return self::createJsonData(true,$list);
     }

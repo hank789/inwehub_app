@@ -831,6 +831,8 @@ class QuestionController extends Controller
         $bottom_id = $request->input('bottom_id',0);
         $type = $request->input('type',0);
         $uuid = $request->input('uuid');
+        $returnType = $request->input('return_type');
+
         $loginUser = $request->user();
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
@@ -887,6 +889,11 @@ class QuestionController extends Controller
                 'answer_user_avatar_url' => $bestAnswer ? $bestAnswer->user->avatar : '',
                 'answer_time' => $bestAnswer ? (string)$bestAnswer->created_at : ''
             ];
+        }
+        if ($returnType) {
+            $return = $questions->toArray();
+            $return['data'] = $list;
+            return self::createJsonData(true,$return);
         }
         return self::createJsonData(true,$list);
     }
