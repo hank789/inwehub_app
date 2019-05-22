@@ -134,7 +134,7 @@ class WallstreetcnNews extends Command {
                 'thumbnail' => null,
                 'providerName' => $item['resource']['source_name'],
                 'publishedTime' => $item['resource']['display_time'],
-                'domain' => domain($item['resource']['source_uri']),
+                'domain' => domain($source_uri),
             ];
 
             $data['current_address_name'] = '';
