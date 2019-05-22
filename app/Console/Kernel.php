@@ -123,10 +123,10 @@ class Kernel extends ConsoleKernel
             //$schedule->command('crontab:refresh:cookie:task')->hourly();
             $schedule->command('scraper:atom')->cron('0 8,10,16,20 * * *');
             //$schedule->command('scraper:wallstreetcn:news')->cron('30 8,10,16,20 * * *');
-            $schedule->command('scraper:rss')->cron('30 7,9,11,13,15,17,19,21,22,23 * * *');
+            $schedule->command('scraper:rss')->cron('30 9,15,19,21,22,23 * * *');
             //$schedule->command('scraper:bid:info')->cron('20 12,19,21 * * *');
             $schedule->command('scraper:bid:search')->cron('40 7,10,13,17,21 * * *');
-            $schedule->command('scraper:google:news')->hourly();
+            $schedule->command('scraper:google:news')->cron('55 8,11,14,17,20,23,2,5 * * *');
             $schedule->command('scraper:itjuzi:news')->cron('40 7,13,17,21 * * *');
             $schedule->command('scraper:sap:news')->cron('50 8,12,14,16,19,22 * * *');
             $schedule->command('scraper:indeed:jobs')->cron('55 7,10,13,15,17,21 * * *');
