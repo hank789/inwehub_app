@@ -79,23 +79,46 @@ class Test extends Command
      */
     public function handle()
     {
-        $list = ContentCollection::where('content_type',ContentCollection::CONTENT_TYPE_TAG_WECHAT_GZH)->get();
-        foreach ($list as $item) {
-            if ($item->content['mp_id'] != $item->sort) {
-                $item->sort = $item->content['mp_id'];
-                $item->save();
-                $articles = WechatWenzhangInfo::where('mp_id',$item->sort)->where('date_time','>=','2019-05-01 00:00:00')->orderBy('_id','desc')->get();
-                foreach ($articles as $article) {
-                    $article->addProductTag();
+        $cellData = [];
+        $cellData[] = ['文章ID','文章标题','文章链接','产品','专辑','文章创建时间'];
+        $page = 1;
+        $query = WechatWenzhangInfo::where('source_type',1)->where('type',WechatWenzhangInfo::TYPE_TAG_NEWS);
+        $newsList = $query->orderBy('date_time','asc')->simplePaginate(100,['*'],'page',$page);
+        while ($newsList->count() > 0) {
+            foreach ($newsList as $news) {
+                $tags = $news->tags;
+                $tagString = '';
+                $albums = '';
+                foreach ($tags as $tag) {
+                    $tagString .= $tag->name.',';
+                    $categoryRels = TagCategoryRel::where('tag_id',$tag->id)->where('type',TagCategoryRel::TYPE_REVIEW)->orderBy('support_rate','desc')->get();
+                    foreach ($categoryRels as $categoryRel) {
+                        $category = Category::where('type','product_album')->where('id',$categoryRel->category_id)->first();
+                        if ($category) {
+                            $albums .= $category->name.',';
+                        }
+                    }
                 }
+                $cellData[] = [
+                    $news->_id,
+                    $news->title,
+                    config('app.url').'/articleInfo/'.$news->_id.'?inwehub_user_device=weapp_dianping',
+                    trim($tagString,','),
+                    trim($albums,','),
+                    $news->date_time
+                ];
             }
+            $page ++;
+            $newsList = $query->orderBy('date_time','asc')->simplePaginate(100,['*'],'page',$page);
         }
-        return;
-        $re = Client::instance()->request('http://zhihu.hank.com:8080/api/home');
-        var_dump($re);
+        Excel::create('tags',function($excel) use ($cellData){
+            $excel->sheet('score', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->store('xlsx');
         return;
         $file = '/Users/wanghui/www/interv/intervapp/storage/app/attachments/1553509472gBBUumj.jpg';
-        $re = RuoKuaiService::dama(file_get_contents($file));
+        $re = RuoKuaiService::ruokuai(file_get_contents($file));
         var_dump($re);
         return;
         $url = 'http://mp.weixin.qq.com/profile?src=3&timestamp=1555486298&ver=1&signature=BS8ySGXU*BuFHNZoXpUAoUY6cLA*bPsF9hL3LtrmSz13WtmO9RFeS8ojYK*aKMkYmXgC3HDDufcqJRiOKAK4*Q==';
