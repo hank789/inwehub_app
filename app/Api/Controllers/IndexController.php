@@ -387,12 +387,15 @@ class IndexController extends Controller {
             $query = $query->orderBy('created_at','desc');
         }
 
+
+        $reads = $query->simplePaginate($perPage);
+        $result = $reads->toArray();
         if ($page == 1) {
             if ($last_seen) {
-                $ids = $query->take(99)->pluck('id')->toArray();
+                $ids = $reads->pluck('id')->toArray();
                 $newCount = array_search($last_seen,$ids);
                 if ($newCount === false) {
-                    $newCount = '99+';
+                    $newCount = '20+';
                 }
                 if ($newCount) {
                     $alertMsg = '更新了'.$newCount.'条信息';
@@ -403,8 +406,6 @@ class IndexController extends Controller {
                 $alertMsg = '已为您更新';
             }
         }
-        $reads = $query->simplePaginate($perPage);
-        $result = $reads->toArray();
         $list = [];
         $inwehub_user_device = $request->input('inwehub_user_device','web');
         foreach ($reads as $key=>$item) {
