@@ -67,7 +67,7 @@
                                         <tr id="submission_{{ $submission->id }}">
                                             <td>{{ $submission->id }}</td>
                                             <td>
-                                                <a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title)) }}</a>
+                                                <a href="{{ config('app.mobile_url').'#/c/'.$submission->category_id.'/'.$submission->slug }}" target="_blank">{{ str_limit(strip_tags($submission->title?:$submission->data['title'])) }}</a>
                                                 <br>{{ $submission->created_at }}
                                                 <div class="btn-group-xs" >
                                                     <a class="btn btn-default" target="_blank" href="{{ $submission->type == 'link'?$submission->data['url']:'#' }}" data-toggle="tooltip" title="原始地址"><i class="fa fa-eye"></i></a>
