@@ -124,10 +124,10 @@ class FeedController extends Controller
             $feeds = $query->simplePaginate(Config::get('inwehub.api_data_page_size'));
             if ($page == 1 && $search_type != 5) {
                 if ($last_seen) {
-                    $ids = $query->take(100)->pluck('id')->toArray();
+                    $ids = $feeds->pluck('id')->toArray();
                     $newCount = array_search($last_seen,$ids);
                     if ($newCount === false) {
-                        $newCount = '99+';
+                        $newCount = '20+';
                     }
                     if ($newCount) {
                         $alertMsg = '更新了'.$newCount.'条信息';
