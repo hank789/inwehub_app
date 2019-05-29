@@ -145,8 +145,14 @@ class SystemController extends Controller {
         return self::createJsonData(true);
     }
 
-    public function activityNotify(Request $request) {
-        $user = $request->user();
+    public function activityNotify(Request $request, JWTAuth $JWTAuth) {
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
         $iosPushNoticeOpen = $request->input('ios_push_notify',-1);
         $type = $request->input('type','login');
         $pushNotify = '';

@@ -378,7 +378,7 @@ Route::post('system/device','SystemController@device')->middleware('jwt.auth');
 Route::post('system/location','SystemController@location')->middleware('jwt.auth');
 
 
-Route::post('system/activityNotify','SystemController@activityNotify')->middleware('jwt.auth');
+Route::post('system/activityNotify','SystemController@activityNotify');
 
 //申请添加用户擅长标签
 Route::post('system/applySkillTag','SystemController@applySkillTag')->middleware('jwt.auth');
