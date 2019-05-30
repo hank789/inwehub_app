@@ -28,6 +28,7 @@ class OauthController extends Controller
         $this->validate($request,$validateRules);
         $bindType = $request->input('bindType',1);
         $data = $request->all();
+        \Log::info('oauth-callback',$data);
         $user = null;
         $token = null;
         $newUser = 0;
