@@ -270,9 +270,10 @@ class AuthController extends Controller
             if($this->credit($user->id,Credit::KEY_LOGIN)){
                 $message = '登陆成功! ';
             }
+            $data = [];
+            $data['token'] = $token;
 
             $info = [];
-            $info['token'] = $token;
             $info['newUser'] = $isNewUser;
             $info['id'] = $user->id;
             $info['name'] = $user->name;
@@ -291,8 +292,10 @@ class AuthController extends Controller
             $info['industry_tags'] = array_column($user->industryTags(),'name');
             $info['tags'] = Tag::whereIn('id',$user->userTag()->pluck('tag_id'))->pluck('name');
 
+            $data['info'] = $info;
+
             /*认证成功*/
-            return static::createJsonData(true,$info,ApiException::SUCCESS,$message);
+            return static::createJsonData(true,$data,ApiException::SUCCESS,$message);
 
         }
 
