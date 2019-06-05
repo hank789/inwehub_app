@@ -54,9 +54,7 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
         } else {
             $this->title = $this->submission->user->name.'发布了新'.($this->submission->type == 'link' ? '文章':'分享');
         }
-        $limit = RateLimiter::instance()->increase('push_notify_user_submission',$this->user_id,60*60*24);
-        if ($limit == RateLimiter::STATUS_BAD) return [];
-
+        
         $via = ['database', 'broadcast'];
         if ($notifiable->checkCanDisturbNotify()){
             $via[] = PushChannel::class;
