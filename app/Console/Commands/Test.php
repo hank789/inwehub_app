@@ -81,16 +81,6 @@ class Test extends Command
      */
     public function handle()
     {
-        $ql = QueryList::getInstance();
-        $options = ['proxy' => 'socks5h://127.0.0.1:1080','timeout'=>10];
-        $data = '';
-        try {
-            return $ql->get('https://36kr.com/feed',[],$options)->getHtml();
-        } catch (\Exception $e) {
-            $data =  $ql->get('https://36kr.com/feed')->getHtml();
-        }
-        var_dump($data);
-        return;
         $user = User::find(1);
         $submission = Submission::find(5322);
         $user->notify(new NewSubmission(1,$submission));
