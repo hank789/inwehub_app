@@ -520,6 +520,8 @@ class WechatSogouSpider
                     //var_dump($config['cookies']);
                     return true;
                 }
+            } else {
+                event(new ExceptionNotify('打码平台打码失败'));
             }
         }
         return false;

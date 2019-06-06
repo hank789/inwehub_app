@@ -168,6 +168,11 @@ class RssFeed
 		if (config('app.env') == 'production') {
             $options = ['proxy' => 'socks5h://127.0.0.1:1080'];
         }
-		return $ql->get($url,[],$options)->getHtml();
+        try {
+            return $ql->get($url,[],$options)->getHtml();
+        } catch (\Exception $e) {
+            return $ql->get($url)->getHtml();
+        }
+
 	}
 }

@@ -45,13 +45,16 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
     {
         //自己发的不通知
         if ($this->user_id == $this->submission->user_id) return [];
-        $group = Group::find($this->submission->group_id);
-        $groupMember = GroupMember::where('user_id',$this->user_id)->where('group_id',$group->id)->first();
-        if (!$groupMember) return [];
-        if (!$groupMember->is_notify) return [];
-        $limit = RateLimiter::instance()->increase('push_notify_user_submission',$this->user_id,60*60*24);
-        if ($limit == RateLimiter::STATUS_BAD) return [];
-        $this->title = '圈子['.$group->name.']发布了新'.($this->submission->type == 'link' ? '文章':'分享');
+        if ($this->submission->group_id) {
+            $group = Group::find($this->submission->group_id);
+            $groupMember = GroupMember::where('user_id',$this->user_id)->where('group_id',$group->id)->first();
+            if (!$groupMember) return [];
+            if (!$groupMember->is_notify) return [];
+            $this->title = '圈子['.$group->name.']发布了新'.($this->submission->type == 'link' ? '文章':'分享');
+        } else {
+            $this->title = $this->submission->user->name.'发布了新'.($this->submission->type == 'link' ? '文章':'分享');
+        }
+        
         $via = ['database', 'broadcast'];
         if ($notifiable->checkCanDisturbNotify()){
             $via[] = PushChannel::class;
@@ -98,17 +101,22 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
 
     public function toPush($notifiable)
     {
-        $group = Group::find($this->submission->group_id);
-        $title = strip_tags($this->submission->title);
-        if ($this->submission->type == 'link') {
-            $title = strip_tags($this->submission->data['title']);
+        if ($this->submission->group_id) {
+            $group = Group::find($this->submission->group_id);
+            $title = $group->name;
+        } else {
+            $title = $this->title;
         }
-        if (empty($title)) return false;
+        $body = strip_tags($this->submission->title);
+        if ($this->submission->type == 'link') {
+            $body = strip_tags($this->submission->data['title']);
+        }
+        if (empty($body)) return false;
         return [
-            'title' => $group->name,
+            'title' => $title,
             'inAppTitle' => $this->title,
             'forcePush' => $this->submission->data['sourceViews']??false,
-            'body'  => $title,
+            'body'  => $body,
             'payload' => ['object_type'=>'readhub_new_submission','object_id'=>'/c/'.$this->submission->category_id.'/'.$this->submission->slug],
         ];
     }

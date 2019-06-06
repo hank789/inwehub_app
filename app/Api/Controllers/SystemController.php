@@ -145,6 +145,28 @@ class SystemController extends Controller {
         return self::createJsonData(true);
     }
 
+    public function activityNotify(Request $request, JWTAuth $JWTAuth) {
+        try {
+            $user = $JWTAuth->parseToken()->authenticate();
+        } catch (\Exception $e) {
+            $user = new \stdClass();
+            $user->id = 0;
+            $user->name = '游客';
+        }
+        $iosPushNoticeOpen = $request->input('ios_push_notify',-1);
+        $type = $request->input('type','login');
+        $pushNotify = '';
+        if ($iosPushNoticeOpen >= 0) {
+            $pushNotify = ';ios推送:'.($iosPushNoticeOpen?'开启':'关闭');
+        }
+        switch ($type) {
+            case 'login':
+                event(new UserLoggedIn($user,$request->input('device_system').'唤起'.$pushNotify));
+                break;
+        }
+        return self::createJsonData(true);
+    }
+
     public function location(Request $request){
         $user = $request->user();
         $clientIp = $request->getClientIp();

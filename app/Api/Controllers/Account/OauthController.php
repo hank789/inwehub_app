@@ -28,6 +28,7 @@ class OauthController extends Controller
         $this->validate($request,$validateRules);
         $bindType = $request->input('bindType',1);
         $data = $request->all();
+        \Log::info('oauth-callback',$data);
         $user = null;
         $token = null;
         $newUser = 0;
@@ -50,7 +51,10 @@ class OauthController extends Controller
             $user->name = '游客';
         }
         //微信公众号和微信app的openid不同，但是unionid相同
-        $unionid = isset($data['full_info']['unionid'])?$data['full_info']['unionid']:'1';
+        $unionid = isset($data['full_info']['unionid'])?$data['full_info']['unionid']:'';
+        if (empty($unionid)) {
+            $unionid = isset($data['full_info']['unionId'])?$data['full_info']['unionId']:'';
+        }
         $oauthGzhData = UserOauth::where('unionid',$unionid)->whereIn('auth_type',[UserOauth::AUTH_TYPE_WEIXIN,UserOauth::AUTH_TYPE_WEIXIN_GZH,UserOauth::AUTH_TYPE_WEAPP,UserOauth::AUTH_TYPE_WEAPP_ASK])->where('user_id','>',0)->first();
         if ($oauthGzhData) {
             if ($user->id <= 0) {
