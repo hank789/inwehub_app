@@ -84,7 +84,7 @@ class CollectionController extends Controller
         if(!isset($sourceClassMap[$source_type])){
             abort(404);
         }
-
+        $requestData = $request->all();
         $model = App::make($sourceClassMap[$source_type]);
         $top_id = $request->input('top_id',0);
         $bottom_id = $request->input('bottom_id',0);
@@ -106,7 +106,7 @@ class CollectionController extends Controller
         }
 
         $attentions = $query->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
-
+        $return = $attentions->toArray();
         $data = [];
         foreach($attentions as $attention){
             $item = [];
@@ -151,7 +151,12 @@ class CollectionController extends Controller
             }
             $data[] = $item;
         }
-        return self::createJsonData(true,$data);
+        $return['data'] = $data;
+        if (isset($requestData['bottom_id'])) {
+            return self::createJsonData(true,$data);
+        } else {
+            return self::createJsonData(true,$return);
+        }
     }
 
 }
