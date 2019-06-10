@@ -134,6 +134,7 @@ class CollectionController extends Controller
                         'type' => $submission->type,
                         'title' => $submission->formatTitle(),
                         'img'   => $submission->data['img']??[],
+                        'slug'  => $submission->slug,
                         'submission_url' => $submission->data['url']??$comment_url,
                         'comment_url'    => $comment_url,
                         'domain'         => $submission->data['domain']??'',
