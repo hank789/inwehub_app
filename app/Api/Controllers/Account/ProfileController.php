@@ -884,7 +884,7 @@ class ProfileController extends Controller
         }
         $loginUser = $request->user();
         if ($loginUser->userData->user_level < 4 && $page >= 2) {
-            throw new ApiException(ApiException::USER_LEVEL_LIMIT);
+            //throw new ApiException(ApiException::USER_LEVEL_LIMIT);
         }
         $doings = Doing::where('action',Doing::ACTION_VIEW_RESUME)->where('source_id',$user->id)->where('user_id','!=',$user->id)->orderBy('id','desc')->paginate(Config::get('inwehub.api_data_page_size'));
         $return = $doings->toArray();
