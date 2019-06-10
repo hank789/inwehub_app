@@ -137,7 +137,7 @@ class CollectionController extends Controller
                         'slug'  => $submission->slug,
                         'submission_url' => $submission->data['url']??$comment_url,
                         'comment_url'    => $comment_url,
-                        'domain'         => $submission->data['domain']??'',
+                        'domain'         => $submission->data['domain']??$submission->user->name,
                         'category_name'  => $group?$group->name:'',
                         'created_at'     => (string) $submission->created_at
                     ];
