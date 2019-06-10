@@ -137,7 +137,7 @@ class CollectionController extends Controller
                         'submission_url' => $submission->data['url']??$comment_url,
                         'comment_url'    => $comment_url,
                         'domain'         => $submission->data['domain']??'',
-                        'category_name'  => $group->name,
+                        'category_name'  => $group?$group->name:'',
                         'created_at'     => (string) $submission->created_at
                     ];
                     if (!is_array($item['img'])) {
