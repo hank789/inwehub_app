@@ -95,7 +95,7 @@ class ReadhubController extends Controller
                 'created_at'     => (string) $submission->created_at
             ];
             if (!is_array($item['img']) && $imageArray) {
-                $item['img'] = [$item['img']];
+                $item['img'] = $item['img']?[$item['img']]:[];
             }
             $list[] = $item;
         }

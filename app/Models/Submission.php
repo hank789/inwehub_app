@@ -221,7 +221,7 @@ class Submission extends Model implements HasMedia {
     }
 
     public function formatTitle(){
-        return formatHtml(strip_tags($this->title));
+        return formatHtml(strip_tags(trim($this->title)));
     }
 
     public function partHtmlTitle(){
