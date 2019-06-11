@@ -591,6 +591,7 @@ class FollowController extends Controller
     //搜索我关注的用户
     public function searchFollowedUser(Request $request) {
         $name = $request->input('name');
+        $directory = $request->input('directory',false);
         $query = $request->user()->attentions()->where('source_type','=','App\Models\User')
             ->leftJoin('users','attentions.source_id','=','users.id');
         if ($name) {
@@ -613,6 +614,18 @@ class FollowController extends Controller
             $item['description'] = $user->description;
             $item['is_followed'] = 1;
             $data[] = $item;
+        }
+        if ($directory) {
+            $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+            $return = [];
+            foreach ($letters as $letter) {
+                foreach ($data as $val) {
+                    if (stristr($val['spell'],$letter) == $val['spell']) {
+                        $return[$letter][] = $val;
+                    }
+                }
+            }
+            return self::createJsonData(true,$return);
         }
 
         return self::createJsonData(true,$data);
