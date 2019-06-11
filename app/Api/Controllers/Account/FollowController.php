@@ -605,6 +605,7 @@ class FollowController extends Controller
             $item['user_id'] = $user->id;
             $item['uuid'] = $user->uuid;
             $item['user_name'] = $user->name;
+            $item['spell'] = pinyin_permalink($user->name,'');
             $item['company'] = $user->company;
             $item['title'] = $user->title;
             $item['user_avatar_url'] = $user->avatar;
