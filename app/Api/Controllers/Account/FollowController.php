@@ -591,18 +591,13 @@ class FollowController extends Controller
     //搜索我关注的用户
     public function searchFollowedUser(Request $request) {
         $name = $request->input('name');
-        $requestData = $request->all();
         $directory = $request->input('directory',false);
         $query = $request->user()->attentions()->where('source_type','=','App\Models\User')
             ->leftJoin('users','attentions.source_id','=','users.id');
         if ($name) {
             $query = $query->where('users.name','like',$name.'%');
         }
-        if (isset($requestData['page'])) {
-            $users = $query->select('users.*','attentions.id as attention_id')->paginate(Config::get('inwehub.api_data_page_size'));
-        } else {
-            $users = $query->select('users.*','attentions.id as attention_id')->get();
-        }
+        $users = $query->select('users.*','attentions.id as attention_id')->get();
 
         $data = [];
         foreach ($users as $user) {
