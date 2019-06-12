@@ -20,6 +20,7 @@ class ReadhubController extends Controller
         $bottom_id = $request->input('bottom_id',0);
         $uuid = $request->input('uuid');
         $type = $request->input('type',1);
+        $imageArray = $request->input('imageArray',0);
         $loginUser = $request->user();
         if ($uuid) {
             $user = User::where('uuid',$uuid)->first();
@@ -78,7 +79,7 @@ class ReadhubController extends Controller
                 $category_name = $group?$group->name:'';
             }
 
-            $list[] = [
+            $item = [
                 'id' => $submission->id,
                 'type' => $submission->type,
                 'title' => $submission->formatTitle(),
@@ -93,6 +94,10 @@ class ReadhubController extends Controller
                 'category_name'  => $category_name,
                 'created_at'     => (string) $submission->created_at
             ];
+            if (!is_array($item['img']) && $imageArray) {
+                $item['img'] = $item['img']?[$item['img']]:[];
+            }
+            $list[] = $item;
         }
         $return = $submissions->toArray();
         $return['data'] = $list;

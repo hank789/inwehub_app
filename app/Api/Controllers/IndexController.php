@@ -652,6 +652,7 @@ class IndexController extends Controller {
         $origin_title = '';
         $comment_url = '';
         $type = 1;
+        $slug = '';
         foreach ($comments as $comment) {
             $continue = false;
             switch ($comment->source_type) {
@@ -659,6 +660,8 @@ class IndexController extends Controller {
                     $source = $comment->source;
                     $origin_title = '活动:'.$source->title;
                     $comment_url = '/EnrollmentStatus/'.$source->id;
+                    $continue = true;
+                    continue;
                     break;
                 case 'App\Models\Answer':
                     $source = $comment->source;
@@ -670,6 +673,8 @@ class IndexController extends Controller {
                         $origin_title = '问答:'.$question->title;
                         $comment_url = '/askCommunity/interaction/'.$source->id;
                     }
+                    $continue = true;
+                    continue;
                     break;
                 case 'App\Models\Readhub\Comment':
                     $continue = true;
@@ -690,6 +695,7 @@ class IndexController extends Controller {
                     }
                     $origin_title = ($submission->type == 'review'?'点评:':'动态:').$submission->formatTitle();
                     $comment_url = '/c/'.$submission->category_id.'/'.$submission->slug;
+                    $slug = $submission->slug;
                     if ($submission->type == 'review') {
                         $comment_url = '/dianping/comment/'.$submission->slug;
                     } elseif ($submission->group_id && $user->uuid != $loginUser->uuid && !$submission->group->public) {
@@ -703,6 +709,7 @@ class IndexController extends Controller {
                     'id' => $comment->id,
                     'type'    => $type,
                     'content' => $comment->formatContent(),
+                    'slug' => $slug,
                     'origin_title' => $origin_title,
                     'comment_url'  => $comment_url,
                     'created_at' => date('Y/m/d H:i',strtotime($comment->created_at))
