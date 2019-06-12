@@ -1261,6 +1261,11 @@ if (!function_exists('getUrlInfo')) {
                     //event(new \App\Events\Frontend\System\ExceptionNotify('未取到网站:'.$url.'的图片'));
                 }
                 $title = $ql->find('title')->eq(0)->text();
+                $encode = json_encode([$title]);
+                if ($encode === false) {
+                    $ql->setHtml(iconv("gb2312", "utf-8//IGNORE",$ql->getHtml()));
+                    $title = $ql->find('title')->eq(0)->text();
+                }
                 if (str_contains($image,'.ico')) {
                     $useCache = true;
                     $img_url = Cache::get('domain_url_img_'.domain($url),'');
@@ -1274,12 +1279,7 @@ if (!function_exists('getUrlInfo')) {
                     $temp = $image;
                 }
             }
-            $encode = mb_detect_encoding($title); //得到字符串编码
-            $file_charset = iconv_get_encoding()['internal_encoding']; //当前文件编码
-            $title = trim($title);
-            if ( $encode != 'CP936' && $encode && $encode != $file_charset) {
-                $title = iconv($encode, $file_charset, $title);
-            }
+
             if (str_contains($url,'3g.163.com')) {
                 $title = trim($title,'_&#x624B;&#x673A;&#x7F51;&#x6613;&#x7F51;');
             }
