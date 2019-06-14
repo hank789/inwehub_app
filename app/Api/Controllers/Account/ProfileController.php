@@ -957,6 +957,7 @@ class ProfileController extends Controller
     //用户通讯录列表
     public function addressBookList(Request $request) {
         $user = $request->user();
+        $directory = $request->input('directory',false);
         $cache = Cache::get('user_address_book_list_'.$user->id);
         if (!$cache) {
             $addressBooks = AddressBook::where('user_id',$user->id)->where('status',1)->get()->toArray();
@@ -986,6 +987,7 @@ class ProfileController extends Controller
                         break;
                     }
                 }
+                $addressBook['spell'] = pinyin_permalink($addressBook['display_name'],'');
                 unset($addressBook['detail']);
                 unset($addressBook['address_book_id']);
                 unset($addressBook['phone']);
@@ -995,6 +997,20 @@ class ProfileController extends Controller
                     $notAppUsers[] = $addressBook;
                 }
             }
+
+            if ($directory) {
+                $letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+                $return = [];
+                foreach ($letters as $letter) {
+                    foreach ($notAppUsers as $val) {
+                        if (stristr($val['spell'],$letter) == $val['spell']) {
+                            $return[$letter][] = $val;
+                        }
+                    }
+                }
+                $notAppUsers = $return;
+            }
+
             $cache = [
                 'appUsers' => $appUsers,
                 'notAppUsers' => $notAppUsers,

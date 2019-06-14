@@ -278,7 +278,7 @@ class Question extends Model
                     break;
                 case 'question_invite_answer_confirming':
                 case 'question_answer_confirming':
-                    if($is_find_expert) continue;
+                    if($is_find_expert) break;
                     $title = '匹配成功';
                     $description = '专家已经找到啦,就等他再确认一下!';
                     $is_find_expert = true;

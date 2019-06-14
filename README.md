@@ -134,6 +134,14 @@ server {
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_prefer_server_ciphers on;
+    location /api/weapp/ {
+        index  index.php index.html index.htm;
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    location /api/manage/product/getInfo {
+        index  index.php index.html index.htm;
+        try_files $uri $uri/ /index.php?$query_string;
+    }
     location /api/ {
     	proxy_pass http://inwehub_api;
         proxy_set_header Host $host;

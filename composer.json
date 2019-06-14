@@ -20,7 +20,7 @@
         "jacobcyl/ali-oss-storage": "dev-master",
         "jaeger/querylist": "^4.0",
         "jaeger/querylist-phantomjs": "^4.0",
-        "laravel/framework": "5.5.*",
+        "laravel/framework": "5.5.45",
         "laravel/scout": "^4.0",
         "laravel/tinker": "~1.0",
         "laravelium/sitemap": "2.7.*",
@@ -42,7 +42,6 @@
         "stichoza/google-translate-php": "^3.2",
         "symfony/filesystem": "^3.3",
         "symfony/translation": "4.1",
-        "tightenco/collect": "^5.6",
         "tlapi/slack-laravel": "dev-master",
         "tymon/jwt-auth": "^0.5.10",
         "zhuzhichao/ip-location-zh": "^2.2"
