@@ -200,7 +200,7 @@ class CommentObserver implements ShouldQueue {
                 //通知专栏作者
                 if ($submission->author_id && $submission->author_id != $comment->user_id && !isset($notifyUids[$submission->author_id])) {
                     $notifyUids[$submission->user_id] = $submission->author_id;
-                    if ($members && !in_array($submission->author_id,$members)) continue;
+                    if ($members && !in_array($submission->author_id,$members)) break;
                     $notifyUser = User::find($submission->author_id);
                     $notifyUser->notify(new SubmissionReplied($submission->author_id,
                         [

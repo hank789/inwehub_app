@@ -150,7 +150,7 @@ class TaskLogic {
                     $task_type = 2;
                     $task_type_description = '问答';
                     $answer = Answer::find($task->source_id);
-                    if (!$answer) continue;
+                    if (!$answer) break;
                     $question = Question::find($answer->question_id);
                     $object_id = $question->id;
                     $status = $question->status;

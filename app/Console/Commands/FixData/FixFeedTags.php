@@ -47,7 +47,7 @@ class FixFeedTags extends Command
                     $source = $feed->source;
                     if (!$source) {
                         $feed->delete();
-                        continue;
+                        break;
                     }
                     $tags = $source->question->tags()->pluck('tag_id')->toArray();
                     break;
@@ -56,7 +56,7 @@ class FixFeedTags extends Command
                     $source = Submission::find($feed->source_id);
                     if (!$source) {
                         $feed->delete();
-                        continue;
+                        break;
                     }
                     $tags = $source->tags()->pluck('tag_id')->toArray();
                     break;
@@ -65,7 +65,7 @@ class FixFeedTags extends Command
                     $comment = Comment::find($feed->source_id);
                     if (!$comment) {
                         $feed->delete();
-                        continue;
+                        break;
                     }
                     $source = $comment->source;
                     $tags = $source->tags()->pluck('tag_id')->toArray();
