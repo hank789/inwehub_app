@@ -49,6 +49,18 @@
                                 </tr>
 
                                 <tr>
+                                    <td>使用若快打码</td>
+                                    <td>
+                                        <div class="col-md-4 col-md-offset-4 @if ($errors->has('use_ruokuai_yzm_service')) has-error @endif ">
+                                            <div class="radio">
+                                                <label><input type="radio" name="use_ruokuai_yzm_service" value="0" @if ( Setting()->get('use_ruokuai_yzm_service',1) == 0) checked @endif >否</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <label><input type="radio" name="use_ruokuai_yzm_service" value="1" @if ( Setting()->get('use_ruokuai_yzm_service',1) == 1) checked @endif>是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
                                     <td>爬虫代理</td>
                                     <td>
                                         <div class="col-md-12 @if ($errors->has('scraper_proxy_address')) has-error @endif ">

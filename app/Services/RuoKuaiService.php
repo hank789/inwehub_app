@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Storage;
 class RuoKuaiService {
 
     public static function ruokuai($imageData,$typeid = 3060) {
+        if (Setting()->get('use_ruokuai_yzm_service',1) == 0) {
+            return [];
+        }
+
         $damaUrl = 'http://api.ruokuai.com/create.json';
         $ch = curl_init();
         $fileName = time().str_random(7).'.jpg';
