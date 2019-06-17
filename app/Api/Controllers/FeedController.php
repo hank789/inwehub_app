@@ -88,6 +88,10 @@ class FeedController extends Controller
                 if ($search_user->id != $user->id) {
                     $query = $query->where('public',1)->where('is_anonymous',0);
                 }
+                $query = $query->whereIn('feed_type', [
+                    Feed::FEED_TYPE_SUBMIT_READHUB_ARTICLE,
+                    Feed::FEED_TYPE_SUBMIT_READHUB_REVIEW
+                ]);
                 break;
             case 6:
                 //推荐
