@@ -437,7 +437,7 @@ class SubmissionController extends Controller {
                 $recommend->sort = $recommend->id;
                 $recommend->save();
                 $recommend->setKeywordTags();
-                event(new OperationNotify('用户'.formatSlackUser($user).'新增精选['.$recommend->data['title'].']',$slackFields));
+                event(new OperationNotify('用户'.formatSlackUser($user).'新增精选['.$submission->title.']',$slackFields));
             }
         } else {
             $recommend = RecommendRead::where('source_id',$submission->id)->where('source_type',get_class($submission))->first();
