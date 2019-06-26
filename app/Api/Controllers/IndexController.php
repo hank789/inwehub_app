@@ -431,7 +431,7 @@ class IndexController extends Controller {
                 ->where('supportable_type',Submission::class)
                 ->exists();
             $tags = [];
-            if ($user->id > 0 && $user->isRole('operatormanager')) {
+            if ($user->id > 0 && ($user->isRole('operatormanager') || $user->isRole('admin'))) {
                 $tags = $item->tags()->select('tags.id','tags.name')->get()->toArray();
                 if ($item->isRecommendRead()) {
                     $tags[] = [

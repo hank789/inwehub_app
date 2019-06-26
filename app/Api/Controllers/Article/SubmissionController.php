@@ -350,7 +350,7 @@ class SubmissionController extends Controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $user = $request->user();
-        if (!($user->isRole('operatormanager'))) {
+        if (!($user->isRole('operatormanager') || $user->isRole('admin'))) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $oldTags = $submission->tags->pluck('id')->toArray();
