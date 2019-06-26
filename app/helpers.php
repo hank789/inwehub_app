@@ -2002,6 +2002,8 @@ if (!function_exists('curlShadowsocks')) {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
 
         //通过代理访问需要额外添加的参数项
         curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);

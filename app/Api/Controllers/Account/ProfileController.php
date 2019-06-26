@@ -124,7 +124,7 @@ class ProfileController extends Controller
 
             $info['submission_karma'] = $user->submission_karma;
             $info['comment_karma'] = $user->comment_karma;
-            $info['is_admin'] = $user->isRole('operatormanager');
+            $info['is_admin'] = $user->isRole('operatormanager') || $user->isRole('admin');
 
 
             $info_percent = $user->getInfoCompletePercent(true);
