@@ -329,7 +329,7 @@ class SubmissionController extends Controller {
 
         $submission = Submission::findOrFail($request->id);
         $user = $request->user();
-        if (!($submission->user_id == $user->id || $user->isRole('operatormanager'))) {
+        if (!($submission->user_id == $user->id || $user->isRole('operatormanager') || $user->isRole('admin'))) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
