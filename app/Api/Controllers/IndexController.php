@@ -453,7 +453,7 @@ class IndexController extends Controller {
             }
             $list[] = [
                 'id'    => $item->id,
-                'title' => strip_tags($item->data['title']??$item->title),
+                'title' => trim(strip_tags($item->data['title']??$item->title)),
                 'type'  => $item->type,
                 'domain'    => $domain,
                 'img'   => $img,
