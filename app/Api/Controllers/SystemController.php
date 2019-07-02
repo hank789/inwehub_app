@@ -157,7 +157,7 @@ class SystemController extends Controller {
         $type = $request->input('type','login');
         $pushNotify = '';
         if ($iosPushNoticeOpen >= 0) {
-            $pushNotify = ';ios推送:'.($iosPushNoticeOpen?'开启':'关闭');
+            $pushNotify = ';推送:'.($iosPushNoticeOpen?'开启':'关闭');
         }
         switch ($type) {
             case 'login':
