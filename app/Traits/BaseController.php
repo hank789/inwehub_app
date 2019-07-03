@@ -984,7 +984,7 @@ trait BaseController {
                     $query = $query->orderBy('updated_at','desc');
                     break;
             }
-            $tags = $query->distinct()->groupBy('tag_id')->simplePaginate(30);
+            $tags = $query->distinct()->groupBy('tag_id')->simplePaginate(15);
             $return = $tags->toArray();
             $list = [];
             $used = [];
