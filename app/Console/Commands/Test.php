@@ -81,9 +81,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $submission = Submission::find(5322);
-        $user->notify(new NewSubmission(1,$submission));
+        TagsLogic::delProductCache();
         return;
         $cellData = [];
         $cellData[] = ['文章ID','文章标题','文章链接','产品','专辑','文章创建时间'];
