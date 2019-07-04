@@ -41,7 +41,7 @@ class NewGroupMemberApply extends Notification implements ShouldQueue,ShouldBroa
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
+        return ['database',  PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**

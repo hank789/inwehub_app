@@ -42,7 +42,7 @@ class FollowedQuestionAnswered extends Notification implements ShouldBroadcast,S
      */
     public function via($notifiable)
     {
-        $via = ['database', 'broadcast'];
+        $via = ['database'];
         if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_my_question_new_answered']??true)){
             $via[] = PushChannel::class;
             $via[] = WechatNoticeChannel::class;

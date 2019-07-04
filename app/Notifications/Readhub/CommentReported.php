@@ -37,7 +37,7 @@ class CommentReported extends Notification implements ShouldBroadcast,ShouldQueu
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast'];
+        return ['database'];
     }
 
     /**

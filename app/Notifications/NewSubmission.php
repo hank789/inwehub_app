@@ -55,7 +55,7 @@ class NewSubmission extends Notification implements ShouldBroadcast,ShouldQueue
             $this->title = $this->submission->user->name.'发布了新'.($this->submission->type == 'link' ? '文章':'分享');
         }
         
-        $via = ['database', 'broadcast'];
+        $via = ['database'];
         if ($notifiable->checkCanDisturbNotify()){
             $via[] = PushChannel::class;
             //$via[] = WechatNoticeChannel::class;

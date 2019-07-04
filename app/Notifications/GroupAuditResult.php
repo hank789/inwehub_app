@@ -40,7 +40,7 @@ class GroupAuditResult extends Notification implements ShouldQueue,ShouldBroadca
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
+        return ['database',  PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**

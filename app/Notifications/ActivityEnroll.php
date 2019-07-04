@@ -38,7 +38,7 @@ class ActivityEnroll extends Notification implements ShouldQueue,ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class];
+        return ['database',  PushChannel::class];
     }
 
     /**

@@ -44,7 +44,7 @@ class AnswerPromiseOvertime extends Notification implements ShouldBroadcast,Shou
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database',  PushChannel::class, WechatNoticeChannel::class];
     }
 
     /**
