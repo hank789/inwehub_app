@@ -52,7 +52,7 @@ class NewQuestionInvitation extends Notification implements ShouldBroadcast,Shou
      */
     public function via($notifiable)
     {
-        $via = ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        $via = ['database',  PushChannel::class, WechatNoticeChannel::class];
         if ($this->notifySlack) {
             $via[] = SlackChannel::class;
         }

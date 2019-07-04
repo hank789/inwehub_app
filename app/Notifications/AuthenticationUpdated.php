@@ -37,7 +37,7 @@ class AuthenticationUpdated extends Notification implements ShouldQueue,ShouldBr
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database',  PushChannel::class, WechatNoticeChannel::class];
     }
 
     /**

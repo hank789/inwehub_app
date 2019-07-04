@@ -184,7 +184,7 @@ class IndexController extends Controller {
     }
 
     protected function formatRecommendReadItem($item) {
-        $item['data']['title'] = strip_tags($item['data']['title']);
+        $item['data']['title'] = strip_tags($item['data']['title']??'');
         switch ($item['read_type']) {
             case RecommendRead::READ_TYPE_SUBMISSION:
                 // '发现分享';
@@ -194,6 +194,9 @@ class IndexController extends Controller {
                 }
                 if (is_array($item['data']['img'])) {
                     $item['data']['img'] = $item['data']['img'][0];
+                }
+                if (empty($item['data']['title'])) {
+                    $item['data']['title'] = strip_tags($object->title);
                 }
                 $item['type_description'] = '';
                 $item['data']['comment_number'] = $object->comments_number;
@@ -431,7 +434,7 @@ class IndexController extends Controller {
                 ->where('supportable_type',Submission::class)
                 ->exists();
             $tags = [];
-            if ($user->id > 0 && $user->isRole('operatormanager')) {
+            if ($user->id > 0 && ($user->isRole('operatormanager') || $user->isRole('admin'))) {
                 $tags = $item->tags()->select('tags.id','tags.name')->get()->toArray();
                 if ($item->isRecommendRead()) {
                     $tags[] = [
@@ -450,7 +453,7 @@ class IndexController extends Controller {
             }
             $list[] = [
                 'id'    => $item->id,
-                'title' => strip_tags($item->data['title']??$item->title),
+                'title' => trim(strip_tags($item->data['title']??$item->title)),
                 'type'  => $item->type,
                 'domain'    => $domain,
                 'img'   => $img,

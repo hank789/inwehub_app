@@ -42,7 +42,7 @@ class NewQuestionAnswered extends Notification implements ShouldBroadcast,Should
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class];
+        return ['database',  PushChannel::class, WechatNoticeChannel::class];
     }
 
     /**

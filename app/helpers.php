@@ -1131,7 +1131,7 @@ if (!function_exists('saveImgToCdn')){
 if (!function_exists('getUrlInfo')) {
     function getUrlInfo($url, $withImageUrl = false, $dir = 'submissions', $queue = true) {
         $img_url = Cache::get('url_img_'.$url,'');
-        $title = Cache::get('url_title_'.$url, '');
+        $title = trim(Cache::get('url_title_'.$url, ''));
         if ($title && $img_url) {
             return ['title'=>$title,'img_url'=>$img_url];
         }
@@ -1283,7 +1283,7 @@ if (!function_exists('getUrlInfo')) {
             if (str_contains($url,'3g.163.com')) {
                 $title = trim($title,'_&#x624B;&#x673A;&#x7F51;&#x6613;&#x7F51;');
             }
-            $title = htmlspecialchars_decode($title);
+            $title = trim(htmlspecialchars_decode($title));
             Cache::put('url_title_'.$url,$title,60 * 24 * 7);
             if ($temp && $withImageUrl && !$img_url) {
                 try {

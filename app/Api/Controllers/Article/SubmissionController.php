@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Jobs\ConvertWechatLink;
 use App\Jobs\LogUserViewTags;
 use App\Jobs\NewSubmissionJob;
+use App\Jobs\UploadFile;
 use App\Logic\QuillLogic;
 use App\Logic\TagsLogic;
 use App\Models\Answer;
@@ -30,7 +31,9 @@ use App\Traits\SubmitSubmission;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\JWTAuth;
 
 /**
@@ -106,11 +109,32 @@ class SubmissionController extends Controller {
         ];
         $this->validate($request,$validateRules);
         $user = $request->user();
+        $type = $request->input('type','base64');
         $submission = Submission::find($request->input('id'));
         if ($submission->user_id != $user->id) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
-        $img = $this->uploadImgs($request->input('photos'));
+        if ($type == 'base64') {
+            $img = $this->uploadImgs($request->input('photos'));
+        } else {
+            $images = [];
+            for ($i=0;$i<=8;$i++) {
+                $image_file = 'image'.$i;
+                if($request->hasFile($image_file)){
+                    $file_0 = $request->file($image_file);
+                    $extension = strtolower($file_0->getClientOriginalExtension());
+                    $extArray = array('png', 'gif', 'jpeg', 'jpg');
+                    if(in_array($extension, $extArray)){
+                        $file_name = 'submissions/'.date('Y').'/'.date('m').'/'.time().str_random(7).'.'.$extension;
+                        dispatch((new UploadFile($file_name,base64_encode(File::get($file_0)))));
+                        //Storage::disk('oss')->put($file_name,File::get($file_0));
+                        $images[] = Storage::disk('oss')->url($file_name);
+                    }
+                }
+            }
+            $img = ['img' => $images];
+        }
+
         RateLimiter::instance()->lock_acquire('upload-image-submission-'.$request->input('id'));
         $submission = Submission::find($request->input('id'));
         $data = $submission->data;
@@ -329,7 +353,7 @@ class SubmissionController extends Controller {
 
         $submission = Submission::findOrFail($request->id);
         $user = $request->user();
-        if (!($submission->user_id == $user->id || $user->isRole('operatormanager'))) {
+        if (!($submission->user_id == $user->id || $user->isRole('operatormanager') || $user->isRole('admin'))) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
 
@@ -350,7 +374,7 @@ class SubmissionController extends Controller {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $user = $request->user();
-        if (!($user->isRole('operatormanager'))) {
+        if (!($user->isRole('operatormanager') || $user->isRole('admin'))) {
             throw new ApiException(ApiException::BAD_REQUEST);
         }
         $oldTags = $submission->tags->pluck('id')->toArray();
@@ -437,7 +461,7 @@ class SubmissionController extends Controller {
                 $recommend->sort = $recommend->id;
                 $recommend->save();
                 $recommend->setKeywordTags();
-                event(new OperationNotify('用户'.formatSlackUser($user).'新增精选['.$recommend->data['title'].']',$slackFields));
+                event(new OperationNotify('用户'.formatSlackUser($user).'新增精选['.$submission->title.']',$slackFields));
             }
         } else {
             $recommend = RecommendRead::where('source_id',$submission->id)->where('source_type',get_class($submission))->first();

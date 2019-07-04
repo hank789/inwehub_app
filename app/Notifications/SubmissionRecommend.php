@@ -42,7 +42,7 @@ class SubmissionRecommend extends Notification implements ShouldBroadcast,Should
      */
     public function via($notifiable)
     {
-        $via = ['database', 'broadcast'];
+        $via = ['database'];
         if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_my_user_new_activity']??true)){
             $via[] = PushChannel::class;
             $via[] = WechatNoticeChannel::class;

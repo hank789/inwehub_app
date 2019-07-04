@@ -43,7 +43,7 @@ class MoneyLog extends Notification implements ShouldQueue,ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast',PushChannel::class, WechatNoticeChannel::class];
+        return ['database', PushChannel::class, WechatNoticeChannel::class];
     }
 
     /**

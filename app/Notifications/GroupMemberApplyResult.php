@@ -41,7 +41,7 @@ class GroupMemberApplyResult extends Notification implements ShouldQueue,ShouldB
      */
     public function via($notifiable)
     {
-        return ['database', 'broadcast', PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
+        return ['database',  PushChannel::class, WechatNoticeChannel::class, SlackChannel::class];
     }
 
     /**

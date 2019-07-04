@@ -45,7 +45,7 @@ class NewUserFollowing extends Notification implements ShouldBroadcast,ShouldQue
      */
     public function via($notifiable)
     {
-        $via = ['broadcast',SlackChannel::class];
+        $via = [SlackChannel::class];
         if ($notifiable->checkCanDisturbNotify() && ($notifiable->site_notifications['push_rel_mine_followed']??true)){
             $via[] = PushChannel::class;
             $via[] = WechatNoticeChannel::class;
