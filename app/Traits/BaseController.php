@@ -653,13 +653,16 @@ trait BaseController {
         }
         $inwehub_user_device = $request->input('inwehub_user_device','web');
         $appid = $request->input('system_appid',null);
+        if ($appid) {
+            $inwehub_user_device = 'plus';
+        }
         if ($request->input('inwehub_user_device') == 'www' && $return['type'] == 'article' && !str_contains($request->header('Referer'),'my/discover/add/'.$submission->slug)) {
             $return['data']['description'] = QuillLogic::parseHtml($return['data']['description']);
         }
 
         $domain = $submission->data['domain']??'';
         $link_url = $submission->data['url']??'';
-        if ((!in_array($inwehub_user_device,['web','wechat']) || $appid) && $domain == 'mp.weixin.qq.com') {
+        if ((!in_array($inwehub_user_device,['web','wechat'])) && $domain == 'mp.weixin.qq.com') {
             if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz=') || str_contains($link_url, '/s/'))) {
                 $return['data']['url'] = config('app.url').'/articleInfo/'.$submission->id.'?inwehub_user_device='.$inwehub_user_device;
             }

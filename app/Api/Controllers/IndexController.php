@@ -412,6 +412,9 @@ class IndexController extends Controller {
         $list = [];
         $inwehub_user_device = $request->input('inwehub_user_device','web');
         $appid = $request->input('system_appid',null);
+        if ($appid) {
+            $inwehub_user_device = 'plus';
+        }
         foreach ($reads as $key=>$item) {
             if ($page == 1 && $key == 0) {
                 $last_seen = $item->id;
@@ -422,7 +425,7 @@ class IndexController extends Controller {
             }
             $domain = $item->data['domain']??'';
             $link_url = $item->data['url']??'';
-            if ((!in_array($inwehub_user_device,['web','wechat']) || $appid) && $domain == 'mp.weixin.qq.com') {
+            if ((!in_array($inwehub_user_device,['web','wechat'])) && $domain == 'mp.weixin.qq.com') {
                 if (!(str_contains($link_url, 'wechat_redirect') || str_contains($link_url, '__biz=') || str_contains($link_url, '/s/'))) {
                     $link_url = config('app.url').'/articleInfo/'.$item->id.'?inwehub_user_device='.$inwehub_user_device;
                 }
