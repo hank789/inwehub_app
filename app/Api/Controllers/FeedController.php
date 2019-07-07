@@ -26,6 +26,10 @@ class FeedController extends Controller
         $alertMsg = '';
         $last_seen = RateLimiter::instance()->hGet('user_feed_last_seen',$user->id);
         $inwehub_user_device = $request->input('inwehub_user_device','web');
+        $appid = $request->input('system_appid',null);
+        if ($appid) {
+            $inwehub_user_device = 'plus';
+        }
         $query = Feed::query();
         switch ($search_type) {
             case 1:
