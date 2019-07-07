@@ -19,10 +19,7 @@
                             <div style="position: relative; height: 111px; margin: 20px 0; ">
                                 <div style="position: absolute; left: 0; height: 90px; width: 100%;">
                                     <a target="_blank" href="{{ $item['link_url'] }}" style="text-decoration:none; color: #4A5F7B; font-size: 18px; font-family:PingFangSC-Medium; font-weight:500; line-height:28px; {{ $item['img']?'width: 350px;':'' }} position: absolute; top: 0; display:-webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">{{ $key+1 }}. {{ $item['title'] }}</a>
-                                    <div style="position: absolute; bottom: 0; left: 12px;">
-                                        <img style="width: 12px; height: 14px" src="https://cdn.inwehub.com/system/fire@3x.png" alt="">
-                                        <span style="font-size:14px; font-family:HelveticaNeue; color: #B3C2D5; position: relative; top: 3px;">{{ $item['rate'] }}</span>
-                                    </div>
+                                    
                                 </div>
                                 @if ($item['img'])
                                     <div style="position: absolute; right: 0; width: 132px; height: 89px; border-radius: 4px;"><img style="width: 132px; height: 89px; border-radius: 4px;" src="{{ $item['img'] }}" alt=""></div>
