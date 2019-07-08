@@ -235,11 +235,8 @@ class SystemController extends Controller {
         $app_version = $last->app_version??'1.0.0';
         $is_ios_force = $last->is_ios_force??0;
         $is_android_force = $last->is_android_force??0;
-        $update_msg = '';
-        $msgArr = explode("\n",$last->update_msg);
-        foreach ($msgArr as $item) {
-            $update_msg = $update_msg.'<p style="text-align:left">'.$item.'</p>';
-        }
+        $update_msg = $last->update_msg;
+
         $package_url = $last->package_url??'http://intervapp-test.oss-cn-zhangjiakou.aliyuncs.com/app_version/com.inwehub.InwehubApp.wgt';
         return self::createJsonData(true,[
             'app_version'           => $app_version,
