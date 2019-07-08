@@ -210,7 +210,7 @@ class SystemController extends Controller {
         $appid = $request->input('appid',null);
         $current_version = $request->input('current_version');
         $last = AppVersion::where('status',1)->orderBy('app_version','desc')->first();
-        if((!$appid) || ($app_uuid && RateLimiter::instance()->increase('system:getAppVersionLimit',$app_uuid,5,1)) || ($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,60 * 60 * 2,1) && $current_version==$last->app_version)){
+        if(!$appid || ($app_uuid && RateLimiter::instance()->increase('system:getAppVersionLimit',$app_uuid,5,1)) || ($app_uuid && RateLimiter::instance()->increase('system:getAppVersion',$app_uuid,60 * 60 * 2,1) && $current_version==$last->app_version)){
             return self::createJsonData(true,[
                 'app_version'           => 0,
                 'is_ios_force'          => 0,
