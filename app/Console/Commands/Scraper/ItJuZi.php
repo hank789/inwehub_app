@@ -120,7 +120,7 @@ class ItJuZi extends Command {
                             $img = [$img];
                         }
 
-                        $title = date('n月d日',$item['time']).'，「'.$item['name'].'」获得金额'.$item['money'].'的'.$item['round'].'融资，投资方'.implode('，',array_column($item['investor'],'invst_name')).'。';
+                        $title = date('n月d日',$item['time']).'，「'.$item['name'].'」获得金额'.$item['money'].'的'.$item['round'].'融资，投资方'.implode('，',array_column($item['investor'],'name')).'。';
                         $this->info($title);
                         $data = [
                             'url'           => $company_url,
