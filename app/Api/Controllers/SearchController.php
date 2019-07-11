@@ -94,8 +94,11 @@ class SearchController extends Controller
         $query = Submission::search(formatElasticSearchTitle($word))->where('status',1)->where('public',1);
         if (config('app.env') == 'production') {
             $query = $query->where('product_type',1);
+            $submissions = $query->orderBy('rate.keyword', 'desc')->paginate($perPage);
+        } else {
+            $submissions = $query->orderBy('rate', 'desc')->paginate($perPage);
         }
-        $submissions = $query->orderBy('rate', 'desc')->paginate($perPage);
+
         $return['submission']['total'] = $submissions->total();
         foreach ($submissions as $submission) {
             $return['submission']['list'][] = $submission->formatListItem($user);
@@ -143,8 +146,14 @@ class SearchController extends Controller
             $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
                 ->where('status',1);
         }
-        $tags = $query->orderBy('reviews', 'desc')
-            ->paginate($perPage);
+        if (config('app.env') == 'production') {
+            $tags = $query->orderBy('reviews.keyword', 'desc')
+                ->paginate($perPage);
+        } else {
+            $tags = $query->orderBy('reviews', 'desc')
+                ->paginate($perPage);
+        }
+
         $return['product']['total'] = $tags->total();
         foreach ($tags as $tag) {
             $info = Tag::getReviewInfo($tag->id);
@@ -160,10 +169,12 @@ class SearchController extends Controller
         $query = Submission::search(formatElasticSearchTitle($word))->where('status',1);
         if (config('app.env') == 'production') {
             $query = $query->where('product_type',2);
+            $submissions = $query->orderBy('rate.keyword', 'desc')->paginate($perPage);
         } else {
             $query = $query->where('type','review');
+            $submissions = $query->orderBy('rate', 'desc')->paginate($perPage);
         }
-        $submissions = $query->orderBy('rate', 'desc')->paginate($perPage);
+
         $return['review']['total'] = $submissions->total();
         foreach ($submissions as $submission) {
             $return['review']['list'][] = $submission->formatListItem($user,false);
@@ -237,9 +248,13 @@ class SearchController extends Controller
         if (config('app.env') == 'production') {
             $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
                 ->where('status',1);
+            $tags = $query->orderBy('reviews.keyword', 'desc')
+                ->paginate(Config::get('inwehub.api_data_page_size'));
+        } else {
+            $tags = $query->orderBy('reviews', 'desc')
+                ->paginate(Config::get('inwehub.api_data_page_size'));
         }
-        $tags = $query->orderBy('reviews', 'desc')
-            ->paginate(Config::get('inwehub.api_data_page_size'));
+
         $data = [];
         $ids = [];
         foreach ($tags as $key=>$tag) {
@@ -286,10 +301,12 @@ class SearchController extends Controller
         $query = Submission::search(formatElasticSearchTitle($request->input('search_word')))->where('status',1);
         if (config('app.env') == 'production') {
             $query = $query->where('product_type',2);
+            $submissions = $query->orderBy('rate.keyword', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         } else {
             $query = $query->where('type','review');
+            $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         }
-        $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+
         $return = $submissions->toArray();
         $data = [];
         foreach ($submissions as $submission) {
@@ -401,8 +418,11 @@ class SearchController extends Controller
         $query = Submission::search(formatElasticSearchTitle($request->input('search_word')))->where('status',1)->where('public',1);
         if (config('app.env') == 'production') {
             $query = $query->where('product_type',1);
+            $submissions = $query->orderBy('rate.keyword', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+        } else {
+            $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
         }
-        $submissions = $query->orderBy('rate', 'desc')->paginate(Config::get('inwehub.api_data_page_size'));
+
         $return = $submissions->toArray();
         $data = [];
         foreach ($submissions as $submission) {
