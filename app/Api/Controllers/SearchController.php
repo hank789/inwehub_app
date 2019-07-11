@@ -146,14 +146,8 @@ class SearchController extends Controller
             $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
                 ->where('status',1);
         }
-        if (config('app.env') == 'production') {
-            $tags = $query->orderBy('reviews.keyword', 'desc')
-                ->paginate($perPage);
-        } else {
-            $tags = $query->orderBy('reviews', 'desc')
-                ->paginate($perPage);
-        }
-
+        $tags = $query->orderBy('reviews', 'desc')
+            ->paginate($perPage);
         $return['product']['total'] = $tags->total();
         foreach ($tags as $tag) {
             $info = Tag::getReviewInfo($tag->id);
@@ -248,12 +242,9 @@ class SearchController extends Controller
         if (config('app.env') == 'production') {
             $query = $query->where('type',TagCategoryRel::TYPE_REVIEW)
                 ->where('status',1);
-            $tags = $query->orderBy('reviews.keyword', 'desc')
-                ->paginate(Config::get('inwehub.api_data_page_size'));
-        } else {
-            $tags = $query->orderBy('reviews', 'desc')
-                ->paginate(Config::get('inwehub.api_data_page_size'));
         }
+        $tags = $query->orderBy('reviews', 'desc')
+            ->paginate(Config::get('inwehub.api_data_page_size'));
 
         $data = [];
         $ids = [];
