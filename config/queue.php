@@ -60,7 +60,7 @@ return [
         'redis' => [
             'driver' => 'redis',
             'connection' => 'default',
-            'queue' => 'inwehub:default',
+            'queue' => env('REDIS_PREFIX', 'inwehub').':default',
             'retry_after' => 90,
         ],
 

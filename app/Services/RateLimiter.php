@@ -17,6 +17,9 @@ class RateLimiter extends Singleton
 
     private $prefix = 'rate-limit';
 
+    private $prefix2 = '';
+
+
     protected static $instance = null;
 
     /**
@@ -27,6 +30,7 @@ class RateLimiter extends Singleton
     public function __construct($client)
     {
         $this->client = $client;
+        $this->prefix2 = config('cache.prefix');
     }
 
     public function disconnect() {
@@ -54,7 +58,7 @@ class RateLimiter extends Singleton
     }
 
     public function del($key) {
-        $this->client->del('inwehub:'.$key);
+        $this->client->del($this->prefix2.':'.$key);
     }
 
     public function increase($event, $target, $expire = 60, $times = 1)
@@ -83,53 +87,62 @@ class RateLimiter extends Singleton
     }
 
     public function hIncrBy($event,$key,$value){
-        return $this->client->hIncrBy('inwehub:'.$event,$key,$value);
+        return $this->client->hIncrBy($this->prefix2.':'.$event,$key,$value);
     }
 
     public function hSet($event,$key,$value) {
-        return $this->client->hSet('inwehub:'.$event,$key,$value);
+        return $this->client->hSet($this->prefix2.':'.$event,$key,$value);
     }
 
     public function hGet($event,$key) {
-        return $this->client->hGet('inwehub:'.$event,$key);
+        return $this->client->hGet($this->prefix2.':'.$event,$key);
     }
 
     public function hGetAll($event){
-        return $this->client->hGetAll('inwehub:'.$event);
+        return $this->client->hGetAll($this->prefix2.':'.$event);
     }
 
     public function hDel($event,$key) {
-        return $this->client->hDel('inwehub:'.$event,$key);
+        return $this->client->hDel($this->prefix2.':'.$event,$key);
     }
 
     public function hClear($event) {
         $keys = $this->hGetAll($event);
         foreach ($keys as $key=>$val) {
-            $this->client->hDel('inwehub:'.$event,$key);
+            $this->client->hDel($this->prefix2.':'.$event,$key);
         }
     }
 
     public function sAdd($key,$value,$expire = 60) {
-        $this->client->sAdd('inwehub:'.$key,$value);
+        $this->client->sAdd($this->prefix2.':'.$key,$value);
         if ($expire) {
-            $this->client->expire('inwehub:'.$key,$expire);
+            $this->client->expire($this->prefix2.':'.$key,$expire);
         }
         return true;
     }
 
-    public function sMembers($key, $keyPrefix = 'inwehub:') {
+    public function sMembers($key, $keyPrefix = '') {
+        if (empty($keyPrefix)) {
+            $keyPrefix = $this->prefix2.':';
+        }
         return $this->client->sMembers($keyPrefix.$key);
     }
 
-    public function sRem($key,$value,$keyPrefix = 'inwehub:') {
+    public function sRem($key,$value,$keyPrefix = '') {
+        if (empty($keyPrefix)) {
+            $keyPrefix = $this->prefix2.':';
+        }
         return $this->client->sRem($keyPrefix.$key,$value);
     }
 
     public function sIsMember($key,$value){
-        return $this->client->sIsMember('inwehub:'.$key,$value);
+        return $this->client->sIsMember($this->prefix2.':'.$key,$value);
     }
 
-    public function sClear($key, $keyPrefix = 'inwehub:'){
+    public function sClear($key, $keyPrefix = ''){
+        if (empty($keyPrefix)) {
+            $keyPrefix = $this->prefix2.':';
+        }
         $members = $this->sMembers($key,$keyPrefix);
         foreach ($members as $member) {
             $this->sRem($key,$member,$keyPrefix);
@@ -137,7 +150,7 @@ class RateLimiter extends Singleton
     }
 
     public function zAdd($key,$score,$value){
-        return $this->client->zAdd('inwehub:'.$key,$score,$value);
+        return $this->client->zAdd($this->prefix2.':'.$key,$score,$value);
     }
 
     /**
@@ -165,19 +178,31 @@ class RateLimiter extends Singleton
      * $redis->zRevRange('key', 0, -1, true); // array('val10' => 10, 'val2' => 2, 'val0' => 0)
      * </pre>
      */
-    public function zRevrange($key,$start,$end,$keyPrefix = 'inwehub:'){
+    public function zRevrange($key,$start,$end,$keyPrefix = ''){
+        if (empty($keyPrefix)) {
+            $keyPrefix = $this->prefix2.':';
+        }
         return $this->client->zRevRange($keyPrefix.$key,$start,$end,'WITHSCORES');
     }
 
-    public function zRevrangeByScore($key,$start,$end,$withscores=true,$keyPrefix = 'inwehub:') {
+    public function zRevrangeByScore($key,$start,$end,$withscores=true,$keyPrefix = '') {
+        if (empty($keyPrefix)) {
+            $keyPrefix = $this->prefix2.':';
+        }
         return $this->client->zRevRangeByScore($keyPrefix.$key,$start,$end,['withscores' => $withscores]);
     }
 
-    public function zRangeByScore($key,$start,$end,$withscores=true,$keyPrefix = 'inwehub:') {
+    public function zRangeByScore($key,$start,$end,$withscores=true,$keyPrefix = '') {
+        if (empty($keyPrefix)) {
+            $keyPrefix = $this->prefix2.':';
+        }
         return $this->client->zRangeByScore($keyPrefix.$key,$start,$end,['withscores' => $withscores]);
     }
 
-    public function zRem($key,$value,$keyPrefix = 'inwehub:') {
+    public function zRem($key,$value,$keyPrefix = '') {
+        if (empty($keyPrefix)) {
+            $keyPrefix = $this->prefix2.':';
+        }
         return $this->client->zRem($keyPrefix.$key,$value);
     }
 
@@ -219,7 +244,7 @@ class RateLimiter extends Singleton
      * @param $key
      */
     function lock_release($key){
-        $this->client->del('inwehub:'.$key);
+        $this->client->del($this->prefix2.':'.$key);
     }
 
     public static function instance(){
