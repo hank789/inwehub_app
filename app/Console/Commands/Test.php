@@ -81,6 +81,40 @@ class Test extends Command
      */
     public function handle()
     {
+        $query = Tag::query();
+        $page = 1;
+        $perPage = 1000;
+        $tags = $query->simplePaginate($perPage,['*'],'page',$page);
+        while ($tags->count() > 0) {
+            foreach ($tags as $tag) {
+                $count = Taggable::where('tag_id',$tag->id)->count();
+                if ($count <= 1) {
+                    if ($tag->reviews <= 0 && '自动分类' == implode(',',$tag->categories->pluck('name')->toArray())) {
+                        $this->info($tag->name);
+                        $tag->delete();
+                    } elseif ($tag->reviews <= 0) {
+                        $categories = $tag->categories;
+                        $delete = true;
+                        foreach ($categories as $category) {
+                            if ($category->type == 'product_album') {
+                                $delete = false;
+                            }
+                            if ($category->id > 1 && $category->id <=42) {
+                                $delete = false;
+                            }
+                        }
+                        if ($delete) {
+                            $this->info($tag->name);
+                            $tag->delete();
+                        }
+                    }
+                }
+            }
+            $page ++;
+            $tags = $query->simplePaginate($perPage,['*'],'page',$page);
+        }
+        TagsLogic::delCache();
+        TagsLogic::delRelatedProductsCache();
         TagsLogic::delProductCache();
         return;
         $cellData = [];

@@ -86,6 +86,6 @@ return [
     |
     */
 
-    'prefix' => 'inwehub',
+    'prefix' => env('REDIS_PREFIX', 'inwehub'),
 
 ];
