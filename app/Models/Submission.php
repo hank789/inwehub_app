@@ -201,7 +201,7 @@ class Submission extends Model implements HasMedia {
         }
         $title = strip_tags(implode(';',$data));
         $str_length = strlen($title);
-        if ($str_length >= 32760) {
+        if ($str_length >= 30760) {
             //elasticsearch的索引长度为32766
             $title = str_limit($title,$str_length/1.6,'');
         }
