@@ -73,8 +73,10 @@ class ItJuZi extends Command {
             try {
                 $data = $this->getListData($page,$headers);
             } catch (\Exception $e) {
-                if ($e->getCode() == 400) {
+                if ($e->getCode() == 400 || $e->getCode() == 445) {
+                    RateLimiter::instance()->setVale('itjuzi','token','',60*60*24*5);
                     $this->getItJuziAuth();
+                    $headers['Authorization'] = $this->itjuzi_auth;
                     $data = $this->getListData($page,$headers);
                 } else {
                     app('sentry')->captureException($e);
