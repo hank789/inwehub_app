@@ -372,7 +372,7 @@ class IndexController extends Controller {
             $user->name = '游客';
         }
         if ($filterTag != -1) {
-            $query = Submission::where('status',1)->where('group_id',0)->where('type','!=','review');
+            $query = Submission::where('status',1)->where('group_id',0)->where('type','link');
             if ($filterTag) {
                 $query = $query->whereHas('tags',function($query) use ($filterTag) {
                     $query->where('tag_id', $filterTag);
