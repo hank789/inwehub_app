@@ -385,9 +385,9 @@ class IndexController extends Controller {
             $filterTagName = '推荐';
         }
         if ($filterTag) {
-            $query = $query->orderBy('rate','desc');
+            $query = $query->orderBy('id','desc');
         } else {
-            $query = $query->orderBy('created_at','desc');
+            $query = $query->orderBy('id','desc');
         }
 
 
