@@ -208,6 +208,13 @@ analysis-ik
 ```
 如果出现 `analysis-ik`，证明 ik 已经安装。
 
+允许外网访问，在es目录：
+```
+vi config/elasticsearch.yml
+
+```
+将参数：network.host，改成本机ip地址
+
 在es目录运行
 ```
 ./bin/elasticsearch
@@ -224,6 +231,8 @@ $ php artisan es:init
 //创建对应model的索引
 $ php artisan scout:import 'App\Models\Submission'
 $ php artisan scout:import 'App\Models\Tag'
+
+
 
 ```
 搜索：
