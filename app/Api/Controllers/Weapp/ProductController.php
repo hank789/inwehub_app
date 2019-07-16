@@ -413,6 +413,9 @@ class ProductController extends Controller {
     public function getAlbumList(Request $request) {
         $categories = Category::where('grade',0)->where('type','product_album')->where('status',1)->orderBy('sort','asc')->orderBy('updated_at','desc')->simplePaginate($request->input('perPage',10));
         $data = $categories->toArray();
+        foreach ($data['data'] as &$item) {
+            $item['album_qrcode'] = RateLimiter::instance()->hGet('album-qrcode',$item['id']);
+        }
         return self::createJsonData(true,$data);
     }
 
