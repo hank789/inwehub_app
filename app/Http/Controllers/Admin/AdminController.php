@@ -15,7 +15,7 @@ class AdminController extends Controller {
 
 
 
-    public function __construct(Request $request){
+    public function __construct(){
 
 
         /*未审核问题数*/
