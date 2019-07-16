@@ -372,7 +372,7 @@ class IndexController extends Controller {
             $user->name = '游客';
         }
         if ($filterTag != -1) {
-            $query = Submission::where('status',1)->where('group_id',0)->where('type','link');
+            $query = Submission::where('status',1)->where('group_id',0)->where('type','link')->where('rate','>',0);
             if ($filterTag) {
                 $query = $query->whereHas('tags',function($query) use ($filterTag) {
                     $query->where('tag_id', $filterTag);
@@ -384,11 +384,7 @@ class IndexController extends Controller {
             $query = RecommendRead::where('audit_status',1);
             $filterTagName = '推荐';
         }
-        if ($filterTag) {
-            $query = $query->orderBy('id','desc');
-        } else {
-            $query = $query->orderBy('id','desc');
-        }
+        $query = $query->orderBy('rate','desc');
 
 
         $reads = $query->simplePaginate($perPage);
