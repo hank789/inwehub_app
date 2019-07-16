@@ -5,6 +5,7 @@
  * @email: hank.huiwang@gmail.com
  */
 
+use App\Http\Controllers\Admin\IndexController;
 use App\Models\Comment;
 use App\Models\Groups\Group;
 use App\Models\Groups\GroupMember;
@@ -93,6 +94,8 @@ class CalcGroupHot extends Command
             $score = $submissions + $upvotes;
             RateLimiter::instance()->zAdd('product-daily-hot-'.date('Ymd'),$score,$product->tag_id);
         }
+        $controller = new IndexController();
+        $controller->index();
     }
 
 }

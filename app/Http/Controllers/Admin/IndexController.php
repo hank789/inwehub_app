@@ -35,7 +35,7 @@ class IndexController extends AdminController
      */
     public function index()
     {
-        $data = Cache::remember('admin_index_dashboard',30,function () {
+        $data = Cache::remember('admin_index_dashboard',60,function () {
             $totalUserNum = User::count();
             $totalUserNumHasPhone = User::whereNotNull('mobile')->count();
             $totalUserNumHasEmail = $totalUserNum - User::where('email','')->count();
