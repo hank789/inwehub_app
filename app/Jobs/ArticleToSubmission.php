@@ -8,6 +8,7 @@ use App\Models\Scraper\WechatMpInfo;
 use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Tag;
+use App\Models\TagCategoryRel;
 use App\Services\RateLimiter;
 use App\Services\WechatGzhService;
 use App\Traits\SubmitSubmission;
@@ -178,6 +179,18 @@ class ArticleToSubmission implements ShouldQueue
             $author->group->increment('articles');
         }
         $regionTags = $author->tags->pluck('id')->toArray();
+        $productTags = $article->tags->pluck('id')->toArray();
+        $regionTags = array_merge($regionTags,$productTags);
+        foreach ($productTags as $productTag) {
+            $rels = TagCategoryRel::where('type',TagCategoryRel::TYPE_REVIEW)->where('status',1)->get();
+            foreach ($rels as $rel) {
+                $category = Category::find($rel->category_id);
+                //专辑对应的领域
+                if ($category && $category->parent_id == 1359) {
+                    $regionTags[] = $category->getRegionTag();
+                }
+            }
+        }
         if($regionTags) {
             Tag::multiAddByIds($regionTags,$submission);
         }
