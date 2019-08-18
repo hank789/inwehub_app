@@ -78,6 +78,7 @@ class WechatPostsNew extends Command {
                 try {
                     $info = $spider->getGzhInfo($mpInfo->wx_hao,false,2);
                 } catch (\Exception $e) {
+                    $this->error($e->getMessage());
                     break;
                 }
                 if ($info === false) continue;
