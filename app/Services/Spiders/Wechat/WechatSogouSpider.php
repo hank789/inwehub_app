@@ -55,6 +55,7 @@ class WechatSogouSpider
         $request_url = 'https://weixin.sogou.com/weixin?type=1&s_from=input&query='.$wx_hao.'&ie=utf8&_sug_=n&_sug_type_=';
         $jieFengCount = 0;
         $jfResult = false;
+        $lastArticle = [];
         $headers = [
             'Host'    => 'weixin.sogou.com',
             'Connection' => 'keep-alive',
@@ -120,7 +121,7 @@ class WechatSogouSpider
         $img = $content->find('div.img-box > a')->children('img')->attr('src');
         $url = $content->find('div.img-box')->children('a')->attr('href');
         $name = $content->find('div.txt-box > p.tit')->eq(0)->children('a')->text();
-        $description = $content->find('ul.news-list2 > li')->children('dl')->map(function ($item) {
+        $description = $content->find('ul.news-list2 > li')->eq(0)->children('dl')->map(function ($item) {
             $dt = $item->find('dt')->text();
             if ($dt == '功能介绍：') {
                 return ['description'=>$item->find('dd')->text()];
@@ -141,6 +142,7 @@ class WechatSogouSpider
             }
         })->toArray();
         //var_dump($content->getHtml());
+        \Log::info('desc',$description);
 
         if (!empty($name) && !str_contains($url,'://')) {
             $returnHtml = $content->getHtml();
@@ -160,8 +162,16 @@ class WechatSogouSpider
                 //\Log::info('WechatSogouSpider',[$url]);
                 $content2 = $this->requestUrl($url,$this->proxyIp,['headers'=>$headers]);
             } else {
-                if (!isset($description[2])) return false;
-                $url = str_replace('https://weixin.sogou.com','',$description[2]['lastArticleUrl']);
+                if (isset($description[2]['lastArticleUrl'])) {
+                    $lastArticleUrl = $description[2]['lastArticleUrl'];
+                    $lastArticle = $description[2];
+                } elseif (isset($description[1]['lastArticleUrl'])) {
+                    $lastArticleUrl = $description[1]['lastArticleUrl'];
+                    $lastArticle = $description[1];
+                } else {
+                    return false;
+                }
+                $url = str_replace('https://weixin.sogou.com','',$lastArticleUrl);
                 //\Log::info('url',[$url]);
                 $s = str_replace('(','',str_replace('parseInt','',str_replace('"','',$matchs[1])));
                 $t =eval('return '.$s.';');
@@ -212,7 +222,7 @@ class WechatSogouSpider
             'qrcode' => '',
             'description' => $description[0]['description']??'',
             'company' => $description[1]['company']??'',
-            'lastArticle' => $description[2]??[],
+            'lastArticle' => $lastArticle,
             'last_qunfa_id' => 0
         ];
         \Log::info('WechatSogouSpider',$data);

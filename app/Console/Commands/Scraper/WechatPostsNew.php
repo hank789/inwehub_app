@@ -86,6 +86,8 @@ class WechatPostsNew extends Command {
 
                 if ($last_qunfa_time >= date('Y-m-d H:i:s',$info['lastArticle']['lastArticleTime'])) {
                     $this->info('没有更新文章');
+                    $mpInfo->update_time = date('Y-m-d H:i:s');
+                    $mpInfo->save();
                     continue;
                 }
                 $this->info($info['lastArticle']['lastArticleTitle']);
