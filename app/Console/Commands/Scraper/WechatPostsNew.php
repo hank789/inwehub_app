@@ -81,8 +81,16 @@ class WechatPostsNew extends Command {
                     $this->error($e->getMessage());
                     break;
                 }
-                if ($info === false) continue;
-                if (empty($info['lastArticle'])) continue;
+                if ($info === false) {
+                    $mpInfo->update_time = date('Y-m-d H:i:s');
+                    $mpInfo->save();
+                    continue;
+                }
+                if (empty($info['lastArticle'])) {
+                    $mpInfo->update_time = date('Y-m-d H:i:s');
+                    $mpInfo->save();
+                    continue;
+                }
 
                 if ($last_qunfa_time >= date('Y-m-d H:i:s',$info['lastArticle']['lastArticleTime'])) {
                     $this->info('没有更新文章');
@@ -92,7 +100,11 @@ class WechatPostsNew extends Command {
                 }
                 $this->info($info['lastArticle']['lastArticleTitle']);
                 $uuid = base64_encode($mpInfo->_id.$info['lastArticle']['lastArticleTitle'].date('Y-m-d',$info['lastArticle']['lastArticleTime']));
-                if (RateLimiter::instance()->hGet('wechat_article',$uuid)) continue;
+                if (RateLimiter::instance()->hGet('wechat_article',$uuid)) {
+                    $mpInfo->update_time = date('Y-m-d H:i:s');
+                    $mpInfo->save();
+                    continue;
+                }
 
                 $article = WechatWenzhangInfo::create([
                     'title' => formatHtml($info['lastArticle']['lastArticleTitle']),
