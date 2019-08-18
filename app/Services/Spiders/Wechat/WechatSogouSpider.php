@@ -48,8 +48,9 @@ class WechatSogouSpider
      * 根据公众号id获取公众号信息
      * @param $wx_hao
      * @param $usePayProxy
+     * @param $version
      */
-    public function getGzhInfo($wx_hao, $usePayProxy = false) {
+    public function getGzhInfo($wx_hao, $usePayProxy = false, $version = 1) {
         $this->requestUrl('https://weixin.sogou.com/',null);
         $request_url = 'https://weixin.sogou.com/weixin?type=1&s_from=input&query='.$wx_hao.'&ie=utf8&_sug_=n&_sug_type_=';
         $jieFengCount = 0;
@@ -127,6 +128,17 @@ class WechatSogouSpider
             if (str_contains($dt,'认证：')) {
                 return ['company'=>$item->find('dd')->text()];
             }
+            if ($dt == '最近文章：') {
+                $timeSpan = $item->find('dd')->children('span')->text();
+                //var_dump($timeSpan);
+                $pattern = "/timeConvert\('([\s\S]*?)'\)/is";
+                preg_match($pattern, $timeSpan, $matchs);
+                return [
+                    'lastArticleUrl' => 'https://weixin.sogou.com'.$item->find('dd')->children('a')->attr('href'),
+                    'lastArticleTitle' => $item->find('dd')->children('a')->text(),
+                    'lastArticleTime' => $matchs[1]
+                ];
+            }
         })->toArray();
         //var_dump($content->getHtml());
 
@@ -137,14 +149,29 @@ class WechatSogouSpider
 
             $pattern = "/a=this.href.substr\(a\+([\s\S]*?)\)\+b/is";
             preg_match($pattern, $returnHtml, $matchs);
-            $s = str_replace('(','',str_replace('parseInt','',str_replace('"','',$matchs[1])));
-            $t =eval('return '.$s.';');
-
-            $h = substr($url,$a+$t+$b,1);
-            $url = 'https://weixin.sogou.com'.$url.'&k='.$b.'&h='.$h;
-            \Log::info('WechatSogouSpider',[$url]);
             $headers['Referer'] = $request_url;
-            $content2 = $this->requestUrl($url,$this->proxyIp,['headers'=>$headers]);
+            if ($version == 1) {
+                $s = str_replace('(','',str_replace('parseInt','',str_replace('"','',$matchs[1])));
+                $t =eval('return '.$s.';');
+
+                $h = substr($url,$a+$t+$b,1);
+
+                $url = 'https://weixin.sogou.com'.$url.'&k='.$b.'&h='.$h;
+                //\Log::info('WechatSogouSpider',[$url]);
+                $content2 = $this->requestUrl($url,$this->proxyIp,['headers'=>$headers]);
+            } else {
+                $url = str_replace('https://weixin.sogou.com','',$description[2]['lastArticleUrl']);
+                //\Log::info('url',[$url]);
+                $s = str_replace('(','',str_replace('parseInt','',str_replace('"','',$matchs[1])));
+                $t =eval('return '.$s.';');
+
+                $h = substr($url,$a+$t+$b,1);
+
+                $url = 'https://weixin.sogou.com'.$url.'&k='.$b.'&h='.$h;
+                //\Log::info('test',[$url]);
+                $content2 = $this->requestUrl($url,$this->proxyIp,['headers'=>$headers]);
+            }
+
             $html = $content2->getHtml();
             //var_dump($html);
             if (str_contains($html,'需要您协助验证')) {
@@ -184,6 +211,7 @@ class WechatSogouSpider
             'qrcode' => '',
             'description' => $description[0]['description']??'',
             'company' => $description[1]['company']??'',
+            'lastArticle' => $description[2]??[],
             'last_qunfa_id' => 0
         ];
         \Log::info('WechatSogouSpider',$data);

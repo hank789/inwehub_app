@@ -1718,7 +1718,8 @@ if (!function_exists('getWechatArticleInfo')) {
 
 
 if (!function_exists('getWechatUrlBodyText')) {
-    function getWechatUrlBodyText($url,$strip_tags=true, $downloadImg = false) {
+    function getWechatUrlBodyText($url,$strip_tags=true, $downloadImg = false, $detail = false) {
+        $author = '';
         $html = file_get_contents_curl($url);
         if (str_contains($html,'访问过于频繁，请用微信扫描二维码进行访问')) {
             $html = curlShadowsocks($url);
@@ -1734,6 +1735,12 @@ if (!function_exists('getWechatUrlBodyText')) {
         }
         $parse = parse_url($url);
         if ($parse['host'] == 'mp.weixin.qq.com') {
+            if ($detail) {
+                $ql = \QL\QueryList::getInstance();
+                $ql->setHtml($html);
+                $author = $ql->find('span.rich_media_meta.rich_media_meta_text')->text();
+                $author = trim(str_replace('原创：','',$author));
+            }
             preg_match_all("/id=\"js_content\">(.*)<script/iUs",$html,$content,PREG_PATTERN_ORDER);
             $html = isset($content[1][0])?($strip_tags?strip_tags($content[1][0]):$content[1][0]):'';
             if ($downloadImg) {
@@ -1744,6 +1751,9 @@ if (!function_exists('getWechatUrlBodyText')) {
             }
             //去除微信图片遮罩
             $html = str_replace('opacity: 0;','',$html);
+            if ($detail) {
+                return ['html' => $html, 'author'=>$author];
+            }
         }
         return $html;
     }
