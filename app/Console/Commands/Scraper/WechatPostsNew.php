@@ -80,12 +80,12 @@ class WechatPostsNew extends Command {
                 } catch (\Exception $e) {
                     break;
                 }
-                if ($info === false) break;
+                if ($info === false) continue;
                 if (empty($info['lastArticle'])) continue;
 
                 if ($last_qunfa_time >= date('Y-m-d H:i:s',$info['lastArticle']['lastArticleTime'])) {
                     $this->info('没有更新文章');
-                    break;
+                    continue;
                 }
                 $this->info($info['lastArticle']['lastArticleTitle']);
                 $uuid = base64_encode($mpInfo->_id.$info['lastArticle']['lastArticleTitle'].date('Y-m-d',$info['lastArticle']['lastArticleTime']));
