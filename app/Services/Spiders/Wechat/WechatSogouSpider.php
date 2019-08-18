@@ -160,6 +160,7 @@ class WechatSogouSpider
                 //\Log::info('WechatSogouSpider',[$url]);
                 $content2 = $this->requestUrl($url,$this->proxyIp,['headers'=>$headers]);
             } else {
+                if (!isset($description[2])) return false;
                 $url = str_replace('https://weixin.sogou.com','',$description[2]['lastArticleUrl']);
                 //\Log::info('url',[$url]);
                 $s = str_replace('(','',str_replace('parseInt','',str_replace('"','',$matchs[1])));
