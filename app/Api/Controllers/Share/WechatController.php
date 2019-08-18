@@ -98,6 +98,9 @@ class WechatController extends Controller
                     $source_type_class = Submission::class;
                     $action = Doing::ACTION_SHARE_SUBMISSION_SUCCESS;
                     $submission = Submission::where('slug',$target_id)->first();
+                    if (!$submission) {
+                        $submission = Submission::find($target_id);
+                    }
                     if ($submission) {
                         $refer_user_id = $submission->user_id;
                         $target_id = $submission->id;

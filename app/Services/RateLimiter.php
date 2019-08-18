@@ -102,6 +102,10 @@ class RateLimiter extends Singleton
         return $this->client->hGetAll($this->prefix2.':'.$event);
     }
 
+    public function hScan($event,$iterator,$pattern,$count=10) {
+        return $this->client->hScan($this->prefix2.':'.$event, $iterator, 'match', $pattern, 'count', $count);
+    }
+
     public function hDel($event,$key) {
         return $this->client->hDel($this->prefix2.':'.$event,$key);
     }

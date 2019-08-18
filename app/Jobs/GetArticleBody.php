@@ -50,8 +50,9 @@ class GetArticleBody implements ShouldQueue
         if (!empty($article->body)) return;
 
         if ($article->source_type == 1) {
-            $body = getWechatUrlBodyText($article->content_url,false, true);
-            $article->body = $body;
+            $body = getWechatUrlBodyText($article->content_url,false, true,true);
+            $article->body = $body['html'];
+            $article->author = $body['author'];
             $article->save();
         }
 
