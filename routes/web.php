@@ -9,6 +9,8 @@
 Route::group(['namespace'=>'Web'], function() {
 
     Route::get('/',['as'=>'website.index','uses'=>'IndexController@index']);
+    Route::get('/testPay',['as'=>'website.testPay','uses'=>'IndexController@testPay']);
+    Route::post('/testNotify',['as'=>'website.testNotify','uses'=>'IndexController@testNotify']);
 
     Route::get('/articleInfo/{id}',['as'=>'website.articleInfo','uses'=>'IndexController@articleInfo'])->where(['id'=>'[0-9]+']);
     Route::get('/trackEmail/{type}/{id}/{uid}',['as'=>'website.trackEmail','uses'=>'IndexController@trackEmail'])->where(['id'=>'[0-9]+']);

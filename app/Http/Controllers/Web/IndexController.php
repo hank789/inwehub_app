@@ -7,7 +7,10 @@ use App\Models\Scraper\WechatWenzhangInfo;
 use App\Models\Submission;
 use App\Models\Tag;
 use App\Models\User;
+use App\Third\Pay\ali\AlipayTradePrecreateContentBuilder;
+use App\Third\Pay\ali\AlipayTradeService;
 use Illuminate\Http\Request;
+
 /**
  * @author: wanghui
  * @date: 2017/4/19 下午7:49
@@ -21,6 +24,43 @@ class IndexController extends Controller
         \Log::info('test',[$request->url()]);
         //return view('inspinia.home.index');
         return '欢迎来到Inwehub';
+    }
+
+    public function testPay() {
+        $payRequestBuilder = new AlipayTradePrecreateContentBuilder();
+        $payRequestBuilder->setBody('测试支付');
+        $payRequestBuilder->setSubject('测试支付');
+        $payRequestBuilder->setTotalAmount(0.01);
+        $payRequestBuilder->setOutTradeNo(time());
+        $payRequestBuilder->setTimeExpress('30m'); // 支付超时，线下扫码交易定义为30分钟
+        $config = config('payment.ali');
+
+        $aop = new AlipayTradeService($config);
+
+        $response = $aop->qrcodePay($payRequestBuilder,$config['return_url'],$config['notify_url']);
+
+        //获取 到结果的 qr_code 使用phpqrcode 或者 qrcode.js生成二维码就行了
+        /**
+         * 注意扫码支付使用的使用需要在界面轮询订单的状态进行界面的跳转
+         */
+        //$base64Img = (new QRCode())->render($response['qr_code']);
+        var_dump($response);
+    }
+
+    public function testNotify(Request $request) {
+        \Log::info('testNotify', $request->all());
+        \Log::info('testNotifyPost',$_POST);
+        $config = config('payment.ali');
+        $aop = new AlipayTradeService($config);
+        $check = $aop->check($request->all());
+        if (!$check) {
+            //验签失败
+            echo "fail";
+            \Log::info('testNotifyFail');
+            return;
+        }
+        \Log::info('testNotifySuccess');
+        echo 'success';
     }
 
     public function articleInfo($id, Request $request)
