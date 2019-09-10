@@ -27,6 +27,7 @@ class IndexController extends Controller
     }
 
     public function testPay() {
+        return;
         $payRequestBuilder = new AlipayTradePrecreateContentBuilder();
         $payRequestBuilder->setBody('测试支付');
         $payRequestBuilder->setSubject('测试支付');
