@@ -258,7 +258,7 @@ class AlipayTradeService
      * 请确保项目文件有可写权限，不然打印不了日志。
      */
     public function writeLog($text) {
-        LogHelper::info('supplier_pay_ali_request_data',['body'=>$text]);
+        \Log::info('supplier_pay_ali_request_data',['body'=>$text]);
     }
 
 }
